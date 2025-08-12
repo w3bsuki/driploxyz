@@ -104,7 +104,9 @@
 								onclick={() => handleSellerClick(seller)}
 							/>
 							{#if seller.premium}
-								<span class="absolute -top-1 left-1/2 -translate-x-1/2 text-sm bg-white rounded-full p-0.5 shadow-sm">👑</span>
+								<div class="absolute -top-1 -right-1 w-5 h-5 bg-black rounded-full flex items-center justify-center">
+									<span class="text-white text-xs">★</span>
+								</div>
 							{/if}
 						</div>
 					{/each}

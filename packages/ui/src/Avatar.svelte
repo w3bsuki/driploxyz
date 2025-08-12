@@ -43,16 +43,13 @@
     variant === 'square' ? 'rounded-xl' : 'rounded-full'
   );
   
-  // Use ring for premium border - much cleaner!
-  const premiumClass = $derived(
-    premium ? 'ring-2 ring-yellow-400' : ''
-  );
+  // Clean up - removed unused premium classes
 </script>
 
 <button
   {onclick}
   disabled={!onclick}
-  class="relative block {sizeClasses[size]} {shapeClass} {premiumClass} {onclick ? 'cursor-pointer' : 'cursor-default'} {className} overflow-hidden"
+  class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-2 ring-black' : ''} {onclick ? 'cursor-pointer' : 'cursor-default'} {className} overflow-hidden"
 >
   {#if src}
     <img 
