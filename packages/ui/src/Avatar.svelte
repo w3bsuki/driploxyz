@@ -5,6 +5,7 @@
     name?: string;
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     premium?: boolean;
+    variant?: 'circle' | 'square';
     onclick?: () => void;
     class?: string;
   }
@@ -15,6 +16,7 @@
     name = '',
     size = 'md',
     premium = false,
+    variant = 'circle',
     onclick,
     class: className = ''
   }: Props = $props();
@@ -36,42 +38,31 @@
   };
 
   const initial = name ? name.charAt(0).toUpperCase() : '?';
+  
+  const shapeClass = $derived(
+    variant === 'square' ? 'rounded-xl' : 'rounded-full'
+  );
+  
+  // Use ring for premium border - much cleaner!
+  const premiumClass = $derived(
+    premium ? 'ring-2 ring-yellow-400' : ''
+  );
 </script>
 
 <button
   {onclick}
-  class="relative flex-shrink-0 {onclick ? 'cursor-pointer' : 'cursor-default'} {className}"
   disabled={!onclick}
+  class="relative block {sizeClasses[size]} {shapeClass} {premiumClass} {onclick ? 'cursor-pointer' : 'cursor-default'} {className} overflow-hidden"
 >
-  {#if premium}
-    <!-- Premium ring -->
-    <div class="rounded-full bg-gradient-to-tr from-yellow-400 via-red-500 to-pink-500 p-[2px] {sizeClasses[size]}">
-      <div class="flex items-center justify-center rounded-full bg-white p-[2px] w-full h-full">
-        {#if src}
-          <img 
-            {src} 
-            {alt}
-            class="rounded-full object-cover w-full h-full"
-          />
-        {:else}
-          <div class="flex items-center justify-center rounded-full bg-gray-200 w-full h-full">
-            <span class="font-semibold text-gray-600 {textSizes[size]}">{initial}</span>
-          </div>
-        {/if}
-      </div>
-    </div>
+  {#if src}
+    <img 
+      {src} 
+      {alt}
+      class="w-full h-full object-cover"
+    />
   {:else}
-    <!-- Regular avatar -->
-    {#if src}
-      <img 
-        {src} 
-        {alt}
-        class="rounded-full object-cover {sizeClasses[size]}"
-      />
-    {:else}
-      <div class="flex items-center justify-center rounded-full bg-gray-200 {sizeClasses[size]}">
-        <span class="font-semibold text-gray-600 {textSizes[size]}">{initial}</span>
-      </div>
-    {/if}
+    <div class="flex items-center justify-center w-full h-full bg-gray-200">
+      <span class="font-semibold text-gray-600 {textSizes[size]}">{initial}</span>
+    </div>
   {/if}
 </button>

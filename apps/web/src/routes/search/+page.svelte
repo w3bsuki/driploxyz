@@ -1,10 +1,13 @@
 <script lang="ts">
   import { ProductCard, Button, type Product } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
+  import BottomNav from '$lib/components/BottomNav.svelte';
+  import { goto } from '$app/navigation';
   
   // Search and filter states
   let searchQuery = $state('');
-  let selectedCategory = $state('all');
+  let selectedMainCategory = $state<string | null>(null);
+  let selectedSubcategory = $state<string | null>(null);
   let selectedSize = $state('all');
   let selectedBrand = $state('all');
   let selectedCondition = $state('all');
@@ -13,30 +16,135 @@
   let sortBy = $state('relevance');
   let showFilters = $state(false);
   
-  // Categories  
-  const categories = [
-    { id: 'all', name: 'All', icon: '🛍️' },
-    { id: 'women', name: 'Women', icon: '👗' },
-    { id: 'men', name: 'Men', icon: '👔' },
-    { id: 'kids', name: 'Kids', icon: '👶' },
-    { id: 'pets', name: 'Pets', icon: '🐕' },
-    { id: 'shoes', name: 'Shoes', icon: '👟' },
-    { id: 'bags', name: 'Bags', icon: '👜' },
-    { id: 'more', name: 'More', icon: '✨' }
-  ];
-  
-  // Subcategories based on selected category
-  const subcategories: Record<string, string[]> = {
-    women: ['Dresses', 'Tops', 'Pants', 'Jackets', 'Skirts'],
-    men: ['Shirts', 'T-Shirts', 'Pants', 'Jackets', 'Suits'],
-    kids: ['Baby', 'Toddler', 'School Age', 'Teen'],
-    pets: ['Dog', 'Cat', 'Accessories', 'Toys'],
-    shoes: ['Sneakers', 'Boots', 'Heels', 'Flats', 'Sandals'],
-    bags: ['Handbags', 'Backpacks', 'Totes', 'Clutches'],
-    more: ['Jewelry', 'Watches', 'Belts', 'Hats', 'Home']
+  // Category data structure with subcategories
+  const categoryData = {
+    women: {
+      name: 'Women',
+      icon: '👗',
+      subcategories: [
+        { name: 'Dresses', icon: '👗' },
+        { name: 'Tops', icon: '👚' },
+        { name: 'Jeans', icon: '👖' },
+        { name: 'Skirts', icon: '👠' },
+        { name: 'Jackets', icon: '🧥' },
+        { name: 'Shoes', icon: '👠' },
+        { name: 'Bags', icon: '👜' },
+        { name: 'Accessories', icon: '💍' }
+      ]
+    },
+    men: {
+      name: 'Men',
+      icon: '👔',
+      subcategories: [
+        { name: 'T-Shirts', icon: '👕' },
+        { name: 'Shirts', icon: '👔' },
+        { name: 'Jeans', icon: '👖' },
+        { name: 'Jackets', icon: '🧥' },
+        { name: 'Suits', icon: '🤵' },
+        { name: 'Shoes', icon: '👞' },
+        { name: 'Watches', icon: '⌚' },
+        { name: 'Accessories', icon: '🎩' }
+      ]
+    },
+    kids: {
+      name: 'Kids',
+      icon: '👶',
+      subcategories: [
+        { name: 'Baby (0-2)', icon: '👶' },
+        { name: 'Girls (2-8)', icon: '👧' },
+        { name: 'Boys (2-8)', icon: '👦' },
+        { name: 'Girls (9-16)', icon: '🧒' },
+        { name: 'Boys (9-16)', icon: '🧒' },
+        { name: 'Shoes', icon: '👟' },
+        { name: 'School', icon: '🎒' },
+        { name: 'Toys', icon: '🧸' }
+      ]
+    },
+    pets: {
+      name: 'Pets',
+      icon: '🐕',
+      subcategories: [
+        { name: 'Dog Apparel', icon: '🐕' },
+        { name: 'Cat Accessories', icon: '🐱' },
+        { name: 'Pet Toys', icon: '🦴' },
+        { name: 'Leashes', icon: '🦮' },
+        { name: 'Beds', icon: '🛏️' },
+        { name: 'Food Bowls', icon: '🥣' },
+        { name: 'Carriers', icon: '🎒' }
+      ]
+    },
+    shoes: {
+      name: 'Shoes',
+      icon: '👟',
+      subcategories: [
+        { name: 'Sneakers', icon: '👟' },
+        { name: 'Boots', icon: '🥾' },
+        { name: 'Heels', icon: '👠' },
+        { name: 'Flats', icon: '🩰' },
+        { name: 'Sandals', icon: '👡' },
+        { name: 'Athletic', icon: '⚽' },
+        { name: 'Dress Shoes', icon: '👞' }
+      ]
+    },
+    bags: {
+      name: 'Bags',
+      icon: '👜',
+      subcategories: [
+        { name: 'Handbags', icon: '👜' },
+        { name: 'Backpacks', icon: '🎒' },
+        { name: 'Totes', icon: '👝' },
+        { name: 'Clutches', icon: '💼' },
+        { name: 'Crossbody', icon: '👜' },
+        { name: 'Travel', icon: '🧳' },
+        { name: 'Laptop Bags', icon: '💻' }
+      ]
+    },
+    home: {
+      name: 'Home',
+      icon: '🏠',
+      subcategories: [
+        { name: 'Decor', icon: '🖼️' },
+        { name: 'Bedding', icon: '🛏️' },
+        { name: 'Kitchen', icon: '🍽️' },
+        { name: 'Lighting', icon: '💡' },
+        { name: 'Storage', icon: '📦' },
+        { name: 'Garden', icon: '🌱' },
+        { name: 'Art', icon: '🎨' },
+        { name: 'Textiles', icon: '🧶' }
+      ]
+    },
+    beauty: {
+      name: 'Beauty',
+      icon: '💄',
+      subcategories: [
+        { name: 'Makeup', icon: '💄' },
+        { name: 'Skincare', icon: '🧴' },
+        { name: 'Fragrance', icon: '🌺' },
+        { name: 'Hair Care', icon: '💇' },
+        { name: 'Tools', icon: '🪞' },
+        { name: 'Nails', icon: '💅' },
+        { name: 'Bath & Body', icon: '🛁' },
+        { name: 'Sets', icon: '🎁' }
+      ]
+    }
   };
   
-  let selectedSubcategory = $state<string | null>(null);
+  const mainCategories = Object.keys(categoryData);
+  
+  // Derive current display based on selection
+  const currentDisplay = $derived(() => {
+    if (selectedMainCategory && categoryData[selectedMainCategory]) {
+      return {
+        type: 'subcategories',
+        items: categoryData[selectedMainCategory].subcategories,
+        parent: categoryData[selectedMainCategory].name
+      };
+    }
+    return {
+      type: 'main',
+      items: mainCategories
+    };
+  });
   
   const sizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
   const brands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Levi\'s', 'Uniqlo', 'Gap', 'Other'];
@@ -52,7 +160,7 @@
     brand: brands[i % brands.length],
     size: sizes[i % sizes.length],
     condition: conditions[i % 4] as Product['condition'],
-    category: categories[i % categories.length].name,
+    category: Object.values(categoryData)[i % Object.values(categoryData).length].name,
     sellerId: `seller-${i % 10}`,
     sellerName: `Seller${i % 10}`,
     sellerRating: 4 + Math.random(),
@@ -73,10 +181,16 @@
     }
     
     // Filter by category
-    if (selectedCategory !== 'all') {
+    if (selectedMainCategory) {
       results = results.filter(p => 
-        p.category.toLowerCase() === selectedCategory
+        p.category.toLowerCase() === categoryData[selectedMainCategory].name.toLowerCase()
       );
+    }
+    
+    // Filter by subcategory
+    if (selectedSubcategory) {
+      // In real app, you'd have subcategory data on products
+      // For now, just show filtered results
     }
     
     // Filter by size
@@ -120,7 +234,8 @@
   
   let activeFiltersCount = $derived(() => {
     let count = 0;
-    if (selectedCategory !== 'all') count++;
+    if (selectedMainCategory) count++;
+    if (selectedSubcategory) count++;
     if (selectedSize !== 'all') count++;
     if (selectedBrand !== 'all') count++;
     if (selectedCondition !== 'all') count++;
@@ -128,8 +243,23 @@
     return count;
   });
   
+  function selectMainCategory(category: string) {
+    selectedMainCategory = selectedMainCategory === category ? null : category;
+    selectedSubcategory = null; // Reset subcategory when changing category
+  }
+  
+  function selectSubcategory(subcategory: string) {
+    selectedSubcategory = selectedSubcategory === subcategory ? null : subcategory;
+  }
+  
+  function goBackToMain() {
+    selectedMainCategory = null;
+    selectedSubcategory = null;
+  }
+  
   function clearFilters() {
-    selectedCategory = 'all';
+    selectedMainCategory = null;
+    selectedSubcategory = null;
     selectedSize = 'all';
     selectedBrand = 'all';
     selectedCondition = 'all';
@@ -142,7 +272,7 @@
   <title>Search - Driplo</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
   <!-- Main App Header -->
   <Header />
   
@@ -160,12 +290,12 @@
               type="search"
               bind:value={searchQuery}
               placeholder="Search for items, brands..."
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:ring-2 focus:ring-black focus:border-transparent"
+              class="w-full pl-10 pr-4 py-2 ring-2 ring-gray-300 rounded-full text-base focus:ring-black focus:ring-opacity-100"
             />
           </div>
           <button
             onclick={() => showFilters = !showFilters}
-            class="p-2 border border-gray-300 rounded-full hover:bg-gray-50 relative"
+            class="p-2 ring-1 ring-gray-300 rounded-full hover:bg-gray-50 relative"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -177,55 +307,70 @@
             {/if}
           </button>
         </div>
-        
-        <!-- Categories (Horizontal Scroll) -->
-        <div class="mt-3 -mx-4 px-4 overflow-x-auto scrollbar-hide">
-          <div class="flex space-x-2">
-            {#each categories as category}
+      </div>
+    </div>
+  </div>
+  
+  <!-- Transforming Category Navigation -->
+  <div class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      {#if currentDisplay().type === 'main'}
+        <!-- Main Categories Horizontal Scroll -->
+        <div class="overflow-x-auto scrollbar-hide">
+          <div class="flex space-x-3 pb-2">
+            {#each mainCategories as category}
               <button
-                onclick={() => {
-                  selectedCategory = selectedCategory === category.id ? 'all' : category.id;
-                  selectedSubcategory = null; // Reset subcategory when changing category
-                }}
+                onclick={() => selectMainCategory(category)}
                 class="flex flex-col items-center min-w-[70px] py-2 px-2 rounded-lg transition-colors
-                  {selectedCategory === category.id ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+                  {selectedMainCategory === category ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
               >
-                <span class="text-lg mb-1">{category.icon}</span>
-                <span class="text-xs font-medium">{category.name}</span>
+                <span class="text-lg mb-1">{categoryData[category].icon}</span>
+                <span class="text-xs font-medium">{categoryData[category].name}</span>
               </button>
             {/each}
           </div>
         </div>
-        
-        <!-- Subcategories (Show when category selected) -->
-        {#if selectedCategory !== 'all' && subcategories[selectedCategory]}
-          <div class="mt-2 -mx-4 px-4 overflow-x-auto scrollbar-hide">
-            <div class="flex space-x-2">
-              {#each subcategories[selectedCategory] as subcategory}
-                <button
-                  onclick={() => selectedSubcategory = selectedSubcategory === subcategory ? null : subcategory}
-                  class="px-3 py-1.5 rounded-full text-xs font-medium transition-colors
-                    {selectedSubcategory === subcategory 
-                      ? 'bg-black text-white' 
-                      : 'bg-white border border-gray-300 text-gray-700 hover:border-black'}"
-                >
-                  {subcategory}
-                </button>
-              {/each}
-            </div>
+      {:else}
+        <!-- Subcategories with Back Button -->
+        <div class="overflow-x-auto scrollbar-hide">
+          <div class="flex space-x-3 pb-2">
+            <!-- Back Button as first item -->
+            <button
+              onclick={goBackToMain}
+              class="flex flex-col items-center min-w-[70px] py-2 px-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0"
+              aria-label="Back to categories"
+            >
+              <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              <span class="text-xs font-medium">Back</span>
+            </button>
+            
+            {#each currentDisplay().items as subcategory}
+              <button
+                onclick={() => selectSubcategory(subcategory.name)}
+                class="flex flex-col items-center min-w-[70px] py-2 px-2 rounded-lg transition-colors flex-shrink-0
+                  {selectedSubcategory === subcategory.name 
+                    ? 'bg-black text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+              >
+                <span class="text-lg mb-1">{subcategory.icon}</span>
+                <span class="text-xs font-medium whitespace-nowrap">{subcategory.name}</span>
+              </button>
+            {/each}
           </div>
-        {/if}
-      </div>
+        </div>
+      {/if}
     </div>
   </div>
 
-  <!-- Filters Panel (Mobile Drawer / Desktop Sidebar) -->
+  <!-- Filters Panel (Mobile Drawer) -->
   {#if showFilters}
     <div class="fixed inset-0 z-40 sm:hidden">
       <!-- Backdrop -->
       <div class="fixed inset-0 bg-black bg-opacity-50" onclick={() => showFilters = false}></div>
       
-      <!-- Drawer - More Compact -->
+      <!-- Drawer -->
       <div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[60vh] overflow-hidden flex flex-col">
         <div class="p-4 flex flex-col h-full">
           <!-- Fixed Header -->
@@ -238,25 +383,18 @@
             </button>
           </div>
           
-          <!-- Compact Filter Options - Horizontal Tabs -->
-          <div class="flex gap-2 mb-3 overflow-x-auto scrollbar-hide">
-            <button class="px-3 py-1 bg-black text-white rounded-full text-xs font-medium">Size</button>
-            <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">Price</button>
-            <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">Brand</button>
-            <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">Condition</button>
-          </div>
-          
           <!-- Scrollable Filter Options -->
-          <div class="space-y-3 overflow-y-auto flex-1 -mx-4 px-4">
+          <div class="space-y-4 overflow-y-auto flex-1 -mx-4 px-4">
             
-            <!-- Size - Compact Grid -->
+            <!-- Size -->
             <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Size</label>
               <div class="grid grid-cols-4 gap-1.5">
                 {#each sizes as size}
                   <button
                     onclick={() => selectedSize = selectedSize === size ? 'all' : size}
-                    class="py-2 px-2 text-xs rounded-lg border transition-colors
-                      {selectedSize === size ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300'}"
+                    class="py-2 px-2 text-xs rounded-lg ring-1 transition-colors
+                      {selectedSize === size ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
                   >
                     {size}
                   </button>
@@ -270,16 +408,16 @@
               <div class="grid grid-cols-2 gap-2">
                 <button
                   onclick={() => selectedBrand = 'all'}
-                  class="py-3 px-3 text-sm rounded-lg border transition-colors
-                    {selectedBrand === 'all' ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300'}"
+                  class="py-3 px-3 text-sm rounded-lg ring-1 transition-colors
+                    {selectedBrand === 'all' ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
                 >
                   All Brands
                 </button>
                 {#each brands as brand}
                   <button
                     onclick={() => selectedBrand = brand}
-                    class="py-3 px-3 text-sm rounded-lg border transition-colors
-                      {selectedBrand === brand ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300'}"
+                    class="py-3 px-3 text-sm rounded-lg ring-1 transition-colors
+                      {selectedBrand === brand ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
                   >
                     {brand}
                   </button>
@@ -293,16 +431,16 @@
               <div class="space-y-2">
                 <button
                   onclick={() => selectedCondition = 'all'}
-                  class="w-full py-3 px-3 text-sm rounded-lg border text-left transition-colors
-                    {selectedCondition === 'all' ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300'}"
+                  class="w-full py-3 px-3 text-sm rounded-lg ring-1 text-left transition-colors
+                    {selectedCondition === 'all' ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
                 >
                   All Conditions
                 </button>
                 {#each conditions as condition}
                   <button
                     onclick={() => selectedCondition = condition}
-                    class="w-full py-3 px-3 text-sm rounded-lg border text-left transition-colors
-                      {selectedCondition === condition ? 'bg-black text-white border-black' : 'bg-white text-gray-700 border-gray-300'}"
+                    class="w-full py-3 px-3 text-sm rounded-lg ring-1 text-left transition-colors
+                      {selectedCondition === condition ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
                   >
                     <span class="capitalize">{condition.replace('-', ' ')}</span>
                   </button>
@@ -318,14 +456,14 @@
                   type="number"
                   bind:value={priceMin}
                   placeholder="Min"
-                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                  class="flex-1 px-3 py-2 ring-1 ring-gray-300 rounded-lg text-base"
                 />
                 <span class="self-center">-</span>
                 <input
                   type="number"
                   bind:value={priceMax}
                   placeholder="Max"
-                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                  class="flex-1 px-3 py-2 ring-1 ring-gray-300 rounded-lg text-base"
                 />
               </div>
             </div>
@@ -350,7 +488,7 @@
       </p>
       
       <!-- Desktop Sort -->
-      <select bind:value={sortBy} class="hidden sm:block px-3 py-1 border border-gray-300 rounded-lg text-sm">
+      <select bind:value={sortBy} class="hidden sm:block px-3 py-1 ring-1 ring-gray-300 rounded-lg text-sm focus:ring-black">
         <option value="relevance">Relevance</option>
         <option value="newest">Newest first</option>
         <option value="price-low">Price: Low to High</option>
@@ -361,10 +499,20 @@
     <!-- Active Filters Pills -->
     {#if activeFiltersCount() > 0}
       <div class="flex items-center space-x-2 mb-4 overflow-x-auto">
-        {#if selectedCategory !== 'all'}
+        {#if selectedMainCategory}
           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
-            {categories.find(c => c.id === selectedCategory)?.name}
-            <button onclick={() => selectedCategory = 'all'} class="ml-2">
+            {categoryData[selectedMainCategory].name}
+            <button onclick={() => selectedMainCategory = null} class="ml-2">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </span>
+        {/if}
+        {#if selectedSubcategory}
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
+            {selectedSubcategory}
+            <button onclick={() => selectedSubcategory = null} class="ml-2">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>
@@ -393,7 +541,7 @@
         {#each filteredProducts() as product}
           <ProductCard 
             {product}
-            onclick={() => window.location.href = `/product/${product.id}`}
+            onclick={() => goto(`/product/${product.id}`)}
           />
         {/each}
       </div>
@@ -408,6 +556,8 @@
     {/if}
   </div>
 </div>
+
+<BottomNav />
 
 <style>
   /* Hide scrollbar for category carousel */

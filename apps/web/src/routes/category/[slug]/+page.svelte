@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { goto } from '$app/navigation';
   import { Button, ProductCard, Breadcrumb, type Product, type BreadcrumbItem } from '@repo/ui';
   
   // Get category from URL
@@ -337,7 +338,7 @@
           {#each filteredProducts as product}
             <ProductCard 
               {product}
-              onclick={() => window.location.href = `/product/${product.id}`}
+              onclick={() => goto(`/product/${product.id}`)}
             />
           {/each}
         </div>

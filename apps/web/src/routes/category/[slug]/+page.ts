@@ -1,5 +1,9 @@
 import type { PageLoad } from './$types';
 
+export const prerender = false;
+export const ssr = true;
+export const csr = true;
+
 export const load: PageLoad = async ({ params, url }) => {
   // This could fetch category-specific data from your API
   const categoryData = {

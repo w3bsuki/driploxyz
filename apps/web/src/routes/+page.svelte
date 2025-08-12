@@ -1,21 +1,25 @@
 <script lang="ts">
 	import { Button, SearchBar, ProductCard, Avatar, type Product } from '@repo/ui';
 	import Header from '$lib/components/Header.svelte';
+	import BottomNav from '$lib/components/BottomNav.svelte';
+	import QuickViewDialog from '$lib/components/QuickViewDialog.svelte';
+	import { goto } from '$app/navigation';
 
 	let searchQuery = $state('');
+	let selectedSeller = $state<any>(null);
 
 	// Mock premium sellers/ads data
 	const premiumSellers = [
-		{ id: 1, name: 'Vintage Store', premium: true, avatar: '/placeholder-product.svg' },
-		{ id: 2, name: 'Designer Outlet', premium: true, avatar: '/placeholder-product.svg' },
-		{ id: 3, name: 'Sarah M.', premium: true, avatar: null },
-		{ id: 4, name: 'Fashion Hub', premium: true, avatar: '/placeholder-product.svg' },
-		{ id: 5, name: 'Alex K.', premium: false, avatar: null },
-		{ id: 6, name: 'Luxury Finds', premium: true, avatar: '/placeholder-product.svg' },
-		{ id: 7, name: 'Emma\'s Closet', premium: false, avatar: null },
-		{ id: 8, name: 'Top Seller', premium: true, avatar: '/placeholder-product.svg' },
-		{ id: 9, name: 'Mike\'s Shop', premium: false, avatar: null },
-		{ id: 10, name: 'Premium Deals', premium: true, avatar: '/placeholder-product.svg' },
+		{ id: 1, name: 'Vintage Store', premium: true, avatar: '/placeholder-product.svg', rating: 4.8, itemCount: 156, followers: 2340, description: 'Curated vintage fashion from the 70s, 80s, and 90s' },
+		{ id: 2, name: 'Designer Outlet', premium: true, avatar: '/placeholder-product.svg', rating: 4.9, itemCount: 89, followers: 1890, description: 'Authentic designer pieces at great prices' },
+		{ id: 3, name: 'Sarah M.', premium: true, avatar: null, rating: 4.7, itemCount: 45, followers: 567, description: 'Trendy and affordable fashion finds' },
+		{ id: 4, name: 'Fashion Hub', premium: true, avatar: '/placeholder-product.svg', rating: 4.6, itemCount: 234, followers: 3456, description: 'Your one-stop shop for all things fashion' },
+		{ id: 5, name: 'Alex K.', premium: false, avatar: null, rating: 4.5, itemCount: 23, followers: 123 },
+		{ id: 6, name: 'Luxury Finds', premium: true, avatar: '/placeholder-product.svg', rating: 5.0, itemCount: 67, followers: 4567, description: 'Premium luxury items at discounted prices' },
+		{ id: 7, name: 'Emma\'s Closet', premium: false, avatar: null, rating: 4.4, itemCount: 34, followers: 234 },
+		{ id: 8, name: 'Top Seller', premium: true, avatar: '/placeholder-product.svg', rating: 4.8, itemCount: 456, followers: 5678, description: 'Top rated seller with fast shipping' },
+		{ id: 9, name: 'Mike\'s Shop', premium: false, avatar: null, rating: 4.3, itemCount: 12, followers: 45 },
+		{ id: 10, name: 'Premium Deals', premium: true, avatar: '/placeholder-product.svg', rating: 4.7, itemCount: 178, followers: 2345, description: 'Best deals on premium brands' },
 	];
 
 	// Mock product data
@@ -49,15 +53,25 @@
 	}
 
 	function handleSellerClick(seller: any) {
-		console.log('Clicked seller:', seller.name);
+		if (seller.premium) {
+			// Open quick view for premium sellers
+			selectedSeller = seller;
+		} else {
+			// Navigate directly to profile for non-premium
+			goto(`/profile/${seller.id}`);
+		}
 	}
 
 	function handleFilter() {
 		console.log('Open filters');
 	}
+
+	function navigateToCategory(slug: string) {
+		goto(`/category/${slug}`, { replaceState: false, noScroll: false });
+	}
 </script>
 
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
 	<Header />
 
 	<main class="max-w-7xl mx-auto">
@@ -67,7 +81,7 @@
 				<div class="flex space-x-3">
 					<!-- Your Story -->
 					<div class="relative flex-shrink-0">
-						<Avatar size="lg" name="You" />
+						<Avatar size="lg" name="You" variant="square" />
 						<button 
 							class="absolute bottom-0 right-0 w-5 h-5 bg-blue-500 rounded-full border-2 border-white flex items-center justify-center"
 							aria-label="Add to your shop"
@@ -78,15 +92,21 @@
 						</button>
 					</div>
 
-					<!-- Premium Sellers -->
+					<!-- Premium Sellers (Promoted/Paid Ads) -->
 					{#each premiumSellers as seller}
-						<Avatar 
-							size="lg" 
-							name={seller.name} 
-							src={seller.avatar}
-							premium={seller.premium}
-							onclick={() => handleSellerClick(seller)}
-						/>
+						<div class="relative flex-shrink-0">
+							<Avatar 
+								size="lg" 
+								name={seller.name} 
+								src={seller.avatar}
+								premium={seller.premium}
+								variant="square"
+								onclick={() => handleSellerClick(seller)}
+							/>
+							{#if seller.premium}
+								<span class="absolute -top-1 left-1/2 -translate-x-1/2 text-sm bg-white rounded-full p-0.5 shadow-sm">👑</span>
+							{/if}
+						</div>
 					{/each}
 				</div>
 			</div>
@@ -115,14 +135,22 @@
 					] as category}
 						<a 
 							href="/category/{category.slug}"
-							class="flex-1 py-2 bg-white border border-gray-300 rounded-full text-sm font-semibold text-gray-800 hover:border-black hover:bg-gray-50 transition-all text-center"
+							onclick={(e) => {
+								e.preventDefault();
+								navigateToCategory(category.slug);
+							}}
+							class="flex-1 py-2 bg-white ring-1 ring-gray-300 rounded-full text-sm font-semibold text-gray-800 text-center"
 						>
 							{category.name}
 						</a>
 					{/each}
 					<a 
 						href="/search"
-						class="flex-1 py-2 bg-black text-white rounded-full text-sm font-semibold hover:bg-gray-800 transition-colors text-center"
+						onclick={(e) => {
+							e.preventDefault();
+							goto('/search');
+						}}
+						class="flex-1 py-2 bg-black text-white rounded-full text-sm font-semibold text-center"
 					>
 						View all
 					</a>
@@ -131,7 +159,7 @@
 		</div>
 
 		<!-- Product Grid -->
-		<div class="px-4 sm:px-6 lg:px-8 pb-8">
+		<div class="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
 			
 			<!-- Clean Product Grid -->
 			<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -147,10 +175,19 @@
 
 			<!-- Load More - Simple -->
 			<div class="text-center mt-8">
-				<Button variant="ghost" size="lg" class="text-gray-600 hover:text-gray-900">
+				<Button variant="ghost" size="lg" class="text-gray-600">
 					Show more
 				</Button>
 			</div>
 		</div>
 	</main>
 </div>
+
+<BottomNav />
+
+<!-- Quick View Dialog for Premium Sellers -->
+<QuickViewDialog 
+	seller={selectedSeller} 
+	onclose={() => selectedSeller = null} 
+/>
+

@@ -17,7 +17,7 @@
 
   const baseClasses = 'bg-white border border-gray-200 rounded-lg shadow-sm';
   const paddingClasses = $derived(padding ? 'p-6' : '');
-  const hoverClasses = $derived(hover ? 'hover:shadow-md transition-shadow cursor-pointer' : '');
+  const hoverClasses = $derived(hover ? 'cursor-pointer' : '');
   const classes = $derived(`${baseClasses} ${paddingClasses} ${hoverClasses} ${className}`);
 </script>
 

@@ -35,7 +35,7 @@
   };
 </script>
 
-<Card class={`overflow-hidden cursor-pointer ${className}`} padding={false} hover={true} onclick={handleClick}>
+<Card class={`overflow-hidden cursor-pointer ${className}`} padding={false} hover={false} onclick={handleClick}>
   <div class="relative">
     <img 
       src={product.images[0] || '/placeholder-image.jpg'} 
@@ -46,7 +46,7 @@
     {#if onFavorite}
       <button 
         onclick={handleFavorite}
-        class="absolute top-3 right-3 p-2 rounded-full bg-white/80 hover:bg-white transition-colors"
+        class="absolute top-3 right-3 p-2 rounded-full bg-white/80"
         aria-label="Add to favorites"
       >
         <svg 

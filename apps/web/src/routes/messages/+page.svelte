@@ -155,7 +155,7 @@
         </div>
         
         <!-- Tabs -->
-        <div class="px-2 sm:px-6 lg:px-8 flex space-x-1 overflow-x-auto scrollbar-hide">
+        <div class="px-4 sm:px-6 lg:px-8 flex space-x-2 overflow-x-auto scrollbar-hide pb-2">
           <button
             onclick={() => activeTab = 'all'}
             class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
@@ -190,7 +190,7 @@
             {/if}
           </button>
         </div>
-        <div class="h-2"></div>
+        <div class="h-1"></div>
       </div>
     </div>
   {/if}
@@ -198,11 +198,11 @@
   <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 {selectedConversation ? '' : 'pb-20 sm:pb-0'}">
     <div class="sm:grid sm:grid-cols-3 lg:grid-cols-4 {selectedConversation ? 'sm:h-[calc(100vh-80px)]' : 'sm:h-[calc(100vh-180px)]'}">
       <!-- Conversations List -->
-      <div class="sm:col-span-1 lg:col-span-1 bg-white sm:border-r overflow-y-auto {selectedConversation ? 'hidden sm:block' : ''}">
+      <div class="sm:col-span-1 lg:col-span-1 bg-white sm:border-r overflow-y-auto {selectedConversation ? 'hidden sm:block' : ''} {selectedConversation ? '' : 'h-[calc(100vh-160px)] sm:h-auto'}">
         {#each conversations as conv}
           <button
             onclick={() => selectedConversation = conv.id}
-            class="w-full px-4 py-3 hover:bg-gray-50 border-b transition-colors text-left
+            class="w-full px-4 py-4 hover:bg-gray-50 border-b transition-colors text-left min-h-[68px]
               {selectedConversation === conv.id ? 'bg-gray-50' : ''}"
           >
             <div class="flex items-start space-x-3">
@@ -315,12 +315,12 @@
             </div>
             
             {#each messages as message}
-              <div class="flex {message.isMe ? 'justify-end' : 'justify-start'}">
-                <div class="max-w-[75%] sm:max-w-[60%]">
-                  <div class="{message.isMe ? 'bg-black text-white rounded-2xl rounded-br-sm' : 'bg-white text-gray-900 rounded-2xl rounded-bl-sm shadow-sm'} px-4 py-2.5">
+              <div class="flex {message.isMe ? 'justify-end' : 'justify-start'} px-1">
+                <div class="max-w-[80%] sm:max-w-[70%]">
+                  <div class="{message.isMe ? 'bg-black text-white rounded-2xl rounded-br-md' : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm border'} px-4 py-3">
                     <p class="text-sm leading-relaxed">{message.text}</p>
                   </div>
-                  <p class="text-[10px] text-gray-500 mt-1 px-1 {message.isMe ? 'text-right' : ''}">
+                  <p class="text-[11px] text-gray-500 mt-1.5 px-2 {message.isMe ? 'text-right' : ''}">
                     {timeAgo(message.time)}
                   </p>
                 </div>
@@ -329,7 +329,7 @@
           </div>
 
           <!-- Message Input - Fixed at Bottom -->
-          <div class="bg-white border-t p-3 flex-shrink-0">
+          <div class="bg-white border-t p-4 pb-6 sm:pb-3 flex-shrink-0">
             <!-- Quick Actions -->
             <div class="flex gap-2 mb-2 overflow-x-auto scrollbar-hide">
               <button class="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap">
@@ -357,7 +357,7 @@
                   bind:value={messageText}
                   onkeydown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
                   placeholder="Message..."
-                  class="w-full px-4 py-2.5 bg-gray-50 rounded-full text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:bg-white transition-colors"
+                  class="w-full px-4 py-2.5 bg-gray-50 rounded-full text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:bg-white"
                 />
               </div>
               <button 
@@ -387,8 +387,10 @@
     </div>
   </div>
   
-  <!-- Bottom Navigation -->
-  <BottomNav />
+  <!-- Bottom Navigation - Hide in chat -->
+  {#if !selectedConversation}
+    <BottomNav />
+  {/if}
 </div>
 
 <style>
