@@ -1,0 +1,572 @@
+<script lang="ts">
+  import { Button, Avatar, ProductCard, type Product } from '@repo/ui';
+  import Header from '$lib/components/Header.svelte';
+  
+  // Mock user data
+  const user = {
+    id: 'user-123',
+    name: 'Sarah Mitchell',
+    username: 'VintageFinds',
+    avatar: '/placeholder-product.svg',
+    isPremiumSeller: true,
+    balance: 1234.50,
+    pendingBalance: 89.00
+  };
+  
+  // Mock stats
+  const stats = {
+    totalRevenue: 5432.10,
+    monthlyRevenue: 892.50,
+    totalSales: 342,
+    monthlySales: 28,
+    activeListings: 89,
+    totalViews: 12894,
+    monthlyViews: 2341,
+    conversionRate: 2.8
+  };
+  
+  // Mock recent orders
+  const recentOrders = [
+    {
+      id: 'order-1',
+      productTitle: 'Vintage Levi\'s Jacket',
+      buyerName: 'John D.',
+      price: 89,
+      status: 'pending_shipment',
+      date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 'order-2',
+      productTitle: 'Nike Air Max 90',
+      buyerName: 'Emma S.',
+      price: 120,
+      status: 'shipped',
+      date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 'order-3',
+      productTitle: 'Adidas Hoodie',
+      buyerName: 'Mike R.',
+      price: 45,
+      status: 'delivered',
+      date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
+    }
+  ];
+  
+  // Mock active listings
+  const activeListings: Product[] = Array.from({ length: 6 }, (_, i) => ({
+    id: `product-${i + 1}`,
+    title: `Active Item ${i + 1}`,
+    description: 'Great condition item',
+    price: Math.floor(Math.random() * 200) + 30,
+    images: ['/placeholder-product.svg'],
+    brand: ['Levi\'s', 'Nike', 'Adidas', 'Zara'][i % 4],
+    size: ['S', 'M', 'L', 'XL'][i % 4],
+    condition: (['new', 'like-new', 'good', 'fair'] as const)[i % 4],
+    category: ['Jackets', 'Tops', 'Bottoms', 'Accessories'][i % 4],
+    sellerId: user.id,
+    sellerName: user.username,
+    sellerRating: 4.8,
+    createdAt: new Date().toISOString(),
+    location: 'New York, NY'
+  }));
+  
+  // Mock performance data for chart
+  const performanceData = [
+    { month: 'Jan', sales: 45, views: 890 },
+    { month: 'Feb', sales: 52, views: 1020 },
+    { month: 'Mar', sales: 38, views: 780 },
+    { month: 'Apr', sales: 65, views: 1340 },
+    { month: 'May', sales: 48, views: 980 },
+    { month: 'Jun', sales: 42, views: 850 }
+  ];
+  
+  let activeTab = $state<'overview' | 'listings' | 'orders' | 'analytics' | 'settings'>('overview');
+  
+  const timeAgo = (date: string) => {
+    const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
+    if (seconds < 60) return 'just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    return `${days}d ago`;
+  };
+  
+  const getStatusColor = (status: string) => {
+    switch(status) {
+      case 'pending_shipment': return 'bg-yellow-100 text-yellow-800';
+      case 'shipped': return 'bg-blue-100 text-blue-800';
+      case 'delivered': return 'bg-green-100 text-green-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+  
+  const getStatusText = (status: string) => {
+    return status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+</script>
+
+<svelte:head>
+  <title>Seller Dashboard - Driplo</title>
+</svelte:head>
+
+<div class="min-h-screen bg-gray-50">
+  <Header />
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <!-- Welcome Section -->
+    <div class="mb-6">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Welcome back, {user.name}!</h1>
+      <p class="text-gray-600 text-sm sm:text-base mt-1">Here's what's happening with your shop today.</p>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+      <a href="/sell">
+        <Button variant="primary" class="w-full">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          New Listing
+        </Button>
+      </a>
+      <Button variant="outline" class="w-full">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+        </svg>
+        Withdraw
+      </Button>
+      <Button variant="outline" class="w-full">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        Schedule
+      </Button>
+      <Button variant="outline" class="w-full">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        Settings
+      </Button>
+    </div>
+
+    <!-- Balance Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm text-gray-600">Available Balance</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">${user.balance.toFixed(2)}</p>
+            <p class="text-xs sm:text-sm text-gray-500 mt-2">+ ${user.pendingBalance.toFixed(2)} pending</p>
+          </div>
+          <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      </div>
+      
+      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-sm text-gray-600">This Month's Sales</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{stats.monthlySales}</p>
+            <p class="text-xs sm:text-sm text-green-600 mt-2">+12% from last month</p>
+          </div>
+          <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="border-b border-gray-200 mb-6">
+      <nav class="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto">
+        <button
+          onclick={() => activeTab = 'overview'}
+          class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
+            {activeTab === 'overview' 
+              ? 'border-black text-gray-900' 
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+        >
+          Overview
+        </button>
+        <button
+          onclick={() => activeTab = 'listings'}
+          class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
+            {activeTab === 'listings' 
+              ? 'border-black text-gray-900' 
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+        >
+          Listings ({stats.activeListings})
+        </button>
+        <button
+          onclick={() => activeTab = 'orders'}
+          class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
+            {activeTab === 'orders' 
+              ? 'border-black text-gray-900' 
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+        >
+          Orders
+        </button>
+        <button
+          onclick={() => activeTab = 'analytics'}
+          class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
+            {activeTab === 'analytics' 
+              ? 'border-black text-gray-900' 
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+        >
+          Analytics
+        </button>
+        <button
+          onclick={() => activeTab = 'settings'}
+          class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
+            {activeTab === 'settings' 
+              ? 'border-black text-gray-900' 
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
+        >
+          Settings
+        </button>
+      </nav>
+    </div>
+
+    <!-- Tab Content -->
+    {#if activeTab === 'overview'}
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <p class="text-sm text-gray-600">Total Revenue</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900">${stats.totalRevenue.toFixed(0)}</p>
+          <p class="text-xs text-gray-500 mt-1">All time</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <p class="text-sm text-gray-600">Active Listings</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats.activeListings}</p>
+          <p class="text-xs text-gray-500 mt-1">Currently live</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <p class="text-sm text-gray-600">Total Views</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats.monthlyViews}</p>
+          <p class="text-xs text-gray-500 mt-1">This month</p>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+          <p class="text-sm text-gray-600">Conversion Rate</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats.conversionRate}%</p>
+          <p class="text-xs text-gray-500 mt-1">Views to sales</p>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div class="bg-white rounded-lg shadow-sm mb-6">
+        <div class="p-4 sm:p-6 border-b border-gray-200">
+          <div class="flex justify-between items-center">
+            <h2 class="text-lg font-semibold">Recent Orders</h2>
+            <a href="#" onclick={() => activeTab = 'orders'} class="text-sm text-blue-600 hover:underline">View all</a>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Buyer</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              {#each recentOrders as order}
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm text-gray-900">{order.productTitle}</td>
+                  <td class="px-4 py-3 text-sm text-gray-600">{order.buyerName}</td>
+                  <td class="px-4 py-3 text-sm font-medium text-gray-900">${order.price}</td>
+                  <td class="px-4 py-3">
+                    <span class="inline-flex px-2 py-1 text-xs rounded-full {getStatusColor(order.status)}">
+                      {getStatusText(order.status)}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-500">{timeAgo(order.date)}</td>
+                  <td class="px-4 py-3">
+                    <Button size="sm" variant="outline">View</Button>
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Active Listings Preview -->
+      <div>
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-lg font-semibold">Your Active Listings</h2>
+          <a href="#" onclick={() => activeTab = 'listings'} class="text-sm text-blue-600 hover:underline">View all</a>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {#each activeListings as product}
+            <div class="group cursor-pointer">
+              <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
+                <img src={product.images[0]} alt={product.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+              </div>
+              <p class="text-xs sm:text-sm font-medium truncate">{product.title}</p>
+              <p class="text-sm font-bold">${product.price}</p>
+            </div>
+          {/each}
+        </div>
+      </div>
+
+    {:else if activeTab === 'listings'}
+      <div class="bg-white rounded-lg shadow-sm">
+        <div class="p-4 sm:p-6 border-b border-gray-200">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+            <h2 class="text-lg font-semibold">Manage Listings</h2>
+            <div class="flex space-x-2 w-full sm:w-auto">
+              <input 
+                type="search" 
+                placeholder="Search listings..."
+                class="flex-1 sm:flex-none px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+              <Button size="sm">Filter</Button>
+            </div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4 sm:p-6">
+          {#each activeListings as product}
+            <div class="relative group">
+              <ProductCard {product} onclick={() => window.location.href = `/product/${product.id}`} />
+              <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button class="p-1 bg-white rounded-full shadow-lg">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          {/each}
+        </div>
+      </div>
+
+    {:else if activeTab === 'orders'}
+      <div class="bg-white rounded-lg shadow-sm">
+        <div class="p-4 sm:p-6 border-b border-gray-200">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+            <h2 class="text-lg font-semibold">Order Management</h2>
+            <div class="flex space-x-2">
+              <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                <option>All Orders</option>
+                <option>Pending Shipment</option>
+                <option>Shipped</option>
+                <option>Delivered</option>
+                <option>Cancelled</option>
+              </select>
+              <Button size="sm" variant="outline">Export</Button>
+            </div>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Buyer</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              {#each [...recentOrders, ...recentOrders] as order}
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 text-sm text-gray-900">#{order.id}</td>
+                  <td class="px-4 py-3 text-sm text-gray-900">{order.productTitle}</td>
+                  <td class="px-4 py-3 text-sm text-gray-600">{order.buyerName}</td>
+                  <td class="px-4 py-3 text-sm font-medium text-gray-900">${order.price}</td>
+                  <td class="px-4 py-3">
+                    <span class="inline-flex px-2 py-1 text-xs rounded-full {getStatusColor(order.status)}">
+                      {getStatusText(order.status)}
+                    </span>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-gray-500">{timeAgo(order.date)}</td>
+                  <td class="px-4 py-3">
+                    <div class="flex space-x-2">
+                      <Button size="sm" variant="outline">View</Button>
+                      {#if order.status === 'pending_shipment'}
+                        <Button size="sm">Ship</Button>
+                      {/if}
+                    </div>
+                  </td>
+                </tr>
+              {/each}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    {:else if activeTab === 'analytics'}
+      <div class="space-y-6">
+        <!-- Performance Chart -->
+        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+          <h2 class="text-lg font-semibold mb-4">Performance Overview</h2>
+          <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+            <p class="text-gray-500">Chart will be implemented with a charting library</p>
+          </div>
+        </div>
+
+        <!-- Top Products -->
+        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+          <h2 class="text-lg font-semibold mb-4">Top Performing Products</h2>
+          <div class="space-y-4">
+            {#each activeListings.slice(0, 5) as product, i}
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                  <span class="text-sm font-medium text-gray-500">#{i + 1}</span>
+                  <img src={product.images[0]} alt={product.title} class="w-10 h-10 rounded object-cover" />
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">{product.title}</p>
+                    <p class="text-xs text-gray-500">{Math.floor(Math.random() * 100)} views</p>
+                  </div>
+                </div>
+                <p class="text-sm font-bold">${product.price}</p>
+              </div>
+            {/each}
+          </div>
+        </div>
+
+        <!-- Traffic Sources -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+            <h2 class="text-lg font-semibold mb-4">Traffic Sources</h2>
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span>Search</span>
+                  <span>45%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-blue-600 h-2 rounded-full" style="width: 45%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span>Direct</span>
+                  <span>30%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-green-600 h-2 rounded-full" style="width: 30%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between text-sm mb-1">
+                  <span>Social</span>
+                  <span>25%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-purple-600 h-2 rounded-full" style="width: 25%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+            <h2 class="text-lg font-semibold mb-4">Customer Demographics</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Age 18-24</span>
+                <span class="text-sm font-medium">32%</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Age 25-34</span>
+                <span class="text-sm font-medium">45%</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Age 35-44</span>
+                <span class="text-sm font-medium">18%</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Age 45+</span>
+                <span class="text-sm font-medium">5%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    {:else if activeTab === 'settings'}
+      <div class="max-w-2xl">
+        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+          <h2 class="text-lg font-semibold mb-4">Shop Settings</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Shop Name</label>
+              <input type="text" value={user.username} class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Shop Description</label>
+              <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Tell buyers about your shop..."></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Vacation Mode</label>
+              <div class="flex items-center space-x-3">
+                <button class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200">
+                  <span class="inline-block h-4 w-4 transform rounded-full bg-white transition translate-x-1"></span>
+                </button>
+                <span class="text-sm text-gray-600">Your shop is currently active</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+          <h2 class="text-lg font-semibold mb-4">Shipping Settings</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Processing Time</label>
+              <select class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                <option>1-2 business days</option>
+                <option>3-5 business days</option>
+                <option>1 week</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Default Shipping Price</label>
+              <input type="number" value="8.99" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+          <h2 class="text-lg font-semibold mb-4">Payment Settings</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Bank Account</label>
+              <div class="flex items-center justify-between p-3 border border-gray-300 rounded-lg">
+                <span class="text-sm">**** **** **** 1234</span>
+                <Button size="sm" variant="outline">Change</Button>
+              </div>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Payout Schedule</label>
+              <select class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                <option>Daily</option>
+                <option>Weekly</option>
+                <option>Monthly</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <Button size="lg" class="w-full">Save Settings</Button>
+        </div>
+      </div>
+    {/if}
+  </div>
+</div>

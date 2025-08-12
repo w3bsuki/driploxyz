@@ -1,2 +1,10 @@
 export { Counter } from './my-counter-class.svelte';
 export { default as MyCounterButton } from './MyCounterButton.svelte';
+export { default as Button } from './Button.svelte';
+export { default as Input } from './Input.svelte';
+export { default as Card } from './Card.svelte';
+export { default as ProductCard } from './ProductCard.svelte';
+export { default as SearchBar } from './SearchBar.svelte';
+export { default as Avatar } from './Avatar.svelte';
+export { default as Breadcrumb } from './Breadcrumb.svelte';
+export * from './types.js';
