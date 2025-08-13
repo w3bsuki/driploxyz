@@ -2,6 +2,22 @@ import type { PageServerLoad } from './$types';
 import { createServices } from '$lib/services';
 
 export const load: PageServerLoad = async ({ locals: { supabase } }) => {
+  // Handle missing Supabase configuration
+  if (!supabase) {
+    return {
+      promotedProducts: [],
+      featuredProducts: [],
+      categories: [],
+      topSellers: [],
+      errors: {
+        promoted: 'Database not configured',
+        products: 'Database not configured', 
+        categories: 'Database not configured',
+        sellers: 'Database not configured'
+      }
+    };
+  }
+
   const services = createServices(supabase);
 
   try {

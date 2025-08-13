@@ -5,6 +5,14 @@ import { env } from '$env/dynamic/public';
 import type { Database } from '$lib/types/database.types';
 
 const supabase: Handle = async ({ event, resolve }) => {
+  // Fallback for missing environment variables
+  if (!env.PUBLIC_SUPABASE_URL || !env.PUBLIC_SUPABASE_ANON_KEY) {
+    console.warn('Supabase environment variables not configured');
+    event.locals.supabase = null as any;
+    event.locals.safeGetSession = async () => ({ session: null, user: null });
+    return resolve(event);
+  }
+
   event.locals.supabase = createServerClient<Database>(
     env.PUBLIC_SUPABASE_URL,
     env.PUBLIC_SUPABASE_ANON_KEY,
