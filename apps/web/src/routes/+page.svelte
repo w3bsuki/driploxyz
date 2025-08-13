@@ -152,7 +152,19 @@
 					{#if promotedProducts && promotedProducts.length > 0}
 						{#each promotedProducts as product}
 							<button 
-								onclick={() => goto(`/product/${product.id}`)}
+								onclick={() => {
+									// Create mock seller from promoted product
+									selectedSeller = {
+										id: product.seller_id || `seller-${product.id}`,
+										name: product.seller_name || 'Premium Seller',
+										avatar: null,
+										premium: true,
+										rating: 4.8,
+										itemCount: 15,
+										followers: 250,
+										description: 'Premium seller with exclusive items'
+									};
+								}}
 								class="relative flex-shrink-0 group"
 							>
 								<div class="relative">
