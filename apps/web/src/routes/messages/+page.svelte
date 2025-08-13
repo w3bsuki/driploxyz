@@ -12,6 +12,9 @@
   
   // ULTRA SIMPLE conversation logic
   const conversations = $derived(() => {
+    console.log('=== BUILDING CONVERSATIONS ===');
+    console.log('data.messages?.length:', data.messages?.length);
+    console.log('data.conversationParam:', data.conversationParam);
     
     const convMap = new Map();
     
@@ -83,6 +86,8 @@
       new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
     );
     
+    console.log('Built conversations:');
+    result.forEach(conv => console.log(`- ${conv.userName} (${conv.id}): ${conv.messages?.length} messages`));
     
     return result;
   });
@@ -98,18 +103,31 @@
   $effect(() => {
     if (data.conversationParam) {
       const [sellerId, productId] = data.conversationParam.split('__');
-      selectedConversation = sellerId; // Use just the user ID
+      // Find the OTHER user ID (not the current user)
+      const otherUserId = sellerId === data.user?.id ? 
+        data.conversationUser?.id || sellerId : 
+        sellerId;
+      selectedConversation = otherUserId;
+      console.log('Auto-selected conversation for other user:', otherUserId);
     }
   });
   let messageText = $state('');
   let activeTab = $state<'all' | 'buying' | 'selling' | 'offers'>('all');
   
   const selectedConvMessages = $derived(() => {
-    if (!selectedConversation) return [];
+    console.log('=== SELECTED CONV MESSAGES ===');
+    console.log('selectedConversation:', selectedConversation);
+    if (!selectedConversation) {
+      console.log('No selected conversation');
+      return [];
+    }
     const conv = conversations().find(c => c.id === selectedConversation);
-    return conv?.messages?.sort((a, b) => 
+    console.log('Found conv:', conv?.userName, 'with', conv?.messages?.length, 'messages');
+    const messages = conv?.messages?.sort((a, b) => 
       new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     ) || [];
+    console.log('Returning', messages.length, 'messages');
+    return messages;
   });
   
   const timeAgo = (date: string) => {
@@ -123,13 +141,23 @@
   };
   
   async function sendMessage() {
+    console.log('=== SEND MESSAGE DEBUG ===');
+    console.log('messageText:', messageText);
+    console.log('selectedConversation:', selectedConversation);
+    console.log('data.user:', data.user?.id);
+    console.log('data.conversationParam:', data.conversationParam);
+    
     if (!messageText.trim() || !selectedConversation || !data.user) {
+      console.log('Validation failed');
       return;
     }
     
     // selectedConversation is now just the user ID (not user__product)
     const recipientId = selectedConversation;
     const productId = data.conversationParam ? data.conversationParam.split('__')[1] : null;
+    
+    console.log('recipientId:', recipientId);
+    console.log('productId:', productId);
     
     if (recipientId === data.user.id) {
       alert('Cannot send message to yourself!');
@@ -155,9 +183,13 @@
         content: messageText.trim()
       };
       
+      console.log('Sending message data:', messageData);
+      
       const { error } = await data.supabase
         .from('messages')
         .insert(messageData);
+      
+      console.log('Insert result error:', error);
       
       if (error) {
         throw error;
@@ -166,7 +198,8 @@
       messageText = '';
       await invalidate('messages:all');
     } catch (err) {
-      // Silent error handling
+      console.error('Message send error:', err);
+      alert('Failed to send message: ' + (err?.message || 'Unknown error'));
     }
   }
   
@@ -335,7 +368,8 @@
               <span class="text-[11px] text-gray-500 bg-white px-3 py-1 rounded-full">Today</span>
             </div>
             
-            {#each selectedConvMessages as message}
+            <!-- Show ALL messages for this conversation, bypassing complex filtering -->
+            {#each data.messages.filter(m => (m.sender_id === data.user?.id && m.receiver_id === selectedConversation) || (m.receiver_id === data.user?.id && m.sender_id === selectedConversation)) as message}
               <div class="flex {message.sender_id === data.user?.id ? 'justify-end' : 'justify-start'} px-1">
                 <div class="max-w-[80%] sm:max-w-[70%]">
                   <div class="{message.sender_id === data.user?.id ? 'bg-black text-white rounded-2xl rounded-br-md' : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm border'} px-4 py-3">
