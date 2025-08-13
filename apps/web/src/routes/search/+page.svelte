@@ -333,12 +333,14 @@
             <!-- Back Button as first item -->
             <button
               onclick={goBackToMain}
-              class="flex flex-col items-center min-w-[70px] py-2 px-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0"
+              class="flex flex-col items-center justify-center min-w-[70px] py-2 px-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0"
               aria-label="Back to categories"
             >
-              <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-              </svg>
+              <div class="text-lg mb-1">
+                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+              </div>
               <span class="text-xs font-medium">Back</span>
             </button>
             
