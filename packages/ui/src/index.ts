@@ -7,4 +7,14 @@ export { default as ProductCard } from './ProductCard.svelte';
 export { default as SearchBar } from './SearchBar.svelte';
 export { default as Avatar } from './Avatar.svelte';
 export { default as Breadcrumb } from './Breadcrumb.svelte';
+
+// New premium product page components
+export { default as ProductGallery } from './ProductGallery.svelte';
+export { default as SizeSelector } from './SizeSelector.svelte';
+export { default as ConditionReport } from './ConditionReport.svelte';
+export { default as SellerCard } from './SellerCard.svelte';
+export { default as LiveActivity } from './LiveActivity.svelte';
+export { default as ProductSheet } from './ProductSheet.svelte';
+export { default as QuickActions } from './QuickActions.svelte';
+
 export * from './types.js';
