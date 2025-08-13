@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ProductCard, Button, type Product } from '@repo/ui';
+  import { ProductCard, Button, SearchBar, type Product } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import BottomNav from '$lib/components/BottomNav.svelte';
   import { goto } from '$app/navigation';
@@ -266,6 +266,14 @@
     priceMin = '';
     priceMax = '';
   }
+  
+  function handleSearch(query: string) {
+    searchQuery = query;
+  }
+  
+  function handleFilter() {
+    showFilters = !showFilters;
+  }
 </script>
 
 <svelte:head>
@@ -281,31 +289,19 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="py-3">
         <!-- Search Bar -->
-        <div class="flex items-center space-x-2">
-          <div class="flex-1 relative">
-            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="search"
-              bind:value={searchQuery}
-              placeholder="Search for items, brands..."
-              class="w-full pl-10 pr-4 py-2 ring-2 ring-gray-300 rounded-full text-base focus:ring-black focus:ring-opacity-100"
-            />
-          </div>
-          <button
-            onclick={() => showFilters = !showFilters}
-            class="p-2 ring-1 ring-gray-300 rounded-full hover:bg-gray-50 relative"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-            </svg>
-            {#if activeFiltersCount() > 0}
-              <span class="absolute -top-1 -right-1 h-5 w-5 bg-black text-white text-xs rounded-full flex items-center justify-center">
-                {activeFiltersCount()}
-              </span>
-            {/if}
-          </button>
+        <div class="relative">
+          <SearchBar 
+            bind:value={searchQuery}
+            placeholder="Search for items, brands..."
+            onSearch={handleSearch}
+            onFilter={handleFilter}
+            variant="hero"
+          />
+          {#if activeFiltersCount() > 0}
+            <div class="absolute top-2 right-1 h-5 w-5 bg-black text-white text-xs rounded-full flex items-center justify-center pointer-events-none">
+              {activeFiltersCount()}
+            </div>
+          {/if}
         </div>
       </div>
     </div>

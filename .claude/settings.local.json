@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__supabase__search_docs",
+      "WebSearch"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
+}

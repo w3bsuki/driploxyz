@@ -94,9 +94,9 @@
 
 <div class="relative {className}">
   <form onsubmit={handleSubmit}>
-    <div class="relative flex items-center {variant === 'hero' ? 'bg-white rounded-full ring-2 ring-gray-200 shadow-sm hover:shadow-md focus-within:ring-black transition-all' : 'bg-white rounded-lg ring-2 ring-gray-200 focus-within:ring-black transition-colors'}">
+    <div class="relative flex items-center {variant === 'hero' ? 'bg-white rounded-full border border-gray-200 shadow-sm hover:shadow-md focus-within:border-black transition-all' : 'bg-white rounded-lg border border-gray-200 focus-within:border-black transition-colors'}">
       <!-- Search Icon -->
-      <div class="absolute left-4 flex items-center pointer-events-none">
+      <div class="absolute left-4 flex items-center justify-center pointer-events-none">
         <svg class="w-5 h-5 {variant === 'hero' ? 'text-gray-500' : 'text-gray-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
@@ -108,7 +108,7 @@
         bind:value
         {placeholder}
         type="search"
-        class="w-full bg-transparent pl-12 {variant === 'hero' ? 'pr-24' : 'pr-32'} py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-none"
+        class="w-full bg-transparent pl-11 {variant === 'hero' ? 'pr-24' : 'pr-32'} py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-none"
         oninput={handleInput}
         onfocus={handleFocus}
         onblur={handleBlur}
@@ -132,7 +132,7 @@
         <button
           type="button"
           onclick={onFilter}
-          class="absolute right-2 px-3 py-1.5 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center space-x-1 ring-1 ring-gray-200"
+          class="absolute right-2 px-4 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center space-x-1 ring-1 ring-gray-200"
         >
           <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />

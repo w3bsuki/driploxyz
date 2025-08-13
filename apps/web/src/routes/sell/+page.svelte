@@ -1,6 +1,14 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { Button } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
+  import type { PageData } from './$types';
+  
+  interface Props {
+    data: PageData;
+  }
+  
+  let { data }: Props = $props();
   
   let currentStep = $state(1);
   const totalSteps = 5;
@@ -22,15 +30,10 @@
   let tags = $state<string[]>([]);
   let currentTag = $state('');
   
-  // Categories data
-  const categories = {
-    'Women': ['Tops', 'Bottoms', 'Dresses', 'Outerwear', 'Shoes', 'Accessories'],
-    'Men': ['Shirts', 'Pants', 'Jackets', 'Shoes', 'Accessories'],
-    'Kids': ['Boys', 'Girls', 'Baby', 'Shoes', 'Toys'],
-    'Home': ['Decor', 'Furniture', 'Kitchen', 'Bedding'],
-    'Electronics': ['Phones', 'Tablets', 'Audio', 'Gaming'],
-    'Beauty': ['Makeup', 'Skincare', 'Hair', 'Fragrance']
-  };
+  // Get categories from server data
+  const mainCategories = $derived(data.categories.filter(c => !c.parent_id));
+  const getSubcategories = (parentId: string) => 
+    data.categories.filter(c => c.parent_id === parentId);
   
   const sizes = {
     'clothing': ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
@@ -97,12 +100,83 @@
     }
   }
   
-  function handleSubmit() {
-    console.log('Submitting listing:', {
-      photos, title, description, category, subcategory,
-      brand, size, condition, color, material,
-      price, shippingPrice, tags
-    });
+  let submitting = $state(false);
+  let submitError = $state('');
+  
+  async function handleSubmit() {
+    if (!data.user) {
+      goto('/login');
+      return;
+    }
+
+    submitting = true;
+    submitError = '';
+
+    try {
+      // Upload images to Supabase Storage
+      const uploadedUrls: string[] = [];
+      
+      for (const [index, photo] of photos.entries()) {
+        const fileExt = photo.name.split('.').pop();
+        const fileName = `${data.user.id}/${Date.now()}_${index}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await data.supabase.storage
+          .from('product-images')
+          .upload(fileName, photo);
+
+        if (uploadError) throw uploadError;
+
+        // Get public URL
+        const { data: { publicUrl } } = data.supabase.storage
+          .from('product-images')
+          .getPublicUrl(fileName);
+        
+        uploadedUrls.push(publicUrl);
+      }
+
+      // Create product in database
+      const { data: product, error: productError } = await data.supabase
+        .from('products')
+        .insert({
+          title,
+          description: description || null,
+          price: parseFloat(price),
+          category_id: subcategory || category,
+          condition,
+          brand: brand !== 'Other' ? brand : null,
+          size: size || null,
+          location: null,
+          seller_id: data.user.id,
+          status: 'active',
+          shipping_price: parseFloat(shippingPrice || '0'),
+          tags: tags.length > 0 ? tags : null
+        })
+        .select()
+        .single();
+
+      if (productError) throw productError;
+
+      // Add product images
+      const imageInserts = uploadedUrls.map((url, index) => ({
+        product_id: product.id,
+        image_url: url,
+        display_order: index,
+        is_primary: index === 0
+      }));
+
+      const { error: imagesError } = await data.supabase
+        .from('product_images')
+        .insert(imageInserts);
+
+      if (imagesError) throw imagesError;
+
+      // Navigate to success page with product ID
+      goto(`/sell/success?id=${product.id}`);
+    } catch (err) {
+      console.error('Upload error:', err);
+      submitError = 'Failed to upload product. Please try again.';
+      submitting = false;
+    }
   }
   
   function getStepTitle(step: number) {
@@ -176,6 +250,11 @@
 
   <!-- Form Content -->
   <div class="max-w-3xl mx-auto px-4 sm:px-6 py-6">
+    {#if submitError}
+      <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+        {submitError}
+      </div>
+    {/if}
     {#if currentStep === 1}
       <!-- Step 1: Photos -->
       <div class="bg-white rounded-lg p-4 sm:p-6">
@@ -261,25 +340,28 @@
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
             >
               <option value="">Select category</option>
-              {#each Object.keys(categories) as cat}
-                <option value={cat}>{cat}</option>
+              {#each mainCategories as cat}
+                <option value={cat.id}>{cat.name}</option>
               {/each}
             </select>
           </div>
           
           {#if category}
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Subcategory*</label>
-              <select 
-                bind:value={subcategory}
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-              >
-                <option value="">Select subcategory</option>
-                {#each categories[category] as subcat}
-                  <option value={subcat}>{subcat}</option>
-                {/each}
-              </select>
-            </div>
+            {@const subcategories = getSubcategories(category)}
+            {#if subcategories.length > 0}
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Subcategory*</label>
+                <select 
+                  bind:value={subcategory}
+                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+                >
+                  <option value="">Select subcategory</option>
+                  {#each subcategories as subcat}
+                    <option value={subcat.id}>{subcat.name}</option>
+                  {/each}
+                </select>
+              </div>
+            {/if}
           {/if}
         </div>
       </div>
@@ -488,7 +570,12 @@
         <div class="space-y-3 text-sm">
           <div class="flex justify-between">
             <span class="text-gray-600">Category</span>
-            <span class="font-medium">{category} / {subcategory}</span>
+            <span class="font-medium">
+              {mainCategories.find(c => c.id === category)?.name || 'Not selected'}
+              {#if subcategory}
+                / {data.categories.find(c => c.id === subcategory)?.name || ''}
+              {/if}
+            </span>
           </div>
           <div class="flex justify-between">
             <span class="text-gray-600">Brand</span>
@@ -546,12 +633,21 @@
       {:else}
         <Button 
           onclick={handleSubmit}
+          disabled={submitting}
           class="flex items-center"
         >
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
-          Publish Listing
+          {#if submitting}
+            <svg class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Publishing...
+          {:else}
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Publish Listing
+          {/if}
         </Button>
       {/if}
     </div>

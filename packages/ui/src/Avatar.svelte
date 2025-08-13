@@ -49,7 +49,7 @@
 <button
   {onclick}
   disabled={!onclick}
-  class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-2 ring-black' : ''} {onclick ? 'cursor-pointer' : 'cursor-default'} {className} overflow-hidden"
+  class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} {onclick ? 'cursor-pointer' : 'cursor-default'} {className} overflow-hidden"
 >
   {#if src}
     <img 
