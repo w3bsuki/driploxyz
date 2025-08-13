@@ -12,10 +12,6 @@
   
   // ULTRA SIMPLE conversation logic
   const conversations = $derived(() => {
-    console.log('=== FRONTEND DEBUG ===');
-    console.log('data.conversationParam:', data.conversationParam);
-    console.log('data.messages count:', data.messages?.length || 0);
-    console.log('data.conversationUser:', data.conversationUser?.username);
     
     const convMap = new Map();
     
@@ -87,8 +83,6 @@
       new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
     );
     
-    console.log('conversations created:', result.length);
-    result.forEach(conv => console.log(`- ${conv.userName}: ${conv.lastMessage} (ID: ${conv.id})`));
     
     return result;
   });
@@ -105,27 +99,17 @@
     if (data.conversationParam) {
       const [sellerId, productId] = data.conversationParam.split('__');
       selectedConversation = sellerId; // Use just the user ID
-      console.log('Auto-selected conversation:', selectedConversation);
     }
   });
   let messageText = $state('');
   let activeTab = $state<'all' | 'buying' | 'selling' | 'offers'>('all');
   
   const selectedConvMessages = $derived(() => {
-    console.log('=== SELECTED CONV MESSAGES DEBUG ===');
-    console.log('selectedConversation:', selectedConversation);
-    if (!selectedConversation) {
-      console.log('No selected conversation');
-      return [];
-    }
+    if (!selectedConversation) return [];
     const conv = conversations().find(c => c.id === selectedConversation);
-    console.log('Found conversation:', conv?.userName);
-    console.log('Messages in conversation:', conv?.messages?.length);
-    const messages = conv?.messages?.sort((a, b) => 
+    return conv?.messages?.sort((a, b) => 
       new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     ) || [];
-    console.log('Sorted messages count:', messages.length);
-    return messages;
   });
   
   const timeAgo = (date: string) => {
@@ -139,25 +123,15 @@
   };
   
   async function sendMessage() {
-    console.log('=== SENDING MESSAGE ===');
-    console.log('messageText:', messageText);
-    console.log('selectedConversation:', selectedConversation);
-    console.log('data.user:', data.user?.id);
-    
     if (!messageText.trim() || !selectedConversation || !data.user) {
-      console.log('Validation failed - missing data');
       return;
     }
     
     // selectedConversation is now just the user ID (not user__product)
     const recipientId = selectedConversation;
     const productId = data.conversationParam ? data.conversationParam.split('__')[1] : null;
-    console.log('recipientId:', recipientId);
-    console.log('productId:', productId);
-    console.log('data.user.id:', data.user.id);
     
     if (recipientId === data.user.id) {
-      console.error('Cannot send message to yourself!');
       alert('Cannot send message to yourself!');
       return;
     }
@@ -166,12 +140,10 @@
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     
     if (!uuidRegex.test(recipientId)) {
-      console.error('Invalid recipient ID format:', recipientId);
       return;
     }
     
     if (productId && productId !== 'general' && !uuidRegex.test(productId)) {
-      console.error('Invalid product ID format:', productId);
       return;
     }
     
@@ -183,38 +155,31 @@
         content: messageText.trim()
       };
       
-      console.log('Sending message data:', messageData);
-      
       const { error } = await data.supabase
         .from('messages')
         .insert(messageData);
       
       if (error) {
-        console.error('Supabase error:', error);
         throw error;
       }
       
-      console.log('Message sent successfully!');
       messageText = '';
-      
-      // Use SvelteKit invalidation instead of hard reload
-      console.log('Invalidating messages data...');
       await invalidate('messages:all');
     } catch (err) {
-      console.error('Error sending message:', err);
+      // Silent error handling
     }
   }
   
   function acceptOffer(convId: string) {
-    console.log('Accept offer:', convId);
+    // Handle offer acceptance
   }
   
   function declineOffer(convId: string) {
-    console.log('Decline offer:', convId);
+    // Handle offer decline
   }
   
   function counterOffer(convId: string) {
-    console.log('Counter offer:', convId);
+    // Handle counter offer
   }
 </script>
 
@@ -370,19 +335,7 @@
               <span class="text-[11px] text-gray-500 bg-white px-3 py-1 rounded-full">Today</span>
             </div>
             
-            <!-- DEBUG: Show raw message data -->
-            <div class="text-xs text-red-500 p-2 bg-red-50">
-              DEBUG: selectedConvMessages.length = {selectedConvMessages.length}
-              <br>selectedConversation = {selectedConversation}
-              <br>conversations().length = {conversations().length}
-              <br>Found conversation: {conversations().find(c => c.id === selectedConversation)?.userName || 'NOT FOUND'}
-              <br>Messages in found conv: {conversations().find(c => c.id === selectedConversation)?.messages?.length || 'NO MESSAGES'}
-            </div>
-            
-            {#each selectedConvMessages as message, i}
-              <div class="text-xs text-blue-500 p-1 bg-blue-50">
-                Message {i}: {message.content} from {message.sender_id}
-              </div>
+            {#each selectedConvMessages as message}
               <div class="flex {message.sender_id === data.user?.id ? 'justify-end' : 'justify-start'} px-1">
                 <div class="max-w-[80%] sm:max-w-[70%]">
                   <div class="{message.sender_id === data.user?.id ? 'bg-black text-white rounded-2xl rounded-br-md' : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm border'} px-4 py-3">

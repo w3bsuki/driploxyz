@@ -1,6 +1,7 @@
+import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
+export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase }, url }) => {
   const { session, user } = await safeGetSession();
 
   let profile = null;
@@ -11,6 +12,11 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
       .eq('id', user.id)
       .single();
     profile = data;
+    
+    // Redirect to onboarding if profile incomplete (but not if already on onboarding)
+    if (profile && !profile.onboarding_completed && !url.pathname.startsWith('/onboarding')) {
+      throw redirect(303, '/onboarding');
+    }
   }
 
   return {

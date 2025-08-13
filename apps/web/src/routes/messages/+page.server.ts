@@ -96,11 +96,6 @@ export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, 
     console.error('Error fetching messages:', messagesError);
   }
 
-  console.log('=== SERVER LOAD DEBUG ===');
-  console.log('conversationParam:', conversationParam);
-  console.log('messages count:', messages?.length || 0);
-  console.log('conversationUser:', conversationUser?.username);
-  console.log('conversationProduct:', conversationProduct?.title);
 
   return {
     messages: messages || [],
