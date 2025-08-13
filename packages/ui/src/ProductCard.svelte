@@ -38,7 +38,7 @@
 <Card class={`overflow-hidden cursor-pointer ${className}`} padding={false} hover={false} onclick={handleClick}>
   <div class="relative">
     <img 
-      src={product.images[0] || '/placeholder-image.jpg'} 
+      src={product.images[0] || '/placeholder-product.svg'} 
       alt={product.title}
       class="w-full aspect-square object-cover"
     />

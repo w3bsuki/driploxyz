@@ -112,7 +112,7 @@ export async function signOut(supabase: SupabaseClient<Database>) {
  */
 export function getDisplayName(profile: Database['public']['Tables']['profiles']['Row'] | null): string {
   if (!profile) return 'Anonymous';
-  return profile.full_name || profile.username || 'User';
+  return profile.username || profile.full_name || 'User';
 }
 
 /**

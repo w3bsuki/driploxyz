@@ -2,86 +2,8 @@
   import { Button, Avatar } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   
-  // Mock purchase data
-  const purchases = [
-    {
-      id: 'order-001',
-      date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      status: 'delivered',
-      items: [
-        {
-          id: 'item-1',
-          title: 'Vintage Levi\'s Jacket',
-          image: '/placeholder-product.svg',
-          price: 89,
-          size: 'M',
-          sellerId: 'seller-1',
-          sellerName: 'VintageFinds',
-          sellerAvatar: '/placeholder-product.svg'
-        }
-      ],
-      total: 97.99,
-      shipping: 8.99,
-      deliveryDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-      trackingNumber: 'DPL123456789',
-      shippingAddress: '123 Main St, New York, NY 10001'
-    },
-    {
-      id: 'order-002',
-      date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      status: 'in_transit',
-      items: [
-        {
-          id: 'item-2',
-          title: 'Nike Air Max 90',
-          image: '/placeholder-product.svg',
-          price: 120,
-          size: '10',
-          sellerId: 'seller-2',
-          sellerName: 'SneakerHead',
-          sellerAvatar: '/placeholder-product.svg'
-        },
-        {
-          id: 'item-3',
-          title: 'Adidas Hoodie',
-          image: '/placeholder-product.svg',
-          price: 65,
-          size: 'L',
-          sellerId: 'seller-2',
-          sellerName: 'SneakerHead',
-          sellerAvatar: '/placeholder-product.svg'
-        }
-      ],
-      total: 193.99,
-      shipping: 8.99,
-      deliveryDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString(),
-      trackingNumber: 'DPL987654321',
-      shippingAddress: '123 Main St, New York, NY 10001'
-    },
-    {
-      id: 'order-003',
-      date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-      status: 'delivered',
-      items: [
-        {
-          id: 'item-4',
-          title: 'Zara Dress',
-          image: '/placeholder-product.svg',
-          price: 45,
-          size: 'S',
-          sellerId: 'seller-3',
-          sellerName: 'Fashionista',
-          sellerAvatar: '/placeholder-product.svg'
-        }
-      ],
-      total: 53.99,
-      shipping: 8.99,
-      deliveryDate: new Date(Date.now() - 25 * 24 * 60 * 60 * 1000).toISOString(),
-      trackingNumber: 'DPL456789123',
-      shippingAddress: '123 Main St, New York, NY 10001',
-      hasReview: true
-    }
-  ];
+  // Purchase data will come from Supabase
+  const purchases: any[] = [];
   
   let activeTab = $state<'all' | 'to_review' | 'issues'>('all');
   let expandedOrders = $state<Set<string>>(new Set());
@@ -192,15 +114,15 @@
               {#each order.items as item, i}
                 <div class="flex items-start space-x-4 {i > 0 ? 'mt-4 pt-4 border-t' : ''}">
                   <img 
-                    src={item.image} 
+                    src={item.image || ''} 
                     alt={item.title}
-                    class="w-20 h-20 object-cover rounded-lg"
+                    class="w-20 h-20 object-cover rounded-lg bg-gray-200"
                   />
                   <div class="flex-1">
                     <h4 class="font-medium text-gray-900">{item.title}</h4>
                     <p class="text-sm text-gray-600">Size: {item.size} • ${item.price}</p>
                     <div class="flex items-center space-x-2 mt-2">
-                      <Avatar src={item.sellerAvatar} name={item.sellerName} size="xs" />
+                      <Avatar src={item.sellerAvatar || ''} name={item.sellerName} size="xs" />
                       <a href="/profile/{item.sellerId}" class="text-sm text-gray-600 hover:text-gray-900">
                         {item.sellerName}
                       </a>

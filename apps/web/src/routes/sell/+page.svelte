@@ -11,7 +11,7 @@
   let { data }: Props = $props();
   
   let currentStep = $state(1);
-  const totalSteps = 5;
+  const totalSteps = 3;
   
   // Form data
   let photos = $state<File[]>([]);
@@ -91,11 +91,9 @@
   
   function canProceed() {
     switch(currentStep) {
-      case 1: return photos.length > 0;
-      case 2: return title && category && subcategory;
-      case 3: return brand && size && condition;
-      case 4: return price && shippingPrice;
-      case 5: return true;
+      case 1: return photos.length > 0 && title && category;
+      case 2: return brand && size && condition;
+      case 3: return price && shippingPrice;
       default: return false;
     }
   }
@@ -181,11 +179,9 @@
   
   function getStepTitle(step: number) {
     switch(step) {
-      case 1: return 'Photos';
-      case 2: return 'Details';
-      case 3: return 'Info';
-      case 4: return 'Price';
-      case 5: return 'Review';
+      case 1: return 'Photos & Details';
+      case 2: return 'Product Info';
+      case 3: return 'Price & Publish';
       default: return '';
     }
   }
@@ -256,85 +252,67 @@
       </div>
     {/if}
     {#if currentStep === 1}
-      <!-- Step 1: Photos -->
-      <div class="bg-white rounded-lg p-4 sm:p-6">
-        <h2 class="text-xl font-semibold mb-2">Add Photos</h2>
-        <p class="text-sm text-gray-600 mb-6">Add up to 10 photos. First photo will be the cover.</p>
-        
-        <div class="grid grid-cols-3 sm:grid-cols-5 gap-3 mb-4">
-          {#each photoUrls as url, i}
-            <div class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
-              <img src={url} alt="Upload {i + 1}" class="w-full h-full object-cover" />
-              <button 
-                onclick={() => removePhoto(i)}
-                class="absolute top-1 right-1 p-1 bg-black bg-opacity-50 rounded-full text-white"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      <!-- Step 1: Photos & Details -->
+      <div class="bg-white rounded-lg p-4 space-y-6">
+        <!-- Photos -->
+        <div>
+          <h2 class="text-lg font-semibold mb-2">Photos</h2>
+          <div class="grid grid-cols-3 gap-2 mb-3">
+            {#each photoUrls as url, i}
+              <div class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                <img src={url} alt="Upload {i + 1}" class="w-full h-full object-cover" />
+                <button 
+                  onclick={() => removePhoto(i)}
+                  class="absolute top-1 right-1 p-1 bg-black bg-opacity-50 rounded-full text-white"
+                >
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                {#if i === 0}
+                  <span class="absolute bottom-1 left-1 px-1 py-0.5 bg-black bg-opacity-50 text-white text-xs rounded">Cover</span>
+                {/if}
+              </div>
+            {/each}
+            
+            {#if photos.length < 10}
+              <label class="aspect-square bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer">
+                <svg class="w-6 h-6 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-              </button>
-              {#if i === 0}
-                <span class="absolute bottom-1 left-1 px-2 py-1 bg-black bg-opacity-50 text-white text-xs rounded">
-                  Cover
-                </span>
-              {/if}
-            </div>
-          {/each}
-          
-          {#if photos.length < 10}
-            <label class="aspect-square bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50">
-              <svg class="w-8 h-8 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-              </svg>
-              <span class="text-xs text-gray-500">Add Photo</span>
-              <input 
-                type="file" 
-                accept="image/*" 
-                multiple 
-                class="hidden"
-                onchange={handlePhotoUpload}
-              />
-            </label>
-          {/if}
+                <span class="text-xs text-gray-500">Add</span>
+                <input type="file" accept="image/*" multiple class="hidden" onchange={handlePhotoUpload} />
+              </label>
+            {/if}
+          </div>
         </div>
-        
-        <div class="bg-blue-50 p-3 rounded-lg">
-          <p class="text-sm text-blue-800">
-            💡 Tips: Use natural lighting, show all angles, include any flaws
-          </p>
-        </div>
-      </div>
 
-    {:else if currentStep === 2}
-      <!-- Step 2: Basic Details -->
-      <div class="bg-white rounded-lg p-4 sm:p-6 space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Title*</label>
-          <input 
-            type="text"
-            bind:value={title}
-            placeholder="e.g. Vintage Levi's Denim Jacket"
-            maxlength="50"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-          />
-          <p class="text-xs text-gray-500 mt-1">{title.length}/50 characters</p>
-        </div>
-        
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea 
-            bind:value={description}
-            rows="4"
-            placeholder="Describe your item: condition, measurements, material..."
-            maxlength="500"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-          ></textarea>
-          <p class="text-xs text-gray-500 mt-1">{description.length}/500 characters</p>
-        </div>
-        
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <!-- Basic Details -->
+        <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Category*</label>
+            <label class="block text-sm font-medium mb-1">Title*</label>
+            <input 
+              type="text"
+              bind:value={title}
+              placeholder="e.g. Vintage Levi's Denim Jacket"
+              maxlength="50"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+            />
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-1">Description</label>
+            <textarea 
+              bind:value={description}
+              rows="3"
+              placeholder="Describe your item..."
+              maxlength="500"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+            ></textarea>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium mb-1">Category*</label>
             <select 
               bind:value={category}
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
@@ -350,7 +328,7 @@
             {@const subcategories = getSubcategories(category)}
             {#if subcategories.length > 0}
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Subcategory*</label>
+                <label class="block text-sm font-medium mb-1">Subcategory</label>
                 <select 
                   bind:value={subcategory}
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
@@ -366,9 +344,9 @@
         </div>
       </div>
 
-    {:else if currentStep === 3}
-      <!-- Step 3: Item Info -->
-      <div class="bg-white rounded-lg p-4 sm:p-6 space-y-4">
+    {:else if currentStep === 2}
+      <!-- Step 2: Product Info -->
+      <div class="bg-white rounded-lg p-4 space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Brand*</label>
           <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-2">
@@ -457,8 +435,8 @@
         </div>
       </div>
 
-    {:else if currentStep === 4}
-      <!-- Step 4: Pricing -->
+    {:else if currentStep === 3}
+      <!-- Step 3: Price & Publish -->
       <div class="bg-white rounded-lg p-4 sm:p-6 space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Price*</label>
@@ -543,66 +521,6 @@
           {/if}
         </div>
       </div>
-
-    {:else if currentStep === 5}
-      <!-- Step 5: Review -->
-      <div class="bg-white rounded-lg p-4 sm:p-6">
-        <h2 class="text-xl font-semibold mb-4">Review Your Listing</h2>
-        
-        <!-- Preview Card -->
-        <div class="border rounded-lg p-4 mb-6">
-          <div class="flex space-x-4">
-            {#if photoUrls.length > 0}
-              <img src={photoUrls[0]} alt={title} class="w-24 h-24 object-cover rounded-lg" />
-            {/if}
-            <div class="flex-1">
-              <h3 class="font-semibold text-lg">{title || 'No title'}</h3>
-              <p class="text-gray-600 text-sm mt-1">{description || 'No description'}</p>
-              <div class="flex items-center space-x-4 mt-2">
-                <span class="font-bold text-xl">${price || '0'}</span>
-                <span class="text-sm text-gray-500">{size} • {condition}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Details Summary -->
-        <div class="space-y-3 text-sm">
-          <div class="flex justify-between">
-            <span class="text-gray-600">Category</span>
-            <span class="font-medium">
-              {mainCategories.find(c => c.id === category)?.name || 'Not selected'}
-              {#if subcategory}
-                / {data.categories.find(c => c.id === subcategory)?.name || ''}
-              {/if}
-            </span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Brand</span>
-            <span class="font-medium">{brand}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Condition</span>
-            <span class="font-medium capitalize">{condition.replace('-', ' ')}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Shipping</span>
-            <span class="font-medium">${shippingPrice}</span>
-          </div>
-          {#if tags.length > 0}
-            <div class="flex justify-between">
-              <span class="text-gray-600">Tags</span>
-              <span class="font-medium">{tags.length} tags</span>
-            </div>
-          {/if}
-        </div>
-        
-        <div class="bg-green-50 p-3 rounded-lg mt-6">
-          <p class="text-sm text-green-800">
-            ✅ Your listing is ready to go live!
-          </p>
-        </div>
-      </div>
     {/if}
     
     <!-- Navigation Buttons -->
@@ -634,7 +552,7 @@
         <Button 
           onclick={handleSubmit}
           disabled={submitting}
-          class="flex items-center"
+          class="flex items-center flex-1"
         >
           {#if submitting}
             <svg class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -643,9 +561,6 @@
             </svg>
             Publishing...
           {:else}
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-            </svg>
             Publish Listing
           {/if}
         </Button>

@@ -15,4 +15,5 @@ export { default as SellerCard } from './SellerCard.svelte';
 export { default as LiveActivity } from './LiveActivity.svelte';
 export { default as ProductSheet } from './ProductSheet.svelte';
 export { default as QuickActions } from './QuickActions.svelte';
+export { default as TabGroup } from './TabGroup.svelte';
 export * from './types.js';

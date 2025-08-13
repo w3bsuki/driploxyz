@@ -94,7 +94,7 @@
       goto('/login');
       return;
     }
-    goto(`/messages/new?to=${data.product.seller_id}&product=${data.product.id}`);
+    goto(`/messages?conversation=${data.product.seller_id}__${data.product.id}`);
   }
   
   async function handleMakeOffer() {

@@ -2,7 +2,7 @@
   import '../app.css';
   import { invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
-  import { user, session, profile, authLoading } from '$lib/stores/auth';
+  import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import type { LayoutData } from './$types';
 
   let { data }: { data: LayoutData } = $props();
@@ -17,6 +17,12 @@
     }
     if (data?.session !== undefined) {
       session.set(data.session);
+    }
+    if (data?.profile !== undefined) {
+      profile.set(data.profile);
+    }
+    if (data?.supabase) {
+      setSupabaseClient(data.supabase);
     }
     authLoading.set(false);
   });

@@ -2,39 +2,14 @@
   import { ProductCard, Button, Avatar, type Product } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   
-  // Mock favorited products
-  const favoritedProducts: Product[] = Array.from({ length: 15 }, (_, i) => ({
-    id: `fav-product-${i + 1}`,
-    title: `Favorited Item ${i + 1}`,
-    description: 'Great condition item you liked',
-    price: Math.floor(Math.random() * 200) + 30,
-    originalPrice: Math.floor(Math.random() * 50) + 250,
-    images: ['/placeholder-product.svg'],
-    brand: ['Levi\'s', 'Nike', 'Adidas', 'Zara', 'H&M'][i % 5],
-    size: ['S', 'M', 'L', 'XL'][i % 4],
-    condition: (['new', 'like-new', 'good', 'fair'] as const)[i % 4],
-    category: ['Jackets', 'Tops', 'Bottoms', 'Shoes', 'Accessories'][i % 5],
-    sellerId: `seller-${i % 5}`,
-    sellerName: ['VintageFinds', 'StyleHub', 'Fashionista', 'TrendSetter', 'ChicCloset'][i % 5],
-    sellerRating: 4 + Math.random(),
-    createdAt: new Date(Date.now() - i * 60 * 60 * 1000).toISOString(),
-    location: 'New York, NY',
-    isFavorited: true,
-    favoritedAt: new Date(Date.now() - i * 30 * 60 * 1000).toISOString()
-  }));
+  // Favorited products will come from Supabase
+  const favoritedProducts: Product[] = [];
   
-  // Price alerts
-  const priceAlerts = [
-    { productId: 'fav-product-1', targetPrice: 50 },
-    { productId: 'fav-product-3', targetPrice: 75 }
-  ];
+  // Price alerts will come from Supabase
+  const priceAlerts: any[] = [];
   
-  // Collections
-  const collections = [
-    { id: 'col-1', name: 'Summer Outfits', count: 8, image: '/placeholder-product.svg' },
-    { id: 'col-2', name: 'Vintage Finds', count: 12, image: '/placeholder-product.svg' },
-    { id: 'col-3', name: 'Gift Ideas', count: 5, image: '/placeholder-product.svg' }
-  ];
+  // Collections will come from Supabase
+  const collections: any[] = [];
   
   let selectedCollection = $state<string | null>(null);
   let sortBy = $state('recently-added');

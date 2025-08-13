@@ -3,6 +3,11 @@
   import Header from '$lib/components/Header.svelte';
   import BottomNav from '$lib/components/BottomNav.svelte';
   import { goto } from '$app/navigation';
+  import type { PageData } from './$types';
+  
+  interface Props {
+    data: PageData;
+  }
   
   // Search and filter states
   let searchQuery = $state('');
@@ -15,6 +20,8 @@
   let priceMax = $state('');
   let sortBy = $state('relevance');
   let showFilters = $state(false);
+  
+  let { data }: Props = $props();
   
   // Category data structure with subcategories
   const categoryData = {
@@ -150,27 +157,29 @@
   const brands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Levi\'s', 'Uniqlo', 'Gap', 'Other'];
   const conditions = ['new', 'like-new', 'good', 'fair'];
   
-  // Mock products
-  const allProducts: Product[] = Array.from({ length: 48 }, (_, i) => ({
-    id: `product-${i + 1}`,
-    title: `Item ${i + 1}`,
-    description: 'Great condition item',
-    price: Math.floor(Math.random() * 200) + 20,
-    images: ['/placeholder-product.svg'],
-    brand: brands[i % brands.length],
-    size: sizes[i % sizes.length],
-    condition: conditions[i % 4] as Product['condition'],
-    category: Object.values(categoryData)[i % Object.values(categoryData).length].name,
-    sellerId: `seller-${i % 10}`,
-    sellerName: `Seller${i % 10}`,
-    sellerRating: 4 + Math.random(),
-    createdAt: new Date(Date.now() - i * 60 * 60 * 1000).toISOString(),
-    location: 'New York, NY'
-  }));
+  // Transform real products from Supabase to Product interface
+  const allProducts = $derived(() => {
+    return (data.products || []).map(product => ({
+      id: product.id,
+      title: product.title,
+      description: product.description,
+      price: Number(product.price),
+      images: product.images?.map(img => img.image_url) || ['/placeholder-product.svg'],
+      brand: product.brand,
+      size: product.size,
+      condition: product.condition as Product['condition'],
+      category: product.category?.name || 'Uncategorized',
+      sellerId: product.seller_id,
+      sellerName: product.seller?.username || 'Unknown',
+      sellerRating: Number(product.seller?.rating) || 4.5,
+      createdAt: product.created_at,
+      location: product.location || 'Unknown'
+    }));
+  });
   
   // Filtered products
   let filteredProducts = $derived(() => {
-    let results = [...allProducts];
+    let results = [...allProducts()];
     
     // Filter by search query
     if (searchQuery) {
@@ -243,23 +252,29 @@
     return count;
   });
   
+  // Category selection handlers
   function selectMainCategory(category: string) {
-    selectedMainCategory = selectedMainCategory === category ? null : category;
-    selectedSubcategory = null; // Reset subcategory when changing category
+    const isCurrentlySelected = selectedMainCategory === category;
+    selectedMainCategory = isCurrentlySelected ? null : category;
+    selectedSubcategory = null; // Always reset subcategory
   }
   
   function selectSubcategory(subcategory: string) {
-    selectedSubcategory = selectedSubcategory === subcategory ? null : subcategory;
+    const isCurrentlySelected = selectedSubcategory === subcategory;
+    selectedSubcategory = isCurrentlySelected ? null : subcategory;
+  }
+  
+  function resetCategories() {
+    selectedMainCategory = null;
+    selectedSubcategory = null;
   }
   
   function goBackToMain() {
-    selectedMainCategory = null;
-    selectedSubcategory = null;
+    resetCategories();
   }
   
   function clearFilters() {
-    selectedMainCategory = null;
-    selectedSubcategory = null;
+    resetCategories();
     selectedSize = 'all';
     selectedBrand = 'all';
     selectedCondition = 'all';
@@ -311,13 +326,12 @@
   <div class="bg-white border-b">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       {#if currentDisplay().type === 'main'}
-        <!-- Main Categories Horizontal Scroll -->
         <div class="overflow-x-auto scrollbar-hide">
           <div class="flex space-x-3 pb-2">
             {#each mainCategories as category}
               <button
                 onclick={() => selectMainCategory(category)}
-                class="flex flex-col items-center min-w-[70px] py-2 px-2 rounded-lg transition-colors
+                class="flex flex-col items-center min-w-[70px] py-2 px-2 rounded-lg flex-shrink-0
                   {selectedMainCategory === category ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
               >
                 <span class="text-lg mb-1">{categoryData[category].icon}</span>
@@ -327,30 +341,22 @@
           </div>
         </div>
       {:else}
-        <!-- Subcategories with Back Button -->
         <div class="overflow-x-auto scrollbar-hide">
           <div class="flex space-x-3 pb-2">
-            <!-- Back Button as first item -->
             <button
               onclick={goBackToMain}
-              class="flex flex-col items-center justify-center min-w-[70px] py-2 px-2 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0"
-              aria-label="Back to categories"
+              class="flex flex-col items-center justify-center min-w-[70px] py-2 px-2 rounded-lg flex-shrink-0 bg-gray-100 text-gray-700 hover:bg-gray-200"
             >
-              <div class="text-lg mb-1">
-                <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-              </div>
+              <svg class="w-[18px] h-[18px] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
               <span class="text-xs font-medium">Back</span>
             </button>
-            
             {#each currentDisplay().items as subcategory}
               <button
                 onclick={() => selectSubcategory(subcategory.name)}
-                class="flex flex-col items-center min-w-[70px] py-2 px-2 rounded-lg transition-colors flex-shrink-0
-                  {selectedSubcategory === subcategory.name 
-                    ? 'bg-black text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+                class="flex flex-col items-center min-w-[70px] py-2 px-2 rounded-lg flex-shrink-0
+                  {selectedSubcategory === subcategory.name ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
               >
                 <span class="text-lg mb-1">{subcategory.icon}</span>
                 <span class="text-xs font-medium whitespace-nowrap">{subcategory.name}</span>

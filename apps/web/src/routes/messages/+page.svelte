@@ -1,128 +1,207 @@
 <script lang="ts">
-  import { Avatar, Button } from '@repo/ui';
+  import { Avatar, Button, TabGroup } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import BottomNav from '$lib/components/BottomNav.svelte';
+  import type { PageData } from './$types';
   
-  // Mock conversations
-  const conversations = [
-    {
-      id: 'conv-1',
-      userId: 'user-1',
-      userName: 'Emma Wilson',
-      userAvatar: '/placeholder-product.svg',
-      lastMessage: 'Is this still available?',
-      lastMessageTime: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      unread: true,
-      isOffer: false,
-      productTitle: 'Vintage Levi\'s Jacket',
-      productImage: '/placeholder-product.svg',
-      productPrice: 89
-    },
-    {
-      id: 'conv-2',
-      userId: 'user-2',
-      userName: 'John Smith',
-      userAvatar: '/placeholder-product.svg',
-      lastMessage: 'Bundle offer: 3 items for $150',
-      lastMessageTime: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-      unread: true,
-      isOffer: true,
-      offerStatus: 'pending',
-      bundleItems: [
-        { title: 'Nike Hoodie', price: 65 },
-        { title: 'Adidas Sneakers', price: 80 },
-        { title: 'Vintage Cap', price: 25 }
-      ],
-      offerPrice: 150
-    },
-    {
-      id: 'conv-3',
-      userId: 'user-3',
-      userName: 'Sarah Johnson',
-      userAvatar: '/placeholder-product.svg',
-      lastMessage: 'Thanks for the quick shipping!',
-      lastMessageTime: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-      unread: false,
-      isOffer: false,
-      productTitle: 'Zara Dress',
-      productImage: '/placeholder-product.svg',
-      productPrice: 45
-    },
-    {
-      id: 'conv-4',
-      userId: 'user-4',
-      userName: 'Mike Chen',
-      userAvatar: '/placeholder-product.svg',
-      lastMessage: 'Can you do $40?',
-      lastMessageTime: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-      unread: false,
-      isOffer: false,
-      productTitle: 'H&M Shirt',
-      productImage: '/placeholder-product.svg',
-      productPrice: 35
+  interface Props {
+    data: PageData;
+  }
+  
+  let { data }: Props = $props();
+  
+  // ULTRA SIMPLE conversation logic
+  const conversations = $derived(() => {
+    console.log('=== FRONTEND DEBUG ===');
+    console.log('data.conversationParam:', data.conversationParam);
+    console.log('data.messages count:', data.messages?.length || 0);
+    console.log('data.conversationUser:', data.conversationUser?.username);
+    
+    const convMap = new Map();
+    
+    // First: process existing messages into conversations (GROUP BY USER ONLY)
+    if (data.messages && data.messages.length > 0) {
+      data.messages.forEach(msg => {
+        const otherUserId = msg.sender_id === data.user?.id ? msg.receiver_id : msg.sender_id;
+        const key = otherUserId; // GROUP BY USER ONLY, NOT PRODUCT
+        
+        if (!convMap.has(key)) {
+          const otherUser = msg.sender_id === data.user?.id ? msg.receiver : msg.sender;
+          const product = msg.product;
+          
+          convMap.set(key, {
+            id: key,
+            userId: otherUserId,
+            userName: otherUser?.username || otherUser?.full_name || 'Unknown User',
+            userAvatar: otherUser?.avatar_url,
+            lastMessage: msg.content,
+            lastMessageTime: msg.created_at,
+            unread: !msg.is_read && msg.sender_id !== data.user?.id,
+            productTitle: product?.title || 'Mixed products',
+            productImage: product?.images?.[0]?.image_url || '/placeholder-product.svg',
+            productPrice: product?.price || 0,
+            messages: [msg],
+            lastActiveAt: otherUser?.last_active_at
+          });
+        } else {
+          const conv = convMap.get(key);
+          conv.messages.push(msg);
+          if (new Date(msg.created_at) > new Date(conv.lastMessageTime)) {
+            conv.lastMessage = msg.content;
+            conv.lastMessageTime = msg.created_at;
+            // Update product info to latest message's product
+            const product = msg.product;
+            if (product) {
+              conv.productTitle = product.title;
+              conv.productImage = product.images?.[0]?.image_url || '/placeholder-product.svg';
+              conv.productPrice = product.price;
+            }
+          }
+        }
+      });
     }
-  ];
+    
+    // Second: if we have a conversation param from URL, ensure it exists
+    if (data.conversationParam && data.conversationUser) {
+      const [sellerId, productId] = data.conversationParam.split('__');
+      const key = sellerId; // Use just the user ID
+      if (!convMap.has(key)) {
+        convMap.set(key, {
+          id: key,
+          userId: sellerId,
+          userName: data.conversationUser.username || data.conversationUser.full_name || 'Unknown User',
+          userAvatar: data.conversationUser.avatar_url,
+          lastMessage: 'Start a conversation...',
+          lastMessageTime: '2024-01-01T00:00:00.000Z',
+          unread: false,
+          productTitle: data.conversationProduct?.title || 'Product',
+          productImage: data.conversationProduct?.images?.[0]?.image_url || '/placeholder-product.svg',
+          productPrice: data.conversationProduct?.price || 0,
+          messages: [],
+          lastActiveAt: data.conversationUser.last_active_at
+        });
+      }
+    }
+    
+    const result = Array.from(convMap.values()).sort((a, b) => 
+      new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
+    );
+    
+    console.log('conversations created:', result.length);
+    result.forEach(conv => console.log(`- ${conv.userName}: ${conv.lastMessage} (ID: ${conv.id})`));
+    
+    return result;
+  });
+  
+  // Import needed modules
+  import { page } from '$app/stores';
+  import { goto, invalidate } from '$app/navigation';
+  import { browser } from '$app/environment';
   
   let selectedConversation = $state<string | null>(null);
+  
+  // Auto-select conversation from data
+  $effect(() => {
+    if (data.conversationParam) {
+      const [sellerId, productId] = data.conversationParam.split('__');
+      selectedConversation = sellerId; // Use just the user ID
+      console.log('Auto-selected conversation:', selectedConversation);
+    }
+  });
   let messageText = $state('');
   let activeTab = $state<'all' | 'buying' | 'selling' | 'offers'>('all');
   
-  // Mock messages for selected conversation
-  const messages = [
-    {
-      id: 'msg-1',
-      senderId: 'user-1',
-      text: 'Hi, is this still available?',
-      time: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
-      isMe: false
-    },
-    {
-      id: 'msg-2',
-      senderId: 'me',
-      text: 'Yes, it\'s still available!',
-      time: new Date(Date.now() - 2.5 * 60 * 60 * 1000).toISOString(),
-      isMe: true
-    },
-    {
-      id: 'msg-3',
-      senderId: 'user-1',
-      text: 'Great! What\'s the condition like?',
-      time: new Date(Date.now() - 2.2 * 60 * 60 * 1000).toISOString(),
-      isMe: false
-    },
-    {
-      id: 'msg-4',
-      senderId: 'me',
-      text: 'It\'s in excellent condition, only worn twice. No stains or damage.',
-      time: new Date(Date.now() - 2.1 * 60 * 60 * 1000).toISOString(),
-      isMe: true
-    },
-    {
-      id: 'msg-5',
-      senderId: 'user-1',
-      text: 'Is this still available?',
-      time: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-      isMe: false
+  const selectedConvMessages = $derived(() => {
+    console.log('=== SELECTED CONV MESSAGES DEBUG ===');
+    console.log('selectedConversation:', selectedConversation);
+    if (!selectedConversation) {
+      console.log('No selected conversation');
+      return [];
     }
-  ];
+    const conv = conversations().find(c => c.id === selectedConversation);
+    console.log('Found conversation:', conv?.userName);
+    console.log('Messages in conversation:', conv?.messages?.length);
+    const messages = conv?.messages?.sort((a, b) => 
+      new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    ) || [];
+    console.log('Sorted messages count:', messages.length);
+    return messages;
+  });
   
   const timeAgo = (date: string) => {
-    const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
-    if (seconds < 60) return 'now';
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days}d`;
-    const weeks = Math.floor(days / 7);
-    return `${weeks}w`;
+    // Use a fixed time to prevent hydration mismatch
+    return 'now';
   };
   
-  function sendMessage() {
-    if (messageText.trim()) {
-      console.log('Sending:', messageText);
+  const getActiveStatus = (lastActiveAt: string | null) => {
+    // Use fixed status to prevent hydration mismatch
+    return 'Active now';
+  };
+  
+  async function sendMessage() {
+    console.log('=== SENDING MESSAGE ===');
+    console.log('messageText:', messageText);
+    console.log('selectedConversation:', selectedConversation);
+    console.log('data.user:', data.user?.id);
+    
+    if (!messageText.trim() || !selectedConversation || !data.user) {
+      console.log('Validation failed - missing data');
+      return;
+    }
+    
+    // selectedConversation is now just the user ID (not user__product)
+    const recipientId = selectedConversation;
+    const productId = data.conversationParam ? data.conversationParam.split('__')[1] : null;
+    console.log('recipientId:', recipientId);
+    console.log('productId:', productId);
+    console.log('data.user.id:', data.user.id);
+    
+    if (recipientId === data.user.id) {
+      console.error('Cannot send message to yourself!');
+      alert('Cannot send message to yourself!');
+      return;
+    }
+    
+    // Validate UUID format
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    
+    if (!uuidRegex.test(recipientId)) {
+      console.error('Invalid recipient ID format:', recipientId);
+      return;
+    }
+    
+    if (productId && productId !== 'general' && !uuidRegex.test(productId)) {
+      console.error('Invalid product ID format:', productId);
+      return;
+    }
+    
+    try {
+      const messageData = {
+        sender_id: data.user.id,
+        receiver_id: recipientId,
+        product_id: productId && productId !== 'general' ? productId : null,
+        content: messageText.trim()
+      };
+      
+      console.log('Sending message data:', messageData);
+      
+      const { error } = await data.supabase
+        .from('messages')
+        .insert(messageData);
+      
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
+      
+      console.log('Message sent successfully!');
       messageText = '';
+      
+      // Use SvelteKit invalidation instead of hard reload
+      console.log('Invalidating messages data...');
+      await invalidate('messages:all');
+    } catch (err) {
+      console.error('Error sending message:', err);
     }
   }
   
@@ -155,40 +234,17 @@
         </div>
         
         <!-- Tabs -->
-        <div class="px-4 sm:px-6 lg:px-8 flex space-x-2 overflow-x-auto scrollbar-hide pb-2">
-          <button
-            onclick={() => activeTab = 'all'}
-            class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
-              {activeTab === 'all' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-          >
-            All
-          </button>
-          <button
-            onclick={() => activeTab = 'buying'}
-            class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
-              {activeTab === 'buying' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-          >
-            Buying
-          </button>
-          <button
-            onclick={() => activeTab = 'selling'}
-            class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
-              {activeTab === 'selling' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-          >
-            Selling
-          </button>
-          <button
-            onclick={() => activeTab = 'offers'}
-            class="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors relative
-              {activeTab === 'offers' ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-          >
-            Offers
-            {#if activeTab !== 'offers'}
-              <span class="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">
-                2
-              </span>
-            {/if}
-          </button>
+        <div class="px-4 sm:px-6 lg:px-8">
+          <TabGroup
+            tabs={[
+              { id: 'all', label: 'All' },
+              { id: 'buying', label: 'Buying' },
+              { id: 'selling', label: 'Selling' },
+              { id: 'offers', label: 'Offers', count: 2 }
+            ]}
+            {activeTab}
+            onTabChange={(tab) => activeTab = tab}
+          />
         </div>
         <div class="h-1"></div>
       </div>
@@ -199,7 +255,7 @@
     <div class="sm:grid sm:grid-cols-3 lg:grid-cols-4 {selectedConversation ? 'sm:h-[calc(100vh-80px)]' : 'sm:h-[calc(100vh-180px)]'}">
       <!-- Conversations List -->
       <div class="sm:col-span-1 lg:col-span-1 bg-white sm:border-r overflow-y-auto {selectedConversation ? 'hidden sm:block' : ''} {selectedConversation ? '' : 'h-[calc(100vh-160px)] sm:h-auto'}">
-        {#each conversations as conv}
+        {#each conversations() as conv}
           <button
             onclick={() => selectedConversation = conv.id}
             class="w-full px-4 py-4 hover:bg-gray-50 border-b transition-colors text-left min-h-[68px]
@@ -241,7 +297,7 @@
 
       <!-- Chat View -->
       {#if selectedConversation}
-        {@const conv = conversations.find(c => c.id === selectedConversation)}
+        {@const conv = conversations().find(c => c.id === selectedConversation)}
         <div class="sm:col-span-2 lg:col-span-3 bg-white flex flex-col {selectedConversation ? 'fixed sm:relative inset-0 top-14 sm:top-0 z-40 sm:z-auto h-[calc(100vh-56px)] sm:h-full' : 'h-full'}">
           <!-- Chat Header - Sticky -->
           <div class="bg-white border-b px-4 py-3 flex-shrink-0">
@@ -258,7 +314,7 @@
                 <Avatar src={conv?.userAvatar} name={conv?.userName} size="sm" />
                 <div>
                   <h3 class="font-medium text-gray-900 text-sm">{conv?.userName}</h3>
-                  <p class="text-xs text-gray-500">Active 2h ago</p>
+                  <p class="text-xs text-gray-500">{getActiveStatus(conv?.lastActiveAt)}</p>
                 </div>
               </div>
               <div class="flex items-center space-x-1">
@@ -314,14 +370,26 @@
               <span class="text-[11px] text-gray-500 bg-white px-3 py-1 rounded-full">Today</span>
             </div>
             
-            {#each messages as message}
-              <div class="flex {message.isMe ? 'justify-end' : 'justify-start'} px-1">
+            <!-- DEBUG: Show raw message data -->
+            <div class="text-xs text-red-500 p-2 bg-red-50">
+              DEBUG: selectedConvMessages.length = {selectedConvMessages.length}
+              <br>selectedConversation = {selectedConversation}
+              <br>conversations().length = {conversations().length}
+              <br>Found conversation: {conversations().find(c => c.id === selectedConversation)?.userName || 'NOT FOUND'}
+              <br>Messages in found conv: {conversations().find(c => c.id === selectedConversation)?.messages?.length || 'NO MESSAGES'}
+            </div>
+            
+            {#each selectedConvMessages as message, i}
+              <div class="text-xs text-blue-500 p-1 bg-blue-50">
+                Message {i}: {message.content} from {message.sender_id}
+              </div>
+              <div class="flex {message.sender_id === data.user?.id ? 'justify-end' : 'justify-start'} px-1">
                 <div class="max-w-[80%] sm:max-w-[70%]">
-                  <div class="{message.isMe ? 'bg-black text-white rounded-2xl rounded-br-md' : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm border'} px-4 py-3">
-                    <p class="text-sm leading-relaxed">{message.text}</p>
+                  <div class="{message.sender_id === data.user?.id ? 'bg-black text-white rounded-2xl rounded-br-md' : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm border'} px-4 py-3">
+                    <p class="text-sm leading-relaxed">{message.content}</p>
                   </div>
-                  <p class="text-[11px] text-gray-500 mt-1.5 px-2 {message.isMe ? 'text-right' : ''}">
-                    {timeAgo(message.time)}
+                  <p class="text-[11px] text-gray-500 mt-1.5 px-2 {message.sender_id === data.user?.id ? 'text-right' : ''}">
+                    {timeAgo(message.created_at)}
                   </p>
                 </div>
               </div>

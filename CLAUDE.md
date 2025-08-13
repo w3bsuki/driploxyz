@@ -118,6 +118,20 @@ src/
 
 ## Development Guidelines
 
+### COMPONENT REUSABILITY - CRITICAL RULES
+✅ **ALWAYS reuse existing components** from `@repo/ui` package
+✅ **NEVER duplicate UI logic** - check packages/ui first
+✅ **BUILD once, USE everywhere** - all UI in shared package
+✅ **NO component bloat** - keep apps/ directories minimal
+✅ **EXTEND existing components** rather than creating new ones
+
+### Required Component Strategy:
+1. Check `packages/ui/src/` for existing components FIRST
+2. Extend existing components with props/variants
+3. Only create new components in @repo/ui if absolutely necessary
+4. Import components consistently: `import { Component } from '@repo/ui'`
+5. Keep app-specific files minimal - business logic only
+
 ### Svelte 5 + SvelteKit 2 + Turborepo Rules
 
 #### MUST DO - Svelte 5 Runes (NEVER use legacy syntax)

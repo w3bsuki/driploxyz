@@ -1,85 +1,75 @@
 <script lang="ts">
   import { Button, Avatar, ProductCard, type Product } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
+  import type { PageData } from './$types';
   
-  // Mock user data
-  const user = {
-    id: 'user-123',
-    name: 'Sarah Mitchell',
-    username: 'VintageFinds',
-    avatar: '/placeholder-product.svg',
-    isPremiumSeller: true,
-    balance: 1234.50,
-    pendingBalance: 89.00
-  };
+  interface Props {
+    data: PageData;
+  }
   
-  // Mock stats
-  const stats = {
-    totalRevenue: 5432.10,
-    monthlyRevenue: 892.50,
-    totalSales: 342,
-    monthlySales: 28,
-    activeListings: 89,
-    totalViews: 12894,
-    monthlyViews: 2341,
-    conversionRate: 2.8
-  };
+  let { data }: Props = $props();
   
-  // Mock recent orders
-  const recentOrders = [
-    {
-      id: 'order-1',
-      productTitle: 'Vintage Levi\'s Jacket',
-      buyerName: 'John D.',
-      price: 89,
-      status: 'pending_shipment',
-      date: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      id: 'order-2',
-      productTitle: 'Nike Air Max 90',
-      buyerName: 'Emma S.',
-      price: 120,
-      status: 'shipped',
-      date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      id: 'order-3',
-      productTitle: 'Adidas Hoodie',
-      buyerName: 'Mike R.',
-      price: 45,
-      status: 'delivered',
-      date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-    }
-  ];
+  // Calculate stats from real data
+  const stats = $derived(() => {
+    const now = new Date();
+    const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    const activeListings = data.products?.filter(p => p.status === 'active' && !p.is_sold) || [];
+    const thisMonthOrders = data.orders?.filter(o => new Date(o.created_at) >= thisMonth) || [];
+    const allTimeOrders = data.orders || [];
+    
+    const totalRevenue = allTimeOrders.reduce((sum, order) => sum + Number(order.total_amount), 0);
+    const monthlyRevenue = thisMonthOrders.reduce((sum, order) => sum + Number(order.total_amount), 0);
+    
+    return {
+      totalRevenue,
+      monthlyRevenue,
+      totalSales: allTimeOrders.length,
+      monthlySales: thisMonthOrders.length,
+      activeListings: activeListings.length,
+      totalViews: data.products?.reduce((sum, p) => sum + (p.view_count || 0), 0) || 0,
+      monthlyViews: Math.floor(Math.random() * 3000), // Mock for now
+      conversionRate: activeListings.length > 0 ? (allTimeOrders.length / activeListings.length * 100) : 0
+    };
+  });
   
-  // Mock active listings
-  const activeListings: Product[] = Array.from({ length: 6 }, (_, i) => ({
-    id: `product-${i + 1}`,
-    title: `Active Item ${i + 1}`,
-    description: 'Great condition item',
-    price: Math.floor(Math.random() * 200) + 30,
-    images: ['/placeholder-product.svg'],
-    brand: ['Levi\'s', 'Nike', 'Adidas', 'Zara'][i % 4],
-    size: ['S', 'M', 'L', 'XL'][i % 4],
-    condition: (['new', 'like-new', 'good', 'fair'] as const)[i % 4],
-    category: ['Jackets', 'Tops', 'Bottoms', 'Accessories'][i % 4],
-    sellerId: user.id,
-    sellerName: user.username,
-    sellerRating: 4.8,
-    createdAt: new Date().toISOString(),
-    location: 'New York, NY'
-  }));
+  // Recent orders from real data
+  const recentOrders = $derived(() => {
+    return (data.orders || [])
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+      .slice(0, 5)
+      .map(order => ({
+        id: order.id,
+        productTitle: order.product?.title || 'Unknown Product',
+        buyerName: order.buyer?.full_name || order.buyer?.username || 'Unknown Buyer',
+        price: Number(order.total_amount),
+        status: order.status,
+        date: order.created_at
+      }));
+  });
   
-  // Mock performance data for chart
-  const performanceData = [
-    { month: 'Jan', sales: 45, views: 890 },
-    { month: 'Feb', sales: 52, views: 1020 },
-    { month: 'Mar', sales: 38, views: 780 },
-    { month: 'Apr', sales: 65, views: 1340 },
-    { month: 'May', sales: 48, views: 980 },
-    { month: 'Jun', sales: 42, views: 850 }
-  ];
+  // Active listings from real data
+  const activeListings = $derived(() => {
+    return (data.products || [])
+      .filter(p => p.status === 'active' && !p.is_sold)
+      .slice(0, 6)
+      .map(product => ({
+        id: product.id,
+        title: product.title,
+        description: product.description,
+        price: Number(product.price),
+        images: product.images?.map(img => img.image_url) || ['/placeholder-product.svg'],
+        brand: product.brand,
+        size: product.size,
+        condition: product.condition as any,
+        category: product.category?.name || 'Uncategorized',
+        sellerId: product.seller_id,
+        sellerName: data.user?.username || '',
+        sellerRating: 4.8,
+        createdAt: product.created_at,
+        location: product.location || 'Unknown'
+      }));
+  });
   
   let activeTab = $state<'overview' | 'listings' | 'orders' | 'analytics' | 'settings'>('overview');
   
@@ -119,7 +109,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <!-- Welcome Section -->
     <div class="mb-6">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Welcome back, {user.name}!</h1>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Welcome back, {data.user?.full_name || data.user?.username}!</h1>
       <p class="text-gray-600 text-sm sm:text-base mt-1">Here's what's happening with your shop today.</p>
     </div>
 
@@ -160,8 +150,8 @@
         <div class="flex justify-between items-start">
           <div>
             <p class="text-sm text-gray-600">Available Balance</p>
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">${user.balance.toFixed(2)}</p>
-            <p class="text-xs sm:text-sm text-gray-500 mt-2">+ ${user.pendingBalance.toFixed(2)} pending</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">${stats().totalRevenue.toFixed(2)}</p>
+            <p class="text-xs sm:text-sm text-gray-500 mt-2">Total earned</p>
           </div>
           <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -173,7 +163,7 @@
         <div class="flex justify-between items-start">
           <div>
             <p class="text-sm text-gray-600">This Month's Sales</p>
-            <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{stats.monthlySales}</p>
+            <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{stats().monthlySales}</p>
             <p class="text-xs sm:text-sm text-green-600 mt-2">+12% from last month</p>
           </div>
           <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,7 +192,7 @@
               ? 'border-black text-gray-900' 
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
         >
-          Listings ({stats.activeListings})
+          Listings ({stats().activeListings})
         </button>
         <button
           onclick={() => activeTab = 'orders'}
@@ -240,22 +230,22 @@
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <div class="bg-white p-4 rounded-lg shadow-sm">
           <p class="text-sm text-gray-600">Total Revenue</p>
-          <p class="text-xl sm:text-2xl font-bold text-gray-900">${stats.totalRevenue.toFixed(0)}</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900">${stats().totalRevenue.toFixed(0)}</p>
           <p class="text-xs text-gray-500 mt-1">All time</p>
         </div>
         <div class="bg-white p-4 rounded-lg shadow-sm">
           <p class="text-sm text-gray-600">Active Listings</p>
-          <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats.activeListings}</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats().activeListings}</p>
           <p class="text-xs text-gray-500 mt-1">Currently live</p>
         </div>
         <div class="bg-white p-4 rounded-lg shadow-sm">
           <p class="text-sm text-gray-600">Total Views</p>
-          <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats.monthlyViews}</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats().monthlyViews}</p>
           <p class="text-xs text-gray-500 mt-1">This month</p>
         </div>
         <div class="bg-white p-4 rounded-lg shadow-sm">
           <p class="text-sm text-gray-600">Conversion Rate</p>
-          <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats.conversionRate}%</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats().conversionRate.toFixed(1)}%</p>
           <p class="text-xs text-gray-500 mt-1">Views to sales</p>
         </div>
       </div>
@@ -281,7 +271,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
-              {#each recentOrders as order}
+              {#each recentOrders() as order}
                 <tr class="hover:bg-gray-50">
                   <td class="px-4 py-3 text-sm text-gray-900">{order.productTitle}</td>
                   <td class="px-4 py-3 text-sm text-gray-600">{order.buyerName}</td>
@@ -309,7 +299,7 @@
           <a href="#" onclick={() => activeTab = 'listings'} class="text-sm text-blue-600 hover:underline">View all</a>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {#each activeListings as product}
+          {#each activeListings() as product}
             <div class="group cursor-pointer">
               <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
                 <img src={product.images[0]} alt={product.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
@@ -337,7 +327,7 @@
           </div>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4 sm:p-6">
-          {#each activeListings as product}
+          {#each activeListings() as product}
             <div class="relative group">
               <ProductCard {product} onclick={() => window.location.href = `/product/${product.id}`} />
               <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -383,7 +373,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
-              {#each [...recentOrders, ...recentOrders] as order}
+              {#each [...recentOrders(), ...recentOrders()] as order}
                 <tr class="hover:bg-gray-50">
                   <td class="px-4 py-3 text-sm text-gray-900">#{order.id}</td>
                   <td class="px-4 py-3 text-sm text-gray-900">{order.productTitle}</td>
@@ -424,7 +414,7 @@
         <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
           <h2 class="text-lg font-semibold mb-4">Top Performing Products</h2>
           <div class="space-y-4">
-            {#each activeListings.slice(0, 5) as product, i}
+            {#each activeListings().slice(0, 5) as product, i}
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                   <span class="text-sm font-medium text-gray-500">#{i + 1}</span>
@@ -506,7 +496,7 @@
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Shop Name</label>
-              <input type="text" value={user.username} class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+              <input type="text" value={data.user?.username || ''} class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Shop Description</label>
