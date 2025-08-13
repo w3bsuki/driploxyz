@@ -369,7 +369,7 @@
             </div>
             
             <!-- Show ALL messages for this conversation, bypassing complex filtering -->
-            {#each data.messages.filter(m => (m.sender_id === data.user?.id && m.receiver_id === selectedConversation) || (m.receiver_id === data.user?.id && m.sender_id === selectedConversation)) as message}
+            {#each data.messages.filter(m => (m.sender_id === data.user?.id && m.receiver_id === selectedConversation) || (m.receiver_id === data.user?.id && m.sender_id === selectedConversation)).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) as message}
               <div class="flex {message.sender_id === data.user?.id ? 'justify-end' : 'justify-start'} px-1">
                 <div class="max-w-[80%] sm:max-w-[70%]">
                   <div class="{message.sender_id === data.user?.id ? 'bg-black text-white rounded-2xl rounded-br-md' : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm border'} px-4 py-3">
