@@ -1,0 +1,1 @@
+{"version":3,"file":"Breadcrumb.svelte.d.ts","sourceRoot":"","sources":["../src/Breadcrumb.svelte.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAE,cAAc,EAAE,MAAM,YAAY,CAAC;AAG/C,UAAU,KAAK;IACb,KAAK,EAAE,cAAc,EAAE,CAAC;IACxB,KAAK,CAAC,EAAE,MAAM,CAAC;CAChB;AA6BH,QAAA,MAAM,UAAU,2CAAwC,CAAC;AACzD,KAAK,UAAU,GAAG,UAAU,CAAC,OAAO,UAAU,CAAC,CAAC;AAChD,eAAe,UAAU,CAAC"}
