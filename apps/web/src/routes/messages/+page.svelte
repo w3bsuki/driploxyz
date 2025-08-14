@@ -36,7 +36,7 @@
             lastMessage: msg.content,
             lastMessageTime: msg.created_at,
             unread: !msg.is_read && msg.sender_id !== data.user?.id,
-            productTitle: product?.title || 'Mixed products',
+            productTitle: product?.title || null,
             productImage: product?.images?.[0]?.image_url || '/placeholder-product.svg',
             productPrice: product?.price || 0,
             messages: [msg],
@@ -73,7 +73,7 @@
           lastMessage: 'Start a conversation...',
           lastMessageTime: '2024-01-01T00:00:00.000Z',
           unread: false,
-          productTitle: data.conversationProduct?.title || 'Product',
+          productTitle: data.conversationProduct?.title || null,
           productImage: data.conversationProduct?.images?.[0]?.image_url || '/placeholder-product.svg',
           productPrice: data.conversationProduct?.price || 0,
           messages: [],
@@ -362,10 +362,14 @@
                     <span class="bg-blue-100 text-blue-700 text-[10px] font-medium px-1.5 py-0.5 rounded">Offer</span>
                     <span class="text-xs font-semibold text-gray-900">${conv.offerPrice}</span>
                   </div>
-                {:else if conv.productTitle}
+                {:else}
                   <div class="flex items-center space-x-2 mt-1">
-                    <img src={conv.productImage} alt={conv.productTitle} class="w-6 h-6 rounded object-cover" />
-                    <span class="text-xs text-gray-600 truncate">{conv.productTitle}</span>
+                    {#if conv.productTitle}
+                      <img src={conv.productImage} alt={conv.productTitle} class="w-6 h-6 rounded object-cover" />
+                      <span class="text-xs text-gray-600 truncate">{conv.productTitle}</span>
+                    {:else}
+                      <span class="text-xs text-gray-500 italic">No products</span>
+                    {/if}
                   </div>
                 {/if}
                 
@@ -433,7 +437,7 @@
                 {/if}
               </div>
             {:else if conv?.productTitle}
-              <a href="/product/{conv.id}" class="mt-3 flex items-center space-x-3 p-2.5 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+              <a href="/product/{data.conversationParam ? data.conversationParam.split('__')[1] : ''}" class="mt-3 flex items-center space-x-3 p-2.5 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
                 <img src={conv.productImage} alt={conv.productTitle} class="w-10 h-10 rounded-lg object-cover" />
                 <div class="flex-1">
                   <p class="text-xs font-medium text-gray-900">{conv.productTitle}</p>
@@ -443,6 +447,10 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                 </svg>
               </a>
+            {:else}
+              <div class="mt-3 p-2.5 bg-gray-50 rounded-xl">
+                <p class="text-xs text-gray-500 text-center italic">No products - General conversation</p>
+              </div>
             {/if}
           </div>
 
