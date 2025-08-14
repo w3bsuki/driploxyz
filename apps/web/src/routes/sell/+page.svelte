@@ -153,6 +153,14 @@
       }
 
       // Create product in database
+      console.log('Creating product with data:', {
+        title,
+        price: parseFloat(price),
+        category_id: subcategory || category,
+        condition,
+        seller_id: data.user.id
+      });
+      
       const { data: product, error: productError } = await supabase
         .from('products')
         .insert({
