@@ -66,7 +66,7 @@ export interface SearchFilters {
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search';
-export type SearchBarVariant = 'hero' | 'power';
+export type SearchBarVariant = 'hero' | 'power' | 'compact';
 
 export interface BreadcrumbItem {
   label: string;

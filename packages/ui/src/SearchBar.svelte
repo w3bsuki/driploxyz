@@ -151,6 +151,41 @@
           </div>
         </div>
       </div>
+    {:else if variant === 'compact'}
+      <!-- Compact variant (no filter button) -->
+      <div class="relative flex items-center bg-white rounded-lg border border-gray-200 focus-within:border-gray-400 transition-colors">
+        <!-- Search Icon -->
+        <div class="absolute left-3 flex items-center justify-center pointer-events-none">
+          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        
+        <!-- Input -->
+        <input
+          bind:this={inputElement}
+          bind:value
+          {placeholder}
+          type="search"
+          class="w-full bg-transparent pl-9 pr-10 py-2 text-sm placeholder-gray-500 focus:outline-none"
+          oninput={handleInput}
+          onfocus={handleFocus}
+          onblur={handleBlur}
+        />
+        
+        <!-- Clear Button -->
+        {#if value}
+          <button
+            type="button"
+            onclick={handleClear}
+            class="absolute right-2 p-1 hover:bg-gray-200 rounded-full transition-colors"
+          >
+            <svg class="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        {/if}
+      </div>
     {:else}
       <!-- Regular variant -->
       <div class="relative flex items-center bg-white rounded-lg border border-gray-200 focus-within:border-gray-400 transition-colors">

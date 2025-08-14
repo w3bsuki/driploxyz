@@ -11,7 +11,7 @@
   let { data }: Props = $props();
   
   // ULTRA SIMPLE conversation logic
-  const conversations = $derived(() => {
+  const allConversations = $derived(() => {
     console.log('=== BUILDING CONVERSATIONS ===');
     console.log('data.messages?.length:', data.messages?.length);
     console.log('data.conversationParam:', data.conversationParam);
@@ -91,6 +91,31 @@
     
     return result;
   });
+
+  // Filtered conversations based on active tab
+  const conversations = $derived(() => {
+    const all = allConversations();
+    
+    switch (activeTab) {
+      case 'unread':
+        return all.filter(conv => conv.unread);
+      case 'buying':
+        // Messages where current user is the buyer (received messages about their inquiries)
+        return all.filter(conv => 
+          conv.messages.some(msg => msg.receiver_id === data.user?.id)
+        );
+      case 'selling':
+        // Messages where current user is the seller (received messages about their products)
+        return all.filter(conv => 
+          conv.messages.some(msg => msg.sender_id === data.user?.id)
+        );
+      case 'offers':
+        return all.filter(conv => conv.isOffer);
+      case 'all':
+      default:
+        return all;
+    }
+  });
   
   // Import needed modules
   import { page } from '$app/stores';
@@ -112,7 +137,7 @@
     }
   });
   let messageText = $state('');
-  let activeTab = $state<'all' | 'buying' | 'selling' | 'offers'>('all');
+  let activeTab = $state<'all' | 'buying' | 'selling' | 'offers' | 'unread'>('all');
   
   const selectedConvMessages = $derived(() => {
     console.log('=== SELECTED CONV MESSAGES ===');
@@ -231,14 +256,43 @@
           <h1 class="text-lg font-semibold text-gray-900">Inbox</h1>
         </div>
         
-        <!-- Tabs -->
-        <div class="px-4 sm:px-6 lg:px-8">
-          <TabGroup
-            tabs={[
-              { id: 'all', label: 'All' },
+        <!-- Mobile Filter Pills (Full Width) -->
+        <div class="sm:hidden">
+          <div class="grid grid-cols-5 gap-1 px-4 pb-3">
+            {#each [
+              { id: 'all', label: 'All', count: allConversations().length },
+              { id: 'unread', label: 'Unread', count: allConversations().filter(c => c.unread).length },
               { id: 'buying', label: 'Buying' },
               { id: 'selling', label: 'Selling' },
-              { id: 'offers', label: 'Offers', count: 2 }
+              { id: 'offers', label: 'Offers', count: allConversations().filter(c => c.isOffer).length }
+            ] as tab}
+              <button
+                onclick={() => activeTab = tab.id}
+                class="px-2 py-1.5 rounded-full text-xs font-medium transition-colors
+                  {activeTab === tab.id 
+                    ? 'bg-black text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+              >
+                <div class="truncate">
+                  {tab.label}
+                  {#if tab.count !== undefined && tab.count > 0}
+                    <span class="ml-1 text-[10px]">({tab.count})</span>
+                  {/if}
+                </div>
+              </button>
+            {/each}
+          </div>
+        </div>
+        
+        <!-- Desktop Tabs -->
+        <div class="hidden sm:block px-4 sm:px-6 lg:px-8">
+          <TabGroup
+            tabs={[
+              { id: 'all', label: 'All', count: allConversations().length },
+              { id: 'unread', label: 'Unread', count: allConversations().filter(c => c.unread).length },
+              { id: 'buying', label: 'Buying' },
+              { id: 'selling', label: 'Selling' },
+              { id: 'offers', label: 'Offers', count: allConversations().filter(c => c.isOffer).length }
             ]}
             {activeTab}
             onTabChange={(tab) => activeTab = tab}
