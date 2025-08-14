@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Avatar, Button, TabGroup } from '@repo/ui';
+  import { Avatar, Button, TabGroup, TypingIndicator } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import BottomNav from '$lib/components/BottomNav.svelte';
   import type { PageData } from './$types';
@@ -138,6 +138,9 @@
   });
   let messageText = $state('');
   let activeTab = $state<'all' | 'buying' | 'selling' | 'offers' | 'unread'>('all');
+  let isTyping = $state(false);
+  let typingTimeout: NodeJS.Timeout | null = null;
+  let typingUsers = $state<Record<string, string>>({});
   
   const selectedConvMessages = $derived(() => {
     console.log('=== SELECTED CONV MESSAGES ===');
@@ -165,6 +168,28 @@
     return 'Active now';
   };
   
+  // Handle typing indicator
+  function handleTyping() {
+    if (!selectedConversation || !data.user) return;
+    
+    // Clear existing timeout
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+    
+    // Set typing state
+    if (!isTyping) {
+      isTyping = true;
+      // Send typing indicator to other user via Supabase channel
+      // This would be implemented with presence features
+    }
+    
+    // Clear typing after 3 seconds of inactivity
+    typingTimeout = setTimeout(() => {
+      isTyping = false;
+    }, 3000);
+  }
+
   async function sendMessage() {
     console.log('=== SEND MESSAGE DEBUG ===');
     console.log('messageText:', messageText);
@@ -175,6 +200,12 @@
     if (!messageText.trim() || !selectedConversation || !data.user) {
       console.log('Validation failed');
       return;
+    }
+    
+    // Clear typing indicator
+    isTyping = false;
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
     }
     
     // selectedConversation is now just the user ID (not user__product)
@@ -429,12 +460,39 @@
                   <div class="{message.sender_id === data.user?.id ? 'bg-black text-white rounded-2xl rounded-br-md' : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm border'} px-4 py-3">
                     <p class="text-sm leading-relaxed">{message.content}</p>
                   </div>
-                  <p class="text-[11px] text-gray-500 mt-1.5 px-2 {message.sender_id === data.user?.id ? 'text-right' : ''}">
-                    {timeAgo(message.created_at)}
-                  </p>
+                  <div class="flex items-center justify-between mt-1.5 px-2">
+                    <p class="text-[11px] text-gray-500 {message.sender_id === data.user?.id ? 'order-2' : ''}">
+                      {timeAgo(message.created_at)}
+                    </p>
+                    
+                    <!-- Read Receipt for sent messages -->
+                    {#if message.sender_id === data.user?.id}
+                      <div class="flex items-center space-x-1 text-[10px] text-gray-400">
+                        {#if message.is_read}
+                          <svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span class="text-blue-500">Read</span>
+                        {:else}
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span>Sent</span>
+                        {/if}
+                      </div>
+                    {/if}
+                  </div>
                 </div>
               </div>
             {/each}
+            
+            <!-- Typing Indicator -->
+            {#if selectedConversation && typingUsers[selectedConversation]}
+              <TypingIndicator 
+                show={true}
+                username={typingUsers[selectedConversation]}
+              />
+            {/if}
           </div>
 
           <!-- Message Input - Fixed at Bottom -->
@@ -464,7 +522,14 @@
                 <input
                   type="text"
                   bind:value={messageText}
-                  onkeydown={(e) => e.key === 'Enter' && !e.shiftKey && sendMessage()}
+                  onkeydown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      sendMessage();
+                    } else {
+                      handleTyping();
+                    }
+                  }}
+                  oninput={handleTyping}
                   placeholder="Message..."
                   class="w-full px-4 py-2.5 bg-gray-50 rounded-full text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:bg-white"
                 />

@@ -92,10 +92,27 @@ export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, 
     .update({ last_active_at: new Date().toISOString() })
     .eq('id', user.id);
 
+  // Mark messages as read when user opens the conversation
+  if (conversationParam && messages) {
+    const [sellerId] = conversationParam.split('__');
+    const messagesToMarkRead = messages.filter(
+      msg => msg.receiver_id === user.id && 
+             msg.sender_id === sellerId && 
+             !msg.is_read
+    );
+
+    if (messagesToMarkRead.length > 0) {
+      const messageIds = messagesToMarkRead.map(msg => msg.id);
+      await supabase
+        .from('messages')
+        .update({ is_read: true })
+        .in('id', messageIds);
+    }
+  }
+
   if (messagesError) {
     console.error('Error fetching messages:', messagesError);
   }
-
 
   return {
     messages: messages || [],

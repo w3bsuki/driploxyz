@@ -1,8 +1,18 @@
 <script lang="ts">
-  import { Button, Avatar } from '@repo/ui';
+  import { Button, Avatar, NotificationBell, NotificationPanel, MessageNotificationToast } from '@repo/ui';
   import { page } from '$app/stores';
   import { authState, displayName, userInitials, canSell } from '$lib/stores/auth';
   import { signOut } from '$lib/auth';
+  import { 
+    notifications, 
+    notificationPanelOpen, 
+    messageToasts,
+    unreadCount, 
+    notificationActions,
+    messageToastActions
+  } from '$lib/stores/notifications';
+  import { onMount } from 'svelte';
+  import { RealtimeNotificationService } from '$lib/services/realtime-notifications';
   
   interface Props {
     showSearch?: boolean;
@@ -12,6 +22,7 @@
   let { showSearch = false, minimal = false }: Props = $props();
   let mobileMenuOpen = $state(false);
   let userMenuOpen = $state(false);
+  let notificationService: RealtimeNotificationService | null = null;
   
   // Animated emoji for logo
   const clothingEmojis = ['👗', '👔', '👶', '🐕'];
@@ -42,6 +53,26 @@
     mobileMenuOpen = false;
     userMenuOpen = false;
   }
+
+  // Initialize notification service when user logs in
+  onMount(() => {
+    const unsubscribe = authState.subscribe(state => {
+      if (state.user && state.supabase && !notificationService) {
+        notificationService = new RealtimeNotificationService(state.supabase, state.user.id);
+        notificationService.initialize();
+      } else if (!state.user && notificationService) {
+        notificationService.destroy();
+        notificationService = null;
+      }
+    });
+
+    return () => {
+      unsubscribe();
+      if (notificationService) {
+        notificationService.destroy();
+      }
+    };
+  });
 </script>
 
 <style>
@@ -99,8 +130,24 @@
       </nav>
       
       <!-- Right: Auth/Account -->
-      <div class="flex items-center">
+      <div class="flex items-center space-x-3">
         {#if $authState.user}
+          <!-- Notifications -->
+          <div class="relative">
+            <NotificationBell 
+              count={$unreadCount}
+              onclick={() => notificationActions.togglePanel()}
+            />
+            
+            <NotificationPanel 
+              notifications={$notifications}
+              show={$notificationPanelOpen}
+              onMarkAsRead={notificationActions.markAsRead}
+              onMarkAllAsRead={notificationActions.markAllAsRead}
+              onClose={notificationActions.closePanel}
+            />
+          </div>
+
           <!-- User Menu -->
           <div class="relative">
             <Avatar 
@@ -331,3 +378,15 @@
     {/if}
   </div>
 </header>
+
+<!-- Message Toast Notifications -->
+{#each $messageToasts as toast (toast.id)}
+  <MessageNotificationToast 
+    show={true}
+    sender={toast.sender}
+    message={toast.message}
+    product={toast.product}
+    onReply={() => window.location.href = `/messages?conversation=${toast.sender.id}`}
+    onDismiss={() => messageToastActions.remove(toast.id)}
+  />
+{/each}

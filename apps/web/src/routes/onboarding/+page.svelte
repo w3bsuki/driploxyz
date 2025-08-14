@@ -1,6 +1,19 @@
 <script lang="ts">
-  import { Button, Input, Avatar } from '@repo/ui';
+  import { 
+    Button, 
+    Input, 
+    OnboardingStep,
+    AccountTypeSelector,
+    AvatarSelector,
+    SocialLinksEditor,
+    PayoutMethodSelector,
+    WelcomeModal,
+    OnboardingSuccessModal,
+    BrandPaymentModal,
+    WelcomeTutorialFlow
+  } from '@repo/ui';
   import { goto } from '$app/navigation';
+  import { onMount } from 'svelte';
   import type { PageData } from './$types';
 
   interface Props {
@@ -10,200 +23,420 @@
   let { data }: Props = $props();
 
   let step = $state(1);
+  let showWelcome = $state(false);
+  let welcomeStep = $state(0);
+  let showSuccessModal = $state(false);
+  let showTutorialFlow = $state(false);
+  let showBrandPayment = $state(false);
+  let brandPaid = $state(false);
   let accountType = $state<'personal' | 'brand'>('personal');
   let username = $state('');
+  let fullName = $state('');
   let avatarUrl = $state('');
   let payoutMethod = $state<'revolut' | 'paypal' | 'card'>('revolut');
-  let payoutDetails = $state('');
-  let payoutName = $state(''); // Optional display name for payout method
+  let payoutDetails = $state<string>('');
+  let payoutName = $state<string>('');
   let socialLinks = $state<Array<{ type: string; url: string }>>([]);
   let submitting = $state(false);
 
-  const avatars = [
-    '/avatars/1.png', '/avatars/2.png', '/avatars/3.png', '/avatars/4.png',
-    '/avatars/5.png', '/avatars/6.png', '/avatars/7.png', '/avatars/8.png'
-  ];
+  const totalSteps = 5;
 
-  function addSocialLink() {
-    socialLinks = [...socialLinks, { type: 'instagram', url: '' }];
+  // Show welcome modal on mount
+  onMount(() => {
+    showWelcome = true;
+    
+    // Check if user paid for brand account
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('brand_paid') === 'true') {
+      brandPaid = true;
+      accountType = 'brand';
+    }
+  });
+
+  function handleWelcomeNext() {
+    if (welcomeStep < 3) {
+      welcomeStep++;
+    }
   }
 
-  function removeSocialLink(index: number) {
-    socialLinks = socialLinks.filter((_, i) => i !== index);
+  function handleWelcomePrevious() {
+    if (welcomeStep > 0) {
+      welcomeStep--;
+    }
+  }
+
+  function handleWelcomeComplete() {
+    showWelcome = false;
+  }
+
+  function handleSuccessComplete() {
+    showSuccessModal = false;
+    showTutorialFlow = true;
+  }
+
+  async function handleTutorialComplete() {
+    showTutorialFlow = false;
+    await goto('/dashboard');
+  }
+
+  function handleBrandPaymentSuccess() {
+    showBrandPayment = false;
+    brandPaid = true;
+    accountType = 'brand';
+  }
+
+  function handleBrandPaymentCancel() {
+    showBrandPayment = false;
+    accountType = 'personal';
+  }
+
+  function nextStep() {
+    if (step < totalSteps) {
+      step++;
+    }
+  }
+
+  function prevStep() {
+    if (step > 1) {
+      step--;
+    }
+  }
+
+  function handleAccountTypeSelect(type: 'personal' | 'brand') {
+    if (type === 'brand' && !brandPaid) {
+      // Show payment modal for brand accounts
+      showBrandPayment = true;
+    } else {
+      accountType = type;
+    }
+  }
+
+  function handleAvatarSelect(url: string) {
+    avatarUrl = url;
+  }
+
+  function handleSocialLinksUpdate(links: Array<{ type: string; url: string }>) {
+    socialLinks = links;
+  }
+
+  function handlePayoutMethodChange(method: 'revolut' | 'paypal' | 'card') {
+    payoutMethod = method;
+  }
+
+  function handlePayoutDetailsChange(details: string) {
+    payoutDetails = details || '';
+  }
+
+  function handlePayoutNameChange(name: string) {
+    payoutName = name || '';
   }
 
   async function completeOnboarding() {
-    if (!data.user) return;
+    if (!data.user || !username.trim()) return;
     
     submitting = true;
     
-    const { error } = await data.supabase
-      .from('profiles')
-      .update({
-        account_type: accountType,
-        username,
-        avatar_url: avatarUrl,
-        payout_method: { type: payoutMethod, details: payoutDetails, name: payoutName },
-        social_links: socialLinks,
-        onboarding_completed: true
-      })
-      .eq('id', data.user.id);
+    try {
+      // Determine brand status - if they paid during onboarding, they get full brand status
+      const brandStatus = accountType === 'brand' ? (brandPaid ? 'brand' : 'brand_pending') : 'personal';
+      
+      // Update profile
+      const { error: profileError } = await data.supabase
+        .from('profiles')
+        .update({
+          account_type: accountType,
+          username: username.trim(),
+          full_name: fullName.trim() || null,
+          avatar_url: avatarUrl || null,
+          payout_method: payoutDetails ? { 
+            type: payoutMethod, 
+            details: payoutDetails.trim(), 
+            name: payoutName.trim() || null 
+          } : null,
+          social_links: socialLinks.filter(link => link.url.trim()),
+          onboarding_completed: true,
+          verified: true,
+          brand_status: brandStatus
+        })
+        .eq('id', data.user.id);
 
-    if (!error) {
-      goto('/dashboard');
+      if (profileError) throw profileError;
+
+      // If brand account, create brand entry
+      if (accountType === 'brand') {
+        const { error: brandError } = await data.supabase
+          .from('brands')
+          .insert({
+            profile_id: data.user.id,
+            brand_name: fullName.trim() || username.trim(),
+            brand_description: `${username.trim()} - Professional fashion brand`,
+            verified_brand: brandPaid, // Verified if they paid during onboarding
+            subscription_active: brandPaid // Active if they paid during onboarding
+          });
+
+        if (brandError) throw brandError;
+      }
+
+      // Show success modal
+      showSuccessModal = true;
+    } catch (error) {
+      console.error('Onboarding error:', error);
+      alert('Something went wrong. Please try again.');
+    } finally {
+      submitting = false;
     }
-    submitting = false;
   }
+
+  const canProceed = $derived(() => {
+    switch (step) {
+      case 1: return accountType;
+      case 2: return username && username.trim().length >= 3;
+      case 3: return avatarUrl;
+      case 4: return payoutDetails && payoutDetails.trim().length > 0;
+      case 5: return true; // Social links are optional
+      default: return false;
+    }
+  });
 </script>
 
 <svelte:head>
   <title>Complete Your Profile - Driplo</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-  <div class="w-full max-w-md bg-white rounded-lg shadow-sm p-6">
-    <div class="text-center mb-6">
-      <h1 class="text-2xl font-bold">Welcome to Driplo</h1>
-      <p class="text-gray-600 text-sm">Let's set up your profile</p>
-    </div>
+<!-- Welcome Modal -->
+<WelcomeModal
+  {showWelcome}
+  currentStep={welcomeStep}
+  onNext={handleWelcomeNext}
+  onPrevious={handleWelcomePrevious}
+  onComplete={handleWelcomeComplete}
+  onSkip={handleWelcomeComplete}
+/>
 
-    <!-- Progress -->
-    <div class="mb-6">
-      <div class="flex justify-between mb-2">
-        {#each Array(4) as _, i}
-          <div class="w-2 h-2 rounded-full {step > i ? 'bg-black' : 'bg-gray-300'}"></div>
+<!-- Step 1: Account Type -->
+{#if step === 1}
+  <OnboardingStep
+    title="Choose Your Account Type"
+    subtitle="Select the perfect plan for your selling journey"
+  >
+    {#snippet children()}
+      <!-- Progress Indicator -->
+      <div class="flex justify-center space-x-3 mb-8">
+        {#each Array(totalSteps) as _, i}
+          <div class="h-2 rounded-full transition-all duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
       </div>
-    </div>
 
-    {#if step === 1}
-      <div class="space-y-4">
-        <h2 class="text-lg font-semibold">Account Type</h2>
-        <div class="space-y-2">
-          <button
-            onclick={() => accountType = 'personal'}
-            class="w-full p-4 border rounded-lg text-left {accountType === 'personal' ? 'border-black bg-gray-50' : 'border-gray-200'}"
-          >
-            <div class="font-medium">Personal Account</div>
-            <div class="text-sm text-gray-600">Free - Perfect for individuals</div>
-          </button>
-          <button
-            onclick={() => accountType = 'brand'}
-            class="w-full p-4 border rounded-lg text-left {accountType === 'brand' ? 'border-black bg-gray-50' : 'border-gray-200'}"
-          >
-            <div class="font-medium">Brand Account</div>
-            <div class="text-sm text-gray-600">50 BGN/month - For businesses</div>
-          </button>
-        </div>
+      <AccountTypeSelector
+        selected={accountType}
+        onSelect={handleAccountTypeSelect}
+        class="mb-8"
+      />
+
+      <div class="flex space-x-4">
+        <Button
+          onclick={nextStep}
+          disabled={!canProceed()}
+          class="flex-1 bg-black text-white hover:bg-gray-800"
+        >
+          Continue
+        </Button>
+      </div>
+    {/snippet}
+  </OnboardingStep>
+
+<!-- Step 2: Profile Setup -->
+{:else if step === 2}
+  <OnboardingStep
+    title="Create Your Profile"
+    subtitle="Tell us a bit about yourself"
+  >
+    {#snippet children()}
+      <!-- Progress Indicator -->
+      <div class="flex justify-center space-x-3 mb-8">
+        {#each Array(totalSteps) as _, i}
+          <div class="h-2 rounded-full transition-all duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
+        {/each}
       </div>
 
-    {:else if step === 2}
-      <div class="space-y-4">
-        <h2 class="text-lg font-semibold">Profile Setup</h2>
+      <div class="space-y-6 mb-8">
         <Input
           bind:value={username}
-          placeholder="Choose username"
+          placeholder="Choose a unique username"
           label="Username"
+          class="bg-white/80"
+          required
         />
-        <div>
-          <label class="block text-sm font-medium mb-2">Avatar</label>
-          <div class="grid grid-cols-4 gap-2">
-            {#each avatars as avatar}
-              <button
-                onclick={() => avatarUrl = avatar}
-                class="p-1 border rounded-lg {avatarUrl === avatar ? 'border-black' : 'border-gray-200'}"
-              >
-                <Avatar src={avatar} name="Avatar" size="md" />
-              </button>
-            {/each}
-          </div>
-        </div>
+        
+        <Input
+          bind:value={fullName}
+          placeholder="Your full name (optional)"
+          label="Full Name"
+          class="bg-white/80"
+        />
+
+        {#if username.trim().length > 0 && username.trim().length < 3}
+          <p class="text-sm text-red-600 mt-1">Username must be at least 3 characters long</p>
+        {/if}
       </div>
 
-    {:else if step === 3}
-      <div class="space-y-4">
-        <h2 class="text-lg font-semibold">Payout Method</h2>
-        <p class="text-sm text-gray-600">Choose how you'd like to receive payments when you sell items. We'll manually process payouts (minimum 20 BGN).</p>
-        
-        <div class="space-y-2">
-          {#each [['revolut', 'Revolut Tag (Recommended)', 'Fast & secure transfers'], ['paypal', 'PayPal Email', 'Global payment solution'], ['card', 'Bank/Card Details', 'Traditional bank transfer']] as [method, label, description]}
-            <button
-              onclick={() => payoutMethod = method}
-              class="w-full p-4 border rounded-lg text-left {payoutMethod === method ? 'border-black bg-gray-50' : 'border-gray-200'}"
-            >
-              <div class="font-medium">{label}</div>
-              <div class="text-sm text-gray-600">{description}</div>
-            </button>
-          {/each}
-        </div>
-        
-        <div class="space-y-3">
-          <Input
-            bind:value={payoutDetails}
-            placeholder={payoutMethod === 'revolut' ? '@your_revolut_tag' : payoutMethod === 'paypal' ? 'your-email@example.com' : 'Bank account or card details'}
-            label={payoutMethod === 'revolut' ? 'Revolut Tag' : payoutMethod === 'paypal' ? 'PayPal Email' : 'Account Details'}
-            required
-          />
-          
-          <Input
-            bind:value={payoutName}
-            placeholder="Optional display name"
-            label="Display Name (Optional)"
-          />
-          
-          {#if payoutMethod === 'revolut'}
-            <div class="text-xs text-gray-500">
-              💡 Your Revolut tag should start with @ (e.g., @username)
-            </div>
-          {:else if payoutMethod === 'paypal'}
-            <div class="text-xs text-gray-500">
-              💡 Use the email address associated with your PayPal account
-            </div>
-          {:else}
-            <div class="text-xs text-gray-500">
-              💡 Include bank name, account number, or card details for transfers
-            </div>
-          {/if}
-        </div>
+      <div class="flex space-x-4">
+        <Button
+          onclick={prevStep}
+          variant="outline"
+          class="flex-1"
+        >
+          Back
+        </Button>
+        <Button
+          onclick={nextStep}
+          disabled={!canProceed()}
+          class="flex-1 bg-black text-white hover:bg-gray-800"
+        >
+          Continue
+        </Button>
       </div>
+    {/snippet}
+  </OnboardingStep>
 
-    {:else if step === 4}
-      <div class="space-y-4">
-        <h2 class="text-lg font-semibold">Social Links (Optional)</h2>
-        {#each socialLinks as link, i}
-          <div class="flex gap-2">
-            <select bind:value={link.type} class="px-3 py-2 border rounded-lg">
-              <option value="instagram">Instagram</option>
-              <option value="tiktok">TikTok</option>
-              <option value="website">Website</option>
-            </select>
-            <Input bind:value={link.url} placeholder="URL" class="flex-1" />
-            <Button onclick={() => removeSocialLink(i)} variant="outline" size="sm">×</Button>
-          </div>
+<!-- Step 3: Avatar Selection -->
+{:else if step === 3}
+  <OnboardingStep
+    title="Choose Your Avatar"
+    subtitle="Pick a profile picture that represents you"
+  >
+    {#snippet children()}
+      <!-- Progress Indicator -->
+      <div class="flex justify-center space-x-3 mb-8">
+        {#each Array(totalSteps) as _, i}
+          <div class="h-2 rounded-full transition-all duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
-        <Button onclick={addSocialLink} variant="outline" class="w-full">Add Link</Button>
       </div>
-    {/if}
 
-    <div class="flex justify-between mt-6">
-      <Button
-        onclick={() => step--}
-        variant="outline"
-        disabled={step === 1}
-      >
-        Back
-      </Button>
-      
-      {#if step < 4}
-        <Button onclick={() => step++}>Next</Button>
-      {:else}
+      <AvatarSelector
+        bind:selected={avatarUrl}
+        uploadEnabled={true}
+        class="mb-8"
+      />
+
+      <div class="flex space-x-4">
+        <Button
+          onclick={prevStep}
+          variant="outline"
+          class="flex-1"
+        >
+          Back
+        </Button>
+        <Button
+          onclick={nextStep}
+          disabled={!canProceed()}
+          class="flex-1 bg-black text-white hover:bg-gray-800"
+        >
+          Continue
+        </Button>
+      </div>
+    {/snippet}
+  </OnboardingStep>
+
+<!-- Step 4: Payout Method -->
+{:else if step === 4}
+  <OnboardingStep
+    title="Set Up Payouts"
+    subtitle="Choose how you'll receive payments from sales"
+  >
+    {#snippet children()}
+      <!-- Progress Indicator -->
+      <div class="flex justify-center space-x-3 mb-8">
+        {#each Array(totalSteps) as _, i}
+          <div class="h-2 rounded-full transition-all duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
+        {/each}
+      </div>
+
+      <PayoutMethodSelector
+        bind:selectedMethod={payoutMethod}
+        bind:payoutDetails={payoutDetails}
+        bind:payoutName={payoutName}
+        class="mb-8"
+      />
+
+      <div class="flex space-x-4">
+        <Button
+          onclick={prevStep}
+          variant="outline"
+          class="flex-1"
+        >
+          Back
+        </Button>
+        <Button
+          onclick={nextStep}
+          disabled={!canProceed()}
+          class="flex-1 bg-black text-white hover:bg-gray-800"
+        >
+          Continue
+        </Button>
+      </div>
+    {/snippet}
+  </OnboardingStep>
+
+<!-- Step 5: Social Links -->
+{:else if step === 5}
+  <OnboardingStep
+    title="Connect Your Socials"
+    subtitle="Help buyers discover your style (optional)"
+  >
+    {#snippet children()}
+      <!-- Progress Indicator -->
+      <div class="flex justify-center space-x-3 mb-8">
+        {#each Array(totalSteps) as _, i}
+          <div class="h-2 rounded-full transition-all duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
+        {/each}
+      </div>
+
+      <SocialLinksEditor
+        links={socialLinks}
+        onUpdate={handleSocialLinksUpdate}
+        class="mb-8"
+      />
+
+      <div class="flex space-x-4">
+        <Button
+          onclick={prevStep}
+          variant="outline"
+          class="flex-1"
+        >
+          Back
+        </Button>
         <Button
           onclick={completeOnboarding}
-          disabled={submitting || !username || !payoutDetails}
+          disabled={submitting}
+          loading={submitting}
+          class="flex-1 bg-green-600 text-white hover:bg-green-700"
         >
-          {submitting ? 'Setting up...' : 'Complete'}
+          {submitting ? 'Setting up...' : 'Complete Setup'}
         </Button>
-      {/if}
-    </div>
-  </div>
-</div>
+      </div>
+    {/snippet}
+  </OnboardingStep>
+{/if}
+
+<!-- Success Modal -->
+<OnboardingSuccessModal
+  show={showSuccessModal}
+  accountType={accountType}
+  onClose={handleSuccessComplete}
+/>
+
+<!-- Brand Payment Modal -->
+<BrandPaymentModal
+  show={showBrandPayment}
+  onSuccess={handleBrandPaymentSuccess}
+  onCancel={handleBrandPaymentCancel}
+  onClose={() => showBrandPayment = false}
+/>
+
+<!-- Welcome Tutorial Flow -->
+<WelcomeTutorialFlow
+  show={showTutorialFlow}
+  accountType={accountType}
+  onComplete={handleTutorialComplete}
+/>

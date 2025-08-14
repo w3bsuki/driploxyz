@@ -1,0 +1,185 @@
+<script lang="ts">
+  import { browser } from '$app/environment';
+  import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
+
+  interface Props {
+    show: boolean;
+    onSuccess?: () => void;
+    onCancel?: () => void;
+    onClose?: () => void;
+  }
+
+  let { show, onSuccess, onCancel, onClose }: Props = $props();
+
+  let loading = $state(false);
+  let error = $state('');
+  let stripe: any = $state(null);
+  let elements: any = $state(null);
+  let cardElement: any = $state(null);
+  let cardContainer: HTMLDivElement;
+
+  // Brand plan ID
+  const BRAND_PLAN_ID = 'd3735d51-cbba-4b77-9e21-e50bdf9e53e8';
+
+  // Initialize Stripe when modal shows
+  $effect(() => {
+    if (show && browser && !stripe) {
+      initializeStripe();
+    }
+  });
+
+  async function initializeStripe() {
+    try {
+      console.log('🔥 PAYMENT MODAL - Initializing Stripe');
+      const { loadStripe } = await import('@stripe/stripe-js');
+      stripe = await loadStripe(PUBLIC_STRIPE_PUBLISHABLE_KEY);
+      
+      if (stripe && cardContainer) {
+        elements = stripe.elements();
+        cardElement = elements.create('card', {
+          style: {
+            base: {
+              fontSize: '16px',
+              color: '#424770',
+              fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+              fontSmoothing: 'antialiased',
+              '::placeholder': {
+                color: '#aab7c4',
+              },
+            },
+            invalid: {
+              color: '#fa755a',
+              iconColor: '#fa755a'
+            },
+          },
+        });
+        cardElement.mount(cardContainer);
+        console.log('🔥 PAYMENT MODAL - Card element mounted');
+      }
+    } catch (err) {
+      console.error('🔥 PAYMENT MODAL - Stripe initialization error:', err);
+      error = 'Failed to load payment form';
+    }
+  }
+
+  async function handlePayment() {
+    if (!stripe || !cardElement) {
+      error = 'Payment form not ready';
+      return;
+    }
+    
+    loading = true;
+    error = '';
+    
+    try {
+      console.log('🔥 PAYMENT MODAL - Starting payment for brand plan:', BRAND_PLAN_ID);
+      
+      // Create subscription on server
+      const response = await fetch('/api/subscriptions/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          planId: BRAND_PLAN_ID,
+          discountPercent: 0
+        })
+      });
+
+      const result = await response.json();
+      console.log('🔥 PAYMENT MODAL - API response:', result);
+      
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      const { clientSecret } = result;
+      
+      if (!clientSecret) {
+        throw new Error('No payment client secret received from server');
+      }
+
+      // Confirm payment with card element
+      console.log('🔥 PAYMENT MODAL - Confirming payment with card');
+      const { error: paymentError } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+        }
+      });
+
+      if (paymentError) {
+        console.error('🔥 PAYMENT MODAL - Payment error:', paymentError);
+        error = paymentError.message || 'Payment failed';
+      } else {
+        console.log('🔥 PAYMENT MODAL - Payment successful!');
+        onSuccess?.();
+      }
+      
+    } catch (err) {
+      console.error('🔥 PAYMENT MODAL - Error:', err);
+      error = err instanceof Error ? err.message : 'Payment failed';
+    } finally {
+      loading = false;
+    }
+  }
+
+  function handleCancel() {
+    onCancel?.();
+    onClose?.();
+  }
+</script>
+
+{#if show}
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm">
+    <div class="w-full max-w-sm bg-white rounded-lg shadow-lg border border-gray-200 p-5">
+      <!-- Header -->
+      <div class="text-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-900 mb-1">Brand Account</h3>
+        <p class="text-sm text-gray-600">50 BGN/month subscription</p>
+      </div>
+
+      <!-- Card Input -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">
+          Payment Details
+        </label>
+        <div bind:this={cardContainer} class="p-2.5 border border-gray-300 rounded bg-white text-sm"></div>
+      </div>
+
+      <!-- Error Message -->
+      {#if error}
+        <div class="mb-3 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-600">
+          {error}
+        </div>
+      {/if}
+
+      <!-- Actions -->
+      <div class="flex gap-2">
+        <button
+          onclick={handleCancel}
+          disabled={loading}
+          class="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 transition-colors disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <button
+          onclick={handlePayment}
+          disabled={loading || !stripe}
+          class="flex-1 px-3 py-1.5 text-sm text-white bg-gray-900 rounded hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {#if loading}
+            <div class="flex items-center justify-center gap-1">
+              <div class="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin"></div>
+              Processing...
+            </div>
+          {:else}
+            Pay 50 BGN
+          {/if}
+        </button>
+      </div>
+
+      <!-- Security Note -->
+      <div class="mt-3 text-center text-xs text-gray-500">
+        Secured by Stripe
+      </div>
+    </div>
+  </div>
+{/if}
