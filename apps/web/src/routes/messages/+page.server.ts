@@ -114,10 +114,18 @@ export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, 
     console.error('Error fetching messages:', messagesError);
   }
 
+  // Count unread messages for the user
+  const { count: unreadCount } = await supabase
+    .from('messages')
+    .select('*', { count: 'exact', head: true })
+    .eq('receiver_id', user.id)
+    .eq('is_read', false);
+
   return {
     messages: messages || [],
     conversationUser,
     conversationProduct,
-    conversationParam
+    conversationParam,
+    unreadCount: unreadCount || 0
   };
 };

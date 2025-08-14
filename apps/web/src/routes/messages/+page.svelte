@@ -2,6 +2,7 @@
   import { Avatar, Button, TabGroup, TypingIndicator } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import BottomNav from '$lib/components/BottomNav.svelte';
+  import { messageNotificationActions } from '$lib/stores/messageNotifications';
   import type { PageData } from './$types';
   
   interface Props {
@@ -9,6 +10,13 @@
   }
   
   let { data }: Props = $props();
+
+  // Set initial unread count from server data
+  $effect(() => {
+    if (data.unreadCount !== undefined) {
+      messageNotificationActions.setUnreadCount(data.unreadCount);
+    }
+  });
   
   // ULTRA SIMPLE conversation logic
   const allConversations = $derived(() => {

@@ -3,6 +3,9 @@
   import { invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
+  import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
+  import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
+  import { MessageNotificationToast, FollowNotificationToast } from '@repo/ui';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import type { LayoutData } from './$types';
 
@@ -44,3 +47,35 @@
 
 <EarlyBirdBanner />
 <slot />
+
+<!-- Global Message Notification Toast -->
+{#if $activeNotification}
+  <MessageNotificationToast
+    show={true}
+    sender={{
+      id: $activeNotification.senderId,
+      username: $activeNotification.senderName,
+      avatar_url: $activeNotification.senderAvatar
+    }}
+    message={$activeNotification.message}
+    product={$activeNotification.isProductMessage ? {
+      id: $activeNotification.productId || '',
+      title: $activeNotification.productTitle || '',
+      image: $activeNotification.productImage || ''
+    } : undefined}
+    onReply={() => handleNotificationClick($activeNotification)}
+    onDismiss={() => activeNotification.set(null)}
+  />
+{/if}
+
+<!-- Global Follow Notification Toast -->
+{#if $activeFollowNotification}
+  <FollowNotificationToast
+    show={true}
+    followerName={$activeFollowNotification.followerName}
+    followerUsername={$activeFollowNotification.followerUsername}
+    followerAvatar={$activeFollowNotification.followerAvatar}
+    onViewProfile={() => handleFollowNotificationClick($activeFollowNotification)}
+    onDismiss={() => activeFollowNotification.set(null)}
+  />
+{/if}

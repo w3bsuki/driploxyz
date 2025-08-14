@@ -30,6 +30,7 @@ export { default as Accordion } from './components/Accordion.svelte';
 export { default as NotificationBell } from './NotificationBell.svelte';
 export { default as NotificationPanel } from './NotificationPanel.svelte';
 export { default as MessageNotificationToast } from './MessageNotificationToast.svelte';
+export { default as FollowNotificationToast } from './FollowNotificationToast.svelte';
 export { default as TypingIndicator } from './TypingIndicator.svelte';
 
 // Onboarding components
@@ -43,5 +44,15 @@ export { default as OnboardingSuccessModal } from './OnboardingSuccessModal.svel
 export { default as BrandBadge } from './BrandBadge.svelte';
 export { default as BrandPaymentModal } from './BrandPaymentModal.svelte';
 export { default as WelcomeTutorialFlow } from './WelcomeTutorialFlow.svelte';
+
+// Product sold status components
+export { default as SoldOverlay } from './SoldOverlay.svelte';
+export { default as SoldNotificationToast } from './SoldNotificationToast.svelte';
+export { default as ProductSoldManager } from './ProductSoldManager.svelte';
+export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte';
+
+// Image upload components
+export { default as ImageUploader } from './ImageUploader.svelte';
+export { default as OptimizedImage } from './OptimizedImage.svelte';
 
 export * from './types.js';
