@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import { Button } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
+  import { createClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   
   interface Props {
@@ -9,6 +10,9 @@
   }
   
   let { data }: Props = $props();
+  
+  // Initialize Supabase client
+  const supabase = createClient();
   
   let currentStep = $state(1);
   const totalSteps = 3;
@@ -118,14 +122,14 @@
         const fileExt = photo.name.split('.').pop();
         const fileName = `${data.user.id}/${Date.now()}_${index}.${fileExt}`;
         
-        const { data: uploadData, error: uploadError } = await data.supabase.storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
           .from('product-images')
           .upload(fileName, photo);
 
         if (uploadError) throw uploadError;
 
         // Get public URL
-        const { data: { publicUrl } } = data.supabase.storage
+        const { data: { publicUrl } } = supabase.storage
           .from('product-images')
           .getPublicUrl(fileName);
         
@@ -133,7 +137,7 @@
       }
 
       // Create product in database
-      const { data: product, error: productError } = await data.supabase
+      const { data: product, error: productError } = await supabase
         .from('products')
         .insert({
           title,
@@ -162,7 +166,7 @@
         is_primary: index === 0
       }));
 
-      const { error: imagesError } = await data.supabase
+      const { error: imagesError } = await supabase
         .from('product_images')
         .insert(imageInserts);
 
