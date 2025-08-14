@@ -20,6 +20,7 @@
   let priceMax = $state('');
   let sortBy = $state('relevance');
   let showFilters = $state(false);
+  let showCategories = $state(false);
   
   let { data }: Props = $props();
   
@@ -287,6 +288,12 @@
   }
   
   function handleFilter() {
+    // Toggle categories (main/subcategory navigation)
+    showCategories = !showCategories;
+  }
+  
+  function handleMobileFilters() {
+    // Toggle mobile filter drawer (size, brand, condition, price)
     showFilters = !showFilters;
   }
 </script>
@@ -299,11 +306,11 @@
   <!-- Main App Header -->
   <Header />
   
-  <!-- Search Section -->
-  <div class="bg-white shadow-sm sticky top-14 sm:top-16 z-30">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="py-3">
-        <!-- Search Bar -->
+  <!-- Clean Search Section -->
+  <div class="bg-gray-50 sticky top-14 sm:top-16 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="space-y-3">
+        <!-- Main Search Bar -->
         <div class="relative">
           <SearchBar 
             bind:value={searchQuery}
@@ -318,53 +325,114 @@
             </div>
           {/if}
         </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Transforming Category Navigation -->
-  <div class="bg-white border-b">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        
+        <!-- Collapsible Categories -->
+        {#if showCategories}
+          <div class="bg-white rounded-2xl border border-gray-200 p-1 shadow-sm backdrop-blur-xl transition-all duration-300 ease-out">
+            <div class="bg-gray-50/80 relative rounded-xl border overflow-hidden">
+              <div 
+                aria-hidden="true"
+                class="absolute inset-x-0 top-0 h-full rounded-[inherit] pointer-events-none"
+                style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
+              />
+              <div class="relative p-3">
+                <!-- Category Navigation -->
       {#if currentDisplay().type === 'main'}
         <div class="overflow-x-auto scrollbar-hide">
           <div class="flex space-x-3 pb-2">
             {#each mainCategories as category}
               <button
                 onclick={() => selectMainCategory(category)}
-                class="flex flex-col items-center min-w-[70px] py-2 px-2 rounded-lg flex-shrink-0
-                  {selectedMainCategory === category ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+                class="flex-shrink-0 min-w-[70px]"
               >
-                <span class="text-lg mb-1">{categoryData[category].icon}</span>
-                <span class="text-xs font-medium">{categoryData[category].name}</span>
+                {#if selectedMainCategory === category}
+                  <!-- Selected state - solid black -->
+                  <div class="flex flex-col items-center py-2 px-2 rounded-lg bg-black text-white">
+                    <span class="text-lg mb-1">{categoryData[category].icon}</span>
+                    <span class="text-xs font-medium">{categoryData[category].name}</span>
+                  </div>
+                {:else}
+                  <!-- Glass morphism for unselected categories -->
+                  <div class="bg-white/70 rounded-lg border border-white/50 p-0.5 shadow-sm backdrop-blur-sm hover:shadow-md hover:bg-white/80 transition-all">
+                    <div class="bg-white/60 relative rounded-lg border border-white/30 overflow-hidden">
+                      <div 
+                        aria-hidden="true"
+                        class="absolute inset-x-0 top-0 h-full rounded-[inherit] pointer-events-none"
+                        style="background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 40%, rgba(0,0,0,0) 100%)"
+                      />
+                      <div class="relative flex flex-col items-center py-2 px-2 text-gray-700">
+                        <span class="text-lg mb-1">{categoryData[category].icon}</span>
+                        <span class="text-xs font-medium">{categoryData[category].name}</span>
+                      </div>
+                    </div>
+                  </div>
+                {/if}
               </button>
             {/each}
           </div>
-        </div>
-      {:else}
-        <div class="overflow-x-auto scrollbar-hide">
-          <div class="flex space-x-3 pb-2">
-            <button
-              onclick={goBackToMain}
-              class="flex flex-col items-center justify-center min-w-[70px] py-2 px-2 rounded-lg flex-shrink-0 bg-gray-100 text-gray-700 hover:bg-gray-200"
-            >
-              <svg class="w-[18px] h-[18px] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-              </svg>
-              <span class="text-xs font-medium">Back</span>
-            </button>
-            {#each currentDisplay().items as subcategory}
-              <button
-                onclick={() => selectSubcategory(subcategory.name)}
-                class="flex flex-col items-center min-w-[70px] py-2 px-2 rounded-lg flex-shrink-0
-                  {selectedSubcategory === subcategory.name ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-              >
-                <span class="text-lg mb-1">{subcategory.icon}</span>
-                <span class="text-xs font-medium whitespace-nowrap">{subcategory.name}</span>
-              </button>
-            {/each}
+            </div>
+          {:else}
+            <div class="overflow-x-auto scrollbar-hide">
+              <div class="flex space-x-3 pb-2">
+                <!-- Back button with glass morphism -->
+                <button
+                  onclick={goBackToMain}
+                  class="flex-shrink-0 min-w-[70px]"
+                >
+                  <div class="bg-white/70 rounded-lg border border-white/50 p-0.5 shadow-sm backdrop-blur-sm hover:shadow-md hover:bg-white/80 transition-all">
+                    <div class="bg-white/60 relative rounded-lg border border-white/30 overflow-hidden">
+                      <div 
+                        aria-hidden="true"
+                        class="absolute inset-x-0 top-0 h-full rounded-[inherit] pointer-events-none"
+                        style="background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 40%, rgba(0,0,0,0) 100%)"
+                      />
+                      <div class="relative flex flex-col items-center justify-center py-2 px-2 text-gray-700">
+                        <svg class="w-[18px] h-[18px] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        <span class="text-xs font-medium">Back</span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+                
+                {#each currentDisplay().items as subcategory}
+                  <button
+                    onclick={() => selectSubcategory(subcategory.name)}
+                    class="flex-shrink-0 min-w-[70px]"
+                  >
+                    {#if selectedSubcategory === subcategory.name}
+                      <!-- Selected state - solid black -->
+                      <div class="flex flex-col items-center py-2 px-2 rounded-lg bg-black text-white">
+                        <span class="text-lg mb-1">{subcategory.icon}</span>
+                        <span class="text-xs font-medium whitespace-nowrap">{subcategory.name}</span>
+                      </div>
+                    {:else}
+                      <!-- Glass morphism for unselected subcategories -->
+                      <div class="bg-white/70 rounded-lg border border-white/50 p-0.5 shadow-sm backdrop-blur-sm hover:shadow-md hover:bg-white/80 transition-all">
+                        <div class="bg-white/60 relative rounded-lg border border-white/30 overflow-hidden">
+                          <div 
+                            aria-hidden="true"
+                            class="absolute inset-x-0 top-0 h-full rounded-[inherit] pointer-events-none"
+                            style="background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 40%, rgba(0,0,0,0) 100%)"
+                          />
+                          <div class="relative flex flex-col items-center py-2 px-2 text-gray-700">
+                            <span class="text-lg mb-1">{subcategory.icon}</span>
+                            <span class="text-xs font-medium whitespace-nowrap">{subcategory.name}</span>
+                          </div>
+                        </div>
+                      </div>
+                    {/if}
+                  </button>
+                {/each}
+              </div>
+            </div>
+                {/if}
+              </div>
+            </div>
           </div>
-        </div>
-      {/if}
+        {/if}
+      </div>
     </div>
   </div>
 
@@ -375,20 +443,20 @@
       <div class="fixed inset-0 bg-black bg-opacity-50" onclick={() => showFilters = false}></div>
       
       <!-- Drawer -->
-      <div class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[60vh] overflow-hidden flex flex-col">
-        <div class="p-4 flex flex-col h-full">
-          <!-- Fixed Header -->
-          <div class="flex justify-between items-center mb-3 flex-shrink-0">
-            <h2 class="text-lg font-semibold">Quick Filters</h2>
-            <button onclick={() => showFilters = false} class="p-1">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          
-          <!-- Scrollable Filter Options -->
-          <div class="space-y-4 overflow-y-auto flex-1 -mx-4 px-4">
+      <div class="fixed bottom-20 left-0 right-0 bg-white rounded-t-2xl h-[calc(85vh-5rem)] flex flex-col">
+        <!-- Fixed Header -->
+        <div class="flex justify-between items-center p-4 border-b border-gray-100 flex-shrink-0">
+          <h2 class="text-lg font-semibold">Quick Filters</h2>
+          <button onclick={() => showFilters = false} class="p-1">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Scrollable Filter Options -->
+        <div class="flex-1 overflow-y-auto">
+          <div class="space-y-6 p-4">
             
             <!-- Size -->
             <div>
@@ -472,12 +540,12 @@
               </div>
             </div>
           </div>
-          
-          <!-- Fixed Actions -->
-          <div class="flex space-x-2 mt-6 flex-shrink-0">
-            <Button onclick={clearFilters} variant="outline" class="flex-1 h-12">Clear All</Button>
-            <Button onclick={() => showFilters = false} class="flex-1 h-12">Apply Filters</Button>
-          </div>
+        </div>
+        
+        <!-- Fixed Actions -->
+        <div class="flex space-x-3 p-4 border-t border-gray-100 flex-shrink-0">
+          <Button onclick={clearFilters} variant="outline" class="flex-1 h-12">Clear All</Button>
+          <Button onclick={() => showFilters = false} class="flex-1 h-12">Apply Filters</Button>
         </div>
       </div>
     </div>
@@ -491,13 +559,32 @@
         {searchQuery && ` for "${searchQuery}"`}
       </p>
       
-      <!-- Desktop Sort -->
-      <select bind:value={sortBy} class="hidden sm:block px-3 py-1 ring-1 ring-gray-300 rounded-lg text-sm focus:ring-black">
-        <option value="relevance">Relevance</option>
-        <option value="newest">Newest first</option>
-        <option value="price-low">Price: Low to High</option>
-        <option value="price-high">Price: High to Low</option>
-      </select>
+      <div class="flex items-center space-x-3">
+        <!-- Mobile Filter Button -->
+        <button
+          onclick={handleMobileFilters}
+          class="sm:hidden flex items-center space-x-2 px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors"
+          aria-label="Open filters"
+        >
+          <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          <span>Filters</span>
+          {#if activeFiltersCount() > 0}
+            <div class="h-4 w-4 bg-black text-white text-xs rounded-full flex items-center justify-center">
+              {activeFiltersCount()}
+            </div>
+          {/if}
+        </button>
+        
+        <!-- Desktop Sort -->
+        <select bind:value={sortBy} class="hidden sm:block px-3 py-1 ring-1 ring-gray-300 rounded-lg text-sm focus:ring-black">
+          <option value="relevance">Relevance</option>
+          <option value="newest">Newest first</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+        </select>
+      </div>
     </div>
     
     <!-- Active Filters Pills -->

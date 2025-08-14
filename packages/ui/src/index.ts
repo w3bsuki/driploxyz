@@ -22,4 +22,8 @@ export { default as TabGroup } from './TabGroup.svelte';
 export { default as PaymentForm } from './PaymentForm.svelte';
 export { default as CheckoutSummary } from './CheckoutSummary.svelte';
 
+// Pricing components
+export { default as PricingCard } from './components/PricingCard.svelte';
+export { default as Accordion } from './components/Accordion.svelte';
+
 export * from './types.js';

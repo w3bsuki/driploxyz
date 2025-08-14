@@ -136,7 +136,7 @@
         <h3 class="text-xs sm:text-sm font-semibold text-gray-900 mb-2">Featured Items</h3>
         <div class="grid grid-cols-2 gap-2 sm:gap-3">
           {#each products.length > 0 ? products : mockSellerProducts as product}
-            <div class="cursor-pointer" onclick={() => viewProduct(product.id)}>
+            <div class="cursor-pointer" onclick={() => viewProduct(product.id)} role="button" tabindex="0">
               <div class="relative">
                 <img 
                   src={product.images[0]} 

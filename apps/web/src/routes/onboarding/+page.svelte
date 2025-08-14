@@ -15,6 +15,7 @@
   let avatarUrl = $state('');
   let payoutMethod = $state<'revolut' | 'paypal' | 'card'>('revolut');
   let payoutDetails = $state('');
+  let payoutName = $state(''); // Optional display name for payout method
   let socialLinks = $state<Array<{ type: string; url: string }>>([]);
   let submitting = $state(false);
 
@@ -42,7 +43,7 @@
         account_type: accountType,
         username,
         avatar_url: avatarUrl,
-        payout_method: { type: payoutMethod, details: payoutDetails },
+        payout_method: { type: payoutMethod, details: payoutDetails, name: payoutName },
         social_links: socialLinks,
         onboarding_completed: true
       })
@@ -122,20 +123,48 @@
     {:else if step === 3}
       <div class="space-y-4">
         <h2 class="text-lg font-semibold">Payout Method</h2>
+        <p class="text-sm text-gray-600">Choose how you'd like to receive payments when you sell items. We'll manually process payouts (minimum 20 BGN).</p>
+        
         <div class="space-y-2">
-          {#each [['revolut', 'Revolut Tag'], ['paypal', 'PayPal Email'], ['card', 'Card Details']] as [method, label]}
+          {#each [['revolut', 'Revolut Tag (Recommended)', 'Fast & secure transfers'], ['paypal', 'PayPal Email', 'Global payment solution'], ['card', 'Bank/Card Details', 'Traditional bank transfer']] as [method, label, description]}
             <button
               onclick={() => payoutMethod = method}
-              class="w-full p-3 border rounded-lg text-left {payoutMethod === method ? 'border-black bg-gray-50' : 'border-gray-200'}"
+              class="w-full p-4 border rounded-lg text-left {payoutMethod === method ? 'border-black bg-gray-50' : 'border-gray-200'}"
             >
-              {label}
+              <div class="font-medium">{label}</div>
+              <div class="text-sm text-gray-600">{description}</div>
             </button>
           {/each}
         </div>
-        <Input
-          bind:value={payoutDetails}
-          placeholder={payoutMethod === 'revolut' ? 'Your Revolut tag' : payoutMethod === 'paypal' ? 'Your PayPal email' : 'Card information'}
-        />
+        
+        <div class="space-y-3">
+          <Input
+            bind:value={payoutDetails}
+            placeholder={payoutMethod === 'revolut' ? '@your_revolut_tag' : payoutMethod === 'paypal' ? 'your-email@example.com' : 'Bank account or card details'}
+            label={payoutMethod === 'revolut' ? 'Revolut Tag' : payoutMethod === 'paypal' ? 'PayPal Email' : 'Account Details'}
+            required
+          />
+          
+          <Input
+            bind:value={payoutName}
+            placeholder="Optional display name"
+            label="Display Name (Optional)"
+          />
+          
+          {#if payoutMethod === 'revolut'}
+            <div class="text-xs text-gray-500">
+              💡 Your Revolut tag should start with @ (e.g., @username)
+            </div>
+          {:else if payoutMethod === 'paypal'}
+            <div class="text-xs text-gray-500">
+              💡 Use the email address associated with your PayPal account
+            </div>
+          {:else}
+            <div class="text-xs text-gray-500">
+              💡 Include bank name, account number, or card details for transfers
+            </div>
+          {/if}
+        </div>
       </div>
 
     {:else if step === 4}
@@ -170,7 +199,7 @@
       {:else}
         <Button
           onclick={completeOnboarding}
-          disabled={submitting || !username}
+          disabled={submitting || !username || !payoutDetails}
         >
           {submitting ? 'Setting up...' : 'Complete'}
         </Button>

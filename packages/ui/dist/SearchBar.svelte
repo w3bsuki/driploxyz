@@ -94,64 +94,145 @@
 
 <div class="relative {className}">
   <form onsubmit={handleSubmit}>
-    <div class="relative flex items-center {variant === 'hero' ? 'bg-white rounded-full border border-gray-200 shadow-sm hover:shadow-md focus-within:border-black transition-all' : 'bg-white rounded-lg border border-gray-200 focus-within:border-black transition-colors'}">
-      <!-- Search Icon -->
-      <div class="absolute left-4 flex items-center justify-center pointer-events-none">
-        <svg class="w-5 h-5 {variant === 'hero' ? 'text-gray-500' : 'text-gray-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-        </svg>
+    {#if variant === 'hero'}
+      <!-- Glass morphism container for hero variant -->
+      <div class="bg-white rounded-full border border-gray-200 p-1 shadow-sm backdrop-blur-xl hover:shadow-md focus-within:border-gray-400 transition-all">
+        <!-- Inner glass frame -->
+        <div class="bg-gray-50/80 relative rounded-full border overflow-hidden">
+          <div 
+            aria-hidden="true"
+            class="absolute inset-x-0 top-0 h-full rounded-[inherit] pointer-events-none"
+            style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
+          />
+          <div class="relative flex items-center">
+            <!-- Search Icon -->
+            <div class="absolute left-4 flex items-center justify-center pointer-events-none">
+              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            
+            <!-- Input -->
+            <input
+              bind:this={inputElement}
+              bind:value
+              {placeholder}
+              type="search"
+              class="w-full bg-transparent pl-11 pr-24 py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-none"
+              oninput={handleInput}
+              onfocus={handleFocus}
+              onblur={handleBlur}
+            />
+            
+            <!-- Clear Button -->
+            {#if value}
+              <button
+                type="button"
+                onclick={handleClear}
+                class="absolute right-16 p-1 hover:bg-gray-200 rounded-full transition-colors"
+              >
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            {/if}
+            
+            <!-- Categories Button -->
+            <button
+              type="button"
+              onclick={onFilter}
+              class="absolute right-2 px-4 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center space-x-1 ring-1 ring-gray-200"
+            >
+              <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+              <span class="text-xs font-medium text-gray-600 hidden sm:inline">Categories</span>
+            </button>
+          </div>
+        </div>
       </div>
-      
-      <!-- Input -->
-      <input
-        bind:this={inputElement}
-        bind:value
-        {placeholder}
-        type="search"
-        class="w-full bg-transparent pl-11 {variant === 'hero' ? 'pr-24' : 'pr-32'} py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-none"
-        oninput={handleInput}
-        onfocus={handleFocus}
-        onblur={handleBlur}
-      />
-      
-      <!-- Clear Button -->
-      {#if value}
-        <button
-          type="button"
-          onclick={handleClear}
-          class="absolute {variant === 'hero' ? 'right-16' : 'right-24'} p-1 hover:bg-gray-200 rounded-full transition-colors"
-        >
+    {:else if variant === 'compact'}
+      <!-- Compact variant (no filter button) -->
+      <div class="relative flex items-center bg-white rounded-lg border border-gray-200 focus-within:border-gray-400 transition-colors">
+        <!-- Search Icon -->
+        <div class="absolute left-3 flex items-center justify-center pointer-events-none">
           <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-        </button>
-      {/if}
-      
-      <!-- Filter Button -->
-      {#if variant === 'hero'}
+        </div>
+        
+        <!-- Input -->
+        <input
+          bind:this={inputElement}
+          bind:value
+          {placeholder}
+          type="search"
+          class="w-full bg-transparent pl-9 pr-10 py-2 text-sm placeholder-gray-500 focus:outline-none"
+          oninput={handleInput}
+          onfocus={handleFocus}
+          onblur={handleBlur}
+        />
+        
+        <!-- Clear Button -->
+        {#if value}
+          <button
+            type="button"
+            onclick={handleClear}
+            class="absolute right-2 p-1 hover:bg-gray-200 rounded-full transition-colors"
+          >
+            <svg class="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        {/if}
+      </div>
+    {:else}
+      <!-- Regular variant -->
+      <div class="relative flex items-center bg-white rounded-lg border border-gray-200 focus-within:border-gray-400 transition-colors">
+        <!-- Search Icon -->
+        <div class="absolute left-4 flex items-center justify-center pointer-events-none">
+          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        
+        <!-- Input -->
+        <input
+          bind:this={inputElement}
+          bind:value
+          {placeholder}
+          type="search"
+          class="w-full bg-transparent pl-11 pr-32 py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-none"
+          oninput={handleInput}
+          onfocus={handleFocus}
+          onblur={handleBlur}
+        />
+        
+        <!-- Clear Button -->
+        {#if value}
+          <button
+            type="button"
+            onclick={handleClear}
+            class="absolute right-24 p-1 hover:bg-gray-200 rounded-full transition-colors"
+          >
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        {/if}
+        
+        <!-- Filter Button -->
         <button
           type="button"
           onclick={onFilter}
-          class="absolute right-2 px-4 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center space-x-1 ring-1 ring-gray-200"
-        >
-          <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          <span class="text-xs font-medium text-gray-600 hidden sm:inline">Filters</span>
-        </button>
-      {:else}
-        <button
-          type="button"
-          onclick={onFilter}
-          class="absolute right-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center space-x-2"
+          class="absolute right-2 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
-          <span class="text-sm font-medium">Filters</span>
         </button>
-      {/if}
-    </div>
+      </div>
+    {/if}
   </form>
 
   {#if showCategories && showCategoryDropdown}

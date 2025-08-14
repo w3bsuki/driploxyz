@@ -259,7 +259,25 @@ export class ProductService {
     error: string | null;
   }> {
     try {
-      const { data, error } = await this.supabase
+      // Get premium boosted products
+      const { data: boostedProducts, error: boostedError } = await this.supabase
+        .from('products')
+        .select(`
+          *,
+          product_images (*),
+          categories (name),
+          profiles!products_seller_id_fkey (username, rating, avatar_url),
+          premium_boosts!inner (boost_start, boost_end)
+        `)
+        .eq('status', 'active')
+        .eq('is_sold', false)
+        .lte('premium_boosts.boost_start', new Date().toISOString())
+        .gte('premium_boosts.boost_end', new Date().toISOString())
+        .order('premium_boosts.boost_start', { ascending: false })
+        .limit(limit);
+
+      // Get manually promoted products (fallback)
+      const { data: manuallyPromoted, error: manualError } = await this.supabase
         .from('products')
         .select(`
           *,
@@ -273,19 +291,34 @@ export class ProductService {
         .or('promotion_expires_at.is.null,promotion_expires_at.gt.now()')
         .order('promotion_priority', { ascending: false })
         .order('promoted_at', { ascending: false })
-        .limit(limit);
+        .limit(Math.max(0, limit - (boostedProducts?.length || 0)));
 
-      if (error) {
-        console.error('Error fetching promoted products:', error);
-        return { data: [], error: error.message };
+      if (boostedError && manualError) {
+        throw new Error('Failed to fetch promoted products');
       }
 
-      if (!data) {
+      // Combine and deduplicate products
+      const allPromoted = [
+        ...(boostedProducts || []),
+        ...(manuallyPromoted || [])
+      ];
+      
+      // Remove duplicates based on product ID
+      const uniqueProducts = allPromoted.reduce((acc, product) => {
+        if (!acc.find(p => p.id === product.id)) {
+          acc.push(product);
+        }
+        return acc;
+      }, [] as any[]);
+
+      const limitedProducts = uniqueProducts.slice(0, limit);
+
+      if (!limitedProducts || limitedProducts.length === 0) {
         return { data: [], error: null };
       }
 
       // Transform the data
-      const products: ProductWithImages[] = data.map(item => ({
+      const products: ProductWithImages[] = limitedProducts.map(item => ({
         ...item,
         images: item.product_images || [],
         category_name: item.categories?.name,

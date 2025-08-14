@@ -2,6 +2,8 @@ import { json } from '@sveltejs/kit';
 import { stripe } from '$lib/stripe/server.js';
 import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types.js';
+import { createServerClient } from '@supabase/ssr';
+import { TransactionService } from '$lib/services/transactions.js';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const body = await request.text();
@@ -51,28 +53,65 @@ export const POST: RequestHandler = async ({ request }) => {
 async function handlePaymentSuccess(paymentIntent: any) {
 	console.log('Payment succeeded:', paymentIntent.id);
 	
-	// TODO: Implement order processing logic:
-	// 1. Update order status in Supabase
-	// 2. Notify seller
-	// 3. Send confirmation email to buyer
-	// 4. Update product availability if needed
+	const { productId, sellerId, buyerId, orderId, productPrice, shippingCost } = paymentIntent.metadata;
 	
-	const { productId, sellerId } = paymentIntent.metadata;
-	
-	if (productId && sellerId) {
-		// Example: Create order record in database
-		// await supabase.from('orders').insert({
-		//   id: generateOrderId(),
-		//   product_id: productId,
-		//   seller_id: sellerId,
-		//   buyer_id: buyerId, // Get from user session
-		//   amount: paymentIntent.amount,
-		//   status: 'paid',
-		//   payment_intent_id: paymentIntent.id,
-		//   created_at: new Date().toISOString()
-		// });
-		
-		console.log(`Order created for product ${productId} by seller ${sellerId}`);
+	if (productId && sellerId && buyerId && orderId) {
+		try {
+			// Initialize Supabase client
+			const supabase = createServerClient(
+				env.PUBLIC_SUPABASE_URL!,
+				env.SUPABASE_SERVICE_ROLE_KEY!,
+				{
+					cookies: {
+						getAll: () => [],
+						setAll: () => {}
+					}
+				}
+			);
+
+			const transactionService = new TransactionService(supabase);
+			
+			// Create transaction record with commission calculation
+			const { transaction, error } = await transactionService.createTransaction({
+				orderId,
+				sellerId,
+				buyerId,
+				productId,
+				productPrice: parseFloat(productPrice),
+				shippingCost: shippingCost ? parseFloat(shippingCost) : 0,
+				stripePaymentIntentId: paymentIntent.id
+			});
+
+			if (error) {
+				console.error('Error creating transaction:', error);
+				return;
+			}
+
+			// Update order status to paid
+			await supabase
+				.from('orders')
+				.update({ 
+					status: 'paid',
+					updated_at: new Date().toISOString()
+				})
+				.eq('id', orderId);
+
+			// Mark product as sold
+			await supabase
+				.from('products')
+				.update({ 
+					is_sold: true, 
+					sold_at: new Date().toISOString(),
+					status: 'sold'
+				})
+				.eq('id', productId);
+
+			console.log(`Transaction created successfully: ${transaction?.id}`);
+			console.log(`Commission: ${transaction?.commission_amount} BGN, Seller gets: ${transaction?.seller_amount} BGN`);
+			
+		} catch (error) {
+			console.error('Error processing payment success:', error);
+		}
 	}
 }
 

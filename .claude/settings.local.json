@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "mcp__supabase__search_docs",
-      "WebSearch"
+      "WebSearch",
+      "mcp__supabase__apply_migration"
     ]
   },
   "enableAllProjectMcpServers": true,

@@ -33,6 +33,7 @@
   let shippingPrice = $state('8.99');
   let tags = $state<string[]>([]);
   let currentTag = $state('');
+  let usePremiumBoost = $state(false);
   
   // Get categories from server data
   const mainCategories = $derived(data.categories.filter(c => !c.parent_id));
@@ -196,6 +197,36 @@
 
       if (imagesError) throw imagesError;
 
+      // Handle premium boost if selected
+      if (usePremiumBoost && data.profile?.subscription_tier === 'premium') {
+        // Create premium boost record
+        const { error: boostError } = await supabase
+          .from('premium_boosts')
+          .insert({
+            product_id: product.id,
+            seller_id: data.user.id,
+            boost_start: new Date().toISOString(),
+            boost_end: new Date(Date.now() + (5 * 24 * 60 * 60 * 1000)).toISOString(), // 5 days
+            boost_type: 'premium_listing'
+          });
+
+        if (boostError) {
+          console.error('Error creating premium boost:', boostError);
+        } else {
+          // Decrement user's premium boosts remaining
+          const { error: updateError } = await supabase
+            .from('profiles')
+            .update({ 
+              premium_boosts_remaining: Math.max(0, (data.profile.premium_boosts_remaining || 0) - 1)
+            })
+            .eq('id', data.user.id);
+
+          if (updateError) {
+            console.error('Error updating premium boosts remaining:', updateError);
+          }
+        }
+      }
+
       // Navigate to success page with product ID
       goto(`/sell/success?id=${product.id}`);
     } catch (err) {
@@ -297,6 +328,58 @@
 
   <!-- Form Content -->
   <div class="max-w-3xl mx-auto px-4 sm:px-6 py-6">
+    {#if data.needsBrandSubscription}
+      <!-- Brand Subscription Required -->
+      <div class="mb-6 p-6 bg-blue-50 border border-blue-200 rounded-lg">
+        <div class="text-center space-y-4">
+          <div class="text-4xl">🏢</div>
+          <div>
+            <h3 class="text-lg font-medium text-blue-800">Brand Subscription Required</h3>
+            <p class="text-blue-700 mt-1">To list products as a business account, you need an active Brand subscription.</p>
+          </div>
+          
+          {#if data.plans.find(p => p.plan_type === 'brand')}
+            {@const brandPlan = data.plans.find(p => p.plan_type === 'brand')}
+            <div class="bg-white p-4 rounded-lg border border-blue-200">
+              <div class="text-sm text-blue-800 space-y-2">
+                <p><strong>Brand Plan Features:</strong></p>
+                <div class="grid grid-cols-2 gap-2 text-left">
+                  <div class="flex items-center space-x-1">
+                    <span class="text-green-500">✓</span>
+                    <span class="text-xs">List unlimited products</span>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <span class="text-green-500">✓</span>
+                    <span class="text-xs">Brand verification badge</span>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <span class="text-green-500">✓</span>
+                    <span class="text-xs">Business account features</span>
+                  </div>
+                  <div class="flex items-center space-x-1">
+                    <span class="text-green-500">✓</span>
+                    <span class="text-xs">Priority support</span>
+                  </div>
+                </div>
+                <div class="text-lg font-bold text-blue-900 mt-3">
+                  {brandPlan.price_monthly} {brandPlan.currency}/month
+                </div>
+              </div>
+            </div>
+          {/if}
+          
+          <div class="space-y-2">
+            <Button href="/dashboard/upgrade" class="w-full" size="lg">
+              Subscribe to Brand Plan
+            </Button>
+            <Button href="/profile/edit" variant="outline" class="w-full">
+              Switch to Personal Account
+            </Button>
+          </div>
+        </div>
+      </div>
+    {:else}
+    
     {#if submitError}
       <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
         {submitError}
@@ -503,7 +586,7 @@
             />
           </div>
           <p class="text-xs text-gray-500 mt-1">
-            Platform fee (10%): ${price ? (parseFloat(price) * 0.1).toFixed(2) : '0.00'}
+            Platform fee (5%): ${price ? (parseFloat(price) * 0.05).toFixed(2) : '0.00'}
           </p>
         </div>
         
@@ -534,12 +617,12 @@
               <span class="text-sm font-medium">${parseFloat(shippingPrice || '0').toFixed(2)}</span>
             </div>
             <div class="flex justify-between mb-2">
-              <span class="text-sm text-gray-600">Platform Fee (10%)</span>
-              <span class="text-sm font-medium">-${(parseFloat(price) * 0.1).toFixed(2)}</span>
+              <span class="text-sm text-gray-600">Platform Fee (5%)</span>
+              <span class="text-sm font-medium">-${(parseFloat(price) * 0.05).toFixed(2)}</span>
             </div>
             <div class="border-t pt-2 flex justify-between">
               <span class="font-medium">You'll Earn</span>
-              <span class="font-bold text-lg">${(parseFloat(price) * 0.9).toFixed(2)}</span>
+              <span class="font-bold text-lg">${(parseFloat(price) * 0.95).toFixed(2)}</span>
             </div>
           </div>
         {/if}
@@ -571,6 +654,80 @@
             </div>
           {/if}
         </div>
+        
+        <!-- Premium Boost Selection -->
+        {#if data.profile?.subscription_tier === 'premium' && data.profile?.premium_boosts_remaining > 0}
+          <div class="border-t pt-6">
+            <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg border border-yellow-200">
+              <div class="flex items-start space-x-3">
+                <div class="text-2xl">⭐</div>
+                <div class="flex-1">
+                  <h3 class="text-lg font-medium text-yellow-800">Boost Your Listing</h3>
+                  <p class="text-yellow-700 text-sm mt-1">Give your product 3-7 days of homepage visibility to reach more buyers</p>
+                  
+                  <div class="mt-3">
+                    <label class="flex items-center space-x-2">
+                      <input 
+                        type="checkbox" 
+                        bind:checked={usePremiumBoost}
+                        class="rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
+                      />
+                      <span class="text-sm font-medium text-yellow-800">
+                        Use Premium Boost ({data.profile.premium_boosts_remaining} remaining)
+                      </span>
+                    </label>
+                  </div>
+                  
+                  {#if usePremiumBoost}
+                    <div class="mt-3 p-3 bg-white rounded border border-yellow-200">
+                      <div class="text-xs text-yellow-700 space-y-1">
+                        <div class="flex items-center space-x-1">
+                          <span class="text-green-500">✓</span>
+                          <span>Featured in homepage carousel</span>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                          <span class="text-green-500">✓</span>
+                          <span>Higher search ranking</span>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                          <span class="text-green-500">✓</span>
+                          <span>3-7 days of premium visibility</span>
+                        </div>
+                      </div>
+                    </div>
+                  {/if}
+                </div>
+              </div>
+            </div>
+          </div>
+        {:else if data.profile?.subscription_tier !== 'premium'}
+          <div class="border-t pt-6">
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <div class="flex items-start space-x-3">
+                <div class="text-2xl">⭐</div>
+                <div class="flex-1">
+                  <h3 class="text-lg font-medium text-gray-800">Want More Visibility?</h3>
+                  <p class="text-gray-600 text-sm mt-1">Upgrade to Premium for 10 monthly boosts and homepage features</p>
+                  
+                  <div class="mt-3">
+                    <Button href="/dashboard/upgrade" variant="outline" size="sm">
+                      View Premium Plans
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {:else}
+          <div class="border-t pt-6">
+            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+              <div class="text-center text-gray-600">
+                <p class="text-sm">You've used all your premium boosts for this month.</p>
+                <p class="text-xs mt-1">Boosts reset at the start of your next billing period.</p>
+              </div>
+            </div>
+          </div>
+        {/if}
       </div>
     {/if}
     
@@ -617,5 +774,6 @@
         </Button>
       {/if}
     </div>
+    {/if}
   </div>
 </div>

@@ -15,20 +15,7 @@
 <div class="bg-white border-b border-gray-200">
   <div class="px-4 sm:px-6 lg:px-8 py-4">
     <div class="overflow-x-auto scrollbar-hide">
-      <div class="flex space-x-3">
-        <!-- Your Story -->
-        <a 
-          href="/sell"
-          class="relative flex-shrink-0 group"
-        >
-          <div class="w-16 h-16 sm:w-20 sm:h-20 bg-black rounded-2xl flex items-center justify-center group-hover:scale-105 transition-transform">
-            <svg class="w-8 h-8 sm:w-10 sm:h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-          </div>
-          <span class="block text-xs text-center mt-1 font-medium">Sell</span>
-        </a>
-
+      <div class="flex space-x-2 -mx-4 px-4 sm:mx-0 sm:px-0">
         <!-- Promoted Products -->
         {#if promotedProducts && promotedProducts.length > 0}
           {#each promotedProducts as product}
@@ -45,30 +32,40 @@
               })}
               class="relative flex-shrink-0 group"
             >
-              <div class="relative">
-                <!-- Promoted badge -->
-                <div class="absolute top-0 right-0 z-10 w-5 h-5 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full flex items-center justify-center">
-                  <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                  </svg>
-                </div>
-                <!-- Product image -->
-                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-gray-200 group-hover:scale-105 transition-transform">
-                  <img 
-                    src={product.images[0]?.image_url || '/placeholder-product.svg'} 
-                    alt={product.title}
-                    class="w-full h-full object-cover"
+              <!-- Glass morphism container -->
+              <div class="bg-white rounded-2xl border border-gray-200 p-1 shadow-sm backdrop-blur-xl group-hover:scale-105 transition-transform">
+                <!-- Inner glass frame -->
+                <div class="bg-gray-50/80 relative rounded-xl border overflow-hidden">
+                  <div 
+                    aria-hidden="true"
+                    class="absolute inset-x-0 top-0 h-32 rounded-[inherit]"
+                    style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
                   />
+                  <!-- Product image -->
+                  <div class="w-28 h-28 sm:w-36 sm:h-36 relative">
+                    <img 
+                      src={product.images[0]?.image_url || '/placeholder-product.svg'} 
+                      alt={product.title}
+                      class="w-full h-full object-cover"
+                    />
+                    <!-- Seller avatar -->
+                    <div class="absolute bottom-2 left-2 w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
+                      <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
+                        {product.seller_name?.charAt(0).toUpperCase() || 'S'}
+                      </div>
+                    </div>
+                    <!-- Price badge -->
+                    <div class="absolute bottom-2 right-2 bg-black text-white text-xs font-semibold px-2 py-1 rounded-lg">
+                      ${product.price}
+                    </div>
+                  </div>
                 </div>
               </div>
-              <span class="block text-xs text-center mt-1 font-medium truncate max-w-[64px] sm:max-w-[80px]">
-                ${product.price}
-              </span>
             </button>
           {/each}
         {/if}
 
-        <!-- Top Sellers (if no promoted products) -->
+        <!-- Top Sellers (fallback) -->
         {#if (!promotedProducts || promotedProducts.length === 0) && sellers.length > 0}
           {#each sellers as seller}
             <div class="relative flex-shrink-0">

@@ -3,6 +3,7 @@
   import { invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
+  import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import type { LayoutData } from './$types';
 
   let { data }: { data: LayoutData } = $props();
@@ -41,4 +42,5 @@
   });
 </script>
 
+<EarlyBirdBanner />
 <slot />

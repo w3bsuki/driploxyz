@@ -31,8 +31,8 @@
     }
   },
   "peerDependencies": {
-    "svelte": "^5.0.0",
-    "@sveltejs/kit": "^2.0.0"
+    "@sveltejs/kit": "^2.0.0",
+    "svelte": "^5.0.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -45,5 +45,9 @@
     "svelte-check": "^4.3.0",
     "typescript": "5.8.2",
     "vite": "^6.3.2"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.1"
   }
 }

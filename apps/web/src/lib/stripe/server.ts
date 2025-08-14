@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
-import { env } from '$env/dynamic/private';
+import { STRIPE_SECRET_KEY } from '$env/static/private';
 
-const stripeSecretKey = env.STRIPE_SECRET_KEY;
+const stripeSecretKey = STRIPE_SECRET_KEY;
 if (!stripeSecretKey) {
 	throw new Error('STRIPE_SECRET_KEY environment variable is required');
 }
