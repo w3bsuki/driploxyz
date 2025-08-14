@@ -115,6 +115,22 @@
     submitError = '';
 
     try {
+      // Debug: Check Supabase client
+      console.log('Supabase client:', supabase);
+      console.log('User:', data.user);
+      console.log('Photos to upload:', photos.length);
+      
+      // Test Supabase connection
+      const { data: testData, error: testError } = await supabase.from('products').select('count').limit(1);
+      if (testError) {
+        console.error('Supabase connection test failed:', testError);
+        throw new Error(`Database connection failed: ${testError.message}`);
+      }
+      console.log('Supabase connection test passed');
+      
+      if (photos.length === 0) {
+        throw new Error('Please add at least one photo');
+      }
       // Upload images to Supabase Storage
       const uploadedUrls: string[] = [];
       
@@ -176,7 +192,30 @@
       goto(`/sell/success?id=${product.id}`);
     } catch (err) {
       console.error('Upload error:', err);
-      submitError = 'Failed to upload product. Please try again.';
+      console.error('Error details:', {
+        message: err?.message,
+        code: err?.code,
+        details: err?.details,
+        hint: err?.hint
+      });
+      
+      // More specific error messages
+      let errorMessage = 'Failed to upload product. Please try again.';
+      if (err?.message) {
+        if (err.message.includes('storage')) {
+          errorMessage = 'Failed to upload images. Check your connection.';
+        } else if (err.message.includes('products')) {
+          errorMessage = 'Failed to save product details. Check required fields.';
+        } else if (err.message.includes('product_images')) {
+          errorMessage = 'Product saved but images failed. Try editing to add images.';
+        } else if (err.message.includes('authentication')) {
+          errorMessage = 'Please log in again and try.';
+        } else {
+          errorMessage = `Error: ${err.message}`;
+        }
+      }
+      
+      submitError = errorMessage;
       submitting = false;
     }
   }
