@@ -12,6 +12,19 @@
   let { showSearch = false, minimal = false }: Props = $props();
   let mobileMenuOpen = $state(false);
   let userMenuOpen = $state(false);
+  
+  // Animated emoji for logo
+  const clothingEmojis = ['👗', '👔', '👶', '🐕'];
+  let currentEmojiIndex = $state(0);
+  
+  // Cycle through emojis every 2 seconds
+  $effect(() => {
+    const interval = setInterval(() => {
+      currentEmojiIndex = (currentEmojiIndex + 1) % clothingEmojis.length;
+    }, 2000);
+    
+    return () => clearInterval(interval);
+  });
 
   async function handleSignOut() {
     try {
@@ -31,216 +44,283 @@
   }
 </script>
 
+<style>
+  @keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(-2px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
 <!-- Unified Header for all pages -->
-<header class="bg-white shadow-sm sticky top-0 z-40">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex justify-between items-center h-14 sm:h-16">
-      <!-- Logo -->
-      <a href="/" class="flex items-center">
-        <span class="text-xl sm:text-2xl font-bold text-gray-900">Driplo</span>
-      </a>
+<header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-14 sm:h-16">
+      <!-- Left: Mobile Menu + Logo -->
+      <div class="flex items-center space-x-0.5 sm:space-x-4">
+        <!-- Mobile Menu Button -->
+        <button
+          onclick={() => mobileMenuOpen = !mobileMenuOpen}
+          class="sm:hidden p-2 text-gray-700 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-200"
+          aria-label="Toggle menu"
+        >
+          {#if mobileMenuOpen}
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          {:else}
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          {/if}
+        </button>
+        
+        <!-- Logo with Animated Emoji -->
+        <a href="/" class="flex items-center space-x-1">
+          <span class="text-lg sm:text-2xl font-bold text-gray-900">Driplo</span>
+          <span 
+            class="text-lg sm:text-xl transition-all duration-300 hover:scale-110"
+            style="display: inline-block; animation: fadeIn 0.3s ease-in-out;"
+          >
+            {clothingEmojis[currentEmojiIndex]}
+          </span>
+        </a>
+      </div>
       
-      <!-- Desktop Navigation -->
+      <!-- Center: Desktop Navigation -->
       <nav class="hidden sm:flex items-center space-x-6">
         <a href="/search" class="text-gray-600 hover:text-gray-900 font-medium">Browse</a>
-        
         {#if $authState.user}
-          <!-- Authenticated Navigation -->
           {#if $canSell}
             <a href="/sell" class="text-gray-600 hover:text-gray-900 font-medium">Sell</a>
           {/if}
           <a href="/messages" class="text-gray-600 hover:text-gray-900 font-medium">Messages</a>
           <a href="/dashboard" class="text-gray-600 hover:text-gray-900 font-medium">Dashboard</a>
-          
-          <!-- User Menu -->
-          <div class="relative">
-            <button
-              onclick={() => userMenuOpen = !userMenuOpen}
-              class="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
-            >
-              <Avatar 
-                name={$displayName} 
-                src={$authState.profile?.avatar_url} 
-                size="sm"
-                fallback={$userInitials}
-              />
-              <span class="font-medium">{$displayName}</span>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-            
-            {#if userMenuOpen}
-              <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                <a href="/profile/me" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Profile
-                </a>
-                <a href="/orders" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Orders
-                </a>
-                <a href="/favorites" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Favorites
-                </a>
-                {#if !$canSell}
-                  <a href="/become-seller" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                    Become a Seller
-                  </a>
-                {/if}
-                <div class="border-t border-gray-100"></div>
-                <a href="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                  Settings
-                </a>
-                <button
-                  onclick={handleSignOut}
-                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Sign Out
-                </button>
-              </div>
-            {/if}
-          </div>
-        {:else}
-          <!-- Unauthenticated Navigation -->
-          <div class="flex items-center space-x-2">
-            <a href="/login" class="inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-300 bg-white text-gray-700 focus-visible:ring-gray-500 px-3 py-1.5 text-sm">
-              Sign In
-            </a>
-            <a href="/signup" class="inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white focus-visible:ring-blue-500 px-3 py-1.5 text-sm">
-              Sign Up
-            </a>
-          </div>
         {/if}
       </nav>
       
-      <!-- Mobile Menu Button -->
-      <button
-        onclick={() => mobileMenuOpen = !mobileMenuOpen}
-        class="sm:hidden p-2 text-gray-600 hover:text-gray-900"
-        aria-label="Toggle menu"
-      >
-        {#if mobileMenuOpen}
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        {:else}
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        {/if}
-      </button>
-    </div>
-    
-    <!-- Mobile Menu -->
-    {#if mobileMenuOpen}
-      <div class="sm:hidden border-t border-gray-200 bg-white">
-        <div class="py-4">
-          <nav class="space-y-1">
-            <a href="/search" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 font-medium" onclick={closeMenus}>
-              <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              Browse
-            </a>
+      <!-- Right: Auth/Account -->
+      <div class="flex items-center">
+        {#if $authState.user}
+          <!-- User Menu -->
+          <div class="relative">
+            <Avatar 
+              name={$displayName} 
+              src={$authState.profile?.avatar_url} 
+              size="sm"
+              fallback={$userInitials}
+              onclick={() => userMenuOpen = !userMenuOpen}
+              class="hover:bg-gray-50 hover:scale-105 transition-all duration-200 border-2 border-transparent hover:border-gray-200"
+            />
             
-            {#if $authState.user}
-              <!-- Authenticated Mobile Menu -->
-              {#if $canSell}
-                <a href="/sell" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 font-medium" onclick={closeMenus}>
-                  <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  </svg>
-                  Sell
-                </a>
-              {/if}
-              <a href="/messages" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 font-medium" onclick={closeMenus}>
-                <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-                Messages
-              </a>
-              <a href="/dashboard" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50 font-medium" onclick={closeMenus}>
-                <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-                Dashboard
-              </a>
-              
-              <div class="border-t border-gray-100 my-2"></div>
-              
-              <div class="px-4 py-3">
-                <div class="flex items-center space-x-3">
-                  <Avatar 
-                    name={$displayName} 
-                    src={$authState.profile?.avatar_url} 
-                    size="md"
-                    fallback={$userInitials}
-                  />
-                  <div>
-                    <p class="font-medium text-gray-900">{$displayName}</p>
-                    <p class="text-sm text-gray-500">{$authState.user?.email}</p>
+            {#if userMenuOpen}
+              <div class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
+                <!-- User Info Header -->
+                <div class="px-4 py-3 border-b border-gray-100">
+                  <div class="flex items-center space-x-3">
+                    <Avatar 
+                      name={$displayName} 
+                      src={$authState.profile?.avatar_url} 
+                      size="sm"
+                      fallback={$userInitials}
+                    />
+                    <div class="flex-1 min-w-0">
+                      <p class="font-semibold text-gray-900 truncate text-sm">{$displayName}</p>
+                      <p class="text-xs text-gray-500 truncate">{$authState.user?.email}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              
-              <div class="space-y-1">
-                <a href="/profile/me" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50" onclick={closeMenus}>
-                  <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  Profile
-                </a>
-                <a href="/orders" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50" onclick={closeMenus}>
-                  <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                  </svg>
-                  Orders
-                </a>
-                <a href="/favorites" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50" onclick={closeMenus}>
-                  <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                  </svg>
-                  Favorites
-                </a>
-                {#if !$canSell}
-                  <a href="/become-seller" class="flex items-center px-4 py-3 text-blue-600 hover:bg-blue-50" onclick={closeMenus}>
-                    <svg class="w-5 h-5 mr-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Become a Seller
-                  </a>
-                {/if}
-                <a href="/settings" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50" onclick={closeMenus}>
-                  <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  Settings
-                </a>
                 
-                <div class="border-t border-gray-100 mt-2 pt-2">
+                <!-- Menu Items -->
+                <div class="py-1">
+                  <a href="/profile/me" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors" onclick={closeMenus}>
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    Profile
+                  </a>
+                  <a href="/orders" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors" onclick={closeMenus}>
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    Orders
+                  </a>
+                  <a href="/favorites" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors" onclick={closeMenus}>
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    Favorites
+                  </a>
+                  {#if !$canSell}
+                    <a href="/become-seller" class="flex items-center px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors" onclick={closeMenus}>
+                      <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Start Selling
+                    </a>
+                  {/if}
+                </div>
+                
+                <div class="border-t border-gray-100 pt-1">
+                  <a href="/settings" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors" onclick={closeMenus}>
+                    <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.50 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Settings
+                  </a>
                   <button
                     onclick={handleSignOut}
-                    class="flex items-center w-full px-4 py-3 text-red-600 hover:bg-red-50"
+                    class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   >
-                    <svg class="w-5 h-5 mr-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
                     Sign Out
                   </button>
                 </div>
               </div>
-            {:else}
-              <!-- Unauthenticated Mobile Menu -->
-              <div class="border-t border-gray-100 mt-2 pt-2 space-y-1">
-                <a href="/login" class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-50" onclick={closeMenus}>
-                  <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                  </svg>
-                  Sign In
+            {/if}
+          </div>
+        {:else}
+          <!-- Sign In/Up Buttons -->
+          <div class="flex items-center space-x-2">
+            <a href="/login" class="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg hover:bg-white/20">
+              Sign In
+            </a>
+            <a href="/signup" class="px-3 py-1.5 text-sm font-medium bg-black/80 text-white rounded-lg hover:bg-black backdrop-blur-sm">
+              Sign Up
+            </a>
+          </div>
+        {/if}
+      </div>
+    </div>
+    
+    <!-- Mobile Menu -->
+    {#if mobileMenuOpen}
+      <div class="sm:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-xl z-50">
+        <div class="px-3 py-3">
+          <nav class="space-y-3">
+            {#if $authState.user}
+              <!-- User Profile Section - Compact -->
+              <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
+                <div class="flex items-center space-x-3">
+                  <Avatar 
+                    name={$displayName} 
+                    src={$authState.profile?.avatar_url} 
+                    size="sm"
+                    fallback={$userInitials}
+                  />
+                  <div class="flex-1 min-w-0">
+                    <p class="font-semibold text-gray-900 truncate text-sm">{$displayName}</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Categories - Compact Grid -->
+              <div class="grid grid-cols-4 gap-2">
+                <a href="/category/women" class="bg-pink-50 rounded-lg p-2 hover:bg-pink-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-pink-200/50" onclick={closeMenus}>
+                  <span class="text-lg mb-0.5">👗</span>
+                  <span class="text-xs font-medium text-gray-700">Women</span>
                 </a>
-                <div class="px-4 pb-3">
-                  <a href="/signup" class="flex items-center justify-center w-full px-4 py-3 bg-black text-white rounded-lg font-medium" onclick={closeMenus}>
-                    Get Started
+                <a href="/category/men" class="bg-blue-50 rounded-lg p-2 hover:bg-blue-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-blue-200/50" onclick={closeMenus}>
+                  <span class="text-lg mb-0.5">👔</span>
+                  <span class="text-xs font-medium text-gray-700">Men</span>
+                </a>
+                <a href="/category/kids" class="bg-yellow-50 rounded-lg p-2 hover:bg-yellow-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-yellow-200/50" onclick={closeMenus}>
+                  <span class="text-lg mb-0.5">👶</span>
+                  <span class="text-xs font-medium text-gray-700">Kids</span>
+                </a>
+                <a href="/category/pets" class="bg-green-50 rounded-lg p-2 hover:bg-green-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-green-200/50" onclick={closeMenus}>
+                  <span class="text-lg mb-0.5">🐕</span>
+                  <span class="text-xs font-medium text-gray-700">Pets</span>
+                </a>
+              </div>
+              
+              <!-- Essential Actions Only -->
+              <div class="space-y-2">
+                {#if $canSell}
+                  <a href="/sell" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-[44px]" onclick={closeMenus}>
+                    <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <span class="font-medium text-sm">Sell Items</span>
+                  </a>
+                {/if}
+                
+                <a href="/profile/me" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-[44px]" onclick={closeMenus}>
+                  <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <span class="font-medium text-sm">Profile</span>
+                </a>
+                
+                <a href="/orders" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-[44px]" onclick={closeMenus}>
+                  <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                  <span class="font-medium text-sm">Orders</span>
+                </a>
+                
+                <a href="/favorites" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-[44px]" onclick={closeMenus}>
+                  <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  <span class="font-medium text-sm">Favorites</span>
+                </a>
+                
+                {#if !$canSell}
+                  <a href="/become-seller" class="flex items-center px-3 py-2.5 text-blue-700 hover:bg-blue-50 rounded-lg transition-colors min-h-[44px] bg-blue-25" onclick={closeMenus}>
+                    <svg class="w-4 h-4 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="font-semibold text-sm">Start Selling</span>
+                  </a>
+                {/if}
+              </div>
+              
+              <!-- Sign Out -->
+              <div class="pt-2 border-t border-gray-200">
+                <button
+                  onclick={handleSignOut}
+                  class="flex items-center w-full px-3 py-2.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors min-h-[44px]"
+                >
+                  <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <span class="font-semibold text-sm">Sign Out</span>
+                </button>
+              </div>
+              
+            {:else}
+              <!-- Logged Out Menu - Ultra Compact -->
+              <div class="space-y-3">
+                <!-- Categories Grid -->
+                <div class="grid grid-cols-4 gap-2">
+                  <a href="/category/women" class="bg-pink-50 rounded-lg p-2 hover:bg-pink-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-pink-200/50" onclick={closeMenus}>
+                    <span class="text-lg mb-0.5">👗</span>
+                    <span class="text-xs font-medium text-gray-700">Women</span>
+                  </a>
+                  <a href="/category/men" class="bg-blue-50 rounded-lg p-2 hover:bg-blue-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-blue-200/50" onclick={closeMenus}>
+                    <span class="text-lg mb-0.5">👔</span>
+                    <span class="text-xs font-medium text-gray-700">Men</span>
+                  </a>
+                  <a href="/category/kids" class="bg-yellow-50 rounded-lg p-2 hover:bg-yellow-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-yellow-200/50" onclick={closeMenus}>
+                    <span class="text-lg mb-0.5">👶</span>
+                    <span class="text-xs font-medium text-gray-700">Kids</span>
+                  </a>
+                  <a href="/category/pets" class="bg-green-50 rounded-lg p-2 hover:bg-green-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-green-200/50" onclick={closeMenus}>
+                    <span class="text-lg mb-0.5">🐕</span>
+                    <span class="text-xs font-medium text-gray-700">Pets</span>
+                  </a>
+                </div>
+                
+                <!-- Authentication - Compact -->
+                <div class="grid grid-cols-2 gap-2">
+                  <a href="/login" class="flex items-center justify-center px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-[44px] border border-gray-200" onclick={closeMenus}>
+                    <span class="font-semibold text-sm">Sign In</span>
+                  </a>
+                  <a href="/signup" class="flex items-center justify-center px-3 py-3 bg-black text-white rounded-lg font-bold hover:bg-gray-800 transition-colors min-h-[44px]" onclick={closeMenus}>
+                    <span class="text-sm">Get Started</span>
                   </a>
                 </div>
               </div>

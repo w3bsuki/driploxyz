@@ -2,6 +2,7 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { Button, ProductCard, Breadcrumb, type Product, type BreadcrumbItem } from '@repo/ui';
+  import Header from '$lib/components/Header.svelte';
   
   // Get category from URL
   const categorySlug = $page.params.slug;
@@ -147,19 +148,8 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
-  <!-- Header -->
-  <header class="bg-white shadow sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-center py-4">
-        <a href="/" class="text-2xl font-bold text-gray-900">Driplo</a>
-        <nav class="flex items-center space-x-2 sm:space-x-6">
-          <a href="/browse" class="text-gray-600 hover:text-gray-900 font-medium text-sm">Browse</a>
-          <a href="/sell" class="text-gray-600 hover:text-gray-900 font-medium text-sm">Sell</a>
-          <Button size="sm">Sign Up</Button>
-        </nav>
-      </div>
-    </div>
-  </header>
+  <!-- Unified Header -->
+  <Header />
 
   <!-- Category Hero -->
   <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
