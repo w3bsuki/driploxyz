@@ -73,9 +73,16 @@
 				}
 			});
 
-			// Mount payment element
-			const paymentElement = elements.create('payment');
-			paymentElement.mount('#payment-element');
+			// Wait for DOM to be ready, then mount payment element
+			await new Promise(resolve => setTimeout(resolve, 100));
+			
+			const paymentElementContainer = document.getElementById('payment-element');
+			if (paymentElementContainer) {
+				const paymentElement = elements.create('payment');
+				paymentElement.mount('#payment-element');
+			} else {
+				throw new Error('Payment element container not found');
+			}
 
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to initialize payment';
@@ -171,7 +178,7 @@
 							</div>
 						{/if}
 
-						<form on:submit={handleSubmit} class="space-y-6">
+						<form onsubmit={handleSubmit} class="space-y-6">
 							<div id="payment-element" class="p-4 border border-gray-200 rounded-lg">
 								<!-- Stripe Elements will be mounted here -->
 							</div>

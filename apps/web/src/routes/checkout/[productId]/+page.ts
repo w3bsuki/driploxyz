@@ -1,27 +1,41 @@
 import type { PageLoad } from './$types.js';
 import type { Product } from '@repo/ui';
 
-export const load: PageLoad = async ({ params }) => {
-	// This is a mock product for now - replace with actual Supabase query
-	const mockProduct: Product = {
+export const load: PageLoad = async ({ params, fetch }) => {
+	try {
+		// Get real product data from the API
+		const response = await fetch(`/api/products/${params.productId}`);
+		
+		if (response.ok) {
+			const productData = await response.json();
+			return {
+				product: productData.product
+			};
+		}
+	} catch (error) {
+		console.error('Failed to load product:', error);
+	}
+
+	// Fallback to test product with $0.01 price for testing
+	const testProduct: Product = {
 		id: params.productId,
-		title: 'Vintage Denim Jacket',
-		description: 'Classic 90s style denim jacket in excellent condition',
-		price: 4500, // €45.00 in cents
+		title: 'TEST PRODUCT - $0.01',
+		description: 'Test product for payment testing - will charge $0.01',
+		price: 1, // $0.01 in cents for testing
 		images: ['/placeholder-product.jpg'],
-		brand: 'Levi\'s',
+		brand: 'Test Brand',
 		size: 'M',
-		condition: 'good',
-		category: 'jackets',
-		sellerId: 'seller-123',
-		sellerName: 'fashionista_jane',
-		sellerRating: 4.8,
+		condition: 'new',
+		category: 'test',
+		sellerId: 'test-seller',
+		sellerName: 'test_user',
+		sellerRating: 5.0,
 		createdAt: new Date().toISOString(),
-		location: 'Paris, France',
-		tags: ['vintage', 'denim', 'casual']
+		location: 'Test Location',
+		tags: ['test', 'payment']
 	};
 
 	return {
-		product: mockProduct
+		product: testProduct
 	};
 };
