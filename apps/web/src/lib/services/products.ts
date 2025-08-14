@@ -51,7 +51,7 @@ export class ProductService {
           *,
           product_images (*),
           categories (name),
-          profiles!products_seller_id_fkey (username, rating)
+          profiles!products_seller_id_fkey (username, rating, avatar_url)
         `)
         .eq('id', id)
         .eq('is_active', true)
@@ -102,7 +102,7 @@ export class ProductService {
             id, image_url, alt_text, sort_order
           ),
           categories!products_category_id_fkey (name),
-          profiles!products_seller_id_fkey (username, rating)
+          profiles!products_seller_id_fkey (username, rating, avatar_url)
         `, { count: 'exact' })
         .eq('is_active', true)
         .eq('is_sold', false);
@@ -181,7 +181,8 @@ export class ProductService {
         images: item.product_images || [],
         category_name: item.categories?.name,
         seller_name: item.profiles?.username,
-        seller_rating: item.profiles?.rating
+        seller_rating: item.profiles?.rating,
+        seller_avatar: item.profiles?.avatar_url
       }));
 
       return { data: products, error: null, total: count || 0 };
@@ -324,6 +325,7 @@ export class ProductService {
         category_name: item.categories?.name,
         seller_name: item.profiles?.username,
         seller_rating: item.profiles?.rating,
+        seller_avatar: item.profiles?.avatar_url,
         seller_avatar: item.profiles?.avatar_url
       }));
 

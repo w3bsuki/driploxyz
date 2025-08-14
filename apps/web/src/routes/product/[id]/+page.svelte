@@ -29,9 +29,10 @@
   const sellerData = $derived({
     id: data.product.seller_id,
     name: data.product.seller_name || 'Unknown Seller',
+    username: data.product.seller_name, // seller_name contains the username from profiles table
     avatar: data.product.seller_avatar,
     stats: {
-      rating: data.product.seller_rating || 4.8,
+      rating: data.product.seller_rating || null,
       totalSales: 234,
       responseTime: 2,
       joinedDate: '2022-01-15',
@@ -267,7 +268,7 @@
             stats={sellerData.stats}
             onFollow={() => console.log('Follow seller')}
             onMessage={handleMessage}
-            onViewProfile={() => goto(`/profile/${sellerData.id}`)}
+            onViewProfile={() => goto(`/profile/${sellerData.username || sellerData.id}`)}
             showFullStats={false}
           />
           
@@ -348,7 +349,8 @@
                 ...product,
                 images: product.images.map(img => img.image_url),
                 sellerName: product.seller_name,
-                sellerRating: product.seller_rating
+                sellerRating: product.seller_rating,
+                sellerAvatar: product.seller_avatar
               }}
               onclick={() => goto(`/product/${product.id}`)}
               class="hover:shadow-lg transition-shadow"
@@ -374,7 +376,8 @@
                 ...product,
                 images: product.images.map(img => img.image_url),
                 sellerName: product.seller_name,
-                sellerRating: product.seller_rating
+                sellerRating: product.seller_rating,
+                sellerAvatar: product.seller_avatar
               }}
               onclick={() => goto(`/product/${product.id}`)}
               class="hover:shadow-lg transition-shadow"

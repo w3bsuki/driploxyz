@@ -172,7 +172,8 @@
       category: product.category?.name || 'Uncategorized',
       sellerId: product.seller_id,
       sellerName: product.seller?.username || 'Unknown',
-      sellerRating: Number(product.seller?.rating) || 4.5,
+      sellerRating: product.seller?.rating ? Number(product.seller.rating) : null,
+      sellerAvatar: product.seller?.avatar_url,
       createdAt: product.created_at,
       location: product.location || 'Unknown'
     }));

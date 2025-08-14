@@ -19,8 +19,18 @@
   let saving = $state(false);
 
   const avatars = [
-    '/avatars/1.png', '/avatars/2.png', '/avatars/3.png', '/avatars/4.png',
-    '/avatars/5.png', '/avatars/6.png', '/avatars/7.png', '/avatars/8.png'
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=1&backgroundColor=f3f4f6',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=2&backgroundColor=ddd6fe',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=3&backgroundColor=fef3c7',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=4&backgroundColor=fce7f3',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=5&backgroundColor=dcfce7',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=6&backgroundColor=cffafe',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=7&backgroundColor=fef2f2',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=8&backgroundColor=f0f9ff',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=9&backgroundColor=fafaf9',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=10&backgroundColor=f5f3ff',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=11&backgroundColor=fff7ed',
+    'https://api.dicebear.com/7.x/avataaars/svg?seed=12&backgroundColor=ecfdf5'
   ];
 
   function addSocialLink() {
@@ -49,7 +59,7 @@
       .eq('id', data.user.id);
 
     if (!error) {
-      goto(`/profile/${data.user.id}`);
+      goto(`/profile/${data.profile?.username || data.user.id}`);
     }
     saving = false;
   }
@@ -66,22 +76,55 @@
     <div class="bg-white rounded-lg p-6">
       <div class="flex items-center justify-between mb-6">
         <h1 class="text-xl font-bold">Edit Profile</h1>
-        <a href="/profile/{data.user?.id}" class="text-sm text-gray-600 hover:underline">Cancel</a>
+        <a href="/profile/{data.profile?.username || data.user?.id}" class="text-sm text-gray-600 hover:underline">Cancel</a>
       </div>
 
       <div class="space-y-6">
         <!-- Avatar -->
         <div>
           <label class="block text-sm font-medium mb-2">Avatar</label>
-          <div class="grid grid-cols-8 gap-2 mb-4">
-            {#each avatars as avatar}
-              <button
-                onclick={() => avatarUrl = avatar}
-                class="p-1 border rounded-lg {avatarUrl === avatar ? 'border-black' : 'border-gray-200'}"
-              >
-                <Avatar src={avatar} name="Avatar" size="sm" />
-              </button>
-            {/each}
+          
+          <!-- Selected Avatar Preview -->
+          {#if avatarUrl}
+            <div class="flex justify-center mb-4">
+              <div class="relative">
+                <Avatar src={avatarUrl} name="Your Avatar" size="lg" class="ring-2 ring-black/20" />
+                <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-black rounded-full border-2 border-white flex items-center justify-center">
+                  <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          {/if}
+          
+          <!-- Avatar Horizontal Scroll -->
+          <div class="relative mb-4">
+            <div class="flex space-x-3 overflow-x-auto scrollbar-hide pb-2">
+              {#each avatars as avatar}
+                <button
+                  type="button"
+                  onclick={() => avatarUrl = avatar}
+                  class="relative group flex-shrink-0"
+                >
+                  <div class="relative w-16 h-16 overflow-hidden rounded-xl border-2 transition-all duration-200 {avatarUrl === avatar ? 'border-black ring-2 ring-black/20' : 'border-gray-200 hover:border-gray-300'}">
+                    <img src={avatar} alt="Avatar option" class="w-full h-full object-cover" />
+                    
+                    <!-- Selection indicator -->
+                    {#if avatarUrl === avatar}
+                      <div class="absolute top-1 right-1 w-3 h-3 bg-black rounded-full flex items-center justify-center">
+                        <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                      </div>
+                    {/if}
+                  </div>
+                </button>
+              {/each}
+            </div>
+            
+            <!-- Scroll hint -->
+            <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none"></div>
           </div>
         </div>
 
@@ -128,3 +171,16 @@
     </div>
   </div>
 </div>
+
+<style>
+  .scrollbar-hide {
+    /* Hide scrollbar for Chrome, Safari, and Opera */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+  }
+</style>

@@ -11,9 +11,13 @@ export interface Product {
   sellerId: string;
   sellerName: string;
   sellerRating: number;
+  sellerAvatar?: string;
   createdAt: string;
   location?: string;
   tags?: string[];
+  is_sold?: boolean;
+  sold_at?: string;
+  status?: string;
 }
 
 export interface User {
