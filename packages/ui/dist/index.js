@@ -16,4 +16,7 @@ export { default as LiveActivity } from './LiveActivity.svelte';
 export { default as ProductSheet } from './ProductSheet.svelte';
 export { default as QuickActions } from './QuickActions.svelte';
 export { default as TabGroup } from './TabGroup.svelte';
+// Payment components
+export { default as PaymentForm } from './PaymentForm.svelte';
+export { default as CheckoutSummary } from './CheckoutSummary.svelte';
 export * from './types.js';
