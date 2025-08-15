@@ -1,125 +1,54 @@
 <script lang="ts">
   import { Button } from '@repo/ui';
-  import { onMount } from 'svelte';
-  import { createClient } from '$lib/supabase/client';
   import * as i18n from '@repo/i18n';
 
-  let showBanner = $state(false);
-  let earlyBirdCount = $state(0);
-  let loading = $state(true);
+  let showBanner = $state(true);
+  let dismissed = $state(false);
 
-  const supabase = createClient();
-
-  onMount(async () => {
-    // Check if user previously dismissed banner first
-    const dismissed = localStorage.getItem('earlyBirdBannerDismissed');
-    if (dismissed === 'true') {
-      showBanner = false;
-      loading = false;
-      return;
-    }
-
-    try {
-      // Check discount eligibility via API
-      const response = await fetch('/api/subscriptions/discount');
-      
-      if (response.ok) {
-        const discountInfo = await response.json();
-        showBanner = discountInfo.eligible;
-        
-        // Get actual count of early bird users
-        const { count } = await supabase
-          .from('user_subscriptions')
-          .select('*', { count: 'exact', head: true })
-          .gt('discount_percent', 0);
-          
-        earlyBirdCount = count || 0;
-      } else {
-        showBanner = false;
-      }
-    } catch (error) {
-      console.error('Error checking early bird status:', error);
-      showBanner = false;
-    } finally {
-      loading = false;
-    }
-  });
-
-  function dismissBanner() {
+  function dismiss() {
+    dismissed = true;
     showBanner = false;
-    // Store dismissal in localStorage to remember user preference
-    localStorage.setItem('earlyBirdBannerDismissed', 'true');
   }
 </script>
 
-{#if !loading && showBanner}
-  <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white relative">
-    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2">
-      <!-- Mobile Layout -->
-      <div class="sm:hidden">
-        <div class="grid grid-cols-[1fr_auto_auto] items-center gap-3">
-          <div class="flex items-center space-x-3">
-            <div class="text-xl">🚀</div>
-            <div>
-              <div class="text-sm font-bold">
-                {i18n.banner_welcomeToDriplo()} - {i18n.banner_sellBuySecond()}
-              </div>
-            </div>
-          </div>
-          
+{#if showBanner && !dismissed}
+  <div class="relative bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
+    <div class="px-3 py-2 sm:px-6 sm:py-3">
+      <div class="flex flex-col items-center justify-center gap-2 text-center sm:flex-row sm:gap-4">
+        <!-- Mobile Layout -->
+        <div class="flex items-center gap-2 sm:hidden">
+          <span class="text-lg">🚀</span>
+          <span class="text-sm font-bold">{i18n.t('banner_welcomeToDriplo')}</span>
+        </div>
+        <div class="text-xs sm:hidden">{i18n.t('banner_sellBuySecond')}</div>
+        
+        <!-- Desktop Layout -->
+        <div class="hidden sm:flex sm:items-center sm:gap-3">
+          <span class="text-xl">🚀</span>
+          <span class="text-base font-bold">{i18n.t('banner_welcomeToDriplo')}</span>
+          <span class="text-sm opacity-90">{i18n.t('banner_sellBuySecond')}</span>
+        </div>
+        
+        <!-- CTA Button -->
+        <div class="flex items-center gap-2">
           <Button 
             href="/sell"
-            variant="outline"
             size="sm"
-            class="!bg-white !text-blue-600 !border-white font-bold shadow-sm hover:!bg-blue-50 !px-4"
+            class="!bg-white !text-indigo-600 hover:!bg-gray-100 !font-bold !px-4 !py-2 !text-sm sm:!px-6"
           >
-            {i18n.banner_register()}
+            {i18n.t('banner_register')}
           </Button>
           
           <button 
-            onclick={dismissBanner}
-            class="text-white hover:text-gray-200 p-2"
-            aria-label="Dismiss"
+            onclick={dismiss}
+            class="p-1 rounded-full hover:bg-white/20 transition-colors"
+            aria-label="Close banner"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
-      </div>
-
-      <!-- Desktop Layout -->
-      <div class="hidden sm:grid sm:grid-cols-[1fr_auto_auto] sm:items-center sm:gap-6">
-        <div class="flex items-center space-x-4">
-          <div class="text-2xl">🚀</div>
-          <div>
-            <div class="text-base font-bold leading-tight">
-              {i18n.banner_welcomeToDriplo()}
-            </div>
-            <div class="text-sm opacity-90 leading-tight mt-1">
-              {i18n.banner_sellBuySecond()} - {i18n.banner_joinCommunity()}
-            </div>
-          </div>
-        </div>
-        
-        <Button 
-          href="/sell"
-          variant="outline"
-          size="md"
-          class="!bg-white !text-blue-600 !border-white font-bold shadow-sm hover:!bg-blue-50"
-        >
-          {i18n.banner_register()}
-        </Button>
-        
-        <button 
-          onclick={dismissBanner}
-          class="text-white hover:text-gray-200 p-2"
-          aria-label="Dismiss"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
       </div>
     </div>
   </div>
