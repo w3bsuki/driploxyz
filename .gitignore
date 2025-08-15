@@ -31,3 +31,10 @@ yarn-error.log*
 
 dist
 !packages/ui/dist
+
+# vercel
+.vercel/
+apps/web/.vercel/
+
+# windows null file
+nul
