@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { type Handle, redirect, error } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import type { Database } from '$lib/types/database.types';
 
 const supabase: Handle = async ({ event, resolve }) => {
@@ -12,24 +12,24 @@ const supabase: Handle = async ({ event, resolve }) => {
       path: event.url.pathname,
       method: event.request.method,
       userAgent: event.request.headers.get('user-agent')?.substring(0, 50),
-      hasSupabaseUrl: !!PUBLIC_SUPABASE_URL,
-      hasSupabaseKey: !!PUBLIC_SUPABASE_ANON_KEY
+      hasSupabaseUrl: !!env.PUBLIC_SUPABASE_URL,
+      hasSupabaseKey: !!env.PUBLIC_SUPABASE_ANON_KEY
     });
   }
   
   // CRITICAL: Fail fast with clear error message
-  if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
+  if (!env.PUBLIC_SUPABASE_URL || !env.PUBLIC_SUPABASE_ANON_KEY) {
     console.error('[CRITICAL] Missing Supabase environment variables', {
-      url: !!PUBLIC_SUPABASE_URL,
-      key: !!PUBLIC_SUPABASE_ANON_KEY
+      url: !!env.PUBLIC_SUPABASE_URL,
+      key: !!env.PUBLIC_SUPABASE_ANON_KEY
     });
     throw error(500, 'Server configuration error. Please contact support.');
   }
 
   try {
     event.locals.supabase = createServerClient<Database>(
-      PUBLIC_SUPABASE_URL,
-      PUBLIC_SUPABASE_ANON_KEY,
+      env.PUBLIC_SUPABASE_URL,
+      env.PUBLIC_SUPABASE_ANON_KEY,
       {
         cookies: {
           getAll() {

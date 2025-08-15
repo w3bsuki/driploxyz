@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import { env as privateEnv } from '$env/dynamic/private';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
+import { SUPABASE_SERVICE_ROLE_KEY, STRIPE_SECRET_KEY } from '$env/static/private';
 
 export function GET() {
   return json({
@@ -12,9 +12,9 @@ export function GET() {
       deployment_id: process.env.VERCEL_DEPLOYMENT_ID || 'local',
       has_public_supabase_url: !!PUBLIC_SUPABASE_URL,
       has_public_supabase_key: !!PUBLIC_SUPABASE_ANON_KEY,
-      has_service_role_key: !!privateEnv.SUPABASE_SERVICE_ROLE_KEY,
-      has_stripe_public_key: !!privateEnv.PUBLIC_STRIPE_PUBLISHABLE_KEY,
-      has_stripe_secret_key: !!privateEnv.STRIPE_SECRET_KEY,
+      has_service_role_key: !!SUPABASE_SERVICE_ROLE_KEY,
+      has_stripe_public_key: !!PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      has_stripe_secret_key: !!STRIPE_SECRET_KEY,
     },
     request_info: {
       vercel_id: process.env.VERCEL_REQUEST_ID || null,

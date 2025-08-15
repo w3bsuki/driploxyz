@@ -30,7 +30,7 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .maybeSingle(); // Use maybeSingle to avoid error if no profile
+        .single();
       
       if (profileError && profileError.code !== 'PGRST116') {
         console.error('[PROFILE_FETCH_ERROR]', profileError);
