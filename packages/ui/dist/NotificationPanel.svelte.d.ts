@@ -1,3 +1,11 @@
+interface Translations {
+    title?: string;
+    unread?: string;
+    markAllRead?: string;
+    noNotifications?: string;
+    notifyWhenSomethingHappens?: string;
+    viewAll?: string;
+}
 interface Notification {
     id: string;
     type: 'message' | 'like' | 'sale' | 'offer' | 'system';
@@ -25,6 +33,7 @@ interface Props {
     onMarkAllAsRead?: () => void;
     onClose?: () => void;
     class?: string;
+    translations?: Translations;
 }
 declare const NotificationPanel: import("svelte").Component<Props, {}, "">;
 type NotificationPanel = ReturnType<typeof NotificationPanel>;

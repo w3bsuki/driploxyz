@@ -1,3 +1,9 @@
+interface Translations {
+    newMessage?: string;
+    reply?: string;
+    dismiss?: string;
+    now?: string;
+}
 interface Props {
     show?: boolean;
     sender: {
@@ -15,6 +21,7 @@ interface Props {
     onDismiss?: () => void;
     autoHide?: boolean;
     duration?: number;
+    translations?: Translations;
 }
 declare const MessageNotificationToast: import("svelte").Component<Props, {}, "">;
 type MessageNotificationToast = ReturnType<typeof MessageNotificationToast>;

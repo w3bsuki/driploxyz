@@ -37,6 +37,7 @@ export { default as SocialLinksEditor } from './SocialLinksEditor.svelte';
 export { default as PayoutMethodSelector } from './PayoutMethodSelector.svelte';
 export { default as OnboardingSuccessModal } from './OnboardingSuccessModal.svelte';
 export { default as BrandBadge } from './BrandBadge.svelte';
+export { default as NewSellerBadge } from './NewSellerBadge.svelte';
 export { default as BrandPaymentModal } from './BrandPaymentModal.svelte';
 export { default as WelcomeTutorialFlow } from './WelcomeTutorialFlow.svelte';
 // Product sold status components
@@ -49,4 +50,8 @@ export { default as ImageUploader } from './ImageUploader.svelte';
 export { default as OptimizedImage } from './OptimizedImage.svelte';
 // Language switcher
 export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
+// Cookie consent
+export { default as CookieConsent } from './CookieConsent.svelte';
+// Locale detection
+export { default as LocaleDetectionBanner } from './LocaleDetectionBanner.svelte';
 export * from './types.js';

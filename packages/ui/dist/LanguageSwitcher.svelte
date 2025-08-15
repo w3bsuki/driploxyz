@@ -1,16 +1,21 @@
 <script lang="ts">
 	interface Props {
-		currentLanguage: string;
-		languages: Array<{ code: string; name: string; flag?: string }>;
-		onLanguageChange: (lang: string) => void;
+		currentLanguage?: string;
+		languages?: Array<{ code: string; name: string; flag?: string }>;
+		onLanguageChange?: (lang: string) => void;
 		variant?: 'dropdown' | 'inline' | 'compact';
 		class?: string;
 	}
 
 	let {
-		currentLanguage,
-		languages,
-		onLanguageChange,
+		currentLanguage = 'en',
+		languages = [
+			{ code: 'en', name: 'English', flag: '🇬🇧' },
+			{ code: 'bg', name: 'Български', flag: '🇧🇬' },
+			{ code: 'ru', name: 'Русский', flag: '🇷🇺' },
+			{ code: 'ua', name: 'Українська', flag: '🇺🇦' }
+		],
+		onLanguageChange = () => {},
 		variant = 'dropdown',
 		class: className = ''
 	}: Props = $props();

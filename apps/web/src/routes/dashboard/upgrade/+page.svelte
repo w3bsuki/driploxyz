@@ -5,6 +5,7 @@
   import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
   import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
+  import * as i18n from '@repo/i18n';
 
   interface Props {
     data: PageData;
@@ -205,8 +206,8 @@
       <div class="max-w-4xl mx-auto text-center">
         <div class="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-lg">
           <span class="text-lg">🎉</span>
-          <span class="font-semibold">Early Bird: {discountInfo.discountPercent}% OFF First Month!</span>
-          <span class="bg-white text-black px-2 py-1 rounded text-xs font-bold">Limited Time</span>
+          <span class="font-semibold">{i18n.banner_earlyBird()}: {discountInfo.discountPercent}% {i18n.banner_off()} {i18n.banner_firstMonth()}!</span>
+          <span class="bg-white text-black px-2 py-1 rounded text-xs font-bold">{i18n.banner_limitedTime()}</span>
         </div>
       </div>
     </div>
@@ -227,11 +228,11 @@
           <PricingCard
             planName={plan.name}
             planIcon={getPlanIcon(plan.plan_type)}
-            badge={isPremium ? '🔥 Most Popular' : isBrand ? '💼 Business' : ''}
+            badge={isPremium ? `🔥 ${i18n.banner_mostPopular()}` : isBrand ? `💼 ${i18n.banner_business()}` : ''}
             price={discountInfo.eligible ? discountedPrice : plan.price_monthly}
             originalPrice={discountInfo.eligible ? plan.price_monthly : undefined}
             period="/ month"
-            buttonText={isActive ? 'Currently Active' : `Get ${plan.name}`}
+            buttonText={isActive ? i18n.banner_currentlyActive() : `Get ${plan.name}`}
             features={features}
             onSelect={() => {
               if (!isActive) {
@@ -359,7 +360,7 @@
               
               {#if subscription.discount_percent > 0}
                 <div class="bg-black text-white rounded px-3 py-2 text-center">
-                  <span class="text-sm font-bold">{subscription.discount_percent}% OFF Applied</span>
+                  <span class="text-sm font-bold">{subscription.discount_percent}% {i18n.banner_offApplied()}</span>
                 </div>
               {/if}
             </div>

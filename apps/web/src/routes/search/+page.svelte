@@ -4,6 +4,8 @@
   import BottomNav from '$lib/components/BottomNav.svelte';
   import { goto } from '$app/navigation';
   import type { PageData } from './$types';
+  import * as i18n from '@repo/i18n';
+  import { formatPrice } from '$lib/utils/price';
   
   interface Props {
     data: PageData;
@@ -24,128 +26,128 @@
   
   let { data }: Props = $props();
   
-  // Category data structure with subcategories
-  const categoryData = {
+  // Category data structure with subcategories using i18n
+  const categoryData = $derived(() => ({
     women: {
-      name: 'Women',
+      name: i18n.category_women(),
       icon: '👗',
       subcategories: [
-        { name: 'Dresses', icon: '👗' },
-        { name: 'Tops', icon: '👚' },
-        { name: 'Jeans', icon: '👖' },
-        { name: 'Skirts', icon: '👠' },
-        { name: 'Jackets', icon: '🧥' },
-        { name: 'Shoes', icon: '👠' },
-        { name: 'Bags', icon: '👜' },
-        { name: 'Accessories', icon: '💍' }
+        { name: i18n.subcategory_dresses(), icon: '👗' },
+        { name: i18n.subcategory_tops(), icon: '👚' },
+        { name: i18n.subcategory_jeans(), icon: '👖' },
+        { name: i18n.subcategory_skirts(), icon: '👠' },
+        { name: i18n.subcategory_jackets(), icon: '🧥' },
+        { name: i18n.category_shoes(), icon: '👠' },
+        { name: i18n.category_bags(), icon: '👜' },
+        { name: i18n.subcategory_accessories(), icon: '💍' }
       ]
     },
     men: {
-      name: 'Men',
+      name: i18n.category_men(),
       icon: '👔',
       subcategories: [
-        { name: 'T-Shirts', icon: '👕' },
-        { name: 'Shirts', icon: '👔' },
-        { name: 'Jeans', icon: '👖' },
-        { name: 'Jackets', icon: '🧥' },
-        { name: 'Suits', icon: '🤵' },
-        { name: 'Shoes', icon: '👞' },
-        { name: 'Watches', icon: '⌚' },
-        { name: 'Accessories', icon: '🎩' }
+        { name: i18n.subcategory_tshirts(), icon: '👕' },
+        { name: i18n.subcategory_shirts(), icon: '👔' },
+        { name: i18n.subcategory_jeans(), icon: '👖' },
+        { name: i18n.subcategory_jackets(), icon: '🧥' },
+        { name: i18n.subcategory_suits(), icon: '🤵' },
+        { name: i18n.category_shoes(), icon: '👞' },
+        { name: i18n.subcategory_watches(), icon: '⌚' },
+        { name: i18n.subcategory_accessories(), icon: '🎩' }
       ]
     },
     kids: {
-      name: 'Kids',
+      name: i18n.category_kids(),
       icon: '👶',
       subcategories: [
-        { name: 'Baby (0-2)', icon: '👶' },
-        { name: 'Girls (2-8)', icon: '👧' },
-        { name: 'Boys (2-8)', icon: '👦' },
-        { name: 'Girls (9-16)', icon: '🧒' },
-        { name: 'Boys (9-16)', icon: '🧒' },
-        { name: 'Shoes', icon: '👟' },
-        { name: 'School', icon: '🎒' },
-        { name: 'Toys', icon: '🧸' }
+        { name: i18n.subcategory_baby(), icon: '👶' },
+        { name: i18n.subcategory_girls2to8(), icon: '👧' },
+        { name: i18n.subcategory_boys2to8(), icon: '👦' },
+        { name: i18n.subcategory_girls9to16(), icon: '🧒' },
+        { name: i18n.subcategory_boys9to16(), icon: '🧒' },
+        { name: i18n.category_shoes(), icon: '👟' },
+        { name: i18n.subcategory_school(), icon: '🎒' },
+        { name: i18n.subcategory_toys(), icon: '🧸' }
       ]
     },
     pets: {
-      name: 'Pets',
+      name: i18n.category_pets(),
       icon: '🐕',
       subcategories: [
-        { name: 'Dog Apparel', icon: '🐕' },
-        { name: 'Cat Accessories', icon: '🐱' },
-        { name: 'Pet Toys', icon: '🦴' },
-        { name: 'Leashes', icon: '🦮' },
-        { name: 'Beds', icon: '🛏️' },
-        { name: 'Food Bowls', icon: '🥣' },
-        { name: 'Carriers', icon: '🎒' }
+        { name: i18n.subcategory_dogApparel(), icon: '🐕' },
+        { name: i18n.subcategory_catAccessories(), icon: '🐱' },
+        { name: i18n.subcategory_petToys(), icon: '🦴' },
+        { name: i18n.subcategory_leashes(), icon: '🦮' },
+        { name: i18n.subcategory_beds(), icon: '🛏️' },
+        { name: i18n.subcategory_foodBowls(), icon: '🥣' },
+        { name: i18n.subcategory_carriers(), icon: '🎒' }
       ]
     },
     shoes: {
-      name: 'Shoes',
+      name: i18n.category_shoes(),
       icon: '👟',
       subcategories: [
-        { name: 'Sneakers', icon: '👟' },
-        { name: 'Boots', icon: '🥾' },
-        { name: 'Heels', icon: '👠' },
-        { name: 'Flats', icon: '🩰' },
-        { name: 'Sandals', icon: '👡' },
-        { name: 'Athletic', icon: '⚽' },
-        { name: 'Dress Shoes', icon: '👞' }
+        { name: i18n.subcategory_sneakers(), icon: '👟' },
+        { name: i18n.subcategory_boots(), icon: '🥾' },
+        { name: i18n.subcategory_heels(), icon: '👠' },
+        { name: i18n.subcategory_flats(), icon: '🩰' },
+        { name: i18n.subcategory_sandals(), icon: '👡' },
+        { name: i18n.subcategory_athletic(), icon: '⚽' },
+        { name: i18n.subcategory_dressShoes(), icon: '👞' }
       ]
     },
     bags: {
-      name: 'Bags',
+      name: i18n.category_bags(),
       icon: '👜',
       subcategories: [
-        { name: 'Handbags', icon: '👜' },
-        { name: 'Backpacks', icon: '🎒' },
-        { name: 'Totes', icon: '👝' },
-        { name: 'Clutches', icon: '💼' },
-        { name: 'Crossbody', icon: '👜' },
-        { name: 'Travel', icon: '🧳' },
-        { name: 'Laptop Bags', icon: '💻' }
+        { name: i18n.subcategory_handbags(), icon: '👜' },
+        { name: i18n.subcategory_backpacks(), icon: '🎒' },
+        { name: i18n.subcategory_totes(), icon: '👝' },
+        { name: i18n.subcategory_clutches(), icon: '💼' },
+        { name: i18n.subcategory_crossbody(), icon: '👜' },
+        { name: i18n.subcategory_travel(), icon: '🧳' },
+        { name: i18n.subcategory_laptopBags(), icon: '💻' }
       ]
     },
     home: {
-      name: 'Home',
+      name: i18n.category_home(),
       icon: '🏠',
       subcategories: [
-        { name: 'Decor', icon: '🖼️' },
-        { name: 'Bedding', icon: '🛏️' },
-        { name: 'Kitchen', icon: '🍽️' },
-        { name: 'Lighting', icon: '💡' },
-        { name: 'Storage', icon: '📦' },
-        { name: 'Garden', icon: '🌱' },
-        { name: 'Art', icon: '🎨' },
-        { name: 'Textiles', icon: '🧶' }
+        { name: i18n.subcategory_decor(), icon: '🖼️' },
+        { name: i18n.subcategory_bedding(), icon: '🛏️' },
+        { name: i18n.subcategory_kitchen(), icon: '🍽️' },
+        { name: i18n.subcategory_lighting(), icon: '💡' },
+        { name: i18n.subcategory_storage(), icon: '📦' },
+        { name: i18n.subcategory_garden(), icon: '🌱' },
+        { name: i18n.subcategory_art(), icon: '🎨' },
+        { name: i18n.subcategory_textiles(), icon: '🧶' }
       ]
     },
     beauty: {
-      name: 'Beauty',
+      name: i18n.category_beauty(),
       icon: '💄',
       subcategories: [
-        { name: 'Makeup', icon: '💄' },
-        { name: 'Skincare', icon: '🧴' },
-        { name: 'Fragrance', icon: '🌺' },
-        { name: 'Hair Care', icon: '💇' },
-        { name: 'Tools', icon: '🪞' },
-        { name: 'Nails', icon: '💅' },
-        { name: 'Bath & Body', icon: '🛁' },
-        { name: 'Sets', icon: '🎁' }
+        { name: i18n.subcategory_makeup(), icon: '💄' },
+        { name: i18n.subcategory_skincare(), icon: '🧴' },
+        { name: i18n.subcategory_fragrance(), icon: '🌺' },
+        { name: i18n.subcategory_hairCare(), icon: '💇' },
+        { name: i18n.subcategory_tools(), icon: '🪞' },
+        { name: i18n.subcategory_nails(), icon: '💅' },
+        { name: i18n.subcategory_bathBody(), icon: '🛁' },
+        { name: i18n.subcategory_sets(), icon: '🎁' }
       ]
     }
-  };
+  }));
   
-  const mainCategories = Object.keys(categoryData);
+  const mainCategories = Object.keys(categoryData());
   
   // Derive current display based on selection
   const currentDisplay = $derived(() => {
-    if (selectedMainCategory && categoryData[selectedMainCategory]) {
+    if (selectedMainCategory && categoryData()[selectedMainCategory]) {
       return {
         type: 'subcategories',
-        items: categoryData[selectedMainCategory].subcategories,
-        parent: categoryData[selectedMainCategory].name
+        items: categoryData()[selectedMainCategory].subcategories,
+        parent: categoryData()[selectedMainCategory].name
       };
     }
     return {
@@ -194,7 +196,7 @@
     // Filter by category
     if (selectedMainCategory) {
       results = results.filter(p => 
-        p.category.toLowerCase() === categoryData[selectedMainCategory].name.toLowerCase()
+        p.category.toLowerCase() === categoryData()[selectedMainCategory].name.toLowerCase()
       );
     }
     
@@ -315,7 +317,7 @@
         <div class="relative">
           <SearchBar 
             bind:value={searchQuery}
-            placeholder="Search for items, brands..."
+            placeholder={i18n.search_placeholder()}
             onSearch={handleSearch}
             onFilter={handleFilter}
             variant="hero"
@@ -349,8 +351,8 @@
                 {#if selectedMainCategory === category}
                   <!-- Selected state - solid black -->
                   <div class="flex flex-col items-center py-2 px-2 rounded-lg bg-black text-white">
-                    <span class="text-lg mb-1">{categoryData[category].icon}</span>
-                    <span class="text-xs font-medium">{categoryData[category].name}</span>
+                    <span class="text-lg mb-1">{categoryData()[category].icon}</span>
+                    <span class="text-xs font-medium">{categoryData()[category].name}</span>
                   </div>
                 {:else}
                   <!-- Glass morphism for unselected categories -->
@@ -362,8 +364,8 @@
                         style="background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 40%, rgba(0,0,0,0) 100%)"
                       />
                       <div class="relative flex flex-col items-center py-2 px-2 text-gray-700">
-                        <span class="text-lg mb-1">{categoryData[category].icon}</span>
-                        <span class="text-xs font-medium">{categoryData[category].name}</span>
+                        <span class="text-lg mb-1">{categoryData()[category].icon}</span>
+                        <span class="text-xs font-medium">{categoryData()[category].name}</span>
                       </div>
                     </div>
                   </div>
@@ -391,7 +393,7 @@
                         <svg class="w-[18px] h-[18px] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
-                        <span class="text-xs font-medium">Back</span>
+                        <span class="text-xs font-medium">{i18n.search_back()}</span>
                       </div>
                     </div>
                   </div>
@@ -447,7 +449,7 @@
       <div class="fixed bottom-20 left-0 right-0 bg-white rounded-t-2xl h-[calc(85vh-5rem)] flex flex-col">
         <!-- Fixed Header -->
         <div class="flex justify-between items-center p-4 border-b border-gray-100 flex-shrink-0">
-          <h2 class="text-lg font-semibold">Quick Filters</h2>
+          <h2 class="text-lg font-semibold">{i18n.search_quickFilters()}</h2>
           <button onclick={() => showFilters = false} class="p-1">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -461,7 +463,7 @@
             
             <!-- Size -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Size</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_size()}</label>
               <div class="grid grid-cols-4 gap-1.5">
                 {#each sizes as size}
                   <button
@@ -477,14 +479,14 @@
             
             <!-- Brand -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_brand()}</label>
               <div class="grid grid-cols-2 gap-2">
                 <button
                   onclick={() => selectedBrand = 'all'}
                   class="py-3 px-3 text-sm rounded-lg ring-1 transition-colors
                     {selectedBrand === 'all' ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
                 >
-                  All Brands
+                  {i18n.search_allBrands()}
                 </button>
                 {#each brands as brand}
                   <button
@@ -500,14 +502,14 @@
             
             <!-- Condition -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Condition</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_condition()}</label>
               <div class="space-y-2">
                 <button
                   onclick={() => selectedCondition = 'all'}
                   class="w-full py-3 px-3 text-sm rounded-lg ring-1 text-left transition-colors
                     {selectedCondition === 'all' ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
                 >
-                  All Conditions
+                  {i18n.search_allConditions()}
                 </button>
                 {#each conditions as condition}
                   <button
@@ -515,7 +517,13 @@
                     class="w-full py-3 px-3 text-sm rounded-lg ring-1 text-left transition-colors
                       {selectedCondition === condition ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
                   >
-                    <span class="capitalize">{condition.replace('-', ' ')}</span>
+                    <span class="capitalize">{
+                      condition === 'new' ? i18n.condition_new() :
+                      condition === 'like-new' ? i18n.condition_likeNew() :
+                      condition === 'good' ? i18n.condition_good() :
+                      condition === 'fair' ? i18n.condition_fair() :
+                      condition.replace('-', ' ')
+                    }</span>
                   </button>
                 {/each}
               </div>
@@ -523,19 +531,19 @@
             
             <!-- Price Range -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_priceRange()}</label>
               <div class="flex space-x-2">
                 <input
                   type="number"
                   bind:value={priceMin}
-                  placeholder="Min"
+                  placeholder={i18n.search_min()}
                   class="flex-1 px-3 py-2 ring-1 ring-gray-300 rounded-lg text-base"
                 />
                 <span class="self-center">-</span>
                 <input
                   type="number"
                   bind:value={priceMax}
-                  placeholder="Max"
+                  placeholder={i18n.search_max()}
                   class="flex-1 px-3 py-2 ring-1 ring-gray-300 rounded-lg text-base"
                 />
               </div>
@@ -545,8 +553,8 @@
         
         <!-- Fixed Actions -->
         <div class="flex space-x-3 p-4 border-t border-gray-100 flex-shrink-0">
-          <Button onclick={clearFilters} variant="outline" class="flex-1 h-12">Clear All</Button>
-          <Button onclick={() => showFilters = false} class="flex-1 h-12">Apply Filters</Button>
+          <Button onclick={clearFilters} variant="outline" class="flex-1 h-12">{i18n.search_clearAll()}</Button>
+          <Button onclick={() => showFilters = false} class="flex-1 h-12">{i18n.search_applyFilters()}</Button>
         </div>
       </div>
     </div>
@@ -556,8 +564,8 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
     <div class="flex items-center justify-between mb-4">
       <p class="text-sm text-gray-600">
-        {filteredProducts().length} items found
-        {searchQuery && ` for "${searchQuery}"`}
+        {filteredProducts().length} {i18n.search_itemsFound()}
+        {searchQuery && ` ${i18n.search_for()} "${searchQuery}"`}
       </p>
       
       <div class="flex items-center space-x-3">
@@ -570,7 +578,7 @@
           <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
-          <span>Filters</span>
+          <span>{i18n.search_filters()}</span>
           {#if activeFiltersCount() > 0}
             <div class="h-4 w-4 bg-black text-white text-xs rounded-full flex items-center justify-center">
               {activeFiltersCount()}
@@ -580,10 +588,10 @@
         
         <!-- Desktop Sort -->
         <select bind:value={sortBy} class="hidden sm:block px-3 py-1 ring-1 ring-gray-300 rounded-lg text-sm focus:ring-black">
-          <option value="relevance">Relevance</option>
-          <option value="newest">Newest first</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
+          <option value="relevance">{i18n.search_relevance()}</option>
+          <option value="newest">{i18n.search_newestFirst()}</option>
+          <option value="price-low">{i18n.search_priceLowToHigh()}</option>
+          <option value="price-high">{i18n.search_priceHighToLow()}</option>
         </select>
       </div>
     </div>
@@ -593,7 +601,7 @@
       <div class="flex items-center space-x-2 mb-4 overflow-x-auto">
         {#if selectedMainCategory}
           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
-            {categoryData[selectedMainCategory].name}
+            {categoryData()[selectedMainCategory].name}
             <button onclick={() => selectedMainCategory = null} class="ml-2">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -613,7 +621,7 @@
         {/if}
         {#if selectedSize !== 'all'}
           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
-            Size: {selectedSize}
+            {i18n.search_size()}: {selectedSize}
             <button onclick={() => selectedSize = 'all'} class="ml-2">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -622,7 +630,7 @@
           </span>
         {/if}
         <button onclick={clearFilters} class="text-sm text-gray-600 hover:text-gray-900">
-          Clear all
+          {i18n.search_clearAllFilters()}
         </button>
       </div>
     {/if}
@@ -634,6 +642,18 @@
           <ProductCard 
             {product}
             onclick={() => goto(`/product/${product.id}`)}
+            translations={{
+              size: i18n.product_size(),
+              newSeller: i18n.trending_newSeller(),
+              unknownSeller: i18n.seller_unknown(),
+              currency: i18n.common_currency(),
+              addToFavorites: i18n.product_addToFavorites(),
+              new: i18n.condition_new(),
+              likeNew: i18n.condition_likeNew(),
+              good: i18n.condition_good(),
+              fair: i18n.condition_fair(),
+              formatPrice: (price: number) => formatPrice(price)
+            }}
           />
         {/each}
       </div>
@@ -642,8 +662,8 @@
         <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <h3 class="text-lg font-medium text-gray-900 mb-2">No items found</h3>
-        <p class="text-gray-600">Try adjusting your filters or search terms</p>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">{i18n.search_noItemsFound()}</h3>
+        <p class="text-gray-600">{i18n.search_adjustFilters()}</p>
       </div>
     {/if}
   </div>

@@ -8,6 +8,28 @@
     color?: string;
   }
 
+  interface Translations {
+    welcome?: string;
+    welcomeBrand?: string;
+    welcomePersonal?: string;
+    discover?: string;
+    discoverDesc?: string;
+    sell?: string;
+    sellDesc?: string;
+    ready?: string;
+    readyDesc?: string;
+    back?: string;
+    next?: string;
+    getStarted?: string;
+    skip?: string;
+    designer?: string;
+    vintage?: string;
+    trending?: string;
+    totalSales?: string;
+    happySellers?: string;
+    trustedMarketplace?: string;
+  }
+
   interface Props {
     show?: boolean;
     steps?: WelcomeStep[];
@@ -16,6 +38,7 @@
     onPrevious?: () => void;
     onComplete?: () => void;
     onSkip?: () => void;
+    translations?: Translations;
   }
 
   let { 
@@ -58,7 +81,8 @@
     onNext,
     onPrevious,
     onComplete,
-    onSkip
+    onSkip,
+    translations = {}
   }: Props = $props();
 
   const currentStepData = $derived(steps[currentStep]);
@@ -124,7 +148,7 @@
                 onclick={onPrevious}
                 class="flex-1 px-6 py-3 text-gray-600 hover:text-gray-800 font-medium rounded-xl hover:bg-gray-100/50 transition-colors"
               >
-                Back
+{translations.back || 'Back'}
               </button>
             {/if}
 
@@ -133,9 +157,9 @@
               class="flex-1 px-6 py-3 bg-black text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors"
             >
               {#if isLastStep}
-                Get Started
+{translations.getStarted || 'Get Started'}
               {:else}
-                Next
+{translations.next || 'Next'}
               {/if}
             </button>
 
@@ -144,7 +168,7 @@
                 onclick={onSkip}
                 class="px-4 py-3 text-gray-500 hover:text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-100/50 transition-colors"
               >
-                Skip
+{translations.skip || 'Skip'}
               </button>
             {/if}
           </div>
@@ -156,15 +180,15 @@
         <div class="grid grid-cols-3 gap-3 mt-6">
           <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 border border-white/30 text-center">
             <div class="text-lg mb-1">👗</div>
-            <div class="text-xs font-medium text-gray-700">Designer</div>
+            <div class="text-xs font-medium text-gray-700">{translations.designer || 'Designer'}</div>
           </div>
           <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 border border-white/30 text-center">
             <div class="text-lg mb-1">♻️</div>
-            <div class="text-xs font-medium text-gray-700">Vintage</div>
+            <div class="text-xs font-medium text-gray-700">{translations.vintage || 'Vintage'}</div>
           </div>
           <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 border border-white/30 text-center">
             <div class="text-lg mb-1">⚡</div>
-            <div class="text-xs font-medium text-gray-700">Trending</div>
+            <div class="text-xs font-medium text-gray-700">{translations.trending || 'Trending'}</div>
           </div>
         </div>
       {/if}
@@ -174,11 +198,11 @@
         <div class="grid grid-cols-2 gap-3 mt-6">
           <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/30 text-center">
             <div class="text-lg font-bold text-green-600 mb-1">$2.5M+</div>
-            <div class="text-xs text-gray-600">Total Sales</div>
+            <div class="text-xs text-gray-600">{translations.totalSales || 'Total Sales'}</div>
           </div>
           <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/30 text-center">
             <div class="text-lg font-bold text-blue-600 mb-1">50K+</div>
-            <div class="text-xs text-gray-600">Happy Sellers</div>
+            <div class="text-xs text-gray-600">{translations.happySellers || 'Happy Sellers'}</div>
           </div>
         </div>
       {/if}

@@ -2,12 +2,21 @@
 	import type { PaymentIntent } from './types.js';
 	import Button from './Button.svelte';
 
+	interface Translations {
+		total?: string;
+		processing?: string;
+		pay?: string;
+		paymentSystemNotInitialized?: string;
+		paymentFailed?: string;
+	}
+
 	interface Props {
 		amount: number;
 		currency?: string;
 		onPaymentSuccess?: (paymentIntent: PaymentIntent) => void;
 		onPaymentError?: (error: string) => void;
 		loading?: boolean;
+		translations?: Translations;
 	}
 
 	let { 
@@ -15,7 +24,8 @@
 		currency = 'eur',
 		onPaymentSuccess,
 		onPaymentError,
-		loading = false 
+		loading = false,
+		translations = {}
 	}: Props = $props();
 
 	let paymentProcessing = $state(false);
@@ -33,7 +43,7 @@
 		event.preventDefault();
 		
 		if (!stripe || !elements) {
-			onPaymentError?.('Payment system not initialized');
+			onPaymentError?.(translations.paymentSystemNotInitialized || 'Payment system not initialized');
 			return;
 		}
 
@@ -54,7 +64,7 @@
 				onPaymentSuccess?.(paymentIntent);
 			}
 		} catch (error) {
-			onPaymentError?.(error instanceof Error ? error.message : 'Payment failed');
+			onPaymentError?.(error instanceof Error ? error.message : (translations.paymentFailed || 'Payment failed'));
 		} finally {
 			paymentProcessing = false;
 		}
@@ -71,7 +81,7 @@
 <form on:submit={handleSubmit} class="space-y-6">
 	<div class="bg-gray-50 p-4 rounded-lg">
 		<div class="flex justify-between items-center">
-			<span class="text-sm font-medium text-gray-600">Total</span>
+			<span class="text-sm font-medium text-gray-600">{translations.total || 'Total'}</span>
 			<span class="text-lg font-bold text-gray-900">
 				{formatAmount(amount, currency)}
 			</span>
@@ -91,9 +101,9 @@
 		variant="primary"
 	>
 		{#if paymentProcessing}
-			Processing...
+			{translations.processing || 'Processing...'}
 		{:else}
-			Pay {formatAmount(amount, currency)}
+			{translations.pay || 'Pay'} {formatAmount(amount, currency)}
 		{/if}
 	</Button>
 </form>

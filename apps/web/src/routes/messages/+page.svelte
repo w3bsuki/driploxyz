@@ -4,6 +4,7 @@
   import BottomNav from '$lib/components/BottomNav.svelte';
   import { messageNotificationActions } from '$lib/stores/messageNotifications';
   import type { PageData } from './$types';
+  import * as i18n from '@repo/i18n';
   
   interface Props {
     data: PageData;
@@ -168,12 +169,12 @@
   
   const timeAgo = (date: string) => {
     // Use a fixed time to prevent hydration mismatch
-    return 'now';
+    return i18n.messages_now();
   };
   
   const getActiveStatus = (lastActiveAt: string | null) => {
     // Use fixed status to prevent hydration mismatch
-    return 'Active now';
+    return i18n.messages_activeNow();
   };
   
   // Handle typing indicator
@@ -292,18 +293,18 @@
     <div class="bg-white border-b sticky top-14 sm:top-16 z-30">
       <div class="max-w-7xl mx-auto">
         <div class="px-4 sm:px-6 lg:px-8 py-3">
-          <h1 class="text-lg font-semibold text-gray-900">Inbox</h1>
+          <h1 class="text-lg font-semibold text-gray-900">{i18n.messages_inbox()}</h1>
         </div>
         
         <!-- Mobile Filter Pills (Full Width) -->
         <div class="sm:hidden">
           <div class="grid grid-cols-5 gap-1 px-4 pb-3">
             {#each [
-              { id: 'all', label: 'All', count: allConversations().length },
-              { id: 'unread', label: 'Unread', count: allConversations().filter(c => c.unread).length },
-              { id: 'buying', label: 'Buying' },
-              { id: 'selling', label: 'Selling' },
-              { id: 'offers', label: 'Offers', count: allConversations().filter(c => c.isOffer).length }
+              { id: 'all', label: i18n.messages_all(), count: allConversations().length },
+              { id: 'unread', label: i18n.messages_unread(), count: allConversations().filter(c => c.unread).length },
+              { id: 'buying', label: i18n.messages_buying() },
+              { id: 'selling', label: i18n.messages_selling() },
+              { id: 'offers', label: i18n.messages_offers(), count: allConversations().filter(c => c.isOffer).length }
             ] as tab}
               <button
                 onclick={() => activeTab = tab.id}
@@ -327,11 +328,11 @@
         <div class="hidden sm:block px-4 sm:px-6 lg:px-8">
           <TabGroup
             tabs={[
-              { id: 'all', label: 'All', count: allConversations().length },
-              { id: 'unread', label: 'Unread', count: allConversations().filter(c => c.unread).length },
-              { id: 'buying', label: 'Buying' },
-              { id: 'selling', label: 'Selling' },
-              { id: 'offers', label: 'Offers', count: allConversations().filter(c => c.isOffer).length }
+              { id: 'all', label: i18n.messages_all(), count: allConversations().length },
+              { id: 'unread', label: i18n.messages_unread(), count: allConversations().filter(c => c.unread).length },
+              { id: 'buying', label: i18n.messages_buying() },
+              { id: 'selling', label: i18n.messages_selling() },
+              { id: 'offers', label: i18n.messages_offers(), count: allConversations().filter(c => c.isOffer).length }
             ]}
             {activeTab}
             onTabChange={(tab) => activeTab = tab}
@@ -376,7 +377,7 @@
                       <img src={conv.productImage} alt={conv.productTitle} class="w-6 h-6 rounded object-cover" />
                       <span class="text-xs text-gray-600 truncate">{conv.productTitle}</span>
                     {:else}
-                      <span class="text-xs text-gray-500 italic">No products</span>
+                      <span class="text-xs text-gray-500 italic">{i18n.messages_noProducts()}</span>
                     {/if}
                   </div>
                 {/if}
@@ -431,16 +432,16 @@
               <div class="mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
                 <div class="flex justify-between items-start mb-2">
                   <div>
-                    <p class="text-xs font-semibold text-blue-900 uppercase tracking-wide">Bundle Offer</p>
+                    <p class="text-xs font-semibold text-blue-900 uppercase tracking-wide">{i18n.messages_bundleOffer()}</p>
                     <p class="text-[11px] text-blue-700">{conv.bundleItems?.length} items • Save ${(conv.bundleItems?.reduce((sum, item) => sum + item.price, 0) || 0) - conv.offerPrice}</p>
                   </div>
                   <p class="text-lg font-bold text-blue-900">${conv.offerPrice}</p>
                 </div>
                 {#if conv.offerStatus === 'pending'}
                   <div class="flex space-x-2">
-                    <button onclick={() => acceptOffer(conv.id)} class="flex-1 py-1.5 bg-black text-white text-xs font-medium rounded-lg hover:bg-gray-800">Accept</button>
-                    <button onclick={() => declineOffer(conv.id)} class="flex-1 py-1.5 bg-white text-gray-700 text-xs font-medium rounded-lg border border-gray-300 hover:bg-gray-50">Decline</button>
-                    <button onclick={() => counterOffer(conv.id)} class="flex-1 py-1.5 bg-white text-gray-700 text-xs font-medium rounded-lg border border-gray-300 hover:bg-gray-50">Counter</button>
+                    <button onclick={() => acceptOffer(conv.id)} class="flex-1 py-1.5 bg-black text-white text-xs font-medium rounded-lg hover:bg-gray-800">{i18n.messages_acceptOffer()}</button>
+                    <button onclick={() => declineOffer(conv.id)} class="flex-1 py-1.5 bg-white text-gray-700 text-xs font-medium rounded-lg border border-gray-300 hover:bg-gray-50">{i18n.messages_declineOffer()}</button>
+                    <button onclick={() => counterOffer(conv.id)} class="flex-1 py-1.5 bg-white text-gray-700 text-xs font-medium rounded-lg border border-gray-300 hover:bg-gray-50">{i18n.messages_counterOffer()}</button>
                   </div>
                 {/if}
               </div>
@@ -457,7 +458,7 @@
               </a>
             {:else}
               <div class="mt-3 p-2.5 bg-gray-50 rounded-xl">
-                <p class="text-xs text-gray-500 text-center italic">No products - General conversation</p>
+                <p class="text-xs text-gray-500 text-center italic">{i18n.messages_noProducts()}</p>
               </div>
             {/if}
           </div>
@@ -466,7 +467,7 @@
           <div class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
             <!-- Date Separator -->
             <div class="flex items-center justify-center">
-              <span class="text-[11px] text-gray-500 bg-white px-3 py-1 rounded-full">Today</span>
+              <span class="text-[11px] text-gray-500 bg-white px-3 py-1 rounded-full">{i18n.messages_today()}</span>
             </div>
             
             <!-- Show ALL messages for this conversation, bypassing complex filtering -->
@@ -488,12 +489,12 @@
                           <svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                           </svg>
-                          <span class="text-blue-500">Read</span>
+                          <span class="text-blue-500">{i18n.messages_read()}</span>
                         {:else}
                           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                           </svg>
-                          <span>Sent</span>
+                          <span>{i18n.messages_sent()}</span>
                         {/if}
                       </div>
                     {/if}
@@ -517,19 +518,19 @@
             <div class="flex gap-2 mb-2 overflow-x-auto scrollbar-hide">
               <button class="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap">
                 <span class="text-lg">💰</span>
-                <span class="text-xs font-medium">Make Offer</span>
+                <span class="text-xs font-medium">{i18n.messages_makeOffer()}</span>
               </button>
               <button class="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap">
                 <span class="text-lg">📦</span>
-                <span class="text-xs font-medium">Bundle</span>
+                <span class="text-xs font-medium">{i18n.messages_bundle()}</span>
               </button>
               <button class="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap">
                 <span class="text-lg">📍</span>
-                <span class="text-xs font-medium">Location</span>
+                <span class="text-xs font-medium">{i18n.messages_location()}</span>
               </button>
               <button class="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap">
                 <span class="text-lg">📸</span>
-                <span class="text-xs font-medium">Photo</span>
+                <span class="text-xs font-medium">{i18n.messages_photo()}</span>
               </button>
             </div>
             
@@ -546,7 +547,7 @@
                     }
                   }}
                   oninput={handleTyping}
-                  placeholder="Message..."
+                  placeholder={i18n.messages_messageInput()}
                   class="w-full px-4 py-2.5 bg-gray-50 rounded-full text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:bg-white"
                 />
               </div>
@@ -569,8 +570,8 @@
             <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
-            <h3 class="text-lg font-medium text-gray-900 mb-2">Select a conversation</h3>
-            <p class="text-gray-600">Choose a message from the list to start chatting</p>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">{i18n.messages_selectConversation()}</h3>
+            <p class="text-gray-600">{i18n.messages_chooseMessage()}</p>
           </div>
         </div>
       {/if}

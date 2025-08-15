@@ -2,6 +2,15 @@
   import Avatar from './Avatar.svelte';
   import Button from './Button.svelte';
   
+  interface Translations {
+    title?: string;
+    unread?: string;
+    markAllRead?: string;
+    noNotifications?: string;
+    notifyWhenSomethingHappens?: string;
+    viewAll?: string;
+  }
+  
   interface Notification {
     id: string;
     type: 'message' | 'like' | 'sale' | 'offer' | 'system';
@@ -30,6 +39,7 @@
     onMarkAllAsRead?: () => void;
     onClose?: () => void;
     class?: string;
+    translations?: Translations;
   }
 
   let { 
@@ -39,7 +49,8 @@
     onMarkAsRead,
     onMarkAllAsRead,
     onClose,
-    class: className = ''
+    class: className = '',
+    translations = {}
   }: Props = $props();
 
   const unreadCount = $derived(notifications.filter(n => !n.read).length);
@@ -95,9 +106,9 @@
       <!-- Header -->
       <div class="flex items-center justify-between p-4 border-b border-gray-100/50 bg-white/50">
         <div>
-          <h3 class="font-semibold text-gray-900">Notifications</h3>
+          <h3 class="font-semibold text-gray-900">{translations.title || 'Notifications'}</h3>
           {#if unreadCount > 0}
-            <p class="text-xs text-gray-600">{unreadCount} unread</p>
+            <p class="text-xs text-gray-600">{unreadCount} {translations.unread || 'unread'}</p>
           {/if}
         </div>
         <div class="flex items-center space-x-2">
@@ -108,7 +119,7 @@
               onclick={onMarkAllAsRead}
               class="text-xs"
             >
-              Mark all read
+{translations.markAllRead || 'Mark all read'}
             </Button>
           {/if}
           <button 
@@ -141,8 +152,8 @@
           <!-- Empty State -->
           <div class="p-8 text-center">
             <div class="text-4xl mb-2">🔔</div>
-            <h4 class="font-medium text-gray-900 mb-1">No notifications</h4>
-            <p class="text-sm text-gray-600">We'll notify you when something happens</p>
+            <h4 class="font-medium text-gray-900 mb-1">{translations.noNotifications || 'No notifications'}</h4>
+            <p class="text-sm text-gray-600">{translations.notifyWhenSomethingHappens || "We'll notify you when something happens"}</p>
           </div>
         {:else}
           <!-- Notifications -->
@@ -222,7 +233,7 @@
             href="/notifications"
             class="w-full text-xs text-gray-600"
           >
-            View all notifications
+{translations.viewAll || 'View all notifications'}
           </Button>
         </div>
       {/if}

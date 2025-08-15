@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import { enhance } from '$app/forms';
   import type { ActionData, PageData } from './$types';
+  import * as i18n from '@repo/i18n';
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
   
@@ -37,7 +38,7 @@
     <div class="space-y-3">
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700">
-          Email address
+          {i18n.auth_email()}
         </label>
         <div class="mt-1">
           <input
@@ -48,14 +49,14 @@
             required
             bind:value={email}
             class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            placeholder="Enter your email"
+            placeholder={i18n.auth_email()}
           />
         </div>
       </div>
 
       <div>
         <label for="password" class="block text-sm font-medium text-gray-700">
-          Password
+          {i18n.auth_password()}
         </label>
         <div class="mt-1">
           <input
@@ -66,7 +67,7 @@
             required
             bind:value={password}
             class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            placeholder="Enter your password"
+            placeholder={i18n.auth_password()}
           />
         </div>
       </div>
@@ -74,7 +75,7 @@
       <div class="flex items-center justify-between">
         <div class="text-sm">
           <a href="/forgot-password" class="font-medium text-blue-600 hover:text-blue-500">
-            Forgot your password?
+            {i18n.auth_forgotPassword()}
           </a>
         </div>
       </div>
@@ -85,7 +86,7 @@
           disabled={loading}
           class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white focus-visible:ring-blue-500 px-6 py-3 text-base"
         >
-          {loading ? 'Signing in...' : 'Sign in'}
+          {loading ? i18n.loading() : i18n.auth_signIn()}
         </button>
       </div>
     </div>
@@ -97,7 +98,7 @@
       <div class="w-full border-t border-gray-300" />
     </div>
     <div class="relative flex justify-center text-sm">
-      <span class="px-2 bg-white text-gray-500">Or continue with</span>
+      <span class="px-2 bg-white text-gray-500">{i18n.auth_orContinueWith()}</span>
     </div>
   </div>
 
@@ -127,9 +128,9 @@
   </div>
 
   <div class="text-center text-sm">
-    <span class="text-gray-500">Don't have an account? </span>
+    <span class="text-gray-500">{i18n.auth_dontHaveAccount()} </span>
     <a href="/signup" class="font-medium text-blue-600 hover:text-blue-500">
-      Sign up
+      {i18n.auth_signUp()}
     </a>
   </div>
 </div>

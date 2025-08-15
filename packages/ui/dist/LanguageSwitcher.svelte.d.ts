@@ -1,11 +1,11 @@
 interface Props {
-    currentLanguage: string;
-    languages: Array<{
+    currentLanguage?: string;
+    languages?: Array<{
         code: string;
         name: string;
         flag?: string;
     }>;
-    onLanguageChange: (lang: string) => void;
+    onLanguageChange?: (lang: string) => void;
     variant?: 'dropdown' | 'inline' | 'compact';
     class?: string;
 }

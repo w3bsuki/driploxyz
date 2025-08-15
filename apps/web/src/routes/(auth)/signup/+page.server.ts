@@ -1,5 +1,6 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import { detectLanguage } from '@repo/i18n';
 
 export const load: PageServerLoad = async ({ locals: { session } }) => {
   if (session) {
@@ -8,13 +9,18 @@ export const load: PageServerLoad = async ({ locals: { session } }) => {
 };
 
 export const actions: Actions = {
-  signup: async ({ request, locals: { supabase } }) => {
+  signup: async ({ request, locals: { supabase }, cookies }) => {
     const formData = await request.formData();
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const confirmPassword = formData.get('confirmPassword') as string;
     const fullName = formData.get('fullName') as string;
     const terms = formData.get('terms') as string;
+    
+    // Get user's locale from cookie or Accept-Language header
+    const localeCookie = cookies.get('locale');
+    const acceptLanguage = request.headers.get('accept-language') || '';
+    const userLocale = localeCookie || detectLanguage(acceptLanguage);
 
     // Validation
     if (!email || !password || !fullName) {
@@ -83,13 +89,14 @@ export const actions: Actions = {
       // Generate a unique username based on name and user ID
       const username = `user_${data.user.id.substring(0, 8)}`;
       
-      // Create profile for the new user
+      // Create profile for the new user with detected locale
       const { error: profileError } = await supabase
         .from('profiles')
         .insert({
           id: data.user.id,
           username,
-          full_name: fullName
+          full_name: fullName,
+          locale: userLocale
         });
 
       if (profileError) {
@@ -97,20 +104,11 @@ export const actions: Actions = {
         // Continue anyway - profile might already exist
       }
 
-      // For development, auto-confirm and sign in the user
-      // In production, you'd send a confirmation email
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      if (!signInError) {
-        throw redirect(303, '/');
-      }
-
+      // Don't auto-login - require email verification
       return {
         success: true,
-        message: 'Account created successfully! Please check your email to verify your account.'
+        message: 'Account created successfully! Please check your email to verify your account.',
+        email
       };
     }
 

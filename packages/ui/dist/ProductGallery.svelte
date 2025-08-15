@@ -8,6 +8,12 @@
     condition?: string;
     isAuthenticated?: boolean;
     class?: string;
+    translations?: {
+      new?: string;
+      likeNew?: string;
+      good?: string;
+      fair?: string;
+    };
   }
 
   let { 
@@ -15,7 +21,13 @@
     title, 
     condition,
     isAuthenticated = false,
-    class: className = '' 
+    class: className = '',
+    translations = {
+      new: 'New with tags',
+      likeNew: 'Like new',
+      good: 'Good condition',
+      fair: 'Fair condition'
+    }
   }: Props = $props();
 
   let selectedIndex = $state(0);
@@ -33,10 +45,10 @@
   }[condition || ''] || 'bg-gray-500 text-white');
 
   const conditionLabels = $derived({
-    'new': 'New with tags',
-    'like-new': 'Like new',
-    'good': 'Good condition',
-    'fair': 'Fair condition'
+    'new': translations.new || 'New with tags',
+    'like-new': translations.likeNew || 'Like new',
+    'good': translations.good || 'Good condition',
+    'fair': translations.fair || 'Fair condition'
   }[condition || ''] || condition);
 
   function handleImageClick() {

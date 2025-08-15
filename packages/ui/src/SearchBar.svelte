@@ -5,6 +5,7 @@
   interface Props {
     value?: string;
     placeholder?: string;
+    categoriesText?: string;
     suggestions?: string[];
     variant?: SearchBarVariant;
     showCategoryDropdown?: boolean;
@@ -18,6 +19,7 @@
   let { 
     value = $bindable(''),
     placeholder = 'Search clothing, brands, styles...',
+    categoriesText = 'Categories',
     suggestions = [],
     variant = 'hero',
     showCategoryDropdown = false,
@@ -97,16 +99,16 @@
     {#if variant === 'hero'}
       <!-- Glass morphism container for hero variant -->
       <div class="bg-white rounded-full border border-gray-200 p-1 shadow-sm backdrop-blur-xl hover:shadow-md focus-within:border-gray-400 transition-all">
-        <!-- Inner glass frame -->
-        <div class="bg-gray-50/80 relative rounded-full border overflow-hidden">
+        <!-- Inner glass frame with fixed min-height -->
+        <div class="bg-gray-50/80 relative rounded-full border border-gray-100 overflow-hidden" style="min-height: 48px;">
           <div 
             aria-hidden="true"
-            class="absolute inset-x-0 top-0 h-full rounded-[inherit] pointer-events-none"
+            class="absolute inset-0 rounded-full pointer-events-none"
             style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
-          />
-          <div class="relative flex items-center">
+          ></div>
+          <div class="relative flex items-center py-3" style="min-height: 48px;">
             <!-- Search Icon -->
-            <div class="absolute left-4 flex items-center justify-center pointer-events-none">
+            <div class="pl-4 pr-3 flex items-center justify-center">
               <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -118,36 +120,39 @@
               bind:value
               {placeholder}
               type="search"
-              class="w-full bg-transparent pl-11 pr-24 py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-none"
+              class="flex-1 bg-transparent text-base sm:text-sm placeholder-gray-500 focus:outline-none min-w-0"
               oninput={handleInput}
               onfocus={handleFocus}
               onblur={handleBlur}
             />
             
-            <!-- Clear Button -->
-            {#if value}
+            <!-- Right side buttons container -->
+            <div class="flex items-center pr-2">
+              <!-- Clear Button -->
+              {#if value}
+                <button
+                  type="button"
+                  onclick={handleClear}
+                  class="p-1.5 hover:bg-gray-200 rounded-full transition-colors mr-1"
+                >
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              {/if}
+              
+              <!-- Categories Button -->
               <button
                 type="button"
-                onclick={handleClear}
-                class="absolute right-16 p-1 hover:bg-gray-200 rounded-full transition-colors"
+                onclick={onFilter}
+                class="px-3 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center space-x-1 ring-1 ring-gray-200 whitespace-nowrap"
               >
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                <svg class="w-4 h-4 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
+                <span class="text-xs font-medium text-gray-600 hidden sm:inline">{categoriesText}</span>
               </button>
-            {/if}
-            
-            <!-- Categories Button -->
-            <button
-              type="button"
-              onclick={onFilter}
-              class="absolute right-2 px-4 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center space-x-1 ring-1 ring-gray-200"
-            >
-              <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-              <span class="text-xs font-medium text-gray-600 hidden sm:inline">Categories</span>
-            </button>
+            </div>
           </div>
         </div>
       </div>

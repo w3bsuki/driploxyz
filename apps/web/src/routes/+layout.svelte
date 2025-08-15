@@ -1,19 +1,24 @@
 <script lang="ts">
   import '../app.css';
+  import '$lib/styles/cyrillic-typography.css';
   import { invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
-  import { MessageNotificationToast, FollowNotificationToast } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast, CookieConsent } from '@repo/ui';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
+  import LocaleDetector from '$lib/components/LocaleDetector.svelte';
   import { initializeLanguage } from '$lib/utils/language';
+  import * as i18n from '@repo/i18n';
   import type { LayoutData } from './$types';
 
   // Initialize language immediately when browser is available
   if (browser) {
     initializeLanguage();
+    // Set the lang attribute on the html element
+    document.documentElement.lang = i18n.languageTag();
   }
 
   let { data }: { data: LayoutData } = $props();
@@ -55,6 +60,12 @@
 
 <EarlyBirdBanner />
 <slot />
+
+<!-- Locale Detection -->
+<LocaleDetector />
+
+<!-- Cookie Consent Banner -->
+<CookieConsent />
 
 <!-- Global Message Notification Toast -->
 {#if $activeNotification}

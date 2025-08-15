@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Avatar } from '@repo/ui';
+  import * as i18n from '@repo/i18n';
 
   interface Props {
     promotedProducts: any[];
@@ -22,20 +23,25 @@
             <button 
               onclick={() => onSellerSelect({
                 id: product.seller_id || `seller-${product.id}`,
-                name: product.seller_name || 'Premium Seller',
+                name: product.seller_name || i18n.seller_premiumSeller(),
                 avatar: null,
                 premium: true,
                 rating: 4.8,
                 itemCount: 15,
                 followers: 250,
-                description: 'Premium seller with exclusive items'
+                description: i18n.seller_premiumSellerDescription()
               })}
               class="relative flex-shrink-0 group"
             >
-              <!-- Glass morphism container -->
-              <div class="bg-white rounded-2xl border border-gray-200 p-1 shadow-sm backdrop-blur-xl group-hover:scale-105 transition-transform">
+              <!-- Glass morphism container with golden promoted border -->
+              <div class="bg-white rounded-2xl border-2 border-yellow-400/60 shadow-lg shadow-yellow-100 backdrop-blur-xl group-hover:scale-105 group-hover:shadow-yellow-200 transition-all duration-300">
+                <!-- Promoted badge -->
+                <div class="absolute -top-2 left-3 z-10 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
+                  <span>👑</span>
+                  <span>{i18n.trending_promoted()}</span>
+                </div>
                 <!-- Inner glass frame -->
-                <div class="bg-gray-50/80 relative rounded-xl border overflow-hidden">
+                <div class="bg-gray-50/80 relative rounded-xl border border-yellow-200/40 overflow-hidden mt-2">
                   <div 
                     aria-hidden="true"
                     class="absolute inset-x-0 top-0 h-32 rounded-[inherit]"
@@ -56,7 +62,7 @@
                     </div>
                     <!-- Price badge -->
                     <div class="absolute bottom-2 right-2 bg-black text-white text-xs font-semibold px-2 py-1 rounded-lg">
-                      ${product.price}
+                      {i18n.common_currency()}{product.price}
                     </div>
                   </div>
                 </div>

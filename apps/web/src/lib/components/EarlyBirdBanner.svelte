@@ -2,6 +2,7 @@
   import { Button } from '@repo/ui';
   import { onMount } from 'svelte';
   import { createClient } from '$lib/supabase/client';
+  import * as i18n from '@repo/i18n';
 
   let showBanner = $state(false);
   let earlyBirdCount = $state(0);
@@ -59,7 +60,7 @@
           <div class="text-2xl animate-bounce">🎉</div>
           <div>
             <div class="text-sm font-medium">
-              Early Bird Special: <strong>50% OFF</strong> Premium Plans!
+              {i18n.banner_limitedTime()}: <strong>50% {i18n.banner_percentOff()}</strong> Premium Plans!
             </div>
             <div class="text-xs opacity-90">
               Limited to first 100 users • {100 - earlyBirdCount} spots remaining
@@ -73,12 +74,12 @@
             size="sm"
             class="bg-white text-green-600 hover:bg-gray-100 font-medium"
           >
-            Claim Discount
+{i18n.banner_shopNow()}
           </Button>
           <button 
             onclick={dismissBanner}
             class="text-white hover:text-gray-200 p-1"
-            aria-label="Dismiss banner"
+            aria-label="{i18n.messages_dismiss()}"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { Button, Avatar, ProductCard } from '@repo/ui';
+  import { Button, Avatar, ProductCard, BrandBadge, NewSellerBadge } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import BottomNav from '$lib/components/BottomNav.svelte';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import * as i18n from '@repo/i18n';
   
   interface Props {
     data: PageData;
@@ -76,15 +77,15 @@
         <div class="flex justify-between text-center mb-3">
           <div>
             <div class="text-lg font-semibold">{data.profile.active_listings || 0}</div>
-            <div class="text-xs text-gray-600">Posts</div>
+            <div class="text-xs text-gray-600">{i18n.profile_posts()}</div>
           </div>
           <div>
             <div class="text-lg font-semibold">{data.profile.sold_listings || 0}</div>
-            <div class="text-xs text-gray-600">Sold</div>
+            <div class="text-xs text-gray-600">{i18n.profile_sold()}</div>
           </div>
           <div>
             <div class="text-lg font-semibold">{data.profile.sales_count || 0}</div>
-            <div class="text-xs text-gray-600">Sales</div>
+            <div class="text-xs text-gray-600">{i18n.profile_sales()}</div>
           </div>
         </div>
         
@@ -92,10 +93,10 @@
         {#if data.isOwnProfile}
           <div class="flex space-x-2">
             <a href="/profile/edit" class="flex-1">
-              <Button variant="outline" size="sm" class="w-full text-sm">Edit Profile</Button>
+              <Button variant="outline" size="sm" class="w-full text-sm">{i18n.profile_editProfile()}</Button>
             </a>
             <a href="/dashboard" class="flex-1">
-              <Button size="sm" class="w-full text-sm">Dashboard</Button>
+              <Button size="sm" class="w-full text-sm">{i18n.profile_dashboard()}</Button>
             </a>
           </div>
         {:else}
@@ -106,10 +107,10 @@
               size="sm"
               class="flex-1 text-sm"
             >
-              {isFollowing ? 'Following' : 'Follow'}
+              {isFollowing ? i18n.profile_following() : i18n.profile_follow()}
             </Button>
             <Button onclick={handleMessage} variant="outline" size="sm" class="flex-1 text-sm">
-              Message
+              {i18n.profile_message()}
             </Button>
           </div>
         {/if}
@@ -120,6 +121,18 @@
     <div class="mt-3">
       <div class="flex items-center space-x-2">
         <h1 class="font-semibold text-sm">{data.profile.username}</h1>
+        
+        <!-- Brand Badge -->
+        {#if data.profile.brand_status === 'active' || data.profile.account_type === 'brand'}
+          <BrandBadge size="sm" verified={data.profile.verified} />
+        {/if}
+        
+        <!-- New Seller Badge (shows for first 30 days after completing onboarding) -->
+        {#if data.profile.onboarding_completed && data.profile.sales_count < 5}
+          <NewSellerBadge size="sm" />
+        {/if}
+        
+        <!-- Rating -->
         {#if data.profile.rating}
           <div class="flex items-center space-x-1">
             <svg class="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
@@ -128,12 +141,14 @@
             <span class="text-xs text-gray-600">{data.profile.rating.toFixed(1)}</span>
           </div>
         {/if}
+        
+        <!-- Top Seller -->
         {#if data.profile.role === 'seller' && data.profile.sales_count > 10}
-          <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">Premium</span>
+          <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">{i18n.profile_premium()}</span>
         {/if}
       </div>
       <p class="text-xs text-gray-500">
-        Joined {timeAgo(data.profile.created_at)}
+        {i18n.profile_joined()} {timeAgo(data.profile.created_at)}
         {#if data.profile.location} • {data.profile.location}{/if}
       </p>
       {#if data.profile.bio}
@@ -204,7 +219,7 @@
         </div>
       {:else}
         <div class="text-center py-12 text-gray-500">
-          <p>No listings yet</p>
+          <p>{i18n.profile_noListingsYet()}</p>
         </div>
       {/if}
     {:else if activeTab === 'reviews'}
@@ -221,7 +236,7 @@
                 />
                 <div class="flex-1">
                   <div class="flex items-center justify-between mb-1">
-                    <span class="text-sm font-medium">{review.reviewer?.username || 'Anonymous'}</span>
+                    <span class="text-sm font-medium">{review.reviewer?.username || i18n.profile_anonymous()}</span>
                     <span class="text-xs text-gray-500">{timeAgo(review.created_at)}</span>
                   </div>
                   <div class="flex items-center mb-2">
@@ -244,43 +259,43 @@
         </div>
       {:else}
         <div class="text-center py-12 text-gray-500">
-          <p>No reviews yet</p>
+          <p>{i18n.profile_noReviewsYet()}</p>
         </div>
       {/if}
     {:else if activeTab === 'about'}
       <!-- About -->
       <div class="space-y-6">
         <div class="bg-gray-50 rounded-lg p-4">
-          <h3 class="font-semibold mb-3">Seller Stats</h3>
+          <h3 class="font-semibold mb-3">{i18n.profile_sellerStats()}</h3>
           <div class="space-y-2 text-sm">
             <div class="flex justify-between">
-              <span class="text-gray-600">Items Sold</span>
+              <span class="text-gray-600">{i18n.profile_itemsSold()}</span>
               <span class="font-medium">{data.profile.sold_listings || 0}</span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-600">Rating</span>
+              <span class="text-gray-600">{i18n.profile_rating()}</span>
               <span class="font-medium">
                 {#if data.profile.rating}
-                  {data.profile.rating.toFixed(1)}/5 ({data.profile.review_count || 0} reviews)
+                  {data.profile.rating.toFixed(1)}/5 ({data.profile.review_count || 0} {i18n.profile_reviews()})
                 {:else}
-                  No ratings yet
+                  {i18n.profile_noRatingsYet()}
                 {/if}
               </span>
             </div>
             <div class="flex justify-between">
-              <span class="text-gray-600">Member Since</span>
+              <span class="text-gray-600">{i18n.profile_memberSince()}</span>
               <span class="font-medium">{new Date(data.profile.created_at).toLocaleDateString()}</span>
             </div>
           </div>
         </div>
         
         <div class="bg-gray-50 rounded-lg p-4">
-          <h3 class="font-semibold mb-3">Policies</h3>
+          <h3 class="font-semibold mb-3">{i18n.profile_policies()}</h3>
           <div class="space-y-2 text-sm text-gray-700">
-            <p>• 14-day return policy</p>
-            <p>• Ships within 1-2 business days</p>
-            <p>• Secure payments through Driplo</p>
-            <p>• Response time: Usually within 1 hour</p>
+            <p>• {i18n.profile_returnPolicy()}</p>
+            <p>• {i18n.profile_shipsWithin()}</p>
+            <p>• {i18n.profile_securePayments()}</p>
+            <p>• {i18n.profile_responseTime()}</p>
           </div>
         </div>
       </div>

@@ -1,6 +1,8 @@
 <script lang="ts">
   import { enhance } from '$app/forms';
+  import { goto } from '$app/navigation';
   import type { ActionData, PageData } from './$types';
+  import * as i18n from '@repo/i18n';
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
   
@@ -61,21 +63,21 @@
   <!-- Signup Form -->
   <form method="POST" action="?/signup" use:enhance={() => {
     loading = true;
-    console.log('Form submitting with data:', new FormData(document.querySelector('form')));
     return async ({ result, update }) => {
       loading = false;
-      console.log('Form result:', result);
-      if (result.type === 'redirect') {
-        console.log('Redirecting to:', result.location);
+      if (result.type === 'success' && result.data?.success) {
+        // Redirect to email verification page
+        goto(`/auth/verify-email?email=${encodeURIComponent(result.data.email)}`);
+      } else {
+        await update();
       }
-      await update();
     };
   }}>
     <div class="space-y-3">
       <!-- Full Name -->
       <div>
         <label for="fullName" class="block text-sm font-medium text-gray-700">
-          Full Name
+          {i18n.auth_firstName()} {i18n.auth_lastName()}
         </label>
         <input
           id="fullName"
@@ -91,7 +93,7 @@
       <!-- Email -->
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700">
-          Email address
+          {i18n.auth_email()}
         </label>
         <input
           id="email"
@@ -108,7 +110,7 @@
       <!-- Password Fields -->
       <div>
         <label for="password" class="block text-sm font-medium text-gray-700">
-          Password
+          {i18n.auth_password()}
         </label>
         <input
           id="password"
@@ -125,7 +127,7 @@
 
       <div>
         <label for="confirmPassword" class="block text-sm font-medium text-gray-700">
-          Confirm Password
+          {i18n.auth_confirmPassword()}
         </label>
         <input
           id="confirmPassword"
@@ -138,7 +140,7 @@
           placeholder="Re-enter your password"
         />
         {#if passwordMismatch}
-          <p class="mt-1 text-sm text-red-600">Passwords do not match</p>
+          <p class="mt-1 text-sm text-red-600">{i18n.error_validation()}</p>
         {/if}
       </div>
 
@@ -152,10 +154,10 @@
           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
         />
         <label for="terms" class="ml-2 block text-sm text-gray-900">
-          I agree to the
-          <a href="/terms" class="text-blue-600 hover:text-blue-500">Terms and Conditions</a>
-          and
-          <a href="/privacy" class="text-blue-600 hover:text-blue-500">Privacy Policy</a>
+          {i18n.auth_termsAgreement()}
+          <a href="/terms" class="text-blue-600 hover:text-blue-500">{i18n.auth_termsOfService()}</a>
+          {i18n.auth_and()}
+          <a href="/privacy" class="text-blue-600 hover:text-blue-500">{i18n.auth_privacyPolicy()}</a>
         </label>
       </div>
 
@@ -166,7 +168,7 @@
           disabled={loading}
           class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-blue-600 text-white focus-visible:ring-blue-500 px-6 py-3 text-base"
         >
-          {loading ? 'Creating account...' : 'Sign up'}
+          {loading ? i18n.auth_createAccount() + '...' : i18n.auth_signUp()}
         </button>
       </div>
     </div>
@@ -178,7 +180,7 @@
       <div class="w-full border-t border-gray-300"></div>
     </div>
     <div class="relative flex justify-center text-sm">
-      <span class="px-2 bg-white text-gray-500">Or continue with</span>
+      <span class="px-2 bg-white text-gray-500">{i18n.auth_orContinueWith()}</span>
     </div>
   </div>
 
@@ -208,9 +210,9 @@
   </div>
 
   <div class="text-center text-sm">
-    <span class="text-gray-500">Already have an account? </span>
+    <span class="text-gray-500">{i18n.auth_alreadyHaveAccount()} </span>
     <a href="/login" class="font-medium text-blue-600 hover:text-blue-500">
-      Sign in
+      {i18n.auth_signIn()}
     </a>
   </div>
 </div>

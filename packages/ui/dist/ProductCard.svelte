@@ -10,6 +10,18 @@
     onclick?: (product: Product) => void;
     favorited?: boolean;
     class?: string;
+    translations?: {
+      size?: string;
+      newSeller?: string;
+      unknownSeller?: string;
+      currency?: string;
+      addToFavorites?: string;
+      new?: string;
+      likeNew?: string;
+      good?: string;
+      fair?: string;
+      formatPrice?: (price: number) => string;
+    };
   }
 
   let { 
@@ -17,7 +29,18 @@
     onFavorite, 
     onclick,
     favorited = false,
-    class: className = ''
+    class: className = '',
+    translations = {
+      size: 'Size',
+      newSeller: 'New Seller',
+      unknownSeller: 'Unknown Seller',
+      currency: '$',
+      addToFavorites: 'Add to favorites',
+      new: 'New',
+      likeNew: 'Like New',
+      good: 'Good',
+      fair: 'Fair'
+    }
   }: Props = $props();
 
   function handleFavorite(event: MouseEvent) {
@@ -34,6 +57,13 @@
     'like-new': 'bg-blue-100 text-blue-800',
     'good': 'bg-yellow-100 text-yellow-800',
     'fair': 'bg-orange-100 text-orange-800'
+  };
+  
+  const conditionLabels = {
+    'new': translations.new || 'New',
+    'like-new': translations.likeNew || 'Like New',
+    'good': translations.good || 'Good',
+    'fair': translations.fair || 'Fair'
   };
 </script>
 
@@ -53,14 +83,14 @@
     
     <div class="absolute top-3 left-3 right-3 flex items-center justify-between">
       <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium {conditionColors[product.condition]}">
-        {product.condition}
+        {conditionLabels[product.condition] || product.condition}
       </span>
       
       {#if onFavorite}
         <button 
           onclick={handleFavorite}
           class="p-2 rounded-full bg-white/80"
-          aria-label="Add to favorites"
+          aria-label={translations.addToFavorites}
         >
           <svg 
             class="w-5 h-5 {favorited ? 'text-red-500 fill-current' : 'text-gray-600'}" 
@@ -80,7 +110,7 @@
   <div class="p-3 sm:p-4">
     <div class="flex justify-between items-start mb-1 sm:mb-2">
       <h3 class="font-semibold text-sm sm:text-base text-gray-900 truncate flex-1 mr-2">{product.title}</h3>
-      <span class="text-base sm:text-lg font-bold text-gray-900">${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}</span>
+      <span class="text-base sm:text-lg font-bold text-gray-900">{translations.formatPrice ? translations.formatPrice(product.price) : `${translations.currency}${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}`}</span>
     </div>
     
     <div class="space-y-0.5 sm:space-y-1 text-xs sm:text-sm text-gray-600">
@@ -88,7 +118,7 @@
         <p class="truncate">{product.brand}</p>
       {/if}
       {#if product.size}
-        <p>Size: {product.size}</p>
+        <p>{translations.size}: {product.size}</p>
       {/if}
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-2 min-w-0">
@@ -97,7 +127,7 @@
             name={product.sellerName} 
             size="xs" 
           />
-          <span class="truncate text-xs">{product.sellerName || 'Unknown Seller'}</span>
+          <span class="truncate text-xs">{product.sellerName || translations.unknownSeller}</span>
         </div>
         {#if product.sellerRating !== undefined && product.sellerRating !== null}
           <div class="flex items-center">
@@ -108,7 +138,7 @@
           </div>
         {:else}
           <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-medium">
-            New Seller
+            {translations.newSeller}
           </span>
         {/if}
       </div>

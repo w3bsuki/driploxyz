@@ -4,6 +4,7 @@
   import Header from '$lib/components/Header.svelte';
   import { createClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
+  import * as i18n from '@repo/i18n';
   
   interface Props {
     data: PageData;
@@ -261,16 +262,16 @@
   
   function getStepTitle(step: number) {
     switch(step) {
-      case 1: return 'Photos & Details';
-      case 2: return 'Product Info';
-      case 3: return 'Price & Publish';
+      case 1: return i18n.sell_photosAndDetails();
+      case 2: return i18n.sell_productInfo();
+      case 3: return i18n.sell_priceAndPublish();
       default: return '';
     }
   }
 </script>
 
 <svelte:head>
-  <title>Sell an Item - Driplo</title>
+  <title>{i18n.sell_listItem()} - Driplo</title>
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
@@ -286,9 +287,9 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </a>
-          <h1 class="text-lg sm:text-xl font-bold text-gray-900">List an Item</h1>
+          <h1 class="text-lg sm:text-xl font-bold text-gray-900">{i18n.sell_listItem()}</h1>
         </div>
-        <button class="text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 hover:bg-gray-100 rounded-lg">Save Draft</button>
+        <button class="text-sm text-gray-600 hover:text-gray-900 px-3 py-1.5 hover:bg-gray-100 rounded-lg">{i18n.sell_saveDraft()}</button>
       </div>
     </div>
   </div>
@@ -334,35 +335,35 @@
         <div class="text-center space-y-4">
           <div class="text-4xl">🏢</div>
           <div>
-            <h3 class="text-lg font-medium text-blue-800">Brand Subscription Required</h3>
-            <p class="text-blue-700 mt-1">To list products as a business account, you need an active Brand subscription.</p>
+            <h3 class="text-lg font-medium text-blue-800">{i18n.sell_brandSubscriptionRequired()}</h3>
+            <p class="text-blue-700 mt-1">{i18n.sell_brandSubscriptionDescription()}</p>
           </div>
           
           {#if data.plans.find(p => p.plan_type === 'brand')}
             {@const brandPlan = data.plans.find(p => p.plan_type === 'brand')}
             <div class="bg-white p-4 rounded-lg border border-blue-200">
               <div class="text-sm text-blue-800 space-y-2">
-                <p><strong>Brand Plan Features:</strong></p>
+                <p><strong>{i18n.sell_brandPlanFeatures()}</strong></p>
                 <div class="grid grid-cols-2 gap-2 text-left">
                   <div class="flex items-center space-x-1">
                     <span class="text-green-500">✓</span>
-                    <span class="text-xs">List unlimited products</span>
+                    <span class="text-xs">{i18n.sell_listUnlimitedProducts()}</span>
                   </div>
                   <div class="flex items-center space-x-1">
                     <span class="text-green-500">✓</span>
-                    <span class="text-xs">Brand verification badge</span>
+                    <span class="text-xs">{i18n.sell_brandVerificationBadge()}</span>
                   </div>
                   <div class="flex items-center space-x-1">
                     <span class="text-green-500">✓</span>
-                    <span class="text-xs">Business account features</span>
+                    <span class="text-xs">{i18n.sell_businessAccountFeatures()}</span>
                   </div>
                   <div class="flex items-center space-x-1">
                     <span class="text-green-500">✓</span>
-                    <span class="text-xs">Priority support</span>
+                    <span class="text-xs">{i18n.sell_prioritySupport()}</span>
                   </div>
                 </div>
                 <div class="text-lg font-bold text-blue-900 mt-3">
-                  {brandPlan.price_monthly} {brandPlan.currency}/month
+                  {brandPlan.price_monthly} {brandPlan.currency}/{i18n.sell_month()}
                 </div>
               </div>
             </div>
@@ -370,10 +371,10 @@
           
           <div class="space-y-2">
             <Button href="/dashboard/upgrade" class="w-full" size="lg">
-              Subscribe to Brand Plan
+              {i18n.sell_subscribeToBrandPlan()}
             </Button>
             <Button href="/profile/edit" variant="outline" class="w-full">
-              Switch to Personal Account
+              {i18n.sell_switchToPersonalAccount()}
             </Button>
           </div>
         </div>
@@ -390,7 +391,7 @@
       <div class="bg-white rounded-lg p-4 space-y-6">
         <!-- Photos -->
         <div>
-          <h2 class="text-lg font-semibold mb-2">Photos</h2>
+          <h2 class="text-lg font-semibold mb-2">{i18n.sell_photos()}</h2>
           <div class="grid grid-cols-3 gap-2 mb-3">
             {#each photoUrls as url, i}
               <div class="relative aspect-square bg-gray-100 rounded-lg overflow-hidden">
@@ -404,7 +405,7 @@
                   </svg>
                 </button>
                 {#if i === 0}
-                  <span class="absolute bottom-1 left-1 px-1 py-0.5 bg-black bg-opacity-50 text-white text-xs rounded">Cover</span>
+                  <span class="absolute bottom-1 left-1 px-1 py-0.5 bg-black bg-opacity-50 text-white text-xs rounded">{i18n.sell_cover()}</span>
                 {/if}
               </div>
             {/each}
@@ -414,7 +415,7 @@
                 <svg class="w-6 h-6 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
-                <span class="text-xs text-gray-500">Add</span>
+                <span class="text-xs text-gray-500">{i18n.sell_add()}</span>
                 <input type="file" accept="image/*" multiple class="hidden" onchange={handlePhotoUpload} />
               </label>
             {/if}
@@ -424,34 +425,34 @@
         <!-- Basic Details -->
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium mb-1">Title*</label>
+            <label class="block text-sm font-medium mb-1">{i18n.sell_title()}*</label>
             <input 
               type="text"
               bind:value={title}
-              placeholder="e.g. Vintage Levi's Denim Jacket"
+              placeholder={i18n.sell_titlePlaceholder()}
               maxlength="50"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
             />
           </div>
           
           <div>
-            <label class="block text-sm font-medium mb-1">Description</label>
+            <label class="block text-sm font-medium mb-1">{i18n.sell_description()}</label>
             <textarea 
               bind:value={description}
               rows="3"
-              placeholder="Describe your item..."
+              placeholder={i18n.sell_descriptionPlaceholder()}
               maxlength="500"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
             ></textarea>
           </div>
           
           <div>
-            <label class="block text-sm font-medium mb-1">Category*</label>
+            <label class="block text-sm font-medium mb-1">{i18n.sell_category()}*</label>
             <select 
               bind:value={category}
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
             >
-              <option value="">Select category</option>
+              <option value="">{i18n.sell_selectCategory()}</option>
               {#each mainCategories as cat}
                 <option value={cat.id}>{cat.name}</option>
               {/each}
@@ -462,12 +463,12 @@
             {@const subcategories = getSubcategories(category)}
             {#if subcategories.length > 0}
               <div>
-                <label class="block text-sm font-medium mb-1">Subcategory</label>
+                <label class="block text-sm font-medium mb-1">{i18n.sell_subcategory()}</label>
                 <select 
                   bind:value={subcategory}
                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
                 >
-                  <option value="">Select subcategory</option>
+                  <option value="">{i18n.sell_selectSubcategory()}</option>
                   {#each subcategories as subcat}
                     <option value={subcat.id}>{subcat.name}</option>
                   {/each}
@@ -482,7 +483,7 @@
       <!-- Step 2: Product Info -->
       <div class="bg-white rounded-lg p-4 space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Brand*</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{i18n.sell_brand()}*</label>
           <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-2">
             {#each popularBrands as b}
               <button
@@ -499,14 +500,14 @@
           {#if brand === 'Other'}
             <input 
               type="text"
-              placeholder="Enter brand name"
+              placeholder={i18n.sell_enterBrandName()}
               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
             />
           {/if}
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Size*</label>
+          <label class="block text-sm font-medium text-gray-700 mb-1">{i18n.sell_size()}*</label>
           <select 
             bind:value={size}
             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"

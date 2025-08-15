@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
+  import * as i18n from '@repo/i18n';
 
   interface Props {
     data: PageData;
@@ -66,7 +67,7 @@
 </script>
 
 <svelte:head>
-  <title>Edit Profile - Driplo</title>
+  <title>{i18n.profile_editProfile()} - Driplo</title>
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
@@ -75,20 +76,20 @@
   <div class="max-w-2xl mx-auto p-4">
     <div class="bg-white rounded-lg p-6">
       <div class="flex items-center justify-between mb-6">
-        <h1 class="text-xl font-bold">Edit Profile</h1>
-        <a href="/profile/{data.profile?.username || data.user?.id}" class="text-sm text-gray-600 hover:underline">Cancel</a>
+        <h1 class="text-xl font-bold">{i18n.profile_editProfile()}</h1>
+        <a href="/profile/{data.profile?.username || data.user?.id}" class="text-sm text-gray-600 hover:underline">{i18n.profile_cancel()}</a>
       </div>
 
       <div class="space-y-6">
         <!-- Avatar -->
         <div>
-          <label class="block text-sm font-medium mb-2">Avatar</label>
+          <label class="block text-sm font-medium mb-2">{i18n.profile_avatar()}</label>
           
           <!-- Selected Avatar Preview -->
           {#if avatarUrl}
             <div class="flex justify-center mb-4">
               <div class="relative">
-                <Avatar src={avatarUrl} name="Your Avatar" size="lg" class="ring-2 ring-black/20" />
+                <Avatar src={avatarUrl} name={i18n.profile_yourAvatar()} size="lg" class="ring-2 ring-black/20" />
                 <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-black rounded-full border-2 border-white flex items-center justify-center">
                   <svg class="w-2 h-2 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
@@ -129,34 +130,34 @@
         </div>
 
         <!-- Basic Info -->
-        <Input bind:value={username} label="Username" placeholder="Your username" />
-        <Input bind:value={fullName} label="Full Name" placeholder="Your full name" />
+        <Input bind:value={username} label={i18n.profile_username()} placeholder={i18n.profile_yourUsername()} />
+        <Input bind:value={fullName} label={i18n.profile_fullName()} placeholder={i18n.profile_yourFullName()} />
         <div>
-          <label class="block text-sm font-medium mb-1">Bio</label>
+          <label class="block text-sm font-medium mb-1">{i18n.profile_bio()}</label>
           <textarea
             bind:value={bio}
             rows="3"
-            placeholder="Tell people about yourself..."
+            placeholder={i18n.profile_tellPeopleAboutYourself()}
             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
           ></textarea>
         </div>
-        <Input bind:value={location} label="Location" placeholder="Your location" />
+        <Input bind:value={location} label={i18n.profile_location()} placeholder={i18n.profile_yourLocation()} />
 
         <!-- Social Links -->
         <div>
-          <label class="block text-sm font-medium mb-2">Social Links</label>
+          <label class="block text-sm font-medium mb-2">{i18n.profile_socialLinks()}</label>
           {#each socialLinks as link, i}
             <div class="flex gap-2 mb-2">
               <select bind:value={link.type} class="px-3 py-2 border border-gray-300 rounded-lg">
-                <option value="instagram">Instagram</option>
-                <option value="tiktok">TikTok</option>
-                <option value="website">Website</option>
+                <option value="instagram">{i18n.profile_instagram()}</option>
+                <option value="tiktok">{i18n.profile_tiktok()}</option>
+                <option value="website">{i18n.profile_website()}</option>
               </select>
-              <Input bind:value={link.url} placeholder="URL" class="flex-1" />
+              <Input bind:value={link.url} placeholder={i18n.profile_url()} class="flex-1" />
               <Button onclick={() => removeSocialLink(i)} variant="outline" size="sm">×</Button>
             </div>
           {/each}
-          <Button onclick={addSocialLink} variant="outline" class="w-full">Add Link</Button>
+          <Button onclick={addSocialLink} variant="outline" class="w-full">{i18n.profile_addLink()}</Button>
         </div>
 
         <div class="flex justify-end space-x-2">
@@ -164,7 +165,7 @@
             onclick={saveProfile}
             disabled={saving || !username}
           >
-            {saving ? 'Saving...' : 'Save Profile'}
+            {saving ? i18n.profile_saving() : i18n.profile_saveProfile()}
           </Button>
         </div>
       </div>

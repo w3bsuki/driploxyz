@@ -34,7 +34,19 @@ export const actions: Actions = {
     }
 
     if (data.user) {
-      // Redirect to home page after successful login
+      // Check if user has completed onboarding
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', data.user.id)
+        .single();
+      
+      // If they haven't completed onboarding, send them there
+      if (profile && !profile.onboarding_completed) {
+        throw redirect(303, '/onboarding');
+      }
+      
+      // Otherwise redirect to home page
       throw redirect(303, '/');
     }
 

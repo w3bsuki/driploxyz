@@ -144,13 +144,13 @@
       
       <!-- Center: Desktop Navigation -->
       <nav class="hidden sm:flex items-center space-x-6">
-        <a href="/search" class="text-gray-600 hover:text-gray-900 font-medium">Browse</a>
+        <a href="/search" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.menu_browse()}</a>
         {#if $authState.user}
           {#if $canSell}
-            <a href="/sell" class="text-gray-600 hover:text-gray-900 font-medium">Sell</a>
+            <a href="/sell" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.nav_sell()}</a>
           {/if}
-          <a href="/messages" class="text-gray-600 hover:text-gray-900 font-medium">Messages</a>
-          <a href="/dashboard" class="text-gray-600 hover:text-gray-900 font-medium">Dashboard</a>
+          <a href="/messages" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.nav_messages()}</a>
+          <a href="/dashboard" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.profile_dashboard()}</a>
         {/if}
       </nav>
       
@@ -180,6 +180,14 @@
               onMarkAsRead={notificationActions.markAsRead}
               onMarkAllAsRead={notificationActions.markAllAsRead}
               onClose={notificationActions.closePanel}
+              translations={{
+                title: i18n.notifications_title(),
+                unread: i18n.notifications_unread(),
+                markAllRead: i18n.notifications_markAllRead(),
+                noNotifications: i18n.notifications_noNotifications(),
+                notifyWhenSomethingHappens: i18n.notifications_notifyWhenSomethingHappens(),
+                viewAll: i18n.notifications_viewAll()
+              }}
             />
           </div>
 
@@ -218,26 +226,26 @@
                     <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    Profile
+                    {i18n.profile_myProfile()}
                   </a>
                   <a href="/orders" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors" onclick={closeMenus}>
                     <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
-                    Orders
+                    {i18n.profile_orders()}
                   </a>
                   <a href="/favorites" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors" onclick={closeMenus}>
                     <svg class="w-4 h-4 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
-                    Favorites
+                    {i18n.profile_favorites()}
                   </a>
                   {#if !$canSell}
                     <a href="/become-seller" class="flex items-center px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors" onclick={closeMenus}>
                       <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      Start Selling
+                      {i18n.profile_startSelling()}
                     </a>
                   {/if}
                 </div>
@@ -248,7 +256,7 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.50 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    Settings
+                    {i18n.profile_settings()}
                   </a>
                   <button
                     onclick={handleSignOut}
@@ -257,7 +265,7 @@
                     <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                     </svg>
-                    Sign Out
+                    {i18n.auth_signOut()}
                   </button>
                 </div>
               </div>
@@ -267,10 +275,10 @@
           <!-- Sign In/Up Buttons -->
           <div class="flex items-center space-x-2">
             <a href="/login" class="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg hover:bg-white/20">
-              Sign In
+              {i18n.auth_signIn()}
             </a>
             <a href="/signup" class="px-3 py-1.5 text-sm font-medium bg-black/80 text-white rounded-lg hover:bg-black backdrop-blur-sm">
-              Sign Up
+              {i18n.auth_signUp()}
             </a>
           </div>
         {/if}
@@ -302,19 +310,19 @@
               <div class="grid grid-cols-4 gap-2">
                 <a href="/category/women" class="bg-pink-50 rounded-lg p-2 hover:bg-pink-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-pink-200/50" onclick={closeMenus}>
                   <span class="text-lg mb-0.5">👗</span>
-                  <span class="text-xs font-medium text-gray-700">Women</span>
+                  <span class="text-xs font-medium text-gray-700">{i18n.category_women()}</span>
                 </a>
                 <a href="/category/men" class="bg-blue-50 rounded-lg p-2 hover:bg-blue-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-blue-200/50" onclick={closeMenus}>
                   <span class="text-lg mb-0.5">👔</span>
-                  <span class="text-xs font-medium text-gray-700">Men</span>
+                  <span class="text-xs font-medium text-gray-700">{i18n.category_men()}</span>
                 </a>
                 <a href="/category/kids" class="bg-yellow-50 rounded-lg p-2 hover:bg-yellow-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-yellow-200/50" onclick={closeMenus}>
                   <span class="text-lg mb-0.5">👶</span>
-                  <span class="text-xs font-medium text-gray-700">Kids</span>
+                  <span class="text-xs font-medium text-gray-700">{i18n.category_kids()}</span>
                 </a>
                 <a href="/category/pets" class="bg-green-50 rounded-lg p-2 hover:bg-green-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-green-200/50" onclick={closeMenus}>
                   <span class="text-lg mb-0.5">🐕</span>
-                  <span class="text-xs font-medium text-gray-700">Pets</span>
+                  <span class="text-xs font-medium text-gray-700">{i18n.category_pets()}</span>
                 </a>
               </div>
               
@@ -325,7 +333,7 @@
                     <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
-                    <span class="font-medium text-sm">Sell Items</span>
+                    <span class="font-medium text-sm">{i18n.menu_sellItems()}</span>
                   </a>
                 {/if}
                 
@@ -333,21 +341,21 @@
                   <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  <span class="font-medium text-sm">Profile</span>
+                  <span class="font-medium text-sm">{i18n.profile_myProfile()}</span>
                 </a>
                 
                 <a href="/orders" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-[44px]" onclick={closeMenus}>
                   <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
-                  <span class="font-medium text-sm">Orders</span>
+                  <span class="font-medium text-sm">{i18n.profile_orders()}</span>
                 </a>
                 
                 <a href="/favorites" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-[44px]" onclick={closeMenus}>
                   <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                   </svg>
-                  <span class="font-medium text-sm">Favorites</span>
+                  <span class="font-medium text-sm">{i18n.profile_favorites()}</span>
                 </a>
                 
                 {#if !$canSell}
@@ -355,7 +363,7 @@
                     <svg class="w-4 h-4 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span class="font-semibold text-sm">Start Selling</span>
+                    <span class="font-semibold text-sm">{i18n.profile_startSelling()}</span>
                   </a>
                 {/if}
               </div>
@@ -383,7 +391,7 @@
                   <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
-                  <span class="font-semibold text-sm">Sign Out</span>
+                  <span class="font-semibold text-sm">{i18n.auth_signOut()}</span>
                 </button>
               </div>
               
@@ -394,19 +402,19 @@
                 <div class="grid grid-cols-4 gap-2">
                   <a href="/category/women" class="bg-pink-50 rounded-lg p-2 hover:bg-pink-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-pink-200/50" onclick={closeMenus}>
                     <span class="text-lg mb-0.5">👗</span>
-                    <span class="text-xs font-medium text-gray-700">Women</span>
+                    <span class="text-xs font-medium text-gray-700">{i18n.category_women()}</span>
                   </a>
                   <a href="/category/men" class="bg-blue-50 rounded-lg p-2 hover:bg-blue-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-blue-200/50" onclick={closeMenus}>
                     <span class="text-lg mb-0.5">👔</span>
-                    <span class="text-xs font-medium text-gray-700">Men</span>
+                    <span class="text-xs font-medium text-gray-700">{i18n.category_men()}</span>
                   </a>
                   <a href="/category/kids" class="bg-yellow-50 rounded-lg p-2 hover:bg-yellow-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-yellow-200/50" onclick={closeMenus}>
                     <span class="text-lg mb-0.5">👶</span>
-                    <span class="text-xs font-medium text-gray-700">Kids</span>
+                    <span class="text-xs font-medium text-gray-700">{i18n.category_kids()}</span>
                   </a>
                   <a href="/category/pets" class="bg-green-50 rounded-lg p-2 hover:bg-green-100 transition-colors min-h-[44px] flex flex-col items-center justify-center border border-green-200/50" onclick={closeMenus}>
                     <span class="text-lg mb-0.5">🐕</span>
-                    <span class="text-xs font-medium text-gray-700">Pets</span>
+                    <span class="text-xs font-medium text-gray-700">{i18n.category_pets()}</span>
                   </a>
                 </div>
                 
@@ -424,10 +432,10 @@
                 <!-- Authentication - Compact -->
                 <div class="grid grid-cols-2 gap-2">
                   <a href="/login" class="flex items-center justify-center px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-[44px] border border-gray-200" onclick={closeMenus}>
-                    <span class="font-semibold text-sm">Sign In</span>
+                    <span class="font-semibold text-sm">{i18n.auth_signIn()}</span>
                   </a>
                   <a href="/signup" class="flex items-center justify-center px-3 py-3 bg-black text-white rounded-lg font-bold hover:bg-gray-800 transition-colors min-h-[44px]" onclick={closeMenus}>
-                    <span class="text-sm">Get Started</span>
+                    <span class="text-sm">{i18n.auth_signUp()}</span>
                   </a>
                 </div>
               </div>

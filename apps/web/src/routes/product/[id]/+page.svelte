@@ -11,6 +11,8 @@
   import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import * as i18n from '@repo/i18n';
+  import { formatPrice } from '$lib/utils/price';
   
   interface Props {
     data: PageData;
@@ -41,17 +43,32 @@
     }
   });
   
+  // Map category names to translation keys
+  function getCategoryTranslation(categoryName: string) {
+    const categoryMap: Record<string, () => string> = {
+      'Women': () => i18n.category_women(),
+      'Men': () => i18n.category_men(),
+      'Kids': () => i18n.category_kids(),
+      'Pets': () => i18n.category_pets(),
+      'Shoes': () => i18n.category_shoes(),
+      'Bags': () => i18n.category_bags(),
+      'Home': () => i18n.category_home(),
+      'Beauty': () => i18n.category_beauty()
+    };
+    return categoryMap[categoryName]?.() || categoryName;
+  }
+  
   const breadcrumbItems = $derived([
-    { label: 'Home', href: '/' },
-    { label: data.product.category_name || 'Category', href: `/category/${data.product.category_id}` },
+    { label: i18n.nav_home(), href: '/' },
+    { label: getCategoryTranslation(data.product.category_name) || i18n.search_categories(), href: `/category/${data.product.category_id}` },
     { label: data.product.title }
   ]);
   
   const conditionLabel = $derived({
-    'new': 'New with tags',
-    'like-new': 'Like new',
-    'good': 'Good',
-    'fair': 'Fair'
+    'new': i18n.product_newWithTags(),
+    'like-new': i18n.product_likeNewCondition(),
+    'good': i18n.product_goodCondition(),
+    'fair': i18n.product_fairCondition()
   }[data.product.condition] || data.product.condition);
   
   const conditionColor = $derived({
@@ -66,11 +83,11 @@
     const now = new Date();
     const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
     
-    if (diffInDays === 0) return 'today';
-    if (diffInDays === 1) return 'yesterday';
-    if (diffInDays < 7) return `${diffInDays}d ago`;
-    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)}w ago`;
-    return `${Math.floor(diffInDays / 30)}mo ago`;
+    if (diffInDays === 0) return i18n.product_today();
+    if (diffInDays === 1) return i18n.product_yesterday();
+    if (diffInDays < 7) return `${diffInDays}${i18n.product_daysAgo()}`;
+    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)}${i18n.product_weeksAgo()}`;
+    return `${Math.floor(diffInDays / 30)}${i18n.product_monthsAgo()}`;
   }
   
   async function handleFavorite() {
@@ -149,6 +166,12 @@
               condition={data.product.condition}
               isAuthenticated={true}
               class="h-[500px] lg:h-[600px] rounded-lg overflow-hidden"
+              translations={{
+                new: i18n.product_newWithTags(),
+                likeNew: i18n.product_likeNewCondition(),
+                good: i18n.product_goodCondition(),
+                fair: i18n.product_fairCondition()
+              }}
             />
           </div>
         </div>
@@ -171,7 +194,7 @@
             <div class="flex flex-wrap gap-1.5 mb-4">
               {#if data.product.size}
                 <span class="px-2 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700">
-                  Size {data.product.size}
+                  {i18n.product_size()} {data.product.size}
                 </span>
               {/if}
               <span class="px-2 py-1 rounded text-xs font-medium {conditionColor} text-white">
@@ -198,63 +221,63 @@
                 onclick={handleMessage}
                 class="flex-1 h-10 text-sm"
               >
-                Message
+                {i18n.seller_message()}
               </Button>
               <Button 
                 variant="outline"
                 onclick={handleMakeOffer}
                 class="flex-1 h-10 text-sm"
               >
-                Make offer
+                {i18n.product_makeOffer()}
               </Button>
               <Button 
                 variant="primary" 
                 onclick={handleBuyNow}
                 class="flex-1 h-10 text-sm"
               >
-                Buy now
+                {i18n.product_buyNow()}
               </Button>
             </div>
           </div>
           
           <!-- Product Details -->
           <div class="bg-white rounded-xl p-4">
-            <h3 class="font-medium text-gray-900 mb-3 text-sm">Item details</h3>
+            <h3 class="font-medium text-gray-900 mb-3 text-sm">{i18n.product_itemDetails()}</h3>
             <div class="space-y-2">
               <div class="flex justify-between items-center">
-                <span class="text-gray-500 text-sm">Condition</span>
+                <span class="text-gray-500 text-sm">{i18n.product_condition()}</span>
                 <span class="font-medium text-sm">{conditionLabel}</span>
               </div>
               {#if data.product.brand}
                 <div class="flex justify-between items-center">
-                  <span class="text-gray-500 text-sm">Brand</span>
+                  <span class="text-gray-500 text-sm">{i18n.product_brand()}</span>
                   <span class="font-medium text-sm">{data.product.brand}</span>
                 </div>
               {/if}
               {#if data.product.size}
                 <div class="flex justify-between items-center">
-                  <span class="text-gray-500 text-sm">Size</span>
+                  <span class="text-gray-500 text-sm">{i18n.product_size()}</span>
                   <span class="font-medium text-sm">{data.product.size}</span>
                 </div>
               {/if}
               {#if data.product.color}
                 <div class="flex justify-between items-center">
-                  <span class="text-gray-500 text-sm">Color</span>
+                  <span class="text-gray-500 text-sm">{i18n.filter_color()}</span>
                   <span class="font-medium text-sm">{data.product.color}</span>
                 </div>
               {/if}
               <div class="flex justify-between items-center">
-                <span class="text-gray-500 text-sm">Shipping</span>
+                <span class="text-gray-500 text-sm">{i18n.product_shipping()}</span>
                 <span class="font-medium text-sm">
                   {#if data.product.shipping_price}
-                    ${data.product.shipping_price}
+                    {formatPrice(data.product.shipping_price)}
                   {:else}
-                    Free
+                    {i18n.product_freeShippingLower()}
                   {/if}
                 </span>
               </div>
               <div class="flex justify-between items-center border-t pt-2 mt-2">
-                <span class="text-gray-500 text-sm">Posted</span>
+                <span class="text-gray-500 text-sm">{i18n.product_postedTime()}</span>
                 <span class="font-medium text-sm">{formatDate(data.product.created_at)}</span>
               </div>
             </div>
@@ -270,6 +293,24 @@
             onMessage={handleMessage}
             onViewProfile={() => goto(`/profile/${sellerData.username || sellerData.id}`)}
             showFullStats={false}
+            translations={{
+              soldBy: i18n.seller_soldBy(),
+              message: i18n.seller_message(),
+              follow: i18n.seller_follow(),
+              following: i18n.seller_following(),
+              viewFullProfile: i18n.seller_viewFullProfile(),
+              sales: i18n.seller_sales(),
+              activeNow: i18n.seller_activeNow(),
+              activeAgo: i18n.seller_activeAgo(),
+              memberFor: i18n.seller_memberFor(),
+              newMember: i18n.seller_newMember(),
+              trustedSeller: i18n.seller_trustedSeller(),
+              superstarSeller: i18n.seller_superstarSeller(),
+              verified: i18n.seller_verified(),
+              positiveReviews: i18n.seller_positiveReviews(),
+              avgShipping: i18n.seller_avgShipping(),
+              recentActivity: i18n.seller_recentActivity()
+            }}
           />
           
           
@@ -283,12 +324,12 @@
   <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 z-30">
     <div class="flex items-center justify-between mb-2">
       <div>
-        <p class="text-2xl font-bold text-gray-900">${data.product.price}</p>
+        <p class="text-2xl font-bold text-gray-900">{formatPrice(data.product.price)}</p>
         <p class="text-sm text-gray-600">
           {#if data.product.shipping_price}
-            + ${data.product.shipping_price} shipping
+            + {formatPrice(data.product.shipping_price)} {i18n.product_shipping().toLowerCase()}
           {:else}
-            Free shipping
+            {i18n.product_freeShipping()}
           {/if}
         </p>
       </div>
@@ -317,21 +358,21 @@
         onclick={handleMessage}
         class="flex-1 h-11 text-sm font-medium"
       >
-        Message
+        {i18n.seller_message()}
       </Button>
       <Button 
         variant="outline" 
         onclick={handleMakeOffer}
         class="flex-1 h-11 text-sm font-medium"
       >
-        Make offer
+        {i18n.product_makeOffer()}
       </Button>
       <Button 
         variant="primary" 
         onclick={handleBuyNow}
         class="flex-1 h-11 text-sm font-medium"
       >
-        Buy now
+        {i18n.product_buyNow()}
       </Button>
     </div>
   </div>
@@ -341,7 +382,7 @@
     <!-- Similar Products -->
     {#if data.similarProducts && data.similarProducts.length > 0}
       <div class="mt-8">
-        <h2 class="text-xl font-bold text-gray-900 mb-4">You might also like</h2>
+        <h2 class="text-xl font-bold text-gray-900 mb-4">{i18n.product_youMightLike()}</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {#each data.similarProducts.slice(0, 6) as product}
             <ProductCard 
@@ -354,6 +395,18 @@
               }}
               onclick={() => goto(`/product/${product.id}`)}
               class="hover:shadow-lg transition-shadow"
+              translations={{
+                size: i18n.product_size(),
+                newSeller: i18n.trending_newSeller(),
+                unknownSeller: i18n.seller_unknown(),
+                currency: i18n.common_currency(),
+                addToFavorites: i18n.product_addToFavorites(),
+                formatPrice: (price: number) => formatPrice(price),
+                new: i18n.product_new(),
+                likeNew: i18n.product_likeNew(),
+                good: i18n.product_good(),
+                fair: i18n.product_fair()
+              }}
             />
           {/each}
         </div>
@@ -364,9 +417,9 @@
     {#if data.sellerProducts && data.sellerProducts.length > 0}
       <div class="mt-8">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-bold text-gray-900">More from {data.product.seller_name}</h2>
+          <h2 class="text-xl font-bold text-gray-900">{i18n.product_moreFromSeller()} {data.product.seller_name}</h2>
           <a href="/profile/{data.product.seller_id}" class="text-sm text-blue-600 hover:underline">
-            View all →
+            {i18n.product_viewAll()} →
           </a>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
@@ -381,6 +434,18 @@
               }}
               onclick={() => goto(`/product/${product.id}`)}
               class="hover:shadow-lg transition-shadow"
+              translations={{
+                size: i18n.product_size(),
+                newSeller: i18n.trending_newSeller(),
+                unknownSeller: i18n.seller_unknown(),
+                currency: i18n.common_currency(),
+                addToFavorites: i18n.product_addToFavorites(),
+                formatPrice: (price: number) => formatPrice(price),
+                new: i18n.product_new(),
+                likeNew: i18n.product_likeNew(),
+                good: i18n.product_good(),
+                fair: i18n.product_fair()
+              }}
             />
           {/each}
         </div>

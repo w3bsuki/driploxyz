@@ -107,12 +107,12 @@
 		goto(`/category/${categorySlug}`);
 	}
 
-	// Get only top-level categories for navigation pills
+	// Get only top-level categories for navigation pills (excluding Pets)
 	const mainCategories = $derived(
 		data.categories
-			.filter(cat => !cat.parent_id) // Only top-level categories
+			.filter(cat => !cat.parent_id && cat.slug !== 'pets') // Only top-level categories, exclude pets
 			.sort((a, b) => a.sort_order - b.sort_order) // Sort by order
-			.slice(0, 4) // Take first 4
+			.slice(0, 3) // Take first 3 (Women, Men, Kids)
 	);
 
 	// Category icon mapping (same as search page)
@@ -161,6 +161,7 @@
 					bind:value={searchQuery}
 					onSearch={handleSearch}
 					placeholder={i18n.nav_search()}
+					categoriesText={i18n.search_categories()}
 					variant="compact"
 					class="max-w-sm mx-auto"
 				/>
@@ -179,7 +180,8 @@
 						onSearch={handleSearch}
 						onFilter={handleFilter}
 						placeholder={i18n.search_placeholder()}
-						suggestions={['Vintage jackets', 'Designer bags', 'Summer dresses', 'Sneakers']}
+						categoriesText={i18n.search_categories()}
+						suggestions={[i18n.home_searchSuggestions_vintageJackets(), i18n.home_searchSuggestions_designerBags(), i18n.home_searchSuggestions_summerDresses(), i18n.home_searchSuggestions_sneakers()]}
 						showCategoryDropdown={false}
 					/>
 				</div>
@@ -189,16 +191,16 @@
 					<div class="flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-hide sm:gap-3">
 					<button 
 						onclick={() => goto('/search')}
-						class="flex-shrink-0 px-4 py-2 bg-black text-white rounded-full text-sm font-medium hover:bg-gray-900 transition-colors"
+						class="category-nav-pill flex-shrink-0 px-5 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-gray-900 transition-colors"
 					>
 						{i18n.search_all()}
 					</button>
 					{#each mainCategories as category}
 						<button 
 							onclick={() => navigateToCategory(category.slug)}
-							class="flex-shrink-0 px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors"
+							class="category-nav-pill flex-shrink-0 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors"
 						>
-							{category.name}
+							{i18n[`category_${category.slug.toLowerCase()}`] ? i18n[`category_${category.slug.toLowerCase()}`]() : category.name}
 						</button>
 					{/each}
 					</div>
@@ -207,18 +209,18 @@
 				<!-- Discovery Dropdown (Trending + Top Sellers) -->
 				{#if showCategoryDropdown}
 					<div class="bg-white rounded-2xl border border-gray-200 p-1 shadow-sm backdrop-blur-xl transition-all duration-300 ease-out">
-						<div class="bg-gray-50/80 relative rounded-xl border overflow-hidden">
+						<div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
 							<div 
 								aria-hidden="true"
-								class="absolute inset-x-0 top-0 h-full rounded-[inherit] pointer-events-none"
+								class="absolute inset-0 rounded-xl pointer-events-none"
 								style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
-							/>
+							></div>
 							<div class="relative p-4 space-y-4">
 								<!-- Trending Section -->
 								<div>
 									<h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{i18n.trending_title()}</h3>
 									<div class="space-y-1">
-										{#each ['Vintage jackets', 'Y2K jeans', 'Designer bags under $100'] as trend}
+										{#each [i18n.home_trending_vintageJackets(), i18n.home_trending_y2kJeans(), i18n.home_trending_designerBagsUnder100()] as trend}
 											<button
 												onclick={() => handleSearch(trend)}
 												class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-white/60 rounded-lg transition-colors flex items-center space-x-2"
@@ -258,7 +260,7 @@
 															<span>{seller.rating.toFixed(1)}</span>
 														</div>
 													{:else}
-														<span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-medium">
+														<span class="text-badge bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-medium">
 															{i18n.trending_newSeller()}
 														</span>
 													{/if}

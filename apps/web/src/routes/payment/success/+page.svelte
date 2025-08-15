@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { Button, Card } from '@repo/ui';
 	import { goto } from '$app/navigation';
+	import * as i18n from '@repo/i18n';
 
 	const paymentIntentId = $derived($page.url.searchParams.get('payment_intent'));
 
@@ -15,7 +16,7 @@
 </script>
 
 <svelte:head>
-	<title>Payment Successful | Driplo</title>
+	<title>{i18n.checkout_paymentSuccessful()} | Driplo</title>
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -29,16 +30,16 @@
 			</div>
 
 			<h1 class="text-2xl font-bold text-gray-900 mb-2">
-				Payment Successful!
+				{i18n.checkout_paymentSuccessful()}
 			</h1>
 			
 			<p class="text-gray-600 mb-6">
-				Thank you for your purchase. Your order has been confirmed and the seller has been notified.
+				{i18n.checkout_paymentSuccessfulDesc()}
 			</p>
 
 			{#if paymentIntentId}
 				<div class="bg-gray-50 rounded-lg p-4 mb-6">
-					<p class="text-sm text-gray-500 mb-1">Payment Reference</p>
+					<p class="text-sm text-gray-500 mb-1">{i18n.checkout_paymentReference()}</p>
 					<p class="text-sm font-mono text-gray-900 break-all">
 						{paymentIntentId}
 					</p>
@@ -51,7 +52,7 @@
 					variant="primary"
 					class="w-full"
 				>
-					View Your Orders
+					{i18n.checkout_viewYourOrders()}
 				</Button>
 				
 				<Button
@@ -59,13 +60,13 @@
 					variant="outline"
 					class="w-full"
 				>
-					Continue Shopping
+					{i18n.checkout_continueShopping()}
 				</Button>
 			</div>
 
 			<div class="mt-6 pt-6 border-t border-gray-200">
 				<p class="text-xs text-gray-500">
-					You'll receive an email confirmation shortly with your order details.
+					{i18n.checkout_emailConfirmation()}
 				</p>
 			</div>
 		</Card>

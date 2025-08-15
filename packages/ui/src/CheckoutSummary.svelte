@@ -2,18 +2,28 @@
 	import type { Product } from './types.js';
 	import Card from './Card.svelte';
 
+	interface Translations {
+		orderSummary?: string;
+		subtotal?: string;
+		shipping?: string;
+		serviceFee?: string;
+		total?: string;
+	}
+
 	interface Props {
 		product: Product;
 		shippingCost?: number;
 		serviceFee?: number;
 		currency?: string;
+		translations?: Translations;
 	}
 
 	let { 
 		product, 
 		shippingCost = 0,
 		serviceFee = 0,
-		currency = 'eur'
+		currency = 'eur',
+		translations = {}
 	}: Props = $props();
 
 	const subtotal = $derived(product.price);
@@ -28,7 +38,7 @@
 </script>
 
 <Card class="p-6">
-	<h3 class="text-lg font-semibold mb-4">Order Summary</h3>
+	<h3 class="text-lg font-semibold mb-4">{translations.orderSummary || 'Order Summary'}</h3>
 	
 	<div class="space-y-4">
 		<!-- Product -->
@@ -58,20 +68,20 @@
 		<!-- Costs breakdown -->
 		<div class="space-y-2">
 			<div class="flex justify-between text-sm">
-				<span class="text-gray-600">Subtotal</span>
+				<span class="text-gray-600">{translations.subtotal || 'Subtotal'}</span>
 				<span class="text-gray-900">{formatAmount(subtotal, currency)}</span>
 			</div>
 			
 			{#if shippingCost > 0}
 				<div class="flex justify-between text-sm">
-					<span class="text-gray-600">Shipping</span>
+					<span class="text-gray-600">{translations.shipping || 'Shipping'}</span>
 					<span class="text-gray-900">{formatAmount(shippingCost, currency)}</span>
 				</div>
 			{/if}
 			
 			{#if serviceFee > 0}
 				<div class="flex justify-between text-sm">
-					<span class="text-gray-600">Service fee</span>
+					<span class="text-gray-600">{translations.serviceFee || 'Service fee'}</span>
 					<span class="text-gray-900">{formatAmount(serviceFee, currency)}</span>
 				</div>
 			{/if}
@@ -81,7 +91,7 @@
 
 		<!-- Total -->
 		<div class="flex justify-between">
-			<span class="text-base font-semibold text-gray-900">Total</span>
+			<span class="text-base font-semibold text-gray-900">{translations.total || 'Total'}</span>
 			<span class="text-base font-semibold text-gray-900">
 				{formatAmount(total, currency)}
 			</span>

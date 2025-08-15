@@ -4,6 +4,12 @@ interface Props {
     condition?: string;
     isAuthenticated?: boolean;
     class?: string;
+    translations?: {
+        new?: string;
+        likeNew?: string;
+        good?: string;
+        fair?: string;
+    };
 }
 declare const ProductGallery: import("svelte").Component<Props, {}, "">;
 type ProductGallery = ReturnType<typeof ProductGallery>;

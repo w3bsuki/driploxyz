@@ -15,6 +15,20 @@ interface SoldNotification {
     sold_at: string;
     read: boolean;
 }
+interface Translations {
+    salesActivity?: string;
+    newSales?: string;
+    earned?: string;
+    markAllRead?: string;
+    noSalesYet?: string;
+    notifyWhenItemsSell?: string;
+    itemSold?: string;
+    soldTo?: string;
+    viewOrderDetails?: string;
+    totalSales?: string;
+    totalSalesPlural?: string;
+    viewAllSales?: string;
+}
 interface Props {
     notifications: SoldNotification[];
     show?: boolean;
@@ -24,6 +38,7 @@ interface Props {
     onViewOrder?: (orderId: string) => void;
     onClose?: () => void;
     class?: string;
+    translations?: Translations;
 }
 declare const SoldNotificationPanel: import("svelte").Component<Props, {}, "">;
 type SoldNotificationPanel = ReturnType<typeof SoldNotificationPanel>;

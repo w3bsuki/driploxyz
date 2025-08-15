@@ -1,6 +1,13 @@
 <script lang="ts">
   import Avatar from './Avatar.svelte';
   
+  interface Translations {
+    newMessage?: string;
+    reply?: string;
+    dismiss?: string;
+    now?: string;
+  }
+
   interface Props {
     show?: boolean;
     sender: {
@@ -18,6 +25,7 @@
     onDismiss?: () => void;
     autoHide?: boolean;
     duration?: number;
+    translations?: Translations;
   }
 
   let { 
@@ -28,7 +36,8 @@
     onReply,
     onDismiss,
     autoHide = true,
-    duration = 5000
+    duration = 5000,
+    translations = {}
   }: Props = $props();
 
   let timeoutId: NodeJS.Timeout | null = null;
@@ -55,7 +64,7 @@
       <div class="flex items-center justify-between p-3 border-b border-gray-100/50">
         <div class="flex items-center space-x-2">
           <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span class="text-xs font-medium text-gray-600">New message</span>
+          <span class="text-xs font-medium text-gray-600">{translations.newMessage || 'New message'}</span>
         </div>
         <button 
           onclick={onDismiss}
@@ -81,7 +90,7 @@
               <h4 class="font-medium text-gray-900 text-sm">
                 {sender.username}
               </h4>
-              <span class="text-xs text-gray-500">now</span>
+              <span class="text-xs text-gray-500">{translations.now || 'now'}</span>
             </div>
             
             <p class="text-sm text-gray-700 mb-3 line-clamp-3">
@@ -110,7 +119,7 @@
                   class="flex-1 px-3 py-2 bg-black text-white text-xs font-medium rounded-lg 
                     hover:bg-gray-800 transition-colors"
                 >
-                  Reply
+{translations.reply || 'Reply'}
                 </button>
               {/if}
               <button
@@ -118,7 +127,7 @@
                 class="px-3 py-2 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg 
                   hover:bg-gray-200 transition-colors"
               >
-                Dismiss
+{translations.dismiss || 'Dismiss'}
               </button>
             </div>
           </div>

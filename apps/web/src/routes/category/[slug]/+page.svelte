@@ -3,6 +3,8 @@
   import { goto } from '$app/navigation';
   import { Button, ProductCard, Breadcrumb, type Product, type BreadcrumbItem } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
+  import * as i18n from '@repo/i18n';
+  import { formatPrice } from '$lib/utils/price';
   
   // Get category from URL
   const categorySlug = $page.params.slug;
@@ -331,6 +333,18 @@
             <ProductCard 
               {product}
               onclick={() => goto(`/product/${product.id}`)}
+              translations={{
+                size: i18n.product_size(),
+                newSeller: i18n.trending_newSeller(),
+                unknownSeller: i18n.seller_unknown(),
+                currency: i18n.common_currency(),
+                addToFavorites: i18n.product_addToFavorites(),
+                new: i18n.condition_new(),
+                likeNew: i18n.condition_likeNew(),
+                good: i18n.condition_good(),
+                fair: i18n.condition_fair(),
+                formatPrice: (price: number) => formatPrice(price)
+              }}
             />
           {/each}
         </div>

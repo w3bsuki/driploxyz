@@ -2,6 +2,7 @@ import type { SearchBarVariant } from './types.js';
 interface Props {
     value?: string;
     placeholder?: string;
+    categoriesText?: string;
     suggestions?: string[];
     variant?: SearchBarVariant;
     showCategoryDropdown?: boolean;

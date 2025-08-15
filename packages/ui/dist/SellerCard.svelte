@@ -23,6 +23,24 @@
     onViewProfile?: () => void;
     showFullStats?: boolean;
     class?: string;
+    translations?: {
+      soldBy?: string;
+      message?: string;
+      follow?: string;
+      following?: string;
+      viewFullProfile?: string;
+      sales?: string;
+      activeNow?: string;
+      activeAgo?: string;
+      memberFor?: string;
+      newMember?: string;
+      trustedSeller?: string;
+      superstarSeller?: string;
+      verified?: string;
+      positiveReviews?: string;
+      avgShipping?: string;
+      recentActivity?: string;
+    };
   }
 
   let { 
@@ -35,28 +53,29 @@
     onMessage,
     onViewProfile,
     showFullStats = false,
-    class: className = '' 
+    class: className = '',
+    translations = {}
   }: Props = $props();
 
   let isHovering = $state(false);
 
   const verificationData = $derived({
     'basic': {
-      label: 'Verified',
+      label: translations.verified || 'Verified',
       icon: '✓',
       color: 'text-green-600',
       bgColor: 'bg-green-100',
       description: 'Email and phone verified'
     },
     'verified': {
-      label: 'Trusted Seller',
+      label: translations.trustedSeller || 'Trusted Seller',
       icon: '🛡️',
       color: 'text-blue-600',
       bgColor: 'bg-blue-100',
       description: 'ID verified, excellent ratings'
     },
     'superstar': {
-      label: 'Superstar Seller',
+      label: translations.superstarSeller || 'Superstar Seller',
       icon: '⭐',
       color: 'text-purple-600',
       bgColor: 'bg-purple-100',
@@ -76,9 +95,9 @@
     const years = now.getFullYear() - date.getFullYear();
     const months = (now.getFullYear() - date.getFullYear()) * 12 + now.getMonth() - date.getMonth();
     
-    if (years > 0) return `Member for ${years} year${years > 1 ? 's' : ''}`;
-    if (months > 0) return `Member for ${months} month${months > 1 ? 's' : ''}`;
-    return 'New member';
+    if (years > 0) return `${translations.memberFor || 'Member for'} ${years} year${years > 1 ? 's' : ''}`;
+    if (months > 0) return `${translations.memberFor || 'Member for'} ${months} month${months > 1 ? 's' : ''}`;
+    return translations.newMember || 'New member';
   }
 
   function formatLastActive(dateString: string) {
@@ -86,10 +105,10 @@
     const now = new Date();
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
     
-    if (diffInHours < 1) return 'Active now';
-    if (diffInHours < 24) return `Active ${Math.round(diffInHours)}h ago`;
+    if (diffInHours < 1) return translations.activeNow || 'Active now';
+    if (diffInHours < 24) return `Active ${Math.round(diffInHours)}h ${translations.activeAgo || 'ago'}`;
     const days = Math.round(diffInHours / 24);
-    return `Active ${days}d ago`;
+    return `Active ${days}d ${translations.activeAgo || 'ago'}`;
   }
 
   function getActivityStatus(lastActive: string) {
@@ -116,7 +135,7 @@
 >
   <!-- Header -->
   <div class="flex items-center justify-between mb-3">
-    <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">Sold by</h3>
+    <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">{translations.soldBy || 'Sold by'}</h3>
     <span class="text-xs text-gray-500">{formatLastActive(stats.lastActive)}</span>
   </div>
 
@@ -166,8 +185,8 @@
           <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
           </svg>
-          <span class="font-medium text-gray-900">{stats.rating.toFixed(1)}</span>
-          <span>({stats.totalSales} sales)</span>
+          <span class="font-medium text-gray-900">{stats.rating?.toFixed(1) || '0.0'}</span>
+          <span>({stats.totalSales} {translations.sales || 'sales'})</span>
         </div>
 
         <!-- Response Time -->
@@ -198,7 +217,7 @@
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
       </svg>
-      Message
+      {translations.message || 'Message'}
     </button>
     
     <button
@@ -212,12 +231,12 @@
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
         </svg>
-        Following
+        {translations.following || 'Following'}
       {:else}
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
         </svg>
-        Follow
+        {translations.follow || 'Follow'}
       {/if}
     </button>
   </div>
@@ -227,7 +246,7 @@
     onclick={onViewProfile}
     class="w-full flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
   >
-    View full profile
+    {translations.viewFullProfile || 'View full profile'}
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
     </svg>
@@ -243,17 +262,17 @@
       <div class="grid grid-cols-2 gap-4 text-xs">
         <div class="text-center p-2 bg-gray-50 rounded-lg">
           <div class="font-semibold text-gray-900">98%</div>
-          <div class="text-gray-600">Positive reviews</div>
+          <div class="text-gray-600">{translations.positiveReviews || 'Positive reviews'}</div>
         </div>
         <div class="text-center p-2 bg-gray-50 rounded-lg">
           <div class="font-semibold text-gray-900">24h</div>
-          <div class="text-gray-600">Avg shipping</div>
+          <div class="text-gray-600">{translations.avgShipping || 'Avg shipping'}</div>
         </div>
       </div>
 
       <!-- Recent Activity -->
       <div class="text-xs text-gray-600">
-        <div class="font-medium text-gray-900 mb-1">Recent activity</div>
+        <div class="font-medium text-gray-900 mb-1">{translations.recentActivity || 'Recent activity'}</div>
         <div class="space-y-1">
           <div>• Sold 3 items this week</div>
           <div>• 100% of orders shipped on time</div>

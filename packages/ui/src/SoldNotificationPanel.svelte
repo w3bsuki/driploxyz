@@ -20,6 +20,21 @@
     read: boolean;
   }
 
+  interface Translations {
+    salesActivity?: string;
+    newSales?: string;
+    earned?: string;
+    markAllRead?: string;
+    noSalesYet?: string;
+    notifyWhenItemsSell?: string;
+    itemSold?: string;
+    soldTo?: string;
+    viewOrderDetails?: string;
+    totalSales?: string;
+    totalSalesPlural?: string;
+    viewAllSales?: string;
+  }
+
   interface Props {
     notifications: SoldNotification[];
     show?: boolean;
@@ -29,6 +44,7 @@
     onViewOrder?: (orderId: string) => void;
     onClose?: () => void;
     class?: string;
+    translations?: Translations;
   }
 
   let { 
@@ -39,7 +55,8 @@
     onMarkAllAsRead,
     onViewOrder,
     onClose,
-    class: className = ''
+    class: className = '',
+    translations = {}
   }: Props = $props();
 
   const unreadCount = $derived(notifications.filter(n => !n.read).length);
@@ -90,14 +107,14 @@
         <div>
           <h3 class="font-semibold text-gray-900 flex items-center">
             <span class="text-green-600 mr-2">💰</span>
-            Sales Activity
+            {translations.salesActivity || 'Sales Activity'}
           </h3>
           <div class="flex items-center space-x-4 text-xs text-gray-600 mt-1">
             {#if unreadCount > 0}
-              <span>{unreadCount} new</span>
+              <span>{unreadCount} {translations.newSales || 'new'}</span>
             {/if}
             {#if notifications.length > 0}
-              <span>${totalEarnings.toFixed(2)} earned</span>
+              <span>${totalEarnings.toFixed(2)} {translations.earned || 'earned'}</span>
             {/if}
           </div>
         </div>
@@ -109,7 +126,7 @@
               onclick={onMarkAllAsRead}
               class="text-xs"
             >
-              Mark all read
+              {translations.markAllRead || 'Mark all read'}
             </Button>
           {/if}
           <button 
@@ -142,8 +159,8 @@
           <!-- Empty State -->
           <div class="p-8 text-center">
             <div class="text-4xl mb-2">🛍️</div>
-            <h4 class="font-medium text-gray-900 mb-1">No sales yet</h4>
-            <p class="text-sm text-gray-600">We'll notify you when items sell</p>
+            <h4 class="font-medium text-gray-900 mb-1">{translations.noSalesYet || 'No sales yet'}</h4>
+            <p class="text-sm text-gray-600">{translations.notifyWhenItemsSell || 'We\'ll notify you when items sell'}</p>
           </div>
         {:else}
           <!-- Sold Items -->
@@ -173,7 +190,7 @@
                   <div class="flex-1 min-w-0">
                     <div class="flex items-start justify-between">
                       <h4 class="text-sm font-medium text-gray-900 truncate pr-2">
-                        Item sold!
+                        {translations.itemSold || 'Item sold!'}
                       </h4>
                       <div class="text-right flex-shrink-0">
                         <div class="text-sm font-bold text-green-600">
@@ -198,7 +215,7 @@
                           size="xs" 
                         />
                         <span class="text-xs text-gray-600">
-                          Sold to {notification.buyer.username}
+                          {translations.soldTo || 'Sold to'} {notification.buyer.username}
                         </span>
                       </div>
                     {/if}
@@ -207,7 +224,7 @@
                     {#if notification.order_id}
                       <div class="mt-2">
                         <span class="text-xs text-blue-600 hover:text-blue-800">
-                          View order details →
+                          {translations.viewOrderDetails || 'View order details'} →
                         </span>
                       </div>
                     {/if}
@@ -229,7 +246,7 @@
         <div class="p-3 border-t border-gray-100/50 bg-white/50">
           <div class="flex items-center justify-between">
             <div class="text-xs text-gray-600">
-              {notifications.length} total sale{notifications.length === 1 ? '' : 's'}
+              {notifications.length} {notifications.length === 1 ? (translations.totalSales || 'total sale') : (translations.totalSalesPlural || 'total sales')}
             </div>
             <Button 
               variant="ghost" 
@@ -237,7 +254,7 @@
               href="/dashboard/sales"
               class="text-xs text-gray-600"
             >
-              View all sales
+              {translations.viewAllSales || 'View all sales'}
             </Button>
           </div>
         </div>
