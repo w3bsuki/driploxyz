@@ -260,24 +260,12 @@ export class ProductService {
     error: string | null;
   }> {
     try {
-      // Get premium boosted products
-      const { data: boostedProducts, error: boostedError } = await this.supabase
-        .from('products')
-        .select(`
-          *,
-          product_images (*),
-          categories (name),
-          profiles!products_seller_id_fkey (username, rating, avatar_url),
-          premium_boosts!inner (boost_start, boost_end)
-        `)
-        .eq('status', 'active')
-        .eq('is_sold', false)
-        .lte('premium_boosts.boost_start', new Date().toISOString())
-        .gte('premium_boosts.boost_end', new Date().toISOString())
-        .order('premium_boosts.boost_start', { ascending: false })
-        .limit(limit);
+      // TEMPORARY FIX: Skip premium boost query that's causing 400 errors
+      // TODO: Fix premium_boosts table/query later
+      const boostedProducts: any[] = [];
+      const boostedError = null;
 
-      // Get manually promoted products (fallback)
+      // Get manually promoted products (main source for now)
       const { data: manuallyPromoted, error: manualError } = await this.supabase
         .from('products')
         .select(`
@@ -292,9 +280,10 @@ export class ProductService {
         .or('promotion_expires_at.is.null,promotion_expires_at.gt.now()')
         .order('promotion_priority', { ascending: false })
         .order('promoted_at', { ascending: false })
-        .limit(Math.max(0, limit - (boostedProducts?.length || 0)));
+        .limit(limit);
 
-      if (boostedError && manualError) {
+      if (manualError) {
+        console.error('Manual promoted products error:', manualError);
         throw new Error('Failed to fetch promoted products');
       }
 
