@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { SearchBar } from '@repo/ui';
+	import * as i18n from '@repo/i18n';
+	import { initializeLanguage, getStoredLanguage } from '$lib/utils/language';
+	import { onMount } from 'svelte';
 	import Header from '$lib/components/Header.svelte';
 	import BottomNav from '$lib/components/BottomNav.svelte';
 	import QuickViewDialog from '$lib/components/QuickViewDialog.svelte';
@@ -17,6 +20,17 @@
 	let showCategoryDropdown = $state(false);
 	let showCompactSearch = $state(false);
 	let heroSearchElement: HTMLElement;
+
+	// Language state
+	let currentLang = $state(getStoredLanguage() || 'en');
+	let updateKey = $state(0);
+
+	// Initialize language on mount
+	onMount(() => {
+		initializeLanguage();
+		currentLang = i18n.languageTag();
+		updateKey++;
+	});
 
 	// Transform promoted products for highlights
 	const promotedProducts = $derived(data.promotedProducts?.map((product: ProductWithImages) => ({
@@ -135,17 +149,18 @@
 	});
 </script>
 
+{#key currentLang}
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
 	<Header />
 
 	<!-- Compact Sticky Search Bar -->
 	{#if showCompactSearch}
-		<div class="fixed top-14 sm:top-16 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm transition-all duration-300">
+		<div class="fixed top-14 sm:top-16 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm transition-all duration-300">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5">
 				<SearchBar 
 					bind:value={searchQuery}
 					onSearch={handleSearch}
-					placeholder="Search..."
+					placeholder={i18n.nav_search()}
 					variant="compact"
 					class="max-w-sm mx-auto"
 				/>
@@ -163,7 +178,7 @@
 						bind:value={searchQuery}
 						onSearch={handleSearch}
 						onFilter={handleFilter}
-						placeholder="Search for anything..."
+						placeholder={i18n.search_placeholder()}
 						suggestions={['Vintage jackets', 'Designer bags', 'Summer dresses', 'Sneakers']}
 						showCategoryDropdown={false}
 					/>
@@ -176,7 +191,7 @@
 						onclick={() => goto('/search')}
 						class="flex-shrink-0 px-4 py-2 bg-black text-white rounded-full text-sm font-medium hover:bg-gray-900 transition-colors"
 					>
-						All
+						{i18n.search_all()}
 					</button>
 					{#each mainCategories as category}
 						<button 
@@ -201,7 +216,7 @@
 							<div class="relative p-4 space-y-4">
 								<!-- Trending Section -->
 								<div>
-									<h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Trending Now</h3>
+									<h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{i18n.trending_title()}</h3>
 									<div class="space-y-1">
 										{#each ['Vintage jackets', 'Y2K jeans', 'Designer bags under $100'] as trend}
 											<button
@@ -219,7 +234,7 @@
 
 								<!-- Top Sellers Section -->
 								<div>
-									<h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Top Sellers</h3>
+									<h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{i18n.trending_topSellers()}</h3>
 									<div class="space-y-1">
 										{#each sellers.slice(0, 3) as seller}
 											<button
@@ -244,7 +259,7 @@
 														</div>
 													{:else}
 														<span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-medium">
-															New Seller
+															{i18n.trending_newSeller()}
 														</span>
 													{/if}
 												</div>
@@ -282,4 +297,5 @@
 	seller={selectedSeller} 
 	onclose={() => selectedSeller = null} 
 />
+{/key}
 

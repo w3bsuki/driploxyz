@@ -55,4 +55,7 @@ export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte
 export { default as ImageUploader } from './ImageUploader.svelte';
 export { default as OptimizedImage } from './OptimizedImage.svelte';
 
+// Language switcher
+export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
+
 export * from './types.js';

@@ -6,6 +6,7 @@
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     premium?: boolean;
     variant?: 'circle' | 'square';
+    fallback?: string;
     onclick?: () => void;
     class?: string;
   }
@@ -17,9 +18,12 @@
     size = 'md',
     premium = false,
     variant = 'circle',
+    fallback = '',
     onclick,
     class: className = ''
   }: Props = $props();
+
+  let imageError = $state(false);
 
   const sizeClasses = {
     xs: 'w-8 h-8',
@@ -37,7 +41,16 @@
     xl: 'text-xl'
   };
 
-  const initial = name ? name.charAt(0).toUpperCase() : '?';
+  const initial = fallback || (name ? name.charAt(0).toUpperCase() : '?');
+  
+  function handleImageError() {
+    imageError = true;
+  }
+  
+  // Reset error state when src changes
+  $effect(() => {
+    imageError = false;
+  });
   
   const shapeClass = $derived(
     variant === 'square' ? 'rounded-xl' : 'rounded-full'
@@ -51,10 +64,11 @@
   disabled={!onclick}
   class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} {onclick ? 'cursor-pointer' : 'cursor-default'} {className} overflow-hidden"
 >
-  {#if src}
+  {#if src && !imageError}
     <img 
       {src} 
       {alt}
+      onerror={handleImageError}
       class="w-full h-full object-cover"
     />
   {:else}

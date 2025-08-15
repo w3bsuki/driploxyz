@@ -5,6 +5,7 @@ interface Props {
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     premium?: boolean;
     variant?: 'circle' | 'square';
+    fallback?: string;
     onclick?: () => void;
     class?: string;
 }

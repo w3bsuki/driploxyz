@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { Product } from './types.js';
   import Card from './Card.svelte';
+  import SoldOverlay from './SoldOverlay.svelte';
+  import Avatar from './Avatar.svelte';
 
   interface Props {
     product: Product;
@@ -35,12 +37,18 @@
   };
 </script>
 
-<Card class={`overflow-hidden cursor-pointer ${className}`} padding={false} hover={false} onclick={handleClick}>
+<Card class={`overflow-hidden ${className}`} padding={false} hover={true} onclick={handleClick}>
   <div class="relative">
     <img 
       src={product.images[0] || '/placeholder-product.svg'} 
       alt={product.title}
       class="w-full aspect-square object-cover"
+    />
+    
+    <!-- Sold Overlay -->
+    <SoldOverlay 
+      show={product.is_sold || false} 
+      soldAt={product.sold_at} 
     />
     
     <div class="absolute top-3 left-3 right-3 flex items-center justify-between">
@@ -83,7 +91,14 @@
         <p>Size: {product.size}</p>
       {/if}
       <div class="flex items-center justify-between">
-        <span class="truncate">{product.sellerName || 'Unknown Seller'}</span>
+        <div class="flex items-center space-x-2 min-w-0">
+          <Avatar 
+            src={product.sellerAvatar} 
+            name={product.sellerName} 
+            size="xs" 
+          />
+          <span class="truncate text-xs">{product.sellerName || 'Unknown Seller'}</span>
+        </div>
         {#if product.sellerRating !== undefined && product.sellerRating !== null}
           <div class="flex items-center">
             <svg class="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
@@ -91,6 +106,10 @@
             </svg>
             <span class="ml-0.5 sm:ml-1 text-xs">{product.sellerRating.toFixed(1)}</span>
           </div>
+        {:else}
+          <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full font-medium">
+            New Seller
+          </span>
         {/if}
       </div>
     </div>

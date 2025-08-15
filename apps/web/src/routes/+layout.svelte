@@ -2,12 +2,19 @@
   import '../app.css';
   import { invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
   import { MessageNotificationToast, FollowNotificationToast } from '@repo/ui';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
+  import { initializeLanguage } from '$lib/utils/language';
   import type { LayoutData } from './$types';
+
+  // Initialize language immediately when browser is available
+  if (browser) {
+    initializeLanguage();
+  }
 
   let { data }: { data: LayoutData } = $props();
 
@@ -32,6 +39,7 @@
   });
 
   onMount(() => {
+    
     if (!supabase) return;
     
     const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {

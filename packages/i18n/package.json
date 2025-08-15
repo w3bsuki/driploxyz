@@ -1,0 +1,32 @@
+{
+  "name": "@repo/i18n",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "pnpm run compile && pnpm run types",
+    "compile": "paraglide-js compile --project ./project.inlang --outdir ./lib/paraglide",
+    "types": "tsc",
+    "dev": "paraglide-js compile --project ./project.inlang --outdir ./lib/paraglide --watch",
+    "clean": "rm -rf lib dist"
+  },
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js",
+      "default": "./lib/index.js"
+    }
+  },
+  "files": [
+    "lib",
+    "messages"
+  ],
+  "dependencies": {
+    "@inlang/paraglide-js": "1.11.2"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "^5.8.2"
+  }
+}

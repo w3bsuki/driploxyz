@@ -22,6 +22,7 @@ export { default as Accordion } from './components/Accordion.svelte';
 export { default as NotificationBell } from './NotificationBell.svelte';
 export { default as NotificationPanel } from './NotificationPanel.svelte';
 export { default as MessageNotificationToast } from './MessageNotificationToast.svelte';
+export { default as FollowNotificationToast } from './FollowNotificationToast.svelte';
 export { default as TypingIndicator } from './TypingIndicator.svelte';
 export { default as WelcomeModal } from './WelcomeModal.svelte';
 export { default as OnboardingStep } from './OnboardingStep.svelte';
@@ -33,5 +34,12 @@ export { default as OnboardingSuccessModal } from './OnboardingSuccessModal.svel
 export { default as BrandBadge } from './BrandBadge.svelte';
 export { default as BrandPaymentModal } from './BrandPaymentModal.svelte';
 export { default as WelcomeTutorialFlow } from './WelcomeTutorialFlow.svelte';
+export { default as SoldOverlay } from './SoldOverlay.svelte';
+export { default as SoldNotificationToast } from './SoldNotificationToast.svelte';
+export { default as ProductSoldManager } from './ProductSoldManager.svelte';
+export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte';
+export { default as ImageUploader } from './ImageUploader.svelte';
+export { default as OptimizedImage } from './OptimizedImage.svelte';
+export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
 export * from './types.js';
 //# sourceMappingURL=index.d.ts.map

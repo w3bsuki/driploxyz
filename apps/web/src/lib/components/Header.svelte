@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Button, Avatar, NotificationBell, NotificationPanel, MessageNotificationToast } from '@repo/ui';
+  import { Button, Avatar, NotificationBell, NotificationPanel, MessageNotificationToast, LanguageSwitcher } from '@repo/ui';
+  import * as i18n from '@repo/i18n';
   import { page } from '$app/stores';
   import { authState, displayName, userInitials, canSell } from '$lib/stores/auth';
   import { signOut } from '$lib/auth';
@@ -12,7 +13,9 @@
     messageToastActions
   } from '$lib/stores/notifications';
   import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import { RealtimeNotificationService } from '$lib/services/realtime-notifications';
+  import { initializeLanguage, switchLanguage as switchLang, getStoredLanguage } from '$lib/utils/language';
   
   interface Props {
     showSearch?: boolean;
@@ -23,6 +26,23 @@
   let mobileMenuOpen = $state(false);
   let userMenuOpen = $state(false);
   let notificationService: RealtimeNotificationService | null = null;
+  
+  // Language state
+  let currentLang = $state('en');
+  let updateKey = $state(0);
+  
+  const languages = [
+    { code: 'en', name: 'English', flag: '🇬🇧' },
+    { code: 'bg', name: 'Български', flag: '🇧🇬' },
+    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+    { code: 'ua', name: 'Українська', flag: '🇺🇦' }
+  ];
+  
+  function switchLanguage(lang: string) {
+    switchLang(lang);
+    currentLang = lang;
+    window.location.reload();
+  }
   
   // Animated emoji for logo
   const clothingEmojis = ['👗', '👔', '👶', '🐕'];
@@ -54,8 +74,13 @@
     userMenuOpen = false;
   }
 
-  // Initialize notification service when user logs in
+  // Initialize language and notification service
   onMount(() => {
+    // Initialize language from cookie or browser preference
+    initializeLanguage();
+    currentLang = i18n.languageTag();
+    
+    // Subscribe to auth state for notifications
     const unsubscribe = authState.subscribe(state => {
       if (state.user && state.supabase && !notificationService) {
         notificationService = new RealtimeNotificationService(state.supabase, state.user.id);
@@ -131,6 +156,16 @@
       
       <!-- Right: Auth/Account -->
       <div class="flex items-center space-x-3">
+        <!-- Desktop Language Switcher -->
+        <div class="hidden sm:block">
+          <LanguageSwitcher
+            currentLanguage={currentLang}
+            {languages}
+            onLanguageChange={switchLanguage}
+            variant="dropdown"
+          />
+        </div>
+        
         {#if $authState.user}
           <!-- Notifications -->
           <div class="relative">
@@ -325,6 +360,20 @@
                 {/if}
               </div>
               
+              <!-- Language Switcher -->
+              <div class="pt-2 border-t border-gray-200">
+                <div class="px-3 py-2">
+                  <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{i18n.nav_settings()}</p>
+                  <LanguageSwitcher
+                    currentLanguage={currentLang}
+                    {languages}
+                    onLanguageChange={switchLanguage}
+                    variant="inline"
+                    class="w-full"
+                  />
+                </div>
+              </div>
+              
               <!-- Sign Out -->
               <div class="pt-2 border-t border-gray-200">
                 <button
@@ -359,6 +408,17 @@
                     <span class="text-lg mb-0.5">🐕</span>
                     <span class="text-xs font-medium text-gray-700">Pets</span>
                   </a>
+                </div>
+                
+                <!-- Language Switcher for logged out users -->
+                <div class="px-3 py-2">
+                  <LanguageSwitcher
+                    currentLanguage={currentLang}
+                    {languages}
+                    onLanguageChange={switchLanguage}
+                    variant="inline"
+                    class="w-full"
+                  />
                 </div>
                 
                 <!-- Authentication - Compact -->
