@@ -3,12 +3,14 @@
   import { goto } from '$app/navigation';
   import { Button } from '@repo/ui';
   import type { LayoutData } from './$types';
+  import type { Snippet } from 'svelte';
 
   interface Props {
     data: LayoutData;
+    children?: Snippet;
   }
 
-  let { data }: Props = $props();
+  let { data, children }: Props = $props();
 
   // Check if user is admin
   if (!data.user || data.profile?.role !== 'admin') {
@@ -68,7 +70,7 @@
 
       <!-- Main Content -->
       <main class="flex-1">
-        <slot />
+        {@render children?.()}
       </main>
     </div>
   </div>

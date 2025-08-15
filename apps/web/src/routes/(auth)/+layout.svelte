@@ -1,8 +1,9 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import type { LayoutData } from './$types';
+  import type { Snippet } from 'svelte';
 
-  let { data }: { data: LayoutData } = $props();
+  let { data, children }: { data: LayoutData; children?: Snippet } = $props();
   
   const isSignup = $derived($page.route.id?.includes('signup'));
   const isLogin = $derived($page.route.id?.includes('login'));
@@ -36,7 +37,7 @@
 
       <!-- Form content -->
       <div class="px-5 pb-5">
-        <slot />
+        {@render children?.()}
       </div>
     </div>
   </div>

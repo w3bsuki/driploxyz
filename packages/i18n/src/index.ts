@@ -1,6 +1,6 @@
 // Re-export generated Paraglide functions
-export * from '../lib/paraglide/messages.js';
-export * from '../lib/paraglide/runtime.js';
+export * from './paraglide/messages.js';
+export * from './paraglide/runtime.js';
 
 // Type definitions
 export type LanguageTag = 'en' | 'bg' | 'ru' | 'ua';

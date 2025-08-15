@@ -13,6 +13,7 @@
   import { initializeLanguage } from '$lib/utils/language';
   import * as i18n from '@repo/i18n';
   import type { LayoutData } from './$types';
+  import type { Snippet } from 'svelte';
 
   // Initialize language immediately when browser is available
   if (browser) {
@@ -21,7 +22,7 @@
     document.documentElement.lang = i18n.languageTag();
   }
 
-  let { data }: { data: LayoutData } = $props();
+  let { data, children }: { data: LayoutData; children?: Snippet } = $props();
 
   // Use $derived for reactive destructuring in Svelte 5
   const supabase = $derived(data?.supabase);
@@ -59,7 +60,7 @@
 </script>
 
 <EarlyBirdBanner />
-<slot />
+{@render children?.()}
 
 <!-- Locale Detection -->
 <LocaleDetector />
