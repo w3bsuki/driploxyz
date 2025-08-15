@@ -37,19 +37,29 @@ export function detectBrowserLanguage(): LanguageTag {
 // IP-based geo detection (using free API)
 export async function detectCountryFromIP(): Promise<string | null> {
   try {
+    // Add timeout to prevent hanging on mobile networks
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+    
     // Using ipapi.co free tier (no API key needed for basic usage)
     const response = await fetch('https://ipapi.co/json/', {
       headers: {
         'Accept': 'application/json'
-      }
+      },
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
     
     if (!response.ok) return null;
     
     const data = await response.json();
     return data.country_code || null;
   } catch (error) {
-    console.error('Failed to detect country from IP:', error);
+    // Don't log on abort (timeout) as it's expected on slow mobile networks
+    if (error instanceof Error && error.name !== 'AbortError') {
+      console.error('Failed to detect country from IP:', error);
+    }
     return null;
   }
 }
@@ -100,9 +110,14 @@ export function shouldShowLocaleDetectionBanner(
 // Store user's locale preference
 export function storeLocalePreference(locale: LanguageTag) {
   if (typeof window !== 'undefined') {
-    localStorage.setItem('preferredLocale', locale);
-    // Also set a cookie for SSR
-    document.cookie = `locale=${locale};path=/;max-age=31536000;samesite=lax`;
+    try {
+      localStorage.setItem('preferredLocale', locale);
+      // Also set a cookie for SSR with proper attributes for mobile Safari
+      const isSecure = window.location.protocol === 'https:';
+      document.cookie = `locale=${locale};path=/;max-age=31536000;samesite=lax${isSecure ? ';secure' : ''}`;
+    } catch (error) {
+      console.error('Failed to store locale preference:', error);
+    }
   }
 }
 
@@ -110,9 +125,14 @@ export function storeLocalePreference(locale: LanguageTag) {
 export function getStoredLocalePreference(): LanguageTag | null {
   if (typeof window === 'undefined') return null;
   
-  const stored = localStorage.getItem('preferredLocale');
-  if (stored && ['en', 'bg', 'ru', 'ua'].includes(stored)) {
-    return stored as LanguageTag;
+  try {
+    const stored = localStorage.getItem('preferredLocale');
+    if (stored && ['en', 'bg', 'ru', 'ua'].includes(stored)) {
+      return stored as LanguageTag;
+    }
+  } catch (error) {
+    // localStorage might be blocked on some mobile browsers
+    console.error('Failed to get stored locale preference:', error);
   }
   
   return null;

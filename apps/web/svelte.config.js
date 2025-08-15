@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-vercel';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -7,10 +7,14 @@ const config = {
 	// for more information about preprocessors
 	preprocess: vitePreprocess(),
 	kit: {
-		// adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.
-		// If your environment is not supported or you settled on a specific environment, switch out the adapter.
-		// See https://kit.svelte.dev/docs/adapters for more information about adapters.
-		adapter: adapter(),
+		adapter: adapter({
+			runtime: 'nodejs20.x', // Force Node.js runtime to avoid edge runtime issues
+			regions: ['iad1'], // Optional: specify region for lower latency  
+			split: false, // Keep everything in one function to avoid edge/node mixing
+			isr: {
+				expiration: 60 // ISR cache for 60 seconds
+			}
+		}),
 		csrf: {
 			checkOrigin: false
 		}
