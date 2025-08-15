@@ -1,6 +1,6 @@
 // Re-export generated Paraglide functions
-export * from './paraglide/messages.js';
-export * from './paraglide/runtime.js';
+export * from '../lib/paraglide/messages.js';
+export * from '../lib/paraglide/runtime.js';
 // Helper constants
 export const languageNames = {
     en: 'English',

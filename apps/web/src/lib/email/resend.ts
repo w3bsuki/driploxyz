@@ -1,8 +1,21 @@
 import { Resend } from 'resend';
 import { env } from '$env/dynamic/private';
 
-// Initialize Resend with your API key
-export const resend = new Resend(env.RESEND_API_KEY);
+// Initialize Resend with your API key (lazy initialization to avoid build errors)
+let resendInstance: Resend | null = null;
+
+function getResendInstance(): Resend | null {
+	if (!env.RESEND_API_KEY) {
+		console.warn('RESEND_API_KEY not configured - email sending disabled');
+		return null;
+	}
+	
+	if (!resendInstance) {
+		resendInstance = new Resend(env.RESEND_API_KEY);
+	}
+	
+	return resendInstance;
+}
 
 // Email templates
 export const emailTemplates = {
@@ -114,6 +127,12 @@ export const emailTemplates = {
 // Helper function to send email
 export async function sendEmail(to: string, template: { subject: string; html: string }) {
 	try {
+		const resend = getResendInstance();
+		if (!resend) {
+			console.warn('Email sending skipped - RESEND_API_KEY not configured');
+			return { success: false, error: 'Email service not configured' };
+		}
+		
 		const data = await resend.emails.send({
 			from: 'Driplo <hi@driplo.xyz>',
 			to: [to],

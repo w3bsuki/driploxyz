@@ -12,7 +12,15 @@
         "STRIPE_WEBHOOK_SECRET",
         "PUBLIC_SUPABASE_URL",
         "PUBLIC_SUPABASE_ANON_KEY",
-        "SUPABASE_SERVICE_ROLE_KEY"
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "RESEND_API_KEY",
+        "NODE_ENV",
+        "PUBLIC_SENTRY_DSN",
+        "SENTRY_DSN",
+        "SENTRY_ORG",
+        "SENTRY_PROJECT",
+        "SENTRY_AUTH_TOKEN",
+        "SENTRY_RELEASE"
       ]
     },
     "lint": {
