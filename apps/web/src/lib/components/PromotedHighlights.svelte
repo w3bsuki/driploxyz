@@ -14,41 +14,42 @@
 
 <!-- Promoted Listings / Highlights -->
 <div class="bg-white border-b border-gray-200">
-  <div class="px-4 sm:px-6 lg:px-8 py-4">
+  <div class="px-4 sm:px-6 lg:px-8 pt-4 pb-6">
     <div class="overflow-x-auto scrollbar-hide">
       <div class="flex space-x-2 -mx-4 px-4 sm:mx-0 sm:px-0">
         <!-- Promoted Products -->
         {#if promotedProducts && promotedProducts.length > 0}
           {#each promotedProducts as product}
-            <button 
-              onclick={() => onSellerSelect({
-                id: product.seller_id || `seller-${product.id}`,
-                name: product.seller_name || i18n.seller_premiumSeller(),
-                avatar: null,
-                premium: true,
-                rating: 4.8,
-                itemCount: 15,
-                followers: 250,
-                description: i18n.seller_premiumSellerDescription()
-              })}
-              class="relative flex-shrink-0 group"
-            >
-              <!-- Glass morphism container with golden promoted border -->
-              <div class="bg-white rounded-2xl border-2 border-yellow-400/60 shadow-lg shadow-yellow-100 backdrop-blur-xl group-hover:scale-105 group-hover:shadow-yellow-200 transition-all duration-300">
-                <!-- Promoted badge -->
-                <div class="absolute -top-2 left-3 z-10 bg-gradient-to-r from-yellow-400 to-yellow-500 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
-                  <span>👑</span>
+            <div class="relative flex-shrink-0 group pt-3">
+              <button 
+                onclick={() => onSellerSelect({
+                  id: product.seller_id || `seller-${product.id}`,
+                  name: product.seller_name || i18n.seller_premiumSeller(),
+                  avatar: null,
+                  premium: true,
+                  rating: 4.8,
+                  itemCount: 15,
+                  followers: 250,
+                  description: i18n.seller_premiumSellerDescription()
+                })}
+                class="block"
+              >
+              <!-- Glass morphism container -->
+              <div class="bg-white rounded-2xl border border-gray-200 p-1 shadow-sm backdrop-blur-xl group-hover:scale-105 transition-transform">
+                <!-- Premium badge -->
+                <div class="absolute -top-2 left-1/2 -translate-x-1/2 z-10 bg-black text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md flex items-center gap-1">
+                  <span>⭐</span>
                   <span>{i18n.trending_promoted()}</span>
                 </div>
                 <!-- Inner glass frame -->
-                <div class="bg-gray-50/80 relative rounded-xl border border-yellow-200/40 overflow-hidden mt-2">
+                <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
                   <div 
                     aria-hidden="true"
                     class="absolute inset-x-0 top-0 h-32 rounded-[inherit]"
                     style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
                   />
                   <!-- Product image -->
-                  <div class="w-28 h-28 sm:w-36 sm:h-36 relative">
+                  <div class="w-32 h-32 sm:w-40 sm:h-40 relative">
                     <img 
                       src={product.images[0]?.image_url || '/placeholder-product.svg'} 
                       alt={product.title}
@@ -68,6 +69,7 @@
                 </div>
               </div>
             </button>
+            </div>
           {/each}
         {/if}
 

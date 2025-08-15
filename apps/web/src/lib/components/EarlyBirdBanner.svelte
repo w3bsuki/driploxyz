@@ -53,39 +53,73 @@
 </script>
 
 {#if !loading && showBanner}
-  <div class="bg-gradient-to-r from-green-500 to-emerald-600 text-white relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-3">
-          <div class="text-2xl animate-bounce">🎉</div>
-          <div>
-            <div class="text-sm font-medium">
-              {i18n.banner_limitedTime()}: <strong>50% {i18n.banner_percentOff()}</strong> Premium Plans!
-            </div>
-            <div class="text-xs opacity-90">
-              Limited to first 100 users • {100 - earlyBirdCount} spots remaining
+  <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white relative">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2">
+      <!-- Mobile Layout -->
+      <div class="sm:hidden">
+        <div class="grid grid-cols-[1fr_auto_auto] items-center gap-3">
+          <div class="flex items-center space-x-3">
+            <div class="text-xl">🚀</div>
+            <div>
+              <div class="text-sm font-bold">
+                {i18n.banner_welcomeToDriplo()} - {i18n.banner_sellBuySecond()}
+              </div>
             </div>
           </div>
-        </div>
-        
-        <div class="flex items-center space-x-3">
+          
           <Button 
-            href="/dashboard/upgrade"
+            href="/sell"
+            variant="outline"
             size="sm"
-            class="bg-white text-green-600 hover:bg-gray-100 font-medium"
+            class="!bg-white !text-blue-600 !border-white font-bold shadow-sm hover:!bg-blue-50 !px-4"
           >
-{i18n.banner_shopNow()}
+            {i18n.banner_register()}
           </Button>
+          
           <button 
             onclick={dismissBanner}
-            class="text-white hover:text-gray-200 p-1"
-            aria-label="{i18n.messages_dismiss()}"
+            class="text-white hover:text-gray-200 p-2"
+            aria-label="Dismiss"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
+      </div>
+
+      <!-- Desktop Layout -->
+      <div class="hidden sm:grid sm:grid-cols-[1fr_auto_auto] sm:items-center sm:gap-6">
+        <div class="flex items-center space-x-4">
+          <div class="text-2xl">🚀</div>
+          <div>
+            <div class="text-base font-bold leading-tight">
+              {i18n.banner_welcomeToDriplo()}
+            </div>
+            <div class="text-sm opacity-90 leading-tight mt-1">
+              {i18n.banner_sellBuySecond()} - {i18n.banner_joinCommunity()}
+            </div>
+          </div>
+        </div>
+        
+        <Button 
+          href="/sell"
+          variant="outline"
+          size="md"
+          class="!bg-white !text-blue-600 !border-white font-bold shadow-sm hover:!bg-blue-50"
+        >
+          {i18n.banner_register()}
+        </Button>
+        
+        <button 
+          onclick={dismissBanner}
+          class="text-white hover:text-gray-200 p-2"
+          aria-label="Dismiss"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
       </div>
     </div>
   </div>

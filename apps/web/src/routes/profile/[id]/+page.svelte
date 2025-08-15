@@ -53,7 +53,7 @@
   <Header />
 
   <!-- Profile Section -->
-  <div class="px-4 py-6">
+  <div class="px-4 py-6 overflow-visible">
     <div class="flex items-start space-x-4">
       <!-- Avatar -->
       <div class="relative">
@@ -119,7 +119,7 @@
     
     <!-- Name and Bio -->
     <div class="mt-3">
-      <div class="flex items-center space-x-2">
+      <div class="flex items-center space-x-2 flex-wrap gap-y-1">
         <h1 class="font-semibold text-sm">{data.profile.username}</h1>
         
         <!-- Brand Badge -->

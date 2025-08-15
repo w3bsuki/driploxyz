@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button, ProductCard, SoldNotificationPanel } from '@repo/ui';
-  import { m } from '@repo/i18n';
+  import * as i18n from '@repo/i18n';
   import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
   import { onMount } from 'svelte';

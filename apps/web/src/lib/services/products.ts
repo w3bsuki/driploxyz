@@ -325,7 +325,6 @@ export class ProductService {
         category_name: item.categories?.name,
         seller_name: item.profiles?.username,
         seller_rating: item.profiles?.rating,
-        seller_avatar: item.profiles?.avatar_url,
         seller_avatar: item.profiles?.avatar_url
       }));
 

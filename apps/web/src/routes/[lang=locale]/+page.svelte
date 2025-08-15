@@ -9,7 +9,7 @@
 	import { serviceUtils } from '$lib/services';
 	import type { PageData } from './$types';
 	import type { ProductWithImages } from '$lib/services';
-	import { m, languageTag } from '@repo/i18n';
+	import * as i18n from '@repo/i18n';
 
 	let { data }: { data: PageData } = $props();
 
@@ -146,8 +146,8 @@
 				<SearchBar 
 					bind:value={searchQuery}
 					onSearch={handleSearch}
-					placeholder={m.nav_search()}
-					categoriesText={m.search_categories()}
+					placeholder={i18n.nav_search()}
+					categoriesText={i18n.search_categories()}
 					variant="compact"
 					class="max-w-sm mx-auto"
 				/>
@@ -165,9 +165,9 @@
 						bind:value={searchQuery}
 						onSearch={handleSearch}
 						onFilter={handleFilter}
-						placeholder={m.search_placeholder()}
-						categoriesText={m.search_categories()}
-						suggestions={[m.home_searchSuggestions_vintageJackets(), m.home_searchSuggestions_designerBags(), m.home_searchSuggestions_summerDresses(), m.home_searchSuggestions_sneakers()]}
+						placeholder={i18n.search_placeholder()}
+						categoriesText={i18n.search_categories()}
+						suggestions={[i18n.home_searchSuggestions_vintageJackets(), i18n.home_searchSuggestions_designerBags(), i18n.home_searchSuggestions_summerDresses(), i18n.home_searchSuggestions_sneakers()]}
 						showCategoryDropdown={false}
 					/>
 				</div>
@@ -179,7 +179,7 @@
 						onclick={() => goto('/search')}
 						class="category-nav-pill flex-shrink-0 px-5 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-gray-900 transition-colors"
 					>
-						{m.search_all()}
+						{i18n.search_all()}
 					</button>
 					{#each mainCategories as category}
 						<button 
@@ -204,9 +204,9 @@
 							<div class="relative p-4 space-y-4">
 								<!-- Trending Section -->
 								<div>
-									<h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{m.trending_title()}</h3>
+									<h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{i18n.trending_title()}</h3>
 									<div class="space-y-1">
-										{#each [m.home_trending_vintageJackets(), m.home_trending_y2kJeans(), m.home_trending_designerBagsUnder100()] as trend}
+										{#each [i18n.home_trending_vintageJackets(), i18n.home_trending_y2kJeans(), i18n.home_trending_designerBagsUnder100()] as trend}
 											<button
 												onclick={() => handleSearch(trend)}
 												class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-white/60 rounded-lg transition-colors flex items-center space-x-2"
@@ -222,7 +222,7 @@
 
 								<!-- Top Sellers Section -->
 								<div>
-									<h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{m.trending_topSellers()}</h3>
+									<h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{i18n.trending_topSellers()}</h3>
 									<div class="space-y-1">
 										{#each sellers.slice(0, 3) as seller}
 											<button
@@ -247,7 +247,7 @@
 														</div>
 													{:else}
 														<span class="text-badge bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-medium">
-															{m.trending_newSeller()}
+															{i18n.trending_newSeller()}
 														</span>
 													{/if}
 												</div>
