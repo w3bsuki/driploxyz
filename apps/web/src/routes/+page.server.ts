@@ -21,31 +21,64 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
   const services = createServices(supabase);
 
   try {
-    // Load data in parallel for better performance
-    const [
-      { data: promotedProducts, error: promotedError },
-      { data: featuredProducts, error: productsError },
-      { data: categories, error: categoriesError },
-      { data: topSellers, error: sellersError }
-    ] = await Promise.all([
-      // Get promoted products for highlights
-      services.products.getPromotedProducts(8),
-      // Get featured/recent products
-      services.products.getProducts({
+    // Load data in parallel but with error handling for each
+    let promotedProducts = [];
+    let promotedError = null;
+    let featuredProducts = [];
+    let productsError = null;
+    let categories = [];
+    let categoriesError = null;
+    let topSellers = [];
+    let sellersError = null;
+
+    // Get promoted products with error handling
+    try {
+      const result = await services.products.getPromotedProducts(8);
+      promotedProducts = result.data || [];
+      promotedError = result.error;
+    } catch (err) {
+      console.error('Promoted products failed:', err);
+      promotedError = 'Failed to load promoted products';
+    }
+
+    // Get featured products with error handling
+    try {
+      const result = await services.products.getProducts({
         sort: { by: 'created_at', direction: 'desc' },
         limit: 12
-      }),
-      // Get main categories
-      services.categories.getMainCategories(),
-      // Get top sellers
-      services.profiles.getTopSellers(8)
-    ]);
+      });
+      featuredProducts = result.data || [];
+      productsError = result.error;
+    } catch (err) {
+      console.error('Featured products failed:', err);
+      productsError = 'Failed to load products';
+    }
+
+    // Get categories with error handling
+    try {
+      const result = await services.categories.getMainCategories();
+      categories = result.data || [];
+      categoriesError = result.error;
+    } catch (err) {
+      console.error('Categories failed:', err);
+      categoriesError = 'Failed to load categories';
+    }
+
+    // Get top sellers with error handling
+    try {
+      const result = await services.profiles.getTopSellers(8);
+      topSellers = result.data || [];
+      sellersError = result.error;
+    } catch (err) {
+      console.error('Top sellers failed:', err);
+      sellersError = 'Failed to load sellers';
+    }
 
     return {
-      promotedProducts: promotedProducts || [],
-      featuredProducts: featuredProducts || [],
-      categories: categories || [],
-      topSellers: topSellers || [],
+      promotedProducts,
+      featuredProducts,
+      categories,
+      topSellers,
       errors: {
         promoted: promotedError,
         products: productsError,
