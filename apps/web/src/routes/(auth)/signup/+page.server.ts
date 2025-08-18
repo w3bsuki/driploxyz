@@ -96,7 +96,8 @@ export const actions: Actions = {
           id: data.user.id,
           username,
           full_name: fullName,
-          locale: userLocale
+          locale: userLocale,
+          onboarding_completed: false
         });
 
       if (profileError) {

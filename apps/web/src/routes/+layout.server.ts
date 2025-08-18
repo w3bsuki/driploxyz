@@ -41,7 +41,7 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
       // Single consolidated redirect check with comprehensive guards
       const shouldRedirect = 
         profile && 
-        !profile.onboarding_completed && 
+        profile.onboarding_completed !== true && 
         !REDIRECT_PATHS_TO_SKIP.some(path => url.pathname.startsWith(path));
       
       if (shouldRedirect) {

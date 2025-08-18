@@ -20,11 +20,18 @@ export const load: PageLoad = async ({ parent }) => {
     };
   }
 
+  // Log for debugging
+  console.log('[ONBOARDING_DEBUG]', { 
+    userId: user?.id, 
+    profile, 
+    onboardingCompleted: profile?.onboarding_completed 
+  });
+
   // Use profile from parent to avoid duplicate fetch
   // Parent already fetched profile, no need to fetch again
-  if (profile?.onboarding_completed) {
-    console.log('[ONBOARDING] Already completed, redirecting to dashboard');
-    throw redirect(303, '/dashboard');
+  if (profile?.onboarding_completed === true) {
+    console.log('[ONBOARDING] Already completed, redirecting to home');
+    throw redirect(303, '/');
   }
 
   return {
