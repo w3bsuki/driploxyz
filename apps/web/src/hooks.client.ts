@@ -1,8 +1,10 @@
 import { handleErrorWithSentry } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
+import { env } from '$env/dynamic/public';
 
-import { PUBLIC_SENTRY_DSN } from '$env/static/public';
+// Get Sentry DSN from environment (may be undefined)
+const PUBLIC_SENTRY_DSN = env.PUBLIC_SENTRY_DSN;
 
 // Only initialize Sentry if DSN is present
 if (PUBLIC_SENTRY_DSN) {
