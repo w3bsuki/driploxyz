@@ -1,5 +1,5 @@
 import { redirect, fail } from '@sveltejs/kit';
-import { superValidate } from 'sveltekit-superforms/server';
+import { superValidate, setError } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { LoginSchema } from '$lib/validation/auth.js';
 import type { Actions, PageServerLoad } from './$types';
@@ -30,10 +30,7 @@ export const actions: Actions = {
 
     if (error) {
       console.error('Sign in error:', error);
-      return fail(400, {
-        form,
-        error: error.message
-      });
+      return setError(form, '', error.message);
     }
 
     if (data.user) {
@@ -69,9 +66,6 @@ export const actions: Actions = {
       throw redirect(303, '/');
     }
 
-    return fail(400, {
-      form,
-      error: 'Unable to sign in'
-    });
+    return setError(form, '', 'Unable to sign in');
   }
 };

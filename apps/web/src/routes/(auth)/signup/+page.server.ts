@@ -1,4 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
+import { superValidate, setError } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { SignupSchema } from '$lib/validation/auth.js';
 import type { Actions, PageServerLoad } from './$types';
 import { detectLanguage } from '@repo/i18n';
 
@@ -6,54 +9,25 @@ export const load: PageServerLoad = async ({ locals: { session } }) => {
   if (session) {
     throw redirect(303, '/');
   }
+  
+  const form = await superValidate(zod(SignupSchema));
+  return { form };
 };
 
 export const actions: Actions = {
   signup: async ({ request, locals: { supabase }, cookies }) => {
-    const formData = await request.formData();
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    const confirmPassword = formData.get('confirmPassword') as string;
-    const fullName = formData.get('fullName') as string;
-    const terms = formData.get('terms') as string;
+    const form = await superValidate(request, zod(SignupSchema));
+    
+    if (!form.valid) {
+      return fail(400, { form });
+    }
+    
+    const { email, password, fullName, terms } = form.data;
     
     // Get user's locale from cookie or Accept-Language header
     const localeCookie = cookies.get('locale');
     const acceptLanguage = request.headers.get('accept-language') || '';
     const userLocale = localeCookie || detectLanguage(acceptLanguage);
-
-    // Validation
-    if (!email || !password || !fullName) {
-      return fail(400, {
-        error: 'All fields are required',
-        email,
-        fullName
-      });
-    }
-
-    if (password !== confirmPassword) {
-      return fail(400, {
-        error: 'Passwords do not match',
-        email,
-        fullName
-      });
-    }
-
-    if (password.length < 8) {
-      return fail(400, {
-        error: 'Password must be at least 8 characters',
-        email,
-        fullName
-      });
-    }
-
-    if (!terms) {
-      return fail(400, {
-        error: 'You must agree to the terms and conditions',
-        email,
-        fullName
-      });
-    }
 
     // Create user
     const { data, error } = await supabase.auth.signUp({
@@ -71,18 +45,10 @@ export const actions: Actions = {
       
       // Handle specific errors
       if (error.message.includes('already registered')) {
-        return fail(400, {
-          error: 'An account with this email already exists',
-          email,
-          fullName
-        });
+        return setError(form, 'email', 'An account with this email already exists');
       }
       
-      return fail(400, {
-        error: error.message,
-        email,
-        fullName
-      });
+      return setError(form, '', error.message);
     }
 
     if (data.user) {
@@ -107,16 +73,13 @@ export const actions: Actions = {
 
       // Don't auto-login - require email verification
       return {
+        form,
         success: true,
         message: 'Account created successfully! Please check your email to verify your account.',
-        email
+        email: form.data.email
       };
     }
 
-    return fail(400, {
-      error: 'Unable to create account',
-      email,
-      fullName
-    });
+    return setError(form, '', 'Unable to create account');
   }
 };

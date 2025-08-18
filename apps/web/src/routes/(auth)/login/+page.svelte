@@ -1,14 +1,17 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { enhance } from '$app/forms';
-  import type { ActionData, PageData } from './$types';
+  import { superForm } from 'sveltekit-superforms';
+  import { zod } from 'sveltekit-superforms/adapters';
+  import { LoginSchema } from '$lib/validation/auth.js';
+  import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
 
-  let { data, form }: { data: PageData; form: ActionData } = $props();
+  let { data }: { data: PageData } = $props();
   
-  let loading = $state(false);
-  let email = $state('');
-  let password = $state('');
+  const { form, errors, constraints, submitting, enhance } = superForm(data.form, {
+    validators: zod(LoginSchema),
+    resetForm: false
+  });
 </script>
 
 <svelte:head>
@@ -18,7 +21,7 @@
 
 <div class="space-y-4">
 
-  {#if form?.error}
+  {#if $errors._errors}
     <div class="bg-red-50 border border-red-200 rounded-md p-4">
       <div class="flex">
         <div class="flex-shrink-0">
@@ -27,21 +30,14 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-red-800">{form.error}</p>
+          <p class="text-sm text-red-800">{$errors._errors[0]}</p>
         </div>
       </div>
     </div>
   {/if}
 
   <!-- Email/Password Form -->
-  <form method="POST" action="?/signin" 
-    use:enhance={() => {
-      loading = true;
-      return async ({ update }) => {
-        await update();
-        loading = false;
-      };
-    }}>
+  <form method="POST" action="?/signin" use:enhance>
     <div class="space-y-3">
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700">
@@ -54,10 +50,16 @@
             type="email"
             autocomplete="email"
             required
-            bind:value={email}
-            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            bind:value={$form.email}
+            aria-invalid={$errors.email ? 'true' : undefined}
+            aria-describedby={$errors.email ? 'email-error' : undefined}
+            class="appearance-none block w-full px-3 py-2 border {$errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             placeholder={i18n.auth_email()}
+            {...$constraints.email}
           />
+          {#if $errors.email}
+            <div id="email-error" class="mt-1 text-sm text-red-600">{$errors.email}</div>
+          {/if}
         </div>
       </div>
 
@@ -72,10 +74,16 @@
             type="password"
             autocomplete="current-password"
             required
-            bind:value={password}
-            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            bind:value={$form.password}
+            aria-invalid={$errors.password ? 'true' : undefined}
+            aria-describedby={$errors.password ? 'password-error' : undefined}
+            class="appearance-none block w-full px-3 py-2 border {$errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             placeholder={i18n.auth_password()}
+            {...$constraints.password}
           />
+          {#if $errors.password}
+            <div id="password-error" class="mt-1 text-sm text-red-600">{$errors.password}</div>
+          {/if}
         </div>
       </div>
 
@@ -90,10 +98,10 @@
       <div>
         <button
           type="submit"
-          disabled={loading}
+          disabled={$submitting}
           class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-blue-600 text-white focus-visible:ring-blue-500 px-6 py-3 text-base transition-all duration-200"
         >
-          {#if loading}
+          {#if $submitting}
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>

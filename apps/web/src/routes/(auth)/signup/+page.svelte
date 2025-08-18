@@ -1,26 +1,17 @@
 <script lang="ts">
-  import { enhance } from '$app/forms';
   import { goto } from '$app/navigation';
-  import type { ActionData, PageData } from './$types';
+  import { superForm } from 'sveltekit-superforms';
+  import { zod } from 'sveltekit-superforms/adapters';
+  import { SignupSchema } from '$lib/validation/auth.js';
+  import type { PageData, ActionData } from './$types';
   import * as i18n from '@repo/i18n';
 
-  let { data, form }: { data: PageData; form: ActionData } = $props();
+  let { data, form: actionResult }: { data: PageData; form: ActionData } = $props();
   
-  let loading = $state(false);
-  let email = $state('');
-  let password = $state('');
-  let confirmPassword = $state('');
-  let fullName = $state('');
-  let agreedToTerms = $state(false);
-
-  let passwordMismatch = $derived(password !== confirmPassword && confirmPassword.length > 0);
-  let validForm = $derived(
-    email.length > 0 && 
-    password.length >= 8 && 
-    !passwordMismatch && 
-    fullName.length > 0 &&
-    agreedToTerms
-  );
+  const { form, errors, constraints, submitting, enhance, message } = superForm(data.form, {
+    validators: zod(SignupSchema),
+    resetForm: false
+  });
 </script>
 
 <svelte:head>
@@ -30,7 +21,7 @@
 
 <div class="space-y-4">
 
-  {#if form?.error}
+  {#if $errors._errors}
     <div class="bg-red-50 border border-red-200 rounded-md p-4">
       <div class="flex">
         <div class="flex-shrink-0">
@@ -39,13 +30,13 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-red-800">{form.error}</p>
+          <p class="text-sm text-red-800">{$errors._errors[0]}</p>
         </div>
       </div>
     </div>
   {/if}
 
-  {#if form?.success}
+  {#if actionResult?.success}
     <div class="bg-green-50 border border-green-200 rounded-md p-4">
       <div class="flex">
         <div class="flex-shrink-0">
@@ -54,25 +45,25 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-green-800">{form.message || 'Account created successfully!'}</p>
+          <p class="text-sm text-green-800">{actionResult.message || 'Account created successfully!'}</p>
         </div>
       </div>
     </div>
   {/if}
 
   <!-- Signup Form -->
-  <form method="POST" action="?/signup" use:enhance={() => {
-    loading = true;
-    return async ({ result, update }) => {
-      loading = false;
-      if (result.type === 'success' && result.data?.success) {
-        // Redirect to email verification page
-        goto(`/auth/verify-email?email=${encodeURIComponent(result.data.email)}`);
-      } else {
-        await update();
-      }
-    };
-  }}>
+  <form method="POST" action="?/signup" use:enhance={
+    () => {
+      return async ({ result, update }) => {
+        if (result.type === 'success' && result.data?.success) {
+          // Redirect to email verification page
+          goto(`/auth/verify-email?email=${encodeURIComponent(result.data.email)}`);
+        } else {
+          await update();
+        }
+      };
+    }
+  }>
     <div class="space-y-3">
       <!-- Full Name -->
       <div>
@@ -84,10 +75,16 @@
           name="fullName"
           type="text"
           required
-          bind:value={fullName}
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          bind:value={$form.fullName}
+          aria-invalid={$errors.fullName ? 'true' : undefined}
+          aria-describedby={$errors.fullName ? 'fullName-error' : undefined}
+          class="mt-1 block w-full px-3 py-2 border {$errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           placeholder="John Doe"
+          {...$constraints.fullName}
         />
+        {#if $errors.fullName}
+          <div id="fullName-error" class="mt-1 text-sm text-red-600">{$errors.fullName}</div>
+        {/if}
       </div>
 
       <!-- Email -->
@@ -101,10 +98,16 @@
           type="email"
           autocomplete="email"
           required
-          bind:value={email}
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          bind:value={$form.email}
+          aria-invalid={$errors.email ? 'true' : undefined}
+          aria-describedby={$errors.email ? 'email-error' : undefined}
+          class="mt-1 block w-full px-3 py-2 border {$errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           placeholder="john@example.com"
+          {...$constraints.email}
         />
+        {#if $errors.email}
+          <div id="email-error" class="mt-1 text-sm text-red-600">{$errors.email}</div>
+        {/if}
       </div>
 
       <!-- Password Fields -->
@@ -118,11 +121,16 @@
           type="password"
           autocomplete="new-password"
           required
-          minlength="8"
-          bind:value={password}
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          bind:value={$form.password}
+          aria-invalid={$errors.password ? 'true' : undefined}
+          aria-describedby={$errors.password ? 'password-error' : undefined}
+          class="mt-1 block w-full px-3 py-2 border {$errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           placeholder="Minimum 8 characters"
+          {...$constraints.password}
         />
+        {#if $errors.password}
+          <div id="password-error" class="mt-1 text-sm text-red-600">{$errors.password}</div>
+        {/if}
       </div>
 
       <div>
@@ -135,12 +143,15 @@
           type="password"
           autocomplete="new-password"
           required
-          bind:value={confirmPassword}
-          class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          bind:value={$form.confirmPassword}
+          aria-invalid={$errors.confirmPassword ? 'true' : undefined}
+          aria-describedby={$errors.confirmPassword ? 'confirmPassword-error' : undefined}
+          class="mt-1 block w-full px-3 py-2 border {$errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           placeholder="Re-enter your password"
+          {...$constraints.confirmPassword}
         />
-        {#if passwordMismatch}
-          <p class="mt-1 text-sm text-red-600">{i18n.error_validation()}</p>
+        {#if $errors.confirmPassword}
+          <div id="confirmPassword-error" class="mt-1 text-sm text-red-600">{$errors.confirmPassword}</div>
         {/if}
       </div>
 
@@ -150,9 +161,14 @@
           id="terms"
           name="terms"
           type="checkbox"
-          bind:checked={agreedToTerms}
+          bind:checked={$form.terms}
+          aria-invalid={$errors.terms ? 'true' : undefined}
+          aria-describedby={$errors.terms ? 'terms-error' : undefined}
           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
         />
+        {#if $errors.terms}
+          <div id="terms-error" class="mt-1 text-sm text-red-600">{$errors.terms}</div>
+        {/if}
         <label for="terms" class="ml-2 block text-sm text-gray-900">
           {i18n.auth_termsAgreement()}
           <a href="/terms" class="text-blue-600 hover:text-blue-500">{i18n.auth_termsOfService()}</a>
@@ -165,10 +181,10 @@
       <div>
         <button
           type="submit"
-          disabled={loading}
+          disabled={$submitting}
           class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-blue-600 text-white focus-visible:ring-blue-500 px-6 py-3 text-base transition-all duration-200"
         >
-          {#if loading}
+          {#if $submitting}
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
