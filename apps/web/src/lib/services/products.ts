@@ -265,7 +265,7 @@ export class ProductService {
       const boostedProducts: any[] = [];
       const boostedError = null;
 
-      // Get boosted products (using actual database columns)
+      // Get featured products (fallback since no boosted products exist)
       const { data: manuallyPromoted, error: manualError } = await this.supabase
         .from('products')
         .select(`
@@ -274,10 +274,9 @@ export class ProductService {
           categories (name),
           profiles!products_seller_id_fkey (username, rating, avatar_url)
         `)
-        .eq('is_boosted', true)
+        .eq('is_featured', true)
         .eq('is_active', true)
         .eq('is_sold', false)
-        .or('boosted_until.is.null,boosted_until.gt.now()')
         .order('created_at', { ascending: false })
         .limit(limit);
 
