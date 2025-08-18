@@ -108,8 +108,13 @@ export async function signOut(supabase: SupabaseClient<Database>) {
     if (error) {
       console.error('Sign out error:', error);
     }
+    
+    // Force redirect to logout endpoint to clear cookies properly
+    window.location.href = '/logout';
   } catch (error) {
     console.error('Sign out error:', error);
+    // Force redirect even on error
+    window.location.href = '/logout';
   }
 }
 
