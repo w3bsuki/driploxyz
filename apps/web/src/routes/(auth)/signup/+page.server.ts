@@ -1,5 +1,6 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { superValidate, setError } from 'sveltekit-superforms/server';
+import { zod } from 'sveltekit-superforms/adapters';
 import { SignupSchema } from '$lib/validation/auth.js';
 import type { Actions, PageServerLoad } from './$types';
 import { detectLanguage } from '@repo/i18n';
@@ -9,13 +10,13 @@ export const load: PageServerLoad = async ({ locals: { session } }) => {
     throw redirect(303, '/');
   }
   
-  const form = await superValidate(SignupSchema);
+  const form = await superValidate(zod(SignupSchema));
   return { form };
 };
 
 export const actions: Actions = {
   signup: async ({ request, locals: { supabase }, cookies }) => {
-    const form = await superValidate(request, SignupSchema);
+    const form = await superValidate(request, zod(SignupSchema));
     
     if (!form.valid) {
       return fail(400, { form });

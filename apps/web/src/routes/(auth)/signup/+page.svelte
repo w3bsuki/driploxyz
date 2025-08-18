@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { superForm } from 'sveltekit-superforms/client';
+  import { zod } from 'sveltekit-superforms/adapters';
   import { SignupSchema } from '$lib/validation/auth.js';
   import type { PageData, ActionData } from './$types';
   import * as i18n from '@repo/i18n';
@@ -8,7 +9,7 @@
   let { data, form: actionResult }: { data: PageData; form: ActionData } = $props();
   
   const { form, errors, constraints, submitting, enhance, message } = superForm(data.form, {
-    validators: SignupSchema,
+    validators: zod(SignupSchema),
     resetForm: false
   });
 </script>
