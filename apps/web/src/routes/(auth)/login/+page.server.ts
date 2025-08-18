@@ -1,24 +1,27 @@
 import { redirect, fail } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms/server';
+import { zod } from 'sveltekit-superforms/adapters';
+import { LoginSchema } from '$lib/validation/auth.js';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals: { session } }) => {
   if (session) {
     throw redirect(303, '/');
   }
+  
+  const form = await superValidate(zod(LoginSchema));
+  return { form };
 };
 
 export const actions: Actions = {
   signin: async ({ request, locals: { supabase } }) => {
-    const formData = await request.formData();
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-
-    if (!email || !password) {
-      return fail(400, {
-        error: 'Email and password are required',
-        email
-      });
+    const form = await superValidate(request, zod(LoginSchema));
+    
+    if (!form.valid) {
+      return fail(400, { form });
     }
+    
+    const { email, password } = form.data;
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -28,8 +31,8 @@ export const actions: Actions = {
     if (error) {
       console.error('Sign in error:', error);
       return fail(400, {
-        error: error.message,
-        email
+        form,
+        error: error.message
       });
     }
 
@@ -67,8 +70,8 @@ export const actions: Actions = {
     }
 
     return fail(400, {
-      error: 'Unable to sign in',
-      email
+      form,
+      error: 'Unable to sign in'
     });
   }
 };

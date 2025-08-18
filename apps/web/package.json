@@ -23,7 +23,9 @@
 		"@supabase/ssr": "^0.6.1",
 		"@supabase/supabase-js": "^2.55.0",
 		"resend": "^6.0.1",
-		"stripe": "^18.4.0"
+		"stripe": "^18.4.0",
+		"sveltekit-superforms": "^2.27.1",
+		"zod": "^4.0.17"
 	},
 	"devDependencies": {
 		"@repo/eslint-config": "workspace:*",
