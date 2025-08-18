@@ -1,0 +1,7 @@
+# Override GitHub language detection
+*.svelte linguist-language=Svelte
+*.js linguist-language=JavaScript
+*.ts linguist-language=TypeScript
+packages/ui/dist/* linguist-generated=true
+node_modules/* linguist-vendored=true
+*.lock linguist-generated=true
