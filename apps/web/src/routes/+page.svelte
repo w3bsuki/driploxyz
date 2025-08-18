@@ -144,6 +144,13 @@
 	// Scroll detection for compact search
 	$effect(() => {
 		if (!heroSearchElement) return;
+		
+		// Check if IntersectionObserver is supported
+		if (!window.IntersectionObserver) {
+			// Fallback: always show compact search on unsupported browsers
+			showCompactSearch = true;
+			return;
+		}
 
 		const observer = new IntersectionObserver(
 			([entry]) => {
