@@ -4,7 +4,7 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { LoginSchema } from '$lib/validation/auth.js';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
+export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) => {
   const { session } = await safeGetSession();
   
   if (session) {
@@ -12,7 +12,31 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
   }
   
   const form = await superValidate(zod(LoginSchema));
-  return { form };
+  
+  // Handle auth callback errors
+  const error = url.searchParams.get('error');
+  let errorMessage = null;
+  
+  if (error) {
+    switch (error) {
+      case 'auth_failed':
+        errorMessage = 'Authentication failed. Please try again.';
+        break;
+      case 'session_exchange_failed':
+        errorMessage = 'Unable to complete sign in. Please try again.';
+        break;
+      case 'auth_callback_failed':
+        errorMessage = 'Authentication callback failed. Please try signing in again.';
+        break;
+      case 'no_auth_code':
+        errorMessage = 'Authentication code missing. Please try signing in again.';
+        break;
+      default:
+        errorMessage = decodeURIComponent(error);
+    }
+  }
+  
+  return { form, errorMessage };
 };
 
 export const actions: Actions = {

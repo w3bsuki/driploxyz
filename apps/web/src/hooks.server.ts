@@ -48,14 +48,16 @@ const supabase: Handle = async ({ event, resolve }) => {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              // Production-compatible cookie settings
+              // Vercel-optimized cookie settings
+              const isSecure = event.url.protocol === 'https:';
+              
               event.cookies.set(name, value, { 
                 ...options,
                 path: '/',
-                sameSite: 'lax',
-                secure: event.url.protocol === 'https:',
-                httpOnly: false, // Allow client access for auth
-                maxAge: 60 * 60 * 24 * 7 // 1 week
+                sameSite: 'lax', // Use lax for better compatibility
+                secure: isSecure, // Secure when HTTPS
+                httpOnly: false, // Client needs access for auth state sync
+                maxAge: options?.maxAge || 60 * 60 * 24 * 7 // 1 week default
               });
             });
           },
@@ -137,7 +139,7 @@ export const handle = SENTRY_DSN ? sequence(sentryHandle(), supabase, authGuard)
 // Sentry error handler (only if DSN configured)
 export const handleError: HandleServerError = SENTRY_DSN ? handleErrorWithSentry() : (async ({ error, event }) => {
   // Always log critical errors, but only details in debug mode
-  console.error('[SERVER_ERROR]', isDebug ? error : error.message);
+  console.error('[SERVER_ERROR]', isDebug ? error : (error instanceof Error ? error.message : 'Unknown error'));
   return {
     message: 'Internal Server Error'
   };
