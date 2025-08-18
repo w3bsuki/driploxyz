@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset your password</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #fafafa;
+            color: #2d2d2d;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 48px 32px 32px;
+            text-align: center;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1a1a1a;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+        .tagline {
+            font-size: 14px;
+            color: #666;
+            font-weight: 400;
+        }
+        .content {
+            padding: 48px 32px;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #1a1a1a;
+            text-align: center;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        .text {
+            font-size: 16px;
+            color: #4a4a4a;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 32px;
+            font-weight: 500;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .button:hover {
+            background-color: #333;
+            transform: translateY(-1px);
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 32px;
+            text-align: center;
+            border-top: 1px solid #f0f0f0;
+        }
+        .footer-text {
+            font-size: 14px;
+            color: #888;
+            margin: 8px 0;
+        }
+        .footer-links {
+            margin: 20px 0;
+        }
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            margin: 0 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .footer-links a:hover {
+            color: #1a1a1a;
+        }
+        .security-note {
+            background-color: #f0f9ff;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 24px 0;
+            font-size: 14px;
+            color: #0369a1;
+            text-align: center;
+        }
+        .warning-note {
+            background-color: #fef7f0;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 24px 0;
+            font-size: 14px;
+            color: #ea580c;
+            text-align: center;
+        }
+        .lock-icon {
+            font-size: 48px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">driplo</div>
+            <div class="tagline">sustainable fashion marketplace</div>
+        </div>
+        
+        <div class="content">
+            <div class="lock-icon">🔐</div>
+            <div class="title">Reset your password</div>
+            <div class="subtitle">Let's get you back into your account</div>
+            
+            <div class="text">
+                We received a request to reset your password. 
+                Click the button below to create a new one.
+            </div>
+            
+            <div class="button-container">
+                <a href="{{ .ConfirmationURL }}" class="button">Reset Password</a>
+            </div>
+            
+            <div class="warning-note">
+                ⚠️ Didn't request this? No worries — just ignore this email and your account stays secure.
+            </div>
+            
+            <div class="security-note">
+                🔒 This link expires in 1 hour. Need a new one? Just request another reset.
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-links">
+                <a href="mailto:hello@driplo.com">Support</a>
+                <a href="{{ .SiteURL }}/help">Help</a>
+            </div>
+            <div class="footer-text">© 2024 driplo — sustainable fashion, made simple</div>
+            <div class="footer-text">{{ .Email }}</div>
+        </div>
+    </div>
+</body>
+</html>

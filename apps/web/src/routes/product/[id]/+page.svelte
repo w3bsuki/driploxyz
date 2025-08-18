@@ -146,26 +146,26 @@
   <Header />
   
   <!-- Breadcrumb -->
-  <div class="bg-white border-b">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+  <div class="bg-white/80 backdrop-blur-xl border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       <Breadcrumb items={breadcrumbItems} />
     </div>
   </div>
   
   
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 pb-32 lg:pb-6">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-32 lg:pb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
       
       <!-- Left Column - Enhanced Gallery -->
       <div class="lg:col-span-7">
-        <div class="sticky top-4">
-          <div class="bg-white rounded-xl p-4">
+        <div class="sticky top-6">
+          <div class="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-lg">
             <ProductGallery 
               images={productImages}
               title={data.product.title}
               condition={data.product.condition}
               isAuthenticated={true}
-              class="h-[500px] lg:h-[600px] rounded-lg overflow-hidden"
+              class="h-[500px] lg:h-[650px] rounded-xl overflow-hidden"
               translations={{
                 new: i18n.product_newWithTags(),
                 likeNew: i18n.product_likeNewCondition(),
@@ -182,26 +182,53 @@
         <div class="space-y-6">
           
           <!-- Product Header -->
-          <div class="bg-white rounded-xl p-4">
-            <div class="mb-3">
+          <div class="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-lg">
+            <!-- Price and Favorite -->
+            <div class="flex items-start justify-between mb-4">
+              <div>
+                <span class="text-3xl font-bold text-gray-900">
+                  {formatPrice(data.product.price)}
+                </span>
+                {#if data.product.shipping_price}
+                  <p class="text-sm text-gray-500 mt-1">
+                    + {formatPrice(data.product.shipping_price)} {i18n.product_shipping().toLowerCase()}
+                  </p>
+                {:else}
+                  <p class="text-sm text-green-600 mt-1">
+                    {i18n.product_freeShipping()}
+                  </p>
+                {/if}
+              </div>
+              <button
+                onclick={handleFavorite}
+                class="p-3 rounded-full backdrop-blur-md bg-white/80 border border-white/20 transition-all duration-200 hover:bg-white/90 {isFavorited ? 'text-red-500' : 'text-gray-600'}"
+              >
+                <svg class="w-5 h-5" fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Brand and Title -->
+            <div class="mb-4">
               {#if data.product.brand}
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">{data.product.brand}</p>
+                <p class="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">{data.product.brand}</p>
               {/if}
-              <h1 class="text-xl font-bold text-gray-900 leading-tight">{data.product.title}</h1>
+              <h1 class="text-2xl font-bold text-gray-900 leading-tight">{data.product.title}</h1>
             </div>
             
             <!-- Essential Tags -->
-            <div class="flex flex-wrap gap-1.5 mb-4">
+            <div class="flex flex-wrap gap-2 mb-6">
               {#if data.product.size}
-                <span class="px-2 py-1 rounded text-xs font-medium bg-blue-50 text-blue-700">
+                <span class="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
                   {i18n.product_size()} {data.product.size}
                 </span>
               {/if}
-              <span class="px-2 py-1 rounded text-xs font-medium {conditionColor} text-white">
+              <span class="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
                 {conditionLabel}
               </span>
               {#if data.product.color}
-                <span class="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700">
+                <span class="px-3 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
                   {data.product.color}
                 </span>
               {/if}
@@ -209,31 +236,31 @@
 
             <!-- Description -->
             {#if data.product.description}
-              <div class="mb-4">
-                <p class="text-gray-600 text-sm leading-relaxed">{data.product.description}</p>
+              <div class="mb-6">
+                <p class="text-gray-600 leading-relaxed">{data.product.description}</p>
               </div>
             {/if}
             
             <!-- Desktop Actions -->
-            <div class="hidden lg:flex gap-2">
+            <div class="hidden lg:flex gap-3">
               <Button 
                 variant="outline" 
                 onclick={handleMessage}
-                class="flex-1 h-10 text-sm"
+                class="flex-1 h-12 font-medium"
               >
                 {i18n.seller_message()}
               </Button>
               <Button 
                 variant="outline"
                 onclick={handleMakeOffer}
-                class="flex-1 h-10 text-sm"
+                class="flex-1 h-12 font-medium"
               >
                 {i18n.product_makeOffer()}
               </Button>
               <Button 
                 variant="primary" 
                 onclick={handleBuyNow}
-                class="flex-1 h-10 text-sm"
+                class="flex-1 h-12 font-medium bg-black hover:bg-gray-800"
               >
                 {i18n.product_buyNow()}
               </Button>
@@ -241,34 +268,34 @@
           </div>
           
           <!-- Product Details -->
-          <div class="bg-white rounded-xl p-4">
-            <h3 class="font-medium text-gray-900 mb-3 text-sm">{i18n.product_itemDetails()}</h3>
-            <div class="space-y-2">
-              <div class="flex justify-between items-center">
-                <span class="text-gray-500 text-sm">{i18n.product_condition()}</span>
-                <span class="font-medium text-sm">{conditionLabel}</span>
+          <div class="bg-white/80 backdrop-blur-xl rounded-2xl p-6 border border-white/20 shadow-lg">
+            <h3 class="font-semibold text-gray-900 mb-4">{i18n.product_itemDetails()}</h3>
+            <div class="space-y-4">
+              <div class="flex justify-between items-center py-2">
+                <span class="text-gray-600">{i18n.product_condition()}</span>
+                <span class="font-medium text-gray-900">{conditionLabel}</span>
               </div>
               {#if data.product.brand}
-                <div class="flex justify-between items-center">
-                  <span class="text-gray-500 text-sm">{i18n.product_brand()}</span>
-                  <span class="font-medium text-sm">{data.product.brand}</span>
+                <div class="flex justify-between items-center py-2">
+                  <span class="text-gray-600">{i18n.product_brand()}</span>
+                  <span class="font-medium text-gray-900">{data.product.brand}</span>
                 </div>
               {/if}
               {#if data.product.size}
-                <div class="flex justify-between items-center">
-                  <span class="text-gray-500 text-sm">{i18n.product_size()}</span>
-                  <span class="font-medium text-sm">{data.product.size}</span>
+                <div class="flex justify-between items-center py-2">
+                  <span class="text-gray-600">{i18n.product_size()}</span>
+                  <span class="font-medium text-gray-900">{data.product.size}</span>
                 </div>
               {/if}
               {#if data.product.color}
-                <div class="flex justify-between items-center">
-                  <span class="text-gray-500 text-sm">{i18n.filter_color()}</span>
-                  <span class="font-medium text-sm">{data.product.color}</span>
+                <div class="flex justify-between items-center py-2">
+                  <span class="text-gray-600">{i18n.filter_color()}</span>
+                  <span class="font-medium text-gray-900">{data.product.color}</span>
                 </div>
               {/if}
-              <div class="flex justify-between items-center">
-                <span class="text-gray-500 text-sm">{i18n.product_shipping()}</span>
-                <span class="font-medium text-sm">
+              <div class="flex justify-between items-center py-2">
+                <span class="text-gray-600">{i18n.product_shipping()}</span>
+                <span class="font-medium text-gray-900">
                   {#if data.product.shipping_price}
                     {formatPrice(data.product.shipping_price)}
                   {:else}
@@ -276,9 +303,9 @@
                   {/if}
                 </span>
               </div>
-              <div class="flex justify-between items-center border-t pt-2 mt-2">
-                <span class="text-gray-500 text-sm">{i18n.product_postedTime()}</span>
-                <span class="font-medium text-sm">{formatDate(data.product.created_at)}</span>
+              <div class="flex justify-between items-center py-2 border-t border-gray-200">
+                <span class="text-gray-600">{i18n.product_postedTime()}</span>
+                <span class="font-medium text-gray-900">{formatDate(data.product.created_at)}</span>
               </div>
             </div>
           </div>
@@ -321,8 +348,8 @@
   </div>
   
   <!-- Mobile Bottom Action Bar -->
-  <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 z-30">
-    <div class="flex items-center justify-between mb-2">
+  <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-gray-200/50 px-4 py-4 z-30 shadow-lg">
+    <div class="flex items-center justify-between mb-4">
       <div>
         <p class="text-2xl font-bold text-gray-900">{formatPrice(data.product.price)}</p>
         <p class="text-sm text-gray-600">
@@ -333,10 +360,10 @@
           {/if}
         </p>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
         <button
           onclick={handleFavorite}
-          class="p-2 rounded-full {isFavorited ? 'bg-red-50 text-red-500' : 'bg-gray-100 text-gray-600'} transition-colors"
+          class="p-3 rounded-full backdrop-blur-md bg-white/80 border border-white/20 transition-all duration-200 {isFavorited ? 'text-red-500' : 'text-gray-600'}"
         >
           <svg class="w-5 h-5" fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
@@ -344,7 +371,7 @@
         </button>
         <button
           onclick={handleShare}
-          class="p-2 rounded-full bg-gray-100 text-gray-600 transition-colors"
+          class="p-3 rounded-full backdrop-blur-md bg-white/80 border border-white/20 transition-all duration-200 text-gray-600"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 01-7.432 0m9.032-4.026A9.001 9.001 0 0112 3c-4.474 0-8.268 3.12-9.032 7.326m0 0A9.001 9.001 0 0012 21c4.474 0 8.268-3.12 9.032-7.326"/>
@@ -352,25 +379,25 @@
         </button>
       </div>
     </div>
-    <div class="flex gap-2">
+    <div class="flex gap-3">
       <Button 
         variant="outline" 
         onclick={handleMessage}
-        class="flex-1 h-11 text-sm font-medium"
+        class="flex-1 h-12 font-medium"
       >
         {i18n.seller_message()}
       </Button>
       <Button 
         variant="outline" 
         onclick={handleMakeOffer}
-        class="flex-1 h-11 text-sm font-medium"
+        class="flex-1 h-12 font-medium"
       >
         {i18n.product_makeOffer()}
       </Button>
       <Button 
         variant="primary" 
         onclick={handleBuyNow}
-        class="flex-1 h-11 text-sm font-medium"
+        class="flex-1 h-12 font-medium bg-black hover:bg-gray-800"
       >
         {i18n.product_buyNow()}
       </Button>
