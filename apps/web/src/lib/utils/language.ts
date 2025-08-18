@@ -57,12 +57,18 @@ export function initializeLanguage() {
     i18n.setLanguageTag(storedLang as any);
   } else {
     // Try to detect from browser language
-    const browserLang = navigator.language.split('-')[0].toLowerCase();
-    if (i18n.isAvailableLanguageTag(browserLang)) {
-      i18n.setLanguageTag(browserLang as any);
-      setStoredLanguage(browserLang);
-    } else {
-      // Default to English
+    try {
+      const browserLang = navigator?.language?.split('-')[0]?.toLowerCase();
+      if (browserLang && i18n.isAvailableLanguageTag(browserLang)) {
+        i18n.setLanguageTag(browserLang as any);
+        setStoredLanguage(browserLang);
+      } else {
+        // Default to English
+        i18n.setLanguageTag('en');
+        setStoredLanguage('en');
+      }
+    } catch (e) {
+      // Navigator not available, default to English
       i18n.setLanguageTag('en');
       setStoredLanguage('en');
     }
