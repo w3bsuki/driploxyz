@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { superForm } from 'sveltekit-superforms/client';
-  import { zod } from 'sveltekit-superforms/adapters';
+  import { superForm } from 'sveltekit-superforms';
+  import { zodClient } from 'sveltekit-superforms/adapters';
   import { SignupSchema } from '$lib/validation/auth.js';
   import type { PageData, ActionData } from './$types';
   import * as i18n from '@repo/i18n';
@@ -9,8 +9,10 @@
   let { data, form: actionResult }: { data: PageData; form: ActionData } = $props();
   
   const { form, errors, constraints, submitting, enhance, message } = superForm(data.form, {
-    validators: zod(SignupSchema),
-    resetForm: false
+    validators: zodClient(SignupSchema),
+    resetForm: false,
+    taintedMessage: null,
+    validationMethod: 'oninput'
   });
 </script>
 
@@ -64,10 +66,10 @@
       };
     }
   }>
-    <div class="space-y-3">
+    <div class="space-y-1">
       <!-- Full Name -->
       <div>
-        <label for="fullName" class="block text-sm font-medium text-gray-700">
+        <label for="fullName" class="block text-sm font-semibold text-gray-700 mb-2">
           {i18n.auth_firstName()} {i18n.auth_lastName()}
         </label>
         <input
@@ -78,18 +80,25 @@
           bind:value={$form.fullName}
           aria-invalid={$errors.fullName ? 'true' : undefined}
           aria-describedby={$errors.fullName ? 'fullName-error' : undefined}
-          class="mt-1 block w-full px-3 py-2 border {$errors.fullName ? 'border-red-500' : 'border-gray-300'} rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border {$errors.fullName ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors text-sm"
           placeholder="John Doe"
           {...$constraints.fullName}
         />
-        {#if $errors.fullName}
-          <div id="fullName-error" class="mt-1 text-sm text-red-600">{$errors.fullName}</div>
-        {/if}
+        <div class="mt-1 h-2">
+          {#if $errors.fullName}
+            <div id="fullName-error" class="text-sm text-red-600 flex items-center gap-1">
+              <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+              <span>{$errors.fullName}</span>
+            </div>
+          {/if}
+        </div>
       </div>
 
       <!-- Email -->
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700">
+        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
           {i18n.auth_email()}
         </label>
         <input
@@ -101,18 +110,25 @@
           bind:value={$form.email}
           aria-invalid={$errors.email ? 'true' : undefined}
           aria-describedby={$errors.email ? 'email-error' : undefined}
-          class="mt-1 block w-full px-3 py-2 border {$errors.email ? 'border-red-500' : 'border-gray-300'} rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border {$errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors text-sm"
           placeholder="john@example.com"
           {...$constraints.email}
         />
-        {#if $errors.email}
-          <div id="email-error" class="mt-1 text-sm text-red-600">{$errors.email}</div>
-        {/if}
+        <div class="mt-1 h-2">
+          {#if $errors.email}
+            <div id="email-error" class="text-sm text-red-600 flex items-center gap-1">
+              <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+              <span>{$errors.email}</span>
+            </div>
+          {/if}
+        </div>
       </div>
 
       <!-- Password Fields -->
       <div>
-        <label for="password" class="block text-sm font-medium text-gray-700">
+        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
           {i18n.auth_password()}
         </label>
         <input
@@ -124,17 +140,24 @@
           bind:value={$form.password}
           aria-invalid={$errors.password ? 'true' : undefined}
           aria-describedby={$errors.password ? 'password-error' : undefined}
-          class="mt-1 block w-full px-3 py-2 border {$errors.password ? 'border-red-500' : 'border-gray-300'} rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border {$errors.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors text-sm"
           placeholder="Minimum 8 characters"
           {...$constraints.password}
         />
-        {#if $errors.password}
-          <div id="password-error" class="mt-1 text-sm text-red-600">{$errors.password}</div>
-        {/if}
+        <div class="mt-1 h-2">
+          {#if $errors.password}
+            <div id="password-error" class="text-sm text-red-600 flex items-center gap-1">
+              <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+              <span>{$errors.password}</span>
+            </div>
+          {/if}
+        </div>
       </div>
 
       <div>
-        <label for="confirmPassword" class="block text-sm font-medium text-gray-700">
+        <label for="confirmPassword" class="block text-sm font-semibold text-gray-700 mb-2">
           {i18n.auth_confirmPassword()}
         </label>
         <input
@@ -146,13 +169,20 @@
           bind:value={$form.confirmPassword}
           aria-invalid={$errors.confirmPassword ? 'true' : undefined}
           aria-describedby={$errors.confirmPassword ? 'confirmPassword-error' : undefined}
-          class="mt-1 block w-full px-3 py-2 border {$errors.confirmPassword ? 'border-red-500' : 'border-gray-300'} rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border {$errors.confirmPassword ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors text-sm"
           placeholder="Re-enter your password"
           {...$constraints.confirmPassword}
         />
-        {#if $errors.confirmPassword}
-          <div id="confirmPassword-error" class="mt-1 text-sm text-red-600">{$errors.confirmPassword}</div>
-        {/if}
+        <div class="mt-1 h-2">
+          {#if $errors.confirmPassword}
+            <div id="confirmPassword-error" class="text-sm text-red-600 flex items-center gap-1">
+              <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+              <span>{$errors.confirmPassword}</span>
+            </div>
+          {/if}
+        </div>
       </div>
 
       <!-- Terms Checkbox -->
@@ -166,9 +196,16 @@
           aria-describedby={$errors.terms ? 'terms-error' : undefined}
           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
         />
-        {#if $errors.terms}
-          <div id="terms-error" class="mt-1 text-sm text-red-600">{$errors.terms}</div>
-        {/if}
+        <div class="mt-1 h-2">
+          {#if $errors.terms}
+            <div id="terms-error" class="text-sm text-red-600 flex items-center gap-1">
+              <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+              </svg>
+              <span>{$errors.terms}</span>
+            </div>
+          {/if}
+        </div>
         <label for="terms" class="ml-2 block text-sm text-gray-900">
           {i18n.auth_termsAgreement()}
           <a href="/terms" class="text-blue-600 hover:text-blue-500">{i18n.auth_termsOfService()}</a>
@@ -182,12 +219,12 @@
         <button
           type="submit"
           disabled={$submitting}
-          class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-blue-600 text-white focus-visible:ring-blue-500 px-6 py-3 text-base transition-all duration-200"
+          class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-blue-600 hover:bg-blue-700 text-white focus-visible:ring-blue-500 px-4 py-2.5 text-sm transition-all duration-200"
         >
           {#if $submitting}
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 818-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
             {i18n.auth_createAccount()}...
           {:else}

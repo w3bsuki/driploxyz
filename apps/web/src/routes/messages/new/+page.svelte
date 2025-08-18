@@ -38,8 +38,9 @@
       
       if (error) throw error;
       
-      // Navigate to messages page
-      goto('/messages');
+      // Navigate to messages page with conversation context
+      const conversationParam = productId ? `${recipientId}__${productId}` : `${recipientId}__general`;
+      goto(`/messages?conversation=${conversationParam}`);
     } catch (err) {
       console.error('Error sending message:', err);
       sending = false;

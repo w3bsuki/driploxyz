@@ -126,7 +126,7 @@ function showToastNotification(notification: MessageNotification) {
 export const handleNotificationClick = (notification: MessageNotification) => {
   const conversationParam = notification.isProductMessage && notification.productId
     ? `${notification.senderId}__${notification.productId}`
-    : notification.senderId;
+    : `${notification.senderId}__general`;
   
   goto(`/messages?conversation=${conversationParam}`);
   messageNotificationActions.markAsRead(notification.id);

@@ -1,5 +1,5 @@
 import { redirect, fail } from '@sveltejs/kit';
-import { superValidate, setError } from 'sveltekit-superforms/server';
+import { superValidate, setError } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { SignupSchema } from '$lib/validation/auth.js';
 import type { Actions, PageServerLoad } from './$types';

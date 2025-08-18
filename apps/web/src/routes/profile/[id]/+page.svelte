@@ -29,7 +29,8 @@
       goto('/login');
       return;
     }
-    goto(`/messages/new?to=${data.profile.id}`);
+    // For profile page, open general conversation (no product)
+    goto(`/messages?conversation=${data.profile.id}__general`);
   }
   
   const timeAgo = (date: string) => {

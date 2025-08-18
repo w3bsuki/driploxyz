@@ -8,6 +8,7 @@
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
   import { MessageNotificationToast, FollowNotificationToast, CookieConsent } from '@repo/ui';
+  import { page } from '$app/stores';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import LocaleDetector from '$lib/components/LocaleDetector.svelte';
   import { initializeLanguage } from '$lib/utils/language';
@@ -26,6 +27,7 @@
 
   // Use $derived for reactive destructuring in Svelte 5
   const supabase = $derived(data?.supabase);
+  const isAuthPage = $derived($page.route.id?.includes('(auth)'));
 
   // Initialize auth stores
   $effect(() => {
@@ -72,7 +74,9 @@
   });
 </script>
 
-<EarlyBirdBanner />
+{#if !isAuthPage}
+  <EarlyBirdBanner />
+{/if}
 {@render children?.()}
 
 <!-- Locale Detection -->

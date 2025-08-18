@@ -6,10 +6,8 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
   const next = url.searchParams.get('next') ?? '/';
 
   if (code) {
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    
-    if (!error && data.user) {
-      // Successful authentication
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error) {
       throw redirect(303, `/${next.slice(1)}`);
     }
   }

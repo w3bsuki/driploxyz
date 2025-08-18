@@ -5,12 +5,16 @@
   import { messageNotificationActions } from '$lib/stores/messageNotifications';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
+  import { onMount, onDestroy } from 'svelte';
+  import type { RealtimeChannel } from '@supabase/supabase-js';
   
   interface Props {
     data: PageData;
   }
   
   let { data }: Props = $props();
+  
+  let messageChannel: RealtimeChannel | null = null;
 
   // Set initial unread count from server data
   $effect(() => {
@@ -19,19 +23,71 @@
     }
   });
   
-  // ULTRA SIMPLE conversation logic
+  // Set up real-time subscription for messages
+  onMount(() => {
+    if (!data.user || !data.supabase) return;
+    
+    console.log('Setting up real-time subscription for user:', data.user.id);
+    
+    // Subscribe to new messages
+    messageChannel = data.supabase
+      .channel('user-messages')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `receiver_id=eq.${data.user.id}`
+        },
+        async (payload) => {
+          console.log('New message received:', payload);
+          // Force reload the page data
+          await invalidate('messages:all');
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `sender_id=eq.${data.user.id}`
+        },
+        async (payload) => {
+          console.log('Own message sent:', payload);
+          // Small delay to ensure DB transaction completes
+          setTimeout(async () => {
+            await invalidate('messages:all');
+          }, 100);
+        }
+      )
+      .subscribe((status) => {
+        console.log('Realtime subscription status:', status);
+      });
+  });
+  
+  onDestroy(() => {
+    if (messageChannel) {
+      console.log('Cleaning up real-time subscription');
+      data.supabase?.removeChannel(messageChannel);
+    }
+  });
+  
+  // CONVERSATION LOGIC WITH PRODUCT CONTEXT
   const allConversations = $derived(() => {
-    console.log('=== BUILDING CONVERSATIONS ===');
+    console.log('=== BUILDING CONVERSATIONS WITH PRODUCT CONTEXT ===');
     console.log('data.messages?.length:', data.messages?.length);
     console.log('data.conversationParam:', data.conversationParam);
     
     const convMap = new Map();
     
-    // First: process existing messages into conversations (GROUP BY USER ONLY)
+    // First: process existing messages into conversations (GROUP BY USER + PRODUCT)
     if (data.messages && data.messages.length > 0) {
       data.messages.forEach(msg => {
         const otherUserId = msg.sender_id === data.user?.id ? msg.receiver_id : msg.sender_id;
-        const key = otherUserId; // GROUP BY USER ONLY, NOT PRODUCT
+        const productId = msg.product_id || 'general';
+        const key = `${otherUserId}__${productId}`; // GROUP BY USER + PRODUCT
         
         if (!convMap.has(key)) {
           const otherUser = msg.sender_id === data.user?.id ? msg.receiver : msg.sender;
@@ -40,6 +96,7 @@
           convMap.set(key, {
             id: key,
             userId: otherUserId,
+            productId: productId === 'general' ? null : productId,
             userName: otherUser?.username || otherUser?.full_name || 'Unknown User',
             userAvatar: otherUser?.avatar_url,
             lastMessage: msg.content,
@@ -49,7 +106,8 @@
             productImage: product?.images?.[0]?.image_url || '/placeholder-product.svg',
             productPrice: product?.price || 0,
             messages: [msg],
-            lastActiveAt: otherUser?.last_active_at
+            lastActiveAt: otherUser?.last_active_at,
+            isProductConversation: productId !== 'general'
           });
         } else {
           const conv = convMap.get(key);
@@ -57,13 +115,10 @@
           if (new Date(msg.created_at) > new Date(conv.lastMessageTime)) {
             conv.lastMessage = msg.content;
             conv.lastMessageTime = msg.created_at;
-            // Update product info to latest message's product
-            const product = msg.product;
-            if (product) {
-              conv.productTitle = product.title;
-              conv.productImage = product.images?.[0]?.image_url || '/placeholder-product.svg';
-              conv.productPrice = product.price;
-            }
+          }
+          // Update unread status
+          if (!msg.is_read && msg.sender_id !== data.user?.id) {
+            conv.unread = true;
           }
         }
       });
@@ -72,11 +127,12 @@
     // Second: if we have a conversation param from URL, ensure it exists
     if (data.conversationParam && data.conversationUser) {
       const [sellerId, productId] = data.conversationParam.split('__');
-      const key = sellerId; // Use just the user ID
+      const key = data.conversationParam; // Use the full conversation parameter
       if (!convMap.has(key)) {
         convMap.set(key, {
           id: key,
           userId: sellerId,
+          productId: productId === 'general' ? null : productId,
           userName: data.conversationUser.username || data.conversationUser.full_name || 'Unknown User',
           userAvatar: data.conversationUser.avatar_url,
           lastMessage: 'Start a conversation...',
@@ -86,7 +142,8 @@
           productImage: data.conversationProduct?.images?.[0]?.image_url || '/placeholder-product.svg',
           productPrice: data.conversationProduct?.price || 0,
           messages: [],
-          lastActiveAt: data.conversationUser.last_active_at
+          lastActiveAt: data.conversationUser.last_active_at,
+          isProductConversation: productId !== 'general'
         });
       }
     }
@@ -116,7 +173,8 @@
       case 'selling':
         // Messages where current user is the seller (received messages about their products)
         return all.filter(conv => 
-          conv.messages.some(msg => msg.sender_id === data.user?.id)
+          conv.messages.some(msg => msg.sender_id === data.user?.id) &&
+          conv.isProductConversation
         );
       case 'offers':
         return all.filter(conv => conv.isOffer);
@@ -141,8 +199,9 @@
       const otherUserId = sellerId === data.user?.id ? 
         data.conversationUser?.id || sellerId : 
         sellerId;
-      selectedConversation = otherUserId;
-      console.log('Auto-selected conversation for other user:', otherUserId);
+      const conversationKey = `${otherUserId}__${productId || 'general'}`;
+      selectedConversation = conversationKey;
+      console.log('Auto-selected conversation with product context:', conversationKey);
     }
   });
   let messageText = $state('');
@@ -158,7 +217,9 @@
       console.log('No selected conversation');
       return [];
     }
-    const conv = conversations().find(c => c.id === selectedConversation);
+    const convs = conversations();
+    console.log('All conversations:', convs.length);
+    const conv = convs.find(c => c.id === selectedConversation);
     console.log('Found conv:', conv?.userName, 'with', conv?.messages?.length, 'messages');
     const messages = conv?.messages?.sort((a, b) => 
       new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -217,9 +278,8 @@
       clearTimeout(typingTimeout);
     }
     
-    // selectedConversation is now just the user ID (not user__product)
-    const recipientId = selectedConversation;
-    const productId = data.conversationParam ? data.conversationParam.split('__')[1] : null;
+    // Extract user ID and product ID from conversation key
+    const [recipientId, productId] = selectedConversation.split('__');
     
     console.log('recipientId:', recipientId);
     console.log('productId:', productId);
@@ -261,6 +321,7 @@
       }
       
       messageText = '';
+      // Force refresh messages
       await invalidate('messages:all');
     } catch (err) {
       console.error('Message send error:', err);
@@ -373,11 +434,17 @@
                   </div>
                 {:else}
                   <div class="flex items-center space-x-2 mt-1">
-                    {#if conv.productTitle}
-                      <img src={conv.productImage} alt={conv.productTitle} class="w-6 h-6 rounded object-cover" />
-                      <span class="text-xs text-gray-600 truncate">{conv.productTitle}</span>
+                    {#if conv.isProductConversation && conv.productTitle}
+                      <div class="flex items-center space-x-2">
+                        <img src={conv.productImage} alt={conv.productTitle} class="w-6 h-6 rounded object-cover" />
+                        <span class="text-xs text-gray-600 truncate">{conv.productTitle}</span>
+                        <span class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium">Product</span>
+                      </div>
                     {:else}
-                      <span class="text-xs text-gray-500 italic">{i18n.messages_noProducts()}</span>
+                      <div class="flex items-center space-x-2">
+                        <span class="text-xs text-gray-500 italic">{i18n.messages_noProducts()}</span>
+                        <span class="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-medium">General</span>
+                      </div>
                     {/if}
                   </div>
                 {/if}
@@ -445,20 +512,31 @@
                   </div>
                 {/if}
               </div>
-            {:else if conv?.productTitle}
-              <a href="/product/{data.conversationParam ? data.conversationParam.split('__')[1] : ''}" class="mt-3 flex items-center space-x-3 p-2.5 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
-                <img src={conv.productImage} alt={conv.productTitle} class="w-10 h-10 rounded-lg object-cover" />
-                <div class="flex-1">
-                  <p class="text-xs font-medium text-gray-900">{conv.productTitle}</p>
-                  <p class="text-sm font-bold">${conv.productPrice}</p>
+            {:else if conv?.isProductConversation && conv?.productTitle}
+              <div class="mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
+                <div class="flex items-center space-x-2 mb-2">
+                  <span class="text-xs font-semibold text-blue-900 uppercase tracking-wide">Product Conversation</span>
+                  <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-medium">Active</span>
                 </div>
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
+                <a href="/product/{conv.productId}" class="flex items-center space-x-3 p-2 bg-white rounded-lg hover:bg-gray-50 transition-colors">
+                  <img src={conv.productImage} alt={conv.productTitle} class="w-12 h-12 rounded-lg object-cover shadow-sm" />
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900 truncate">{conv.productTitle}</p>
+                    <p class="text-lg font-bold text-gray-900">${conv.productPrice}</p>
+                  </div>
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              </div>
             {:else}
-              <div class="mt-3 p-2.5 bg-gray-50 rounded-xl">
-                <p class="text-xs text-gray-500 text-center italic">{i18n.messages_noProducts()}</p>
+              <div class="mt-3 bg-gray-50 rounded-xl p-3 border border-gray-200">
+                <div class="flex items-center justify-center space-x-2">
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  <span class="text-xs text-gray-500 font-medium">General Conversation</span>
+                </div>
               </div>
             {/if}
           </div>
@@ -470,8 +548,8 @@
               <span class="text-[11px] text-gray-500 bg-white px-3 py-1 rounded-full">{i18n.messages_today()}</span>
             </div>
             
-            <!-- Show ALL messages for this conversation, bypassing complex filtering -->
-            {#each data.messages.filter(m => (m.sender_id === data.user?.id && m.receiver_id === selectedConversation) || (m.receiver_id === data.user?.id && m.sender_id === selectedConversation)).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) as message}
+            <!-- Show messages for the selected conversation -->
+            {#each selectedConvMessages() as message}
               <div class="flex {message.sender_id === data.user?.id ? 'justify-end' : 'justify-start'} px-1">
                 <div class="max-w-[80%] sm:max-w-[70%]">
                   <div class="{message.sender_id === data.user?.id ? 'bg-black text-white rounded-2xl rounded-br-md' : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm border'} px-4 py-3">

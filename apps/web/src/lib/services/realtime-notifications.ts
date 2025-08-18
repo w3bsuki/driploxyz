@@ -198,7 +198,7 @@ export class RealtimeNotificationService {
 					},
 					product,
 					read: false,
-					action_url: `/messages?conversation=${sender.id}`
+					action_url: `/messages?conversation=${sender.id}__${message.product_id || 'general'}`
 				});
 			}
 
