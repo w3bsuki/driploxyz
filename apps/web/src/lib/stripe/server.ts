@@ -1,13 +1,15 @@
 import Stripe from 'stripe';
-import { STRIPE_SECRET_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 
-const stripeSecretKey = STRIPE_SECRET_KEY;
+// Use dynamic environment variables to avoid build-time requirement
+const stripeSecretKey = env.STRIPE_SECRET_KEY;
+
 if (!stripeSecretKey) {
-	throw new Error('STRIPE_SECRET_KEY environment variable is required');
+	console.warn('STRIPE_SECRET_KEY not available - Stripe functionality disabled');
 }
 
-export const stripe = new Stripe(stripeSecretKey, {
+export const stripe = stripeSecretKey ? new Stripe(stripeSecretKey, {
 	apiVersion: '2024-12-18.acacia'
-});
+}) : null;
 
 export type { Stripe };

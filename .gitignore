@@ -38,3 +38,5 @@ apps/web/.vercel/
 
 # windows null file
 nul
+.vercel
+.env*.local

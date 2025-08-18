@@ -17,13 +17,18 @@ Sentry.init({
 const supabase: Handle = async ({ event, resolve }) => {
   // Production logging for debugging
   const isProd = process.env.NODE_ENV === 'production';
+  const userAgent = event.request.headers.get('user-agent') || '';
+  const isMobile = /Mobile|Android|iPhone|iPad/i.test(userAgent);
+  
   if (isProd) {
     console.log('[HOOK_START]', {
       path: event.url.pathname,
       method: event.request.method,
-      userAgent: event.request.headers.get('user-agent')?.substring(0, 50),
+      userAgent: userAgent.substring(0, 100),
+      isMobile,
       hasSupabaseUrl: !!env.PUBLIC_SUPABASE_URL,
-      hasSupabaseKey: !!env.PUBLIC_SUPABASE_ANON_KEY
+      hasSupabaseKey: !!env.PUBLIC_SUPABASE_ANON_KEY,
+      cookieCount: event.cookies.getAll().length
     });
   }
   
@@ -31,7 +36,9 @@ const supabase: Handle = async ({ event, resolve }) => {
   if (!env.PUBLIC_SUPABASE_URL || !env.PUBLIC_SUPABASE_ANON_KEY) {
     console.error('[CRITICAL] Missing Supabase environment variables', {
       url: !!env.PUBLIC_SUPABASE_URL,
-      key: !!env.PUBLIC_SUPABASE_ANON_KEY
+      key: !!env.PUBLIC_SUPABASE_ANON_KEY,
+      isMobile,
+      userAgent: userAgent.substring(0, 50)
     });
     throw error(500, 'Server configuration error. Please contact support.');
   }
@@ -47,14 +54,14 @@ const supabase: Handle = async ({ event, resolve }) => {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              // Mobile Safari fix: explicit cookie attributes
+              // Mobile Safari fix: less restrictive cookie settings
               event.cookies.set(name, value, { 
-                ...options, 
+                ...options,
                 path: '/',
                 sameSite: 'lax',
                 secure: event.url.protocol === 'https:',
-                httpOnly: true,
-                maxAge: 60 * 60 * 24 * 7 // 7 days
+                // Remove httpOnly for auth cookies to prevent mobile issues
+                httpOnly: options?.httpOnly !== false
               });
             });
           },
@@ -62,7 +69,12 @@ const supabase: Handle = async ({ event, resolve }) => {
       }
     );
   } catch (err) {
-    console.error('[SUPABASE_INIT_ERROR]', err);
+    console.error('[SUPABASE_INIT_ERROR]', {
+      error: err,
+      isMobile,
+      userAgent: userAgent.substring(0, 50),
+      path: event.url.pathname
+    });
     throw error(500, 'Failed to initialize authentication');
   }
 

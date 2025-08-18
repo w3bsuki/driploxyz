@@ -4,6 +4,10 @@ import type { RequestHandler } from './$types.js';
 
 export const POST: RequestHandler = async ({ request }) => {
 	try {
+		if (!stripe) {
+			return json({ error: 'Payment processing not available' }, { status: 503 });
+		}
+
 		const { amount, currency = 'eur', productId, metadata = {} } = await request.json();
 
 		if (!amount || amount < 50) {

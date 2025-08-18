@@ -6,6 +6,10 @@ import { sendEmail, emailTemplates } from '$lib/email/resend';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
+		if (!stripe) {
+			return json({ error: 'Payment processing not available' }, { status: 503 });
+		}
+
 		const { paymentIntentId } = await request.json();
 
 		if (!paymentIntentId) {
