@@ -1,5 +1,6 @@
 interface Props {
     show: boolean;
+    stripePublishableKey?: string;
     onSuccess?: () => void;
     onCancel?: () => void;
     onClose?: () => void;

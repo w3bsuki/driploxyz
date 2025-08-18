@@ -1,15 +1,15 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
 
   interface Props {
     show: boolean;
+    stripePublishableKey?: string;
     onSuccess?: () => void;
     onCancel?: () => void;
     onClose?: () => void;
   }
 
-  let { show, onSuccess, onCancel, onClose }: Props = $props();
+  let { show, stripePublishableKey, onSuccess, onCancel, onClose }: Props = $props();
 
   let loading = $state(false);
   let error = $state('');
@@ -31,8 +31,11 @@
   async function initializeStripe() {
     try {
       console.log('🔥 PAYMENT MODAL - Initializing Stripe');
+      if (!stripePublishableKey) {
+        throw new Error('Stripe publishable key is required');
+      }
       const { loadStripe } = await import('@stripe/stripe-js');
-      stripe = await loadStripe(PUBLIC_STRIPE_PUBLISHABLE_KEY);
+      stripe = await loadStripe(stripePublishableKey);
       
       if (stripe && cardContainer) {
         elements = stripe.elements();

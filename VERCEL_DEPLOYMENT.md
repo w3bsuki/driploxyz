@@ -6,7 +6,7 @@
 - **Framework**: SvelteKit
 - **Root Directory**: `/` (entire monorepo)
 - **Build Settings**:
-  - **Build Command**: `pnpm run build --filter=web`
+  - **Build Command**: `cd apps/web && pnpm run build`
   - **Output Directory**: `apps/web/.svelte-kit`
   - **Install Command**: `pnpm install`
 
@@ -63,7 +63,7 @@ Create `vercel.json` in project root:
 
 ```json
 {
-  "buildCommand": "pnpm run build --filter=web",
+  "buildCommand": "cd apps/web && pnpm run build",
   "outputDirectory": "apps/web/.svelte-kit",
   "framework": "sveltekit",
   "regions": ["iad1"],
@@ -71,7 +71,8 @@ Create `vercel.json` in project root:
     "apps/web/.svelte-kit/**": {
       "runtime": "nodejs20.x"
     }
-  }
+  },
+  "installCommand": "pnpm install"
 }
 ```
 
@@ -111,7 +112,7 @@ Apps/web `package.json` should have:
 ### 2. Configure Build Settings
 1. Set Framework: **SvelteKit** (not just "Svelte")
 2. Set Root Directory: `/` (entire monorepo)
-3. Override Build Command: `pnpm run build --filter=web`
+3. Override Build Command: `cd apps/web && pnpm run build`
 4. Override Output Directory: `apps/web/.svelte-kit`
 5. Override Install Command: `pnpm install`
 
