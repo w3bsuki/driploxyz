@@ -8,7 +8,7 @@
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
   import { MessageNotificationToast, FollowNotificationToast } from '@repo/ui';
-  import CookieConsentPro from '$lib/components/CookieConsentPro.svelte';
+  import SimpleCookieConsent from '$lib/components/SimpleCookieConsent.svelte';
   import { page } from '$app/stores';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import LocaleDetector from '$lib/components/LocaleDetector.svelte';
@@ -122,22 +122,10 @@
 {/if}
 {@render children?.()}
 
-<!-- Locale Detection -->
-<LocaleDetector />
+<!-- Removed ugly locale detection -->
 
-<!-- Professional Cookie Consent with Locale Detection -->
-<CookieConsentPro 
-  onLocaleChange={(locale) => {
-    if (browser) {
-      i18n.setLanguageTag(locale);
-      document.documentElement.lang = locale;
-      // Store locale preference
-      localStorage.setItem('preferred-locale', locale);
-      // Reload page to apply new locale
-      window.location.reload();
-    }
-  }}
-/>
+<!-- Simple Cookie Consent Banner -->
+<SimpleCookieConsent />
 
 <!-- Global Message Notification Toast -->
 {#if $activeNotification}

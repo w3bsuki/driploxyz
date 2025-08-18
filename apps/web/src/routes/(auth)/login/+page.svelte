@@ -12,7 +12,14 @@
     validators: zodClient(LoginSchema),
     resetForm: false,
     taintedMessage: null,
-    validationMethod: 'oninput'
+    validationMethod: 'oninput',
+    onResult: ({ result }) => {
+      console.log('[LOGIN_FORM] Result:', result);
+      if (result.type === 'redirect') {
+        // Handle redirect manually to ensure auth state is updated
+        goto(result.location);
+      }
+    }
   });
 </script>
 

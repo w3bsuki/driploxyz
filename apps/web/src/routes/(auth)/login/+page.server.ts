@@ -95,8 +95,9 @@ export const actions: Actions = {
       }
       
       // Otherwise redirect to home page
-      console.log('[LOGIN_REDIRECT] Sending to home');
-      throw redirect(303, '/');
+      console.log('[LOGIN_REDIRECT] Login successful, redirecting to home');
+      // Use 302 for temporary redirect to ensure browser doesn't cache
+      throw redirect(302, '/');
     }
     
     console.error('[LOGIN_ERROR] No user data returned');

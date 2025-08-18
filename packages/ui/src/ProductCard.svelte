@@ -136,12 +136,17 @@
   </div>
   
   <div class="p-2">
+    <!-- Category Label (MEN/WOMEN/KIDS) -->
+    {#if product.category}
+      <div class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">{product.category}</div>
+    {/if}
+    
     <!-- Product Title -->
     <h3 class="font-semibold text-sm text-gray-900 leading-[1.2] truncate">{product.title}</h3>
     
-    <!-- Brand, Size, Category - SINGLE ROW -->
+    <!-- Subcategory, Brand and Size - SINGLE ROW -->
     <div class="text-xs text-gray-500 mt-0.5 truncate">
-      {#if product.brand}<span class="font-medium text-gray-600">{product.brand}</span>{/if}{#if product.brand && (product.size || product.category)}<span class="mx-1">•</span>{/if}{#if product.size}Size {product.size}{/if}{#if product.size && product.category}<span class="mx-1">•</span>{/if}{#if product.category}<span class="uppercase">{product.category}</span>{/if}
+      {#if product.subcategory}<span class="uppercase">{product.subcategory}</span>{/if}{#if product.subcategory && (product.brand || product.size)}<span class="mx-1">•</span>{/if}{#if product.brand}<span class="font-medium text-gray-600">{product.brand}</span>{/if}{#if product.brand && product.size}<span class="mx-1">•</span>{/if}{#if product.size}Size {product.size}{/if}
     </div>
     
     <!-- Price -->
