@@ -5,10 +5,11 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/publi
 import type { Database } from '$lib/types/database.types';
 import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
-import { DEBUG, SENTRY_DSN } from '$env/static/private';
+import { SENTRY_DSN } from '$env/static/private';
+import { dev } from '$app/environment';
 
-// Debug flag for controlled logging - from environment
-const isDebug = DEBUG === 'true';
+// Debug flag for controlled logging - use dev mode as default
+const isDebug = dev;
 
 // Only initialize Sentry if DSN is present
 if (SENTRY_DSN) {
@@ -46,7 +47,7 @@ const supabase: Handle = async ({ event, resolve }) => {
                 path: '/',
                 sameSite: 'lax',
                 secure: event.url.protocol === 'https:',
-                httpOnly: true,
+                httpOnly: false, // Allow client access for auth
                 maxAge: 60 * 60 * 24 * 7 // 1 week
               });
             });
