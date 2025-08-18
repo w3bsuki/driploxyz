@@ -70,25 +70,27 @@ export class RealtimeNotificationService {
 
 	/**
 	 * Subscribe to admin notifications
+	 * TODO: Enable when admin_notifications table exists
 	 */
 	private subscribeToNotifications() {
-		const notificationsChannel = this.supabase
-			.channel('user_notifications')
-			.on(
-				'postgres_changes',
-				{
-					event: 'INSERT',
-					schema: 'public',
-					table: 'admin_notifications'
-				},
-				(payload) => {
-					const notification = payload.new as Tables['admin_notifications']['Row'];
-					this.handleNewNotification(notification);
-				}
-			)
-			.subscribe();
+		// Disabled - admin_notifications table doesn't exist yet
+		// const notificationsChannel = this.supabase
+		// 	.channel('user_notifications')
+		// 	.on(
+		// 		'postgres_changes',
+		// 		{
+		// 			event: 'INSERT',
+		// 			schema: 'public',
+		// 			table: 'admin_notifications'
+		// 		},
+		// 		(payload) => {
+		// 			const notification = payload.new as Tables['admin_notifications']['Row'];
+		// 			this.handleNewNotification(notification);
+		// 		}
+		// 	)
+		// 	.subscribe();
 
-		this.channels.push(notificationsChannel);
+		// this.channels.push(notificationsChannel);
 	}
 
 	/**
