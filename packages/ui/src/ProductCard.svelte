@@ -85,7 +85,7 @@
     
     <!-- Condition Badge Top Left -->
     <div class="absolute top-2 left-2">
-      <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold shadow-sm {conditionColors[product.condition]}">
+      <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold shadow-lg {conditionColors[product.condition]}">
         {conditionLabels[product.condition] || product.condition}
       </span>
     </div>
