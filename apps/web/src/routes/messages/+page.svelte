@@ -381,10 +381,13 @@
           </div>
         {/if}
         {#each conversations() as conv}
-          <button
-            onclick={() => selectedConversation = conv.id}
-            class="w-full px-4 py-4 hover:bg-gray-50 border-b transition-colors text-left min-h-[68px]
+          <div
+            class="w-full px-4 py-4 hover:bg-gray-50 border-b transition-colors text-left min-h-[68px] cursor-pointer
               {selectedConversation === conv.id ? 'bg-gray-50' : ''}"
+            onclick={() => selectedConversation = conv.id}
+            role="button"
+            tabindex="0"
+            onkeydown={(e) => e.key === 'Enter' && (selectedConversation = conv.id)}
           >
             <div class="flex items-start space-x-3">
               <div class="relative flex-shrink-0">
@@ -426,7 +429,7 @@
                 </p>
               </div>
             </div>
-          </button>
+          </div>
         {/each}
       </div>
 
@@ -478,9 +481,9 @@
                 </div>
                 {#if conv.offerStatus === 'pending'}
                   <div class="flex space-x-2">
-                    <button onclick={() => acceptOffer(conv.id)} class="flex-1 py-1.5 bg-black text-white text-xs font-medium rounded-lg hover:bg-gray-800">{i18n.messages_acceptOffer()}</button>
-                    <button onclick={() => declineOffer(conv.id)} class="flex-1 py-1.5 bg-white text-gray-700 text-xs font-medium rounded-lg border border-gray-300 hover:bg-gray-50">{i18n.messages_declineOffer()}</button>
-                    <button onclick={() => counterOffer(conv.id)} class="flex-1 py-1.5 bg-white text-gray-700 text-xs font-medium rounded-lg border border-gray-300 hover:bg-gray-50">{i18n.messages_counterOffer()}</button>
+                    <button onclick={(e) => { e.stopPropagation(); acceptOffer(conv.id); }} class="flex-1 py-1.5 bg-black text-white text-xs font-medium rounded-lg hover:bg-gray-800">{i18n.messages_acceptOffer()}</button>
+                    <button onclick={(e) => { e.stopPropagation(); declineOffer(conv.id); }} class="flex-1 py-1.5 bg-white text-gray-700 text-xs font-medium rounded-lg border border-gray-300 hover:bg-gray-50">{i18n.messages_declineOffer()}</button>
+                    <button onclick={(e) => { e.stopPropagation(); counterOffer(conv.id); }} class="flex-1 py-1.5 bg-white text-gray-700 text-xs font-medium rounded-lg border border-gray-300 hover:bg-gray-50">{i18n.messages_counterOffer()}</button>
                   </div>
                 {/if}
               </div>

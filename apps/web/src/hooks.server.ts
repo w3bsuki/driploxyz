@@ -5,11 +5,18 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/publi
 import type { Database } from '$lib/types/database.types';
 import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
-import { SENTRY_DSN } from '$env/static/private';
 import { dev } from '$app/environment';
 
 // Debug flag for controlled logging - use dev mode as default
 const isDebug = dev;
+
+// Try to get Sentry DSN - may not be defined in all environments
+let SENTRY_DSN: string | undefined;
+try {
+  SENTRY_DSN = process.env.SENTRY_DSN;
+} catch {
+  // Environment variable not available
+}
 
 // Only initialize Sentry if DSN is present
 if (SENTRY_DSN) {
