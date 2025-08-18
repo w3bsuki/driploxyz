@@ -55,10 +55,10 @@
   }
 
   const conditionColors = {
-    'new': 'bg-white/90 backdrop-blur text-gray-900 border border-gray-200',
-    'like-new': 'bg-white/90 backdrop-blur text-gray-900 border border-gray-200',
-    'good': 'bg-white/90 backdrop-blur text-gray-900 border border-gray-200',
-    'fair': 'bg-white/90 backdrop-blur text-gray-900 border border-gray-200'
+    'new': 'bg-green-500 text-white',
+    'like-new': 'bg-blue-500 text-white',
+    'good': 'bg-yellow-500 text-white',
+    'fair': 'bg-orange-500 text-white'
   };
   
   const conditionLabels = {
@@ -83,32 +83,34 @@
       soldAt={product.sold_at} 
     />
     
-    <div class="absolute top-2 left-2 right-2 flex items-center justify-between">
+    <!-- Condition Badge Top Left -->
+    <div class="absolute top-2 left-2">
       <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold shadow-sm {conditionColors[product.condition]}">
         {conditionLabels[product.condition] || product.condition}
       </span>
-      
-      {#if onFavorite}
-        <button 
-          onclick={handleFavorite}
-          class="p-1.5 rounded-full bg-white/90 backdrop-blur shadow-sm hover:shadow-md transition-shadow"
-          aria-label={translations.addToFavorites}
-        >
-          <svg 
-            class="w-4 h-4 transition-colors {favorited ? 'text-red-500 fill-current' : 'text-gray-700 hover:text-red-500'}" 
-            viewBox="0 0 20 20"
-          >
-            <path 
-              fill-rule="evenodd" 
-              d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" 
-              clip-rule="evenodd" 
-            />
-          </svg>
-        </button>
-      {/if}
     </div>
     
-    <!-- Seller Avatar on Image with expandable name -->
+    <!-- Heart/Favorite Button Top Right -->
+    {#if onFavorite}
+      <button 
+        onclick={handleFavorite}
+        class="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 backdrop-blur shadow-sm hover:shadow-md transition-shadow"
+        aria-label={translations.addToFavorites}
+      >
+        <svg 
+          class="w-4 h-4 transition-colors {favorited ? 'text-red-500 fill-current' : 'text-gray-700 hover:text-red-500'}" 
+          viewBox="0 0 20 20"
+        >
+          <path 
+            fill-rule="evenodd" 
+            d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" 
+            clip-rule="evenodd" 
+          />
+        </svg>
+      </button>
+    {/if}
+    
+    <!-- Seller Avatar Bottom Left -->
     <div class="absolute bottom-2 left-2">
       <button 
         class="flex items-center bg-white/90 backdrop-blur rounded-full shadow-sm transition-all duration-200 ease-out {showSellerName ? 'pr-3' : ''}"
@@ -133,6 +135,7 @@
         {/if}
       </button>
     </div>
+    
   </div>
   
   <div class="p-2">

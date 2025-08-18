@@ -5,20 +5,19 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
   const { user } = await safeGetSession();
   
   // Production debugging
-  if (process.env.NODE_ENV === 'production') {
-    console.log('[PROFILE_ME]', {
-      hasUser: !!user,
-      userId: user?.id?.substring(0, 8)
-    });
-  }
+  console.log('[PROFILE_ME] Route accessed', {
+    hasUser: !!user,
+    userId: user?.id?.substring(0, 8),
+    env: process.env.NODE_ENV
+  });
   
   // If not logged in, redirect to login
   if (!user?.id) {
     console.log('[PROFILE_ME] No user found, redirecting to login');
-    throw redirect(303, '/login');
+    // Use 302 to avoid caching issues
+    throw redirect(302, '/login');
   }
 
-  // Redirect to the user's actual profile page
+  // Redirect to the user's actual profile page with 302 (temporary redirect)
   console.log('[PROFILE_ME] Redirecting to user profile:', user.id);
-  throw redirect(303, `/profile/${user.id}`);
-};
+  throw redirect(302, `/profile/${user.id}`);
