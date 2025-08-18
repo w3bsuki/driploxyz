@@ -265,7 +265,7 @@ export class ProductService {
       const boostedProducts: any[] = [];
       const boostedError = null;
 
-      // Get manually promoted products (main source for now)
+      // Get boosted products (using actual database columns)
       const { data: manuallyPromoted, error: manualError } = await this.supabase
         .from('products')
         .select(`
@@ -274,12 +274,11 @@ export class ProductService {
           categories (name),
           profiles!products_seller_id_fkey (username, rating, avatar_url)
         `)
-        .eq('is_promoted', true)
+        .eq('is_boosted', true)
         .eq('is_active', true)
         .eq('is_sold', false)
-        .or('promotion_expires_at.is.null,promotion_expires_at.gt.now()')
-        .order('promotion_priority', { ascending: false })
-        .order('promoted_at', { ascending: false })
+        .or('boosted_until.is.null,boosted_until.gt.now()')
+        .order('created_at', { ascending: false })
         .limit(limit);
 
       if (manualError) {
