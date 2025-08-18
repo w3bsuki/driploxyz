@@ -18,27 +18,26 @@
 
 <button 
   onclick={onclick}
-  class="relative p-2 text-gray-600 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-50/80 backdrop-blur-sm {className}"
+  class="relative p-2 text-gray-600 hover:text-gray-900 transition-all duration-200 rounded-full hover:bg-gray-100 {className}"
   aria-label="Notifications"
 >
-  <!-- Bell Icon -->
-  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+  <!-- Super Simple Bell Icon -->
+  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 22C13.1 22 14 21.1 14 20H10C10 21.1 10.9 22 12 22Z" fill="currentColor"/>
+    <path d="M18 16V11C18 7.93 16.37 5.36 13.5 4.68V4C13.5 3.17 12.83 2.5 12 2.5C11.17 2.5 10.5 3.17 10.5 4V4.68C7.64 5.36 6 7.92 6 11V16L4 18V19H20V18L18 16Z" fill="currentColor"/>
   </svg>
   
-  <!-- Notification Badge with Glass Morphism -->
+  <!-- Clean Notification Badge -->
   {#if hasNotifications && show}
-    <div class="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 
-      bg-gradient-to-r from-red-500 to-red-600 text-white text-xs font-bold rounded-full
-      ring-2 ring-white/80 backdrop-blur-sm shadow-lg
-      animate-pulse">
-      {count > 99 ? '99+' : count}
+    <div class="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1
+      bg-red-500 text-white text-[10px] font-semibold rounded-full
+      ring-2 ring-white shadow-sm">
+      {count > 99 ? '99+' : count > 9 ? count : count}
     </div>
   {/if}
   
-  <!-- Pulse Animation for New Notifications -->
+  <!-- Subtle Pulse for Active Notifications -->
   {#if hasNotifications && show}
-    <div class="absolute -top-1 -right-1 w-5 h-5 bg-red-400 rounded-full animate-ping opacity-30"></div>
+    <div class="absolute -top-0.5 -right-0.5 w-[18px] h-[18px] bg-red-400 rounded-full animate-ping opacity-20"></div>
   {/if}
 </button>

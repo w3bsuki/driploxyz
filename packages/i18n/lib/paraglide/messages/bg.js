@@ -2959,6 +2959,142 @@ export const onboarding_trustedMarketplace = () => `Довереният паз�
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const onboarding_chooseAccountType = () => `Изберете типа на вашия акаунт`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_selectPerfectPlan = () => `Изберете перфектния план за вашето пътуване на продавач`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_createProfile = () => `Създайте вашия профил`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tellAboutYourself = () => `Разкажете ни малко за себе си`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_chooseAvatar = () => `Изберете вашия аватар`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_pickProfilePicture = () => `Изберете профилна снимка, която ви представя`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_setupPayouts = () => `Настройте плащанията`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_choosePaymentMethod = () => `Изберете как ще получавате плащания от продажби`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_connectSocials = () => `Свържете вашите социални мрежи`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_helpBuyersDiscover = () => `Помогнете на купувачите да открият вашия стил (по избор)`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_chooseUniqueUsername = () => `Изберете уникално потребителско име`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_fullNameOptional = () => `Вашето пълно име (по избор)`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_usernameMinLength = () => `Потребителското име трябва да е поне 3 символа`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_settingUp = () => `Настройване...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_completeSetup = () => `Завършете настройката`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_accountTypePersonal = () => `Личен`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_accountTypeBrand = () => `Бранд`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const sales_activity = () => `Продажна активност`
 
 

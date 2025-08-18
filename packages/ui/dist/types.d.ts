@@ -66,6 +66,21 @@ export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'dan
 export type ButtonSize = 'sm' | 'md' | 'lg';
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search';
 export type SearchBarVariant = 'hero' | 'power' | 'compact';
+export type MegaMenuVariant = 'dropdown' | 'accordion';
+export interface CategorySubcategory {
+    name: string;
+    icon: string;
+    itemCount?: number;
+}
+export interface Category {
+    name: string;
+    icon: string;
+    subcategories?: CategorySubcategory[];
+    itemCount?: number;
+}
+export interface CategoryData {
+    [key: string]: Category;
+}
 export interface BreadcrumbItem {
     label: string;
     href?: string;

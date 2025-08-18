@@ -14,6 +14,7 @@
   } from '@repo/ui';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+  import * as m from '@repo/i18n';
   import type { PageData } from './$types';
 
   interface Props {
@@ -76,7 +77,8 @@
 
   async function handleTutorialComplete() {
     showTutorialFlow = false;
-    await goto('/dashboard');
+    // Invalidate auth to refresh profile data
+    await goto('/dashboard', { invalidateAll: true });
   }
 
   function handleBrandPaymentSuccess() {
@@ -138,13 +140,13 @@
     
     try {
       // Determine brand status - if they paid during onboarding, they get full brand status
-      const brandStatus = accountType === 'brand' ? (brandPaid ? 'brand' : 'brand_pending') : 'personal';
+      const brandStatus = accountType === 'brand' ? (brandPaid ? 'brand' : 'brand_pending') : null;
       
-      // Update profile
+      // Update profile - the badge will be assigned automatically via database trigger
       const { error: profileError } = await data.supabase
         .from('profiles')
         .update({
-          account_type: accountType,
+          account_type: accountType, // 'personal' or 'brand'
           username: username.trim(),
           full_name: fullName.trim() || null,
           avatar_url: avatarUrl || null,
@@ -155,12 +157,25 @@
           } : null,
           social_links: socialLinks.filter(link => link.url.trim()),
           onboarding_completed: true,
-          verified: true,
+          verified: accountType === 'brand' && brandPaid, // Only verified if brand and paid
           brand_status: brandStatus
         })
         .eq('id', data.user.id);
 
       if (profileError) throw profileError;
+
+      // Refresh the profile in the store
+      const { data: updatedProfile } = await data.supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+      
+      if (updatedProfile) {
+        // Update the auth store with the new profile
+        const { setProfile } = await import('$lib/stores/auth');
+        setProfile(updatedProfile);
+      }
 
       // If brand account, create brand entry
       if (accountType === 'brand') {
@@ -200,7 +215,7 @@
 </script>
 
 <svelte:head>
-  <title>Complete Your Profile - Driplo</title>
+  <title>{m.onboarding_completeProfile()} - Driplo</title>
 </svelte:head>
 
 <!-- Welcome Modal -->
@@ -211,13 +226,34 @@
   onPrevious={handleWelcomePrevious}
   onComplete={handleWelcomeComplete}
   onSkip={handleWelcomeComplete}
+  translations={{
+    welcome: m.onboarding_welcome(),
+    welcomeBrand: m.onboarding_welcomeBrand(),
+    welcomePersonal: m.onboarding_welcomePersonal(),
+    discover: m.onboarding_discover(),
+    discoverDesc: m.onboarding_discoverDesc(),
+    sell: m.onboarding_sell(),
+    sellDesc: m.onboarding_sellDesc(),
+    ready: m.onboarding_ready(),
+    readyDesc: m.onboarding_readyDesc(),
+    back: m.onboarding_back(),
+    next: m.onboarding_next(),
+    getStarted: m.onboarding_getStarted(),
+    skip: m.onboarding_skip(),
+    designer: m.onboarding_designer(),
+    vintage: m.onboarding_vintage(),
+    trending: m.onboarding_trending(),
+    totalSales: m.onboarding_totalSales(),
+    happySellers: m.onboarding_happySellers(),
+    trustedMarketplace: m.onboarding_trustedMarketplace()
+  }}
 />
 
 <!-- Step 1: Account Type -->
 {#if step === 1}
   <OnboardingStep
-    title="Choose Your Account Type"
-    subtitle="Select the perfect plan for your selling journey"
+    title={m.onboarding_chooseAccountType()}
+    subtitle={m.onboarding_selectPerfectPlan()}
   >
     {#snippet children()}
       <!-- Progress Indicator -->
@@ -239,7 +275,7 @@
           disabled={!canProceed()}
           class="flex-1 bg-black text-white hover:bg-gray-800"
         >
-          Continue
+          {m.onboarding_continue()}
         </Button>
       </div>
     {/snippet}
@@ -248,8 +284,8 @@
 <!-- Step 2: Profile Setup -->
 {:else if step === 2}
   <OnboardingStep
-    title="Create Your Profile"
-    subtitle="Tell us a bit about yourself"
+    title={m.onboarding_createProfile()}
+    subtitle={m.onboarding_tellAboutYourself()}
   >
     {#snippet children()}
       <!-- Progress Indicator -->
@@ -262,21 +298,21 @@
       <div class="space-y-6 mb-8">
         <Input
           bind:value={username}
-          placeholder="Choose a unique username"
-          label="Username"
+          placeholder={m.onboarding_chooseUniqueUsername()}
+          label={m.auth_username()}
           class="bg-white/80"
           required
         />
         
         <Input
           bind:value={fullName}
-          placeholder="Your full name (optional)"
-          label="Full Name"
+          placeholder={m.onboarding_fullNameOptional()}
+          label={m.profile_fullName()}
           class="bg-white/80"
         />
 
         {#if username.trim().length > 0 && username.trim().length < 3}
-          <p class="text-sm text-red-600 mt-1">Username must be at least 3 characters long</p>
+          <p class="text-sm text-red-600 mt-1">{m.onboarding_usernameMinLength()}</p>
         {/if}
       </div>
 
@@ -286,14 +322,14 @@
           variant="outline"
           class="flex-1"
         >
-          Back
+          {m.onboarding_back()}
         </Button>
         <Button
           onclick={nextStep}
           disabled={!canProceed()}
           class="flex-1 bg-black text-white hover:bg-gray-800"
         >
-          Continue
+          {m.onboarding_continue()}
         </Button>
       </div>
     {/snippet}
@@ -302,8 +338,8 @@
 <!-- Step 3: Avatar Selection -->
 {:else if step === 3}
   <OnboardingStep
-    title="Choose Your Avatar"
-    subtitle="Pick a profile picture that represents you"
+    title={m.onboarding_chooseAvatar()}
+    subtitle={m.onboarding_pickProfilePicture()}
   >
     {#snippet children()}
       <!-- Progress Indicator -->
@@ -325,14 +361,14 @@
           variant="outline"
           class="flex-1"
         >
-          Back
+          {m.onboarding_back()}
         </Button>
         <Button
           onclick={nextStep}
           disabled={!canProceed()}
           class="flex-1 bg-black text-white hover:bg-gray-800"
         >
-          Continue
+          {m.onboarding_continue()}
         </Button>
       </div>
     {/snippet}
@@ -341,8 +377,8 @@
 <!-- Step 4: Payout Method -->
 {:else if step === 4}
   <OnboardingStep
-    title="Set Up Payouts"
-    subtitle="Choose how you'll receive payments from sales"
+    title={m.onboarding_setupPayouts()}
+    subtitle={m.onboarding_choosePaymentMethod()}
   >
     {#snippet children()}
       <!-- Progress Indicator -->
@@ -365,14 +401,14 @@
           variant="outline"
           class="flex-1"
         >
-          Back
+          {m.onboarding_back()}
         </Button>
         <Button
           onclick={nextStep}
           disabled={!canProceed()}
           class="flex-1 bg-black text-white hover:bg-gray-800"
         >
-          Continue
+          {m.onboarding_continue()}
         </Button>
       </div>
     {/snippet}
@@ -381,8 +417,8 @@
 <!-- Step 5: Social Links -->
 {:else if step === 5}
   <OnboardingStep
-    title="Connect Your Socials"
-    subtitle="Help buyers discover your style (optional)"
+    title={m.onboarding_connectSocials()}
+    subtitle={m.onboarding_helpBuyersDiscover()}
   >
     {#snippet children()}
       <!-- Progress Indicator -->
@@ -404,7 +440,7 @@
           variant="outline"
           class="flex-1"
         >
-          Back
+          {m.onboarding_back()}
         </Button>
         <Button
           onclick={completeOnboarding}
@@ -412,7 +448,7 @@
           loading={submitting}
           class="flex-1 bg-green-600 text-white hover:bg-green-700"
         >
-          {submitting ? 'Setting up...' : 'Complete Setup'}
+          {submitting ? m.onboarding_settingUp() : m.onboarding_completeSetup()}
         </Button>
       </div>
     {/snippet}

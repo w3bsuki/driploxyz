@@ -38,6 +38,7 @@ export { default as PayoutMethodSelector } from './PayoutMethodSelector.svelte';
 export { default as OnboardingSuccessModal } from './OnboardingSuccessModal.svelte';
 export { default as BrandBadge } from './BrandBadge.svelte';
 export { default as NewSellerBadge } from './NewSellerBadge.svelte';
+export { default as AdminBadge } from './AdminBadge.svelte';
 export { default as BrandPaymentModal } from './BrandPaymentModal.svelte';
 export { default as WelcomeTutorialFlow } from './WelcomeTutorialFlow.svelte';
 // Product sold status components
@@ -54,4 +55,7 @@ export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
 export { default as CookieConsent } from './CookieConsent.svelte';
 // Locale detection
 export { default as LocaleDetectionBanner } from './LocaleDetectionBanner.svelte';
+// Navigation components
+export { default as MegaMenu } from './MegaMenu.svelte';
+export { default as CategorySidebar } from './CategorySidebar.svelte';
 export * from './types.js';

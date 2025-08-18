@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Avatar, ProductCard, BrandBadge, NewSellerBadge } from '@repo/ui';
+  import { Button, Avatar, ProductCard, BrandBadge, NewSellerBadge, AdminBadge } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import BottomNav from '$lib/components/BottomNav.svelte';
   import type { PageData } from './$types';
@@ -122,13 +122,18 @@
       <div class="flex items-center space-x-2 flex-wrap gap-y-1">
         <h1 class="font-semibold text-sm">{data.profile.username}</h1>
         
+        <!-- Admin Badge -->
+        {#if data.profile.role === 'admin' || data.profile.account_type === 'admin'}
+          <AdminBadge size="sm" />
+        {/if}
+        
         <!-- Brand Badge -->
         {#if data.profile.brand_status === 'active' || data.profile.account_type === 'brand'}
           <BrandBadge size="sm" verified={data.profile.verified} />
         {/if}
         
         <!-- New Seller Badge (shows for first 30 days after completing onboarding) -->
-        {#if data.profile.onboarding_completed && data.profile.sales_count < 5}
+        {#if data.profile.onboarding_completed && data.profile.sales_count < 5 && data.profile.role !== 'admin'}
           <NewSellerBadge size="sm" />
         {/if}
         

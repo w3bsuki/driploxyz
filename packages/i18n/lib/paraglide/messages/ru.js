@@ -2701,6 +2701,142 @@ export const onboarding_trustedMarketplace = () => `Надёжная торго�
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const onboarding_chooseAccountType = () => `Выберите тип вашего аккаунта`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_selectPerfectPlan = () => `Выберите идеальный план для вашего пути продавца`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_createProfile = () => `Создайте ваш профиль`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tellAboutYourself = () => `Расскажите нам немного о себе`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_chooseAvatar = () => `Выберите ваш аватар`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_pickProfilePicture = () => `Выберите фото профиля, которое вас представляет`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_setupPayouts = () => `Настройте выплаты`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_choosePaymentMethod = () => `Выберите, как вы будете получать платежи от продаж`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_connectSocials = () => `Подключите ваши социальные сети`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_helpBuyersDiscover = () => `Помогите покупателям открыть ваш стиль (необязательно)`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_chooseUniqueUsername = () => `Выберите уникальное имя пользователя`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_fullNameOptional = () => `Ваше полное имя (необязательно)`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_usernameMinLength = () => `Имя пользователя должно быть не менее 3 символов`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_settingUp = () => `Настройка...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_completeSetup = () => `Завершить настройку`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_accountTypePersonal = () => `Личный`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_accountTypeBrand = () => `Бренд`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const sales_activity = () => `Продажная активность`
 
 

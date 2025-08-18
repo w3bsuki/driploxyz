@@ -13,6 +13,8 @@
     onSuggestionClick?: (suggestion: string) => void;
     onFilter?: () => void;
     onCategorySelect?: (category: string) => void;
+    onOpenMegaMenu?: () => void;
+    showMegaMenuButton?: boolean;
     class?: string;
   }
 
@@ -27,6 +29,8 @@
     onSuggestionClick,
     onFilter,
     onCategorySelect,
+    onOpenMegaMenu,
+    showMegaMenuButton = false,
     class: className = ''
   }: Props = $props();
 
@@ -144,12 +148,18 @@
               <!-- Categories Button -->
               <button
                 type="button"
-                onclick={onFilter}
+                onclick={showMegaMenuButton ? onOpenMegaMenu : onFilter}
                 class="px-3 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center space-x-1 ring-1 ring-gray-200 whitespace-nowrap"
               >
-                <svg class="w-4 h-4 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
+                {#if showMegaMenuButton}
+                  <svg class="w-4 h-4 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                {:else}
+                  <svg class="w-4 h-4 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                {/if}
                 <span class="text-xs font-medium text-gray-600 hidden sm:inline">{categoriesText}</span>
               </button>
             </div>

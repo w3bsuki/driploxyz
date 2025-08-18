@@ -31,11 +31,11 @@ export const load: PageLoad = async ({ parent, url }) => {
       ),
       images:product_images (
         image_url,
-        display_order
+        sort_order
       )
     `)
-    .eq('status', 'active')
     .eq('is_sold', false)
+    .eq('is_active', true)
     .order('created_at', { ascending: false });
 
   // Apply filters

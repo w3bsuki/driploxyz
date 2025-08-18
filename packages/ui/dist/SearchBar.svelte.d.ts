@@ -10,6 +10,8 @@ interface Props {
     onSuggestionClick?: (suggestion: string) => void;
     onFilter?: () => void;
     onCategorySelect?: (category: string) => void;
+    onOpenMegaMenu?: () => void;
+    showMegaMenuButton?: boolean;
     class?: string;
 }
 declare const SearchBar: import("svelte").Component<Props, {}, "value">;

@@ -44,9 +44,22 @@
     authLoading.set(false);
   });
 
-  onMount(() => {
+  onMount(async () => {
     
     if (!supabase) return;
+    
+    // If we have a user but no profile, fetch the profile immediately
+    if (data?.user && !data?.profile) {
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', data.user.id)
+        .single();
+      
+      if (profileData) {
+        profile.set(profileData);
+      }
+    }
     
     const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {
       const currentSession = session.subscribe ? undefined : data?.session;

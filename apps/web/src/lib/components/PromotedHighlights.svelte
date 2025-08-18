@@ -34,12 +34,11 @@
                 })}
                 class="block"
               >
-              <!-- Glass morphism container -->
-              <div class="bg-white rounded-2xl border border-gray-200 p-1 shadow-sm backdrop-blur-xl group-hover:scale-105 transition-transform">
-                <!-- Premium badge -->
-                <div class="absolute -top-2 left-1/2 -translate-x-1/2 z-10 bg-black text-white text-xs font-semibold px-2 py-1 rounded-full shadow-md flex items-center gap-1">
-                  <span>⭐</span>
-                  <span>{i18n.trending_promoted()}</span>
+              <!-- Glass morphism container with subtle border for promoted items -->
+              <div class="bg-white rounded-2xl border border-gray-900/20 p-1 shadow-md backdrop-blur-xl group-hover:scale-105 transition-transform ring-1 ring-gray-900/5">
+                <!-- Premium badge - refined dark design -->
+                <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 z-10 bg-gray-900 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-md tracking-wide">
+                  {i18n.trending_promoted()}
                 </div>
                 <!-- Inner glass frame -->
                 <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
@@ -62,7 +61,7 @@
                       </div>
                     </div>
                     <!-- Price badge -->
-                    <div class="absolute bottom-2 right-2 bg-black text-white text-xs font-semibold px-2 py-1 rounded-lg">
+                    <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg border border-gray-200 shadow-sm">
                       {i18n.common_currency()}{product.price}
                     </div>
                   </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ProductCard, Button, SearchBar, type Product } from '@repo/ui';
+  import { ProductCard, Button, SearchBar, MegaMenu, CategorySidebar, type Product, type CategoryData } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import BottomNav from '$lib/components/BottomNav.svelte';
   import { goto } from '$app/navigation';
@@ -22,12 +22,12 @@
   let priceMax = $state('');
   let sortBy = $state('relevance');
   let showFilters = $state(false);
-  let showCategories = $state(false);
+  let showMegaMenu = $state(false);
   
   let { data }: Props = $props();
   
   // Category data structure with subcategories using i18n
-  const categoryData = $derived(() => ({
+  const categoryData = $derived<CategoryData>(() => ({
     women: {
       name: i18n.category_women(),
       icon: '👗',
@@ -136,28 +136,73 @@
         { name: i18n.subcategory_bathBody(), icon: '🛁' },
         { name: i18n.subcategory_sets(), icon: '🎁' }
       ]
+    },
+    unisex: {
+      name: 'Unisex',
+      icon: '👥',
+      subcategories: [
+        { name: 'Hoodies', icon: '🧥' },
+        { name: 'T-Shirts', icon: '👕' },
+        { name: 'Jeans', icon: '👖' },
+        { name: 'Sneakers', icon: '👟' },
+        { name: 'Watches', icon: '⌚' },
+        { name: 'Backpacks', icon: '🎒' },
+        { name: 'Hats', icon: '🧢' },
+        { name: 'Sunglasses', icon: '🕶️' }
+      ]
+    },
+    accessories: {
+      name: 'Accessories',
+      icon: '💍',
+      subcategories: [
+        { name: 'Jewelry', icon: '💍' },
+        { name: 'Watches', icon: '⌚' },
+        { name: 'Sunglasses', icon: '🕶️' },
+        { name: 'Hats', icon: '🧢' },
+        { name: 'Scarves', icon: '🧣' },
+        { name: 'Belts', icon: '👔' },
+        { name: 'Wallets', icon: '👛' }
+      ]
     }
   }));
   
-  const mainCategories = Object.keys(categoryData());
   
-  // Derive current display based on selection
-  const currentDisplay = $derived(() => {
-    if (selectedMainCategory && categoryData()[selectedMainCategory]) {
-      return {
-        type: 'subcategories',
-        items: categoryData()[selectedMainCategory].subcategories,
-        parent: categoryData()[selectedMainCategory].name
-      };
+  // Smart filter data based on category
+  const smartFilterData = {
+    women: {
+      sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'],
+      brands: ['Zara', 'H&M', 'Mango', 'COS', 'ASOS', 'Urban Outfitters', 'Free People', 'Other']
+    },
+    men: {
+      sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+      brands: ['Nike', 'Adidas', 'Levi\'s', 'Uniqlo', 'Gap', 'Patagonia', 'North Face', 'Other']
+    },
+    kids: {
+      sizes: ['0-3m', '3-6m', '6-12m', '12-18m', '18-24m', '2T', '3T', '4T', '5', '6', '7', '8', '10', '12', '14', '16'],
+      brands: ['Gap Kids', 'H&M Kids', 'Zara Kids', 'Nike', 'Adidas', 'Carter\'s', 'OshKosh', 'Other']
+    },
+    shoes: {
+      sizes: ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46'],
+      brands: ['Nike', 'Adidas', 'Puma', 'Reebok', 'Vans', 'Converse', 'Dr. Martens', 'Other']
+    },
+    bags: {
+      sizes: ['Mini', 'Small', 'Medium', 'Large', 'XL'],
+      brands: ['Coach', 'Michael Kors', 'Kate Spade', 'Longchamp', 'Fjällräven', 'Herschel', 'JanSport', 'Other']
+    },
+    default: {
+      sizes: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
+      brands: ['Nike', 'Adidas', 'Zara', 'H&M', 'Levi\'s', 'Uniqlo', 'Gap', 'Other']
     }
-    return {
-      type: 'main',
-      items: mainCategories
-    };
+  };
+  
+  // Get smart filters based on selected category
+  const currentFilters = $derived(() => {
+    const category = selectedMainCategory || 'default';
+    return smartFilterData[category] || smartFilterData.default;
   });
   
-  const sizes = ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'];
-  const brands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Levi\'s', 'Uniqlo', 'Gap', 'Other'];
+  const sizes = $derived(() => currentFilters().sizes);
+  const brands = $derived(() => currentFilters().brands);
   const conditions = ['new', 'like-new', 'good', 'fair'];
   
   // Transform real products from Supabase to Product interface
@@ -193,11 +238,26 @@
       );
     }
     
-    // Filter by category
+    // Filter by category - match against database category name
     if (selectedMainCategory) {
-      results = results.filter(p => 
-        p.category.toLowerCase() === categoryData()[selectedMainCategory].name.toLowerCase()
-      );
+      // Map our UI categories to database category names
+      const categoryMap: Record<string, string> = {
+        'women': 'Women',
+        'men': 'Men',
+        'kids': 'Kids',
+        'shoes': 'Shoes',
+        'bags': 'Bags',
+        'accessories': 'Accessories',
+        'beauty': 'Beauty',
+        'home': 'Home',
+        'pets': 'Pets'
+      };
+      const dbCategoryName = categoryMap[selectedMainCategory];
+      if (dbCategoryName) {
+        results = results.filter(p => 
+          p.category === dbCategoryName
+        );
+      }
     }
     
     // Filter by subcategory
@@ -256,29 +316,10 @@
     return count;
   });
   
-  // Category selection handlers
-  function selectMainCategory(category: string) {
-    const isCurrentlySelected = selectedMainCategory === category;
-    selectedMainCategory = isCurrentlySelected ? null : category;
-    selectedSubcategory = null; // Always reset subcategory
-  }
-  
-  function selectSubcategory(subcategory: string) {
-    const isCurrentlySelected = selectedSubcategory === subcategory;
-    selectedSubcategory = isCurrentlySelected ? null : subcategory;
-  }
-  
-  function resetCategories() {
-    selectedMainCategory = null;
-    selectedSubcategory = null;
-  }
-  
-  function goBackToMain() {
-    resetCategories();
-  }
   
   function clearFilters() {
-    resetCategories();
+    selectedMainCategory = null;
+    selectedSubcategory = null;
     selectedSize = 'all';
     selectedBrand = 'all';
     selectedCondition = 'all';
@@ -291,8 +332,46 @@
   }
   
   function handleFilter() {
-    // Toggle categories (main/subcategory navigation)
-    showCategories = !showCategories;
+    // Toggle filter panel
+    showFilters = !showFilters;
+  }
+  
+  function handleOpenMegaMenu() {
+    showMegaMenu = true;
+  }
+  
+  function handleCategorySelectFromMega(category: string | null) {
+    selectedMainCategory = category;
+    selectedSubcategory = null;
+    // Keep the menu open when selecting a category
+    // Don't change showMegaMenu here
+  }
+  
+  function handleSubcategorySelectFromMega(subcategory: string | null, category: string) {
+    selectedMainCategory = category;
+    selectedSubcategory = subcategory;
+    // Only close when selecting an actual subcategory (not null)
+    if (subcategory !== null) {
+      showMegaMenu = false;
+    }
+  }
+  
+  function handleFilterRemove(filterType: string) {
+    switch(filterType) {
+      case 'size':
+        selectedSize = 'all';
+        break;
+      case 'brand':
+        selectedBrand = 'all';
+        break;
+      case 'condition':
+        selectedCondition = 'all';
+        break;
+      case 'priceRange':
+        priceMin = '';
+        priceMax = '';
+        break;
+    }
   }
   
   function handleMobileFilters() {
@@ -312,129 +391,33 @@
   <!-- Clean Search Section -->
   <div class="bg-gray-50 sticky top-14 sm:top-16 z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-      <div class="space-y-3">
+      <div class="relative">
         <!-- Main Search Bar -->
-        <div class="relative">
-          <SearchBar 
-            bind:value={searchQuery}
-            placeholder={i18n.search_placeholder()}
-            onSearch={handleSearch}
-            onFilter={handleFilter}
-            variant="hero"
-          />
-          {#if activeFiltersCount() > 0}
-            <div class="absolute top-2 right-1 h-5 w-5 bg-black text-white text-xs rounded-full flex items-center justify-center pointer-events-none">
-              {activeFiltersCount()}
-            </div>
-          {/if}
-        </div>
-        
-        <!-- Collapsible Categories -->
-        {#if showCategories}
-          <div class="bg-white rounded-2xl border border-gray-200 p-1 shadow-sm backdrop-blur-xl transition-all duration-300 ease-out">
-            <div class="bg-gray-50/80 relative rounded-xl border overflow-hidden">
-              <div 
-                aria-hidden="true"
-                class="absolute inset-x-0 top-0 h-full rounded-[inherit] pointer-events-none"
-                style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
-              />
-              <div class="relative p-3">
-                <!-- Category Navigation -->
-      {#if currentDisplay().type === 'main'}
-        <div class="overflow-x-auto scrollbar-hide">
-          <div class="flex space-x-3 pb-2">
-            {#each mainCategories as category}
-              <button
-                onclick={() => selectMainCategory(category)}
-                class="flex-shrink-0 min-w-[70px]"
-              >
-                {#if selectedMainCategory === category}
-                  <!-- Selected state - solid black -->
-                  <div class="flex flex-col items-center py-2 px-2 rounded-lg bg-black text-white">
-                    <span class="text-lg mb-1">{categoryData()[category].icon}</span>
-                    <span class="text-xs font-medium">{categoryData()[category].name}</span>
-                  </div>
-                {:else}
-                  <!-- Glass morphism for unselected categories -->
-                  <div class="bg-white/70 rounded-lg border border-white/50 p-0.5 shadow-sm backdrop-blur-sm hover:shadow-md hover:bg-white/80 transition-all">
-                    <div class="bg-white/60 relative rounded-lg border border-white/30 overflow-hidden">
-                      <div 
-                        aria-hidden="true"
-                        class="absolute inset-x-0 top-0 h-full rounded-[inherit] pointer-events-none"
-                        style="background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 40%, rgba(0,0,0,0) 100%)"
-                      />
-                      <div class="relative flex flex-col items-center py-2 px-2 text-gray-700">
-                        <span class="text-lg mb-1">{categoryData()[category].icon}</span>
-                        <span class="text-xs font-medium">{categoryData()[category].name}</span>
-                      </div>
-                    </div>
-                  </div>
-                {/if}
-              </button>
-            {/each}
-          </div>
-            </div>
-          {:else}
-            <div class="overflow-x-auto scrollbar-hide">
-              <div class="flex space-x-3 pb-2">
-                <!-- Back button with glass morphism -->
-                <button
-                  onclick={goBackToMain}
-                  class="flex-shrink-0 min-w-[70px]"
-                >
-                  <div class="bg-white/70 rounded-lg border border-white/50 p-0.5 shadow-sm backdrop-blur-sm hover:shadow-md hover:bg-white/80 transition-all">
-                    <div class="bg-white/60 relative rounded-lg border border-white/30 overflow-hidden">
-                      <div 
-                        aria-hidden="true"
-                        class="absolute inset-x-0 top-0 h-full rounded-[inherit] pointer-events-none"
-                        style="background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 40%, rgba(0,0,0,0) 100%)"
-                      />
-                      <div class="relative flex flex-col items-center justify-center py-2 px-2 text-gray-700">
-                        <svg class="w-[18px] h-[18px] mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                        <span class="text-xs font-medium">{i18n.search_back()}</span>
-                      </div>
-                    </div>
-                  </div>
-                </button>
-                
-                {#each currentDisplay().items as subcategory}
-                  <button
-                    onclick={() => selectSubcategory(subcategory.name)}
-                    class="flex-shrink-0 min-w-[70px]"
-                  >
-                    {#if selectedSubcategory === subcategory.name}
-                      <!-- Selected state - solid black -->
-                      <div class="flex flex-col items-center py-2 px-2 rounded-lg bg-black text-white">
-                        <span class="text-lg mb-1">{subcategory.icon}</span>
-                        <span class="text-xs font-medium whitespace-nowrap">{subcategory.name}</span>
-                      </div>
-                    {:else}
-                      <!-- Glass morphism for unselected subcategories -->
-                      <div class="bg-white/70 rounded-lg border border-white/50 p-0.5 shadow-sm backdrop-blur-sm hover:shadow-md hover:bg-white/80 transition-all">
-                        <div class="bg-white/60 relative rounded-lg border border-white/30 overflow-hidden">
-                          <div 
-                            aria-hidden="true"
-                            class="absolute inset-x-0 top-0 h-full rounded-[inherit] pointer-events-none"
-                            style="background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 40%, rgba(0,0,0,0) 100%)"
-                          />
-                          <div class="relative flex flex-col items-center py-2 px-2 text-gray-700">
-                            <span class="text-lg mb-1">{subcategory.icon}</span>
-                            <span class="text-xs font-medium whitespace-nowrap">{subcategory.name}</span>
-                          </div>
-                        </div>
-                      </div>
-                    {/if}
-                  </button>
-                {/each}
-              </div>
-            </div>
-                {/if}
-              </div>
-            </div>
+        <SearchBar 
+          bind:value={searchQuery}
+          placeholder={i18n.search_placeholder()}
+          onSearch={handleSearch}
+          onFilter={handleFilter}
+          onOpenMegaMenu={handleOpenMegaMenu}
+          showMegaMenuButton={true}
+          variant="hero"
+        />
+        {#if activeFiltersCount() > 0}
+          <div class="absolute top-2 right-1 h-5 w-5 bg-black text-white text-xs rounded-full flex items-center justify-center pointer-events-none">
+            {activeFiltersCount()}
           </div>
         {/if}
+        
+        <!-- MegaMenu Dropdown -->
+        <MegaMenu
+          isOpen={showMegaMenu}
+          categories={categoryData()}
+          selectedCategory={selectedMainCategory}
+          selectedSubcategory={selectedSubcategory}
+          onCategorySelect={handleCategorySelectFromMega}
+          onSubcategorySelect={handleSubcategorySelectFromMega}
+          onClose={() => showMegaMenu = false}
+        />
       </div>
     </div>
   </div>
@@ -465,7 +448,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_size()}</label>
               <div class="grid grid-cols-4 gap-1.5">
-                {#each sizes as size}
+                {#each sizes() as size}
                   <button
                     onclick={() => selectedSize = selectedSize === size ? 'all' : size}
                     class="py-2 px-2 text-xs rounded-lg ring-1 transition-colors
@@ -488,9 +471,9 @@
                 >
                   {i18n.search_allBrands()}
                 </button>
-                {#each brands as brand}
+                {#each brands() as brand}
                   <button
-                    onclick={() => selectedBrand = brand}
+                    onclick={() => selectedBrand = selectedBrand === brand ? 'all' : brand}
                     class="py-3 px-3 text-sm rounded-lg ring-1 transition-colors
                       {selectedBrand === brand ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
                   >
@@ -513,7 +496,7 @@
                 </button>
                 {#each conditions as condition}
                   <button
-                    onclick={() => selectedCondition = condition}
+                    onclick={() => selectedCondition = selectedCondition === condition ? 'all' : condition}
                     class="w-full py-3 px-3 text-sm rounded-lg ring-1 text-left transition-colors
                       {selectedCondition === condition ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
                   >
@@ -560,9 +543,41 @@
     </div>
   {/if}
 
+
   <!-- Main Content -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex gap-6">
+      <!-- Desktop Sidebar -->
+      <CategorySidebar
+        categories={categoryData()}
+        selectedCategory={selectedMainCategory}
+        selectedSubcategory={selectedSubcategory}
+        appliedFilters={{
+          size: selectedSize,
+          brand: selectedBrand,
+          condition: selectedCondition,
+          priceMin,
+          priceMax
+        }}
+        onCategorySelect={handleCategorySelectFromMega}
+        onSubcategorySelect={handleSubcategorySelectFromMega}
+        onFilterRemove={handleFilterRemove}
+        onClearAll={clearFilters}
+        translations={{
+          categories: 'Categories',
+          filters: 'Active Filters',
+          clearAll: 'Clear All',
+          size: 'Size',
+          brand: 'Brand',
+          condition: 'Condition',
+          priceRange: 'Price Range',
+          allCategories: 'All Categories'
+        }}
+      />
+      
+      <!-- Products Content -->
+      <div class="flex-1">
+        <div class="flex items-center justify-between mb-4">
       <p class="text-sm text-gray-600">
         {filteredProducts().length} {i18n.search_itemsFound()}
         {searchQuery && ` ${i18n.search_for()} "${searchQuery}"`}
@@ -629,6 +644,42 @@
             </button>
           </span>
         {/if}
+        {#if selectedBrand !== 'all'}
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
+            {i18n.search_brand()}: {selectedBrand}
+            <button onclick={() => selectedBrand = 'all'} class="ml-2">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </span>
+        {/if}
+        {#if selectedCondition !== 'all'}
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
+            {i18n.search_condition()}: {
+              selectedCondition === 'new' ? i18n.condition_new() :
+              selectedCondition === 'like-new' ? i18n.condition_likeNew() :
+              selectedCondition === 'good' ? i18n.condition_good() :
+              selectedCondition === 'fair' ? i18n.condition_fair() :
+              selectedCondition
+            }
+            <button onclick={() => selectedCondition = 'all'} class="ml-2">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </span>
+        {/if}
+        {#if priceMin || priceMax}
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
+            {i18n.search_priceRange()}: ${priceMin || '0'} - ${priceMax || '∞'}
+            <button onclick={() => { priceMin = ''; priceMax = ''; }} class="ml-2">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </span>
+        {/if}
         <button onclick={clearFilters} class="text-sm text-gray-600 hover:text-gray-900">
           {i18n.search_clearAllFilters()}
         </button>
@@ -666,10 +717,14 @@
         <p class="text-gray-600">{i18n.search_adjustFilters()}</p>
       </div>
     {/if}
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 
-<BottomNav />
+{#if !showMegaMenu}
+  <BottomNav />
+{/if}
 
 <style>
   /* Hide scrollbar for category carousel */

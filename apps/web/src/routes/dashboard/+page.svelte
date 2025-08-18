@@ -64,7 +64,7 @@
         condition: product.condition as any,
         category: product.category?.name || 'Uncategorized',
         sellerId: product.seller_id,
-        sellerName: data.user?.username || '',
+        sellerName: data.profile?.username || data.profile?.full_name || '',
         sellerRating: 4.8,
         createdAt: product.created_at,
         location: product.location || 'Unknown'
@@ -109,7 +109,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <!-- Welcome Section -->
     <div class="mb-6">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Welcome back, {data.user?.full_name || data.user?.username}!</h1>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Welcome back, {data.profile?.username || data.profile?.full_name || 'User'}!</h1>
       <p class="text-gray-600 text-sm sm:text-base mt-1">Here's what's happening with your shop today.</p>
     </div>
 
@@ -514,7 +514,7 @@
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Shop Name</label>
-              <input type="text" value={data.user?.username || ''} class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+              <input type="text" value={data.profile?.username || ''} class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Shop Description</label>

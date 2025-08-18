@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ parent }) => {
-  const { supabase, user } = await parent();
+  const { supabase, user, profile } = await parent();
 
   if (!user) {
     throw redirect(303, '/login');
@@ -53,6 +53,7 @@ export const load: PageLoad = async ({ parent }) => {
 
   return {
     products: products || [],
-    orders: orders || []
+    orders: orders || [],
+    profile
   };
 };

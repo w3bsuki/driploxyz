@@ -43,40 +43,7 @@
 
   let { 
     show = false,
-    steps = [
-      {
-        id: 'welcome',
-        title: 'Welcome to Driplo',
-        description: 'The trusted marketplace for buying and selling pre-owned fashion. Join thousands of users trading quality clothing.',
-        icon: '👋',
-        gradient: 'bg-gray-900',
-        color: 'bg-gray-900'
-      },
-      {
-        id: 'discover',
-        title: 'Discover Quality Fashion',
-        description: 'Browse curated items from verified sellers. Find authentic pieces, designer brands, and unique vintage items.',
-        icon: '🔍',
-        gradient: 'bg-blue-600',
-        color: 'bg-blue-600'
-      },
-      {
-        id: 'sell',
-        title: 'Sell with Confidence',
-        description: 'List your items quickly with our simple tools. Secure payments, buyer protection, and transparent fees.',
-        icon: '💼',
-        gradient: 'bg-green-600',
-        color: 'bg-green-600'
-      },
-      {
-        id: 'ready',
-        title: 'Ready to Start',
-        description: 'Complete your profile setup to start buying and selling. Your secure marketplace experience begins now.',
-        icon: '✅',
-        gradient: 'bg-black',
-        color: 'bg-black'
-      }
-    ],
+    steps,
     currentStep = 0,
     onNext,
     onPrevious,
@@ -85,8 +52,45 @@
     translations = {}
   }: Props = $props();
 
-  const currentStepData = $derived(steps[currentStep]);
-  const isLastStep = $derived(currentStep === steps.length - 1);
+  const defaultSteps = $derived([
+    {
+      id: 'welcome',
+      title: translations.welcome || 'Welcome to Driplo',
+      description: translations.trustedMarketplace || 'The trusted marketplace for buying and selling pre-owned fashion. Join thousands of users trading quality clothing.',
+      icon: '👋',
+      gradient: 'bg-gray-900',
+      color: 'bg-gray-900'
+    },
+    {
+      id: 'discover',
+      title: translations.discover || 'Discover Quality Fashion',
+      description: translations.discoverDesc || 'Browse curated items from verified sellers. Find authentic pieces, designer brands, and unique vintage items.',
+      icon: '🔍',
+      gradient: 'bg-blue-600',
+      color: 'bg-blue-600'
+    },
+    {
+      id: 'sell',
+      title: translations.sell || 'Sell with Confidence',
+      description: translations.sellDesc || 'List your items quickly with our simple tools. Secure payments, buyer protection, and transparent fees.',
+      icon: '💼',
+      gradient: 'bg-green-600',
+      color: 'bg-green-600'
+    },
+    {
+      id: 'ready',
+      title: translations.ready || 'Ready to Start',
+      description: translations.readyDesc || 'Complete your profile setup to start buying and selling. Your secure marketplace experience begins now.',
+      icon: '✅',
+      gradient: 'bg-black',
+      color: 'bg-black'
+    }
+  ]);
+
+  const effectiveSteps = $derived(steps || defaultSteps);
+
+  const currentStepData = $derived(effectiveSteps[currentStep]);
+  const isLastStep = $derived(currentStep === effectiveSteps.length - 1);
   const isFirstStep = $derived(currentStep === 0);
 
   function handleNext() {
@@ -108,7 +112,7 @@
         <div class="h-1 bg-gray-200/50">
           <div 
             class="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500 ease-out"
-            style="width: {((currentStep + 1) / steps.length) * 100}%"
+            style="width: {((currentStep + 1) / effectiveSteps.length) * 100}%"
           ></div>
         </div>
 
@@ -133,7 +137,7 @@
 
           <!-- Step Indicators -->
           <div class="flex justify-center space-x-2 mb-8">
-            {#each steps as step, index}
+            {#each effectiveSteps as step, index}
               <button
                 onclick={() => currentStep = index}
                 class="w-2 h-2 rounded-full transition-all duration-300 {index === currentStep ? 'bg-black w-8' : 'bg-gray-300 hover:bg-gray-400'}"

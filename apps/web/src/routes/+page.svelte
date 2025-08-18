@@ -12,14 +12,17 @@
 	import { serviceUtils } from '$lib/services';
 	import type { PageData } from './$types';
 	import type { ProductWithImages } from '$lib/services';
+	import type { Seller, ProductDisplay, PromotedProduct } from '$lib/types';
+	import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '$lib/types';
 
 	let { data }: { data: PageData } = $props();
 
 	let searchQuery = $state('');
-	let selectedSeller = $state<any>(null);
+	let selectedSeller = $state<Seller | null>(null);
 	let showCategoryDropdown = $state(false);
 	let showCompactSearch = $state(false);
 	let heroSearchElement: HTMLElement = $state();
+	let loadingCategory = $state<string | null>(null);
 
 	// Language state
 	let currentLang = $state(getStoredLanguage() || 'en');
@@ -32,57 +35,54 @@
 		updateKey++;
 	});
 
-	// Transform promoted products for highlights - force to use featured products if promoted is empty
-	const promotedProducts = $derived((() => {
-		let products = data.promotedProducts || [];
-		
-		// If no promoted products, use the first 8 featured products as highlights
-		if (products.length === 0 && data.featuredProducts?.length > 0) {
-			products = data.featuredProducts.slice(0, 8);
-		}
-		
-		
-		return products.map((product: ProductWithImages) => ({
-			id: product.id,
-			title: product.title,
-			price: product.price,
-			images: product.images,
-			seller_name: product.seller_name,
-			seller_id: product.seller_id
-		}));
-	})());
+	// Transform promoted products for highlights
+	const promotedProducts = $derived<PromotedProduct[]>(
+		(data.promotedProducts?.length ? data.promotedProducts : data.featuredProducts.slice(0, 8))
+			.map((product: ProductWithImages) => ({
+				id: product.id,
+				title: product.title,
+				price: product.price,
+				images: product.images,
+				seller_name: product.seller_name,
+				seller_id: product.seller_id
+			}))
+	);
 
 	// Transform products to match UI component interface
-	const products = $derived(data.featuredProducts.map((product: ProductWithImages) => ({
-		id: product.id,
-		title: product.title,
-		description: product.description,
-		price: product.price,
-		images: product.images.map(img => img.image_url),
-		brand: product.brand,
-		size: product.size,
-		condition: product.condition,
-		category: product.category_name || 'Uncategorized',
-		sellerId: product.seller_id,
-		sellerName: product.seller_name || 'Unknown Seller',
-		sellerRating: product.seller_rating || 0,
-		sellerAvatar: product.seller_avatar,
-		createdAt: product.created_at,
-		location: product.location
-	})));
+	const products = $derived<ProductDisplay[]>(
+		data.featuredProducts.map((product: ProductWithImages) => ({
+			id: product.id,
+			title: product.title,
+			description: product.description,
+			price: product.price,
+			images: product.images.map(img => img.image_url),
+			brand: product.brand,
+			size: product.size,
+			condition: product.condition as ProductDisplay['condition'],
+			category: product.category_name || 'Uncategorized',
+			sellerId: product.seller_id,
+			sellerName: product.seller_name || 'Unknown Seller',
+			sellerRating: product.seller_rating || 0,
+			sellerAvatar: product.seller_avatar,
+			createdAt: product.created_at,
+			location: product.location
+		}))
+	);
 
 	// Transform sellers for display
-	const sellers = $derived(data.topSellers.map(seller => ({
-		id: seller.id,
-		name: seller.username || seller.full_name,
-		username: seller.username,
-		premium: seller.role === 'seller',
-		avatar: seller.avatar_url,
-		rating: seller.rating,
-		itemCount: seller.sales_count,
-		followers: 0, // We don't track followers yet
-		description: seller.bio
-	})));
+	const sellers = $derived<Seller[]>(
+		data.topSellers.map(seller => ({
+			id: seller.id,
+			name: seller.username || seller.full_name,
+			username: seller.username,
+			premium: seller.role === 'seller',
+			avatar: seller.avatar_url,
+			rating: seller.rating,
+			itemCount: seller.sales_count,
+			followers: 0, // We don't track followers yet
+			description: seller.bio
+		}))
+	);
 
 	function handleSearch(query: string) {
 		if (query.trim()) {
@@ -90,16 +90,16 @@
 		}
 	}
 
-	function handleProductClick(product: any) {
+	function handleProductClick(product: ProductDisplay) {
 		goto(`/product/${product.id}`);
 	}
 
-	function handleFavorite(product: any) {
-		// TODO: Implement favorites functionality
-		console.log('Favorited:', product.title);
+	function handleFavorite(product: ProductDisplay) {
+		// Favorites functionality will be implemented with Supabase
+		// For now, just show a toast or notification
 	}
 
-	function handleSellerClick(seller: any) {
+	function handleSellerClick(seller: Seller) {
 		if (seller.premium) {
 			// Open quick view for premium sellers
 			selectedSeller = seller;
@@ -114,8 +114,30 @@
 		showCategoryDropdown = !showCategoryDropdown;
 	}
 
-	function navigateToCategory(categorySlug: string) {
-		goto(`/category/${categorySlug}`);
+	async function navigateToCategory(categorySlug: string) {
+		loadingCategory = categorySlug;
+		
+		// Add a small delay for UX (to show the loading state)
+		await new Promise(resolve => setTimeout(resolve, 300));
+		
+		try {
+			await goto(`/category/${categorySlug}`);
+		} finally {
+			loadingCategory = null;
+		}
+	}
+	
+	async function navigateToAllSearch() {
+		loadingCategory = 'all';
+		
+		// Add a small delay for UX
+		await new Promise(resolve => setTimeout(resolve, 200));
+		
+		try {
+			await goto('/search');
+		} finally {
+			loadingCategory = null;
+		}
 	}
 
 	// Get only top-level categories for navigation pills (excluding Pets)
@@ -126,19 +148,9 @@
 			.slice(0, 3) // Take first 3 (Women, Men, Kids)
 	);
 
-	// Category icon mapping (same as search page)
+	// Get category icon from constants
 	function getCategoryIcon(categoryName: string): string {
-		const iconMap: Record<string, string> = {
-			'Women': '👗',
-			'Men': '👔', 
-			'Kids': '👶',
-			'Pets': '🐕',
-			'Shoes': '👟',
-			'Bags': '👜',
-			'Home': '🏠',
-			'Beauty': '💄'
-		};
-		return iconMap[categoryName] || '📦';
+		return CATEGORY_ICONS[categoryName] || DEFAULT_CATEGORY_ICON;
 	}
 
 	// Scroll detection for compact search
@@ -208,17 +220,33 @@
 				{#if !showCategoryDropdown}
 					<div class="flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-hide sm:gap-3">
 					<button 
-						onclick={() => goto('/search')}
-						class="category-nav-pill flex-shrink-0 px-5 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-gray-900 transition-colors"
+						onclick={navigateToAllSearch}
+						disabled={loadingCategory === 'all'}
+						class="category-nav-pill flex-shrink-0 px-5 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-gray-900 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[80px]"
 					>
-						{i18n.search_all()}
+						{#if loadingCategory === 'all'}
+							<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+								<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+							</svg>
+						{:else}
+							{i18n.search_all()}
+						{/if}
 					</button>
 					{#each mainCategories as category}
 						<button 
 							onclick={() => navigateToCategory(category.slug)}
-							class="category-nav-pill flex-shrink-0 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors"
+							disabled={loadingCategory === category.slug}
+							class="category-nav-pill flex-shrink-0 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[80px]"
 						>
-							{i18n[`category_${category.slug.toLowerCase()}`] ? i18n[`category_${category.slug.toLowerCase()}`]() : category.name}
+							{#if loadingCategory === category.slug}
+								<svg class="animate-spin h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+									<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+									<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+								</svg>
+							{:else}
+								{i18n[`category_${category.slug.toLowerCase()}`] ? i18n[`category_${category.slug.toLowerCase()}`]() : category.name}
+							{/if}
 						</button>
 					{/each}
 					</div>

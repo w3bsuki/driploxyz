@@ -24,6 +24,7 @@
   }: Props = $props();
 
   let imageError = $state(false);
+  let isLoading = $state(true);
 
   const sizeClasses = {
     xs: 'w-8 h-8',
@@ -41,15 +42,35 @@
     xl: 'text-xl'
   };
 
-  const initial = fallback || (name ? name.charAt(0).toUpperCase() : '?');
+  const initial = $derived(() => {
+    // Use fallback if provided and not empty
+    if (fallback && fallback.trim() && fallback !== '?') {
+      return fallback;
+    }
+    // Use name if available
+    if (name && name.trim() && name !== 'Anonymous' && name !== 'User') {
+      return name.charAt(0).toUpperCase();
+    }
+    // Default fallback
+    return '?';
+  });
   
   function handleImageError() {
     imageError = true;
+    isLoading = false;
+  }
+  
+  function handleImageLoad() {
+    isLoading = false;
+    imageError = false;
   }
   
   // Reset error state when src changes
   $effect(() => {
-    imageError = false;
+    if (src) {
+      imageError = false;
+      isLoading = true;
+    }
   });
   
   const shapeClass = $derived(
@@ -69,11 +90,12 @@
       {src} 
       {alt}
       onerror={handleImageError}
+      onload={handleImageLoad}
       class="w-full h-full object-cover"
     />
   {:else}
     <div class="flex items-center justify-center w-full h-full bg-gray-200">
-      <span class="font-semibold text-gray-600 {textSizes[size]}">{initial}</span>
+      <span class="font-semibold text-gray-600 {textSizes[size]}">{initial()}</span>
     </div>
   {/if}
 </button>

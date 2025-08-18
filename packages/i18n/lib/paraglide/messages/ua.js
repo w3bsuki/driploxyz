@@ -2701,6 +2701,142 @@ export const onboarding_trustedMarketplace = () => `Надійна торгов�
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const onboarding_chooseAccountType = () => `Оберіть тип вашого облікового запису`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_selectPerfectPlan = () => `Оберіть ідеальний план для вашого шляху продавця`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_createProfile = () => `Створіть ваш профіль`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tellAboutYourself = () => `Розкажіть нам трохи про себе`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_chooseAvatar = () => `Оберіть ваш аватар`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_pickProfilePicture = () => `Оберіть фото профілю, яке вас представляє`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_setupPayouts = () => `Налаштуйте виплати`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_choosePaymentMethod = () => `Оберіть, як ви будете отримувати платежі від продажів`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_connectSocials = () => `Підключіть ваші соціальні мережі`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_helpBuyersDiscover = () => `Допоможіть покупцям відкрити ваш стиль (необов'язково)`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_chooseUniqueUsername = () => `Оберіть унікальне ім'я користувача`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_fullNameOptional = () => `Ваше повне ім'я (необов'язково)`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_usernameMinLength = () => `Ім'я користувача має бути не менше 3 символів`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_settingUp = () => `Налаштування...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_completeSetup = () => `Завершити налаштування`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_accountTypePersonal = () => `Особистий`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_accountTypeBrand = () => `Бренд`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const sales_activity = () => `Продажна активність`
 
 

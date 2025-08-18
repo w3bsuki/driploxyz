@@ -155,9 +155,9 @@
       </nav>
       
       <!-- Right: Auth/Account -->
-      <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-2">
         <!-- Desktop Language Switcher -->
-        <div class="hidden sm:block">
+        <div class="hidden sm:block mr-2">
           <LanguageSwitcher
             currentLanguage={currentLang}
             {languages}

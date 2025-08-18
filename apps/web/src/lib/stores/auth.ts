@@ -50,12 +50,23 @@ export const displayName = derived(profile, ($profile) => {
 });
 
 export const userInitials = derived(profile, ($profile) => {
-  if (!$profile?.full_name) return '?';
-  return $profile.full_name
-    .split(' ')
-    .map(name => name.charAt(0).toUpperCase())
-    .slice(0, 2)
-    .join('');
+  if (!$profile) return '?';
+  
+  // Try full name first
+  if ($profile.full_name) {
+    return $profile.full_name
+      .split(' ')
+      .map(name => name.charAt(0).toUpperCase())
+      .slice(0, 2)
+      .join('');
+  }
+  
+  // Fall back to username
+  if ($profile.username) {
+    return $profile.username.charAt(0).toUpperCase();
+  }
+  
+  return '?';
 });
 
 // Auth actions
