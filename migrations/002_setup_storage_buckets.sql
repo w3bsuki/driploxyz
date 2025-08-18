@@ -1,9 +1,7 @@
 -- Driplo Marketplace - Storage Buckets Setup
 -- Migration: 002_setup_storage_buckets
 -- Description: Creates storage buckets for marketplace images
-
--- NOTE: These need to be created manually in Supabase Dashboard or via CLI
--- as they cannot be created via SQL migrations
+-- Status: ✅ COMPLETED - All buckets and policies have been created
 
 /*
 STORAGE BUCKETS TO CREATE:

@@ -32,14 +32,25 @@
 		updateKey++;
 	});
 
-	// Transform promoted products for highlights
-	const promotedProducts = $derived(data.promotedProducts?.map((product: ProductWithImages) => ({
-		id: product.id,
-		title: product.title,
-		price: product.price,
-		images: product.images,
-		seller_name: product.seller_name
-	})) || []);
+	// Transform promoted products for highlights - force to use featured products if promoted is empty
+	const promotedProducts = $derived((() => {
+		let products = data.promotedProducts || [];
+		
+		// If no promoted products, use the first 8 featured products as highlights
+		if (products.length === 0 && data.featuredProducts?.length > 0) {
+			products = data.featuredProducts.slice(0, 8);
+		}
+		
+		
+		return products.map((product: ProductWithImages) => ({
+			id: product.id,
+			title: product.title,
+			price: product.price,
+			images: product.images,
+			seller_name: product.seller_name,
+			seller_id: product.seller_id
+		}));
+	})());
 
 	// Transform products to match UI component interface
 	const products = $derived(data.featuredProducts.map((product: ProductWithImages) => ({

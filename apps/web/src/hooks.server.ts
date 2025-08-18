@@ -1,8 +1,18 @@
 import { createServerClient } from '@supabase/ssr';
-import { type Handle, redirect, error } from '@sveltejs/kit';
+import { type Handle, redirect, error, type HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { env } from '$env/dynamic/public';
+import { env as privateEnv } from '$env/dynamic/private';
 import type { Database } from '$lib/types/database.types';
+import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
+import * as Sentry from '@sentry/sveltekit';
+
+// Initialize Sentry
+Sentry.init({
+  dsn: env.PUBLIC_SENTRY_DSN,
+  environment: privateEnv.NODE_ENV || 'development',
+  tracesSampleRate: 1.0,
+});
 
 const supabase: Handle = async ({ event, resolve }) => {
   // Production logging for debugging
@@ -124,4 +134,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
-export const handle = sequence(supabase, authGuard);
+export const handle = sequence(sentryHandle(), supabase, authGuard);
+
+// Sentry error handler
+export const handleError: HandleServerError = handleErrorWithSentry();

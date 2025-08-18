@@ -301,7 +301,35 @@ export class ProductService {
         return acc;
       }, [] as any[]);
 
-      const limitedProducts = uniqueProducts.slice(0, limit);
+      let limitedProducts = uniqueProducts.slice(0, limit);
+
+      // If we don't have enough promoted products, fill with newest listings
+      if (limitedProducts.length < limit) {
+        const remainingLimit = limit - limitedProducts.length;
+        
+        // Get newest products to fill the highlights
+        const { data: newestProducts, error: newestError } = await this.supabase
+          .from('products')
+          .select(`
+            *,
+            product_images (*),
+            categories (name),
+            profiles!products_seller_id_fkey (username, rating, avatar_url)
+          `)
+          .eq('is_active', true)
+          .eq('is_sold', false)
+          .order('created_at', { ascending: false })
+          .limit(remainingLimit);
+
+        if (newestError) {
+          console.error('Newest products error:', newestError);
+        } else {
+          // Add newest products that aren't already in promoted list
+          const promotedIds = new Set(limitedProducts.map(p => p.id));
+          const filteredNewest = (newestProducts || []).filter(p => !promotedIds.has(p.id));
+          limitedProducts = [...limitedProducts, ...filteredNewest];
+        }
+      }
 
       if (!limitedProducts || limitedProducts.length === 0) {
         return { data: [], error: null };

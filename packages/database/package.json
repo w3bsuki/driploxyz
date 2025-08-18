@@ -1,0 +1,27 @@
+{
+  "name": "@repo/database",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/types.ts",
+      "default": "./src/index.ts"
+    },
+    "./types": {
+      "types": "./src/types.ts",
+      "default": "./src/types.ts"
+    }
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "generate": "supabase gen types typescript --project-id koowfhsaqmarfdkwsfiz > src/types.ts"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.46.2"
+  }
+}

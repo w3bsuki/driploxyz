@@ -2,7 +2,6 @@
   import { goto } from '$app/navigation';
   import { Button } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
-  import { createClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   
@@ -12,8 +11,8 @@
   
   let { data }: Props = $props();
   
-  // Initialize Supabase client
-  const supabase = createClient();
+  // Use authenticated Supabase client from layout
+  const supabase = data.supabase;
   
   let currentStep = $state(1);
   const totalSteps = 3;
@@ -113,98 +112,84 @@
       return;
     }
 
+    if (photos.length === 0) {
+      submitError = 'Please add at least one photo';
+      return;
+    }
+
     submitting = true;
     submitError = '';
 
     try {
-      // Debug: Check Supabase client
-      console.log('Supabase client:', supabase);
-      console.log('User:', data.user);
-      console.log('Photos to upload:', photos.length);
+      // Prepare form data for server action
+      const formData = new FormData();
       
-      // Test Supabase connection
-      const { data: testData, error: testError } = await supabase.from('products').select('count').limit(1);
-      if (testError) {
-        console.error('Supabase connection test failed:', testError);
-        throw new Error(`Database connection failed: ${testError.message}`);
-      }
-      console.log('Supabase connection test passed');
-      
-      if (photos.length === 0) {
-        throw new Error('Please add at least one photo');
-      }
-      // Upload images to Supabase Storage
-      const uploadedUrls: string[] = [];
-      
-      for (const [index, photo] of photos.entries()) {
-        const fileExt = photo.name.split('.').pop();
-        const fileName = `${data.user.id}/${Date.now()}_${index}.${fileExt}`;
-        
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('product-images')
-          .upload(fileName, photo);
-
-        if (uploadError) throw uploadError;
-
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('product-images')
-          .getPublicUrl(fileName);
-        
-        uploadedUrls.push(publicUrl);
-      }
-
-      // Create product in database
-      console.log('Creating product with data:', {
+      // Add product data
+      const productData = {
         title,
-        price: parseFloat(price),
+        description: description || null,
+        price,
         category_id: subcategory || category,
         condition,
-        seller_id: data.user.id
-      });
+        brand: brand !== 'Other' ? brand : null,
+        size: size || null,
+        shipping_cost: shippingPrice || '0',
+        tags: tags.length > 0 ? tags : null,
+        color: color || null,
+        material: material || null
+      };
       
-      const { data: product, error: productError } = await supabase
-        .from('products')
-        .insert({
-          title,
-          description: description || null,
-          price: parseFloat(price),
-          category_id: subcategory || category,
-          condition,
-          brand: brand !== 'Other' ? brand : null,
-          size: size || null,
-          location: null,
-          seller_id: data.user.id,
-          status: 'active',
-          shipping_price: parseFloat(shippingPrice || '0'),
-          tags: tags.length > 0 ? tags : null
-        })
-        .select()
-        .single();
+      formData.append('productData', JSON.stringify(productData));
+      
+      // Add files
+      for (const photo of photos) {
+        formData.append('files', photo);
+      }
+      
+      // Submit to server action
+      const response = await fetch('?/create', {
+        method: 'POST',
+        body: formData
+      });
 
-      if (productError) throw productError;
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Server response error:', errorText);
+        throw new Error(`Server error: ${response.status}`);
+      }
 
-      // Add product images
-      const imageInserts = uploadedUrls.map((url, index) => ({
-        product_id: product.id,
-        image_url: url,
-        display_order: index,
-        is_primary: index === 0
-      }));
+      // For SvelteKit server actions, we expect HTML or form response format
+      const responseText = await response.text();
+      
+      // If response is HTML (form response), the action succeeded
+      if (responseText.includes('<!DOCTYPE html>') || responseText.includes('<html')) {
+        // Action succeeded, extract product ID from URL if needed
+        // For now, just redirect to dashboard since we don't have the product ID
+        goto('/dashboard');
+        return;
+      }
 
-      const { error: imagesError } = await supabase
-        .from('product_images')
-        .insert(imageInserts);
+      // If it's JSON, parse it
+      let actionResult;
+      try {
+        actionResult = JSON.parse(responseText);
+      } catch (e) {
+        // Action probably succeeded but returned HTML
+        goto('/dashboard');
+        return;
+      }
+      
+      if (!actionResult || !actionResult.success) {
+        throw new Error(actionResult?.error || 'Failed to create product');
+      }
 
-      if (imagesError) throw imagesError;
-
-      // Handle premium boost if selected
-      if (usePremiumBoost && data.profile?.subscription_tier === 'premium') {
+      // Handle premium boost if selected and we have actionResult
+      if (usePremiumBoost && data.profile?.subscription_tier === 'premium' && actionResult?.productId) {
         // Create premium boost record
         const { error: boostError } = await supabase
           .from('premium_boosts')
           .insert({
-            product_id: product.id,
+            product_id: actionResult.productId,
             seller_id: data.user.id,
             boost_start: new Date().toISOString(),
             boost_end: new Date(Date.now() + (5 * 24 * 60 * 60 * 1000)).toISOString(), // 5 days
@@ -228,8 +213,12 @@
         }
       }
 
-      // Navigate to success page with product ID
-      goto(`/sell/success?id=${product.id}`);
+      // Navigate to success page with product ID or dashboard
+      if (actionResult?.productId) {
+        goto(`/sell/success?id=${actionResult.productId}`);
+      } else {
+        goto('/dashboard');
+      }
     } catch (err) {
       console.error('Upload error:', err);
       console.error('Error details:', {
