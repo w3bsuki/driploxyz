@@ -9,3 +9,4 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
   }
 
   throw redirect(302, `/profile/${user.id}`);
+};
