@@ -25,14 +25,8 @@ export const actions: Actions = {
     
     const { email, password } = form.data as { email: string; password: string };
     
-    // Production debugging
-    if (process.env.NODE_ENV === 'production') {
-      console.log('[LOGIN_ATTEMPT]', {
-        email,
-        timestamp: new Date().toISOString(),
-        origin: url.origin
-      });
-    }
+    // Minimal production logging
+    console.log('[LOGIN_ATTEMPT]', { email: email.substring(0, email.indexOf('@')), origin: url.origin });
 
     let data, error;
     
@@ -74,33 +68,14 @@ export const actions: Actions = {
         .eq('id', data.user.id)
         .single();
       
-      // Log for debugging on Vercel
-      console.log('[LOGIN_DEBUG]', { 
-        userId: data.user.id, 
-        profile, 
-        profileError,
-        onboardingCompleted: profile?.onboarding_completed 
-      });
-      
-      // If profile doesn't exist, send to onboarding
-      if (!profile) {
-        console.log('[LOGIN_REDIRECT] No profile found, sending to onboarding');
+      // Handle onboarding redirection
+      if (!profile || profile.onboarding_completed !== true) {
         throw redirect(303, '/onboarding');
       }
       
-      // If onboarding_completed is null or false, send to onboarding
-      if (profile.onboarding_completed !== true) {
-        console.log('[LOGIN_REDIRECT] Onboarding not completed, sending to onboarding');
-        throw redirect(303, '/onboarding');
-      }
-      
-      // Otherwise redirect to home page
-      console.log('[LOGIN_REDIRECT] Login successful, redirecting to home');
-      // Use 302 for temporary redirect to ensure browser doesn't cache
       throw redirect(302, '/');
     }
     
-    console.error('[LOGIN_ERROR] No user data returned');
     return setError(form, '', 'Authentication failed. Please try again.');
   }
 };

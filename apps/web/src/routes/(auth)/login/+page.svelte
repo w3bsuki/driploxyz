@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { superForm } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { LoginSchema } from '$lib/validation/auth.js';
@@ -12,14 +11,7 @@
     validators: zodClient(LoginSchema),
     resetForm: false,
     taintedMessage: null,
-    validationMethod: 'oninput',
-    onResult: ({ result }) => {
-      console.log('[LOGIN_FORM] Result:', result);
-      if (result.type === 'redirect') {
-        // Handle redirect manually to ensure auth state is updated
-        goto(result.location);
-      }
-    }
+    validationMethod: 'oninput'
   });
 </script>
 

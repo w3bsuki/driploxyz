@@ -16,7 +16,7 @@ const config = {
 			}
 		}),
 		csrf: {
-			checkOrigin: false // Required for form actions in production
+			checkOrigin: true // Enable CSRF protection for security
 		},
 		// Ensure form actions work correctly
 		serviceWorker: {

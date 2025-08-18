@@ -7,7 +7,9 @@
       "mcp__supabase__execute_sql",
       "Bash(pnpm build:*)",
       "Bash(pnpm dev:*)",
-      "mcp__supabase__list_tables"
+      "mcp__supabase__list_tables",
+      "WebFetch(domain:depop.com)",
+      "Bash(git add:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

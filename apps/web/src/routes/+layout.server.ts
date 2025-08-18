@@ -13,13 +13,9 @@ const REDIRECT_PATHS_TO_SKIP = [
 export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase }, url }) => {
   const { session, user } = await safeGetSession();
 
-  // Production debugging
-  if (process.env.NODE_ENV === 'production') {
-    console.log('[LAYOUT_LOAD]', {
-      path: url.pathname,
-      hasSession: !!session,
-      userId: user?.id?.substring(0, 8)
-    });
+  // Minimal production logging
+  if (process.env.NODE_ENV === 'production' && !session) {
+    console.log('[AUTH_ISSUE] No session found for:', url.pathname);
   }
 
   let profile = null;
@@ -33,7 +29,7 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
         .single();
       
       if (profileError && profileError.code !== 'PGRST116') {
-        console.error('[PROFILE_FETCH_ERROR]', profileError);
+        console.error('[PROFILE_ERROR]', { code: profileError.code, message: profileError.message });
       }
       
       profile = data;

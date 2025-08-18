@@ -3,6 +3,7 @@ import { browser } from '$app/environment';
 import type { User, Session, SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database.types';
 import type { AuthState } from '$lib/auth';
+import { canSell as canSellHelper } from '$lib/auth';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -34,15 +35,7 @@ export const isSeller = derived(profile, ($profile) =>
   $profile?.role === 'seller' || $profile?.role === 'admin'
 );
 
-export const canSell = derived(profile, ($profile) => {
-  if (!$profile) return false;
-  return (
-    ($profile.role === 'seller' || $profile.role === 'admin') &&
-    !!$profile.full_name &&
-    !!$profile.username &&
-    !!$profile.location
-  );
-});
+export const canSell = derived(profile, ($profile) => canSellHelper($profile));
 
 export const displayName = derived(profile, ($profile) => {
   if (!$profile) return 'Anonymous';

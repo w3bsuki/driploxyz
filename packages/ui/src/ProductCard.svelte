@@ -83,37 +83,10 @@
       soldAt={product.sold_at} 
     />
     
-    <!-- Condition Badge Top Left -->
-    <div class="absolute top-2 left-2">
-      <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-bold shadow-lg {conditionColors[product.condition]}">
-        {conditionLabels[product.condition] || product.condition}
-      </span>
-    </div>
-    
-    <!-- Heart/Favorite Button Top Right -->
-    {#if onFavorite}
-      <button 
-        onclick={handleFavorite}
-        class="absolute top-2 right-2 p-1.5 rounded-full bg-white/90 backdrop-blur shadow-sm hover:shadow-md transition-shadow"
-        aria-label={translations.addToFavorites}
-      >
-        <svg 
-          class="w-4 h-4 transition-colors {favorited ? 'text-red-500 fill-current' : 'text-gray-700 hover:text-red-500'}" 
-          viewBox="0 0 20 20"
-        >
-          <path 
-            fill-rule="evenodd" 
-            d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" 
-            clip-rule="evenodd" 
-          />
-        </svg>
-      </button>
-    {/if}
-    
-    <!-- Seller Avatar Bottom Left -->
+    <!-- Seller Avatar Bottom Left on Image -->
     <div class="absolute bottom-2 left-2">
-      <button 
-        class="flex items-center bg-white/90 backdrop-blur rounded-full shadow-sm transition-all duration-200 ease-out {showSellerName ? 'pr-3' : ''}"
+      <div 
+        class="flex items-center bg-white/90 backdrop-blur rounded-full shadow-sm transition-all duration-200 ease-out cursor-pointer {showSellerName ? 'pr-3' : ''}"
         onmouseenter={() => showSellerName = true}
         onmouseleave={() => showSellerName = false}
         onclick={(e) => e.stopPropagation()}
@@ -122,38 +95,69 @@
           <Avatar 
             src={product.sellerAvatar} 
             name={product.sellerName} 
-            size="xs" 
+            size="xs"
+            onclick={(e) => e.stopPropagation()}
           />
         </div>
         {#if showSellerName}
-          <span class="text-xs font-medium text-gray-700 ml-1.5 whitespace-nowrap overflow-hidden">
+          <span class="text-xs font-medium text-gray-700 ml-1.5 whitespace-nowrap">
             {product.sellerName || translations.unknownSeller}
             {#if product.sellerRating !== undefined && product.sellerRating !== null}
               <span class="text-amber-600 ml-1">★{product.sellerRating.toFixed(1)}</span>
             {/if}
           </span>
         {/if}
-      </button>
+      </div>
+    </div>
+    
+    <!-- Condition Badge Bottom Right on Image -->
+    <div class="absolute bottom-2 right-2">
+      <span class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold shadow-lg {conditionColors[product.condition]}">
+        {conditionLabels[product.condition] || product.condition}
+      </span>
     </div>
     
   </div>
   
-  <div class="p-2">
-    <!-- Category Label (MEN/WOMEN/KIDS) -->
-    {#if product.category}
-      <div class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">{product.category}</div>
-    {/if}
+  <div class="p-3 space-y-1">
+    <!-- Top Row: Category and Wishlist -->
+    <div class="flex items-center justify-between">
+      {#if product.category}
+        <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{product.category}</span>
+      {:else}
+        <span></span>
+      {/if}
+      
+      {#if onFavorite}
+        <button 
+          onclick={handleFavorite}
+          class="p-0.5 hover:bg-gray-100 rounded-full transition-colors -mr-1"
+          aria-label={translations.addToFavorites}
+        >
+          <svg 
+            class="w-4 h-4 transition-colors {favorited ? 'text-red-500 fill-current' : 'text-gray-400 hover:text-red-500'}" 
+            viewBox="0 0 20 20"
+          >
+            <path 
+              fill-rule="evenodd" 
+              d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" 
+              clip-rule="evenodd" 
+            />
+          </svg>
+        </button>
+      {/if}
+    </div>
     
     <!-- Product Title -->
-    <h3 class="font-semibold text-sm text-gray-900 leading-[1.2] truncate">{product.title}</h3>
+    <h3 class="font-semibold text-sm text-gray-900 leading-tight truncate">{product.title}</h3>
     
     <!-- Subcategory, Brand and Size - SINGLE ROW -->
-    <div class="text-xs text-gray-500 mt-0.5 truncate">
+    <div class="text-xs text-gray-500 truncate">
       {#if product.subcategory}<span class="uppercase">{product.subcategory}</span>{/if}{#if product.subcategory && (product.brand || product.size)}<span class="mx-1">•</span>{/if}{#if product.brand}<span class="font-medium text-gray-600">{product.brand}</span>{/if}{#if product.brand && product.size}<span class="mx-1">•</span>{/if}{#if product.size}Size {product.size}{/if}
     </div>
     
     <!-- Price -->
-    <div class="mt-2">
+    <div class="pt-1">
       <span class="text-base font-bold text-gray-900">
         {translations.formatPrice ? translations.formatPrice(product.price) : `${translations.currency}${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}`}
       </span>

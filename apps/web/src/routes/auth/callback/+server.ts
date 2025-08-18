@@ -5,15 +5,8 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
   const code = url.searchParams.get('code');
   const next = url.searchParams.get('next') ?? '/';
   
-  // Production debugging
-  if (process.env.NODE_ENV === 'production') {
-    console.log('[AUTH_CALLBACK]', {
-      hasCode: !!code,
-      next,
-      origin: url.origin,
-      fullUrl: url.toString()
-    });
-  }
+  // Minimal callback logging
+  console.log('[AUTH_CALLBACK]', { hasCode: !!code, next });
 
   if (code) {
     try {
@@ -29,7 +22,6 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
       }
       
       if (data.session) {
-        console.log('[AUTH_CALLBACK_SUCCESS] Session created, redirecting to:', next);
         // Ensure proper redirect path
         const redirectPath = next.startsWith('/') ? next : `/${next}`;
         throw redirect(303, redirectPath);
@@ -44,6 +36,5 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
   }
 
   // No code provided - redirect to login
-  console.log('[AUTH_CALLBACK] No code provided, redirecting to login');
   throw redirect(303, '/login');
 };

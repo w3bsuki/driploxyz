@@ -38,7 +38,13 @@ export function hasRole(profile: Database['public']['Tables']['profiles']['Row']
  * Checks if user can perform seller actions
  */
 export function canSell(profile: Database['public']['Tables']['profiles']['Row'] | null): boolean {
-  return hasRole(profile, 'seller') || hasRole(profile, 'admin');
+  if (!profile) return false;
+  return (
+    (profile.role === 'seller' || profile.role === 'admin') &&
+    !!profile.full_name &&
+    !!profile.username &&
+    !!profile.location
+  );
 }
 
 /**
@@ -107,13 +113,6 @@ export async function signOut(supabase: SupabaseClient<Database>) {
   }
 }
 
-/**
- * Formats user display name
- */
-export function getDisplayName(profile: Database['public']['Tables']['profiles']['Row'] | null): string {
-  if (!profile) return 'Anonymous';
-  return profile.username || profile.full_name || 'User';
-}
 
 /**
  * Checks if profile is complete enough for selling

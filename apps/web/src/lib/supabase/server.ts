@@ -1,42 +1,24 @@
 import { createServerClient } from '@supabase/ssr';
-import { env } from '$env/dynamic/private';
-import { env as publicEnv } from '$env/dynamic/public';
+import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { RequestEvent } from '@sveltejs/kit';
 
-/**
- * Create a Supabase client for server-side use with service role key
- * This bypasses RLS and should only be used in secure server contexts
- */
-export const createServiceClient = () => {
-  if (!publicEnv.PUBLIC_SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('Supabase environment variables not configured');
-  }
-  
-  return createServerClient(
-    publicEnv.PUBLIC_SUPABASE_URL,
-    env.SUPABASE_SERVICE_ROLE_KEY,
-    {
-      cookies: {
-        get: () => undefined,
-        set: () => {},
-        remove: () => {},
-      },
-    }
-  );
-};
+// Service role client moved to separate .server.js file for security
+// This ensures it's never bundled in client code
+// Import from '$lib/server/supabase.server.js' instead
 
 /**
  * Create a Supabase client for server-side use with anon key
  * This respects RLS policies and should be used for user-facing operations
  */
-export const createClient = (event?: RequestEvent) => {
-  if (!publicEnv.PUBLIC_SUPABASE_URL || !publicEnv.PUBLIC_SUPABASE_ANON_KEY) {
+export const createServerSupabaseClient = (event?: RequestEvent) => {
+  if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
     throw new Error('Supabase environment variables not configured');
   }
   
   return createServerClient(
-    publicEnv.PUBLIC_SUPABASE_URL,
-    publicEnv.PUBLIC_SUPABASE_ANON_KEY,
+    PUBLIC_SUPABASE_URL,
+    PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         get: (key) => event?.cookies.get(key),

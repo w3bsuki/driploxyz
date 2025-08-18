@@ -1,7 +1,10 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createClient } from '$lib/supabase/server';
+import { createServerSupabaseClient } from '$lib/supabase/server';
 import { SubscriptionService } from '$lib/services/subscriptions.js';
+import { env } from '$env/dynamic/private';
+
+const DEBUG = env.DEBUG === 'true';
 
 export const POST: RequestHandler = async (event) => {
   try {
@@ -11,7 +14,7 @@ export const POST: RequestHandler = async (event) => {
       return json({ error: 'Subscription ID is required' }, { status: 400 });
     }
 
-    const supabase = createClient(event);
+    const supabase = createServerSupabaseClient(event);
     
     // Get the current user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -31,7 +34,7 @@ export const POST: RequestHandler = async (event) => {
     return json({ success: true });
 
   } catch (error) {
-    console.error('Error canceling subscription:', error);
+    if (DEBUG) console.error('[Cancel] Internal error:', error);
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 };

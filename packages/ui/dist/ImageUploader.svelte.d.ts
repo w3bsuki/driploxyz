@@ -6,6 +6,12 @@ interface Props {
     onImagesChange?: (images: string[]) => void;
     onError?: (error: string) => void;
     disabled?: boolean;
+    convertToWebP?: boolean;
+    webpQuality?: number;
+    maxDimensions?: {
+        width: number;
+        height: number;
+    };
     class?: string;
 }
 declare const ImageUploader: import("svelte").Component<Props, {}, "">;

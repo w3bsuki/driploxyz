@@ -5,5 +5,5 @@ import type { Database } from '$lib/types/database.types';
 /**
  * Create a Supabase client for use in the browser
  */
-export const createClient = () =>
+export const createBrowserSupabaseClient = () =>
   createBrowserClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);

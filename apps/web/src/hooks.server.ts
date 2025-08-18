@@ -5,21 +5,26 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/publi
 import type { Database } from '$lib/types/database.types';
 import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
+import { DEBUG, SENTRY_DSN } from '$env/static/private';
 
-// Initialize Sentry
-Sentry.init({
-  dsn: '',
-  environment: process.env.NODE_ENV || 'development',
-  tracesSampleRate: 1.0,
-});
+// Debug flag for controlled logging - from environment
+const isDebug = DEBUG === 'true';
+
+// Only initialize Sentry if DSN is present
+if (SENTRY_DSN) {
+  Sentry.init({
+    dsn: SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+  });
+}
 
 const supabase: Handle = async ({ event, resolve }) => {
-  // Production logging for debugging
-  const isProd = process.env.NODE_ENV === 'production';
+  // Controlled debug logging
   const userAgent = event.request.headers.get('user-agent') || '';
   const isMobile = /Mobile|Android|iPhone|iPad/i.test(userAgent);
   
-  if (isProd) {
+  if (isDebug) {
     console.log('[HOOK_START]', {
       path: event.url.pathname,
       method: event.request.method,
@@ -53,14 +58,14 @@ const supabase: Handle = async ({ event, resolve }) => {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              // Mobile Safari fix: less restrictive cookie settings
+              // Production-compatible cookie settings
               event.cookies.set(name, value, { 
                 ...options,
                 path: '/',
                 sameSite: 'lax',
                 secure: event.url.protocol === 'https:',
-                // Remove httpOnly for auth cookies to prevent mobile issues
-                httpOnly: options?.httpOnly !== false
+                httpOnly: true,
+                maxAge: 60 * 60 * 24 * 7 // 1 week
               });
             });
           },
@@ -68,12 +73,14 @@ const supabase: Handle = async ({ event, resolve }) => {
       }
     );
   } catch (err) {
-    console.error('[SUPABASE_INIT_ERROR]', {
-      error: err,
-      isMobile,
-      userAgent: userAgent.substring(0, 50),
-      path: event.url.pathname
-    });
+    if (isDebug) {
+      console.error('[SUPABASE_INIT_ERROR]', {
+        error: err,
+        isMobile,
+        userAgent: userAgent.substring(0, 50),
+        path: event.url.pathname
+      });
+    }
     throw error(500, 'Failed to initialize authentication');
   }
 
@@ -98,13 +105,13 @@ const supabase: Handle = async ({ event, resolve }) => {
       } = await event.locals.supabase.auth.getUser();
 
       if (error || !user) {
-        if (isProd) console.log('[AUTH] JWT validation failed');
+        if (DEBUG) console.log('[AUTH] JWT validation failed');
         return { session: null, user: null };
       }
 
       return { session, user };
     } catch (err) {
-      console.error('[AUTH_ERROR]', err);
+      if (DEBUG) console.error('[AUTH_ERROR]', err);
       return { session: null, user: null };
     }
   };
@@ -139,13 +146,19 @@ const authGuard: Handle = async ({ event, resolve }) => {
     }
   } catch (err) {
     if (err instanceof redirect) throw err;
-    console.error('[AUTH_GUARD_ERROR]', err);
+    if (DEBUG) console.error('[AUTH_GUARD_ERROR]', err);
   }
 
   return resolve(event);
 };
 
-export const handle = sequence(sentryHandle(), supabase, authGuard);
+export const handle = SENTRY_DSN ? sequence(sentryHandle(), supabase, authGuard) : sequence(supabase, authGuard);
 
-// Sentry error handler
-export const handleError: HandleServerError = handleErrorWithSentry();
+// Sentry error handler (only if DSN configured)
+export const handleError: HandleServerError = SENTRY_DSN ? handleErrorWithSentry() : (async ({ error, event }) => {
+  // Always log critical errors, but only details in debug mode
+  console.error('[SERVER_ERROR]', isDebug ? error : error.message);
+  return {
+    message: 'Internal Server Error'
+  };
+});

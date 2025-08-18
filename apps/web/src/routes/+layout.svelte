@@ -30,90 +30,28 @@
   const supabase = $derived(data?.supabase);
   const isAuthPage = $derived($page.route.id?.includes('(auth)'));
 
-  // Initialize auth stores with timeout protection
+  // SSR-friendly auth initialization - no complex client-side logic
   $effect(() => {
-    // Set a timeout to prevent infinite loading state
-    const loadingTimeout = setTimeout(() => {
-      if ($authLoading) {
-        console.warn('[AUTH] Loading timeout - forcing auth state resolution');
-        authLoading.set(false);
-      }
-    }, 5000); // 5 second timeout
-    
-    try {
-      if (data?.user !== undefined) {
-        user.set(data.user);
-      }
-      if (data?.session !== undefined) {
-        session.set(data.session);
-      }
-      if (data?.profile !== undefined) {
-        profile.set(data.profile);
-      }
-      if (data?.supabase) {
-        setSupabaseClient(data.supabase);
-      }
-      authLoading.set(false);
-    } catch (error) {
-      console.error('[AUTH_INIT_ERROR]', error);
-      authLoading.set(false);
-    }
-    
-    // Clear timeout if auth loads successfully
-    return () => clearTimeout(loadingTimeout);
+    // Simply sync server data to stores without complex initialization
+    if (data?.user !== undefined) user.set(data.user);
+    if (data?.session !== undefined) session.set(data.session);  
+    if (data?.profile !== undefined) profile.set(data.profile);
+    if (data?.supabase) setSupabaseClient(data.supabase);
+    authLoading.set(false);
   });
 
   onMount(async () => {
+    if (!supabase) return;
     
-    if (!supabase) {
-      console.error('[LAYOUT] No Supabase client available');
-      authLoading.set(false); // Ensure we don't stay in loading state
-      return;
-    }
-    
-    try {
-      // If we have a user but no profile, fetch the profile immediately
-      if (data?.user && !data?.profile) {
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', data.user.id)
-          .single();
-        
-        if (profileError) {
-          console.error('[PROFILE_FETCH_ERROR]', profileError);
-        } else if (profileData) {
-          profile.set(profileData);
-        }
+    // Set up auth state listener for session changes
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {
+      // Only invalidate if session actually changed
+      if (newSession?.expires_at !== data?.session?.expires_at) {
+        invalidate('supabase:auth');
       }
-      
-      const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {
-        console.log('[AUTH_STATE_CHANGE]', event, newSession?.user?.id?.substring(0, 8));
-        
-        const currentSession = session.subscribe ? undefined : data?.session;
-        if (newSession?.expires_at !== currentSession?.expires_at) {
-          invalidate('supabase:auth');
-        }
-        
-        // Handle specific auth events
-        if (event === 'SIGNED_IN') {
-          console.log('[AUTH] User signed in');
-          authLoading.set(false);
-        } else if (event === 'SIGNED_OUT') {
-          console.log('[AUTH] User signed out');
-          authLoading.set(false);
-        } else if (event === 'TOKEN_REFRESHED') {
-          console.log('[AUTH] Token refreshed');
-        } else if (event === 'USER_UPDATED') {
-          console.log('[AUTH] User updated');
-        }
-      });
+    });
 
-      return () => authListener.subscription.unsubscribe();
-    } catch (error) {
-      console.error('[LAYOUT_MOUNT_ERROR]', error);
-      authLoading.set(false); // Ensure we don't stay in loading state
-    }
+    return () => authListener.subscription.unsubscribe();
   });
 </script>
 

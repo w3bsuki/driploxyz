@@ -7,6 +7,9 @@
     onImagesChange?: (images: string[]) => void;
     onError?: (error: string) => void;
     disabled?: boolean;
+    convertToWebP?: boolean; // Auto-convert to WebP for listings
+    webpQuality?: number; // WebP quality (0-1)
+    maxDimensions?: { width: number; height: number }; // Max dimensions for resize
     class?: string;
   }
 
@@ -18,6 +21,9 @@
     onImagesChange,
     onError,
     disabled = false,
+    convertToWebP = true, // Default to true for listings
+    webpQuality = 0.85, // High quality WebP
+    maxDimensions = { width: 1920, height: 1920 }, // Max dimensions for listings
     class: className = ''
   }: Props = $props();
 
@@ -96,6 +102,28 @@
   }
 
   async function processImage(file: File): Promise<string> {
+    if (convertToWebP && file.type !== 'image/webp') {
+      try {
+        const webpBlob = await convertToWebPFormat(file);
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof reader.result === 'string') {
+              resolve(reader.result);
+            } else {
+              reject(new Error('Failed to read WebP file'));
+            }
+          };
+          reader.onerror = () => reject(new Error('Failed to read WebP file'));
+          reader.readAsDataURL(webpBlob);
+        });
+      } catch (error) {
+        // Fallback to original if WebP conversion fails
+        console.warn('WebP conversion failed, using original:', error);
+      }
+    }
+    
+    // Original processing or fallback
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {
@@ -107,6 +135,64 @@
       };
       reader.onerror = () => reject(new Error('Failed to read file'));
       reader.readAsDataURL(file);
+    });
+  }
+
+  async function convertToWebPFormat(file: File): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      if (!ctx) {
+        reject(new Error('Cannot get canvas context'));
+        return;
+      }
+
+      img.onload = () => {
+        // Calculate dimensions with max constraints
+        let { width, height } = img;
+        
+        if (maxDimensions) {
+          const aspectRatio = width / height;
+          if (width > maxDimensions.width) {
+            width = maxDimensions.width;
+            height = width / aspectRatio;
+          }
+          if (height > maxDimensions.height) {
+            height = maxDimensions.height;
+            width = height * aspectRatio;
+          }
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Draw and convert to WebP
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error('WebP conversion failed'));
+            }
+          },
+          'image/webp',
+          webpQuality
+        );
+        
+        // Clean up
+        URL.revokeObjectURL(img.src);
+      };
+      
+      img.onerror = () => {
+        URL.revokeObjectURL(img.src);
+        reject(new Error('Failed to load image'));
+      };
+      
+      img.src = URL.createObjectURL(file);
     });
   }
 
@@ -160,6 +246,7 @@
             {#if index > 0}
               <button
                 onclick={() => reorderImages(index, index - 1)}
+                aria-label="Move image left"
                 class="p-1.5 bg-white/20 hover:bg-white/30 rounded-full text-white"
                 title="Move left"
               >
@@ -172,6 +259,7 @@
             <!-- Delete -->
             <button
               onclick={() => removeImage(index)}
+              aria-label="Remove image"
               class="p-1.5 bg-red-500/80 hover:bg-red-500 rounded-full text-white"
               title="Remove image"
             >
@@ -184,6 +272,7 @@
             {#if index < images.length - 1}
               <button
                 onclick={() => reorderImages(index, index + 1)}
+                aria-label="Move image right"
                 class="p-1.5 bg-white/20 hover:bg-white/30 rounded-full text-white"
                 title="Move right"
               >
@@ -207,16 +296,17 @@
 
   <!-- Upload Area -->
   {#if images.length < maxImages}
-    <div
-      class="border-2 border-dashed rounded-lg p-6 text-center transition-colors
+    <button
+      class="w-full border-2 border-dashed rounded-lg p-6 text-center transition-colors
         {dragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300'}
         {disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-gray-400 cursor-pointer'}"
       ondrop={handleDrop}
       ondragover={handleDragOver}
       ondragleave={handleDragLeave}
       onclick={openFileDialog}
-      role="button"
-      tabindex="0"
+      onkeydown={(e) => e.key === 'Enter' && openFileDialog()}
+      aria-label="Upload images"
+      {disabled}
     >
       {#if uploading}
         <div class="flex flex-col items-center">
@@ -240,13 +330,16 @@
           <div class="text-xs text-gray-500 space-y-1">
             <p>Up to {maxImages} images, max {maxSize}MB each</p>
             <p>Supported: JPG, PNG, WebP</p>
+            {#if convertToWebP}
+              <p class="text-green-600 font-medium">✓ Auto-converted to WebP for optimal quality</p>
+            {/if}
             {#if images.length === 0}
               <p class="text-blue-600 font-medium">First image will be the main photo</p>
             {/if}
           </div>
         </div>
       {/if}
-    </div>
+    </button>
   {/if}
 
   <!-- Image Count -->

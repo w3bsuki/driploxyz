@@ -1,32 +1,49 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createClient } from '$lib/supabase/server';
+import { createServerSupabaseClient } from '$lib/supabase/server';
 import { SubscriptionService } from '$lib/services/subscriptions.js';
+import { env } from '$env/dynamic/private';
+
+const DEBUG = env.DEBUG === 'true';
+
+// Configuration constants
+const EARLY_BIRD_LIMIT = 100;
+const DISCOUNT_PERCENT = 50;
 
 export const GET: RequestHandler = async (event) => {
   try {
-    const supabase = createClient(event);
+    const supabase = createServerSupabaseClient(event);
     const subscriptionService = new SubscriptionService(supabase);
     
-    // Return discount eligibility - this can be public information
-    // We check early bird status without requiring authentication
-    const { count } = await supabase
+    // Check early bird eligibility without requiring authentication
+    const { count, error } = await supabase
       .from('user_subscriptions')
       .select('*', { count: 'exact', head: true })
       .gt('discount_percent', 0);
     
-    const EARLY_BIRD_LIMIT = 100;
-    const DISCOUNT_PERCENT = 50;
+    if (error) {
+      if (DEBUG) console.error('[Discount] Database error:', error);
+      return json({ 
+        eligible: false, 
+        discountPercent: 0,
+        error: 'Unable to check discount eligibility' 
+      }, { status: 500 });
+    }
     
     const discountInfo = {
       eligible: (count || 0) < EARLY_BIRD_LIMIT,
-      discountPercent: DISCOUNT_PERCENT
+      discountPercent: DISCOUNT_PERCENT,
+      remaining: Math.max(0, EARLY_BIRD_LIMIT - (count || 0))
     };
 
     return json(discountInfo);
 
   } catch (error) {
-    console.error('Error checking discount eligibility:', error);
-    return json({ error: 'Internal server error' }, { status: 500 });
+    if (DEBUG) console.error('[Discount] Internal error:', error);
+    return json({ 
+      eligible: false, 
+      discountPercent: 0,
+      error: 'Internal server error' 
+    }, { status: 500 });
   }
 };
