@@ -25,8 +25,6 @@ export const actions: Actions = {
     
     const { email, password } = form.data as { email: string; password: string };
     
-    // Minimal production logging
-    console.log('[LOGIN_ATTEMPT]', { email: email.substring(0, email.indexOf('@')), origin: url.origin });
 
     let data, error;
     
@@ -38,17 +36,10 @@ export const actions: Actions = {
       data = response.data;
       error = response.error;
     } catch (e) {
-      console.error('[LOGIN_ERROR] Exception during sign in:', e);
       return setError(form, '', 'Authentication service error. Please try again.');
     }
 
     if (error) {
-      console.error('[LOGIN_ERROR]', {
-        code: error.code,
-        message: error.message,
-        status: error.status
-      });
-      
       // Handle specific error cases
       if (error.message.includes('Invalid login credentials')) {
         return setError(form, '', 'Invalid email or password');

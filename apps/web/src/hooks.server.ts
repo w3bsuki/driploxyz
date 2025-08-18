@@ -20,30 +20,12 @@ if (SENTRY_DSN) {
 }
 
 const supabase: Handle = async ({ event, resolve }) => {
-  // Controlled debug logging
+  // Mobile detection for cookie compatibility
   const userAgent = event.request.headers.get('user-agent') || '';
   const isMobile = /Mobile|Android|iPhone|iPad/i.test(userAgent);
   
-  if (isDebug) {
-    console.log('[HOOK_START]', {
-      path: event.url.pathname,
-      method: event.request.method,
-      userAgent: userAgent.substring(0, 100),
-      isMobile,
-      hasSupabaseUrl: !!PUBLIC_SUPABASE_URL,
-      hasSupabaseKey: !!PUBLIC_SUPABASE_ANON_KEY,
-      cookieCount: event.cookies.getAll().length
-    });
-  }
-  
   // CRITICAL: Fail fast with clear error message
   if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
-    console.error('[CRITICAL] Missing Supabase environment variables', {
-      url: !!PUBLIC_SUPABASE_URL,
-      key: !!PUBLIC_SUPABASE_ANON_KEY,
-      isMobile,
-      userAgent: userAgent.substring(0, 50)
-    });
     throw error(500, 'Server configuration error. Please contact support.');
   }
 
@@ -73,14 +55,6 @@ const supabase: Handle = async ({ event, resolve }) => {
       }
     );
   } catch (err) {
-    if (isDebug) {
-      console.error('[SUPABASE_INIT_ERROR]', {
-        error: err,
-        isMobile,
-        userAgent: userAgent.substring(0, 50),
-        path: event.url.pathname
-      });
-    }
     throw error(500, 'Failed to initialize authentication');
   }
 
@@ -105,13 +79,11 @@ const supabase: Handle = async ({ event, resolve }) => {
       } = await event.locals.supabase.auth.getUser();
 
       if (error || !user) {
-        if (DEBUG) console.log('[AUTH] JWT validation failed');
         return { session: null, user: null };
       }
 
       return { session, user };
     } catch (err) {
-      if (DEBUG) console.error('[AUTH_ERROR]', err);
       return { session: null, user: null };
     }
   };
@@ -146,7 +118,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
     }
   } catch (err) {
     if (err instanceof redirect) throw err;
-    if (DEBUG) console.error('[AUTH_GUARD_ERROR]', err);
+    // Auth guard errors are handled silently
   }
 
   return resolve(event);

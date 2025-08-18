@@ -13,10 +13,6 @@ const REDIRECT_PATHS_TO_SKIP = [
 export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase }, url }) => {
   const { session, user } = await safeGetSession();
 
-  // Minimal production logging
-  if (process.env.NODE_ENV === 'production' && !session) {
-    console.log('[AUTH_ISSUE] No session found for:', url.pathname);
-  }
 
   let profile = null;
   
@@ -28,8 +24,9 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
         .eq('id', user.id)
         .single();
       
+      // Ignore profile not found errors (PGRST116)
       if (profileError && profileError.code !== 'PGRST116') {
-        console.error('[PROFILE_ERROR]', { code: profileError.code, message: profileError.message });
+        throw new Error(`Profile fetch failed: ${profileError.message}`);
       }
       
       profile = data;
@@ -41,12 +38,11 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
         !REDIRECT_PATHS_TO_SKIP.some(path => url.pathname.startsWith(path));
       
       if (shouldRedirect) {
-        console.log('[REDIRECT] Sending to onboarding');
         throw redirect(303, '/onboarding');
       }
     } catch (err) {
       if (err instanceof redirect) throw err;
-      console.error('[PROFILE_ERROR]', err);
+      // Profile errors are handled above
     }
   }
 

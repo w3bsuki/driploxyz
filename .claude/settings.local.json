@@ -9,7 +9,9 @@
       "Bash(pnpm dev:*)",
       "mcp__supabase__list_tables",
       "WebFetch(domain:depop.com)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "WebFetch(domain:vinted.com)",
+      "Bash(find:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
