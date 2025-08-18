@@ -1,12 +1,5 @@
 {
   "buildCommand": "pnpm --filter=web build",
-  "outputDirectory": "apps/web/.svelte-kit",
   "framework": "sveltekit",
-  "regions": ["iad1"],
-  "functions": {
-    "apps/web/.svelte-kit/**": {
-      "runtime": "nodejs20.x"
-    }
-  },
   "installCommand": "pnpm install"
 }
