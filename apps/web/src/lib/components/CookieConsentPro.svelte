@@ -72,6 +72,26 @@
 		{ code: 'it', name: 'Italiano', flag: '🇮🇹' }
 	];
 	
+	// Hide/show bottom navigation
+	function hideBottomNav(hide: boolean) {
+		if (!browser) return;
+		const bottomNav = document.querySelector('.bottom-nav');
+		if (bottomNav) {
+			if (hide) {
+				bottomNav.classList.add('opacity-0', 'pointer-events-none', 'transition-opacity');
+			} else {
+				bottomNav.classList.remove('opacity-0', 'pointer-events-none');
+			}
+		}
+	}
+	
+	// React to banner visibility changes
+	$effect(() => {
+		if (browser) {
+			hideBottomNav(showBanner);
+		}
+	});
+	
 	onMount(async () => {
 		if (!browser) return;
 		
@@ -195,6 +215,7 @@
 		window.dispatchEvent(new CustomEvent('cookieConsent', { detail: consentWithMeta }));
 		onConsentChange?.(consentWithMeta);
 		
+		// Hide banner (bottom nav will be restored automatically via $effect)
 		showBanner = false;
 		showLocaleModal = false;
 	}

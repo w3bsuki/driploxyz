@@ -137,18 +137,6 @@
       window.location.reload();
     }
   }}
-  onConsentChange={(consent) => {
-    console.log('Cookie consent updated:', consent);
-    // Hide bottom nav during cookie consent
-    if (browser) {
-      const bottomNav = document.querySelector('.bottom-nav');
-      if (bottomNav && !consent) {
-        bottomNav.classList.add('hidden');
-      } else if (bottomNav) {
-        bottomNav.classList.remove('hidden');
-      }
-    }
-  }}
 />
 
 <!-- Global Message Notification Toast -->
