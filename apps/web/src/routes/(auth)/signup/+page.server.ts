@@ -1,6 +1,5 @@
 import { redirect, fail } from '@sveltejs/kit';
-import { superValidate, setError } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { superValidate, setError } from 'sveltekit-superforms/server';
 import { SignupSchema } from '$lib/validation/auth.js';
 import type { Actions, PageServerLoad } from './$types';
 import { detectLanguage } from '@repo/i18n';
@@ -10,19 +9,19 @@ export const load: PageServerLoad = async ({ locals: { session } }) => {
     throw redirect(303, '/');
   }
   
-  const form = await superValidate(zod(SignupSchema));
+  const form = await superValidate(SignupSchema);
   return { form };
 };
 
 export const actions: Actions = {
   signup: async ({ request, locals: { supabase }, cookies }) => {
-    const form = await superValidate(request, zod(SignupSchema));
+    const form = await superValidate(request, SignupSchema);
     
     if (!form.valid) {
       return fail(400, { form });
     }
     
-    const { email, password, fullName, terms } = form.data;
+    const { email, password, fullName, terms } = form.data as { email: string; password: string; fullName: string; terms: boolean };
     
     // Get user's locale from cookie or Accept-Language header
     const localeCookie = cookies.get('locale');

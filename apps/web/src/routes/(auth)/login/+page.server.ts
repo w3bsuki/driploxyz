@@ -1,6 +1,5 @@
 import { redirect, fail } from '@sveltejs/kit';
-import { superValidate, setError } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { superValidate, setError } from 'sveltekit-superforms/server';
 import { LoginSchema } from '$lib/validation/auth.js';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -9,19 +8,19 @@ export const load: PageServerLoad = async ({ locals: { session } }) => {
     throw redirect(303, '/');
   }
   
-  const form = await superValidate(zod(LoginSchema));
+  const form = await superValidate(LoginSchema);
   return { form };
 };
 
 export const actions: Actions = {
   signin: async ({ request, locals: { supabase } }) => {
-    const form = await superValidate(request, zod(LoginSchema));
+    const form = await superValidate(request, LoginSchema);
     
     if (!form.valid) {
       return fail(400, { form });
     }
     
-    const { email, password } = form.data;
+    const { email, password } = form.data as { email: string; password: string };
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
