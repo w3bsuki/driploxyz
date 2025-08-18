@@ -273,7 +273,7 @@
         <div class="p-4 sm:p-6 border-b border-gray-200">
           <div class="flex justify-between items-center">
             <h2 class="text-lg font-semibold">Recent Orders</h2>
-            <a href="#" onclick={() => activeTab = 'orders'} class="text-sm text-blue-600 hover:underline">View all</a>
+            <button onclick={() => activeTab = 'orders'} class="text-sm text-blue-600 hover:underline">View all</button>
           </div>
         </div>
         <div class="overflow-x-auto">
@@ -314,7 +314,7 @@
       <div>
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-semibold">Your Active Listings</h2>
-          <a href="#" onclick={() => activeTab = 'listings'} class="text-sm text-blue-600 hover:underline">View all</a>
+          <button onclick={() => activeTab = 'listings'} class="text-sm text-blue-600 hover:underline">View all</button>
         </div>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {#each activeListings() as product}
@@ -349,7 +349,7 @@
             <div class="relative group">
               <ProductCard {product} onclick={() => window.location.href = `/product/${product.id}`} />
               <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button class="p-1 bg-white rounded-full shadow-lg">
+                <button aria-label="Edit product" class="p-1 bg-white rounded-full shadow-lg">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
@@ -513,17 +513,17 @@
           <h2 class="text-lg font-semibold mb-4">Shop Settings</h2>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Shop Name</label>
-              <input type="text" value={data.profile?.username || ''} class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+              <label for="shop-name" class="block text-sm font-medium text-gray-700 mb-1">Shop Name</label>
+              <input id="shop-name" type="text" value={data.profile?.username || ''} class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Shop Description</label>
-              <textarea rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Tell buyers about your shop..."></textarea>
+              <label for="shop-description" class="block text-sm font-medium text-gray-700 mb-1">Shop Description</label>
+              <textarea id="shop-description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Tell buyers about your shop..."></textarea>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Vacation Mode</label>
               <div class="flex items-center space-x-3">
-                <button class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200">
+                <button aria-label="Toggle vacation mode" class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200">
                   <span class="inline-block h-4 w-4 transform rounded-full bg-white transition translate-x-1"></span>
                 </button>
                 <span class="text-sm text-gray-600">Your shop is currently active</span>
@@ -536,16 +536,16 @@
           <h2 class="text-lg font-semibold mb-4">Shipping Settings</h2>
           <div class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Processing Time</label>
-              <select class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+              <label for="processing-time" class="block text-sm font-medium text-gray-700 mb-1">Processing Time</label>
+              <select id="processing-time" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 <option>1-2 business days</option>
                 <option>3-5 business days</option>
                 <option>1 week</option>
               </select>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Default Shipping Price</label>
-              <input type="number" value="8.99" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+              <label for="shipping-price" class="block text-sm font-medium text-gray-700 mb-1">Default Shipping Price</label>
+              <input id="shipping-price" type="number" value="8.99" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
             </div>
           </div>
         </div>
@@ -561,8 +561,8 @@
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Payout Schedule</label>
-              <select class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+              <label for="payout-schedule" class="block text-sm font-medium text-gray-700 mb-1">Payout Schedule</label>
+              <select id="payout-schedule" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
                 <option>Daily</option>
                 <option>Weekly</option>
                 <option>Monthly</option>

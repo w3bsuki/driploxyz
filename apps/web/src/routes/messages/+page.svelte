@@ -27,8 +27,6 @@
   onMount(() => {
     if (!data.user || !data.supabase) return;
     
-    console.log('Setting up real-time subscription for user:', data.user.id);
-    
     // Subscribe to new messages
     messageChannel = data.supabase
       .channel('user-messages')
@@ -41,7 +39,6 @@
           filter: `receiver_id=eq.${data.user.id}`
         },
         async (payload) => {
-          console.log('New message received:', payload);
           // Force reload the page data
           await invalidate('messages:all');
         }
@@ -55,30 +52,23 @@
           filter: `sender_id=eq.${data.user.id}`
         },
         async (payload) => {
-          console.log('Own message sent:', payload);
           // Small delay to ensure DB transaction completes
           setTimeout(async () => {
             await invalidate('messages:all');
           }, 100);
         }
       )
-      .subscribe((status) => {
-        console.log('Realtime subscription status:', status);
-      });
+      .subscribe();
   });
   
   onDestroy(() => {
     if (messageChannel) {
-      console.log('Cleaning up real-time subscription');
       data.supabase?.removeChannel(messageChannel);
     }
   });
   
   // CONVERSATION LOGIC WITH PRODUCT CONTEXT
   const allConversations = $derived(() => {
-    console.log('=== BUILDING CONVERSATIONS WITH PRODUCT CONTEXT ===');
-    console.log('data.messages?.length:', data.messages?.length);
-    console.log('data.conversationParam:', data.conversationParam);
     
     const convMap = new Map();
     
@@ -152,8 +142,6 @@
       new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime()
     );
     
-    console.log('Built conversations:');
-    result.forEach(conv => console.log(`- ${conv.userName} (${conv.id}): ${conv.messages?.length} messages`));
     
     return result;
   });
@@ -201,7 +189,6 @@
         sellerId;
       const conversationKey = `${otherUserId}__${productId || 'general'}`;
       selectedConversation = conversationKey;
-      console.log('Auto-selected conversation with product context:', conversationKey);
     }
   });
   let messageText = $state('');
@@ -211,20 +198,14 @@
   let typingUsers = $state<Record<string, string>>({});
   
   const selectedConvMessages = $derived(() => {
-    console.log('=== SELECTED CONV MESSAGES ===');
-    console.log('selectedConversation:', selectedConversation);
     if (!selectedConversation) {
-      console.log('No selected conversation');
       return [];
     }
     const convs = conversations();
-    console.log('All conversations:', convs.length);
     const conv = convs.find(c => c.id === selectedConversation);
-    console.log('Found conv:', conv?.userName, 'with', conv?.messages?.length, 'messages');
     const messages = conv?.messages?.sort((a, b) => 
       new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     ) || [];
-    console.log('Returning', messages.length, 'messages');
     return messages;
   });
   
@@ -261,14 +242,8 @@
   }
 
   async function sendMessage() {
-    console.log('=== SEND MESSAGE DEBUG ===');
-    console.log('messageText:', messageText);
-    console.log('selectedConversation:', selectedConversation);
-    console.log('data.user:', data.user?.id);
-    console.log('data.conversationParam:', data.conversationParam);
     
     if (!messageText.trim() || !selectedConversation || !data.user) {
-      console.log('Validation failed');
       return;
     }
     
@@ -280,9 +255,6 @@
     
     // Extract user ID and product ID from conversation key
     const [recipientId, productId] = selectedConversation.split('__');
-    
-    console.log('recipientId:', recipientId);
-    console.log('productId:', productId);
     
     if (recipientId === data.user.id) {
       alert('Cannot send message to yourself!');
@@ -308,13 +280,9 @@
         content: messageText.trim()
       };
       
-      console.log('Sending message data:', messageData);
-      
       const { error } = await data.supabase
         .from('messages')
         .insert(messageData);
-      
-      console.log('Insert result error:', error);
       
       if (error) {
         throw error;
@@ -324,7 +292,6 @@
       // Force refresh messages
       await invalidate('messages:all');
     } catch (err) {
-      console.error('Message send error:', err);
       alert('Failed to send message: ' + (err?.message || 'Unknown error'));
     }
   }
@@ -408,6 +375,11 @@
     <div class="sm:grid sm:grid-cols-3 lg:grid-cols-4 {selectedConversation ? 'sm:h-[calc(100vh-80px)]' : 'sm:h-[calc(100vh-180px)]'}">
       <!-- Conversations List -->
       <div class="sm:col-span-1 lg:col-span-1 bg-white sm:border-r overflow-y-auto {selectedConversation ? 'hidden sm:block' : ''} {selectedConversation ? '' : 'h-[calc(100vh-160px)] sm:h-auto'}">
+        {#if conversations().length === 0}
+          <div class="p-4 text-center text-gray-500">
+            No conversations yet.
+          </div>
+        {/if}
         {#each conversations() as conv}
           <button
             onclick={() => selectedConversation = conv.id}

@@ -61,6 +61,10 @@
   <div 
     class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 pb-24 sm:pb-4"
     onclick={handleBackdropClick}
+    onkeydown={(e) => e.key === 'Escape' && onclose()}
+    role="dialog"
+    aria-modal="true"
+    tabindex="-1"
   >
     <!-- Dialog -->
     <div class="bg-white rounded-2xl max-w-md w-full max-h-[65vh] sm:max-h-[85vh] overflow-hidden flex flex-col">
@@ -136,7 +140,13 @@
         <h3 class="text-xs sm:text-sm font-semibold text-gray-900 mb-2">Featured Items</h3>
         <div class="grid grid-cols-2 gap-2 sm:gap-3">
           {#each products.length > 0 ? products : mockSellerProducts as product}
-            <div class="cursor-pointer" onclick={() => viewProduct(product.id)} role="button" tabindex="0">
+            <div 
+              class="cursor-pointer w-full text-left" 
+              onclick={() => viewProduct(product.id)}
+              role="button"
+              tabindex="0"
+              onkeydown={(e) => e.key === 'Enter' && viewProduct(product.id)}
+            >
               <div class="relative">
                 <img 
                   src={product.images[0]} 

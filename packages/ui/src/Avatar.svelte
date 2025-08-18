@@ -47,8 +47,8 @@
     if (fallback && fallback.trim() && fallback !== '?') {
       return fallback;
     }
-    // Use name if available
-    if (name && name.trim() && name !== 'Anonymous' && name !== 'User') {
+    // Use name if available - handle various undefined/null/empty cases
+    if (name && typeof name === 'string' && name.trim() && name !== 'Anonymous' && name !== 'User' && name !== 'Unknown User') {
       return name.charAt(0).toUpperCase();
     }
     // Default fallback

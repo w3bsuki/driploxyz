@@ -13,7 +13,13 @@
       "WebFetch(domain:vinted.com)",
       "Bash(find:*)",
       "Bash(git push:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "WebFetch(domain:kit.svelte.dev)",
+      "WebFetch(domain:supabase.com)",
+      "Bash(mv:*)",
+      "WebFetch(domain:svelte.dev)",
+      "Bash(pnpm check-types:*)",
+      "mcp__supabase__get_advisors"
     ]
   },
   "enableAllProjectMcpServers": true,

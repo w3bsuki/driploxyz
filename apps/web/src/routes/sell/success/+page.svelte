@@ -116,8 +116,8 @@
           </svg>
         </div>
         <!-- Pulse rings -->
-        <div class="absolute inset-0 rounded-full bg-green-400 opacity-25 animate-ping" />
-        <div class="absolute inset-0 rounded-full bg-green-400 opacity-25 animate-ping animation-delay-200" />
+        <div class="absolute inset-0 rounded-full bg-green-400 opacity-25 animate-ping"></div>
+        <div class="absolute inset-0 rounded-full bg-green-400 opacity-25 animate-ping animation-delay-200"></div>
       </div>
     </div>
     
@@ -202,7 +202,7 @@
     <div class="mt-8 text-center">
       <p class="text-xs text-gray-500">Redirecting to your listing in a moment...</p>
       <div class="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden max-w-xs mx-auto">
-        <div class="h-full bg-green-500 rounded-full animate-progress" />
+        <div class="h-full bg-green-500 rounded-full animate-progress"></div>
       </div>
     </div>
   </div>

@@ -160,7 +160,7 @@
             />
             <datalist id="brands">
               {#each popularBrands as brand}
-                <option value={brand} />
+                <option value={brand}></option>
               {/each}
             </datalist>
           </div>
@@ -177,7 +177,7 @@
             />
             <datalist id="sizes">
               {#each sizes.clothing as s}
-                <option value={s} />
+                <option value={s}></option>
               {/each}
             </datalist>
           </div>

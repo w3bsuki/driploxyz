@@ -4,9 +4,9 @@ import { stripe } from '$lib/stripe/server.js';
 import { createServiceClient } from '$lib/server/supabase.server';
 import { SubscriptionService } from '$lib/services/subscriptions.js';
 import { STRIPE_WEBHOOK_SECRET } from '$env/static/private';
-import { DEBUG } from '$env/static/private';
+import { dev } from '$app/environment';
 
-const isDebug = DEBUG === 'true';
+const isDebug = dev;
 
 export const POST: RequestHandler = async ({ request }) => {
   const body = await request.text();

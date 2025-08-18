@@ -5,7 +5,9 @@ import { SignupSchema } from '$lib/validation/auth.js';
 import type { Actions, PageServerLoad } from './$types';
 import { detectLanguage } from '@repo/i18n';
 
-export const load: PageServerLoad = async ({ locals: { session } }) => {
+export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
+  const { session } = await safeGetSession();
+  
   if (session) {
     throw redirect(303, '/');
   }
@@ -22,64 +24,79 @@ export const actions: Actions = {
       return fail(400, { form });
     }
     
-    const { email, password, fullName, terms } = form.data as { email: string; password: string; fullName: string; terms: boolean };
+    const { email, password, fullName, terms } = form.data;
     
     // Get user's locale from cookie or Accept-Language header
     const localeCookie = cookies.get('locale');
     const acceptLanguage = request.headers.get('accept-language') || '';
     const userLocale = localeCookie || detectLanguage(acceptLanguage);
 
-    // Create user
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName
+    try {
+      // Create user with proper error handling
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName
+          }
         }
-      }
-    });
+      });
 
-    if (error) {
-      console.error('Sign up error:', error);
-      
-      // Handle specific errors
-      if (error.message.includes('already registered')) {
-        return setError(form, 'email', 'An account with this email already exists');
-      }
-      
-      return setError(form, '', error.message);
-    }
-
-    if (data.user) {
-      // Generate a unique username based on name and user ID
-      const username = `user_${data.user.id.substring(0, 8)}`;
-      
-      // Create profile for the new user with detected locale
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: data.user.id,
-          username,
-          full_name: fullName,
-          locale: userLocale,
-          onboarding_completed: false
-        });
-
-      if (profileError) {
-        console.error('Profile creation error:', profileError);
-        // Continue anyway - profile might already exist
+      if (error) {
+        // Handle specific Supabase auth errors
+        if (error.message.includes('User already registered')) {
+          return setError(form, 'email', 'An account with this email already exists');
+        }
+        if (error.message.includes('Password should be at least')) {
+          return setError(form, 'password', 'Password must be at least 6 characters');
+        }
+        if (error.message.includes('Signup is disabled')) {
+          return setError(form, '', 'Account creation is temporarily disabled');
+        }
+        
+        return setError(form, '', error.message || 'Failed to create account');
       }
 
-      // Don't auto-login - require email verification
+      if (!data.user) {
+        return setError(form, '', 'Failed to create account. Please try again');
+      }
+
+      try {
+        // Generate a unique username based on name and user ID
+        const username = `user_${data.user.id.substring(0, 8)}`;
+        
+        // Create profile for the new user with detected locale
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            username,
+            full_name: fullName,
+            locale: userLocale,
+            onboarding_completed: false
+          });
+
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+          // Continue anyway - profile might already exist or be created by trigger
+        }
+      } catch (profileErr) {
+        console.error('Profile creation failed:', profileErr);
+        // Non-fatal error - continue with signup success
+      }
+
+      // Success - user needs to verify email
       return {
         form,
         success: true,
-        message: 'Account created successfully! Please check your email to verify your account.',
-        email: form.data.email
+        message: 'Account created! Check your email and click the verification link to sign in.',
+        email: email
       };
-    }
 
-    return setError(form, '', 'Unable to create account');
+    } catch (e) {
+      console.error('Signup error:', e);
+      return setError(form, '', 'Account creation service temporarily unavailable');
+    }
   }
 };

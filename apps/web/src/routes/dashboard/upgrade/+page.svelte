@@ -257,7 +257,7 @@
               aria-hidden="true"
               class="absolute inset-x-0 top-0 h-48 rounded-[inherit]"
               style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
-            />
+            ></div>
             
             <div class="mb-8 flex items-center justify-between">
               <div class="text-gray-600 flex items-center gap-2 text-sm font-medium">
@@ -315,7 +315,7 @@
                 aria-hidden="true"
                 class="absolute inset-x-0 top-0 h-48 rounded-[inherit]"
                 style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
-              />
+              ></div>
               
               <div class="mb-8 flex items-center justify-between">
                 <div class="text-gray-600 flex items-center gap-2 text-sm font-medium">
