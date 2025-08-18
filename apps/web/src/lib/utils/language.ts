@@ -58,7 +58,11 @@ export function initializeLanguage() {
   } else {
     // Try to detect from browser language
     try {
-      const browserLang = navigator?.language?.split('-')[0]?.toLowerCase();
+      let browserLang = 'en';
+      if (typeof navigator !== 'undefined' && navigator.language) {
+        browserLang = navigator.language.split('-')[0].toLowerCase();
+      }
+      
       if (browserLang && i18n.isAvailableLanguageTag(browserLang)) {
         i18n.setLanguageTag(browserLang as any);
         setStoredLanguage(browserLang);

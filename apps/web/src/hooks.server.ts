@@ -1,16 +1,15 @@
 import { createServerClient } from '@supabase/ssr';
 import { type Handle, redirect, error, type HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { env } from '$env/dynamic/public';
-import { env as privateEnv } from '$env/dynamic/private';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { Database } from '$lib/types/database.types';
 import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
 
 // Initialize Sentry
 Sentry.init({
-  dsn: env.PUBLIC_SENTRY_DSN,
-  environment: privateEnv.NODE_ENV || 'development',
+  dsn: '',
+  environment: process.env.NODE_ENV || 'development',
   tracesSampleRate: 1.0,
 });
 
@@ -26,17 +25,17 @@ const supabase: Handle = async ({ event, resolve }) => {
       method: event.request.method,
       userAgent: userAgent.substring(0, 100),
       isMobile,
-      hasSupabaseUrl: !!env.PUBLIC_SUPABASE_URL,
-      hasSupabaseKey: !!env.PUBLIC_SUPABASE_ANON_KEY,
+      hasSupabaseUrl: !!PUBLIC_SUPABASE_URL,
+      hasSupabaseKey: !!PUBLIC_SUPABASE_ANON_KEY,
       cookieCount: event.cookies.getAll().length
     });
   }
   
   // CRITICAL: Fail fast with clear error message
-  if (!env.PUBLIC_SUPABASE_URL || !env.PUBLIC_SUPABASE_ANON_KEY) {
+  if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
     console.error('[CRITICAL] Missing Supabase environment variables', {
-      url: !!env.PUBLIC_SUPABASE_URL,
-      key: !!env.PUBLIC_SUPABASE_ANON_KEY,
+      url: !!PUBLIC_SUPABASE_URL,
+      key: !!PUBLIC_SUPABASE_ANON_KEY,
       isMobile,
       userAgent: userAgent.substring(0, 50)
     });
@@ -45,8 +44,8 @@ const supabase: Handle = async ({ event, resolve }) => {
 
   try {
     event.locals.supabase = createServerClient<Database>(
-      env.PUBLIC_SUPABASE_URL,
-      env.PUBLIC_SUPABASE_ANON_KEY,
+      PUBLIC_SUPABASE_URL,
+      PUBLIC_SUPABASE_ANON_KEY,
       {
         cookies: {
           getAll() {
