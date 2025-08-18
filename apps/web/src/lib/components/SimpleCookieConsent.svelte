@@ -28,7 +28,7 @@
 </script>
 
 {#if showBanner}
-	<div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-50 sm:bottom-4 sm:left-4 sm:right-4 sm:rounded-lg sm:max-w-md">
+	<div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg z-[60] sm:bottom-4 sm:left-4 sm:right-auto sm:rounded-lg sm:max-w-md">
 		<div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
 			<p class="text-sm text-gray-600 flex-1">
 				We use cookies to improve your experience. By continuing, you agree to our use of cookies.

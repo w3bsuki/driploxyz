@@ -16,7 +16,11 @@ const config = {
 			}
 		}),
 		csrf: {
-			checkOrigin: false
+			checkOrigin: false // Required for form actions in production
+		},
+		// Ensure form actions work correctly
+		serviceWorker: {
+			register: false
 		}
 	},
 };
