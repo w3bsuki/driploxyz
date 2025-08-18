@@ -19,7 +19,7 @@
 	let selectedSeller = $state<any>(null);
 	let showCategoryDropdown = $state(false);
 	let showCompactSearch = $state(false);
-	let heroSearchElement: HTMLElement;
+	let heroSearchElement: HTMLElement = $state();
 
 	// Language state
 	let currentLang = $state(getStoredLanguage() || 'en');
