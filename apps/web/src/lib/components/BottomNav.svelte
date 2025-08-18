@@ -63,7 +63,7 @@
   }
 </script>
 
-<nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe sm:hidden z-50">
+<nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe sm:hidden z-50">
   <div class="grid grid-cols-5">
     {#each navItems as item}
       <a 

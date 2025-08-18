@@ -7,7 +7,8 @@
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
-  import { MessageNotificationToast, FollowNotificationToast, CookieConsent } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast } from '@repo/ui';
+  import CookieConsentPro from '$lib/components/CookieConsentPro.svelte';
   import { page } from '$app/stores';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import LocaleDetector from '$lib/components/LocaleDetector.svelte';
@@ -29,48 +30,90 @@
   const supabase = $derived(data?.supabase);
   const isAuthPage = $derived($page.route.id?.includes('(auth)'));
 
-  // Initialize auth stores
+  // Initialize auth stores with timeout protection
   $effect(() => {
-    if (data?.user !== undefined) {
-      user.set(data.user);
+    // Set a timeout to prevent infinite loading state
+    const loadingTimeout = setTimeout(() => {
+      if ($authLoading) {
+        console.warn('[AUTH] Loading timeout - forcing auth state resolution');
+        authLoading.set(false);
+      }
+    }, 5000); // 5 second timeout
+    
+    try {
+      if (data?.user !== undefined) {
+        user.set(data.user);
+      }
+      if (data?.session !== undefined) {
+        session.set(data.session);
+      }
+      if (data?.profile !== undefined) {
+        profile.set(data.profile);
+      }
+      if (data?.supabase) {
+        setSupabaseClient(data.supabase);
+      }
+      authLoading.set(false);
+    } catch (error) {
+      console.error('[AUTH_INIT_ERROR]', error);
+      authLoading.set(false);
     }
-    if (data?.session !== undefined) {
-      session.set(data.session);
-    }
-    if (data?.profile !== undefined) {
-      profile.set(data.profile);
-    }
-    if (data?.supabase) {
-      setSupabaseClient(data.supabase);
-    }
-    authLoading.set(false);
+    
+    // Clear timeout if auth loads successfully
+    return () => clearTimeout(loadingTimeout);
   });
 
   onMount(async () => {
     
-    if (!supabase) return;
-    
-    // If we have a user but no profile, fetch the profile immediately
-    if (data?.user && !data?.profile) {
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
-      
-      if (profileData) {
-        profile.set(profileData);
-      }
+    if (!supabase) {
+      console.error('[LAYOUT] No Supabase client available');
+      authLoading.set(false); // Ensure we don't stay in loading state
+      return;
     }
     
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {
-      const currentSession = session.subscribe ? undefined : data?.session;
-      if (newSession?.expires_at !== currentSession?.expires_at) {
-        invalidate('supabase:auth');
+    try {
+      // If we have a user but no profile, fetch the profile immediately
+      if (data?.user && !data?.profile) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+        
+        if (profileError) {
+          console.error('[PROFILE_FETCH_ERROR]', profileError);
+        } else if (profileData) {
+          profile.set(profileData);
+        }
       }
-    });
+      
+      const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {
+        console.log('[AUTH_STATE_CHANGE]', event, newSession?.user?.id?.substring(0, 8));
+        
+        const currentSession = session.subscribe ? undefined : data?.session;
+        if (newSession?.expires_at !== currentSession?.expires_at) {
+          invalidate('supabase:auth');
+        }
+        
+        // Handle specific auth events
+        if (event === 'SIGNED_IN') {
+          console.log('[AUTH] User signed in');
+          authLoading.set(false);
+        } else if (event === 'SIGNED_OUT') {
+          console.log('[AUTH] User signed out');
+          authLoading.set(false);
+        } else if (event === 'TOKEN_REFRESHED') {
+          console.log('[AUTH] Token refreshed');
+        } else if (event === 'USER_UPDATED') {
+          console.log('[AUTH] User updated');
+        }
+      });
 
-    return () => authListener.subscription.unsubscribe();
+      return () => authListener.subscription.unsubscribe();
+    } catch (error) {
+      console.error('[LAYOUT_MOUNT_ERROR]', error);
+      authLoading.set(false); // Ensure we don't stay in loading state
+    }
   });
 </script>
 
@@ -82,8 +125,31 @@
 <!-- Locale Detection -->
 <LocaleDetector />
 
-<!-- Cookie Consent Banner -->
-<CookieConsent />
+<!-- Professional Cookie Consent with Locale Detection -->
+<CookieConsentPro 
+  onLocaleChange={(locale) => {
+    if (browser) {
+      i18n.setLanguageTag(locale);
+      document.documentElement.lang = locale;
+      // Store locale preference
+      localStorage.setItem('preferred-locale', locale);
+      // Reload page to apply new locale
+      window.location.reload();
+    }
+  }}
+  onConsentChange={(consent) => {
+    console.log('Cookie consent updated:', consent);
+    // Hide bottom nav during cookie consent
+    if (browser) {
+      const bottomNav = document.querySelector('.bottom-nav');
+      if (bottomNav && !consent) {
+        bottomNav.classList.add('hidden');
+      } else if (bottomNav) {
+        bottomNav.classList.remove('hidden');
+      }
+    }
+  }}
+/>
 
 <!-- Global Message Notification Toast -->
 {#if $activeNotification}

@@ -135,18 +135,18 @@
     </div>
   </div>
   
-  <div class="px-3 py-2.5">
+  <div class="p-2">
     <!-- Product Title -->
-    <h3 class="font-semibold text-[13px] text-gray-900 leading-tight truncate">{product.title}</h3>
+    <h3 class="font-semibold text-sm text-gray-900 leading-[1.2] truncate">{product.title}</h3>
     
     <!-- Brand, Size, Category - SINGLE ROW -->
-    <div class="text-[11px] text-gray-500 mt-1 truncate">
+    <div class="text-xs text-gray-500 mt-0.5 truncate">
       {#if product.brand}<span class="font-medium text-gray-600">{product.brand}</span>{/if}{#if product.brand && (product.size || product.category)}<span class="mx-1">•</span>{/if}{#if product.size}Size {product.size}{/if}{#if product.size && product.category}<span class="mx-1">•</span>{/if}{#if product.category}<span class="uppercase">{product.category}</span>{/if}
     </div>
     
     <!-- Price -->
-    <div class="mt-1.5">
-      <span class="text-[15px] font-bold text-gray-900">
+    <div class="mt-2">
+      <span class="text-base font-bold text-gray-900">
         {translations.formatPrice ? translations.formatPrice(product.price) : `${translations.currency}${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}`}
       </span>
     </div>

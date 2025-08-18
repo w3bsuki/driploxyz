@@ -4,7 +4,9 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { LoginSchema } from '$lib/validation/auth.js';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals: { session } }) => {
+export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
+  const { session } = await safeGetSession();
+  
   if (session) {
     throw redirect(303, '/');
   }
@@ -14,7 +16,7 @@ export const load: PageServerLoad = async ({ locals: { session } }) => {
 };
 
 export const actions: Actions = {
-  signin: async ({ request, locals: { supabase } }) => {
+  signin: async ({ request, locals: { supabase }, url }) => {
     const form = await superValidate(request, zod(LoginSchema));
     
     if (!form.valid) {
@@ -22,15 +24,46 @@ export const actions: Actions = {
     }
     
     const { email, password } = form.data as { email: string; password: string };
+    
+    // Production debugging
+    if (process.env.NODE_ENV === 'production') {
+      console.log('[LOGIN_ATTEMPT]', {
+        email,
+        timestamp: new Date().toISOString(),
+        origin: url.origin
+      });
+    }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    let data, error;
+    
+    try {
+      const response = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      data = response.data;
+      error = response.error;
+    } catch (e) {
+      console.error('[LOGIN_ERROR] Exception during sign in:', e);
+      return setError(form, '', 'Authentication service error. Please try again.');
+    }
 
     if (error) {
-      console.error('Sign in error:', error);
-      return setError(form, '', error.message);
+      console.error('[LOGIN_ERROR]', {
+        code: error.code,
+        message: error.message,
+        status: error.status
+      });
+      
+      // Handle specific error cases
+      if (error.message.includes('Invalid login credentials')) {
+        return setError(form, '', 'Invalid email or password');
+      }
+      if (error.message.includes('Email not confirmed')) {
+        return setError(form, '', 'Please verify your email before logging in');
+      }
+      
+      return setError(form, '', error.message || 'Unable to sign in');
     }
 
     if (data.user) {
@@ -65,7 +98,8 @@ export const actions: Actions = {
       console.log('[LOGIN_REDIRECT] Sending to home');
       throw redirect(303, '/');
     }
-
-    return setError(form, '', 'Unable to sign in');
+    
+    console.error('[LOGIN_ERROR] No user data returned');
+    return setError(form, '', 'Authentication failed. Please try again.');
   }
 };

@@ -4,14 +4,46 @@ import type { RequestHandler } from './$types';
 export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
   const code = url.searchParams.get('code');
   const next = url.searchParams.get('next') ?? '/';
+  
+  // Production debugging
+  if (process.env.NODE_ENV === 'production') {
+    console.log('[AUTH_CALLBACK]', {
+      hasCode: !!code,
+      next,
+      origin: url.origin,
+      fullUrl: url.toString()
+    });
+  }
 
   if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      throw redirect(303, `/${next.slice(1)}`);
+    try {
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+      
+      if (error) {
+        console.error('[AUTH_CALLBACK_ERROR]', {
+          error: error.message,
+          code: error.code,
+          status: error.status
+        });
+        throw redirect(303, '/login?error=auth_failed');
+      }
+      
+      if (data.session) {
+        console.log('[AUTH_CALLBACK_SUCCESS] Session created, redirecting to:', next);
+        // Ensure proper redirect path
+        const redirectPath = next.startsWith('/') ? next : `/${next}`;
+        throw redirect(303, redirectPath);
+      }
+    } catch (e) {
+      // Re-throw redirects
+      if (e instanceof redirect) throw e;
+      
+      console.error('[AUTH_CALLBACK_EXCEPTION]', e);
+      throw redirect(303, '/login?error=auth_exception');
     }
   }
 
-  // Return the user to an error page with instructions
-  throw redirect(303, '/auth/auth-code-error');
+  // No code provided - redirect to login
+  console.log('[AUTH_CALLBACK] No code provided, redirecting to login');
+  throw redirect(303, '/login');
 };
