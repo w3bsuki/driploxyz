@@ -1,55 +1,63 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-export const POST: RequestHandler = async ({ request, locals: { supabase } }) => {
-  console.log('[API LOGIN] Login endpoint called');
-  
+export const POST: RequestHandler = async ({ request, locals }) => {
   try {
-    const { email, password } = await request.json();
+    // First check if we can read the request
+    const body = await request.json().catch(e => {
+      console.error('[API LOGIN] Failed to parse request:', e);
+      return null;
+    });
     
-    console.log('[API LOGIN] Attempting login for:', email);
+    if (!body) {
+      return json({ 
+        success: false, 
+        error: 'Invalid request body' 
+      }, { status: 400 });
+    }
     
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { email, password } = body;
+    
+    if (!email || !password) {
+      return json({ 
+        success: false, 
+        error: 'Email and password required' 
+      }, { status: 400 });
+    }
+    
+    // Check if supabase is available
+    if (!locals.supabase) {
+      console.error('[API LOGIN] Supabase client not available');
+      return json({ 
+        success: false, 
+        error: 'Auth service unavailable' 
+      }, { status: 503 });
+    }
+    
+    // Try to login
+    const { data, error } = await locals.supabase.auth.signInWithPassword({
       email,
       password
     });
     
     if (error) {
-      console.log('[API LOGIN] Auth error:', error.message);
       return json({ 
         success: false, 
         error: error.message 
-      }, { status: 400 });
+      }, { status: 401 });
     }
-    
-    if (!data.user || !data.session) {
-      console.log('[API LOGIN] No user or session in response');
-      return json({ 
-        success: false, 
-        error: 'Authentication failed' 
-      }, { status: 400 });
-    }
-    
-    console.log('[API LOGIN] Login successful for user:', data.user.id);
-    
-    // Check onboarding status
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('onboarding_completed')
-      .eq('id', data.user.id)
-      .single();
     
     return json({ 
       success: true,
       user: data.user,
-      needsOnboarding: !profile?.onboarding_completed
+      message: 'Login successful'
     });
     
   } catch (e: any) {
-    console.error('[API LOGIN] Exception:', e);
+    console.error('[API LOGIN] Unexpected error:', e);
     return json({ 
       success: false, 
-      error: 'Server error' 
+      error: e.message || 'Internal server error' 
     }, { status: 500 });
   }
 };
