@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { type Handle, redirect, error, type HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { building } from '$app/environment';
 import type { Database } from '$lib/types/database.types';
 import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
@@ -49,12 +50,22 @@ if (SENTRY_DSN) {
 }
 
 const supabase: Handle = async ({ event, resolve }) => {
+  // Skip during build time
+  if (building) {
+    return resolve(event);
+  }
+  
   // Mobile detection for cookie compatibility
   const userAgent = event.request.headers.get('user-agent') || '';
   const isMobile = /Mobile|Android|iPhone|iPad/i.test(userAgent);
   
-  // CRITICAL: Fail fast with clear error message
+  // CRITICAL: Fail fast with clear error message - but more detailed for debugging
   if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
+    console.error('[HOOKS] Missing Supabase environment variables:', {
+      hasUrl: !!PUBLIC_SUPABASE_URL,
+      hasKey: !!PUBLIC_SUPABASE_ANON_KEY,
+      url: PUBLIC_SUPABASE_URL ? `${PUBLIC_SUPABASE_URL.substring(0, 20)}...` : 'undefined'
+    });
     throw error(500, 'Server configuration error. Please contact support.');
   }
 
@@ -69,10 +80,10 @@ const supabase: Handle = async ({ event, resolve }) => {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              // Use Supabase's cookie options as-is
+              // Preserve Supabase's secure cookie options - NEVER override httpOnly
               event.cookies.set(name, value, {
-                ...options,
-                path: '/'
+                path: '/',
+                ...options // Options AFTER path to preserve Supabase's security settings
               });
             });
           },

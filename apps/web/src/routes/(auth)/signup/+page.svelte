@@ -2,31 +2,23 @@
   import { goto } from '$app/navigation';
   import { superForm } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
-  import { SignupSchema } from '$lib/validation/auth.js';
+  import { SignupSchema } from '$lib/validation/auth';
   import type { PageData, ActionData } from './$types';
   import * as i18n from '@repo/i18n';
   import { browser } from '$app/environment';
 
-  let { data, form: actionResult }: { data: PageData; form: ActionData } = $props();
+  let { data }: { data: PageData } = $props();
   
-  // Check for success from action result
-  let success = $state(actionResult?.success || false);
-  let successEmail = $state(actionResult?.email || '');
-  let successMessage = $state(actionResult?.message || '');
-  
-  const { form, errors, constraints, submitting, enhance } = superForm(data.form, {
+  const { form, errors, constraints, submitting, enhance, message } = superForm(data.form, {
     validators: zodClient(SignupSchema),
     resetForm: false,
     taintedMessage: null,
-    validationMethod: 'oninput'
-  });
-  
-  // Watch for successful submission
-  $effect(() => {
-    if (actionResult?.success) {
-      success = true;
-      successEmail = actionResult.email || '';
-      successMessage = actionResult.message || 'Account created successfully! Please check your email to verify your account.';
+    validationMethod: 'oninput',
+    onUpdated: ({ form }) => {
+      // Message will be available here if needed for additional handling
+      if (form.message && form.message.type === 'success') {
+        // Success is handled via the $message store below
+      }
     }
   });
 </script>
@@ -53,7 +45,7 @@
     </div>
   {/if}
 
-  {#if success}
+  {#if $message}
     <div class="bg-green-50 border border-green-200 rounded-md p-4 mb-6">
       <div class="flex">
         <div class="flex-shrink-0">
@@ -63,16 +55,13 @@
         </div>
         <div class="ml-3">
           <h3 class="text-sm font-medium text-green-800">Success!</h3>
-          <p class="mt-2 text-sm text-green-700">{successMessage || 'Account created successfully!'}</p>
-          {#if successEmail}
-            <p class="mt-1 text-sm text-green-700">Email sent to: <strong>{successEmail}</strong></p>
-          {/if}
+          <p class="mt-2 text-sm text-green-700">{$message.text || $message}</p>
           <div class="mt-4 space-x-4">
             <a href="/login" class="text-sm font-medium text-green-600 hover:text-green-500">
               Go to login →
             </a>
-            <a href="/verify-email?email={encodeURIComponent(successEmail)}" class="text-sm font-medium text-green-600 hover:text-green-500">
-              Verification help →
+            <a href="/verify-email" class="text-sm font-medium text-green-600 hover:text-green-500">
+              Didn't receive email? →
             </a>
           </div>
         </div>

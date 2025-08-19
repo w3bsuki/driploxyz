@@ -1,7 +1,7 @@
 <script lang="ts">
   import { superForm } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
-  import { LoginSchema } from '$lib/validation/auth.js';
+  import { LoginSchema } from '$lib/validation/auth';
   import type { PageData, ActionData } from './$types';
   import * as i18n from '@repo/i18n';
 

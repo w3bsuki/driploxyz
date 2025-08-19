@@ -1,7 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { superValidate, setError } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { LoginSchema } from '$lib/validation/auth.js';
+import { LoginSchema } from '$lib/validation/auth';
 import { dev } from '$app/environment';
 import type { Actions, PageServerLoad } from './$types';
 
@@ -105,21 +105,15 @@ export const actions: Actions = {
     }
 
     // Check onboarding status (non-blocking)
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('onboarding_completed')
-        .eq('id', data.user.id)
-        .single();
-      
-      if (!profile || profile.onboarding_completed !== true) {
-        // Redirect to onboarding
-        throw redirect(303, '/onboarding');
-      }
-    } catch (err: any) {
-      // Check if it's a SvelteKit redirect (has status 303)
-      if (err?.status === 303 || err?.location) throw err;
-      // Otherwise continue - profile check is non-critical
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('onboarding_completed')
+      .eq('id', data.user.id)
+      .single();
+    
+    if (!profile || profile.onboarding_completed !== true) {
+      // Redirect to onboarding
+      throw redirect(303, '/onboarding');
     }
     
     // Success - redirect to homepage

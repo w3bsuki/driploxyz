@@ -1,8 +1,8 @@
 import { redirect, fail } from '@sveltejs/kit';
-import { superValidate, setError } from 'sveltekit-superforms';
+import { superValidate, setError, message } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
-import { SignupSchema } from '$lib/validation/auth.js';
-import { dev } from '$app/environment';
+import { SignupSchema } from '$lib/validation/auth';
+import { dev, building } from '$app/environment';
 import type { Actions, PageServerLoad } from './$types';
 import { detectLanguage } from '@repo/i18n';
 
@@ -21,10 +21,13 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
 
 export const actions: Actions = {
   signup: async ({ request, locals: { supabase }, cookies }) => {
+    // Always log in production to debug Vercel issues
     console.log('[SIGNUP] ========== SIGNUP ACTION START ==========');
     console.log('[SIGNUP] Timestamp:', new Date().toISOString());
     console.log('[SIGNUP] Request method:', request.method);
     console.log('[SIGNUP] Request URL:', request.url);
+    console.log('[SIGNUP] Environment:', { dev, building: typeof building !== 'undefined' ? building : 'undefined' });
+    console.log('[SIGNUP] Has supabase client:', !!supabase);
     console.log('[SIGNUP] Headers:', Object.fromEntries(request.headers.entries()));
     
     const form = await superValidate(request, zod(SignupSchema));
@@ -42,26 +45,25 @@ export const actions: Actions = {
     const acceptLanguage = request.headers.get('accept-language') || '';
     const userLocale = localeCookie || detectLanguage(acceptLanguage);
 
-    try {
-      if (DEBUG) {
-        console.log('[SIGNUP] Attempting signup');
-        console.log('[SIGNUP] Terms accepted:', terms);
-        console.log('[SIGNUP] User locale:', userLocale);
-        console.log('[SIGNUP] Supabase client exists:', !!supabase);
+    if (DEBUG) {
+      console.log('[SIGNUP] Attempting signup');
+      console.log('[SIGNUP] Terms accepted:', terms);
+      console.log('[SIGNUP] User locale:', userLocale);
+      console.log('[SIGNUP] Supabase client exists:', !!supabase);
+    }
+    
+    // Create user with proper error handling
+    if (DEBUG) console.log('[SIGNUP] Calling supabase.auth.signUp...');
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName
+        },
+        emailRedirectTo: `${request.url.origin}/auth/callback?next=/onboarding`
       }
-      
-      // Create user with proper error handling
-      if (DEBUG) console.log('[SIGNUP] Calling supabase.auth.signUp...');
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName
-          },
-          emailRedirectTo: `${request.url.origin}/auth/callback`
-        }
-      });
+    });
       
       if (DEBUG) {
         console.log('[SIGNUP] Auth response received');
@@ -74,42 +76,48 @@ export const actions: Actions = {
       if (error) {
         // Handle specific Supabase auth errors
         if (error.message.includes('User already registered')) {
-          return setError(form, 'email', 'An account with this email already exists');
+          return fail(400, {
+          form: setError(form, 'email', 'An account with this email already exists')
+        });
         }
         if (error.message.includes('Password should be at least')) {
-          return setError(form, 'password', 'Password must be at least 6 characters');
+          return fail(400, {
+          form: setError(form, 'password', 'Password must be at least 6 characters')
+        });
         }
         if (error.message.includes('Signup is disabled')) {
-          return setError(form, '', 'Account creation is temporarily disabled');
+          return fail(503, {
+          form: setError(form, '', 'Account creation is temporarily disabled')
+        });
         }
         
-        return setError(form, '', error.message || 'Failed to create account');
+        return fail(400, {
+          form: setError(form, '', error.message || 'Failed to create account')
+        });
       }
 
       if (!data.user) {
-        return setError(form, '', 'Failed to create account. Please try again');
+        return fail(400, {
+          form: setError(form, '', 'Failed to create account. Please try again')
+        });
       }
 
-      try {
-        // Generate a unique username based on name and user ID
-        const username = `user_${data.user.id.substring(0, 8)}`;
-        
-        // Create profile for the new user with detected locale
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            username,
-            full_name: fullName,
-            locale: userLocale,
-            onboarding_completed: false
-          });
+      // Generate a unique username based on name and user ID
+      const username = `user_${data.user.id.substring(0, 8)}`;
+      
+      // Create profile for the new user with detected locale
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: data.user.id,
+          username,
+          full_name: fullName,
+          locale: userLocale,
+          onboarding_completed: false
+        });
 
-        if (profileError) {
-          // Continue anyway - profile might already exist or be created by trigger
-        }
-      } catch (profileErr) {
-        // Non-fatal error - continue with signup success
+      if (profileError && profileError.code !== '23505') { // Ignore duplicate key errors
+        console.warn('[SIGNUP] Profile creation warning:', profileError.message);
       }
 
       // Success - return success response with message
@@ -118,24 +126,11 @@ export const actions: Actions = {
         console.log('[SIGNUP] ========== SIGNUP ACTION END ==========');
       }
       
-      // Return success with email for display
-      return {
-        form,
-        success: true, 
-        email,
-        message: 'Account created successfully! Please check your email to verify your account.'
-      };
+      // Use Superforms message helper for success
+      return message(form, {
+        type: 'success',
+        text: `Account created successfully! We've sent a verification email to ${email}. Please check your inbox to complete your registration.`
+      });
 
-    } catch (e: any) {
-      // Check if it's a SvelteKit redirect (has status 303)
-      if (e?.status === 303 || e?.location) {
-        console.log('[SIGNUP] Throwing redirect');
-        throw e;
-      }
-      
-      console.error('[SIGNUP] Exception:', e);
-      console.log('[SIGNUP] ========== SIGNUP ACTION END (ERROR) ==========');
-      return setError(form, '', 'Account creation service temporarily unavailable');
-    }
   }
 };
