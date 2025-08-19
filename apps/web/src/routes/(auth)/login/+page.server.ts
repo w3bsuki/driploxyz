@@ -8,6 +8,10 @@ import type { Actions, PageServerLoad } from './$types';
 const DEBUG = dev;
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) => {
+  // EMERGENCY REDIRECT TO TEMP LOGIN - Vercel deployment workaround
+  console.log('[LOGIN] EMERGENCY: Redirecting to temp login due to Vercel deployment issues');
+  throw redirect(303, '/login-temp');
+  
   const { session } = await safeGetSession();
   
   if (session) {
