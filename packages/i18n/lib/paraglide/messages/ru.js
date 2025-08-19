@@ -2581,14 +2581,6 @@ export const onboarding_goToDashboard = () => `Перейти к панели и
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandSetupComplete = () => `Ваш бренд-профиль настроен! Чтобы активировать полные функции бренда и значок верификации, вам необходимо подписаться на наш план для брендов из вашей панели управления.`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
 export const onboarding_discover = () => `Откройте качественную моду`
 
 
@@ -3699,3 +3691,45 @@ export { sell_month } from "./en.js"
 export { sell_next } from "./en.js"
 
 export { sell_previous } from "./en.js"
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandSetupComplete = () => `Ваш бренд-профиль настроен! Чтобы активировать полные функции бренда и значок верификации, вам необходимо подписаться на наш план для брендов из вашей панели управления.`
+
+
+export { onboarding_personalAccount } from "./en.js"
+
+export { onboarding_personalAccountDesc } from "./en.js"
+
+export { onboarding_personalFeature1 } from "./en.js"
+
+export { onboarding_personalFeature2 } from "./en.js"
+
+export { onboarding_personalFeature3 } from "./en.js"
+
+export { onboarding_personalFeature4 } from "./en.js"
+
+export { onboarding_brandAccount } from "./en.js"
+
+export { onboarding_brandAccountDesc } from "./en.js"
+
+export { onboarding_brandFeature1 } from "./en.js"
+
+export { onboarding_brandFeature2 } from "./en.js"
+
+export { onboarding_brandFeature3 } from "./en.js"
+
+export { onboarding_brandFeature4 } from "./en.js"
+
+export { onboarding_free } from "./en.js"
+
+export { onboarding_perMonth } from "./en.js"
+
+export { onboarding_popular } from "./en.js"
+
+export { onboarding_selected } from "./en.js"
+
+export { onboarding_select } from "./en.js"

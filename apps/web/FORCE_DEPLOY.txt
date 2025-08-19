@@ -1,9 +1,0 @@
-Deployment forced at: 2025-01-20 11:00:00 - ATTEMPT 3
-CRITICAL FIX: Removed temp redirect to /login-temp that was blocking login
-Login fix ready: v4-redirect-only-fix with temp redirect REMOVED
-vercel.json fixed: removed invalid framework
-Version bumped: 1.0.2
-
-VERCEL DEPLOY THIS COMMIT NOW!
-Login was redirecting to /login-temp instead of showing login form.
-This commit fixes the actual root cause.

@@ -321,9 +321,9 @@
               avatar={seller.avatar}
               stats={seller.stats}
               showFullStats={true}
-              onFollow={() => console.log('Follow seller')}
-              onMessage={() => console.log('Message seller')}
-              onViewProfile={() => console.log('View profile')}
+              onFollow={() => {}}
+              onMessage={() => {}}
+              onViewProfile={() => {}}
             />
           </div>
         {/if}

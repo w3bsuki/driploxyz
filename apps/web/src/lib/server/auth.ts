@@ -55,7 +55,6 @@ export async function getServerSession(cookies: Cookies) {
     
     return { session, user };
   } catch (err) {
-    console.error('[AUTH] Session retrieval error:', err);
     return { session: null, user: null };
   }
 }

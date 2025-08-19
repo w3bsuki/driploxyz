@@ -16,7 +16,7 @@
   let stripe: any = $state(null);
   let elements: any = $state(null);
   let cardElement: any = $state(null);
-  let cardContainer: HTMLDivElement;
+  let cardContainer: HTMLDivElement | undefined = $state();
 
   // Brand plan ID
   const BRAND_PLAN_ID = 'd3735d51-cbba-4b77-9e21-e50bdf9e53e8';
@@ -30,7 +30,6 @@
 
   async function initializeStripe() {
     try {
-      console.log('🔥 PAYMENT MODAL - Initializing Stripe');
       if (!stripePublishableKey) {
         throw new Error('Stripe publishable key is required');
       }
@@ -57,10 +56,8 @@
           },
         });
         cardElement.mount(cardContainer);
-        console.log('🔥 PAYMENT MODAL - Card element mounted');
       }
     } catch (err) {
-      console.error('🔥 PAYMENT MODAL - Stripe initialization error:', err);
       error = 'Failed to load payment form';
     }
   }
@@ -75,7 +72,6 @@
     error = '';
     
     try {
-      console.log('🔥 PAYMENT MODAL - Starting payment for brand plan:', BRAND_PLAN_ID);
       
       // Create subscription on server
       const response = await fetch('/api/subscriptions/create', {
@@ -88,7 +84,6 @@
       });
 
       const result = await response.json();
-      console.log('🔥 PAYMENT MODAL - API response:', result);
       
       if (result.error) {
         throw new Error(result.error);
@@ -101,7 +96,6 @@
       }
 
       // Confirm payment with card element
-      console.log('🔥 PAYMENT MODAL - Confirming payment with card');
       const { error: paymentError } = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: cardElement,
@@ -109,15 +103,12 @@
       });
 
       if (paymentError) {
-        console.error('🔥 PAYMENT MODAL - Payment error:', paymentError);
         error = paymentError.message || 'Payment failed';
       } else {
-        console.log('🔥 PAYMENT MODAL - Payment successful!');
         onSuccess?.();
       }
       
     } catch (err) {
-      console.error('🔥 PAYMENT MODAL - Error:', err);
       error = err instanceof Error ? err.message : 'Payment failed';
     } finally {
       loading = false;

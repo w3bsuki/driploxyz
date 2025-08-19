@@ -24,6 +24,8 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
   }
 
   if (data.session && data.user) {
+    // Force refresh session to ensure we have the correct user
+    await supabase.auth.refreshSession();
     // Check or create profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')

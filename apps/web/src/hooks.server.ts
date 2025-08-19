@@ -59,13 +59,8 @@ const supabase: Handle = async ({ event, resolve }) => {
   const userAgent = event.request.headers.get('user-agent') || '';
   const isMobile = /Mobile|Android|iPhone|iPad/i.test(userAgent);
   
-  // CRITICAL: Fail fast with clear error message - but more detailed for debugging
+  // CRITICAL: Fail fast with clear error message
   if (!env.PUBLIC_SUPABASE_URL || !env.PUBLIC_SUPABASE_ANON_KEY) {
-    console.error('[HOOKS] Missing Supabase environment variables:', {
-      hasUrl: !!env.PUBLIC_SUPABASE_URL,
-      hasKey: !!env.PUBLIC_SUPABASE_ANON_KEY,
-      url: env.PUBLIC_SUPABASE_URL ? `${env.PUBLIC_SUPABASE_URL.substring(0, 20)}...` : 'undefined'
-    });
     throw error(500, 'Server configuration error. Please contact support.');
   }
 
@@ -208,10 +203,6 @@ export const handle = SENTRY_DSN ? sequence(sentryHandle(), supabase, authGuard)
 
 // Sentry error handler (only if DSN configured)
 export const handleError: HandleServerError = SENTRY_DSN ? handleErrorWithSentry() : (async ({ error, event }) => {
-  // Log errors in development only
-  if (dev) {
-    console.error('[SERVER_ERROR]', error);
-  }
   return {
     message: error instanceof Error && error.message.includes('Supabase') 
       ? 'Authentication service error. Please try again.' 

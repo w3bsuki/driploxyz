@@ -130,11 +130,10 @@
 					
 					break; // Success, stop trying other services
 				} catch (err) {
-					console.warn(`Failed to fetch from ${service}:`, err);
+					// Failed to fetch from service
 				}
 			}
 		} catch (error) {
-			console.error('Failed to detect location:', error);
 			// Fallback to browser language
 			const browserLang = navigator.language.split('-')[0];
 			selectedLocale = availableLocales.find(l => l.code === browserLang)?.code || 'en';

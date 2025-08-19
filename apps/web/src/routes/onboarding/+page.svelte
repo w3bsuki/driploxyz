@@ -267,6 +267,29 @@
         selected={accountType}
         onSelect={handleAccountTypeSelect}
         class="mb-8"
+        translations={{
+          personalTitle: m.onboarding_personalAccount(),
+          personalDescription: m.onboarding_personalAccountDesc(),
+          personalFeatures: [
+            m.onboarding_personalFeature1(),
+            m.onboarding_personalFeature2(),
+            m.onboarding_personalFeature3(),
+            m.onboarding_personalFeature4()
+          ],
+          brandTitle: m.onboarding_brandAccount(),
+          brandDescription: m.onboarding_brandAccountDesc(),
+          brandFeatures: [
+            m.onboarding_brandFeature1(),
+            m.onboarding_brandFeature2(),
+            m.onboarding_brandFeature3(),
+            m.onboarding_brandFeature4()
+          ],
+          free: m.onboarding_free(),
+          perMonth: m.onboarding_perMonth(),
+          popular: m.onboarding_popular(),
+          selected: m.onboarding_selected(),
+          select: m.onboarding_select()
+        }}
       />
 
       <div class="flex space-x-4">

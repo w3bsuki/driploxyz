@@ -13,40 +13,54 @@
     selected?: 'personal' | 'brand';
     onSelect?: (type: 'personal' | 'brand') => void;
     class?: string;
+    translations?: {
+      personalTitle?: string;
+      personalDescription?: string;
+      personalFeatures?: string[];
+      brandTitle?: string;
+      brandDescription?: string;
+      brandFeatures?: string[];
+      free?: string;
+      perMonth?: string;
+      popular?: string;
+      selected?: string;
+      select?: string;
+    };
   }
 
   let { 
     selected = 'personal',
     onSelect,
-    class: className = ''
+    class: className = '',
+    translations = {}
   }: Props = $props();
 
   const accountTypes: AccountType[] = [
     {
       value: 'personal',
-      title: 'Personal Account',
-      description: 'Perfect for individuals selling from their personal wardrobe',
-      features: [
+      title: translations.personalTitle || 'Personal Account',
+      description: translations.personalDescription || 'Perfect for individuals selling from their personal wardrobe',
+      features: translations.personalFeatures || [
         'List unlimited items',
         'Basic seller tools',
         'Community access',
         'Secure payments'
       ],
-      price: 'Free',
+      price: translations.free || 'Free',
       icon: '👤',
       popular: true
     },
     {
       value: 'brand',
-      title: 'Brand Account',
-      description: 'Designed for businesses and professional sellers',
-      features: [
+      title: translations.brandTitle || 'Brand Account',
+      description: translations.brandDescription || 'Designed for businesses and professional sellers',
+      features: translations.brandFeatures || [
         'Advanced analytics',
         'Bulk upload tools',
         'Priority support',
         'Custom branding'
       ],
-      price: '50 BGN/month',
+      price: `50 BGN`,
       icon: '🏪'
     }
   ];
@@ -69,7 +83,7 @@
         {#if accountType.popular}
           <div class="absolute -top-2 left-4 z-10">
             <div class="bg-gradient-to-r from-green-600 to-green-700 text-white text-xs font-bold px-2 py-0.5 rounded">
-              Popular
+              {translations.popular || 'Popular'}
             </div>
           </div>
         {/if}
@@ -88,13 +102,13 @@
               <span>{accountType.title}</span>
             </div>
             <span class="border-gray-200 text-gray-600 rounded-full border px-2 py-0.5 text-xs transition-all {selected === accountType.value ? 'bg-gray-900 text-white border-gray-900' : 'hover:border-gray-300'}">
-              {selected === accountType.value ? 'Selected' : 'Select'}
+              {selected === accountType.value ? (translations.selected || 'Selected') : (translations.select || 'Select')}
             </span>
           </div>
           
           <div class="mb-3 flex items-end gap-1">
             <span class="text-3xl font-extrabold tracking-tight">{accountType.price}</span>
-            <span class="text-gray-700 pb-1 text-sm">/ month</span>
+            <span class="text-gray-700 pb-1 text-sm">{accountType.value === 'brand' ? (translations.perMonth || '/ month') : ''}</span>
           </div>
           
           <p class="text-gray-600 text-sm mb-4">{accountType.description}</p>

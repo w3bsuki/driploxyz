@@ -95,7 +95,6 @@
       }
     } catch (error) {
       onError?.('Failed to process images');
-      console.error('Image upload error:', error);
     } finally {
       uploading = false;
     }
@@ -118,8 +117,7 @@
           reader.readAsDataURL(webpBlob);
         });
       } catch (error) {
-        // Fallback to original if WebP conversion fails
-        console.warn('WebP conversion failed, using original:', error);
+        // WebP conversion failed, using original
       }
     }
     
