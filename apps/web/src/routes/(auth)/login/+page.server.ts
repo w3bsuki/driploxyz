@@ -49,7 +49,7 @@ export const actions: Actions = {
     console.log('[LOGIN] Timestamp:', new Date().toISOString());
     console.log('[LOGIN] Request method:', request.method);
     console.log('[LOGIN] Request URL:', request.url);
-    console.log('[LOGIN] Site URL origin:', url.origin);
+    console.log('[LOGIN] Site URL:', url.href);
     console.log('[LOGIN] Environment:', { dev, building: typeof building !== 'undefined' ? building : 'undefined' });
     console.log('[LOGIN] Has supabase client:', !!supabase);
     console.log('[LOGIN] Headers:', Object.fromEntries(request.headers.entries()));
