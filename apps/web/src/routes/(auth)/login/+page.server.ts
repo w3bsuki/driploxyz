@@ -44,15 +44,17 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 
 export const actions: Actions = {
   signin: async ({ request }) => {
-    console.log('[LOGIN] Testing LoginSchema import...');
+    console.log('[LOGIN] Testing superforms imports...');
     
     try {
-      // Test if LoginSchema import works
-      console.log('[LOGIN] LoginSchema imported:', !!LoginSchema);
-      console.log('[LOGIN] Action with LoginSchema import works!');
-      return fail(400, { message: 'LoginSchema import works!' });
+      // Test if superforms imports work
+      console.log('[LOGIN] superValidate:', !!superValidate);
+      console.log('[LOGIN] setError:', !!setError);
+      console.log('[LOGIN] zod:', !!zod);
+      console.log('[LOGIN] All superforms imports work!');
+      return fail(400, { message: 'Superforms imports work!' });
     } catch (err) {
-      console.error('[LOGIN] Error with LoginSchema import:', err);
+      console.error('[LOGIN] Error with superforms imports:', err);
       throw err;
     }
   }
