@@ -62,8 +62,8 @@
     </div>
   {/if}
 
-  <!-- Email/Password Form -->
-  <form method="POST" action="?/signin" use:enhance>
+  <!-- Email/Password Form - EMERGENCY: Basic form without Superforms -->
+  <form method="POST" action="?/signin">
     <div class="space-y-1">
       <div>
         <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
@@ -75,7 +75,7 @@
           type="email"
           autocomplete="email"
           required
-          bind:value={$form.email}
+          name="email"
           aria-invalid={$errors.email ? 'true' : undefined}
           aria-describedby={$errors.email ? 'email-error' : undefined}
           class="appearance-none block w-full px-3 py-2 border {$errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors text-sm"
@@ -104,7 +104,7 @@
           type="password"
           autocomplete="current-password"
           required
-          bind:value={$form.password}
+          name="password"
           aria-invalid={$errors.password ? 'true' : undefined}
           aria-describedby={$errors.password ? 'password-error' : undefined}
           class="appearance-none block w-full px-3 py-2 border {$errors.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors text-sm"
@@ -134,18 +134,9 @@
       <div>
         <button
           type="submit"
-          disabled={$submitting}
-          class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-blue-600 hover:bg-blue-700 text-white focus-visible:ring-blue-500 px-4 py-2.5 text-sm transition-all duration-200"
+          class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 bg-blue-600 hover:bg-blue-700 text-white focus-visible:ring-blue-500 px-4 py-2.5 text-sm transition-all duration-200"
         >
-          {#if $submitting}
-            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            {i18n.loading()}
-          {:else}
-            {i18n.auth_signIn()}
-          {/if}
+          {i18n.auth_signIn()}
         </button>
       </div>
     </div>
