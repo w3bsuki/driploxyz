@@ -79,72 +79,66 @@ export const actions: Actions = {
       }
     });
       
-      if (DEBUG) {
-        console.log('[SIGNUP] Auth response received');
-        console.log('[SIGNUP] Has data:', !!data);
-        console.log('[SIGNUP] Has user:', !!data?.user);
-        console.log('[SIGNUP] User ID:', data?.user?.id);
-        console.log('[SIGNUP] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
+    if (DEBUG) {
+      console.log('[SIGNUP] Auth response received');
+      console.log('[SIGNUP] Has data:', !!data);
+      console.log('[SIGNUP] Has user:', !!data?.user);
+      console.log('[SIGNUP] User ID:', data?.user?.id);
+      console.log('[SIGNUP] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
+    }
+
+    if (error) {
+      // Handle specific Supabase auth errors
+      if (error.message.includes('User already registered')) {
+        setError(form, 'email', 'An account with this email already exists');
+        return fail(400, { form });
       }
-
-      if (error) {
-        // Handle specific Supabase auth errors
-        if (error.message.includes('User already registered')) {
-          return fail(400, {
-          form: setError(form, 'email', 'An account with this email already exists')
-        });
-        }
-        if (error.message.includes('Password should be at least')) {
-          return fail(400, {
-          form: setError(form, 'password', 'Password must be at least 6 characters')
-        });
-        }
-        if (error.message.includes('Signup is disabled')) {
-          return fail(503, {
-          form: setError(form, '', 'Account creation is temporarily disabled')
-        });
-        }
-        
-        return fail(400, {
-          form: setError(form, '', error.message || 'Failed to create account')
-        });
+      if (error.message.includes('Password should be at least')) {
+        setError(form, 'password', 'Password must be at least 6 characters');
+        return fail(400, { form });
       }
-
-      if (!data.user) {
-        return fail(400, {
-          form: setError(form, '', 'Failed to create account. Please try again')
-        });
-      }
-
-      // Generate a unique username based on name and user ID
-      const username = `user_${data.user.id.substring(0, 8)}`;
-      
-      // Create profile for the new user with detected locale
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: data.user.id,
-          username,
-          full_name: fullName,
-          locale: userLocale,
-          onboarding_completed: false
-        });
-
-      if (profileError && profileError.code !== '23505') { // Ignore duplicate key errors
-        console.warn('[SIGNUP] Profile creation warning:', profileError.message);
-      }
-
-      // Success - return success response with message
-      if (DEBUG) {
-        console.log('[SIGNUP] Signup successful!');
-        console.log('[SIGNUP] ========== SIGNUP ACTION END ==========');
+      if (error.message.includes('Signup is disabled')) {
+        setError(form, '', 'Account creation is temporarily disabled');
+        return fail(503, { form });
       }
       
-      // Use Superforms message helper for success
-      return message(form, {
-        type: 'success',
-        text: `Account created successfully! We've sent a verification email to ${email}. Please check your inbox to complete your registration.`
+      setError(form, '', error.message || 'Failed to create account');
+      return fail(400, { form });
+    }
+
+    if (!data.user) {
+      setError(form, '', 'Failed to create account. Please try again');
+      return fail(400, { form });
+    }
+
+    // Generate a unique username based on name and user ID
+    const username = `user_${data.user.id.substring(0, 8)}`;
+    
+    // Create profile for the new user with detected locale
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .insert({
+        id: data.user.id,
+        username,
+        full_name: fullName,
+        locale: userLocale,
+        onboarding_completed: false
       });
 
+    if (profileError && profileError.code !== '23505') { // Ignore duplicate key errors
+      console.warn('[SIGNUP] Profile creation warning:', profileError.message);
+    }
+
+    // Success - return success response with message
+    if (DEBUG) {
+      console.log('[SIGNUP] Signup successful!');
+      console.log('[SIGNUP] ========== SIGNUP ACTION END ==========');
+    }
+    
+    // Use Superforms message helper for success
+    return message(form, {
+      type: 'success',
+      text: `Account created successfully! We've sent a verification email to ${email}. Please check your inbox to complete your registration.`
+    });
   }
 };

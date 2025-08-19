@@ -29,7 +29,7 @@
 </svelte:head>
 
 <!-- DEPLOYMENT VERIFICATION: v1.0.0 - {new Date().toISOString()} -->
-<div class="fixed bottom-2 right-2 bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-mono opacity-75">
+<div class="fixed bottom-2 right-2 bg-green-100 text-green-800 px-2 py-1 rounded-sm text-xs font-mono opacity-75">
   v1.0.0 - Build: {new Date().toISOString().slice(0, 16)}
 </div>
 
@@ -38,7 +38,7 @@
   {#if data.errorMessage}
     <div class="bg-red-50 border border-red-200 rounded-md p-4">
       <div class="flex">
-        <div class="flex-shrink-0">
+        <div class="shrink-0">
           <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
           </svg>
@@ -55,7 +55,7 @@
   {#if $message && $message.type === 'success'}
     <div class="bg-green-50 border border-green-200 rounded-md p-4">
       <div class="flex">
-        <div class="flex-shrink-0">
+        <div class="shrink-0">
           <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.236 4.53L8.23 10.66a.75.75 0 00-1.06 1.061l1.5 1.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
           </svg>
@@ -70,7 +70,7 @@
   {#if $errors?._errors?.length}
     <div class="bg-red-50 border border-red-200 rounded-md p-4">
       <div class="flex">
-        <div class="flex-shrink-0">
+        <div class="shrink-0">
           <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
           </svg>
@@ -98,14 +98,14 @@
           bind:value={$form.email}
           aria-invalid={$errors.email ? 'true' : undefined}
           aria-describedby={$errors.email ? 'email-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {$errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border {$errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
           placeholder="Enter your email"
           {...$constraints.email}
         />
         <div class="mt-1 h-2">
           {#if $errors.email}
             <div id="email-error" class="text-sm text-red-600 flex items-center gap-1">
-              <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
               <span>{$errors.email}</span>
@@ -127,14 +127,14 @@
           bind:value={$form.password}
           aria-invalid={$errors.password ? 'true' : undefined}
           aria-describedby={$errors.password ? 'password-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {$errors.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border {$errors.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
           placeholder="Enter your password"
           {...$constraints.password}
         />
         <div class="mt-1 h-2">
           {#if $errors.password}
             <div id="password-error" class="text-sm text-red-600 flex items-center gap-1">
-              <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
               <span>{$errors.password}</span>
@@ -155,7 +155,7 @@
         <button
           type="submit"
           disabled={$submitting}
-          class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-blue-600 hover:bg-blue-700 text-white focus-visible:ring-blue-500 px-4 py-2.5 text-sm transition-all duration-200"
+          class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-blue-600 hover:bg-blue-700 text-white focus-visible:ring-blue-500 px-4 py-2.5 text-sm transition-all duration-200"
         >
           {#if $submitting}
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -184,7 +184,7 @@
   <!-- Social Login Options -->
   <div class="grid grid-cols-2 gap-3">
     <button
-      class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-300 bg-white text-gray-700 focus-visible:ring-gray-500 px-4 py-2 text-sm"
+      class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-300 bg-white text-gray-700 focus-visible:ring-gray-500 px-4 py-2 text-sm"
       disabled
     >
       <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -196,7 +196,7 @@
       Google
     </button>
     <button
-      class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-300 bg-white text-gray-700 focus-visible:ring-gray-500 px-4 py-2 text-sm"
+      class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-300 bg-white text-gray-700 focus-visible:ring-gray-500 px-4 py-2 text-sm"
       disabled
     >
       <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">

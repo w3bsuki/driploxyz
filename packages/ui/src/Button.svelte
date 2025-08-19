@@ -25,7 +25,7 @@
     children
   }: Props = $props();
 
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50';
 
   const variantClasses = {
     primary: 'bg-blue-600 text-white focus-visible:ring-blue-500',

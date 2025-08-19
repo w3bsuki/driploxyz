@@ -110,9 +110,9 @@
     <!-- Separator for locked features -->
     {#if lockedFeatures && lockedFeatures.length > 0}
       <div class="text-gray-500 flex items-center gap-3 text-sm">
-        <span class="bg-gray-400 h-[1px] flex-1"></span>
+        <span class="bg-gray-400 h-px flex-1"></span>
         <span class="text-gray-500 shrink-0">Upgrade to access</span>
-        <span class="bg-gray-400 h-[1px] flex-1"></span>
+        <span class="bg-gray-400 h-px flex-1"></span>
       </div>
       
       <!-- Locked Features -->

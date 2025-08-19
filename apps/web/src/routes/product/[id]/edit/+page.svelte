@@ -51,7 +51,7 @@
   
   <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
     <!-- Page Header -->
-    <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+    <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6 mb-6">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-bold text-gray-900">Edit Product</h1>
@@ -72,7 +72,7 @@
     <!-- Edit Form -->
     <form method="POST" action="?/update" use:enhance class="space-y-6">
       <!-- Basic Details -->
-      <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+      <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6">
         <h2 class="text-lg font-semibold mb-4">Basic Details</h2>
         
         <div class="space-y-4">
@@ -144,7 +144,7 @@
       </div>
 
       <!-- Product Info -->
-      <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+      <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6">
         <h2 class="text-lg font-semibold mb-4">Product Info</h2>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -207,7 +207,7 @@
       </div>
 
       <!-- Pricing -->
-      <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+      <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6">
         <h2 class="text-lg font-semibold mb-4">Pricing</h2>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">

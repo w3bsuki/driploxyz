@@ -243,19 +243,19 @@
 
 {#if showBanner && !isLoading}
 	<!-- Glass morphism backdrop -->
-	<div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40" onclick={() => {}}>
+	<div class="fixed inset-0 bg-black/40 backdrop-blur-xs z-40" onclick={() => {}}>
 		
 		<!-- Locale Detection Modal (shows first if detected) -->
 		{#if showLocaleModal && detectedLocation}
 			<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md">
 				<div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-6">
 					<div class="text-center mb-6">
-						<div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4">
+						<div class="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-full mb-4">
 							<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
 							</svg>
 						</div>
-						<h2 class="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+						<h2 class="text-2xl font-bold bg-linear-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
 							Welcome to Driplo
 						</h2>
 						<p class="text-gray-600 mt-2">
@@ -305,7 +305,7 @@
 							<div class="flex-1">
 								<div class="flex items-start gap-4">
 									<div class="hidden sm:block">
-										<div class="w-12 h-12 bg-gradient-to-br from-black to-gray-700 rounded-xl flex items-center justify-center">
+										<div class="w-12 h-12 bg-linear-to-br from-black to-gray-700 rounded-xl flex items-center justify-center">
 											<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
 											</svg>
@@ -331,7 +331,7 @@
 													type="checkbox" 
 													checked 
 													disabled 
-													class="mt-1 w-5 h-5 rounded border-gray-300"
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300"
 												/>
 												<div class="flex-1">
 													<div class="font-semibold text-gray-900">Essential Cookies</div>
@@ -351,7 +351,7 @@
 												<input 
 													type="checkbox" 
 													bind:checked={preferences.functional}
-													class="mt-1 w-5 h-5 rounded border-gray-300 text-black focus:ring-black"
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
 												/>
 												<div class="flex-1">
 													<div class="font-semibold text-gray-900">Functional Cookies</div>
@@ -368,7 +368,7 @@
 												<input 
 													type="checkbox" 
 													bind:checked={preferences.analytics}
-													class="mt-1 w-5 h-5 rounded border-gray-300 text-black focus:ring-black"
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
 												/>
 												<div class="flex-1">
 													<div class="font-semibold text-gray-900">Analytics Cookies</div>
@@ -385,7 +385,7 @@
 												<input 
 													type="checkbox" 
 													bind:checked={preferences.marketing}
-													class="mt-1 w-5 h-5 rounded border-gray-300 text-black focus:ring-black"
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
 												/>
 												<div class="flex-1">
 													<div class="font-semibold text-gray-900">Marketing Cookies</div>

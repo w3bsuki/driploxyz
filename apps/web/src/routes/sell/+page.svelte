@@ -142,7 +142,7 @@
   <Header />
   
   <!-- Page Header -->
-  <div class="bg-white shadow-sm sticky top-14 sm:top-16 z-30">
+  <div class="bg-white shadow-xs sticky top-14 sm:top-16 z-30">
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
       <div class="flex justify-between items-center py-3">
         <div class="flex items-center space-x-3">
@@ -256,7 +256,7 @@
                 bind:value={$form.description}
                 rows="4"
                 placeholder={i18n.sell_descriptionPlaceholder()}
-                class="block w-full rounded-lg border px-3 py-2 text-sm placeholder-gray-500 transition-colors focus:outline-none focus:ring-1
+                class="block w-full rounded-lg border px-3 py-2 text-sm placeholder-gray-500 transition-colors focus:outline-hidden focus:ring-1
                   {$errors.description 
                     ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
                     : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'}"
@@ -384,7 +384,7 @@
             <!-- Premium Boost -->
             {#if data.profile?.subscription_tier === 'premium' && data.profile?.premium_boosts_remaining > 0}
               <div class="border-t pt-6">
-                <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-4 rounded-lg border border-yellow-200">
+                <div class="bg-linear-to-r from-yellow-50 to-orange-50 p-4 rounded-lg border border-yellow-200">
                   <div class="flex items-start space-x-3">
                     <div class="text-2xl">⭐</div>
                     <div class="flex-1">
@@ -396,7 +396,7 @@
                           <input 
                             type="checkbox" 
                             bind:checked={$form.use_premium_boost}
-                            class="rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
+                            class="rounded-sm border-gray-300 text-yellow-600 focus:ring-yellow-500"
                           />
                           <span class="text-sm font-medium text-yellow-800">
                             Use Premium Boost ({data.profile.premium_boosts_remaining} remaining)

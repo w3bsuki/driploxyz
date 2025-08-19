@@ -92,7 +92,7 @@
 {#if show}
   <!-- Glass Morphism Backdrop -->
   <div 
-    class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+    class="fixed inset-0 bg-black/20 backdrop-blur-xs z-40"
     onclick={onClose}
     role="button"
     tabindex="-1"
@@ -142,8 +142,8 @@
               <div class="flex items-start space-x-3 p-3 rounded-xl bg-gray-50/50 animate-pulse">
                 <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
                 <div class="flex-1 space-y-2">
-                  <div class="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div class="h-4 bg-gray-200 rounded-sm w-3/4"></div>
+                  <div class="h-3 bg-gray-200 rounded-sm w-1/2"></div>
                 </div>
               </div>
             {/each}
@@ -166,7 +166,7 @@
               >
                 <div class="flex items-start space-x-3">
                   <!-- Icon/Avatar -->
-                  <div class="flex-shrink-0 relative">
+                  <div class="shrink-0 relative">
                     {#if notification.sender}
                       <Avatar 
                         src={notification.sender.avatar_url} 
@@ -177,7 +177,7 @@
                         {getNotificationIcon(notification.type)}
                       </div>
                     {:else}
-                      <div class="w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center text-lg">
+                      <div class="w-8 h-8 bg-linear-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center text-lg">
                         {getNotificationIcon(notification.type)}
                       </div>
                     {/if}
@@ -189,7 +189,7 @@
                       <h4 class="text-sm font-medium text-gray-900 truncate pr-2">
                         {notification.title}
                       </h4>
-                      <span class="text-xs text-gray-500 flex-shrink-0">
+                      <span class="text-xs text-gray-500 shrink-0">
                         {getTimeAgo(notification.timestamp)}
                       </span>
                     </div>
@@ -204,7 +204,7 @@
                         <img 
                           src={notification.product.image} 
                           alt={notification.product.title}
-                          class="w-6 h-6 rounded object-cover"
+                          class="w-6 h-6 rounded-sm object-cover"
                         />
                         <span class="text-xs text-gray-600 truncate">
                           {notification.product.title}
@@ -215,7 +215,7 @@
 
                   <!-- Unread Indicator -->
                   {#if !notification.read}
-                    <div class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></div>
+                    <div class="w-2 h-2 bg-blue-500 rounded-full shrink-0 mt-2"></div>
                   {/if}
                 </div>
               </button>

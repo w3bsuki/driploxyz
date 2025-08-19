@@ -55,7 +55,7 @@
 </script>
 
 {#if show}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-xs">
     <div class="w-full max-w-sm bg-white rounded-lg shadow-lg border border-gray-200 p-5">
       <!-- Progress indicator -->
       <div class="flex justify-center mb-4">
@@ -83,7 +83,7 @@
         </button>
         <button 
           onclick={nextStep}
-          class="flex-1 px-4 py-1.5 text-sm text-white bg-gray-900 rounded hover:bg-gray-800 transition-colors"
+          class="flex-1 px-4 py-1.5 text-sm text-white bg-gray-900 rounded-sm hover:bg-gray-800 transition-colors"
         >
           {currentStep < tutorialSteps.length - 1 ? 'Next' : 'Get Started'}
         </button>

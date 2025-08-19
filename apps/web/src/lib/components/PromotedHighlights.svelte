@@ -20,7 +20,7 @@
         <!-- Promoted Products -->
         {#if promotedProducts && promotedProducts.length > 0}
           {#each promotedProducts as product}
-            <div class="relative flex-shrink-0 group pt-3">
+            <div class="relative shrink-0 group pt-3">
               <button 
                 onclick={() => onSellerSelect({
                   id: product.seller_id || `seller-${product.id}`,
@@ -61,7 +61,7 @@
                       </div>
                     </div>
                     <!-- Price badge -->
-                    <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg border border-gray-200 shadow-sm">
+                    <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg border border-gray-200 shadow-xs">
                       {i18n.common_currency()}{product.price}
                     </div>
                   </div>
@@ -75,7 +75,7 @@
         <!-- Top Sellers (fallback) -->
         {#if (!promotedProducts || promotedProducts.length === 0) && sellers.length > 0}
           {#each sellers as seller}
-            <div class="relative flex-shrink-0">
+            <div class="relative shrink-0">
               <Avatar 
                 size="lg" 
                 name={seller.name} 

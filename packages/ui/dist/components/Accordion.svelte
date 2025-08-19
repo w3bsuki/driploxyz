@@ -34,7 +34,7 @@
       >
         <div class="flex items-center space-x-3">
           {#if item.icon}
-            <div class="w-8 h-8 bg-black text-white rounded flex items-center justify-center flex-shrink-0">
+            <div class="w-8 h-8 bg-black text-white rounded-sm flex items-center justify-center shrink-0">
               <span class="text-sm font-bold">{item.icon}</span>
             </div>
           {/if}

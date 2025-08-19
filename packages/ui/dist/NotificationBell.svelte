@@ -31,7 +31,7 @@
   {#if hasNotifications && show}
     <div class="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1
       bg-red-500 text-white text-[10px] font-semibold rounded-full
-      ring-2 ring-white shadow-sm">
+      ring-2 ring-white shadow-xs">
       {count > 99 ? '99+' : count > 9 ? count : count}
     </div>
   {/if}

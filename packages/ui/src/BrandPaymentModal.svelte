@@ -122,7 +122,7 @@
 </script>
 
 {#if show}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-sm">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/20 backdrop-blur-xs">
     <div class="w-full max-w-sm bg-white rounded-lg shadow-lg border border-gray-200 p-5">
       <!-- Header -->
       <div class="text-center mb-4">
@@ -135,12 +135,12 @@
         <label class="block text-sm font-medium text-gray-700 mb-1">
           Payment Details
         </label>
-        <div bind:this={cardContainer} class="p-2.5 border border-gray-300 rounded bg-white text-sm"></div>
+        <div bind:this={cardContainer} class="p-2.5 border border-gray-300 rounded-sm bg-white text-sm"></div>
       </div>
 
       <!-- Error Message -->
       {#if error}
-        <div class="mb-3 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-600">
+        <div class="mb-3 p-2 bg-red-50 border border-red-200 rounded-sm text-sm text-red-600">
           {error}
         </div>
       {/if}
@@ -150,14 +150,14 @@
         <button
           onclick={handleCancel}
           disabled={loading}
-          class="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded hover:bg-gray-200 transition-colors disabled:opacity-50"
+          class="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-sm hover:bg-gray-200 transition-colors disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           onclick={handlePayment}
           disabled={loading || !stripe}
-          class="flex-1 px-3 py-1.5 text-sm text-white bg-gray-900 rounded hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          class="flex-1 px-3 py-1.5 text-sm text-white bg-gray-900 rounded-sm hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {#if loading}
             <div class="flex items-center justify-center gap-1">

@@ -106,7 +106,7 @@
                 <button
                   type="button"
                   onclick={() => avatarUrl = avatar}
-                  class="relative group flex-shrink-0"
+                  class="relative group shrink-0"
                 >
                   <div class="relative w-16 h-16 overflow-hidden rounded-xl border-2 transition-all duration-200 {avatarUrl === avatar ? 'border-black ring-2 ring-black/20' : 'border-gray-200 hover:border-gray-300'}">
                     <img src={avatar} alt="Avatar option" class="w-full h-full object-cover" />
@@ -125,7 +125,7 @@
             </div>
             
             <!-- Scroll hint -->
-            <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none"></div>
+            <div class="absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white via-white/80 to-transparent pointer-events-none"></div>
           </div>
         </div>
 

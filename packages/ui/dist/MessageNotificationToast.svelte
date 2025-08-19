@@ -103,7 +103,7 @@
                 <img 
                   src={product.image} 
                   alt={product.title}
-                  class="w-6 h-6 rounded object-cover"
+                  class="w-6 h-6 rounded-sm object-cover"
                 />
                 <span class="text-xs text-gray-600 truncate">
                   {product.title}

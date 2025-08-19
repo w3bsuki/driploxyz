@@ -18,7 +18,7 @@
   };
 </script>
 
-<div class="inline-flex items-center space-x-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-lg {sizeClasses[size]} {className}">
+<div class="inline-flex items-center space-x-1 bg-linear-to-r from-purple-600 to-blue-600 text-white font-bold rounded-lg {sizeClasses[size]} {className}">
   <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
     <path d="M12 2L13.09 8.26L19 9L13.09 9.74L12 16L10.91 9.74L5 9L10.91 8.26L12 2Z"/>
   </svg>

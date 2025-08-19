@@ -431,7 +431,7 @@
       <!-- Drawer -->
       <div class="fixed bottom-20 left-0 right-0 bg-white rounded-t-2xl h-[calc(85vh-5rem)] flex flex-col">
         <!-- Fixed Header -->
-        <div class="flex justify-between items-center p-4 border-b border-gray-100 flex-shrink-0">
+        <div class="flex justify-between items-center p-4 border-b border-gray-100 shrink-0">
           <h2 class="text-lg font-semibold">{i18n.search_quickFilters()}</h2>
           <button onclick={() => showFilters = false} class="p-1">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -535,7 +535,7 @@
         </div>
         
         <!-- Fixed Actions -->
-        <div class="flex space-x-3 p-4 border-t border-gray-100 flex-shrink-0">
+        <div class="flex space-x-3 p-4 border-t border-gray-100 shrink-0">
           <Button onclick={clearFilters} variant="outline" class="flex-1 h-12">{i18n.search_clearAll()}</Button>
           <Button onclick={() => showFilters = false} class="flex-1 h-12">{i18n.search_applyFilters()}</Button>
         </div>

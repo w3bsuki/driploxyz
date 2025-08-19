@@ -91,7 +91,7 @@
 {#if show}
   <!-- Glass Morphism Backdrop -->
   <div 
-    class="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+    class="fixed inset-0 bg-black/20 backdrop-blur-xs z-40"
     onclick={onClose}
     role="button"
     tabindex="-1"
@@ -149,8 +149,8 @@
               <div class="flex items-start space-x-3 p-3 rounded-xl bg-gray-50/50 animate-pulse">
                 <div class="w-10 h-10 bg-gray-200 rounded-full"></div>
                 <div class="flex-1 space-y-2">
-                  <div class="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div class="h-4 bg-gray-200 rounded-sm w-3/4"></div>
+                  <div class="h-3 bg-gray-200 rounded-sm w-1/2"></div>
                 </div>
               </div>
             {/each}
@@ -173,7 +173,7 @@
               >
                 <div class="flex items-start space-x-3">
                   <!-- Success Icon with Product Image -->
-                  <div class="flex-shrink-0 relative">
+                  <div class="shrink-0 relative">
                     <img 
                       src={notification.product.image} 
                       alt={notification.product.title}
@@ -192,7 +192,7 @@
                       <h4 class="text-sm font-medium text-gray-900 truncate pr-2">
                         {translations.itemSold || 'Item sold!'}
                       </h4>
-                      <div class="text-right flex-shrink-0">
+                      <div class="text-right shrink-0">
                         <div class="text-sm font-bold text-green-600">
                           +${notification.product.price.toFixed(2)}
                         </div>
@@ -232,7 +232,7 @@
 
                   <!-- Unread Indicator -->
                   {#if !notification.read}
-                    <div class="w-2 h-2 bg-green-500 rounded-full flex-shrink-0 mt-2"></div>
+                    <div class="w-2 h-2 bg-green-500 rounded-full shrink-0 mt-2"></div>
                   {/if}
                 </div>
               </button>

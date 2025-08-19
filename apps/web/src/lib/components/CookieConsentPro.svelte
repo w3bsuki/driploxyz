@@ -277,12 +277,12 @@
 	<!-- Locale Detection Modal (shows first if detected) -->
 	{#if showLocaleModal && detectedLocation}
 		<!-- Modal Backdrop -->
-		<div class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]" onclick={() => {}}></div>
+		<div class="fixed inset-0 bg-black/50 backdrop-blur-xs z-100" onclick={() => {}}></div>
 		
-		<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[101] w-full max-w-md animate-scale-in">
+		<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-101 w-full max-w-md animate-scale-in">
 			<div class="bg-white rounded-2xl shadow-2xl p-6">
 				<div class="text-center mb-6">
-					<div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full mb-4 shadow-lg">
+					<div class="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-blue-500 to-blue-600 rounded-full mb-4 shadow-lg">
 						<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
 						</svg>
@@ -310,7 +310,7 @@
 								<span class="text-2xl">{locale.flag}</span>
 								<span class="font-medium text-sm">{locale.name}</span>
 								{#if locale.code === detectedLocation.suggestedLocale}
-									<span class="ml-auto text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-medium">
+									<span class="ml-auto text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-sm font-medium">
 										Suggested
 									</span>
 								{/if}
@@ -320,7 +320,7 @@
 					
 					<button
 						onclick={() => { showLocaleModal = false }}
-						class="w-full mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-sm"
+						class="w-full mt-4 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors shadow-xs"
 					>
 						Continue with {availableLocales.find(l => l.code === selectedLocale)?.name || 'English'}
 					</button>
@@ -331,7 +331,7 @@
 	
 	<!-- Cookie Consent Banner - Professional Bottom Sheet -->
 	{#if !showLocaleModal}
-		<div class="fixed bottom-0 left-0 right-0 z-[100] animate-slide-up">
+		<div class="fixed bottom-0 left-0 right-0 z-100 animate-slide-up">
 			<div class="bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
 				<div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
 					<div class="flex flex-col lg:flex-row gap-4 lg:gap-6 lg:items-start">
@@ -366,14 +366,14 @@
 												type="checkbox" 
 												checked 
 												disabled 
-												class="w-4 h-4 rounded border-gray-300"
+												class="w-4 h-4 rounded-sm border-gray-300"
 											/>
 											<div>
 												<div class="font-medium text-sm text-gray-900">Essential</div>
 												<p class="text-xs text-gray-500">Required for core site functionality</p>
 											</div>
 										</div>
-										<span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">Always active</span>
+										<span class="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded-sm">Always active</span>
 									</div>
 									
 									<!-- Functional -->
@@ -382,7 +382,7 @@
 											<input 
 												type="checkbox" 
 												bind:checked={preferences.functional}
-												class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+												class="w-4 h-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
 											/>
 											<div>
 												<div class="font-medium text-sm text-gray-900">Preferences</div>
@@ -397,7 +397,7 @@
 											<input 
 												type="checkbox" 
 												bind:checked={preferences.analytics}
-												class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+												class="w-4 h-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
 											/>
 											<div>
 												<div class="font-medium text-sm text-gray-900">Statistics</div>
@@ -412,7 +412,7 @@
 											<input 
 												type="checkbox" 
 												bind:checked={preferences.marketing}
-												class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+												class="w-4 h-4 rounded-sm border-gray-300 text-blue-600 focus:ring-blue-500"
 											/>
 											<div>
 												<div class="font-medium text-sm text-gray-900">Marketing</div>

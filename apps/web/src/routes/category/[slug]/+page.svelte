@@ -154,7 +154,7 @@
   <Header />
 
   <!-- Category Hero -->
-  <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+  <div class="bg-linear-to-r from-purple-600 to-pink-600 text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="flex items-center justify-between">
         <div>
@@ -182,7 +182,7 @@
       <div class="flex overflow-x-auto scrollbar-hide space-x-2">
         <button
           onclick={() => selectedSubcategory = null}
-          class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-colors
+          class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors
             {selectedSubcategory === null 
               ? 'bg-black text-white' 
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
@@ -192,7 +192,7 @@
         {#each subcategories as subcat}
           <button
             onclick={() => selectedSubcategory = subcat}
-            class="px-4 py-2 rounded-full text-sm font-medium flex-shrink-0 transition-colors
+            class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors
               {selectedSubcategory === subcat 
                 ? 'bg-black text-white' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
@@ -211,7 +211,7 @@
       <div class="overflow-x-auto scrollbar-hide">
         <div class="flex space-x-4 pb-2">
           {#each featuredSellers as seller}
-            <a href="/profile/{seller.id}" class="bg-white rounded-lg p-4 hover:shadow-md transition-shadow flex-shrink-0 min-w-[140px]">
+            <a href="/profile/{seller.id}" class="bg-white rounded-lg p-4 hover:shadow-md transition-shadow shrink-0 min-w-[140px]">
               <img src={seller.avatar} alt={seller.name} class="w-16 h-16 rounded-full mx-auto mb-2" />
               <h3 class="text-sm font-medium text-center truncate">{seller.name}</h3>
               <p class="text-xs text-gray-500 text-center">{seller.itemCount} items</p>
@@ -258,7 +258,7 @@
     <div class="flex gap-6">
       <!-- Filters Sidebar -->
       {#if showFilters}
-        <aside class="w-64 flex-shrink-0">
+        <aside class="w-64 shrink-0">
           <div class="bg-white rounded-lg p-4 sticky top-24">
             <div class="flex justify-between items-center mb-4">
               <h3 class="font-semibold">Filters</h3>
@@ -295,7 +295,7 @@
                       type="checkbox" 
                       checked={selectedConditions.includes(condition.value)}
                       onchange={() => toggleCondition(condition.value)}
-                      class="mr-2 rounded text-blue-600"
+                      class="mr-2 rounded-sm text-blue-600"
                     />
                     <span class="text-sm text-gray-700">{condition.label}</span>
                   </label>
@@ -311,14 +311,14 @@
                   type="number" 
                   bind:value={priceRange.min}
                   placeholder="Min"
-                  class="w-24 px-2 py-1 border border-gray-300 rounded text-sm"
+                  class="w-24 px-2 py-1 border border-gray-300 rounded-sm text-sm"
                 />
                 <span class="text-gray-500">-</span>
                 <input 
                   type="number" 
                   bind:value={priceRange.max}
                   placeholder="Max"
-                  class="w-24 px-2 py-1 border border-gray-300 rounded text-sm"
+                  class="w-24 px-2 py-1 border border-gray-300 rounded-sm text-sm"
                 />
               </div>
             </div>

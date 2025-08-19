@@ -89,9 +89,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 </svelte:head>
 
-<div class="min-h-screen bg-gradient-to-b from-green-50 via-white to-white">
+<div class="min-h-screen bg-linear-to-b from-green-50 via-white to-white">
   <!-- Mobile Header -->
-  <div class="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-gray-100 px-4 py-3">
+  <div class="sticky top-0 z-10 bg-white/80 backdrop-blur-xs border-b border-gray-100 px-4 py-3">
     <div class="flex items-center justify-between max-w-lg mx-auto">
       <h1 class="text-lg font-semibold">Listing Complete</h1>
       <button 
@@ -140,7 +140,7 @@
     <!-- Pro Tips -->
     <Card class="mb-6 transform transition-all duration-500 {showTips ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}">
       <div class="flex items-start space-x-3">
-        <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+        <div class="shrink-0 w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
           <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
           </svg>
@@ -150,7 +150,7 @@
           <ul class="space-y-1.5">
             {#each tips as tip}
               <li class="flex items-start">
-                <span class="text-green-500 mr-2 flex-shrink-0">✓</span>
+                <span class="text-green-500 mr-2 shrink-0">✓</span>
                 <span class="text-sm text-gray-600">{tip}</span>
               </li>
             {/each}

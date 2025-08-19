@@ -104,7 +104,7 @@
           <div class="flex space-x-2">
             <Button 
               onclick={handleFollow}
-              variant={isFollowing ? 'outline' : 'primary'}
+              variant={isFollowing ? 'outline-solid' : 'primary'}
               size="sm"
               class="flex-1 text-sm"
             >
@@ -213,7 +213,7 @@
           {#each data.products as product}
             <a
               href="/product/{product.id}"
-              class="aspect-square bg-gray-100 rounded overflow-hidden block"
+              class="aspect-square bg-gray-100 rounded-sm overflow-hidden block"
             >
               <img 
                 src={product.images[0]?.image_url || '/placeholder-product.svg'} 

@@ -111,7 +111,7 @@
         <!-- Progress Bar -->
         <div class="h-1 bg-gray-200/50">
           <div 
-            class="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500 ease-out"
+            class="h-full bg-linear-to-r from-blue-500 to-purple-500 transition-all duration-500 ease-out"
             style="width: {((currentStep + 1) / effectiveSteps.length) * 100}%"
           ></div>
         </div>
@@ -182,15 +182,15 @@
       <!-- Feature Highlights for Discovery Step -->
       {#if currentStepData.id === 'discover'}
         <div class="grid grid-cols-3 gap-3 mt-6">
-          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 border border-white/30 text-center">
+          <div class="bg-white/80 backdrop-blur-xs rounded-xl p-3 border border-white/30 text-center">
             <div class="text-lg mb-1">👗</div>
             <div class="text-xs font-medium text-gray-700">{translations.designer || 'Designer'}</div>
           </div>
-          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 border border-white/30 text-center">
+          <div class="bg-white/80 backdrop-blur-xs rounded-xl p-3 border border-white/30 text-center">
             <div class="text-lg mb-1">♻️</div>
             <div class="text-xs font-medium text-gray-700">{translations.vintage || 'Vintage'}</div>
           </div>
-          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-3 border border-white/30 text-center">
+          <div class="bg-white/80 backdrop-blur-xs rounded-xl p-3 border border-white/30 text-center">
             <div class="text-lg mb-1">⚡</div>
             <div class="text-xs font-medium text-gray-700">{translations.trending || 'Trending'}</div>
           </div>
@@ -200,11 +200,11 @@
       <!-- Stats for Sell Step -->
       {#if currentStepData.id === 'sell'}
         <div class="grid grid-cols-2 gap-3 mt-6">
-          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/30 text-center">
+          <div class="bg-white/80 backdrop-blur-xs rounded-xl p-4 border border-white/30 text-center">
             <div class="text-lg font-bold text-green-600 mb-1">$2.5M+</div>
             <div class="text-xs text-gray-600">{translations.totalSales || 'Total Sales'}</div>
           </div>
-          <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/30 text-center">
+          <div class="bg-white/80 backdrop-blur-xs rounded-xl p-4 border border-white/30 text-center">
             <div class="text-lg font-bold text-blue-600 mb-1">50K+</div>
             <div class="text-xs text-gray-600">{translations.happySellers || 'Happy Sellers'}</div>
           </div>

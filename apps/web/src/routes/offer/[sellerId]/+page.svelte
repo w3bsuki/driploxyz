@@ -113,7 +113,7 @@
   <Header />
   
   <!-- Page Header -->
-  <div class="bg-white shadow-sm sticky top-14 sm:top-16 z-30">
+  <div class="bg-white shadow-xs sticky top-14 sm:top-16 z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between py-3">
         <div class="flex items-center space-x-3">
@@ -139,7 +139,7 @@
     <div class="lg:grid lg:grid-cols-3 lg:gap-6">
       <!-- Products Selection -->
       <div class="lg:col-span-2 mb-6 lg:mb-0">
-        <div class="bg-white rounded-lg shadow-sm">
+        <div class="bg-white rounded-lg shadow-xs">
           <div class="p-4 sm:p-6 border-b">
             <div class="flex justify-between items-center">
               <div>
@@ -192,7 +192,7 @@
 
       <!-- Offer Summary -->
       <div class="lg:col-span-1">
-        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 sticky top-24">
+        <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6 sticky top-24">
           <h2 class="text-lg font-semibold mb-4">Bundle Summary</h2>
           
           {#if selectedItems.size > 0}

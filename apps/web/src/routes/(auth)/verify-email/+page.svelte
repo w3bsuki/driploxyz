@@ -53,7 +53,7 @@
 			{/if}
 		</div>
 		
-		<div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+		<div class="bg-white py-8 px-4 shadow-sm sm:rounded-lg sm:px-10">
 			<div class="space-y-6">
 				<div class="text-center">
 					<svg
@@ -83,7 +83,7 @@
 				{#if resendSuccess}
 					<div class="rounded-md bg-green-50 p-4">
 						<div class="flex">
-							<div class="flex-shrink-0">
+							<div class="shrink-0">
 								<svg
 									class="h-5 w-5 text-green-400"
 									fill="currentColor"
@@ -108,7 +108,7 @@
 				{#if resendError}
 					<div class="rounded-md bg-red-50 p-4">
 						<div class="flex">
-							<div class="flex-shrink-0">
+							<div class="shrink-0">
 								<svg
 									class="h-5 w-5 text-red-400"
 									fill="currentColor"

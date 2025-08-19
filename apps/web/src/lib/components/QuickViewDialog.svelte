@@ -59,7 +59,7 @@
 {#if seller}
   <!-- Backdrop -->
   <div 
-    class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 pb-24 sm:pb-4"
+    class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4 pb-24 sm:pb-4"
     onclick={handleBackdropClick}
     onkeydown={(e) => e.key === 'Escape' && onclose()}
     role="dialog"
@@ -69,14 +69,14 @@
     <!-- Dialog -->
     <div class="bg-white rounded-2xl max-w-md w-full max-h-[65vh] sm:max-h-[85vh] overflow-hidden flex flex-col">
       <!-- Header -->
-      <div class="relative flex-shrink-0">
+      <div class="relative shrink-0">
         <!-- Cover Image -->
-        <div class="h-20 sm:h-28 bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-400"></div>
+        <div class="h-20 sm:h-28 bg-linear-to-br from-yellow-400 via-yellow-500 to-amber-400"></div>
         
         <!-- Close Button -->
         <button
           onclick={onclose}
-          class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full"
+          class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-xs rounded-full"
           aria-label="Close"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +95,7 @@
                 premium={seller.premium}
               />
               {#if seller.premium}
-                <span class="absolute -top-1 left-1/2 -translate-x-1/2 text-sm bg-white rounded-full p-0.5 shadow-sm">👑</span>
+                <span class="absolute -top-1 left-1/2 -translate-x-1/2 text-sm bg-white rounded-full p-0.5 shadow-xs">👑</span>
               {/if}
             </div>
             <div class="flex-1 pb-1">
@@ -158,7 +158,7 @@
                     e.stopPropagation();
                     console.log('Add to wishlist:', product.id);
                   }}
-                  class="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm rounded-full"
+                  class="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-xs rounded-full"
                   aria-label="Add to wishlist"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,7 +187,7 @@
       </div>
       
       <!-- Footer -->
-      <div class="border-t px-4 py-2 bg-gray-50 flex-shrink-0">
+      <div class="border-t px-4 py-2 bg-gray-50 shrink-0">
         <p class="text-[10px] sm:text-xs text-center text-gray-500">
           <span class="inline-flex items-center">
             <span class="text-yellow-500 mr-1">👑</span>

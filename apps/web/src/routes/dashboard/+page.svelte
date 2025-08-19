@@ -140,7 +140,7 @@
         </Button>
       </a>
       <a href="/dashboard/upgrade">
-        <Button variant="outline" class="w-full bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-200 text-yellow-800 hover:from-yellow-100 hover:to-orange-100">
+        <Button variant="outline" class="w-full bg-linear-to-r from-yellow-50 to-orange-50 border-yellow-200 text-yellow-800 hover:from-yellow-100 hover:to-orange-100">
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
           </svg>
@@ -164,7 +164,7 @@
 
     <!-- Balance Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-xs">
         <div class="flex justify-between items-start">
           <div>
             <p class="text-sm text-gray-600">Available Balance</p>
@@ -177,7 +177,7 @@
         </div>
       </div>
       
-      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-sm">
+      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-xs">
         <div class="flex justify-between items-start">
           <div>
             <p class="text-sm text-gray-600">This Month's Sales</p>
@@ -246,22 +246,22 @@
     {#if activeTab === 'overview'}
       <!-- Stats Grid -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white p-4 rounded-lg shadow-sm">
+        <div class="bg-white p-4 rounded-lg shadow-xs">
           <p class="text-sm text-gray-600">Total Revenue</p>
           <p class="text-xl sm:text-2xl font-bold text-gray-900">${stats().totalRevenue.toFixed(0)}</p>
           <p class="text-xs text-gray-500 mt-1">All time</p>
         </div>
-        <div class="bg-white p-4 rounded-lg shadow-sm">
+        <div class="bg-white p-4 rounded-lg shadow-xs">
           <p class="text-sm text-gray-600">Active Listings</p>
           <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats().activeListings}</p>
           <p class="text-xs text-gray-500 mt-1">Currently live</p>
         </div>
-        <div class="bg-white p-4 rounded-lg shadow-sm">
+        <div class="bg-white p-4 rounded-lg shadow-xs">
           <p class="text-sm text-gray-600">Total Views</p>
           <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats().monthlyViews}</p>
           <p class="text-xs text-gray-500 mt-1">This month</p>
         </div>
-        <div class="bg-white p-4 rounded-lg shadow-sm">
+        <div class="bg-white p-4 rounded-lg shadow-xs">
           <p class="text-sm text-gray-600">Conversion Rate</p>
           <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats().conversionRate.toFixed(1)}%</p>
           <p class="text-xs text-gray-500 mt-1">Views to sales</p>
@@ -269,7 +269,7 @@
       </div>
 
       <!-- Recent Orders -->
-      <div class="bg-white rounded-lg shadow-sm mb-6">
+      <div class="bg-white rounded-lg shadow-xs mb-6">
         <div class="p-4 sm:p-6 border-b border-gray-200">
           <div class="flex justify-between items-center">
             <h2 class="text-lg font-semibold">Recent Orders</h2>
@@ -330,7 +330,7 @@
       </div>
 
     {:else if activeTab === 'listings'}
-      <div class="bg-white rounded-lg shadow-sm">
+      <div class="bg-white rounded-lg shadow-xs">
         <div class="p-4 sm:p-6 border-b border-gray-200">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
             <h2 class="text-lg font-semibold">Manage Listings</h2>
@@ -361,7 +361,7 @@
       </div>
 
     {:else if activeTab === 'orders'}
-      <div class="bg-white rounded-lg shadow-sm">
+      <div class="bg-white rounded-lg shadow-xs">
         <div class="p-4 sm:p-6 border-b border-gray-200">
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
             <h2 class="text-lg font-semibold">Order Management</h2>
@@ -421,7 +421,7 @@
     {:else if activeTab === 'analytics'}
       <div class="space-y-6">
         <!-- Performance Chart -->
-        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+        <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6">
           <h2 class="text-lg font-semibold mb-4">Performance Overview</h2>
           <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
             <p class="text-gray-500">Chart will be implemented with a charting library</p>
@@ -429,14 +429,14 @@
         </div>
 
         <!-- Top Products -->
-        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+        <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6">
           <h2 class="text-lg font-semibold mb-4">Top Performing Products</h2>
           <div class="space-y-4">
             {#each activeListings().slice(0, 5) as product, i}
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                   <span class="text-sm font-medium text-gray-500">#{i + 1}</span>
-                  <img src={product.images[0]} alt={product.title} class="w-10 h-10 rounded object-cover" />
+                  <img src={product.images[0]} alt={product.title} class="w-10 h-10 rounded-sm object-cover" />
                   <div>
                     <p class="text-sm font-medium text-gray-900">{product.title}</p>
                     <p class="text-xs text-gray-500">{Math.floor(Math.random() * 100)} views</p>
@@ -450,7 +450,7 @@
 
         <!-- Traffic Sources -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+          <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6">
             <h2 class="text-lg font-semibold mb-4">Traffic Sources</h2>
             <div class="space-y-3">
               <div>
@@ -483,7 +483,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+          <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6">
             <h2 class="text-lg font-semibold mb-4">Customer Demographics</h2>
             <div class="space-y-3">
               <div class="flex justify-between">
@@ -509,7 +509,7 @@
 
     {:else if activeTab === 'settings'}
       <div class="max-w-2xl">
-        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+        <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6 mb-6">
           <h2 class="text-lg font-semibold mb-4">Shop Settings</h2>
           <div class="space-y-4">
             <div>
@@ -532,7 +532,7 @@
           </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-6">
+        <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6 mb-6">
           <h2 class="text-lg font-semibold mb-4">Shipping Settings</h2>
           <div class="space-y-4">
             <div>
@@ -550,7 +550,7 @@
           </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6">
+        <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6">
           <h2 class="text-lg font-semibold mb-4">Payment Settings</h2>
           <div class="space-y-4">
             <div>

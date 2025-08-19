@@ -390,7 +390,7 @@
             onkeydown={(e) => e.key === 'Enter' && (selectedConversation = conv.id)}
           >
             <div class="flex items-start space-x-3">
-              <div class="relative flex-shrink-0">
+              <div class="relative shrink-0">
                 <Avatar src={conv.userAvatar} name={conv.userName} size="md" />
                 {#if conv.unread}
                   <span class="absolute -bottom-0.5 -right-0.5 h-3 w-3 bg-blue-500 rounded-full border-2 border-white"></span>
@@ -399,26 +399,26 @@
               <div class="flex-1 min-w-0">
                 <div class="flex justify-between items-start">
                   <h3 class="font-medium text-gray-900 text-sm truncate">{conv.userName}</h3>
-                  <span class="text-[11px] text-gray-500 flex-shrink-0 ml-2">{timeAgo(conv.lastMessageTime)}</span>
+                  <span class="text-[11px] text-gray-500 shrink-0 ml-2">{timeAgo(conv.lastMessageTime)}</span>
                 </div>
                 
                 {#if conv.isOffer}
                   <div class="inline-flex items-center space-x-1 mt-1">
-                    <span class="bg-blue-100 text-blue-700 text-[10px] font-medium px-1.5 py-0.5 rounded">Offer</span>
+                    <span class="bg-blue-100 text-blue-700 text-[10px] font-medium px-1.5 py-0.5 rounded-sm">Offer</span>
                     <span class="text-xs font-semibold text-gray-900">${conv.offerPrice}</span>
                   </div>
                 {:else}
                   <div class="flex items-center space-x-2 mt-1">
                     {#if conv.isProductConversation && conv.productTitle}
                       <div class="flex items-center space-x-2">
-                        <img src={conv.productImage} alt={conv.productTitle} class="w-6 h-6 rounded object-cover" />
+                        <img src={conv.productImage} alt={conv.productTitle} class="w-6 h-6 rounded-sm object-cover" />
                         <span class="text-xs text-gray-600 truncate">{conv.productTitle}</span>
-                        <span class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-medium">Product</span>
+                        <span class="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-sm font-medium">Product</span>
                       </div>
                     {:else}
                       <div class="flex items-center space-x-2">
                         <span class="text-xs text-gray-500 italic">{i18n.messages_noProducts()}</span>
-                        <span class="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded font-medium">General</span>
+                        <span class="text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-sm font-medium">General</span>
                       </div>
                     {/if}
                   </div>
@@ -438,7 +438,7 @@
         {@const conv = conversations().find(c => c.id === selectedConversation)}
         <div class="sm:col-span-2 lg:col-span-3 bg-white flex flex-col {selectedConversation ? 'fixed sm:relative inset-0 top-14 sm:top-0 z-40 sm:z-auto h-[calc(100vh-56px)] sm:h-full' : 'h-full'}">
           <!-- Chat Header - Sticky -->
-          <div class="bg-white border-b px-4 py-3 flex-shrink-0">
+          <div class="bg-white border-b px-4 py-3 shrink-0">
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-3">
                 <button
@@ -471,7 +471,7 @@
             
             <!-- Product/Offer Info -->
             {#if conv?.isOffer}
-              <div class="mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
+              <div class="mt-3 bg-linear-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
                 <div class="flex justify-between items-start mb-2">
                   <div>
                     <p class="text-xs font-semibold text-blue-900 uppercase tracking-wide">{i18n.messages_bundleOffer()}</p>
@@ -488,13 +488,13 @@
                 {/if}
               </div>
             {:else if conv?.isProductConversation && conv?.productTitle}
-              <div class="mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
+              <div class="mt-3 bg-linear-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
                 <div class="flex items-center space-x-2 mb-2">
                   <span class="text-xs font-semibold text-blue-900 uppercase tracking-wide">Product Conversation</span>
-                  <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-medium">Active</span>
+                  <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-sm font-medium">Active</span>
                 </div>
                 <a href="/product/{conv.productId}" class="flex items-center space-x-3 p-2 bg-white rounded-lg hover:bg-gray-50 transition-colors">
-                  <img src={conv.productImage} alt={conv.productTitle} class="w-12 h-12 rounded-lg object-cover shadow-sm" />
+                  <img src={conv.productImage} alt={conv.productTitle} class="w-12 h-12 rounded-lg object-cover shadow-xs" />
                   <div class="flex-1">
                     <p class="text-sm font-medium text-gray-900 truncate">{conv.productTitle}</p>
                     <p class="text-lg font-bold text-gray-900">${conv.productPrice}</p>
@@ -527,7 +527,7 @@
             {#each selectedConvMessages() as message}
               <div class="flex {message.sender_id === data.user?.id ? 'justify-end' : 'justify-start'} px-1">
                 <div class="max-w-[80%] sm:max-w-[70%]">
-                  <div class="{message.sender_id === data.user?.id ? 'bg-black text-white rounded-2xl rounded-br-md' : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm border'} px-4 py-3">
+                  <div class="{message.sender_id === data.user?.id ? 'bg-black text-white rounded-2xl rounded-br-md' : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-xs border'} px-4 py-3">
                     <p class="text-sm leading-relaxed">{message.content}</p>
                   </div>
                   <div class="flex items-center justify-between mt-1.5 px-2">
@@ -566,7 +566,7 @@
           </div>
 
           <!-- Message Input - Fixed at Bottom -->
-          <div class="bg-white border-t p-4 pb-6 sm:pb-3 flex-shrink-0">
+          <div class="bg-white border-t p-4 pb-6 sm:pb-3 shrink-0">
             <!-- Quick Actions -->
             <div class="flex gap-2 mb-2 overflow-x-auto scrollbar-hide">
               <button class="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap">
@@ -601,7 +601,7 @@
                   }}
                   oninput={handleTyping}
                   placeholder={i18n.messages_messageInput()}
-                  class="w-full px-4 py-2.5 bg-gray-50 rounded-full text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:bg-white"
+                  class="w-full px-4 py-2.5 bg-gray-50 rounded-full text-base placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-black focus:bg-white"
                 />
               </div>
               <button 

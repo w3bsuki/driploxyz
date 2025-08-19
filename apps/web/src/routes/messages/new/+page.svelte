@@ -68,7 +68,7 @@
       </div>
       
       {#if recipient}
-        <div class="flex items-center space-x-3 p-4 bg-white rounded-lg shadow-sm">
+        <div class="flex items-center space-x-3 p-4 bg-white rounded-lg shadow-xs">
           <Avatar 
             src={recipient.avatar_url} 
             name={recipient.full_name || recipient.username} 
@@ -82,7 +82,7 @@
       {/if}
       
       {#if product}
-        <div class="mt-4 p-4 bg-white rounded-lg shadow-sm">
+        <div class="mt-4 p-4 bg-white rounded-lg shadow-xs">
           <div class="flex items-center space-x-3">
             <img 
               src={product.images?.[0]?.image_url || '/placeholder-product.svg'} 
@@ -99,7 +99,7 @@
     </div>
     
     <!-- Message Form -->
-    <div class="bg-white rounded-lg shadow-sm p-4">
+    <div class="bg-white rounded-lg shadow-xs p-4">
       <div class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Message</label>

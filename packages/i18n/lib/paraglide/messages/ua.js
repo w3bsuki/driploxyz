@@ -2581,6 +2581,14 @@ export const onboarding_goToDashboard = () => `Перейти до панелі 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandSetupComplete = () => `Ваш бренд-профіль налаштовано! Щоб активувати повні функції бренду та значок верифікації, вам потрібно підписатися на наш план для брендів з вашої панелі керування.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const onboarding_discover = () => `Відкрийте якісну моду`
 
 
@@ -3691,14 +3699,6 @@ export { sell_month } from "./en.js"
 export { sell_next } from "./en.js"
 
 export { sell_previous } from "./en.js"
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandSetupComplete = () => `Ваш бренд-профіль налаштовано! Щоб активувати повні функції бренду та значок верифікації, вам потрібно підписатися на наш план для брендів з вашої панелі керування.`
-
 
 export { onboarding_personalAccount } from "./en.js"
 

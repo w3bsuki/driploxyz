@@ -185,7 +185,7 @@
   {:else}
     <!-- Key Metrics -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-6 rounded-lg shadow-xs border">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-gray-600">Total Users</p>
@@ -196,7 +196,7 @@
         <div class="mt-2 text-sm text-green-600">+{stats.thisWeekUsers} this week</div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-6 rounded-lg shadow-xs border">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-gray-600">Total Products</p>
@@ -207,7 +207,7 @@
         <div class="mt-2 text-sm text-green-600">+{stats.thisWeekProducts} this week</div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-6 rounded-lg shadow-xs border">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-gray-600">Total Orders</p>
@@ -218,7 +218,7 @@
         <div class="mt-2 text-sm text-green-600">+{stats.thisWeekOrders} this week</div>
       </div>
 
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-6 rounded-lg shadow-xs border">
         <div class="flex items-center justify-between">
           <div>
             <p class="text-sm font-medium text-gray-600">Commission Revenue</p>
@@ -233,7 +233,7 @@
     <!-- Action Items -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Pending Payouts Alert -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-6 rounded-lg shadow-xs border">
         <div class="flex items-center justify-between mb-4">
           <h3 class="text-lg font-medium text-gray-900">Pending Payouts</h3>
           <span class="text-2xl">⚠️</span>
@@ -259,7 +259,7 @@
       </div>
 
       <!-- Quick Actions -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-6 rounded-lg shadow-xs border">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Actions</h3>
         <div class="space-y-3">
           <Button href="/admin/payouts" variant="outline" size="sm" class="w-full">
@@ -278,7 +278,7 @@
       </div>
 
       <!-- Platform Health -->
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-6 rounded-lg shadow-xs border">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Platform Health</h3>
         <div class="space-y-3">
           <div class="flex justify-between items-center">
@@ -302,7 +302,7 @@
     </div>
 
     <!-- Recent Activity -->
-    <div class="bg-white rounded-lg shadow-sm border">
+    <div class="bg-white rounded-lg shadow-xs border">
       <div class="px-6 py-4 border-b">
         <h3 class="text-lg font-medium text-gray-900">Recent Activity</h3>
       </div>

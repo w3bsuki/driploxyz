@@ -108,7 +108,7 @@
 </style>
 
 <!-- Unified Header for all pages -->
-<header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+<header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-xs">
   <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-14 sm:h-16">
       <!-- Left: Mobile Menu + Logo -->
@@ -277,7 +277,7 @@
             <a href="/login" class="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg hover:bg-white/20">
               {i18n.auth_signIn()}
             </a>
-            <a href="/signup" class="px-3 py-1.5 text-sm font-medium bg-black/80 text-white rounded-lg hover:bg-black backdrop-blur-sm">
+            <a href="/signup" class="px-3 py-1.5 text-sm font-medium bg-black/80 text-white rounded-lg hover:bg-black backdrop-blur-xs">
               {i18n.auth_signUp()}
             </a>
           </div>

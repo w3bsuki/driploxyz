@@ -15,7 +15,7 @@
     children
   }: Props = $props();
 
-  const baseClasses = 'bg-white border border-gray-200 rounded-lg shadow-sm';
+  const baseClasses = 'bg-white border border-gray-200 rounded-lg shadow-xs';
   const paddingClasses = $derived(padding ? 'p-6' : '');
   const hoverClasses = $derived(hover ? 'cursor-pointer' : '');
   const classes = $derived(`${baseClasses} ${paddingClasses} ${hoverClasses} ${className}`);

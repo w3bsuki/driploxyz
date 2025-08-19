@@ -55,14 +55,14 @@
     <div class="flex gap-2">
       <button
         onclick={onAccept}
-        class="flex-1 px-4 py-2 bg-black text-white text-sm font-medium rounded hover:bg-gray-800 transition-colors"
+        class="flex-1 px-4 py-2 bg-black text-white text-sm font-medium rounded-sm hover:bg-gray-800 transition-colors"
       >
         Switch to {localeNames[detectedLocale]}
       </button>
       
       <button
         onclick={onDismiss}
-        class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded hover:bg-gray-200 transition-colors"
+        class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-sm hover:bg-gray-200 transition-colors"
       >
         Keep {localeNames[currentLocale]}
       </button>

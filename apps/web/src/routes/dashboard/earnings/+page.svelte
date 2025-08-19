@@ -131,25 +131,25 @@
   {:else}
     <!-- Earnings Overview -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-6 rounded-lg shadow-xs border">
         <div class="text-sm font-medium text-gray-600">Total Earnings</div>
         <div class="text-2xl font-bold text-gray-900">{earnings.totalEarnings.toFixed(2)} BGN</div>
         <div class="text-xs text-gray-500 mt-1">After 5% platform fee</div>
       </div>
       
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-6 rounded-lg shadow-xs border">
         <div class="text-sm font-medium text-gray-600">Available for Payout</div>
         <div class="text-2xl font-bold text-green-600">{earnings.pendingPayout.toFixed(2)} BGN</div>
         <div class="text-xs text-gray-500 mt-1">Minimum 20 BGN</div>
       </div>
       
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-6 rounded-lg shadow-xs border">
         <div class="text-sm font-medium text-gray-600">Total Paid Out</div>
         <div class="text-2xl font-bold text-blue-600">{earnings.totalPaidOut.toFixed(2)} BGN</div>
         <div class="text-xs text-gray-500 mt-1">Processed payouts</div>
       </div>
       
-      <div class="bg-white p-6 rounded-lg shadow-sm border">
+      <div class="bg-white p-6 rounded-lg shadow-xs border">
         <div class="text-sm font-medium text-gray-600">Last Payout</div>
         <div class="text-lg font-medium text-gray-900">
           {earnings.lastPayoutAt ? new Date(earnings.lastPayoutAt).toLocaleDateString() : 'Never'}
@@ -159,7 +159,7 @@
     </div>
 
     <!-- Payout Request -->
-    <div class="bg-white p-6 rounded-lg shadow-sm border">
+    <div class="bg-white p-6 rounded-lg shadow-xs border">
       <div class="flex items-center justify-between mb-4">
         <h2 class="text-lg font-medium text-gray-900">Request Payout</h2>
         <Button 
@@ -181,7 +181,7 @@
     </div>
 
     <!-- Recent Transactions -->
-    <div class="bg-white rounded-lg shadow-sm border">
+    <div class="bg-white rounded-lg shadow-xs border">
       <div class="px-6 py-4 border-b">
         <h2 class="text-lg font-medium text-gray-900">Recent Sales</h2>
       </div>
@@ -234,7 +234,7 @@
     </div>
 
     <!-- Payout History -->
-    <div class="bg-white rounded-lg shadow-sm border">
+    <div class="bg-white rounded-lg shadow-xs border">
       <div class="px-6 py-4 border-b">
         <h2 class="text-lg font-medium text-gray-900">Payout History</h2>
       </div>

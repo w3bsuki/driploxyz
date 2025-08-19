@@ -92,7 +92,7 @@
   }
 </script>
 
-<aside class="hidden lg:block w-64 flex-shrink-0 {className}">
+<aside class="hidden lg:block w-64 shrink-0 {className}">
   <div class="sticky top-20 space-y-6">
     <!-- Active Filters Section -->
     {#if hasActiveFilters()}
@@ -115,7 +115,7 @@
               </span>
               <button
                 onclick={() => onCategorySelect?.(null)}
-                class="p-1 hover:bg-gray-100 rounded transition-colors"
+                class="p-1 hover:bg-gray-100 rounded-sm transition-colors"
               >
                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -129,7 +129,7 @@
               <span class="text-sm text-gray-700">{selectedSubcategory}</span>
               <button
                 onclick={() => onSubcategorySelect?.(null, selectedCategory)}
-                class="p-1 hover:bg-gray-100 rounded transition-colors"
+                class="p-1 hover:bg-gray-100 rounded-sm transition-colors"
               >
                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -146,7 +146,7 @@
                 </span>
                 <button
                   onclick={() => onFilterRemove?.(type)}
-                  class="p-1 hover:bg-gray-100 rounded transition-colors"
+                  class="p-1 hover:bg-gray-100 rounded-sm transition-colors"
                 >
                   <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -238,7 +238,7 @@
     </div>
     
     <!-- Quick Links -->
-    <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-100">
+    <div class="bg-linear-to-br from-purple-50 to-pink-50 rounded-lg p-4 border border-purple-100">
       <h4 class="font-medium text-gray-900 mb-3">Quick Links</h4>
       <div class="space-y-2">
         <a href="/deals" class="flex items-center space-x-2 text-sm text-purple-700 hover:text-purple-900 transition-colors">

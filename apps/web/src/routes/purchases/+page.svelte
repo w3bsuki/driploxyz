@@ -49,7 +49,7 @@
   <Header />
   
   <!-- Page Header -->
-  <div class="bg-white shadow-sm sticky top-14 sm:top-16 z-30">
+  <div class="bg-white shadow-xs sticky top-14 sm:top-16 z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center py-4">
         <h1 class="text-xl sm:text-2xl font-bold text-gray-900">My Purchases</h1>
@@ -86,7 +86,7 @@
     {#if purchases.length > 0}
       <div class="space-y-4">
         {#each purchases as order}
-          <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+          <div class="bg-white rounded-lg shadow-xs overflow-hidden">
             <!-- Order Header -->
             <div class="p-4 sm:p-6 border-b">
               <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-3 sm:space-y-0">
@@ -230,7 +230,7 @@
         {/each}
       </div>
     {:else}
-      <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+      <div class="bg-white rounded-lg shadow-xs p-12 text-center">
         <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>

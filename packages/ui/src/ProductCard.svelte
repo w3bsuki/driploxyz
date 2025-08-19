@@ -86,7 +86,7 @@
     <!-- Seller Avatar Bottom Left on Image -->
     <div class="absolute bottom-2 left-2">
       <div 
-        class="flex items-center bg-white/90 backdrop-blur rounded-full shadow-sm transition-all duration-200 ease-out cursor-pointer {showSellerName ? 'pr-3' : ''}"
+        class="flex items-center bg-white/90 backdrop-blur-sm rounded-full shadow-xs transition-all duration-200 ease-out cursor-pointer {showSellerName ? 'pr-3' : ''}"
         onmouseenter={() => showSellerName = true}
         onmouseleave={() => showSellerName = false}
         onclick={(e) => e.stopPropagation()}

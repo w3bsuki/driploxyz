@@ -184,7 +184,7 @@
     
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-sm border">
+      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-xs border">
         <div class="flex justify-between items-start">
           <div>
             <p class="text-sm text-gray-600">Total Sold</p>
@@ -197,7 +197,7 @@
         </div>
       </div>
       
-      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-sm border">
+      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-xs border">
         <div class="flex justify-between items-start">
           <div>
             <p class="text-sm text-gray-600">Total Revenue</p>
@@ -210,7 +210,7 @@
         </div>
       </div>
       
-      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-sm border">
+      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-xs border">
         <div class="flex justify-between items-start">
           <div>
             <p class="text-sm text-gray-600">This Month</p>
@@ -223,7 +223,7 @@
         </div>
       </div>
       
-      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-sm border">
+      <div class="bg-white rounded-lg p-4 sm:p-6 shadow-xs border">
         <div class="flex justify-between items-start">
           <div>
             <p class="text-sm text-gray-600">Avg. Sale Price</p>
@@ -301,7 +301,7 @@
         <div class="text-gray-500">Loading sold products...</div>
       </div>
     {:else if getFilteredProducts().length === 0}
-      <div class="bg-white rounded-lg shadow-sm p-8 text-center">
+      <div class="bg-white rounded-lg shadow-xs p-8 text-center">
         <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
@@ -309,7 +309,7 @@
         <p class="text-sm text-gray-500 mt-1">Your sold items will appear here</p>
       </div>
     {:else}
-      <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div class="bg-white rounded-lg shadow-xs overflow-hidden">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
@@ -329,7 +329,7 @@
                 <tr class="hover:bg-gray-50">
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
-                      <div class="h-10 w-10 flex-shrink-0">
+                      <div class="h-10 w-10 shrink-0">
                         <img 
                           class="h-10 w-10 rounded-lg object-cover" 
                           src={product.images?.[0]?.image_url || '/placeholder-product.svg'} 
@@ -378,7 +378,7 @@
     {/if}
     
     <!-- Monthly Performance Chart -->
-    <div class="mt-8 bg-white rounded-lg shadow-sm p-6">
+    <div class="mt-8 bg-white rounded-lg shadow-xs p-6">
       <h2 class="text-lg font-semibold mb-4">Sales Performance</h2>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>

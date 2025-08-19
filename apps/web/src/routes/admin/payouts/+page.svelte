@@ -103,21 +103,21 @@
 
   <!-- Payout Statistics -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-    <div class="bg-white p-6 rounded-lg shadow-sm border">
+    <div class="bg-white p-6 rounded-lg shadow-xs border">
       <div class="text-sm font-medium text-gray-600">Pending Payouts</div>
       <div class="text-2xl font-bold text-yellow-600">{payouts.filter(p => p.status === 'pending').length}</div>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow-sm border">
+    <div class="bg-white p-6 rounded-lg shadow-xs border">
       <div class="text-sm font-medium text-gray-600">Processing</div>
       <div class="text-2xl font-bold text-blue-600">{payouts.filter(p => p.status === 'processing').length}</div>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow-sm border">
+    <div class="bg-white p-6 rounded-lg shadow-xs border">
       <div class="text-sm font-medium text-gray-600">Total Amount</div>
       <div class="text-2xl font-bold text-gray-900">
         {payouts.filter(p => p.status === 'pending').reduce((sum, p) => sum + p.amount, 0).toFixed(2)} BGN
       </div>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow-sm border">
+    <div class="bg-white p-6 rounded-lg shadow-xs border">
       <div class="text-sm font-medium text-gray-600">Avg. Payout</div>
       <div class="text-2xl font-bold text-gray-900">
         {payouts.length > 0 ? (payouts.reduce((sum, p) => sum + p.amount, 0) / payouts.length).toFixed(2) : '0'} BGN
@@ -126,7 +126,7 @@
   </div>
 
   <!-- Payouts Table -->
-  <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
+  <div class="bg-white rounded-lg shadow-xs border overflow-hidden">
     <div class="px-6 py-4 border-b">
       <h2 class="text-lg font-medium text-gray-900">Pending Payouts</h2>
     </div>

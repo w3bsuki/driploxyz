@@ -82,7 +82,7 @@
         onclick={() => handleMethodSelect(method.type)}
         class="w-full text-left"
       >
-        <div class="bg-white rounded-xl border p-1.5 shadow-sm backdrop-blur-xl transition-all {selectedMethod === method.type ? 'border-gray-400 shadow-md' : 'border-gray-200 hover:border-gray-300'}">
+        <div class="bg-white rounded-xl border p-1.5 shadow-xs backdrop-blur-xl transition-all {selectedMethod === method.type ? 'border-gray-400 shadow-md' : 'border-gray-200 hover:border-gray-300'}">
           <!-- Header with glass effect -->
           <div class="bg-gray-50/80 relative mb-4 rounded-xl border p-4">
             <div 
@@ -96,7 +96,7 @@
                 <span class="text-lg">{method.icon}</span>
                 <span>{method.name}</span>
                 {#if method.recommended}
-                  <span class="bg-gradient-to-r from-green-600 to-green-700 text-white text-xs px-2 py-0.5 rounded-lg font-bold">
+                  <span class="bg-linear-to-r from-green-600 to-green-700 text-white text-xs px-2 py-0.5 rounded-lg font-bold">
                     Recommended
                   </span>
                 {/if}
@@ -146,7 +146,7 @@
   <!-- Security Note -->
   <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
     <div class="flex items-start space-x-3">
-      <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center flex-shrink-0">
+      <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center shrink-0">
         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
         </svg>

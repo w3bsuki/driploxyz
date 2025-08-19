@@ -78,11 +78,11 @@
       onclick={() => handleSelect(accountType.value)}
       class="w-full text-left max-w-xs relative"
     >
-      <div class="bg-white rounded-xl border p-1.5 shadow-sm backdrop-blur-xl transition-all {selected === accountType.value ? 'border-gray-400 shadow-md' : 'border-gray-200 hover:border-gray-300'}">
+      <div class="bg-white rounded-xl border p-1.5 shadow-xs backdrop-blur-xl transition-all {selected === accountType.value ? 'border-gray-400 shadow-md' : 'border-gray-200 hover:border-gray-300'}">
         <!-- Popular badge -->
         {#if accountType.popular}
           <div class="absolute -top-2 left-4 z-10">
-            <div class="bg-gradient-to-r from-green-600 to-green-700 text-white text-xs font-bold px-2 py-0.5 rounded">
+            <div class="bg-linear-to-r from-green-600 to-green-700 text-white text-xs font-bold px-2 py-0.5 rounded-sm">
               {translations.popular || 'Popular'}
             </div>
           </div>

@@ -127,7 +127,7 @@
     <!-- Condition Badge -->
     {#if condition}
       <div class="absolute top-4 left-4 z-10">
-        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold shadow-lg backdrop-blur-sm {conditionColors}">
+        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold shadow-lg backdrop-blur-xs {conditionColors}">
           {conditionLabels}
         </span>
       </div>
@@ -166,14 +166,14 @@
 
     <!-- Image Counter -->
     {#if images.length > 1}
-      <div class="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm">
+      <div class="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-xs">
         {selectedIndex + 1} / {images.length}
       </div>
     {/if}
 
     <!-- Zoom Indicator -->
     {#if isZoomed}
-      <div class="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm backdrop-blur-sm">
+      <div class="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm backdrop-blur-xs">
         Click to zoom out • ESC to exit
       </div>
     {/if}
@@ -181,12 +181,12 @@
 
   <!-- Thumbnail Strip -->
   {#if images.length > 1}
-    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/20 to-transparent">
+    <div class="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/20 to-transparent">
       <div class="flex gap-2 overflow-x-auto scrollbar-hide">
         {#each images as image, index}
           <button
             onclick={() => handleThumbnailClick(index)}
-            class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden ring-2 transition-all duration-200
+            class="shrink-0 w-16 h-16 rounded-lg overflow-hidden ring-2 transition-all duration-200
                    {selectedIndex === index ? 'ring-white scale-105' : 'ring-transparent hover:ring-white/50'}"
             aria-label="View image {index + 1}"
           >

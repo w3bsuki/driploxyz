@@ -7,7 +7,7 @@
 	<div class="max-w-3xl mx-auto">
 		<h1 class="text-3xl font-bold text-gray-900 mb-8">Cookie Policy</h1>
 		
-		<div class="bg-white shadow rounded-lg p-6 space-y-6">
+		<div class="bg-white shadow-sm rounded-lg p-6 space-y-6">
 			<section>
 				<h2 class="text-xl font-semibold mb-3">What are cookies?</h2>
 				<p class="text-gray-600">

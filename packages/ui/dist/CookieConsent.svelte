@@ -86,19 +86,19 @@
 					<summary class="cursor-pointer font-medium mb-2">Customize preferences</summary>
 					<div class="space-y-2 mt-3">
 						<label class="flex items-center gap-2">
-							<input type="checkbox" checked disabled class="rounded" />
+							<input type="checkbox" checked disabled class="rounded-sm" />
 							<span>Necessary (always enabled)</span>
 						</label>
 						<label class="flex items-center gap-2">
-							<input type="checkbox" bind:checked={preferences.functional} class="rounded" />
+							<input type="checkbox" bind:checked={preferences.functional} class="rounded-sm" />
 							<span>Functional</span>
 						</label>
 						<label class="flex items-center gap-2">
-							<input type="checkbox" bind:checked={preferences.analytics} class="rounded" />
+							<input type="checkbox" bind:checked={preferences.analytics} class="rounded-sm" />
 							<span>Analytics</span>
 						</label>
 						<label class="flex items-center gap-2">
-							<input type="checkbox" bind:checked={preferences.marketing} class="rounded" />
+							<input type="checkbox" bind:checked={preferences.marketing} class="rounded-sm" />
 							<span>Marketing</span>
 						</label>
 					</div>

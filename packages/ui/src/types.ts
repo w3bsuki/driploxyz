@@ -67,7 +67,7 @@ export interface SearchFilters {
   sortBy?: 'newest' | 'price-low' | 'price-high' | 'relevance';
 }
 
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'outline-solid' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search';
 export type SearchBarVariant = 'hero' | 'power' | 'compact';

@@ -185,7 +185,7 @@
 
 	<!-- Compact Sticky Search Bar -->
 	{#if showCompactSearch}
-		<div class="fixed top-14 sm:top-16 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm transition-all duration-300">
+		<div class="fixed top-14 sm:top-16 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-xs transition-all duration-300">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5">
 				<SearchBar 
 					bind:value={searchQuery}
@@ -222,7 +222,7 @@
 					<button 
 						onclick={navigateToAllSearch}
 						disabled={loadingCategory === 'all'}
-						class="category-nav-pill flex-shrink-0 px-5 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-gray-900 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[80px]"
+						class="category-nav-pill shrink-0 px-5 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-gray-900 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[80px]"
 					>
 						{#if loadingCategory === 'all'}
 							<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -237,7 +237,7 @@
 						<button 
 							onclick={() => navigateToCategory(category.slug)}
 							disabled={loadingCategory === category.slug}
-							class="category-nav-pill flex-shrink-0 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[80px]"
+							class="category-nav-pill shrink-0 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[80px]"
 						>
 							{#if loadingCategory === category.slug}
 								<svg class="animate-spin h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -254,7 +254,7 @@
 				
 				<!-- Discovery Dropdown (Trending + Top Sellers) -->
 				{#if showCategoryDropdown}
-					<div class="bg-white rounded-2xl border border-gray-200 p-1 shadow-sm backdrop-blur-xl transition-all duration-300 ease-out">
+					<div class="bg-white rounded-2xl border border-gray-200 p-1 shadow-xs backdrop-blur-xl transition-all duration-300 ease-out">
 						<div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
 							<div 
 								aria-hidden="true"
@@ -289,7 +289,7 @@
 												onclick={() => handleSellerClick(seller)}
 												class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-white/60 rounded-lg transition-colors flex items-center space-x-3"
 											>
-												<div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+												<div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
 													{#if seller.avatar}
 														<img src={seller.avatar} alt={seller.name} class="w-full h-full rounded-full object-cover" />
 													{:else}

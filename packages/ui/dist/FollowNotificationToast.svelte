@@ -51,7 +51,7 @@
       <!-- Content -->
       <div class="p-4">
         <div class="flex items-start space-x-3">
-          <div class="relative flex-shrink-0">
+          <div class="relative shrink-0">
             <Avatar 
               src={followerAvatar} 
               name={followerName} 

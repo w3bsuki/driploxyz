@@ -168,7 +168,7 @@
 
 <!-- Desktop Quick Actions Bar (subtle, top-right corner) -->
 <div class="hidden lg:block fixed top-20 right-4 z-30">
-  <div class="flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg">
+  <div class="flex items-center gap-2 bg-white/90 backdrop-blur-xs rounded-full px-4 py-2 shadow-lg">
     <!-- Favorite -->
     <button
       onclick={handleFavorite}

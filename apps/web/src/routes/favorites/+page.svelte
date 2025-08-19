@@ -94,7 +94,7 @@
   <Header />
   
   <!-- Page Header -->
-  <div class="bg-white shadow-sm sticky top-14 sm:top-16 z-30">
+  <div class="bg-white shadow-xs sticky top-14 sm:top-16 z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center py-4">
         <h1 class="text-xl sm:text-2xl font-bold text-gray-900">My Favorites</h1>
@@ -145,7 +145,7 @@
       <div class="flex space-x-3 overflow-x-auto pb-2">
         <button
           onclick={() => selectedCollection = null}
-          class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors
+          class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors
             {selectedCollection === null ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
         >
           All ({favoritedProducts.length})
@@ -153,7 +153,7 @@
         {#each collections as collection}
           <button
             onclick={() => selectedCollection = collection.id}
-            class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors
+            class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors
               {selectedCollection === collection.id ? 'bg-black text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
           >
             {collection.name} ({collection.count})
@@ -191,7 +191,7 @@
                   type="checkbox"
                   checked={selectedItems.has(product.id)}
                   onchange={() => toggleItemSelection(product.id)}
-                  class="w-5 h-5 rounded border-gray-300 text-black focus:ring-black"
+                  class="w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
                 />
               </div>
             {/if}
@@ -206,7 +206,7 @@
             <div class="absolute top-2 right-2 flex flex-col space-y-1">
               <button
                 onclick={(e) => { e.stopPropagation(); toggleFavorite(product.id); }}
-                class="p-1.5 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow"
+                class="p-1.5 bg-white rounded-full shadow-xs hover:shadow-md transition-shadow"
               >
                 <svg class="w-4 h-4 text-red-500 fill-current" viewBox="0 0 20 20">
                   <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
@@ -215,7 +215,7 @@
               {#if !priceAlerts.find(a => a.productId === product.id)}
                 <button
                   onclick={(e) => { e.stopPropagation(); setPriceAlert(product.id); }}
-                  class="p-1.5 bg-white rounded-full shadow-sm hover:shadow-md transition-shadow"
+                  class="p-1.5 bg-white rounded-full shadow-xs hover:shadow-md transition-shadow"
                 >
                   <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -236,7 +236,7 @@
         {/each}
       </div>
     {:else}
-      <div class="bg-white rounded-lg shadow-sm p-12 text-center">
+      <div class="bg-white rounded-lg shadow-xs p-12 text-center">
         <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>

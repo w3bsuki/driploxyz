@@ -112,7 +112,7 @@
             <button
               type="button"
               onclick={() => removeTag(index)}
-              class="text-gray-500 hover:text-gray-700 focus:outline-none"
+              class="text-gray-500 hover:text-gray-700 focus:outline-hidden"
               aria-label="Remove tag {tag}"
             >
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,7 +133,7 @@
           onkeydown={handleKeydown}
           onfocus={handleInputFocus}
           onblur={handleInputBlur}
-          class="flex-1 min-w-[120px] outline-none text-sm bg-transparent placeholder-gray-400"
+          class="flex-1 min-w-[120px] outline-hidden text-sm bg-transparent placeholder-gray-400"
           aria-label="Add new tag"
         />
       {/if}
@@ -145,7 +145,7 @@
           <button
             type="button"
             onclick={() => selectSuggestion(suggestion)}
-            class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
+            class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 focus:bg-gray-50 focus:outline-hidden"
           >
             #{suggestion}
           </button>

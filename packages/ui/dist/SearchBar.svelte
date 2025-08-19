@@ -102,7 +102,7 @@
   <form onsubmit={handleSubmit}>
     {#if variant === 'hero'}
       <!-- Glass morphism container for hero variant -->
-      <div class="bg-white rounded-full border border-gray-200 p-1 shadow-sm backdrop-blur-xl hover:shadow-md focus-within:border-gray-400 transition-all">
+      <div class="bg-white rounded-full border border-gray-200 p-1 shadow-xs backdrop-blur-xl hover:shadow-md focus-within:border-gray-400 transition-all">
         <!-- Inner glass frame with fixed min-height -->
         <div class="bg-gray-50/80 relative rounded-full border border-gray-100 overflow-hidden" style="min-height: 48px;">
           <div 
@@ -124,7 +124,7 @@
               bind:value
               {placeholder}
               type="search"
-              class="flex-1 bg-transparent text-base sm:text-sm placeholder-gray-500 focus:outline-none min-w-0"
+              class="flex-1 bg-transparent text-base sm:text-sm placeholder-gray-500 focus:outline-hidden min-w-0"
               oninput={handleInput}
               onfocus={handleFocus}
               onblur={handleBlur}
@@ -152,11 +152,11 @@
                 class="px-3 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center space-x-1 ring-1 ring-gray-200 whitespace-nowrap"
               >
                 {#if showMegaMenuButton}
-                  <svg class="w-4 h-4 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 text-gray-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
                 {:else}
-                  <svg class="w-4 h-4 text-gray-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 text-gray-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                   </svg>
                 {/if}
@@ -182,7 +182,7 @@
           bind:value
           {placeholder}
           type="search"
-          class="w-full bg-transparent pl-9 pr-10 py-2 text-sm placeholder-gray-500 focus:outline-none"
+          class="w-full bg-transparent pl-9 pr-10 py-2 text-sm placeholder-gray-500 focus:outline-hidden"
           oninput={handleInput}
           onfocus={handleFocus}
           onblur={handleBlur}
@@ -217,7 +217,7 @@
           bind:value
           {placeholder}
           type="search"
-          class="w-full bg-transparent pl-11 pr-32 py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-none"
+          class="w-full bg-transparent pl-11 pr-32 py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-hidden"
           oninput={handleInput}
           onfocus={handleFocus}
           onblur={handleBlur}
@@ -257,7 +257,7 @@
         {#each categories as category}
           <button
             type="button"
-            class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 rounded-md focus:bg-gray-50 focus:outline-none flex items-center justify-between group"
+            class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 rounded-md focus:bg-gray-50 focus:outline-hidden flex items-center justify-between group"
             onclick={() => handleCategoryClick(category.value)}
           >
             <span>{category.label}</span>
@@ -273,7 +273,7 @@
       {#each suggestions as suggestion}
         <button
           type="button"
-          class="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 focus:bg-gray-50 focus:outline-none flex items-center space-x-3"
+          class="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 focus:bg-gray-50 focus:outline-hidden flex items-center space-x-3"
           onclick={() => handleSuggestionClick(suggestion)}
         >
           <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

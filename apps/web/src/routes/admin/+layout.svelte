@@ -32,12 +32,12 @@
 
 <div class="min-h-screen bg-gray-50">
   <!-- Admin Header -->
-  <header class="bg-white shadow-sm border-b">
+  <header class="bg-white shadow-xs border-b">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <div class="flex items-center space-x-4">
           <h1 class="text-xl font-semibold text-gray-900">Driplo Admin</h1>
-          <span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded">ADMIN</span>
+          <span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-sm">ADMIN</span>
         </div>
         
         <div class="flex items-center space-x-4">
@@ -51,7 +51,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <div class="flex gap-8">
       <!-- Sidebar Navigation -->
-      <aside class="w-64 flex-shrink-0">
+      <aside class="w-64 shrink-0">
         <nav class="space-y-2">
           {#each navItems as item}
             <a

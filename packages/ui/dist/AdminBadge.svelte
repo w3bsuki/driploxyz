@@ -17,7 +17,7 @@
   };
 </script>
 
-<span class="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-semibold {sizeClasses[size]} {className}">
+<span class="inline-flex items-center gap-1 rounded-full bg-linear-to-r from-purple-600 to-indigo-600 text-white font-semibold {sizeClasses[size]} {className}">
   <span>👑</span>
   <span>Admin</span>
 </span>

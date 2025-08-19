@@ -207,7 +207,7 @@
         <div class="inline-flex items-center space-x-2 bg-black text-white px-6 py-3 rounded-lg">
           <span class="text-lg">🎉</span>
           <span class="font-semibold">{i18n.banner_earlyBird()}: {discountInfo.discountPercent}% {i18n.banner_off()} {i18n.banner_firstMonth()}!</span>
-          <span class="bg-white text-black px-2 py-1 rounded text-xs font-bold">{i18n.banner_limitedTime()}</span>
+          <span class="bg-white text-black px-2 py-1 rounded-sm text-xs font-bold">{i18n.banner_limitedTime()}</span>
         </div>
       </div>
     </div>
@@ -359,7 +359,7 @@
               </ul>
               
               {#if subscription.discount_percent > 0}
-                <div class="bg-black text-white rounded px-3 py-2 text-center">
+                <div class="bg-black text-white rounded-sm px-3 py-2 text-center">
                   <span class="text-sm font-bold">{subscription.discount_percent}% {i18n.banner_offApplied()}</span>
                 </div>
               {/if}

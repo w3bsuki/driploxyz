@@ -147,7 +147,7 @@
         name={name} 
         src={avatar} 
         size="lg"
-        class="ring-2 ring-white shadow-sm"
+        class="ring-2 ring-white shadow-xs"
       />
       <!-- Activity Indicator -->
       <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 {activityColor} rounded-full border-2 border-white"></div>
@@ -285,7 +285,7 @@
   <!-- Hover Animation -->
   {#if isHovering}
     <div 
-      class="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 opacity-30 pointer-events-none"
+      class="absolute inset-0 rounded-xl bg-linear-to-r from-blue-50 to-purple-50 opacity-30 pointer-events-none"
       in:fade={{ duration: 200 }}
     ></div>
   {/if}
