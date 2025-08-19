@@ -43,24 +43,14 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 };
 
 export const actions: Actions = {
-  signin: async ({ request, locals: { supabase } }) => {
-    console.log('[LOGIN] Minimal action started');
+  signin: async ({ request }) => {
+    console.log('[LOGIN] Ultra-minimal action started');
     
     try {
-      const form = await superValidate(request, zod(LoginSchema));
-      console.log('[LOGIN] Form validation completed');
-      
-      if (!form.valid) {
-        console.log('[LOGIN] Form invalid');
-        return fail(400, { form });
-      }
-
-      console.log('[LOGIN] Login action completed successfully');
-      return fail(400, {
-        form: setError(form, '', 'Test error - login action is working')
-      });
+      console.log('[LOGIN] Action is executing on Vercel');
+      return fail(400, { message: 'Ultra-minimal action works!' });
     } catch (err) {
-      console.error('[LOGIN] Error in action:', err);
+      console.error('[LOGIN] Error in ultra-minimal action:', err);
       throw err;
     }
   }
