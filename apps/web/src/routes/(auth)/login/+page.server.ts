@@ -111,15 +111,23 @@ export const actions: Actions = {
       .single();
     
     if (!profile || profile.onboarding_completed !== true) {
-      // Redirect to onboarding
-      console.log('[LOGIN] Redirecting to onboarding - profile incomplete');
+      // Return success message with onboarding redirect
+      console.log('[LOGIN] Login successful! User needs onboarding');
       console.log('[LOGIN] ========== LOGIN ACTION END ==========');
-      throw redirect(303, '/onboarding');
+      return message(form, {
+        type: 'success',
+        text: 'Login successful! Redirecting to complete your profile...',
+        redirect: '/onboarding'
+      });
     }
     
-    // Success - redirect to homepage
-    console.log('[LOGIN] Login successful! Redirecting to homepage');
+    // Success - return success message with home redirect
+    console.log('[LOGIN] Login successful! User already onboarded');
     console.log('[LOGIN] ========== LOGIN ACTION END ==========');
-    throw redirect(303, '/');
+    return message(form, {
+      type: 'success',
+      text: 'Login successful! Welcome back.',
+      redirect: '/'
+    });
   }
 };

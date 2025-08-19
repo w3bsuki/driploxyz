@@ -11,7 +11,16 @@
     validators: zodClient(LoginSchema),
     resetForm: false,
     taintedMessage: null,
-    validationMethod: 'oninput'
+    validationMethod: 'oninput',
+    onUpdated: ({ form }) => {
+      // Handle success message with redirect
+      if (form.message && form.message.type === 'success' && form.message.redirect) {
+        // Small delay to show success message before redirect
+        setTimeout(() => {
+          window.location.href = form.message.redirect;
+        }, 1500);
+      }
+    }
   });
 </script>
 
@@ -32,6 +41,22 @@
         </div>
         <div class="ml-3">
           <p class="text-sm text-red-800">{data.errorMessage}</p>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  {#if $message}
+    <div class="bg-green-50 border border-green-200 rounded-md p-4 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.236 4.53L7.53 10.53a.75.75 0 00-1.06 1.06l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-green-800">Success!</h3>
+          <p class="mt-2 text-sm text-green-700">{$message.text || $message}</p>
         </div>
       </div>
     </div>
