@@ -80,12 +80,12 @@
 
 <div class={`brand-selector ${className}`}>
   {#if label}
-    <label class="block text-sm font-medium text-gray-700 mb-2">
+    <div class="block text-sm font-medium text-gray-700 mb-2">
       {label}
       {#if required}
         <span class="text-red-500">*</span>
       {/if}
-    </label>
+    </div>
   {/if}
 
   <!-- Popular Brands Grid -->

@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, session } }) =>
     const { data: categories, error: categoriesError } = await services.categories.getCategories();
 
     if (categoriesError) {
-      console.error('Error loading categories:', categoriesError);
+      // Categories loading failed
     }
 
     // Get available subscription plans for upgrade prompt
@@ -54,7 +54,6 @@ export const load: PageServerLoad = async ({ locals: { supabase, session } }) =>
       form
     };
   } catch (error) {
-    console.error('Error loading sell page:', error);
     
     // Still initialize form even on error
     const form = await superValidate(zod(ProductSchema));
@@ -91,9 +90,7 @@ export const actions: Actions = {
       const formData = await request.formData();
       const files = formData.getAll('photos') as File[];
 
-      console.log('Server: Creating product with data:', form.data);
-      console.log('Server: User ID:', session.user.id);
-      console.log('Server: Files count:', files.length);
+      // Creating product with uploaded files
 
       // Upload images to Supabase Storage
       const uploadedUrls: string[] = [];
@@ -107,7 +104,6 @@ export const actions: Actions = {
           .upload(fileName, file);
 
         if (uploadError) {
-          console.error('Upload error:', uploadError);
           throw uploadError;
         }
 
@@ -141,7 +137,6 @@ export const actions: Actions = {
         .single();
 
       if (productError) {
-        console.error('Product creation error:', productError);
         throw productError;
       }
 
@@ -159,7 +154,6 @@ export const actions: Actions = {
           .insert(imageInserts);
 
         if (imagesError) {
-          console.error('Images error:', imagesError);
           throw imagesError;
         }
       }
@@ -178,7 +172,6 @@ export const actions: Actions = {
         throw error;
       }
       
-      console.error('Server error creating product:', error);
       return fail(500, {
         form,
         error: error.message || 'Failed to create product'

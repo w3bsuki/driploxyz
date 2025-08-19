@@ -30,9 +30,6 @@ export class CSRFProtection {
 			// Simple validation for now
 			return tokenSessionId === sessionId;
 		} catch (error) {
-			if (dev) {
-				console.error('[CSRF] Token validation error:', error);
-			}
 			return false;
 		}
 	}
@@ -80,9 +77,6 @@ export class CSRFProtection {
 			event.cookies.get('csrf_token');
 		
 		if (!token) {
-			if (dev) {
-				console.error('[CSRF] No token provided');
-			}
 			// In production, reject missing tokens
 			return dev;
 		}

@@ -28,7 +28,7 @@
   }: Props = $props();
 
   let inputValue = $state('');
-  let inputElement: HTMLInputElement;
+  let inputElement = $state<HTMLInputElement>();
   let showSuggestions = $state(false);
 
   const filteredSuggestions = $derived(
@@ -92,9 +92,9 @@
 
 <div class={`tag-input ${className}`}>
   {#if label}
-    <label class="block text-sm font-medium text-gray-700 mb-1">
+    <div class="block text-sm font-medium text-gray-700 mb-1">
       {label}
-    </label>
+    </div>
   {/if}
 
   <div class="relative">

@@ -56,25 +56,21 @@ export const actions: Actions = {
 
     if (error) {
       if (error.message.includes('Invalid login credentials')) {
-        return fail(400, {
-          form: setError(form, '', 'Invalid email or password')
-        });
+        setError(form, '', 'Invalid email or password');
+        return fail(400, { form });
       }
       if (error.message.includes('Email not confirmed')) {
-        return fail(400, {
-          form: setError(form, '', 'Please verify your email before logging in')
-        });
+        setError(form, '', 'Please verify your email before logging in');
+        return fail(400, { form });
       }
       
-      return fail(400, {
-        form: setError(form, '', error.message || 'Unable to sign in')
-      });
+      setError(form, '', error.message || 'Unable to sign in');
+      return fail(400, { form });
     }
 
     if (!data.user || !data.session) {
-      return fail(400, {
-        form: setError(form, '', 'Authentication failed. Please try again.')
-      });
+      setError(form, '', 'Authentication failed. Please try again.');
+      return fail(400, { form });
     }
     
     // Use message pattern exactly like signup

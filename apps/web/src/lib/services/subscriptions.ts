@@ -60,7 +60,7 @@ export class SubscriptionService {
 		planId: string,
 		discountPercent: number = 0
 	): Promise<{ subscriptionId?: string; clientSecret?: string; error?: Error }> {
-		console.log('🔥 STRIPE DEBUG - Starting subscription creation:', { userId, planId, discountPercent });
+		// Starting subscription creation
 		try {
 			// Get user email for Stripe customer
 			const { data: profile } = await this.supabase
@@ -80,7 +80,7 @@ export class SubscriptionService {
 				.eq('id', planId)
 				.single();
 
-			console.log('🔥 STRIPE DEBUG - Plan data:', plan);
+			// Retrieved plan data
 			if (!plan) {
 				throw new Error('Subscription plan not found');
 			}
@@ -92,41 +92,32 @@ export class SubscriptionService {
 			}
 
 			// Create Stripe customer
-			console.log('🔥 STRIPE DEBUG - Creating customer for:', profile.username);
 			const customer = await stripe.customers.create({
 				metadata: {
 					supabase_user_id: userId,
 					username: profile.username
 				}
 			});
-			console.log('🔥 STRIPE DEBUG - Customer created:', customer.id);
+			// Customer created successfully
 
 			// Create Stripe product first (separate from price)
-			console.log('🔥 STRIPE DEBUG - Creating product:', { name: plan.name, description: plan.description });
 			const stripeProduct = await stripe.products.create({
 				name: plan.name,
 				description: plan.description || undefined // Use undefined instead of null/empty string
 			});
-			console.log('🔥 STRIPE DEBUG - Product created:', stripeProduct.id);
+			// Product created successfully
 
 			// Then create price using the product ID
 			const priceAmount = Math.round(price * 100);
-			console.log('🔥 STRIPE DEBUG - Creating price:', { amount: priceAmount, currency: plan.currency.toLowerCase() });
 			const stripePrice = await stripe.prices.create({
 				unit_amount: priceAmount, // Convert to cents
 				currency: plan.currency.toLowerCase(),
 				recurring: { interval: 'month' },
 				product: stripeProduct.id
 			});
-			console.log('🔥 STRIPE DEBUG - Price created:', stripePrice.id);
+			// Price created successfully
 
 			// Create Stripe subscription
-			console.log('🔥 STRIPE DEBUG - Creating subscription with settings:', {
-				customer: customer.id,
-				price: stripePrice.id,
-				payment_behavior: 'default_incomplete',
-				payment_settings: { save_default_payment_method: 'on_subscription' }
-			});
 			const subscription = await stripe.subscriptions.create({
 				customer: customer.id,
 				items: [{ price: stripePrice.id }],
@@ -140,7 +131,7 @@ export class SubscriptionService {
 					discount_percent: discountPercent.toString()
 				}
 			});
-			console.log('🔥 STRIPE DEBUG - Subscription created:', subscription.id);
+			// Subscription created successfully
 
 			// Create subscription record in our database
 			const subscriptionData: UserSubscriptionInsert = {
@@ -160,11 +151,7 @@ export class SubscriptionService {
 			const invoice = subscription.latest_invoice as any;
 			const paymentIntent = invoice?.payment_intent;
 			
-			console.log('🔥 STRIPE DEBUG - Payment intent:', paymentIntent?.client_secret ? 'EXISTS' : 'MISSING');
-			console.log('🔥 STRIPE DEBUG - Final result:', {
-				subscriptionId: subscription.id,
-				clientSecret: paymentIntent?.client_secret ? 'EXISTS' : 'MISSING'
-			});
+			// Payment intent and subscription setup completed
 
 			return {
 				subscriptionId: subscription.id,

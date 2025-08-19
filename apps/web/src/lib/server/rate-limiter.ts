@@ -47,5 +47,5 @@ export const messageLimiter = new RateLimiter({
 
 // Development mode - relaxed limits
 if (dev) {
-	console.log('[RATE_LIMITER] Running in development mode - relaxed limits');
+	// Running in development mode - relaxed limits
 }
