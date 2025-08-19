@@ -5,18 +5,29 @@
   import { SignupSchema } from '$lib/validation/auth.js';
   import type { PageData, ActionData } from './$types';
   import * as i18n from '@repo/i18n';
+  import { browser } from '$app/environment';
 
   let { data, form: actionResult }: { data: PageData; form: ActionData } = $props();
+  
+  let success = $state(false);
+  let successMessage = $state('');
   
   const { form, errors, constraints, submitting, enhance, message } = superForm(data.form, {
     validators: zodClient(SignupSchema),
     resetForm: false,
     taintedMessage: null,
     validationMethod: 'oninput',
+    onResult: ({ result }) => {
+      // Handle redirect result (signup success)
+      if (result.type === 'redirect') {
+        success = true;
+        successMessage = 'Account created successfully! Please check your email to verify your account.';
+      }
+    },
     onError: ({ result }) => {
       // Handle errors gracefully to prevent unhandled rejections
       // Errors are already displayed in the UI via $errors
-      // This prevents promise rejection warnings
+      success = false;
     }
   });
 </script>
@@ -43,7 +54,7 @@
     </div>
   {/if}
 
-  {#if actionResult?.success}
+  {#if success}
     <div class="bg-green-50 border border-green-200 rounded-md p-4">
       <div class="flex">
         <div class="flex-shrink-0">
@@ -52,7 +63,7 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-green-800">{actionResult.message || 'Account created successfully!'}</p>
+          <p class="text-sm text-green-800">{successMessage}</p>
         </div>
       </div>
     </div>

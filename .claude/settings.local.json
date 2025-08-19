@@ -20,7 +20,8 @@
       "WebFetch(domain:svelte.dev)",
       "Bash(pnpm check-types:*)",
       "mcp__supabase__get_advisors",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "mcp__playwright__browser_navigate"
     ]
   },
   "enableAllProjectMcpServers": true,

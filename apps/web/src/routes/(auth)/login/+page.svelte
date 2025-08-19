@@ -6,6 +6,7 @@
   import * as i18n from '@repo/i18n';
   import { clientLogin } from '$lib/client/auth';
   import { browser } from '$app/environment';
+  import { goto, invalidateAll } from '$app/navigation';
 
   let { data }: { data: PageData } = $props();
   let clientError = $state('');
@@ -75,8 +76,9 @@
         if (!response.success) {
           clientError = response.error || 'Login failed';
         } else {
-          // Redirect on success
-          window.location.href = '/';
+          // Invalidate all data and redirect on success
+          await invalidateAll();
+          await goto('/', { replaceState: true });
         }
       }
     }}>
