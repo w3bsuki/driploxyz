@@ -51,12 +51,16 @@ const supabase: Handle = async ({ event, resolve }) => {
               // Check if this is an auth cookie that requires special handling
               const isAuthCookie = name.includes('sb-') || name.includes('supabase');
               
+              // Check if we're on HTTPS (handles proxies like Vercel/Cloudflare)
+              const proto = event.request.headers.get('x-forwarded-proto');
+              const isSecure = proto === 'https' || event.url.protocol === 'https:';
+              
               // Critical: Set proper cookie configuration for auth to work
               event.cookies.set(name, value, {
                 ...options,
                 path: '/', // MUST be set for auth to work across routes
                 sameSite: isAuthCookie ? 'lax' : (options?.sameSite || 'lax'), // Lax for auth, strict for others
-                secure: event.url.protocol === 'https:', // Secure on HTTPS (production)
+                secure: isSecure, // Use HTTPS detection that works behind proxies
                 httpOnly: isAuthCookie ? false : (options?.httpOnly ?? true), // Auth cookies need client access
                 maxAge: options?.maxAge || (60 * 60 * 24 * 7) // 1 week default
                 // DO NOT set domain - let browser handle it correctly
