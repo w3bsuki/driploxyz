@@ -27,9 +27,9 @@
   onMount(() => {
     if (!data.user || !data.supabase) return;
     
-    // Subscribe to new messages
+    // Subscribe to new messages - only for received messages
     messageChannel = data.supabase
-      .channel('user-messages')
+      .channel(`messages_${data.user.id}`)
       .on(
         'postgres_changes',
         {
@@ -41,21 +41,6 @@
         async (payload) => {
           // Force reload the page data
           await invalidate('messages:all');
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `sender_id=eq.${data.user.id}`
-        },
-        async (payload) => {
-          // Small delay to ensure DB transaction completes
-          setTimeout(async () => {
-            await invalidate('messages:all');
-          }, 100);
         }
       )
       .subscribe();
@@ -444,6 +429,7 @@
                 <button
                   onclick={() => selectedConversation = null}
                   class="sm:hidden -ml-2"
+                  aria-label="Back to conversations"
                 >
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -456,12 +442,12 @@
                 </div>
               </div>
               <div class="flex items-center space-x-1">
-                <button class="p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100">
+                <button class="p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100" aria-label="Call">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                 </button>
-                <button class="p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100">
+                <button class="p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100" aria-label="Info">
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -577,11 +563,11 @@
                 <span class="text-lg">📦</span>
                 <span class="text-xs font-medium">{i18n.messages_bundle()}</span>
               </button>
-              <button class="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap">
+              <button class="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap" aria-label="Share location">
                 <span class="text-lg">📍</span>
                 <span class="text-xs font-medium">{i18n.messages_location()}</span>
               </button>
-              <button class="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap">
+              <button class="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap" aria-label="Upload photo">
                 <span class="text-lg">📸</span>
                 <span class="text-xs font-medium">{i18n.messages_photo()}</span>
               </button>
@@ -590,6 +576,7 @@
             <div class="flex items-center space-x-2">
               <div class="flex-1 relative">
                 <input
+                  id="message-input"
                   type="text"
                   bind:value={messageText}
                   onkeydown={(e) => {
@@ -601,6 +588,7 @@
                   }}
                   oninput={handleTyping}
                   placeholder={i18n.messages_messageInput()}
+                  aria-label="Type a message"
                   class="w-full px-4 py-2.5 bg-gray-50 rounded-full text-base placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-black focus:bg-white"
                 />
               </div>
@@ -608,6 +596,7 @@
                 onclick={sendMessage}
                 class="p-2.5 bg-black text-white rounded-full hover:bg-gray-800 transition-colors {messageText.trim() ? '' : 'opacity-50 cursor-not-allowed'}"
                 disabled={!messageText.trim()}
+                aria-label="Send message"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

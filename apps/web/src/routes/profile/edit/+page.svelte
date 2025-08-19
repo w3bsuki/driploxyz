@@ -83,7 +83,9 @@
       <div class="space-y-6">
         <!-- Avatar -->
         <div>
-          <label class="block text-sm font-medium mb-2">{i18n.profile_avatar()}</label>
+          <div class="block text-sm font-medium mb-2" role="group" aria-labelledby="avatar-label">
+            <span id="avatar-label">{i18n.profile_avatar()}</span>
+          </div>
           
           <!-- Selected Avatar Preview -->
           {#if avatarUrl}
@@ -107,6 +109,7 @@
                   type="button"
                   onclick={() => avatarUrl = avatar}
                   class="relative group shrink-0"
+                  aria-label="Select avatar option {avatars.indexOf(avatar) + 1}"
                 >
                   <div class="relative w-16 h-16 overflow-hidden rounded-xl border-2 transition-all duration-200 {avatarUrl === avatar ? 'border-black ring-2 ring-black/20' : 'border-gray-200 hover:border-gray-300'}">
                     <img src={avatar} alt="Avatar option" class="w-full h-full object-cover" />
@@ -133,8 +136,9 @@
         <Input bind:value={username} label={i18n.profile_username()} placeholder={i18n.profile_yourUsername()} />
         <Input bind:value={fullName} label={i18n.profile_fullName()} placeholder={i18n.profile_yourFullName()} />
         <div>
-          <label class="block text-sm font-medium mb-1">{i18n.profile_bio()}</label>
+          <label for="bio-textarea" class="block text-sm font-medium mb-1">{i18n.profile_bio()}</label>
           <textarea
+            id="bio-textarea"
             bind:value={bio}
             rows="3"
             placeholder={i18n.profile_tellPeopleAboutYourself()}
@@ -145,16 +149,16 @@
 
         <!-- Social Links -->
         <div>
-          <label class="block text-sm font-medium mb-2">{i18n.profile_socialLinks()}</label>
+          <div class="block text-sm font-medium mb-2" id="social-links-label">{i18n.profile_socialLinks()}</div>
           {#each socialLinks as link, i}
             <div class="flex gap-2 mb-2">
-              <select bind:value={link.type} class="px-3 py-2 border border-gray-300 rounded-lg">
+              <select bind:value={link.type} class="px-3 py-2 border border-gray-300 rounded-lg" aria-label="Social media type for link {i + 1}">
                 <option value="instagram">{i18n.profile_instagram()}</option>
                 <option value="tiktok">{i18n.profile_tiktok()}</option>
                 <option value="website">{i18n.profile_website()}</option>
               </select>
               <Input bind:value={link.url} placeholder={i18n.profile_url()} class="flex-1" />
-              <Button onclick={() => removeSocialLink(i)} variant="outline" size="sm">×</Button>
+              <Button onclick={() => removeSocialLink(i)} variant="outline" size="sm" aria-label="Remove social link {i + 1}">×</Button>
             </div>
           {/each}
           <Button onclick={addSocialLink} variant="outline" class="w-full">{i18n.profile_addLink()}</Button>

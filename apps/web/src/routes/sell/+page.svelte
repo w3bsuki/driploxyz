@@ -146,7 +146,7 @@
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
       <div class="flex justify-between items-center py-3">
         <div class="flex items-center space-x-3">
-          <a href="/dashboard" class="text-gray-600 hover:text-gray-900 p-1">
+          <a href="/dashboard" class="text-gray-600 hover:text-gray-900 p-1" aria-label="Go back to dashboard">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
@@ -224,10 +224,11 @@
           <div class="bg-white rounded-lg p-6 space-y-6">
             <!-- Image Upload -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label for="photo-uploader" class="block text-sm font-medium text-gray-700 mb-2">
                 {i18n.sell_photos()}*
               </label>
               <ImageUploader
+                id="photo-uploader"
                 images={photoUrls}
                 onImagesChange={handleImagesChange}
                 maxImages={10}
@@ -249,10 +250,11 @@
 
             <!-- Description -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label for="product-description" class="block text-sm font-medium text-gray-700 mb-1">
                 {i18n.sell_description()}
               </label>
               <textarea
+                id="product-description"
                 bind:value={$form.description}
                 rows="4"
                 placeholder={i18n.sell_descriptionPlaceholder()}
@@ -392,8 +394,9 @@
                       <p class="text-yellow-700 text-sm mt-1">Give your product premium visibility</p>
                       
                       <div class="mt-3">
-                        <label class="flex items-center space-x-2">
+                        <label for="premium-boost-checkbox" class="flex items-center space-x-2">
                           <input 
+                            id="premium-boost-checkbox"
                             type="checkbox" 
                             bind:checked={$form.use_premium_boost}
                             class="rounded-sm border-gray-300 text-yellow-600 focus:ring-yellow-500"

@@ -150,6 +150,7 @@
           <button
             onclick={handleFavorite}
             class="p-2.5 rounded-full hover:bg-gray-50 transition-all {isFavorited ? 'text-red-500' : 'text-gray-400'}"
+            aria-label="{isFavorited ? 'Remove from favorites' : 'Add to favorites'}"
           >
             <svg class="w-6 h-6" fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
@@ -158,6 +159,7 @@
           <button
             onclick={handleShare}
             class="p-2.5 rounded-full hover:bg-gray-50 transition-all text-gray-400"
+            aria-label="Share this product"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 01-7.432 0"/>
@@ -226,6 +228,7 @@
         <button 
           onclick={handleMessage}
           class="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50"
+          aria-label="Message seller {data.product.seller_name}"
         >
           Message
         </button>
@@ -242,6 +245,7 @@
             <button 
               onclick={() => showFullDescription = !showFullDescription}
               class="text-sm text-black font-medium mt-2"
+              aria-label="{showFullDescription ? 'Show less description' : 'Show more description'}"
             >
               {showFullDescription ? 'Show less' : 'Show more'}
             </button>

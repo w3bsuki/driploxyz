@@ -59,7 +59,7 @@
     <!-- Header -->
     <div class="mb-6">
       <div class="flex items-center space-x-3 mb-4">
-        <button onclick={() => history.back()} class="p-2 hover:bg-gray-100 rounded-lg">
+        <button onclick={() => history.back()} class="p-2 hover:bg-gray-100 rounded-lg" aria-label="Go back">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
           </svg>
@@ -102,8 +102,9 @@
     <div class="bg-white rounded-lg shadow-xs p-4">
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Message</label>
+          <label for="message-text" class="block text-sm font-medium text-gray-700 mb-2">Message</label>
           <textarea
+            id="message-text"
             bind:value={messageText}
             rows="6"
             placeholder="Hi! I'm interested in this item..."

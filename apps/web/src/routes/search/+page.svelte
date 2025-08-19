@@ -426,14 +426,19 @@
   {#if showFilters}
     <div class="fixed inset-0 z-40 sm:hidden">
       <!-- Backdrop -->
-      <div class="fixed inset-0 bg-black bg-opacity-50" onclick={() => showFilters = false}></div>
+      <button 
+        class="fixed inset-0 bg-black bg-opacity-50 border-0 cursor-default"
+        onclick={() => showFilters = false}
+        aria-label="Close filters"
+        tabindex="-1"
+      ></button>
       
       <!-- Drawer -->
       <div class="fixed bottom-20 left-0 right-0 bg-white rounded-t-2xl h-[calc(85vh-5rem)] flex flex-col">
         <!-- Fixed Header -->
         <div class="flex justify-between items-center p-4 border-b border-gray-100 shrink-0">
           <h2 class="text-lg font-semibold">{i18n.search_quickFilters()}</h2>
-          <button onclick={() => showFilters = false} class="p-1">
+          <button onclick={() => showFilters = false} class="p-1" aria-label="Close filters">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -446,7 +451,7 @@
             
             <!-- Size -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_size()}</label>
+              <div class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_size()}</div>
               <div class="grid grid-cols-4 gap-1.5">
                 {#each sizes() as size}
                   <button
@@ -462,7 +467,7 @@
             
             <!-- Brand -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_brand()}</label>
+              <div class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_brand()}</div>
               <div class="grid grid-cols-2 gap-2">
                 <button
                   onclick={() => selectedBrand = 'all'}
@@ -485,7 +490,7 @@
             
             <!-- Condition -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_condition()}</label>
+              <div class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_condition()}</div>
               <div class="space-y-2">
                 <button
                   onclick={() => selectedCondition = 'all'}
@@ -514,7 +519,7 @@
             
             <!-- Price Range -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_priceRange()}</label>
+              <div class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_priceRange()}</div>
               <div class="flex space-x-2">
                 <input
                   type="number"
@@ -617,7 +622,7 @@
         {#if selectedMainCategory}
           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
             {categoryData()[selectedMainCategory].name}
-            <button onclick={() => selectedMainCategory = null} class="ml-2">
+            <button onclick={() => selectedMainCategory = null} class="ml-2" aria-label="Remove category filter">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>
@@ -627,7 +632,7 @@
         {#if selectedSubcategory}
           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
             {selectedSubcategory}
-            <button onclick={() => selectedSubcategory = null} class="ml-2">
+            <button onclick={() => selectedSubcategory = null} class="ml-2" aria-label="Remove subcategory filter">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>
@@ -637,7 +642,7 @@
         {#if selectedSize !== 'all'}
           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
             {i18n.search_size()}: {selectedSize}
-            <button onclick={() => selectedSize = 'all'} class="ml-2">
+            <button onclick={() => selectedSize = 'all'} class="ml-2" aria-label="Remove size filter">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>
@@ -647,7 +652,7 @@
         {#if selectedBrand !== 'all'}
           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
             {i18n.search_brand()}: {selectedBrand}
-            <button onclick={() => selectedBrand = 'all'} class="ml-2">
+            <button onclick={() => selectedBrand = 'all'} class="ml-2" aria-label="Remove brand filter">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>
@@ -663,7 +668,7 @@
               selectedCondition === 'fair' ? i18n.condition_fair() :
               selectedCondition
             }
-            <button onclick={() => selectedCondition = 'all'} class="ml-2">
+            <button onclick={() => selectedCondition = 'all'} class="ml-2" aria-label="Remove condition filter">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>
@@ -673,7 +678,7 @@
         {#if priceMin || priceMax}
           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
             {i18n.search_priceRange()}: ${priceMin || '0'} - ${priceMax || '∞'}
-            <button onclick={() => { priceMin = ''; priceMax = ''; }} class="ml-2">
+            <button onclick={() => { priceMin = ''; priceMax = ''; }} class="ml-2" aria-label="Remove price filter">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>

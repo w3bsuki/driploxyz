@@ -117,7 +117,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between py-3">
         <div class="flex items-center space-x-3">
-          <a href="/profile/{sellerId}" class="p-1.5 -ml-1.5 hover:bg-gray-100 rounded-lg">
+          <a href="/profile/{sellerId}" class="p-1.5 -ml-1.5 hover:bg-gray-100 rounded-lg" aria-label="Go back to seller profile">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
@@ -162,6 +162,7 @@
                   <button
                     onclick={() => toggleItem(product.id)}
                     class="w-full text-left group relative"
+                    aria-label="{selectedItems.has(product.id) ? 'Deselect' : 'Select'} {product.title} for ${product.price}"
                   >
                     <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2 relative">
                       <img 
@@ -215,10 +216,11 @@
             
             <!-- Offer Input -->
             <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-1">Your Offer</label>
+              <label for="offer-amount" class="block text-sm font-medium text-gray-700 mb-1">Your Offer</label>
               <div class="relative">
                 <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">$</span>
                 <input
+                  id="offer-amount"
                   type="number"
                   bind:value={offerAmount}
                   placeholder="0.00"
@@ -229,6 +231,7 @@
               <button 
                 onclick={suggestPrice}
                 class="text-xs text-blue-600 hover:text-blue-800 mt-1"
+                aria-label="Suggest price with 15% discount"
               >
                 Suggest price (15% off)
               </button>
@@ -248,10 +251,11 @@
             
             <!-- Message -->
             <div class="mb-4">
-              <label class="block text-sm font-medium text-gray-700 mb-1">
+              <label for="offer-message" class="block text-sm font-medium text-gray-700 mb-1">
                 Message (optional)
               </label>
               <textarea
+                id="offer-message"
                 bind:value={message}
                 rows="3"
                 placeholder="Add a message to the seller..."
