@@ -54,18 +54,7 @@
   {/if}
 
   <!-- Signup Form -->
-  <form method="POST" action="?/signup" use:enhance={
-    () => {
-      return async ({ result, update }) => {
-        if (result.type === 'success' && result.data?.success) {
-          // Redirect to email verification page
-          goto(`/auth/verify-email?email=${encodeURIComponent(result.data.email)}`);
-        } else {
-          await update();
-        }
-      };
-    }
-  }>
+  <form method="POST" action="?/signup" use:enhance>
     <div class="space-y-1">
       <!-- Full Name -->
       <div>

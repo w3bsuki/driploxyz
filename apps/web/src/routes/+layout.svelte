@@ -8,7 +8,7 @@
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
   import { MessageNotificationToast, FollowNotificationToast } from '@repo/ui';
-  import SimpleCookieConsent from '$lib/components/SimpleCookieConsent.svelte';
+  import CookieConsentPro from '$lib/components/CookieConsentPro.svelte';
   import { page } from '$app/stores';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import LocaleDetector from '$lib/components/LocaleDetector.svelte';
@@ -63,10 +63,37 @@
 {/if}
 {@render children?.()}
 
-<!-- Removed ugly locale detection -->
-
-<!-- Simple Cookie Consent Banner -->
-<SimpleCookieConsent />
+<!-- GDPR Compliant Cookie Consent with Locale Detection -->
+<CookieConsentPro 
+  privacyUrl="/privacy"
+  onLocaleChange={(locale) => {
+    // Update the language globally
+    i18n.setLanguageTag(locale);
+    if (browser) {
+      document.documentElement.lang = locale;
+    }
+    
+    // Store preference if user is authenticated
+    if (supabase && data?.user) {
+      supabase.from('profiles')
+        .update({ locale })
+        .eq('id', data.user.id)
+        .then(() => {});
+    }
+  }}
+  onConsentChange={(consent) => {
+    // Handle consent changes
+    if (browser) {
+      // Dispatch event for analytics tools to listen to
+      window.dispatchEvent(new CustomEvent('cookieConsentUpdate', { detail: consent }));
+      
+      // If user rejected functional cookies, clear any existing locale cookie
+      if (!consent.functional && browser) {
+        document.cookie = 'locale=; path=/; max-age=0';
+      }
+    }
+  }}
+/>
 
 <!-- Global Message Notification Toast -->
 {#if $activeNotification}

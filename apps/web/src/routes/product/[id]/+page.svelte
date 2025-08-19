@@ -110,15 +110,28 @@
 <div class="min-h-screen bg-white">
   <Header />
   
+  <!-- Breadcrumb -->
+  <div class="px-4 lg:px-8 py-3 max-w-7xl mx-auto">
+    <div class="flex items-center gap-2 text-sm text-gray-600">
+      <a href="/" class="hover:text-black transition-colors">Home</a>
+      <span>›</span>
+      <a href="/category/{data.product.category_id}" class="hover:text-black transition-colors">
+        {getCategoryTranslation(data.product.category_name)}
+      </a>
+      <span>›</span>
+      <span class="text-black truncate max-w-[200px]">{data.product.title}</span>
+    </div>
+  </div>
+  
   <div class="lg:grid lg:grid-cols-2 lg:gap-8 max-w-7xl mx-auto">
-    <!-- Gallery - Full width on mobile, left side on desktop -->
+    <!-- Gallery - Full width, sharp corners -->
     <div class="lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)]">
       <ProductGallery 
         images={productImages}
         title={data.product.title}
         condition={data.product.condition}
         isAuthenticated={!!data.user}
-        class="w-full h-[60vh] lg:h-full"
+        class="w-full h-[65vh] lg:h-full"
         translations={{
           new: i18n.product_newWithTags(),
           likeNew: i18n.product_likeNewCondition(),
@@ -130,9 +143,9 @@
     
     <!-- Info section - clean, no containers -->
     <div class="px-4 lg:px-8 py-6 lg:py-8 pb-32 lg:pb-8">
-      <!-- Price and actions -->
+      <!-- Actions only on mobile, price + actions on desktop -->
       <div class="flex items-start justify-between mb-4">
-        <div>
+        <div class="hidden lg:block">
           <p class="text-3xl font-bold">{formatPrice(data.product.price)}</p>
           {#if data.product.shipping_price}
             <p class="text-sm text-gray-600 mt-1">
@@ -142,10 +155,10 @@
             <p class="text-sm text-green-600 mt-1">Free shipping</p>
           {/if}
         </div>
-        <div class="flex gap-2">
+        <div class="flex gap-2 lg:ml-auto">
           <button
             onclick={handleFavorite}
-            class="p-2 rounded-lg hover:bg-gray-100 transition-colors {isFavorited ? 'text-red-500' : 'text-gray-400'}"
+            class="p-2.5 rounded-full hover:bg-gray-50 transition-all {isFavorited ? 'text-red-500' : 'text-gray-400'}"
           >
             <svg class="w-6 h-6" fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
@@ -153,7 +166,7 @@
           </button>
           <button
             onclick={handleShare}
-            class="p-2 rounded-lg hover:bg-gray-100 transition-colors text-gray-400"
+            class="p-2.5 rounded-full hover:bg-gray-50 transition-all text-gray-400"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 01-7.432 0"/>
@@ -171,7 +184,7 @@
       </div>
       
       <!-- Quick info chips -->
-      <div class="flex flex-wrap gap-2 mb-6">
+      <div class="flex flex-wrap gap-2 mb-5">
         {#if data.product.size}
           <span class="px-3 py-1 bg-gray-100 rounded-full text-sm">
             Size {data.product.size}
@@ -188,7 +201,7 @@
       </div>
       
       <!-- Seller strip -->
-      <div class="flex items-center justify-between py-4 border-t border-b border-gray-100 mb-6">
+      <div class="flex items-center justify-between py-3 border-t border-b border-gray-100 mb-5">
         <a href="/profile/{data.product.seller_id}" class="flex items-center gap-3">
           <Avatar 
             src={data.product.seller_avatar} 
@@ -220,8 +233,8 @@
       
       <!-- Description -->
       {#if data.product.description}
-        <div class="mb-6">
-          <h3 class="font-medium mb-2">Description</h3>
+        <div class="mb-5">
+          <h3 class="font-medium text-sm uppercase tracking-wide text-gray-500 mb-2">Description</h3>
           <p class="text-gray-600 text-sm leading-relaxed {!showFullDescription ? 'line-clamp-3' : ''}">
             {data.product.description}
           </p>
@@ -237,7 +250,7 @@
       {/if}
       
       <!-- Item details -->
-      <div class="space-y-3 text-sm mb-6">
+      <div class="space-y-2.5 text-sm mb-6 py-4 border-t border-gray-100">
         <div class="flex justify-between">
           <span class="text-gray-600">Category</span>
           <span>{getCategoryTranslation(data.product.category_name)}</span>
@@ -248,7 +261,10 @@
         </div>
         <div class="flex justify-between">
           <span class="text-gray-600">Views</span>
-          <span>156 today</span>
+          <span class="flex items-center gap-1">
+            <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+            156 today
+          </span>
         </div>
       </div>
       

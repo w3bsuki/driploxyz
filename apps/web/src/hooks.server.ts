@@ -28,15 +28,12 @@ if (SENTRY_DSN) {
 }
 
 const supabase: Handle = async ({ event, resolve }) => {
-  console.log('🔷 HOOKS: Processing request:', event.url.pathname);
-  
   // Mobile detection for cookie compatibility
   const userAgent = event.request.headers.get('user-agent') || '';
   const isMobile = /Mobile|Android|iPhone|iPad/i.test(userAgent);
   
   // CRITICAL: Fail fast with clear error message
   if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
-    console.error('❌ HOOKS: Missing Supabase environment variables');
     throw error(500, 'Server configuration error. Please contact support.');
   }
 
@@ -51,14 +48,18 @@ const supabase: Handle = async ({ event, resolve }) => {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
+              // Check if this is an auth cookie that requires special handling
+              const isAuthCookie = name.includes('sb-') || name.includes('supabase');
+              
               // Critical: Set proper cookie configuration for auth to work
               event.cookies.set(name, value, {
                 ...options,
                 path: '/', // MUST be set for auth to work across routes
-                sameSite: 'lax', // Required for auth flow
-                secure: event.url.protocol === 'https:', // Secure on HTTPS (Vercel)
-                httpOnly: false, // MUST be false for Supabase auth (client needs access)
-                maxAge: options?.maxAge || 60 * 60 * 24 * 7 // 1 week default
+                sameSite: isAuthCookie ? 'lax' : (options?.sameSite || 'lax'), // Lax for auth, strict for others
+                secure: event.url.protocol === 'https:', // Secure on HTTPS (production)
+                httpOnly: isAuthCookie ? false : (options?.httpOnly ?? true), // Auth cookies need client access
+                maxAge: options?.maxAge || (60 * 60 * 24 * 7), // 1 week default
+                domain: event.url.hostname.includes('localhost') ? undefined : `.${event.url.hostname.split('.').slice(-2).join('.')}` // Set domain for production
               });
             });
           },
@@ -110,31 +111,23 @@ const supabase: Handle = async ({ event, resolve }) => {
 };
 
 const authGuard: Handle = async ({ event, resolve }) => {
-  try {
-    const { session, user } = await event.locals.safeGetSession();
-    event.locals.session = session;
-    event.locals.user = user;
+  const { session, user } = await event.locals.safeGetSession();
+  event.locals.session = session;
+  event.locals.user = user;
 
-    // Skip auth checks for public and API routes
-    const publicRoutes = ['/api/health', '/api/debug'];
-    if (publicRoutes.some(route => event.url.pathname.startsWith(route))) {
-      return resolve(event);
-    }
-
-    // Protect routes that require authentication
-    if (!session && event.route.id?.startsWith('/(protected)')) {
-      throw redirect(303, '/login');
-    }
-
-    // Redirect authenticated users away from auth pages
-    if (session && event.route.id?.startsWith('/(auth)')) {
-      throw redirect(303, '/');
-    }
-  } catch (err) {
-    // Do not swallow redirects or errors; rethrow to let SvelteKit handle
-    throw err;
+  // Skip auth checks for public and API routes
+  const publicRoutes = ['/api/health', '/api/debug'];
+  if (publicRoutes.some(route => event.url.pathname.startsWith(route))) {
+    return resolve(event);
   }
 
+  // Only protect explicitly protected routes
+  if (!session && event.route.id?.startsWith('/(protected)')) {
+    throw redirect(303, '/login');
+  }
+
+  // Let individual page load functions handle their own redirect logic
+  // to avoid conflicts and redirect loops
   return resolve(event);
 };
 
@@ -142,9 +135,13 @@ export const handle = SENTRY_DSN ? sequence(sentryHandle(), supabase, authGuard)
 
 // Sentry error handler (only if DSN configured)
 export const handleError: HandleServerError = SENTRY_DSN ? handleErrorWithSentry() : (async ({ error, event }) => {
-  // Always log critical errors, but only details in debug mode
-  console.error('[SERVER_ERROR]', isDebug ? error : (error instanceof Error ? error.message : 'Unknown error'));
+  // Log errors in development only
+  if (dev) {
+    console.error('[SERVER_ERROR]', error);
+  }
   return {
-    message: 'Internal Server Error'
+    message: error instanceof Error && error.message.includes('Supabase') 
+      ? 'Authentication service error. Please try again.' 
+      : 'Internal Server Error'
   };
 });

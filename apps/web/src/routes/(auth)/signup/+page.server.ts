@@ -78,24 +78,19 @@ export const actions: Actions = {
           });
 
         if (profileError) {
-          console.error('Profile creation error:', profileError);
           // Continue anyway - profile might already exist or be created by trigger
         }
       } catch (profileErr) {
-        console.error('Profile creation failed:', profileErr);
         // Non-fatal error - continue with signup success
       }
 
-      // Success - user needs to verify email
-      return {
-        form,
-        success: true,
-        message: 'Account created! Check your email and click the verification link to sign in.',
-        email: email
-      };
+      // Success - redirect to email verification page
+      throw redirect(303, `/auth/verify-email?email=${encodeURIComponent(email)}`);
 
     } catch (e) {
-      console.error('Signup error:', e);
+      // If it's a redirect, rethrow it
+      if (e instanceof redirect) throw e;
+      
       return setError(form, '', 'Account creation service temporarily unavailable');
     }
   }

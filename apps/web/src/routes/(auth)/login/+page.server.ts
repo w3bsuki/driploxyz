@@ -41,32 +41,21 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 
 export const actions: Actions = {
   signin: async ({ request, locals: { supabase }, url }) => {
-    console.log('🔴 LOGIN ACTION CALLED');
-    console.log('Request method:', request.method);
-    console.log('Request URL:', request.url);
-    
     const form = await superValidate(request, zod(LoginSchema));
-    console.log('Form validation result:', form.valid);
-    console.log('Form data:', form.data);
     
     if (!form.valid) {
-      console.log('❌ Form validation failed:', form.errors);
       return fail(400, { form });
     }
     
     const { email, password } = form.data;
-    console.log('🔐 Attempting login for:', email);
     
     // Sign in with Supabase
-    console.log('📡 Calling Supabase signInWithPassword...');
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
-    console.log('📡 Supabase response:', { data: !!data, error: !!error });
 
     if (error) {
-      console.error('Supabase auth error:', error);
       
       // Handle specific error cases
       if (error.message.includes('Invalid login credentials')) {
@@ -104,7 +93,6 @@ export const actions: Actions = {
       // If it's a redirect, rethrow it
       if (err instanceof redirect) throw err;
       // Otherwise continue - profile check is non-critical
-      console.warn('Profile check failed:', err);
     }
     
     // Success - redirect to homepage

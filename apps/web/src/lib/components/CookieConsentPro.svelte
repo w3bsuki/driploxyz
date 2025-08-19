@@ -75,13 +75,19 @@
 	// Hide/show bottom navigation
 	function hideBottomNav(hide: boolean) {
 		if (!browser) return;
-		const bottomNav = document.querySelector('.bottom-nav');
-		if (bottomNav) {
-			if (hide) {
-				bottomNav.classList.add('opacity-0', 'pointer-events-none', 'transition-opacity');
-			} else {
-				bottomNav.classList.remove('opacity-0', 'pointer-events-none');
+		
+		// Use try-catch to prevent SSR errors
+		try {
+			const bottomNav = document.querySelector('.bottom-nav');
+			if (bottomNav) {
+				if (hide) {
+					bottomNav.classList.add('opacity-0', 'pointer-events-none', 'transition-opacity');
+				} else {
+					bottomNav.classList.remove('opacity-0', 'pointer-events-none');
+				}
 			}
+		} catch (e) {
+			// Silently fail during SSR
 		}
 	}
 	
