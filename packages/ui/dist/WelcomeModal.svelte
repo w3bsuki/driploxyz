@@ -141,6 +141,7 @@
               <button
                 onclick={() => currentStep = index}
                 class="w-2 h-2 rounded-full transition-all duration-300 {index === currentStep ? 'bg-black w-8' : 'bg-gray-300 hover:bg-gray-400'}"
+                aria-label={`Go to step ${index + 1}`}
               ></button>
             {/each}
           </div>

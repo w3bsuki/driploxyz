@@ -104,13 +104,11 @@
   bind:this={galleryRef}
 >
   <!-- Main Image Container -->
-  <div 
-    class="relative h-full bg-gray-50 overflow-hidden cursor-zoom-{isZoomed ? 'out' : 'in'}"
+  <button 
+    class="relative h-full w-full bg-gray-50 overflow-hidden cursor-zoom-{isZoomed ? 'out' : 'in'} border-0 p-0 text-left"
     onclick={handleImageClick}
     ontouchstart={handleTouchStart}
     ontouchend={handleTouchEnd}
-    role="button"
-    tabindex="0"
     aria-label="Product image gallery - click to zoom"
   >
     {#key selectedIndex}
@@ -177,7 +175,7 @@
         Click to zoom out • ESC to exit
       </div>
     {/if}
-  </div>
+  </button>
 
   <!-- Thumbnail Strip -->
   {#if images.length > 1}

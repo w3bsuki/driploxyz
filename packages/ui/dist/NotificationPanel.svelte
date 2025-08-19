@@ -91,12 +91,12 @@
 
 {#if show}
   <!-- Glass Morphism Backdrop -->
-  <div 
-    class="fixed inset-0 bg-black/20 backdrop-blur-xs z-40"
+  <button 
+    class="fixed inset-0 bg-black/20 backdrop-blur-xs z-40 bg-transparent border-0 cursor-default"
     onclick={onClose}
-    role="button"
+    aria-label="Close notifications panel"
     tabindex="-1"
-  ></div>
+  ></button>
 
   <!-- Notification Panel -->
   <div class="fixed top-16 right-4 w-96 max-w-[calc(100vw-2rem)] z-50 {className}">
@@ -125,6 +125,7 @@
           <button 
             onclick={onClose}
             class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100/50"
+            aria-label="Close notifications"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

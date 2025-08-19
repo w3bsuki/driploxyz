@@ -16,11 +16,11 @@
 <div class="bg-white border-b border-gray-200">
   <div class="px-4 sm:px-6 lg:px-8 pt-4 pb-6">
     <div class="overflow-x-auto scrollbar-hide">
-      <div class="flex space-x-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+      <div class="flex space-x-3 -mx-4 px-4 sm:mx-0 sm:px-0">
         <!-- Promoted Products -->
         {#if promotedProducts && promotedProducts.length > 0}
           {#each promotedProducts as product}
-            <div class="relative shrink-0 group pt-3">
+            <div class="relative shrink-0 group">
               <button 
                 onclick={() => onSellerSelect({
                   id: product.seller_id || `seller-${product.id}`,
@@ -32,16 +32,14 @@
                   followers: 250,
                   description: i18n.seller_premiumSellerDescription()
                 })}
-                class="block"
+                class="block promoted-highlight"
               >
-              <!-- Glass morphism container with subtle border for promoted items -->
-              <div class="bg-white rounded-2xl border border-gray-900/20 p-1 shadow-md backdrop-blur-xl group-hover:scale-105 transition-transform ring-1 ring-gray-900/5">
-                <!-- Premium badge - refined dark design -->
-                <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 z-10 bg-gray-900 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-md tracking-wide">
-                  {i18n.trending_promoted()}
-                </div>
-                <!-- Inner glass frame -->
-                <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
+              <!-- Premium container with animated gold border -->
+              <div class="promoted-card rounded-2xl shadow-lg group-hover:scale-105 transition-all duration-300">
+                <!-- White padding layer -->
+                <div class="bg-white p-1 rounded-xl">
+                  <!-- Inner glass frame -->
+                  <div class="bg-gray-50/80 relative rounded-lg border border-gray-100 overflow-hidden">
                   <div 
                     aria-hidden="true"
                     class="absolute inset-x-0 top-0 h-32 rounded-[inherit]"
@@ -64,6 +62,7 @@
                     <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg border border-gray-200 shadow-sm">
                       {product.price}{i18n.common_currency()}
                     </div>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -98,3 +97,44 @@
     </div>
   </div>
 </div>
+
+<style>
+  /* Premium gold animated border for promoted items */
+  .promoted-card {
+    position: relative;
+    padding: 2px;
+    background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700, #FFA500);
+    background-size: 300% 300%;
+    animation: shimmer 3s ease infinite;
+  }
+  
+  .promoted-card::before {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    background: white;
+    border-radius: 0.875rem;
+    z-index: 0;
+  }
+  
+  .promoted-card > div {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .promoted-card:hover {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+</style>

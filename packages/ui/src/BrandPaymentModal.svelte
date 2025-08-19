@@ -131,10 +131,10 @@
       </div>
 
       <!-- Card Input -->
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+      <div class="mb-4" role="group" aria-labelledby="payment-details-label">
+        <div id="payment-details-label" class="block text-sm font-medium text-gray-700 mb-1">
           Payment Details
-        </label>
+        </div>
         <div bind:this={cardContainer} class="p-2.5 border border-gray-300 rounded-sm bg-white text-sm"></div>
       </div>
 

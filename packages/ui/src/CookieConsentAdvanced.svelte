@@ -243,7 +243,7 @@
 
 {#if showBanner && !isLoading}
 	<!-- Glass morphism backdrop -->
-	<div class="fixed inset-0 bg-black/40 backdrop-blur-xs z-40" onclick={() => {}}>
+	<div class="fixed inset-0 bg-black/40 backdrop-blur-xs z-40" role="presentation" aria-hidden="true">
 		
 		<!-- Locale Detection Modal (shows first if detected) -->
 		{#if showLocaleModal && detectedLocation}

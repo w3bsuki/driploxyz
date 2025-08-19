@@ -132,6 +132,8 @@
   class="bg-white border rounded-xl p-4 transition-all duration-200 hover:shadow-md {className}"
   onmouseenter={() => isHovering = true}
   onmouseleave={() => isHovering = false}
+  role="region"
+  aria-label="Seller information"
 >
   <!-- Header -->
   <div class="flex items-center justify-between mb-3">

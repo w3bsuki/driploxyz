@@ -82,15 +82,15 @@
 
 <div class={`condition-selector ${className}`}>
   {#if label}
-    <label class="block text-sm font-medium text-gray-700 mb-2">
+    <div class="block text-sm font-medium text-gray-700 mb-2" id="condition-label">
       {label}
       {#if required}
         <span class="text-red-500">*</span>
       {/if}
-    </label>
+    </div>
   {/if}
 
-  <div class="grid grid-cols-2 gap-2">
+  <div class="grid grid-cols-2 gap-2" role="group" aria-labelledby={label ? "condition-label" : undefined}>
     {#each conditions as condition}
       <button
         type="button"

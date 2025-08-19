@@ -60,16 +60,17 @@
 
 {#if isOpen}
   <!-- Backdrop BEHIND the dropdown -->
-  <div 
-    class="fixed inset-0 z-40"
+  <button 
+    class="fixed inset-0 z-40 bg-transparent border-0 cursor-default"
     onclick={onClose}
-  ></div>
+    aria-label="Close menu"
+    tabindex={-1}
+  ></button>
   
   <!-- Dropdown menu ABOVE the backdrop -->
   <div class="absolute top-full left-0 right-0 mt-2 z-50">
     <div 
-      class="bg-white rounded-xl shadow-2xl border border-gray-200 max-h-[calc(100vh-200px)] sm:max-h-[70vh] overflow-y-auto {className}"
-      onclick={(e) => e.stopPropagation()}>
+      class="bg-white rounded-xl shadow-2xl border border-gray-200 max-h-[calc(100vh-200px)] sm:max-h-[70vh] overflow-y-auto {className}">
       <div class="p-4">
         <!-- Header with clear button -->
         <div class="flex items-center justify-between mb-3">
@@ -86,6 +87,7 @@
             <button
               onclick={onClose}
               class="p-1 hover:bg-gray-100 rounded-lg"
+              aria-label="Close menu"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

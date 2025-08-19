@@ -117,12 +117,14 @@
 
 <!-- Backdrop -->
 {#if isVisible}
-  <div 
-    class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+  <button 
+    class="fixed inset-0 bg-black/50 z-40 lg:hidden bg-transparent border-0 cursor-default"
     onclick={onClose}
+    aria-label="Close product sheet"
+    tabindex="-1"
     in:fade={{ duration: 200 }}
     out:fade={{ duration: 200 }}
-  ></div>
+  ></button>
 {/if}
 
 <!-- Mobile Sheet -->
@@ -149,6 +151,7 @@
           <button
             onclick={onClose}
             class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+            aria-label="Close product details"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -160,6 +163,7 @@
             <button
               onclick={onShare}
               class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+              aria-label="Share product"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 01-7.432 0m9.032-4.026A9.001 9.001 0 0112 3c-4.474 0-8.268 3.12-9.032 7.326m0 0A9.001 9.001 0 0012 21c4.474 0 8.268-3.12 9.032-7.326"/>
@@ -169,6 +173,7 @@
             <button
               onclick={onFavorite}
               class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+              aria-label="Add to favorites"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
@@ -189,6 +194,7 @@
           <button
             onclick={toggleFullscreen}
             class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+            aria-label="Toggle fullscreen"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4a4 4 0 114 4H4zM20 8V4a4 4 0 10-4 4h4zM4 16v4a4 4 0 104-4H4zM20 16v4a4 4 0 01-4-4h4z"/>

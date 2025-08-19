@@ -117,10 +117,11 @@
   {#if selectedMethod}
     <div class="space-y-4 pt-4">
       <div class="bg-white rounded-xl border border-gray-200 p-4">
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+        <label for="payout-details" class="block text-sm font-medium text-gray-700 mb-2">
           {currentMethod.name} Details
         </label>
         <Input
+          id="payout-details"
           bind:value={payoutDetails}
           placeholder={currentMethod.placeholder}
           required
@@ -130,10 +131,11 @@
       </div>
 
       <div class="bg-white rounded-xl border border-gray-200 p-4">
-        <label class="block text-sm font-medium text-gray-700 mb-2">
+        <label for="payout-name" class="block text-sm font-medium text-gray-700 mb-2">
           Display Name (Optional)
         </label>
         <Input
+          id="payout-name"
           bind:value={payoutName}
           placeholder="Optional display name"
           class="bg-white"

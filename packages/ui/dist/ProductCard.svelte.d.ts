@@ -4,6 +4,7 @@ interface Props {
     onFavorite?: (product: Product) => void;
     onclick?: (product: Product) => void;
     favorited?: boolean;
+    highlighted?: boolean;
     class?: string;
     translations?: {
         size?: string;
