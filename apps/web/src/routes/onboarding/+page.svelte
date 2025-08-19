@@ -483,6 +483,18 @@
   show={showSuccessModal}
   accountType={accountType}
   onClose={handleSuccessComplete}
+  translations={{
+    welcomeBrand: m.onboarding_welcomeBrand(),
+    welcomePersonal: m.onboarding_welcomePersonal(),
+    brandProfileSetup: m.onboarding_brandProfileSetup(),
+    profileComplete: m.onboarding_profileComplete(),
+    profileCreated: m.onboarding_profileCreated(),
+    profileVerified: m.onboarding_profileVerified(),
+    brandPending: m.onboarding_brandPending(),
+    paymentReady: m.onboarding_paymentReady(),
+    goToDashboard: m.onboarding_goToDashboard(),
+    startExploring: m.onboarding_startExploring()
+  }}
 />
 
 <!-- Brand Payment Modal -->
