@@ -1,5 +1,5 @@
 import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database.types';
+import type { Database } from '@repo/database';
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces

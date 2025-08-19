@@ -1,6 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { SupabaseClient, User, Session } from '@supabase/supabase-js';
-import type { Database } from './types/database.types';
+import type { Database } from '@repo/database';
 
 export interface AuthState {
   user: User | null;

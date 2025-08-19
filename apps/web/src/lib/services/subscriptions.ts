@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database.types.js';
+import type { Database } from '@repo/database';
 import { stripe } from '$lib/stripe/server.js';
 
 type Tables = Database['public']['Tables'];

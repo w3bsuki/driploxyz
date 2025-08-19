@@ -1,6 +1,6 @@
 import { createBrowserClient } from '@supabase/ssr';
 import { env } from '$env/dynamic/public';
-import type { Database } from '$lib/types/database.types';
+import type { Database } from '@repo/database';
 
 /**
  * Create a Supabase client for use in the browser

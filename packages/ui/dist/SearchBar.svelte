@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import type { SearchBarVariant } from './types.js';
 
   interface Props {
@@ -14,6 +13,7 @@
     onFilter?: () => void;
     onCategorySelect?: (category: string) => void;
     onOpenMegaMenu?: () => void;
+    onNavigate?: (path: string) => void;
     showMegaMenuButton?: boolean;
     class?: string;
   }
@@ -30,6 +30,7 @@
     onFilter,
     onCategorySelect,
     onOpenMegaMenu,
+    onNavigate,
     showMegaMenuButton = false,
     class: className = ''
   }: Props = $props();
@@ -82,13 +83,13 @@
     }, 200);
   }
   
-  async function handleCategoryClick(category: string) {
+  function handleCategoryClick(category: string) {
     onCategorySelect?.(category);
     showCategories = false;
     if (category === 'all') {
-      await goto('/search');
+      onNavigate?.('/search');
     } else {
-      await goto(`/category/${category}`);
+      onNavigate?.(`/category/${category}`);
     }
   }
 

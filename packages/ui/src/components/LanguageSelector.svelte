@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
+  const browser = typeof window !== 'undefined';
   
   // Since this is in packages/ui, we'll accept these as props
   interface LanguageOption {

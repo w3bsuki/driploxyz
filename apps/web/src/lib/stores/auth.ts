@@ -1,7 +1,7 @@
 import { writable, derived, type Readable } from 'svelte/store';
 import { browser } from '$app/environment';
 import type { User, Session, SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database.types';
+import type { Database } from '@repo/database';
 import type { AuthState } from '$lib/auth';
 import { canSell as canSellHelper } from '$lib/auth';
 

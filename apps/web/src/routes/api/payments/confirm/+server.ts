@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { stripe } from '$lib/stripe/server.js';
 import type { RequestHandler } from './$types.js';
-import type { Database } from '$lib/types/database.types';
+import type { Database } from '@repo/database';
 import { sendEmail, emailTemplates } from '$lib/email/resend';
 
 export const POST: RequestHandler = async ({ request, locals }) => {

@@ -11,6 +11,7 @@ interface Props {
     onFilter?: () => void;
     onCategorySelect?: (category: string) => void;
     onOpenMegaMenu?: () => void;
+    onNavigate?: (path: string) => void;
     showMegaMenuButton?: boolean;
     class?: string;
 }

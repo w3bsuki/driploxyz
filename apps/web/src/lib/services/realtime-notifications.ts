@@ -1,5 +1,5 @@
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database.types.js';
+import type { Database } from '@repo/database';
 import { 
 	notificationActions, 
 	messageToastActions, 

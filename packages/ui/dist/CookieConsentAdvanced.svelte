@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	const browser = typeof window !== 'undefined';
 	import Button from './Button.svelte';
 	import * as i18n from '@repo/i18n';
 	

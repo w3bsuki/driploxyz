@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { env } from '$env/dynamic/public';
 import type { Cookies } from '@sveltejs/kit';
-import type { Database } from '$lib/types/database.types';
+import type { Database } from '@repo/database';
 
 /**
  * Create a Supabase client for server-side operations

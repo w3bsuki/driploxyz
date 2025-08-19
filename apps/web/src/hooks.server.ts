@@ -3,7 +3,7 @@ import { type Handle, redirect, error, type HandleServerError } from '@sveltejs/
 import { sequence } from '@sveltejs/kit/hooks';
 import { env } from '$env/dynamic/public';
 import { building } from '$app/environment';
-import type { Database } from '$lib/types/database.types';
+import type { Database } from '@repo/database';
 import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
