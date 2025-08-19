@@ -25,7 +25,8 @@
       "Bash(rm:*)",
       "mcp__playwright__browser_close",
       "Bash(pnpm list:*)",
-      "WebFetch(domain:tailwindcss.com)"
+      "WebFetch(domain:tailwindcss.com)",
+      "Bash(rm:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
