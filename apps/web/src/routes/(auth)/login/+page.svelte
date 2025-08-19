@@ -11,18 +11,7 @@
     validators: zodClient(LoginSchema),
     resetForm: false,
     taintedMessage: null,
-    validationMethod: 'oninput',
-    onResult: ({ result }) => {
-      // Handle successful login - let SvelteKit handle the redirect
-      if (result.type === 'redirect') {
-        // Redirect will be handled automatically by SvelteKit
-        return;
-      }
-    },
-    onError: ({ result }) => {
-      // Errors are handled via $errors from server
-      // No need for additional error handling here
-    }
+    validationMethod: 'oninput'
   });
 </script>
 
