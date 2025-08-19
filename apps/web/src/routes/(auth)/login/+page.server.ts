@@ -44,8 +44,21 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 
 export const actions: Actions = {
   signin: async ({ request, locals: { supabase }, url }) => {
+    // EMERGENCY TEST: Skip all auth logic to test form serialization
+    const form = await superValidate(request, zod(LoginSchema));
+    
+    if (!form.valid) {
+      return fail(400, { form });
+    }
+    
+    // Test success message without any Supabase calls
+    return message(form, {
+      type: 'success',
+      text: 'TEST: Form processing works! Auth temporarily disabled for debugging.'
+    });
+    
     // CRITICAL: Top-level try-catch to prevent 500 errors that break Superforms
-    try {
+    /* try {
       // Always log in production to debug Vercel issues (matching signup pattern)
       console.log('[LOGIN] ========== LOGIN ACTION START ==========');
       console.log('[LOGIN] Timestamp:', new Date().toISOString());
@@ -139,6 +152,6 @@ export const actions: Actions = {
       return fail(400, {
         form: setError(errorForm, '', 'Login service is temporarily unavailable. Please try again.')
       });
-    }
+    } */
   }
 };
