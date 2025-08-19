@@ -47,6 +47,7 @@ export const actions: Actions = {
     // Always log in production to debug Vercel issues (matching signup pattern)
     console.log('[LOGIN] ========== LOGIN ACTION START ==========');
     console.log('[LOGIN] Timestamp:', new Date().toISOString());
+    console.log('[LOGIN] Version: v2-fixed');
     console.log('[LOGIN] Request method:', request.method);
     console.log('[LOGIN] Request URL:', request.url);
     console.log('[LOGIN] Site URL origin:', url.origin);
