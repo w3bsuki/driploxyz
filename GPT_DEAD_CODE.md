@@ -1,0 +1,22 @@
+- Duplicates to Consolidate:                                                                                                                     
+    - Cookie Consent:                                                                                                                            
+    - App locals: `apps/web/src/lib/components/CookieConsentAdvanced.svelte`, `CookieConsentPro.svelte`, `SimpleCookieConsent.svelte`            
+    - UI package: `packages/ui/src/CookieConsent.svelte`, `CookieConsentAdvanced.svelte`                                                         
+    - Action: Choose `packages/ui` as canonical; implement variants via props; replace app usage; remove local duplicates.                       
+- Candidates to Review:                                                                                                                          
+    - Local primitives overlapping with packages/ui (Button, Card, Input, etc.).                                                                 
+    - apps/web/src/lib/components/LocaleDetector.svelte if @repo/i18n covers detection already.                                                  
+    - (auth)/login-temp and the hard-redirect from (auth)/login/+page.server.ts once login is restored.                                          
+    - apps/web/src/lib/stripe folder usage; remove if superseded or unused.                                                                      
+- Unused/Legacy Utilities:                                                                                                                       
+    - Scan apps/web/src/lib/services, apps/web/src/lib/utils, and apps/web/src/lib/stores for unused exports.                                    
+    - Remove or inline small one-off helpers that are only used once.                                                                            
+- Verification (safe removal workflow):                                                                                                          
+    - Search for imports before deleting (e.g., ripgrep: rg -n "CookieConsentAdvanced").                                                         
+    - Confirm no dynamic imports or route aliases reference the target.                                                                          
+    - Remove file and run build locally; verify no TypeScript errors.                                                                            
+    - Smoke-test related routes/pages.                                                                                                           
+- DoD:                                                                                                                                           
+    - No runtime or build errors after removal.                                                                                                  
+    - Bundle size and component duplication reduced.                                                                                             
+    - Clear migration notes in commit/PR description.

@@ -1,0 +1,31 @@
+- Component Inventory (packages/ui/src):                                                                                                         
+    - Primitives: Button, Card, Input, TabGroup, Breadcrumb                                                                                      
+    - Media: OptimizedImage, ImageUploader, ProductGallery, ProductCard, ProductSheet                                                            
+    - Feedback/Navigation: NotificationBell/Panel/Toast, Follow/Message/Sold toasts, LanguageSwitcher                                            
+    - Flows/Modals: OnboardingStep/Success, CheckoutSummary, PaymentForm, CookieConsent, CookieConsentAdvanced                                   
+- App Local Components (apps/web/src/lib/components):                                                                                            
+    - Global/Navigation: Header.svelte, BottomNav.svelte                                                                                         
+    - Flows/Dialogs: QuickViewDialog.svelte                                                                                                      
+    - Marketing/UX: EarlyBirdBanner.svelte, PromotedHighlights.svelte, HeroSearch.svelte, LocaleDetector.svelte                                  
+    - Cookie Consent Variants: CookieConsentAdvanced.svelte, CookieConsentPro.svelte, SimpleCookieConsent.svelte                                 
+- Duplication & Consolidation Targets:                                                                                                           
+    - Cookie Consent: Consolidate to packages/ui:                                                                                                
+    - Create a single canonical `CookieConsent` with variants via props:                                                                         
+      - Props: `mode: 'simple' | 'advanced' | 'pro'`, `categories`, `onAccept`, `onReject`, `onCustomize`, `translations`.                       
+      - Accessibility: Focus management, Escape handling, ARIA attributes, keyboard navigability.                                                
+      - Persistence: Single cookie strategy (e.g., `cookie_consent`), with JSON for categories and timestamp.                                    
+    - Replace app-local cookie consent usage with UI package component; delete local duplicates.                                                 
+- Primitives: Prefer packages/ui for Button/Card/Input usage in app templates; remove ad-hoc equivalents.                                        
+- Dialogs: If QuickViewDialog is intended to be reused, migrate to packages/ui with:                                                             
+    - Props: `open`, `onClose`, `title`, `content`, `actions`.                                                                                   
+    - Accessibility: Focus trap, aria-modal, labelledby/ describedby, keyboard handling.                                                         
+- Props & Variants Standardization:                                                                                                              
+    - Standardize size, variant, intent props across UI components.                                                                              
+    - Adopt predictable Tailwind tokens; avoid one-off class names per app component.                                                            
+- Performance:                                                                                                                                   
+    - Avoid umbrella barrel imports; import per-component to aid tree-shaking.                                                                   
+    - Lazy-load heavy UI modules when off-screen or behind dialogs.                                                                              
+- Theming:                                                                                                                                       
+    - Centralize color and radius tokens; ensure app and UI use the same Tailwind config and CSS variables where applicable.                     
+- Documentation:                                                                                                                                 
+    - Provide short usage examples for each UI component in packages/ui/README.md or storybook-style docs if present.

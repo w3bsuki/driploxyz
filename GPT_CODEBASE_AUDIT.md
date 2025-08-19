@@ -1,0 +1,62 @@
+- Overview: Monorepo for Driplo Web with SvelteKit 2, Svelte 5, Supabase SSR, Superforms v2, and a shared UI package. Focus is reliability (auth 
+flows in Vercel), consolidation (UI), and correctness (SSR boundaries, CSRF, redirects).                                                         
+- Structure:                                                                                                                                     
+    - Apps: apps/web (primary SvelteKit app)                                                                                                     
+    - Packages: packages/ui (design system), packages/i18n, packages/eslint-config, packages/typescript-config, packages/database                
+    - Docs: multiple operational and audit docs already present (AUTH_PROD_AUDIT.md, PRODUCTION_ENV_SETUP.md, etc.)                              
+- Conventions (SvelteKit 2/Svelte 5):                                                                                                            
+    - Routing: organized with route groups (auth) and (protected) and root layouts.                                                              
+    - SSR/CSR split:                                                                                                                             
+    - Server: `apps/web/src/hooks.server.ts` creates `@supabase/ssr` client, bridges cookies, passes `global.fetch`, defines `safeGetSession`,   
+and attaches `session/user` in an `authGuard`.                                                                                                   
+    - Root layout: `+layout.server.ts` pulls `session/user` from `locals`, loads `profile`, and redirects to onboarding where needed (skip list  
+in place).                                                                                                                                       
+    - Client layout: `+layout.ts` creates browser/server Supabase client appropriately, using SSR cookies and returns `session/user/profile`.    
+- Runes: used in (auth)/+layout.svelte (e.g., $derived), generally modern Svelte 5 patterns in route components.                                 
+- Auth/Forms:                                                                                                                                    
+    - Superforms v2 in (auth)/login and (auth)/signup:                                                                                           
+    - `login/+page.server.ts`: `signin` action with structured logging; currently load redirects to `/login-temp` (emergency workaround).        
+    - `signup/+page.server.ts`: `signup` action with `superValidate`, profile insert, localization via `@repo/i18n`, and success message.        
+- Callback route routes/auth/callback exists (not inspected here), plus verify/reset flows in (auth).                                            
+- UI/Design System:                                                                                                                              
+    - packages/ui/src: large component set (Button, Card, Input, ProductCard/Gallery/Sheet, CookieConsent*, ImageUploader, etc.).                
+    - App local components in apps/web/src/lib/components: CookieConsentAdvanced.svelte, CookieConsentPro.svelte, SimpleCookieConsent.svelte,    
+Header.svelte, BottomNav.svelte, QuickViewDialog.svelte, and page-specific widgets.                                                              
+    - Duplication: cookie consent appears both in app and UI package. Likely intended to centralize in packages/ui.                              
+- State/Stores:                                                                                                                                  
+    - apps/web/src/lib/stores exists; not fully audited. SSR hydration is driven by +layout.server.ts -> +layout.ts -> +layout.svelte.           
+    - Auth state is sourced from SSR and kept consistent (good).                                                                                 
+- Security:                                                                                                                                      
+    - CSRF disabled: apps/web/svelte.config.js sets csrf.checkOrigin: false for debugging; should be re-enabled after verification.              
+    - Sentry: Optional init gated by DSN. Uses handleErrorWithSentry when configured; dev filter avoids noisy dev sends.                         
+- Performance:                                                                                                                                   
+    - Root page +page.svelte is large (13k lines). Consider code-splitting heavy sections and deferring non-critical hydration.                  
+    - UI consolidation will help bundle size and reduce duplication.                                                                             
+- Accessibility:                                                                                                                                 
+    - Requires focused pass on forms (labels, error messaging), dialogs (QuickViewDialog), keyboard interactions in nav/header, and color        
+contrast.                                                                                                                                        
+- Internationalization:                                                                                                                          
+    - @repo/i18n present; used in signup to detect user locale from cookie/Accept-Language.                                                      
+    - Confirm SSR hydration of locale to client and route-level language toggles if present.                                                     
+- Deploy (Vercel):                                                                                                                               
+    - Adapter: @sveltejs/adapter-vercel with non-edge functions (correct for actions).                                                           
+    - Env documentation is present (vercel-env.md, AUTH_PROD_AUDIT.md).                                                                          
+    - Preview vs production parity depends on env vars and Supabase redirect URL settings.                                                       
+- Issues:                                                                                                                                        
+    - Login page load is hard-redirecting to /login-temp, bypassing the normal flow.                                                             
+    - CSRF disabled globally; should be re-enabled once forms/actions are confirmed stable.                                                      
+    - Excessive logging in auth actions (fine for preview diagnostics; reduce in production).                                                    
+    - Cookie consent duplication across app and UI package.                                                                                      
+    - Potential Hydration Failures on Vercel when env vars are missing or incorrect, leading to “buttons do nothing”.                            
+- Risks:                                                                                                                                         
+    - Missing PUBLIC_SUPABASE_URL or PUBLIC_SUPABASE_ANON_KEY causes 500s on server, breaking SSR and hydration.                                 
+    - Supabase Auth redirect URLs may not include Vercel preview domains.                                                                        
+    - Large monolithic UI files risk bundle size/hydration overhead.                                                                             
+- Recommendations:                                                                                                                               
+    - Remove emergency login redirect; restore normal login load.                                                                                
+    - Verify env variables in Vercel Preview and Production; add PUBLIC_SITE_URL and use it for absolute redirects.                              
+    - Confirm Supabase Auth redirect URLs cover prod and all preview domains.                                                                    
+    - Re-enable CSRF (checkOrigin: true) after verifying Superforms flows.                                                                       
+    - Consolidate cookie consent into packages/ui with variants/props; remove app duplicates.                                                    
+    - Performance pass on heavy pages; code-split and defer non-critical hydration.                                                              
+    - Accessibility pass on forms, dialogs, keyboard nav, and color contrast.
