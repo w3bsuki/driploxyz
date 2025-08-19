@@ -143,19 +143,10 @@
     
     <!-- Info section - clean, no containers -->
     <div class="px-4 lg:px-8 py-6 lg:py-8 pb-32 lg:pb-8">
-      <!-- Actions only on mobile, price + actions on desktop -->
-      <div class="flex items-start justify-between mb-4">
-        <div class="hidden lg:block">
-          <p class="text-3xl font-bold">{formatPrice(data.product.price)}</p>
-          {#if data.product.shipping_price}
-            <p class="text-sm text-gray-600 mt-1">
-              + {formatPrice(data.product.shipping_price)} shipping
-            </p>
-          {:else}
-            <p class="text-sm text-green-600 mt-1">Free shipping</p>
-          {/if}
-        </div>
-        <div class="flex gap-2 lg:ml-auto">
+      <!-- Title on same row as wishlist/share buttons -->
+      <div class="flex items-center justify-between mb-2">
+        <h1 class="text-xl font-semibold">{data.product.title}</h1>
+        <div class="flex gap-2">
           <button
             onclick={handleFavorite}
             class="p-2.5 rounded-full hover:bg-gray-50 transition-all {isFavorited ? 'text-red-500' : 'text-gray-400'}"
@@ -175,12 +166,21 @@
         </div>
       </div>
       
-      <!-- Title and brand -->
+      <!-- Brand and price -->
       <div class="mb-4">
         {#if data.product.brand}
           <p class="text-sm text-gray-600 mb-1">{data.product.brand}</p>
         {/if}
-        <h1 class="text-xl font-semibold">{data.product.title}</h1>
+        <div class="hidden lg:block">
+          <p class="text-3xl font-bold">{formatPrice(data.product.price)}</p>
+          {#if data.product.shipping_price}
+            <p class="text-sm text-gray-600 mt-1">
+              + {formatPrice(data.product.shipping_price)} shipping
+            </p>
+          {:else}
+            <p class="text-sm text-green-600 mt-1">Free shipping</p>
+          {/if}
+        </div>
       </div>
       
       <!-- Quick info chips -->

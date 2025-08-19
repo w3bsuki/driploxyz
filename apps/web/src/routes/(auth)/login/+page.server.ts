@@ -56,25 +56,20 @@ export const actions: Actions = {
     });
 
     if (error) {
-      
       // Handle specific error cases
       if (error.message.includes('Invalid login credentials')) {
-        setError(form, '', 'Invalid email or password');
-        return fail(400, { form });
+        return setError(form, '', 'Invalid email or password');
       }
       if (error.message.includes('Email not confirmed')) {
-        setError(form, '', 'Please verify your email before logging in');
-        return fail(400, { form });
+        return setError(form, '', 'Please verify your email before logging in');
       }
       
       // Return fail with form for superforms to handle properly
-      setError(form, '', error.message || 'Unable to sign in');
-      return fail(400, { form });
+      return setError(form, '', error.message || 'Unable to sign in');
     }
 
     if (!data.user || !data.session) {
-      setError(form, '', 'Authentication failed. Please try again.');
-      return fail(400, { form });
+      return setError(form, '', 'Authentication failed. Please try again.');
     }
 
     // Check onboarding status (non-blocking)
