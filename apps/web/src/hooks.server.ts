@@ -7,6 +7,7 @@ import type { Database } from '$lib/types/database.types';
 import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
+import * as i18n from '@repo/i18n';
 // import { authLimiter, apiLimiter } from '$lib/server/rate-limiter';
 // import { CSRFProtection } from '$lib/server/csrf';
 
@@ -178,6 +179,38 @@ const supabase: Handle = async ({ event, resolve }) => {
 //   return resolve(event);
 // };
 
+const languageHandler: Handle = async ({ event, resolve }) => {
+  // Get language from cookie
+  const langCookie = event.cookies.get('driplo_language');
+  
+  // Set language on server side
+  if (langCookie && i18n.isAvailableLanguageTag(langCookie)) {
+    i18n.setLanguageTag(langCookie as any);
+  } else {
+    // Try to detect from Accept-Language header
+    const acceptLanguage = event.request.headers.get('accept-language');
+    if (acceptLanguage) {
+      const browserLang = acceptLanguage.split(',')[0].split('-')[0].toLowerCase();
+      if (i18n.isAvailableLanguageTag(browserLang)) {
+        i18n.setLanguageTag(browserLang as any);
+        // Set cookie for next time
+        event.cookies.set('driplo_language', browserLang, {
+          path: '/',
+          maxAge: 365 * 24 * 60 * 60,
+          httpOnly: false, // Allow JS to read it
+          sameSite: 'lax'
+        });
+      } else {
+        i18n.setLanguageTag('en');
+      }
+    } else {
+      i18n.setLanguageTag('en');
+    }
+  }
+  
+  return resolve(event);
+};
+
 const authGuard: Handle = async ({ event, resolve }) => {
   const { session, user } = await event.locals.safeGetSession();
   event.locals.session = session;
@@ -199,7 +232,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
-export const handle = SENTRY_DSN ? sequence(sentryHandle(), supabase, authGuard) : sequence(supabase, authGuard);
+export const handle = SENTRY_DSN ? sequence(sentryHandle(), languageHandler, supabase, authGuard) : sequence(languageHandler, supabase, authGuard);
 
 // Sentry error handler (only if DSN configured)
 export const handleError: HandleServerError = SENTRY_DSN ? handleErrorWithSentry() : (async ({ error, event }) => {

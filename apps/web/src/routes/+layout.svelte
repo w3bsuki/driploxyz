@@ -17,14 +17,22 @@
   import type { LayoutData } from './$types';
   import type { Snippet } from 'svelte';
 
-  // Initialize language immediately when browser is available
-  if (browser) {
-    initializeLanguage();
-    // Set the lang attribute on the html element
-    document.documentElement.lang = i18n.languageTag();
-  }
-
   let { data, children }: { data: LayoutData; children?: Snippet } = $props();
+
+  // Initialize language from server data
+  $effect(() => {
+    if (data?.language && i18n.isAvailableLanguageTag(data.language)) {
+      i18n.setLanguageTag(data.language as any);
+      if (browser) {
+        document.documentElement.lang = data.language;
+        // Also update localStorage for client-side persistence
+        localStorage.setItem('driplo_language', data.language);
+      }
+    } else if (browser) {
+      initializeLanguage();
+      document.documentElement.lang = i18n.languageTag();
+    }
+  });
 
   // Use $derived for reactive destructuring in Svelte 5
   const supabase = $derived(data?.supabase);

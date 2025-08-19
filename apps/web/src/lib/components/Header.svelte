@@ -38,9 +38,18 @@
     { code: 'ua', name: 'Українська', flag: '🇺🇦' }
   ];
   
-  function switchLanguage(lang: string) {
+  async function switchLanguage(lang: string) {
+    // Set cookie properly for server-side
+    document.cookie = `driplo_language=${lang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
+    
+    // Update client-side
     switchLang(lang);
     currentLang = lang;
+    
+    // Store in localStorage too
+    localStorage.setItem('driplo_language', lang);
+    
+    // Reload to apply language change
     window.location.reload();
   }
   
