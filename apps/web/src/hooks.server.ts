@@ -10,21 +10,27 @@ import { dev } from '$app/environment';
 // Debug flag for controlled logging - use dev mode as default
 const isDebug = dev;
 
-// Try to get Sentry DSN - may not be defined in all environments
+// Try to get Sentry DSN - optional in some environments
 let SENTRY_DSN: string | undefined;
 try {
-  SENTRY_DSN = process.env.SENTRY_DSN;
+  // In Vercel/production, this should be available
+  const { SENTRY_DSN: dsn } = await import('$env/static/private');
+  SENTRY_DSN = dsn;
 } catch {
-  // Environment variable not available
+  // DSN not available - Sentry won't be initialized
 }
 
 // Only initialize Sentry if DSN is present
 if (SENTRY_DSN) {
   Sentry.init({
     dsn: SENTRY_DSN,
-    environment: process.env.NODE_ENV || 'development',
-    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+    environment: dev ? 'development' : 'production',
+    tracesSampleRate: dev ? 1.0 : 0.1,
+    debug: !dev, // Enable debug in production to see what's happening
   });
+  console.log('[SENTRY] Initialized with DSN');
+} else {
+  console.log('[SENTRY] No DSN found - error tracking disabled');
 }
 
 const supabase: Handle = async ({ event, resolve }) => {
@@ -48,22 +54,10 @@ const supabase: Handle = async ({ event, resolve }) => {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              // Check if this is an auth cookie that requires special handling
-              const isAuthCookie = name.includes('sb-') || name.includes('supabase');
-              
-              // Check if we're on HTTPS (handles proxies like Vercel/Cloudflare)
-              const proto = event.request.headers.get('x-forwarded-proto');
-              const isSecure = proto === 'https' || event.url.protocol === 'https:';
-              
-              // Critical: Set proper cookie configuration for auth to work
+              // CRITICAL: Only set path, let Supabase handle all other cookie options
               event.cookies.set(name, value, {
                 ...options,
-                path: '/', // MUST be set for auth to work across routes
-                sameSite: isAuthCookie ? 'lax' : (options?.sameSite || 'lax'), // Lax for auth, strict for others
-                secure: isSecure, // Use HTTPS detection that works behind proxies
-                httpOnly: isAuthCookie ? false : (options?.httpOnly ?? true), // Auth cookies need client access
-                maxAge: options?.maxAge || (60 * 60 * 24 * 7) // 1 week default
-                // DO NOT set domain - let browser handle it correctly
+                path: '/' // Required for SvelteKit
               });
             });
           },

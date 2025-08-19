@@ -41,19 +41,24 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 
 export const actions: Actions = {
   signin: async ({ request, locals: { supabase }, url }) => {
+    console.log('[LOGIN] Action called');
     const form = await superValidate(request, zod(LoginSchema));
     
     if (!form.valid) {
+      console.log('[LOGIN] Form invalid:', form.errors);
       return fail(400, { form });
     }
     
     const { email, password } = form.data;
+    console.log('[LOGIN] Attempting login for:', email);
     
     // Sign in with Supabase
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
+
+    console.log('[LOGIN] Auth response:', { data: !!data, error: error?.message });
 
     if (error) {
       // Handle specific error cases
@@ -84,9 +89,9 @@ export const actions: Actions = {
         // Redirect to onboarding
         throw redirect(303, '/onboarding');
       }
-    } catch (err) {
-      // If it's a redirect, rethrow it
-      if (err instanceof redirect) throw err;
+    } catch (err: any) {
+      // Check if it's a SvelteKit redirect (has status 303)
+      if (err?.status === 303 || err?.location) throw err;
       // Otherwise continue - profile check is non-critical
     }
     

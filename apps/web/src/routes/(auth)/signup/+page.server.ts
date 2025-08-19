@@ -87,9 +87,9 @@ export const actions: Actions = {
       // Success - redirect to email verification page
       throw redirect(303, `/auth/verify-email?email=${encodeURIComponent(email)}`);
 
-    } catch (e) {
-      // If it's a redirect, rethrow it
-      if (e instanceof redirect) throw e;
+    } catch (e: any) {
+      // Check if it's a SvelteKit redirect (has status 303)
+      if (e?.status === 303 || e?.location) throw e;
       
       return setError(form, '', 'Account creation service temporarily unavailable');
     }

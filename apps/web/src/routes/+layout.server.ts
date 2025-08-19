@@ -10,9 +10,8 @@ const REDIRECT_PATHS_TO_SKIP = [
   '/auth'
 ];
 
-export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase }, url }) => {
+export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase }, url, cookies }) => {
   const { session, user } = await safeGetSession();
-
 
   let profile = null;
   
@@ -51,6 +50,6 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabas
     session,
     user,
     profile,
-    supabase: null, // We'll create browser client in +layout.ts
+    cookies: cookies.getAll(), // Pass cookies for SSR hydration
   };
 };
