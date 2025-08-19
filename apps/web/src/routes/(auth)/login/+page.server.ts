@@ -51,7 +51,7 @@ export const actions: Actions = {
     // Always log in production to debug Vercel issues (matching signup pattern)
     console.log('[LOGIN] ========== LOGIN ACTION START ==========');
     console.log('[LOGIN] Timestamp:', new Date().toISOString());
-    console.log('[LOGIN] Version: v3-bulletproof-matching-signup');
+    console.log('[LOGIN] Version: v4-redirect-only-fix');
     console.log('[LOGIN] Request method:', request.method);
     console.log('[LOGIN] Request URL:', request.url);
     console.log('[LOGIN] Site URL origin:', url.origin);
