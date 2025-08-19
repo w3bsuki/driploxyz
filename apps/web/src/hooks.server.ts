@@ -48,14 +48,21 @@ const supabase: Handle = async ({ event, resolve }) => {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              // Respect Supabase-provided cookie flags; only enforce path
+              // Critical: Set proper cookie configuration for auth to work
               event.cookies.set(name, value, {
-                path: '/',
-                ...options
+                ...options,
+                path: '/', // MUST be set for auth to work across routes
+                sameSite: 'lax', // Required for auth flow
+                secure: event.url.protocol === 'https:', // Secure on HTTPS (Vercel)
+                httpOnly: false, // MUST be false for Supabase auth (client needs access)
+                maxAge: options?.maxAge || 60 * 60 * 24 * 7 // 1 week default
               });
             });
           },
         },
+        global: {
+          fetch: event.fetch // Critical for Vercel deployment
+        }
       }
     );
   } catch (err) {

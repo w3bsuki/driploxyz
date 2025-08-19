@@ -45,8 +45,11 @@
     
     // Set up auth state listener for session changes
     const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {
-      // Only invalidate if session actually changed
-      if (newSession?.expires_at !== data?.session?.expires_at) {
+      console.log('Auth state changed:', event, newSession?.user?.email);
+      
+      // Invalidate all load functions that depend on auth
+      // This ensures the page reloads with new session data
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
         invalidate('supabase:auth');
       }
     });

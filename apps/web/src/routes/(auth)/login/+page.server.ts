@@ -47,23 +47,17 @@ export const actions: Actions = {
       return fail(400, { form });
     }
     
-    const { email, password } = form.data as { email: string; password: string };
+    const { email, password } = form.data;
     
-
-    let data, error;
-    
-    try {
-      const response = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-      data = response.data;
-      error = response.error;
-    } catch (e) {
-      return setError(form, '', 'Authentication service error. Please try again.');
-    }
+    // Sign in with Supabase
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
 
     if (error) {
+      console.error('Supabase auth error:', error);
+      
       // Handle specific error cases
       if (error.message.includes('Invalid login credentials')) {
         return setError(form, '', 'Invalid email or password');
@@ -72,25 +66,40 @@ export const actions: Actions = {
         return setError(form, '', 'Please verify your email before logging in');
       }
       
-      return setError(form, '', error.message || 'Unable to sign in');
+      // Return fail with form for superforms to handle properly
+      return fail(400, {
+        form,
+        message: error.message || 'Unable to sign in'
+      });
     }
 
-    if (data.user) {
-      // Check if user has completed onboarding
-      const { data: profile, error: profileError } = await supabase
+    if (!data.user || !data.session) {
+      return fail(400, {
+        form,
+        message: 'Authentication failed. Please try again.'
+      });
+    }
+
+    // Check onboarding status (non-blocking)
+    try {
+      const { data: profile } = await supabase
         .from('profiles')
         .select('onboarding_completed')
         .eq('id', data.user.id)
         .single();
       
-      // Handle onboarding redirection
       if (!profile || profile.onboarding_completed !== true) {
+        // Redirect to onboarding
         throw redirect(303, '/onboarding');
       }
-      
-      throw redirect(302, '/');
+    } catch (err) {
+      // If it's a redirect, rethrow it
+      if (err instanceof redirect) throw err;
+      // Otherwise continue - profile check is non-critical
+      console.warn('Profile check failed:', err);
     }
     
-    return setError(form, '', 'Authentication failed. Please try again.');
+    // Success - redirect to homepage
+    throw redirect(303, '/');
   }
 };
