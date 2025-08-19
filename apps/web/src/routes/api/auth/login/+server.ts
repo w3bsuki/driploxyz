@@ -1,9 +1,11 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { createServerClient } from '@supabase/ssr';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
   try {
-    // First check if we can read the request
+    // Parse request body
     const body = await request.json().catch(e => {
       console.error('[API LOGIN] Failed to parse request:', e);
       return null;
@@ -25,17 +27,26 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       }, { status: 400 });
     }
     
-    // Check if supabase is available
-    if (!locals.supabase) {
-      console.error('[API LOGIN] Supabase client not available');
-      return json({ 
-        success: false, 
-        error: 'Auth service unavailable' 
-      }, { status: 503 });
-    }
+    // Create Supabase client directly
+    const supabase = createServerClient(
+      PUBLIC_SUPABASE_URL,
+      PUBLIC_SUPABASE_ANON_KEY,
+      {
+        cookies: {
+          getAll() {
+            return cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookies.set(name, value, { ...options, path: '/' });
+            });
+          },
+        },
+      }
+    );
     
     // Try to login
-    const { data, error } = await locals.supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     });

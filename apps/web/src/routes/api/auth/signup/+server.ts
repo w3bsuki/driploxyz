@@ -1,13 +1,33 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { createServerClient } from '@supabase/ssr';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
-export const POST: RequestHandler = async ({ request, locals: { supabase }, cookies }) => {
+export const POST: RequestHandler = async ({ request, cookies }) => {
   console.log('[API SIGNUP] Signup endpoint called');
   
   try {
     const { email, password, fullName } = await request.json();
     
     console.log('[API SIGNUP] Attempting signup for:', email);
+    
+    // Create Supabase client directly
+    const supabase = createServerClient(
+      PUBLIC_SUPABASE_URL,
+      PUBLIC_SUPABASE_ANON_KEY,
+      {
+        cookies: {
+          getAll() {
+            return cookies.getAll();
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              cookies.set(name, value, { ...options, path: '/' });
+            });
+          },
+        },
+      }
+    );
     
     const { data, error } = await supabase.auth.signUp({
       email,
