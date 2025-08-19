@@ -29,6 +29,11 @@
   <meta name="description" content="Sign in to your Driplo account" />
 </svelte:head>
 
+<!-- DEPLOYMENT VERIFICATION: v1.0.0 - {new Date().toISOString()} -->
+<div class="fixed bottom-2 right-2 bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-mono opacity-75">
+  v1.0.0 - Build: {new Date().toISOString().slice(0, 16)}
+</div>
+
 <div class="space-y-4">
 
   {#if data.errorMessage}
