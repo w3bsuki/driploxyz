@@ -21,26 +21,21 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
   let profile = null;
   
   if (user && supabase) {
-    try {
-      const { data, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+    const { data, error: profileError } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
 
-      // Ignore profile not found errors (PGRST116)
-      if (profileError && profileError.code !== 'PGRST116') {
-        // Log and continue without failing the whole request
-        console.warn('Profile fetch failed:', profileError.message);
-      }
-
-      profile = data;
-    } catch (err) {
-      // Non-fatal: continue without profile if fetch fails
-      console.warn('Profile fetch threw:', err);
+    // Ignore profile not found errors (PGRST116)
+    if (profileError && profileError.code !== 'PGRST116') {
+      // Log and continue without failing the whole request
+      console.warn('Profile fetch failed:', profileError.message);
     }
 
-    // Perform redirect decision outside try/catch to avoid swallowing it
+    profile = data;
+
+    // Check if user needs onboarding
     const shouldRedirect =
       profile &&
       profile.onboarding_completed !== true &&

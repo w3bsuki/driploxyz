@@ -24,20 +24,33 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
   }
 
   if (data.session && data.user) {
-    // Best-effort profile check; do not block on error
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('onboarding_completed')
-        .eq('id', data.user.id)
-        .single();
+    // Check or create profile
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('onboarding_completed')
+      .eq('id', data.user.id)
+      .single();
 
-      if (!profile || profile.onboarding_completed !== true) {
+    if (profileError && profileError.code === 'PGRST116') {
+      // Profile doesn't exist, create it
+      const { error: insertError } = await supabase
+        .from('profiles')
+        .insert({
+          id: data.user.id,
+          username: `user_${data.user.id.substring(0, 8)}`,
+          full_name: data.user.user_metadata?.full_name || '',
+          onboarding_completed: false
+        });
+      
+      if (!insertError) {
+        // Profile created, redirect to onboarding
         throw redirect(303, '/onboarding');
       }
-    } catch (profileError) {
-      console.warn('Profile check failed:', profileError);
-      // continue
+    }
+
+    // Check if onboarding is needed
+    if (!profile || profile.onboarding_completed !== true) {
+      throw redirect(303, '/onboarding');
     }
 
     // Safe next redirect

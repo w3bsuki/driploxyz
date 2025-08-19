@@ -9,7 +9,7 @@ const config = {
 	kit: {
 		adapter: adapter(),
 		csrf: {
-			checkOrigin: true
+			checkOrigin: false // TODO: Re-enable after confirming auth works on Vercel
 		}
 	},
 };

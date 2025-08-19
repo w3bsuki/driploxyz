@@ -20,12 +20,18 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
 };
 
 export const actions: Actions = {
-  signup: async ({ request, locals: { supabase }, cookies }) => {
+  signup: async ({ request, locals: { supabase }, cookies, url, getClientAddress }) => {
     // Always log in production to debug Vercel issues
     console.log('[SIGNUP] ========== SIGNUP ACTION START ==========');
     console.log('[SIGNUP] Timestamp:', new Date().toISOString());
     console.log('[SIGNUP] Request method:', request.method);
     console.log('[SIGNUP] Request URL:', request.url);
+    console.log('[SIGNUP] Site URL origin:', url.origin);
+    
+    // Get PUBLIC_SITE_URL from environment (dynamic)
+    const PUBLIC_SITE_URL = process.env.PUBLIC_SITE_URL;
+    console.log('[SIGNUP] PUBLIC_SITE_URL:', PUBLIC_SITE_URL || 'undefined');
+    console.log('[SIGNUP] Email redirect will use:', PUBLIC_SITE_URL || url.origin);
     console.log('[SIGNUP] Environment:', { dev, building: typeof building !== 'undefined' ? building : 'undefined' });
     console.log('[SIGNUP] Has supabase client:', !!supabase);
     console.log('[SIGNUP] Headers:', Object.fromEntries(request.headers.entries()));
@@ -52,6 +58,14 @@ export const actions: Actions = {
       console.log('[SIGNUP] Supabase client exists:', !!supabase);
     }
     
+    // Determine redirect URL with fallback
+    const redirectOrigin = PUBLIC_SITE_URL || url.origin;
+    const emailRedirectTo = `${redirectOrigin}/auth/callback?next=/onboarding`;
+    
+    if (DEBUG) {
+      console.log('[SIGNUP] Email redirect URL constructed:', emailRedirectTo);
+    }
+    
     // Create user with proper error handling
     if (DEBUG) console.log('[SIGNUP] Calling supabase.auth.signUp...');
     const { data, error } = await supabase.auth.signUp({
@@ -61,7 +75,7 @@ export const actions: Actions = {
         data: {
           full_name: fullName
         },
-        emailRedirectTo: `${request.url.origin}/auth/callback?next=/onboarding`
+        emailRedirectTo
       }
     });
       
