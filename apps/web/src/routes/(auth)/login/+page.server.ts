@@ -44,13 +44,15 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 
 export const actions: Actions = {
   signin: async ({ request }) => {
-    console.log('[LOGIN] Ultra-minimal action started');
+    console.log('[LOGIN] Testing LoginSchema import...');
     
     try {
-      console.log('[LOGIN] Action is executing on Vercel');
-      return fail(400, { message: 'Ultra-minimal action works!' });
+      // Test if LoginSchema import works
+      console.log('[LOGIN] LoginSchema imported:', !!LoginSchema);
+      console.log('[LOGIN] Action with LoginSchema import works!');
+      return fail(400, { message: 'LoginSchema import works!' });
     } catch (err) {
-      console.error('[LOGIN] Error in ultra-minimal action:', err);
+      console.error('[LOGIN] Error with LoginSchema import:', err);
       throw err;
     }
   }
