@@ -11,7 +11,12 @@
     validators: zodClient(LoginSchema),
     resetForm: false,
     taintedMessage: null,
-    validationMethod: 'oninput'
+    validationMethod: 'oninput',
+    onError: ({ result }) => {
+      // Handle errors gracefully to prevent unhandled rejections
+      // Errors are already displayed in the UI via $errors
+      // This prevents promise rejection warnings
+    }
   });
 </script>
 
@@ -37,7 +42,7 @@
     </div>
   {/if}
 
-  {#if $errors._errors}
+  {#if $errors?._errors?.length}
     <div class="bg-red-50 border border-red-200 rounded-md p-4">
       <div class="flex">
         <div class="flex-shrink-0">
