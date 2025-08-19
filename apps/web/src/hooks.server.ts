@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { type Handle, redirect, error, type HandleServerError } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import { building } from '$app/environment';
 import type { Database } from '$lib/types/database.types';
 import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
@@ -60,19 +60,19 @@ const supabase: Handle = async ({ event, resolve }) => {
   const isMobile = /Mobile|Android|iPhone|iPad/i.test(userAgent);
   
   // CRITICAL: Fail fast with clear error message - but more detailed for debugging
-  if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
+  if (!env.PUBLIC_SUPABASE_URL || !env.PUBLIC_SUPABASE_ANON_KEY) {
     console.error('[HOOKS] Missing Supabase environment variables:', {
-      hasUrl: !!PUBLIC_SUPABASE_URL,
-      hasKey: !!PUBLIC_SUPABASE_ANON_KEY,
-      url: PUBLIC_SUPABASE_URL ? `${PUBLIC_SUPABASE_URL.substring(0, 20)}...` : 'undefined'
+      hasUrl: !!env.PUBLIC_SUPABASE_URL,
+      hasKey: !!env.PUBLIC_SUPABASE_ANON_KEY,
+      url: env.PUBLIC_SUPABASE_URL ? `${env.PUBLIC_SUPABASE_URL.substring(0, 20)}...` : 'undefined'
     });
     throw error(500, 'Server configuration error. Please contact support.');
   }
 
   try {
     event.locals.supabase = createServerClient<Database>(
-      PUBLIC_SUPABASE_URL,
-      PUBLIC_SUPABASE_ANON_KEY,
+      env.PUBLIC_SUPABASE_URL,
+      env.PUBLIC_SUPABASE_ANON_KEY,
       {
         cookies: {
           getAll() {
