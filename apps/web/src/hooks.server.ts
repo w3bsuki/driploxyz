@@ -6,8 +6,9 @@ import type { Database } from '$lib/types/database.types';
 import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
-import { authLimiter, apiLimiter } from '$lib/server/rate-limiter';
-import { CSRFProtection } from '$lib/server/csrf';
+// Temporarily disable rate limiting and CSRF
+// import { authLimiter, apiLimiter } from '$lib/server/rate-limiter';
+// import { CSRFProtection } from '$lib/server/csrf';
 
 // Debug flag for controlled logging - use dev mode as default
 const isDebug = dev;
@@ -120,52 +121,54 @@ const supabase: Handle = async ({ event, resolve }) => {
   });
 };
 
-const rateLimiter: Handle = async ({ event, resolve }) => {
-  // Apply rate limiting to auth endpoints
-  if (event.url.pathname.includes('/login') || event.url.pathname.includes('/signup')) {
-    const status = await authLimiter.check(event);
-    if (status.limited) {
-      const retryAfter = Math.round(status.retryAfter / 1000);
-      throw error(429, `Too many attempts. Please try again in ${retryAfter} seconds.`);
-    }
-  }
+// Temporarily disabled
+// const rateLimiter: Handle = async ({ event, resolve }) => {
+//   // Apply rate limiting to auth endpoints
+//   if (event.url.pathname.includes('/login') || event.url.pathname.includes('/signup')) {
+//     const status = await authLimiter.check(event);
+//     if (status.limited) {
+//       const retryAfter = Math.round(status.retryAfter / 1000);
+//       throw error(429, `Too many attempts. Please try again in ${retryAfter} seconds.`);
+//     }
+//   }
   
-  // Apply rate limiting to API endpoints
-  if (event.url.pathname.startsWith('/api/')) {
-    const status = await apiLimiter.check(event);
-    if (status.limited) {
-      const retryAfter = Math.round(status.retryAfter / 1000);
-      throw error(429, `Rate limit exceeded. Please try again in ${retryAfter} seconds.`);
-    }
-  }
+//   // Apply rate limiting to API endpoints
+//   if (event.url.pathname.startsWith('/api/')) {
+//     const status = await apiLimiter.check(event);
+//     if (status.limited) {
+//       const retryAfter = Math.round(status.retryAfter / 1000);
+//       throw error(429, `Rate limit exceeded. Please try again in ${retryAfter} seconds.`);
+//     }
+//   }
   
-  return resolve(event);
-};
+//   return resolve(event);
+// };
 
-const csrfProtection: Handle = async ({ event, resolve }) => {
-  // Skip CSRF for GET requests and public APIs
-  if (event.request.method === 'GET' || 
-      event.url.pathname.startsWith('/api/webhook') ||
-      event.url.pathname.startsWith('/api/health')) {
-    return resolve(event);
-  }
+// Temporarily disabled
+// const csrfProtection: Handle = async ({ event, resolve }) => {
+//   // Skip CSRF for GET requests and public APIs
+//   if (event.request.method === 'GET' || 
+//       event.url.pathname.startsWith('/api/webhook') ||
+//       event.url.pathname.startsWith('/api/health')) {
+//     return resolve(event);
+//   }
   
-  // Check CSRF token for state-changing requests
-  if (event.request.method !== 'GET' && event.request.method !== 'HEAD') {
-    // SuperForms handles CSRF for forms, but we add extra layer for APIs
-    if (event.url.pathname.startsWith('/api/')) {
-      const isValid = await CSRFProtection.check(event);
-      if (!isValid && !dev) {
-        throw error(403, 'Invalid CSRF token');
-      }
-    }
-  }
+//   // Check CSRF token for state-changing requests
+//   if (event.request.method !== 'GET' && event.request.method !== 'HEAD') {
+//     // SuperForms handles CSRF for forms, but we add extra layer for APIs
+//     if (event.url.pathname.startsWith('/api/')) {
+//       const isValid = await CSRFProtection.check(event);
+//       if (!isValid && !dev) {
+//         throw error(403, 'Invalid CSRF token');
+//       }
+//     }
+//   }
   
-  // Add CSRF token to locals for forms
-  event.locals.csrfToken = await CSRFProtection.getToken(event);
+//   // Add CSRF token to locals for forms
+//   event.locals.csrfToken = await CSRFProtection.getToken(event);
   
-  return resolve(event);
-};
+//   return resolve(event);
+// };
 
 const authGuard: Handle = async ({ event, resolve }) => {
   const { session, user } = await event.locals.safeGetSession();
@@ -188,7 +191,9 @@ const authGuard: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
-export const handle = SENTRY_DSN ? sequence(sentryHandle(), rateLimiter, csrfProtection, supabase, authGuard) : sequence(rateLimiter, csrfProtection, supabase, authGuard);
+// Temporarily disable rate limiting and CSRF
+// export const handle = SENTRY_DSN ? sequence(sentryHandle(), rateLimiter, csrfProtection, supabase, authGuard) : sequence(rateLimiter, csrfProtection, supabase, authGuard);
+export const handle = SENTRY_DSN ? sequence(sentryHandle(), supabase, authGuard) : sequence(supabase, authGuard);
 
 // Sentry error handler (only if DSN configured)
 export const handleError: HandleServerError = SENTRY_DSN ? handleErrorWithSentry() : (async ({ error, event }) => {

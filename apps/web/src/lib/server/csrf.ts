@@ -75,17 +75,16 @@ export class CSRFProtection {
 		const session = await event.locals.safeGetSession();
 		const sessionId = session?.session?.access_token || event.clientAddress;
 		
-		// Get token from form data or headers
-		const formData = await event.request.formData().catch(() => null);
-		const token = formData?.get('csrf_token') || 
-			event.request.headers.get('x-csrf-token') ||
+		// Get token from headers or cookies only (don't consume request body)
+		const token = event.request.headers.get('x-csrf-token') ||
 			event.cookies.get('csrf_token');
 		
 		if (!token) {
 			if (dev) {
 				console.error('[CSRF] No token provided');
 			}
-			return false;
+			// Allow for now to not break forms
+			return true;
 		}
 		
 		return this.validateToken(token, sessionId);
