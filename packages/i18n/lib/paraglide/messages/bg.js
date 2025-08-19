@@ -2791,6 +2791,150 @@ export const onboarding_brandProfileComplete = () => `Вашият брандо�
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandProfileSetup = () => `Brand Profile Setup`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_popular = () => `Популярен`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalAccount = () => `Личен акаунт`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalAccountDesc = () => `Перфектен за хора, които продават от личния си гардероб`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalFeature1 = () => `Публикувай неограничен брой артикули`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalFeature2 = () => `Основни инструменти за продавачи`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalFeature3 = () => `Достъп до общността`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalFeature4 = () => `Сигурни плащания`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandAccount = () => `Бранд акаунт`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandAccountDesc = () => `Създаден за бизнеси и професионални продавачи`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandFeature1 = () => `Напреднала аналитика`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandFeature2 = () => `Инструменти за масово качване`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandFeature3 = () => `Приоритетна поддръжка`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandFeature4 = () => `Персонализиран брандинг`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_free = () => `Безплатно`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_perMonth = () => `/ месец`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_selected = () => `Избран`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_select = () => `Избери`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const onboarding_profileCreated = () => `Профилът е създаден`
 
 
@@ -4244,139 +4388,3 @@ export const sell_next = () => `Напред`
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const sell_previous = () => `Назад`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_personalAccount = () => `Личен акаунт`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_personalAccountDesc = () => `Перфектен за хора, които продават от личния си гардероб`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_personalFeature1 = () => `Публикувай неограничен брой артикули`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_personalFeature2 = () => `Основни инструменти за продавачи`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_personalFeature3 = () => `Достъп до общността`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_personalFeature4 = () => `Сигурни плащания`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandAccount = () => `Бранд акаунт`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandAccountDesc = () => `Създаден за бизнеси и професионални продавачи`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandFeature1 = () => `Напреднала аналитика`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandFeature2 = () => `Инструменти за масово качване`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandFeature3 = () => `Приоритетна поддръжка`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandFeature4 = () => `Персонализиран брандинг`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_free = () => `Безплатно`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_perMonth = () => `/ месец`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_popular = () => `Популярен`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_selected = () => `Избран`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_select = () => `Избери`

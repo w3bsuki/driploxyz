@@ -47,7 +47,7 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
   }
 
   // Get current language
-  const language = cookies.get('driplo_language') || 'en';
+  const language = cookies.get('locale') || 'en';
   
   return {
     session,

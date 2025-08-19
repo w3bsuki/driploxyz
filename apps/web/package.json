@@ -16,14 +16,12 @@
 		"test:unit": "vitest"
 	},
 	"dependencies": {
-		"@clerk/clerk-js": "^5.86.0",
 		"@repo/i18n": "workspace:*",
 		"@repo/ui": "workspace:*",
 		"@sentry/sveltekit": "^10.5.0",
 		"@stripe/stripe-js": "^7.8.0",
 		"@supabase/ssr": "^0.6.1",
 		"@supabase/supabase-js": "^2.55.0",
-		"clerk-sveltekit": "^0.4.3",
 		"resend": "^6.0.1",
 		"stripe": "^18.4.0",
 		"sveltekit-rate-limiter": "^0.7.0",

@@ -59,9 +59,11 @@ export { default as OptimizedImage } from './OptimizedImage.svelte';
 
 // Language switcher
 export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
+export { default as LanguageSelector } from './components/LanguageSelector.svelte';
 
 // Cookie consent
 export { default as CookieConsent } from './CookieConsent.svelte';
+export { default as CookieConsentBanner } from './components/CookieConsentBanner.svelte';
 
 // Locale detection
 export { default as LocaleDetectionBanner } from './LocaleDetectionBanner.svelte';

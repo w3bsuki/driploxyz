@@ -2,16 +2,6 @@ import { handleErrorWithSentry } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
-import { initializeClerkClient } from 'clerk-sveltekit/client';
-
-// Initialize Clerk
-const PUBLIC_CLERK_PUBLISHABLE_KEY = env.PUBLIC_CLERK_PUBLISHABLE_KEY;
-if (PUBLIC_CLERK_PUBLISHABLE_KEY) {
-  initializeClerkClient(PUBLIC_CLERK_PUBLISHABLE_KEY, {
-    afterSignInUrl: '/dashboard',
-    afterSignUpUrl: '/onboarding'
-  });
-}
 
 // Get Sentry DSN from environment (may be undefined)
 const PUBLIC_SENTRY_DSN = env.PUBLIC_SENTRY_DSN;

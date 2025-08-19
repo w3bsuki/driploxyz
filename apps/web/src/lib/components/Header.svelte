@@ -39,18 +39,14 @@
   ];
   
   async function switchLanguage(lang: string) {
-    // Set cookie properly for server-side
-    document.cookie = `driplo_language=${lang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
+    // Set cookie properly for server-side (use same cookie name as server)
+    document.cookie = `locale=${lang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax`;
     
-    // Update client-side
+    // Update client-side immediately
     switchLang(lang);
     currentLang = lang;
     
-    // Store in localStorage too
-    localStorage.setItem('driplo_language', lang);
-    
-    // Reload to apply language change
-    window.location.reload();
+    // No reload needed - language changes immediately
   }
   
   // Animated emoji for logo

@@ -1,21 +1,20 @@
 import { browser } from '$app/environment';
+import { goto, invalidateAll } from '$app/navigation';
 import * as i18n from '@repo/i18n';
 
-const LANGUAGE_COOKIE_NAME = 'driplo_language';
+const LANGUAGE_COOKIE_NAME = 'locale';
 const COOKIE_MAX_AGE = 365 * 24 * 60 * 60; // 1 year
+
+/**
+ * PRODUCTION-READY LANGUAGE SYSTEM
+ * Cookie-first approach for SSR compatibility
+ * No localStorage conflicts
+ */
 
 export function getStoredLanguage(): string | null {
   if (!browser) return null;
   
-  // Check localStorage first (more reliable)
-  try {
-    const stored = localStorage.getItem(LANGUAGE_COOKIE_NAME);
-    if (stored) return stored;
-  } catch (e) {
-    // localStorage might not be available
-  }
-  
-  // Fallback to cookie
+  // Only use cookies - no localStorage to avoid conflicts
   try {
     const cookies = document.cookie.split(';');
     for (const cookie of cookies) {
@@ -34,56 +33,77 @@ export function getStoredLanguage(): string | null {
 export function setStoredLanguage(lang: string) {
   if (!browser) return;
   
-  // Set in localStorage (more reliable)
+  // ONLY set cookie - consistent with server-side
   try {
-    localStorage.setItem(LANGUAGE_COOKIE_NAME, lang);
+    document.cookie = `${LANGUAGE_COOKIE_NAME}=${encodeURIComponent(lang)}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax; Secure=${location.protocol === 'https:'}`;
   } catch (e) {
-    // localStorage might not be available
-  }
-  
-  // Also set cookie as backup
-  try {
-    document.cookie = `${LANGUAGE_COOKIE_NAME}=${encodeURIComponent(lang)}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
-  } catch (e) {
-    // Cookie setting failed
+    console.warn('Failed to set language cookie:', e);
   }
 }
 
-export function initializeLanguage() {
+/**
+ * Initialize language from server-provided data
+ * NEVER override server-set language
+ */
+export function initializeLanguage(serverLanguage?: string) {
   if (!browser) return;
   
+  // Use server language if provided (SSR first)
+  if (serverLanguage && i18n.isAvailableLanguageTag(serverLanguage)) {
+    i18n.setLanguageTag(serverLanguage as any);
+    document.documentElement.lang = serverLanguage;
+    return;
+  }
+  
+  // Fallback to cookie if no server language
   const storedLang = getStoredLanguage();
   if (storedLang && i18n.isAvailableLanguageTag(storedLang)) {
     i18n.setLanguageTag(storedLang as any);
+    document.documentElement.lang = storedLang;
   } else {
-    // Try to detect from browser language
-    try {
-      let browserLang = 'en';
-      if (typeof navigator !== 'undefined' && navigator.language) {
-        browserLang = navigator.language.split('-')[0].toLowerCase();
-      }
-      
-      if (browserLang && i18n.isAvailableLanguageTag(browserLang)) {
-        i18n.setLanguageTag(browserLang as any);
-        setStoredLanguage(browserLang);
-      } else {
-        // Default to English
-        i18n.setLanguageTag('en');
-        setStoredLanguage('en');
-      }
-    } catch (e) {
-      // Navigator not available, default to English
-      i18n.setLanguageTag('en');
-      setStoredLanguage('en');
+    // Last resort: browser language detection
+    let browserLang = 'en';
+    if (typeof navigator !== 'undefined' && navigator.language) {
+      browserLang = navigator.language.split('-')[0].toLowerCase();
     }
+    
+    const finalLang = i18n.isAvailableLanguageTag(browserLang) ? browserLang : 'en';
+    i18n.setLanguageTag(finalLang as any);
+    document.documentElement.lang = finalLang;
+    setStoredLanguage(finalLang);
   }
 }
 
-export function switchLanguage(lang: string) {
-  if (i18n.isAvailableLanguageTag(lang)) {
-    setStoredLanguage(lang); // Save FIRST
-    i18n.setLanguageTag(lang as any); // Then update runtime
-    return true;
+/**
+ * Switch language and reload page for full SSR sync
+ */
+export async function switchLanguage(lang: string) {
+  if (!i18n.isAvailableLanguageTag(lang)) {
+    return false;
   }
-  return false;
+  
+  // Set cookie first
+  setStoredLanguage(lang);
+  
+  // Update runtime
+  i18n.setLanguageTag(lang as any);
+  document.documentElement.lang = lang;
+  
+  // Force page reload to sync server-side
+  await invalidateAll();
+  await goto(window.location.pathname, { replaceState: true });
+  
+  return true;
+}
+
+/**
+ * Get available languages for language selector
+ */
+export function getAvailableLanguages() {
+  return [
+    { code: 'en', name: 'English', nativeName: 'English' },
+    { code: 'bg', name: 'Bulgarian', nativeName: 'Български' },
+    { code: 'ru', name: 'Russian', nativeName: 'Русский' },
+    { code: 'ua', name: 'Ukrainian', nativeName: 'Українська' }
+  ];
 }

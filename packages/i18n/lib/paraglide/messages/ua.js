@@ -2533,6 +2533,150 @@ export const onboarding_brandProfileComplete = () => `Ваш профіль бр
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandProfileSetup = () => `Brand Profile Setup`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_popular = () => `Popular`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalAccount = () => `Personal Account`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalAccountDesc = () => `Perfect for individual sellers and casual users`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalFeature1 = () => `List up to 50 items`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalFeature2 = () => `Basic seller tools`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalFeature3 = () => `Standard support`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalFeature4 = () => `Community access`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandAccount = () => `Brand Account`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandAccountDesc = () => `Ideal for businesses and professional sellers`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandFeature1 = () => `Unlimited listings`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandFeature2 = () => `Advanced analytics`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandFeature3 = () => `Priority support`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandFeature4 = () => `Verification badge`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_free = () => `Free`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_perMonth = () => `per month`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_selected = () => `Selected`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_select = () => `Select`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const onboarding_profileCreated = () => `Профіль створено`
 
 
@@ -3699,37 +3843,3 @@ export { sell_month } from "./en.js"
 export { sell_next } from "./en.js"
 
 export { sell_previous } from "./en.js"
-
-export { onboarding_personalAccount } from "./en.js"
-
-export { onboarding_personalAccountDesc } from "./en.js"
-
-export { onboarding_personalFeature1 } from "./en.js"
-
-export { onboarding_personalFeature2 } from "./en.js"
-
-export { onboarding_personalFeature3 } from "./en.js"
-
-export { onboarding_personalFeature4 } from "./en.js"
-
-export { onboarding_brandAccount } from "./en.js"
-
-export { onboarding_brandAccountDesc } from "./en.js"
-
-export { onboarding_brandFeature1 } from "./en.js"
-
-export { onboarding_brandFeature2 } from "./en.js"
-
-export { onboarding_brandFeature3 } from "./en.js"
-
-export { onboarding_brandFeature4 } from "./en.js"
-
-export { onboarding_free } from "./en.js"
-
-export { onboarding_perMonth } from "./en.js"
-
-export { onboarding_popular } from "./en.js"
-
-export { onboarding_selected } from "./en.js"
-
-export { onboarding_select } from "./en.js"

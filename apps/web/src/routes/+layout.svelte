@@ -7,11 +7,9 @@
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
-  import { MessageNotificationToast, FollowNotificationToast } from '@repo/ui';
-  import CookieConsentPro from '$lib/components/CookieConsentPro.svelte';
+  import { MessageNotificationToast, FollowNotificationToast, CookieConsentBanner, LanguageSwitcher } from '@repo/ui';
   import { page } from '$app/stores';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
-  import LocaleDetector from '$lib/components/LocaleDetector.svelte';
   import { initializeLanguage } from '$lib/utils/language';
   import * as i18n from '@repo/i18n';
   import type { LayoutData } from './$types';
@@ -19,18 +17,11 @@
 
   let { data, children }: { data: LayoutData; children?: Snippet } = $props();
 
-  // Initialize language from server data
+  // Language initialization - Header component handles switching
   $effect(() => {
-    if (data?.language && i18n.isAvailableLanguageTag(data.language)) {
-      i18n.setLanguageTag(data.language as any);
-      if (browser) {
-        document.documentElement.lang = data.language;
-        // Also update localStorage for client-side persistence
-        localStorage.setItem('driplo_language', data.language);
-      }
-    } else if (browser) {
-      initializeLanguage();
-      document.documentElement.lang = i18n.languageTag();
+    if (browser) {
+      // Use server language from SSR - never override
+      initializeLanguage(data?.language);
     }
   });
 
@@ -81,37 +72,23 @@
 {/if}
 {@render children?.()}
 
-<!-- GDPR Compliant Cookie Consent with Locale Detection -->
-<CookieConsentPro 
-  privacyUrl="/privacy"
-  onLocaleChange={(locale) => {
-    // Update the language globally
-    i18n.setLanguageTag(locale);
+<!-- PRODUCTION-READY Cookie Consent -->
+<CookieConsentBanner 
+  onAccept={() => {
     if (browser) {
-      document.documentElement.lang = locale;
-    }
-    
-    // Store preference if user is authenticated
-    if (supabase && data?.user) {
-      supabase.from('profiles')
-        .update({ locale })
-        .eq('id', data.user.id)
-        .then(() => {});
+      window.dispatchEvent(new CustomEvent('cookieConsentUpdate', { detail: { accepted: true } }));
     }
   }}
-  onConsentChange={(consent) => {
-    // Handle consent changes
+  onDecline={() => {
     if (browser) {
-      // Dispatch event for analytics tools to listen to
-      window.dispatchEvent(new CustomEvent('cookieConsentUpdate', { detail: consent }));
-      
-      // If user rejected functional cookies, clear any existing locale cookie
-      if (!consent.functional && browser) {
-        document.cookie = 'locale=; path=/; max-age=0';
-      }
+      window.dispatchEvent(new CustomEvent('cookieConsentUpdate', { detail: { accepted: false } }));
+      // Clear language cookie if declined
+      document.cookie = 'locale=; path=/; max-age=0';
     }
   }}
 />
+
+<!-- Language selector removed - handled by Header component -->
 
 <!-- Global Message Notification Toast -->
 {#if $activeNotification}

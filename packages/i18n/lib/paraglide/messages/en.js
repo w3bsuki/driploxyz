@@ -2791,6 +2791,150 @@ export const onboarding_brandProfileComplete = () => `Your brand profile is set 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandProfileSetup = () => `Brand Profile Setup`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_popular = () => `Popular`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalAccount = () => `Personal Account`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalAccountDesc = () => `Perfect for individual sellers and casual users`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalFeature1 = () => `List up to 50 items`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalFeature2 = () => `Basic seller tools`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalFeature3 = () => `Standard support`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_personalFeature4 = () => `Community access`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandAccount = () => `Brand Account`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandAccountDesc = () => `Ideal for businesses and professional sellers`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandFeature1 = () => `Unlimited listings`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandFeature2 = () => `Advanced analytics`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandFeature3 = () => `Priority support`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandFeature4 = () => `Verification badge`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_free = () => `Free`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_perMonth = () => `per month`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_selected = () => `Selected`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_select = () => `Select`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const onboarding_profileCreated = () => `Profile Created`
 
 
@@ -4568,139 +4712,3 @@ export const sell_next = () => `Next`
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const sell_previous = () => `Previous`
-
-
-/**
- * Failed to resolve message onboarding_personalAccount for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_personalAccount = () => "onboarding_personalAccount"
-
-
-/**
- * Failed to resolve message onboarding_personalAccountDesc for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_personalAccountDesc = () => "onboarding_personalAccountDesc"
-
-
-/**
- * Failed to resolve message onboarding_personalFeature1 for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_personalFeature1 = () => "onboarding_personalFeature1"
-
-
-/**
- * Failed to resolve message onboarding_personalFeature2 for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_personalFeature2 = () => "onboarding_personalFeature2"
-
-
-/**
- * Failed to resolve message onboarding_personalFeature3 for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_personalFeature3 = () => "onboarding_personalFeature3"
-
-
-/**
- * Failed to resolve message onboarding_personalFeature4 for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_personalFeature4 = () => "onboarding_personalFeature4"
-
-
-/**
- * Failed to resolve message onboarding_brandAccount for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandAccount = () => "onboarding_brandAccount"
-
-
-/**
- * Failed to resolve message onboarding_brandAccountDesc for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandAccountDesc = () => "onboarding_brandAccountDesc"
-
-
-/**
- * Failed to resolve message onboarding_brandFeature1 for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandFeature1 = () => "onboarding_brandFeature1"
-
-
-/**
- * Failed to resolve message onboarding_brandFeature2 for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandFeature2 = () => "onboarding_brandFeature2"
-
-
-/**
- * Failed to resolve message onboarding_brandFeature3 for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandFeature3 = () => "onboarding_brandFeature3"
-
-
-/**
- * Failed to resolve message onboarding_brandFeature4 for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandFeature4 = () => "onboarding_brandFeature4"
-
-
-/**
- * Failed to resolve message onboarding_free for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_free = () => "onboarding_free"
-
-
-/**
- * Failed to resolve message onboarding_perMonth for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_perMonth = () => "onboarding_perMonth"
-
-
-/**
- * Failed to resolve message onboarding_popular for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_popular = () => "onboarding_popular"
-
-
-/**
- * Failed to resolve message onboarding_selected for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_selected = () => "onboarding_selected"
-
-
-/**
- * Failed to resolve message onboarding_select for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const onboarding_select = () => "onboarding_select"

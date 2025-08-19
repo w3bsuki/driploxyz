@@ -14,7 +14,9 @@
   } from '@repo/ui';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import * as m from '@repo/i18n';
+  import { initializeLanguage } from '$lib/utils/language';
   import type { PageData } from './$types';
 
   interface Props {
@@ -39,8 +41,20 @@
   let payoutName = $state<string>('');
   let socialLinks = $state<Array<{ type: string; url: string }>>([]);
   let submitting = $state(false);
+  let languageInitialized = $state(false);
 
   const totalSteps = 5;
+
+  // Initialize language from server data - FIXED
+  $effect(() => {
+    if (browser) {
+      // Use server language from SSR - never override
+      initializeLanguage(data?.language);
+      languageInitialized = true;
+    } else {
+      languageInitialized = true;
+    }
+  });
 
   // Show welcome modal on mount
   onMount(() => {

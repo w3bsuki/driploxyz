@@ -180,12 +180,26 @@ const supabase: Handle = async ({ event, resolve }) => {
 // };
 
 const languageHandler: Handle = async ({ event, resolve }) => {
-  // Get language from cookie
-  const langCookie = event.cookies.get('driplo_language');
+  // Use standard 'locale' cookie name consistently
+  const langCookie = event.cookies.get('locale');
+  
+  // Clean up old driplo_language cookie if it exists
+  const oldLangCookie = event.cookies.get('driplo_language');
+  if (oldLangCookie && !langCookie) {
+    event.cookies.set('locale', oldLangCookie, {
+      path: '/',
+      maxAge: 365 * 24 * 60 * 60,
+      httpOnly: false,
+      sameSite: 'lax'
+    });
+    event.cookies.delete('driplo_language', { path: '/' });
+  }
+  
+  const finalLangCookie = event.cookies.get('locale');
   
   // Set language on server side
-  if (langCookie && i18n.isAvailableLanguageTag(langCookie)) {
-    i18n.setLanguageTag(langCookie as any);
+  if (finalLangCookie && i18n.isAvailableLanguageTag(finalLangCookie)) {
+    i18n.setLanguageTag(finalLangCookie as any);
   } else {
     // Try to detect from Accept-Language header
     const acceptLanguage = event.request.headers.get('accept-language');
@@ -194,7 +208,7 @@ const languageHandler: Handle = async ({ event, resolve }) => {
       if (i18n.isAvailableLanguageTag(browserLang)) {
         i18n.setLanguageTag(browserLang as any);
         // Set cookie for next time
-        event.cookies.set('driplo_language', browserLang, {
+        event.cookies.set('locale', browserLang, {
           path: '/',
           maxAge: 365 * 24 * 60 * 60,
           httpOnly: false, // Allow JS to read it
@@ -202,9 +216,21 @@ const languageHandler: Handle = async ({ event, resolve }) => {
         });
       } else {
         i18n.setLanguageTag('en');
+        event.cookies.set('locale', 'en', {
+          path: '/',
+          maxAge: 365 * 24 * 60 * 60,
+          httpOnly: false,
+          sameSite: 'lax'
+        });
       }
     } else {
       i18n.setLanguageTag('en');
+      event.cookies.set('locale', 'en', {
+        path: '/',
+        maxAge: 365 * 24 * 60 * 60,
+        httpOnly: false,
+        sameSite: 'lax'
+      });
     }
   }
   
