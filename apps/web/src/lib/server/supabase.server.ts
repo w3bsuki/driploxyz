@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 
 /**
  * Create a Supabase client for server-side use with service role key
@@ -11,12 +11,12 @@ import { PUBLIC_SUPABASE_URL } from '$env/static/public';
  * This file uses .server.js naming convention to ensure it's never bundled in client code
  */
 export const createServiceClient = () => {
-  if (!PUBLIC_SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+  if (!env.PUBLIC_SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error('Supabase service role environment variables not configured');
   }
   
   return createServerClient(
-    PUBLIC_SUPABASE_URL,
+    env.PUBLIC_SUPABASE_URL,
     SUPABASE_SERVICE_ROLE_KEY,
     {
       cookies: {

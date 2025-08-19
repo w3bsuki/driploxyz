@@ -1,5 +1,5 @@
 import { createBrowserClient, createServerClient, isBrowser } from '@supabase/ssr';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { env.PUBLIC_SUPABASE_URL, env.PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { LayoutLoad } from './$types';
 import type { Database } from '$lib/types/database.types';
 
@@ -9,15 +9,15 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
   // Create the appropriate client based on the environment
   const supabase = isBrowser()
     ? createBrowserClient<Database>(
-        PUBLIC_SUPABASE_URL,
-        PUBLIC_SUPABASE_ANON_KEY,
+        env.PUBLIC_SUPABASE_URL,
+        env.PUBLIC_SUPABASE_ANON_KEY,
         {
           global: { fetch }
         }
       )
     : createServerClient<Database>(
-        PUBLIC_SUPABASE_URL,
-        PUBLIC_SUPABASE_ANON_KEY,
+        env.PUBLIC_SUPABASE_URL,
+        env.PUBLIC_SUPABASE_ANON_KEY,
         {
           global: { fetch },
           cookies: {
