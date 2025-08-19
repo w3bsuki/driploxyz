@@ -65,40 +65,43 @@ export const actions: Actions = {
       console.log('[LOGIN] Supabase client exists:', !!supabase);
     }
     
-    try {
-      if (DEBUG) console.log('[LOGIN] Calling supabase.auth.signInWithPassword...');
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+    if (DEBUG) console.log('[LOGIN] Calling supabase.auth.signInWithPassword...');
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
 
-      if (DEBUG) {
-        console.log('[LOGIN] Auth response received');
-        console.log('[LOGIN] Has data:', !!data);
-        console.log('[LOGIN] Has user:', !!data?.user);
-        console.log('[LOGIN] Has session:', !!data?.session);
-        console.log('[LOGIN] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
-      }
-    } catch (e: any) {
-      if (DEBUG) console.error('[LOGIN] Exception during auth:', e);
-      return setError(form, '', `Authentication exception: ${e.message}`);
+    if (DEBUG) {
+      console.log('[LOGIN] Auth response received');
+      console.log('[LOGIN] Has data:', !!data);
+      console.log('[LOGIN] Has user:', !!data?.user);
+      console.log('[LOGIN] Has session:', !!data?.session);
+      console.log('[LOGIN] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
     }
 
     if (error) {
       // Handle specific error cases
       if (error.message.includes('Invalid login credentials')) {
-        return setError(form, '', 'Invalid email or password');
+        return fail(400, {
+          form: setError(form, '', 'Invalid email or password')
+        });
       }
       if (error.message.includes('Email not confirmed')) {
-        return setError(form, '', 'Please verify your email before logging in');
+        return fail(400, {
+          form: setError(form, '', 'Please verify your email before logging in')
+        });
       }
       
       // Return fail with form for superforms to handle properly
-      return setError(form, '', error.message || 'Unable to sign in');
+      return fail(400, {
+        form: setError(form, '', error.message || 'Unable to sign in')
+      });
     }
 
     if (!data.user || !data.session) {
-      return setError(form, '', 'Authentication failed. Please try again.');
+      return fail(400, {
+        form: setError(form, '', 'Authentication failed. Please try again.')
+      });
     }
 
     // Check onboarding status (non-blocking)
