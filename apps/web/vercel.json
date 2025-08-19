@@ -4,11 +4,6 @@
   "outputDirectory": ".svelte-kit",
   "installCommand": "pnpm install",
   "devCommand": "pnpm dev",
-  "functions": {
-    "apps/web/build/index.js": {
-      "maxDuration": 30
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",
