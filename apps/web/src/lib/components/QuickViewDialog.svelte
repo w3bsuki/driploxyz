@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Avatar, Button, ProductCard, type Product } from '@repo/ui';
+  import { Avatar, type Product } from '@repo/ui';
   import { goto } from '$app/navigation';
   
   interface Seller {
@@ -21,6 +21,9 @@
   
   let { seller = null, products = [], onclose }: Props = $props();
   
+  const brands = ['Gucci', 'Prada', 'Louis Vuitton', 'Chanel'];
+  const sizes = ['S', 'M', 'L', 'XL'];
+  
   // Mock products for the seller
   const mockSellerProducts: Product[] = Array.from({ length: 4 }, (_, i) => ({
     id: `product-${i + 1}`,
@@ -28,8 +31,8 @@
     description: 'Exclusive item from premium seller',
     price: 45 + (i * 15),
     images: ['/placeholder-product.svg'],
-    brand: ['Gucci', 'Prada', 'Louis Vuitton', 'Chanel'][i % 4],
-    size: ['S', 'M', 'L', 'XL'][i % 4],
+    brand: brands[i % 4],
+    size: sizes[i % 4],
     condition: 'like-new' as const,
     category: 'Fashion',
     sellerId: `seller-${seller?.id}`,
@@ -39,10 +42,10 @@
     location: 'New York, NY'
   }));
   
+  const displayProducts = products.length > 0 ? products : mockSellerProducts;
+  
   function handleBackdropClick(e: MouseEvent) {
-    if (e.target === e.currentTarget) {
-      onclose();
-    }
+    if (e.target === e.currentTarget) onclose();
   }
   
   function viewProfile() {
@@ -53,6 +56,13 @@
   function viewProduct(productId: string) {
     onclose();
     goto(`/product/${productId}`);
+  }
+  
+  function handleKeydown(e: KeyboardEvent, action: () => void) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      action();
+    }
   }
 </script>
 
@@ -71,12 +81,12 @@
       <!-- Header -->
       <div class="relative shrink-0">
         <!-- Cover Image -->
-        <div class="h-20 sm:h-28 bg-linear-to-br from-yellow-400 via-yellow-500 to-amber-400"></div>
+        <div class="h-20 sm:h-28 bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-400"></div>
         
         <!-- Close Button -->
         <button
           onclick={onclose}
-          class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-xs rounded-full"
+          class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full"
           aria-label="Close"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +105,7 @@
                 premium={seller.premium}
               />
               {#if seller.premium}
-                <span class="absolute -top-1 left-1/2 -translate-x-1/2 text-sm bg-white rounded-full p-0.5 shadow-xs">👑</span>
+                <span class="absolute -top-1 left-1/2 -translate-x-1/2 text-sm bg-white rounded-full p-0.5 shadow-sm">👑</span>
               {/if}
             </div>
             <div class="flex-1 pb-1">
@@ -109,12 +119,8 @@
                     <span class="ml-1">{seller.rating}</span>
                   </div>
                 {/if}
-                {#if seller.itemCount}
-                  <span>{seller.itemCount} items</span>
-                {/if}
-                {#if seller.followers}
-                  <span>{seller.followers} followers</span>
-                {/if}
+                {#if seller.itemCount}<span>{seller.itemCount} items</span>{/if}
+                {#if seller.followers}<span>{seller.followers} followers</span>{/if}
               </div>
             </div>
           </div>
@@ -139,13 +145,13 @@
       <div class="flex-1 overflow-y-auto px-4 sm:px-6 py-3">
         <h3 class="text-xs sm:text-sm font-semibold text-gray-900 mb-2">Featured Items</h3>
         <div class="grid grid-cols-2 gap-2 sm:gap-3">
-          {#each products.length > 0 ? products : mockSellerProducts as product}
+          {#each displayProducts as product}
             <div 
               class="cursor-pointer w-full text-left" 
               onclick={() => viewProduct(product.id)}
               role="button"
               tabindex="0"
-              onkeydown={(e) => e.key === 'Enter' && viewProduct(product.id)}
+              onkeydown={(e) => handleKeydown(e, () => viewProduct(product.id))}
             >
               <div class="relative">
                 <img 
@@ -158,7 +164,7 @@
                     e.stopPropagation();
                     console.log('Add to wishlist:', product.id);
                   }}
-                  class="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-xs rounded-full"
+                  class="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm rounded-full"
                   aria-label="Add to wishlist"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

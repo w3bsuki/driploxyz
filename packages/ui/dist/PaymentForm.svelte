@@ -78,7 +78,7 @@
 	};
 </script>
 
-<form on:submit={handleSubmit} class="space-y-6">
+<form onsubmit={handleSubmit} class="space-y-6">
 	<div class="bg-gray-50 p-4 rounded-lg">
 		<div class="flex justify-between items-center">
 			<span class="text-sm font-medium text-gray-600">{translations.total || 'Total'}</span>

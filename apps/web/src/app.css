@@ -15,23 +15,40 @@
   --color-info: oklch(0.7 0.15 240);     /* Blue for like-new items */  
   --color-warning: oklch(0.8 0.12 85);   /* Yellow for good condition */
   --color-accent-orange: oklch(0.75 0.15 50); /* Orange for fair condition */
+  
+  /* Gray colors for proper border compatibility */
+  --color-gray-200: oklch(0.95 0.005 270);  /* Light gray borders */
 }
 
 /*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
-
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
+  TailwindCSS v4 uses better default border handling
+  Removed global border-color override that was causing black borders
 */
+
+/* NUKE ALL INPUT BORDERS AND FOCUS STATES */
 @layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+  input[type="search"],
+  input[type="text"],
+  input {
+    border: none !important; 
+    outline: none !important; 
+    box-shadow: none !important; /* KILL FOCUS BOX SHADOW */
+    ring: none !important; /* KILL TAILWIND FOCUS RING */
+  }
+  
+  input[type="search"]:focus,
+  input[type="text"]:focus,
+  input:focus {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    ring: none !important;
+  }
+  
+  /* REMOVE BROWSER'S DEFAULT SEARCH CLEAR BUTTON */
+  input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none !important;
+    display: none !important;
   }
 }
 

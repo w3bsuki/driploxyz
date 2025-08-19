@@ -61,8 +61,8 @@
                       </div>
                     </div>
                     <!-- Price badge -->
-                    <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg border border-gray-200 shadow-xs">
-                      {i18n.common_currency()}{product.price}
+                    <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg border border-gray-200 shadow-sm">
+                      {product.price}{i18n.common_currency()}
                     </div>
                   </div>
                 </div>

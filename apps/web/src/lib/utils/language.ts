@@ -89,9 +89,8 @@ export async function switchLanguage(lang: string) {
   i18n.setLanguageTag(lang as any);
   document.documentElement.lang = lang;
   
-  // Force page reload to sync server-side
+  // Force page reload to sync server-side - just invalidate, let SvelteKit handle navigation
   await invalidateAll();
-  await goto(window.location.pathname, { replaceState: true });
   
   return true;
 }

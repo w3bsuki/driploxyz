@@ -222,7 +222,8 @@
 					<button 
 						onclick={navigateToAllSearch}
 						disabled={loadingCategory === 'all'}
-						class="category-nav-pill shrink-0 px-5 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-gray-900 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[80px]"
+						class="category-nav-pill shrink-0 px-5 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-gray-900 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center"
+						style="width: 80px; height: 44px;"
 					>
 						{#if loadingCategory === 'all'}
 							<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -237,7 +238,8 @@
 						<button 
 							onclick={() => navigateToCategory(category.slug)}
 							disabled={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[80px]"
+							class="category-nav-pill shrink-0 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center"
+							style="min-width: 80px; height: 44px;"
 						>
 							{#if loadingCategory === category.slug}
 								<svg class="animate-spin h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
