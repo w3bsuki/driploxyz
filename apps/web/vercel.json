@@ -23,7 +23,6 @@
     }
   ],
   "env": {
-    "BUILD_TIMESTAMP": "@now",
-    "FORCE_REBUILD": "v1.0.0-20250819"
+    "FORCE_REBUILD": "v1.0.2-20250819"
   }
 }
