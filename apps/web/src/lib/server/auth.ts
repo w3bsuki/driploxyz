@@ -1,5 +1,5 @@
 import { createServerClient } from '@supabase/ssr';
-import { env.PUBLIC_SUPABASE_URL, env.PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import type { Cookies } from '@sveltejs/kit';
 import type { Database } from '$lib/types/database.types';
 
