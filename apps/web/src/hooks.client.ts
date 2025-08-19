@@ -1,11 +1,7 @@
-import { createBrowserClient } from '@supabase/ssr';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { handleErrorWithSentry } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
-import { invalidate } from '$app/navigation';
-import type { Database } from '$lib/types/database.types';
 
 // Get Sentry DSN from environment (may be undefined)
 const PUBLIC_SENTRY_DSN = env.PUBLIC_SENTRY_DSN;
@@ -23,20 +19,6 @@ if (PUBLIC_SENTRY_DSN) {
     ],
   });
 }
-
-// Initialize Supabase client for auth state synchronization
-const supabase = createBrowserClient<Database>(
-  PUBLIC_SUPABASE_URL,
-  PUBLIC_SUPABASE_ANON_KEY
-);
-
-// CRITICAL: Set up auth state change listener
-supabase.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
-    // Invalidate all data when auth state changes to refetch with new session
-    invalidate('supabase:auth');
-  }
-});
 
 // Export error handler (Sentry-enabled or fallback)
 export const handleError = PUBLIC_SENTRY_DSN 

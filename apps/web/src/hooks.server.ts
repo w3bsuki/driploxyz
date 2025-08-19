@@ -48,16 +48,10 @@ const supabase: Handle = async ({ event, resolve }) => {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              // Vercel-optimized cookie settings
-              const isSecure = event.url.protocol === 'https:';
-              
-              event.cookies.set(name, value, { 
-                ...options,
+              // Respect Supabase-provided cookie flags; only enforce path
+              event.cookies.set(name, value, {
                 path: '/',
-                sameSite: 'lax', // Use lax for better compatibility
-                secure: isSecure, // Secure when HTTPS
-                httpOnly: false, // Client needs access for auth state sync
-                maxAge: options?.maxAge || 60 * 60 * 24 * 7 // 1 week default
+                ...options
               });
             });
           },
@@ -127,8 +121,8 @@ const authGuard: Handle = async ({ event, resolve }) => {
       throw redirect(303, '/');
     }
   } catch (err) {
-    if (err instanceof redirect) throw err;
-    // Auth guard errors are handled silently
+    // Do not swallow redirects or errors; rethrow to let SvelteKit handle
+    throw err;
   }
 
   return resolve(event);
