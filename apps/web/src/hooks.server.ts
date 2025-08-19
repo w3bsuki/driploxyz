@@ -16,9 +16,8 @@ const isDebug = dev;
 // Try to get Sentry DSN - optional in some environments
 let SENTRY_DSN: string | undefined;
 try {
-  // In Vercel/production, this should be available
-  const { SENTRY_DSN: dsn } = await import('$env/static/private');
-  SENTRY_DSN = dsn;
+  // Use static import instead of dynamic import at top level
+  SENTRY_DSN = process.env.SENTRY_DSN;
 } catch {
   // DSN not available - Sentry won't be initialized
 }
@@ -31,10 +30,7 @@ if (SENTRY_DSN) {
     tracesSampleRate: dev ? 1.0 : 0.1,
     debug: dev,
     integrations: [
-      // Capture all unhandled errors
-      new Sentry.Integrations.Http({ tracing: true }),
-      new Sentry.Integrations.OnUncaughtException(),
-      new Sentry.Integrations.OnUnhandledRejection(),
+      // Basic integrations - avoid deprecated ones that might not be available
     ],
     beforeSend(event) {
       // Don't send errors in development
