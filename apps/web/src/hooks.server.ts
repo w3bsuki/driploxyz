@@ -7,6 +7,7 @@ import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
 import { authLimiter, apiLimiter } from '$lib/server/rate-limiter';
+import { CSRFProtection } from '$lib/server/csrf';
 
 // Debug flag for controlled logging - use dev mode as default
 const isDebug = dev;
@@ -141,6 +142,31 @@ const rateLimiter: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
+const csrfProtection: Handle = async ({ event, resolve }) => {
+  // Skip CSRF for GET requests and public APIs
+  if (event.request.method === 'GET' || 
+      event.url.pathname.startsWith('/api/webhook') ||
+      event.url.pathname.startsWith('/api/health')) {
+    return resolve(event);
+  }
+  
+  // Check CSRF token for state-changing requests
+  if (event.request.method !== 'GET' && event.request.method !== 'HEAD') {
+    // SuperForms handles CSRF for forms, but we add extra layer for APIs
+    if (event.url.pathname.startsWith('/api/')) {
+      const isValid = await CSRFProtection.check(event);
+      if (!isValid && !dev) {
+        throw error(403, 'Invalid CSRF token');
+      }
+    }
+  }
+  
+  // Add CSRF token to locals for forms
+  event.locals.csrfToken = await CSRFProtection.getToken(event);
+  
+  return resolve(event);
+};
+
 const authGuard: Handle = async ({ event, resolve }) => {
   const { session, user } = await event.locals.safeGetSession();
   event.locals.session = session;
@@ -162,7 +188,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
-export const handle = SENTRY_DSN ? sequence(sentryHandle(), rateLimiter, supabase, authGuard) : sequence(rateLimiter, supabase, authGuard);
+export const handle = SENTRY_DSN ? sequence(sentryHandle(), rateLimiter, csrfProtection, supabase, authGuard) : sequence(rateLimiter, csrfProtection, supabase, authGuard);
 
 // Sentry error handler (only if DSN configured)
 export const handleError: HandleServerError = SENTRY_DSN ? handleErrorWithSentry() : (async ({ error, event }) => {
