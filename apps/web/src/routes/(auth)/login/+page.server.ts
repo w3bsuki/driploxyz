@@ -43,20 +43,82 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 };
 
 export const actions: Actions = {
-  signin: async ({ request }) => {
-    console.log('[LOGIN] Testing superValidate call...');
+  signin: async ({ request, locals: { supabase }, url }) => {
+    // Always log in production to debug Vercel issues (matching signup pattern)
+    console.log('[LOGIN] ========== LOGIN ACTION START ==========');
+    console.log('[LOGIN] Timestamp:', new Date().toISOString());
+    console.log('[LOGIN] Request method:', request.method);
+    console.log('[LOGIN] Request URL:', request.url);
+    console.log('[LOGIN] Site URL origin:', url.origin);
+    console.log('[LOGIN] Environment:', { dev, building: typeof building !== 'undefined' ? building : 'undefined' });
+    console.log('[LOGIN] Has supabase client:', !!supabase);
+    console.log('[LOGIN] Headers:', Object.fromEntries(request.headers.entries()));
     
-    try {
-      // Test the actual superValidate call that was failing
-      console.log('[LOGIN] About to call superValidate...');
-      const form = await superValidate(request, zod(LoginSchema));
-      console.log('[LOGIN] superValidate completed successfully!');
-      console.log('[LOGIN] Form valid:', form.valid);
-      return fail(400, { message: 'superValidate call works!' });
-    } catch (err) {
-      console.error('[LOGIN] Error in superValidate call:', err);
-      console.error('[LOGIN] Error stack:', err.stack);
-      throw err;
+    const form = await superValidate(request, zod(LoginSchema));
+    console.log('[LOGIN] Form validation result:', { valid: form.valid, data: form.data, errors: form.errors });
+    
+    if (!form.valid) {
+      console.log('[LOGIN] Form invalid - returning fail with errors');
+      return fail(400, { form });
     }
+    
+    const { email, password } = form.data;
+    console.log('[LOGIN] Attempting login for email:', email);
+    console.log('[LOGIN] Supabase client exists:', !!supabase);
+    
+    console.log('[LOGIN] Calling supabase.auth.signInWithPassword...');
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    console.log('[LOGIN] Auth response received');
+    console.log('[LOGIN] Has data:', !!data);
+    console.log('[LOGIN] Has user:', !!data?.user);
+    console.log('[LOGIN] Has session:', !!data?.session);
+    console.log('[LOGIN] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
+
+    if (error) {
+      // Handle specific error cases
+      if (error.message.includes('Invalid login credentials')) {
+        return fail(400, {
+          form: setError(form, '', 'Invalid email or password')
+        });
+      }
+      if (error.message.includes('Email not confirmed')) {
+        return fail(400, {
+          form: setError(form, '', 'Please verify your email before logging in')
+        });
+      }
+      
+      // Return fail with form for superforms to handle properly
+      return fail(400, {
+        form: setError(form, '', error.message || 'Unable to sign in')
+      });
+    }
+
+    if (!data.user || !data.session) {
+      return fail(400, {
+        form: setError(form, '', 'Authentication failed. Please try again.')
+      });
+    }
+
+    // Check onboarding status (non-blocking)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('onboarding_completed')
+      .eq('id', data.user.id)
+      .single();
+    
+    if (!profile || profile.onboarding_completed !== true) {
+      // Redirect to onboarding
+      console.log('[LOGIN] Redirecting to onboarding - profile incomplete');
+      throw redirect(303, '/onboarding');
+    }
+    
+    // Success - redirect to homepage
+    console.log('[LOGIN] Login successful! Redirecting to homepage');
+    console.log('[LOGIN] ========== LOGIN ACTION END ==========');
+    throw redirect(303, '/');
   }
 };
