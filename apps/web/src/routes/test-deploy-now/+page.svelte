@@ -1,4 +1,5 @@
-<h1>Deployment Test</h1>
-<p>If you see this page, the latest commit is deployed.</p>
+<h1>EMERGENCY DEPLOYMENT - LOGIN BROKEN</h1>
+<p>VERCEL MUST DEPLOY THIS NOW!</p>
 <p>Timestamp: {new Date().toISOString()}</p>
-<p>Commit: 8a0a161</p>
+<p>Commit: 3719bee - LOGIN FIX INCLUDED</p>
+<p>LOGIN IS BROKEN - DEPLOY IMMEDIATELY</p>
