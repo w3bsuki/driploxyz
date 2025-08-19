@@ -58,8 +58,8 @@ const supabase: Handle = async ({ event, resolve }) => {
                 sameSite: isAuthCookie ? 'lax' : (options?.sameSite || 'lax'), // Lax for auth, strict for others
                 secure: event.url.protocol === 'https:', // Secure on HTTPS (production)
                 httpOnly: isAuthCookie ? false : (options?.httpOnly ?? true), // Auth cookies need client access
-                maxAge: options?.maxAge || (60 * 60 * 24 * 7), // 1 week default
-                domain: event.url.hostname.includes('localhost') ? undefined : `.${event.url.hostname.split('.').slice(-2).join('.')}` // Set domain for production
+                maxAge: options?.maxAge || (60 * 60 * 24 * 7) // 1 week default
+                // DO NOT set domain - let browser handle it correctly
               });
             });
           },
