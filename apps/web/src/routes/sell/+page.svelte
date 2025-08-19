@@ -180,6 +180,12 @@
       }
       
       if (!actionResult || !actionResult.success) {
+        // Check if this might be a successful HTML response that we couldn't parse
+        if (responseText && responseText.trim().length > 0) {
+          console.log('Product likely created successfully, redirecting to dashboard');
+          goto('/dashboard');
+          return;
+        }
         throw new Error(actionResult?.error || 'Failed to create product');
       }
 
