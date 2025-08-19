@@ -98,7 +98,7 @@
           bind:value={$form.email}
           aria-invalid={$errors.email ? 'true' : undefined}
           aria-describedby={$errors.email ? 'email-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {$errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors text-sm"
+          class="appearance-none block w-full px-3 py-2 border {$errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors text-base sm:text-sm"
           placeholder="Enter your email"
           {...$constraints.email}
         />
@@ -127,7 +127,7 @@
           bind:value={$form.password}
           aria-invalid={$errors.password ? 'true' : undefined}
           aria-describedby={$errors.password ? 'password-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {$errors.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors text-sm"
+          class="appearance-none block w-full px-3 py-2 border {$errors.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 transition-colors text-base sm:text-sm"
           placeholder="Enter your password"
           {...$constraints.password}
         />

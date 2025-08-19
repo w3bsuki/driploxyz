@@ -58,4 +58,11 @@ export { default as LocaleDetectionBanner } from './LocaleDetectionBanner.svelte
 // Navigation components
 export { default as MegaMenu } from './MegaMenu.svelte';
 export { default as CategorySidebar } from './CategorySidebar.svelte';
+// Form components
+export { default as Select } from './Select.svelte';
+export { default as StepIndicator } from './StepIndicator.svelte';
+export { default as ConditionSelector } from './ConditionSelector.svelte';
+export { default as BrandSelector } from './BrandSelector.svelte';
+export { default as PriceInput } from './PriceInput.svelte';
+export { default as TagInput } from './TagInput.svelte';
 export * from './types.js';

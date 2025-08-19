@@ -1,4 +1,7 @@
-import { redirect } from '@sveltejs/kit';
+import { redirect, fail } from '@sveltejs/kit';
+import { superValidate, message } from 'sveltekit-superforms';
+import { zod } from 'sveltekit-superforms/adapters';
+import { ProductSchema } from '$lib/validation/product';
 import type { PageServerLoad, Actions } from './$types';
 import { createServices } from '$lib/services';
 
@@ -38,43 +41,59 @@ export const load: PageServerLoad = async ({ locals: { supabase, session } }) =>
       .eq('is_active', true)
       .order('price_monthly', { ascending: true });
 
+    // Initialize form with Superforms
+    const form = await superValidate(zod(ProductSchema));
+
     return {
       user: session.user,
       profile,
       categories: categories || [],
       canListProducts,
       plans: plans || [],
-      needsBrandSubscription: profile?.account_type === 'brand' && !canListProducts
+      needsBrandSubscription: profile?.account_type === 'brand' && !canListProducts,
+      form
     };
   } catch (error) {
     console.error('Error loading sell page:', error);
+    
+    // Still initialize form even on error
+    const form = await superValidate(zod(ProductSchema));
+    
     return {
       user: session.user,
       profile: null,
       categories: [],
       canListProducts: true,
       plans: [],
-      needsBrandSubscription: false
+      needsBrandSubscription: false,
+      form
     };
   }
 };
 
-export const actions = {
-  create: async ({ request, locals: { supabase, session } }) => {
+export const actions: Actions = {
+  default: async ({ request, locals: { supabase, session } }) => {
     if (!session) {
-      return {
-        success: false,
-        error: 'Not authenticated'
-      };
+      return fail(401, { 
+        form: await superValidate(request, zod(ProductSchema)),
+        error: 'Not authenticated' 
+      });
+    }
+
+    const form = await superValidate(request, zod(ProductSchema));
+    
+    if (!form.valid) {
+      return fail(400, { form });
     }
 
     try {
+      // Get files from formData
       const formData = await request.formData();
-      const productData = JSON.parse(formData.get('productData') as string);
-      const files = formData.getAll('files') as File[];
+      const files = formData.getAll('photos') as File[];
 
-      console.log('Server: Creating product with data:', productData);
+      console.log('Server: Creating product with data:', form.data);
       console.log('Server: User ID:', session.user.id);
+      console.log('Server: Files count:', files.length);
 
       // Upload images to Supabase Storage
       const uploadedUrls: string[] = [];
@@ -104,19 +123,19 @@ export const actions = {
       const { data: product, error: productError } = await supabase
         .from('products')
         .insert({
-          title: productData.title,
-          description: productData.description || null,
-          price: parseFloat(productData.price),
-          category_id: productData.category_id,
-          condition: productData.condition,
-          brand: productData.brand !== 'Other' ? productData.brand : null,
-          size: productData.size || null,
+          title: form.data.title,
+          description: form.data.description || null,
+          price: parseFloat(form.data.price),
+          category_id: form.data.subcategory_id || form.data.category_id,
+          condition: form.data.condition,
+          brand: form.data.brand !== 'Other' ? form.data.brand : null,
+          size: form.data.size || null,
           location: null,
           seller_id: session.user.id,
-          shipping_cost: parseFloat(productData.shipping_cost || '0'),
-          tags: productData.tags?.length > 0 ? productData.tags : null,
-          color: productData.color || null,
-          material: productData.material || null
+          shipping_cost: parseFloat(form.data.shipping_cost || '0'),
+          tags: form.data.tags?.length > 0 ? form.data.tags : null,
+          color: form.data.color || null,
+          material: form.data.material || null
         })
         .select()
         .single();
@@ -132,7 +151,7 @@ export const actions = {
           product_id: product.id,
           image_url: url,
           display_order: index,
-          alt_text: `${productData.title} - Image ${index + 1}`
+          alt_text: `${form.data.title} - Image ${index + 1}`
         }));
 
         const { error: imagesError } = await supabase
@@ -145,17 +164,25 @@ export const actions = {
         }
       }
 
-      return {
-        success: true,
-        productId: product.id
-      };
+      // Handle premium boost if selected
+      if (form.data.use_premium_boost) {
+        // Premium boost logic would go here
+      }
+
+      // Return success with redirect
+      throw redirect(303, `/product/${product.id}?success=true`);
 
     } catch (error) {
+      // If it's a redirect, re-throw it
+      if (error instanceof Response) {
+        throw error;
+      }
+      
       console.error('Server error creating product:', error);
-      return {
-        success: false,
-        error: error.message
-      };
+      return fail(500, {
+        form,
+        error: error.message || 'Failed to create product'
+      });
     }
   }
-} satisfies Actions;
+};
