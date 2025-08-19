@@ -131,7 +131,7 @@ export const actions = {
         const imageInserts = uploadedUrls.map((url, index) => ({
           product_id: product.id,
           image_url: url,
-          sort_order: index,
+          display_order: index,
           alt_text: `${productData.title} - Image ${index + 1}`
         }));
 

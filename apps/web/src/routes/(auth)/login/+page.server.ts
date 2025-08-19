@@ -2,10 +2,7 @@ import { redirect, fail } from '@sveltejs/kit';
 import { superValidate, setError, message } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { LoginSchema } from '$lib/validation/auth';
-import { dev } from '$app/environment';
 import type { Actions, PageServerLoad } from './$types';
-
-const DEBUG = dev;
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) => {
   const { session } = await safeGetSession();
@@ -45,38 +42,19 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 export const actions: Actions = {
   signin: async ({ request, locals: { supabase } }) => {
     const form = await superValidate(request, zod(LoginSchema));
-    
-    if (DEBUG) {
-      console.log('[LOGIN] ========== LOGIN ACTION START ==========');
-      console.log('[LOGIN] Form valid:', form.valid);
-    }
 
     if (!form.valid) {
-      if (DEBUG) console.log('[LOGIN] Form validation failed');
       return fail(400, { form });
     }
     
     const { email, password } = form.data;
-    
-    if (DEBUG) {
-      console.log('[LOGIN] Attempting login for:', email);
-      console.log('[LOGIN] Supabase client exists:', !!supabase);
-    }
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
 
-    if (DEBUG) {
-      console.log('[LOGIN] Auth response - has error:', !!error);
-      console.log('[LOGIN] Auth response - has data:', !!data);
-      console.log('[LOGIN] Auth response - has user:', !!data?.user);
-    }
-
     if (error) {
-      if (DEBUG) console.log('[LOGIN] Auth error:', error.message);
-      
       if (error.message.includes('Invalid login credentials')) {
         return fail(400, {
           form: setError(form, '', 'Invalid email or password')
@@ -94,15 +72,9 @@ export const actions: Actions = {
     }
 
     if (!data.user || !data.session) {
-      if (DEBUG) console.log('[LOGIN] No user or session returned');
       return fail(400, {
         form: setError(form, '', 'Authentication failed. Please try again.')
       });
-    }
-
-    if (DEBUG) {
-      console.log('[LOGIN] Login successful!');
-      console.log('[LOGIN] ========== LOGIN ACTION END ==========');
     }
     
     // Use message pattern exactly like signup
