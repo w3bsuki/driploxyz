@@ -16,19 +16,24 @@ export async function clientLogin(email: string, password: string) {
       body: JSON.stringify({ email, password })
     });
     
-    const data = await response.json();
+    // Try to parse response as JSON
+    let data;
+    const text = await response.text();
+    try {
+      data = JSON.parse(text);
+    } catch {
+      console.error('[CLIENT AUTH] Non-JSON response:', text);
+      return { success: false, error: 'Server error - please try again' };
+    }
+    
     console.log('[CLIENT AUTH] Response:', data);
     
-    if (data.success) {
-      // Redirect based on onboarding status
-      if (data.needsOnboarding) {
-        await goto('/onboarding');
-      } else {
-        await goto('/');
-      }
+    if (response.ok && data.success) {
+      // Force page reload to update auth state
+      window.location.href = '/';
       return { success: true };
     } else {
-      return { success: false, error: data.error || 'Login failed' };
+      return { success: false, error: data.error || 'Invalid email or password' };
     }
   } catch (error: any) {
     console.error('[CLIENT AUTH] Error:', error);

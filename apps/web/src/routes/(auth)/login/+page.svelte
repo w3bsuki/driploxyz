@@ -66,7 +66,19 @@
   {/if}
 
   <!-- Email/Password Form -->
-  <form method="POST" action="?/signin" use:enhance>
+  <form 
+    on:submit|preventDefault={async (e) => {
+      // Handle form submission client-side
+      if (browser) {
+        clientError = '';
+        submitting.set(true);
+        const response = await clientLogin($form.email, $form.password);
+        submitting.set(false);
+        if (!response.success) {
+          clientError = response.error || 'Login failed';
+        }
+      }
+    }}>
     <div class="space-y-1">
       <div>
         <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
