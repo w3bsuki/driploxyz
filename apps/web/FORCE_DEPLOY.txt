@@ -1,0 +1,6 @@
+Deployment forced at: 2025-01-20 10:30:00
+Login fix ready: v4-redirect-only-fix
+vercel.json fixed: removed invalid framework
+Version bumped: 1.0.1
+
+This file exists to force Vercel to deploy our changes.
