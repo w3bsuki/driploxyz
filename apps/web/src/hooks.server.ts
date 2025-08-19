@@ -6,6 +6,7 @@ import type { Database } from '$lib/types/database.types';
 import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
+import { authLimiter, apiLimiter } from '$lib/server/rate-limiter';
 
 // Debug flag for controlled logging - use dev mode as default
 const isDebug = dev;
@@ -118,6 +119,28 @@ const supabase: Handle = async ({ event, resolve }) => {
   });
 };
 
+const rateLimiter: Handle = async ({ event, resolve }) => {
+  // Apply rate limiting to auth endpoints
+  if (event.url.pathname.includes('/login') || event.url.pathname.includes('/signup')) {
+    const status = await authLimiter.check(event);
+    if (status.limited) {
+      const retryAfter = Math.round(status.retryAfter / 1000);
+      throw error(429, `Too many attempts. Please try again in ${retryAfter} seconds.`);
+    }
+  }
+  
+  // Apply rate limiting to API endpoints
+  if (event.url.pathname.startsWith('/api/')) {
+    const status = await apiLimiter.check(event);
+    if (status.limited) {
+      const retryAfter = Math.round(status.retryAfter / 1000);
+      throw error(429, `Rate limit exceeded. Please try again in ${retryAfter} seconds.`);
+    }
+  }
+  
+  return resolve(event);
+};
+
 const authGuard: Handle = async ({ event, resolve }) => {
   const { session, user } = await event.locals.safeGetSession();
   event.locals.session = session;
@@ -139,7 +162,7 @@ const authGuard: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
-export const handle = SENTRY_DSN ? sequence(sentryHandle(), supabase, authGuard) : sequence(supabase, authGuard);
+export const handle = SENTRY_DSN ? sequence(sentryHandle(), rateLimiter, supabase, authGuard) : sequence(rateLimiter, supabase, authGuard);
 
 // Sentry error handler (only if DSN configured)
 export const handleError: HandleServerError = SENTRY_DSN ? handleErrorWithSentry() : (async ({ error, event }) => {

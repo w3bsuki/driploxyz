@@ -1,7 +1,6 @@
 {
   "framework": "sveltekit",
   "buildCommand": "pnpm build",
-  "outputDirectory": ".svelte-kit",
   "installCommand": "pnpm install",
   "devCommand": "pnpm dev",
   "headers": [

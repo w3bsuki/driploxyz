@@ -1,0 +1,50 @@
+import { RateLimiter } from 'sveltekit-rate-limiter/server';
+import { dev } from '$app/environment';
+
+// Auth rate limiter - strict limits to prevent brute force
+export const authLimiter = new RateLimiter({
+	// Identifier (IP address by default)
+	IP: [5, '10m'], // 5 requests per 10 minutes per IP
+	IPUA: [10, '30m'], // 10 requests per 30 minutes per IP+User-Agent
+	cookie: {
+		name: 'auth_rl', // Cookie name for tracking
+		secret: 'auth-rate-limit-secret-key', // Should be in env vars in production
+		rate: [3, '5m'], // 3 attempts per 5 minutes per cookie
+		preflight: true // Check rate limit before processing
+	}
+});
+
+// API rate limiter - more lenient for general API calls
+export const apiLimiter = new RateLimiter({
+	IP: [100, '1m'], // 100 requests per minute per IP
+	IPUA: [500, '5m'], // 500 requests per 5 minutes per IP+User-Agent
+});
+
+// Upload rate limiter - for file uploads
+export const uploadLimiter = new RateLimiter({
+	IP: [10, '1h'], // 10 uploads per hour per IP
+	IPUA: [20, '1h'], // 20 uploads per hour per IP+User-Agent
+	cookie: {
+		name: 'upload_rl',
+		secret: 'upload-rate-limit-secret-key',
+		rate: [5, '30m'], // 5 uploads per 30 minutes per cookie
+		preflight: true
+	}
+});
+
+// Message rate limiter - prevent spam
+export const messageLimiter = new RateLimiter({
+	IP: [30, '1h'], // 30 messages per hour per IP
+	IPUA: [50, '1h'], // 50 messages per hour per IP+User-Agent
+	cookie: {
+		name: 'msg_rl',
+		secret: 'message-rate-limit-secret-key',
+		rate: [20, '30m'], // 20 messages per 30 minutes per cookie
+		preflight: true
+	}
+});
+
+// Development mode - relaxed limits
+if (dev) {
+	console.log('[RATE_LIMITER] Running in development mode - relaxed limits');
+}
