@@ -10,6 +10,7 @@
   let { data, form: actionResult }: { data: PageData; form: ActionData } = $props();
   
   let success = $state(false);
+  let successEmail = $state('');
   let successMessage = $state('');
   
   const { form, errors, constraints, submitting, enhance, message } = superForm(data.form, {
@@ -18,10 +19,11 @@
     taintedMessage: null,
     validationMethod: 'oninput',
     onResult: ({ result }) => {
-      // Handle redirect result (signup success)
-      if (result.type === 'redirect') {
+      // Handle success from server
+      if (result.type === 'success' && result.data?.success) {
         success = true;
-        successMessage = 'Account created successfully! Please check your email to verify your account.';
+        successEmail = result.data.email;
+        successMessage = result.data.message;
       }
     },
     onError: ({ result }) => {
@@ -55,7 +57,7 @@
   {/if}
 
   {#if success}
-    <div class="bg-green-50 border border-green-200 rounded-md p-4">
+    <div class="bg-green-50 border border-green-200 rounded-md p-4 mb-6">
       <div class="flex">
         <div class="flex-shrink-0">
           <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
@@ -63,7 +65,19 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-green-800">{successMessage}</p>
+          <h3 class="text-sm font-medium text-green-800">Success!</h3>
+          <p class="mt-2 text-sm text-green-700">{successMessage || 'Account created successfully!'}</p>
+          {#if successEmail}
+            <p class="mt-1 text-sm text-green-700">Email sent to: <strong>{successEmail}</strong></p>
+          {/if}
+          <div class="mt-4 space-x-4">
+            <a href="/login" class="text-sm font-medium text-green-600 hover:text-green-500">
+              Go to login →
+            </a>
+            <a href="/verify-email?email={encodeURIComponent(successEmail)}" class="text-sm font-medium text-green-600 hover:text-green-500">
+              Verification help →
+            </a>
+          </div>
         </div>
       </div>
     </div>

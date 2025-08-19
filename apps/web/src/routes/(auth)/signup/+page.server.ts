@@ -58,7 +58,8 @@ export const actions: Actions = {
         options: {
           data: {
             full_name: fullName
-          }
+          },
+          emailRedirectTo: `${request.url.origin}/auth/callback`
         }
       });
       
@@ -111,12 +112,19 @@ export const actions: Actions = {
         // Non-fatal error - continue with signup success
       }
 
-      // Success - redirect to email verification page
+      // Success - return success response with message
       if (DEBUG) {
-        console.log('[SIGNUP] Signup successful! Redirecting to verification');
+        console.log('[SIGNUP] Signup successful!');
         console.log('[SIGNUP] ========== SIGNUP ACTION END ==========');
       }
-      throw redirect(303, `/verify-email?email=${encodeURIComponent(email)}`);
+      
+      // Return success with email for display
+      return {
+        form,
+        success: true, 
+        email,
+        message: 'Account created successfully! Please check your email to verify your account.'
+      };
 
     } catch (e: any) {
       // Check if it's a SvelteKit redirect (has status 303)
