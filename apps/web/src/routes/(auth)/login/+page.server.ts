@@ -44,17 +44,18 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 
 export const actions: Actions = {
   signin: async ({ request }) => {
-    console.log('[LOGIN] Testing superforms imports...');
+    console.log('[LOGIN] Testing superValidate call...');
     
     try {
-      // Test if superforms imports work
-      console.log('[LOGIN] superValidate:', !!superValidate);
-      console.log('[LOGIN] setError:', !!setError);
-      console.log('[LOGIN] zod:', !!zod);
-      console.log('[LOGIN] All superforms imports work!');
-      return fail(400, { message: 'Superforms imports work!' });
+      // Test the actual superValidate call that was failing
+      console.log('[LOGIN] About to call superValidate...');
+      const form = await superValidate(request, zod(LoginSchema));
+      console.log('[LOGIN] superValidate completed successfully!');
+      console.log('[LOGIN] Form valid:', form.valid);
+      return fail(400, { message: 'superValidate call works!' });
     } catch (err) {
-      console.error('[LOGIN] Error with superforms imports:', err);
+      console.error('[LOGIN] Error in superValidate call:', err);
+      console.error('[LOGIN] Error stack:', err.stack);
       throw err;
     }
   }
