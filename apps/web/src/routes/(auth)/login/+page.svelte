@@ -71,9 +71,8 @@
       // Handle form submission client-side
       if (browser) {
         clientError = '';
-        submitting.set(true);
+        // submitting is a store from superforms, access it differently
         const response = await clientLogin($form.email, $form.password);
-        submitting.set(false);
         if (!response.success) {
           clientError = response.error || 'Login failed';
         }
