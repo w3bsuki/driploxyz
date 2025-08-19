@@ -1,5 +1,5 @@
 import { redirect, fail } from '@sveltejs/kit';
-import { superValidate, setError } from 'sveltekit-superforms';
+import { superValidate, setError, message } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { LoginSchema } from '$lib/validation/auth';
 import { dev, building } from '$app/environment';
@@ -113,12 +113,20 @@ export const actions: Actions = {
     if (!profile || profile.onboarding_completed !== true) {
       // Redirect to onboarding
       console.log('[LOGIN] Redirecting to onboarding - profile incomplete');
-      throw redirect(303, '/onboarding');
+      return message(form, {
+        type: 'success',
+        text: 'Welcome back! Please complete your profile setup.',
+        redirect: '/onboarding'
+      });
     }
     
     // Success - redirect to homepage
     console.log('[LOGIN] Login successful! Redirecting to homepage');
     console.log('[LOGIN] ========== LOGIN ACTION END ==========');
-    throw redirect(303, '/');
+    return message(form, {
+      type: 'success',
+      text: 'Welcome back! You have been successfully logged in.',
+      redirect: '/'
+    });
   }
 };
