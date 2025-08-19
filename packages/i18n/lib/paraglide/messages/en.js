@@ -2839,6 +2839,14 @@ export const onboarding_goToDashboard = () => `Go to Dashboard & Subscribe`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandSetupComplete = () => `Your brand profile is set up! To activate full brand features and verification badge, you'll need to subscribe to our Brand plan from your dashboard.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const onboarding_discover = () => `Discover Quality Fashion`
 
 

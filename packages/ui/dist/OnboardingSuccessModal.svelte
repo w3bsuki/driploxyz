@@ -1,4 +1,6 @@
 <script lang="ts">
+  import * as m from '@repo/i18n';
+  
   interface Props {
     show?: boolean;
     onClose?: () => void;
@@ -26,13 +28,13 @@
 
       <!-- Content -->
       <h2 class="text-2xl font-bold text-gray-900 mb-3">
-        {isBrand ? 'Welcome to Driplo Business! 🏢' : 'Welcome to Driplo! 🎉'}
+        {isBrand ? m.onboarding_welcomeBrand() : m.onboarding_welcomePersonal()}
       </h2>
       <p class="text-gray-600 mb-6 leading-relaxed">
         {#if isBrand}
-          Your brand profile is set up! To activate full brand features and verification badge, you'll need to subscribe to our Brand plan from your dashboard.
+          {m.onboarding_brandSetupComplete()}
         {:else}
-          Your profile is now complete and verified. You're ready to start buying and selling amazing fashion items!
+          {m.onboarding_profileComplete()}
         {/if}
       </p>
 
@@ -41,11 +43,11 @@
         <div class="grid grid-cols-2 gap-4 text-center">
           <div>
             <div class="text-2xl font-bold text-black">✓</div>
-            <div class="text-xs text-gray-600">Profile {isBrand ? 'Created' : 'Verified'}</div>
+            <div class="text-xs text-gray-600">{isBrand ? m.onboarding_profileCreated() : m.onboarding_profileVerified()}</div>
           </div>
           <div>
             <div class="text-2xl font-bold text-black">{isBrand ? '🏢' : '💳'}</div>
-            <div class="text-xs text-gray-600">{isBrand ? 'Brand Pending' : 'Payment Ready'}</div>
+            <div class="text-xs text-gray-600">{isBrand ? m.onboarding_brandPending() : m.onboarding_paymentReady()}</div>
           </div>
         </div>
       </div>
@@ -55,7 +57,7 @@
         onclick={onClose}
         class="w-full bg-black text-white font-semibold py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors"
       >
-        {isBrand ? 'Go to Dashboard & Subscribe' : 'Start Exploring'}
+        {isBrand ? m.onboarding_goToDashboard() : m.onboarding_startExploring()}
       </button>
     </div>
   </div>

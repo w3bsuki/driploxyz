@@ -2517,7 +2517,7 @@ export const onboarding_welcomePersonal = () => `Добро пожаловать
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_profileComplete = () => `Ваш профиль теперь завершён и верифицирован. Вы готовы начать покупать и продавать удивительные модные вещи!`
+export const onboarding_profileComplete = () => `Ваш профиль завершен и подтвержден. Вы готовы начать покупать и продавать удивительные модные вещи!`
 
 
 /**
@@ -2541,7 +2541,7 @@ export const onboarding_profileCreated = () => `Профиль создан`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_profileVerified = () => `Профиль верифицирован`
+export const onboarding_profileVerified = () => `Профиль подтвержден`
 
 
 /**
@@ -2549,7 +2549,7 @@ export const onboarding_profileVerified = () => `Профиль верифици
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandPending = () => `Бренд ожидает`
+export const onboarding_brandPending = () => `Бренд в ожидании`
 
 
 /**
@@ -2557,7 +2557,7 @@ export const onboarding_brandPending = () => `Бренд ожидает`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_paymentReady = () => `Платёж готов`
+export const onboarding_paymentReady = () => `Платеж готов`
 
 
 /**
@@ -2565,7 +2565,7 @@ export const onboarding_paymentReady = () => `Платёж готов`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_startExploring = () => `Начать изучение`
+export const onboarding_startExploring = () => `Начать исследовать`
 
 
 /**
@@ -2573,7 +2573,15 @@ export const onboarding_startExploring = () => `Начать изучение`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_goToDashboard = () => `Перейти в панель & Подписаться`
+export const onboarding_goToDashboard = () => `Перейти к панели и подписаться`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandSetupComplete = () => `Ваш бренд-профиль настроен! Чтобы активировать полные функции бренда и значок верификации, вам необходимо подписаться на наш план для брендов из вашей панели управления.`
 
 
 /**

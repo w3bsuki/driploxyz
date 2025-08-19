@@ -2517,7 +2517,7 @@ export const onboarding_welcomePersonal = () => `Ласкаво просимо �
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_profileComplete = () => `Ваш профіль тепер завершений і верифікований. Ви готові почати купувати та продавати дивовижні модні речі!`
+export const onboarding_profileComplete = () => `Ваш профіль завершено та підтверджено. Ви готові почати купувати та продавати дивовижні модні речі!`
 
 
 /**
@@ -2541,7 +2541,7 @@ export const onboarding_profileCreated = () => `Профіль створено`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_profileVerified = () => `Профіль верифіковано`
+export const onboarding_profileVerified = () => `Профіль підтверджено`
 
 
 /**
@@ -2549,7 +2549,7 @@ export const onboarding_profileVerified = () => `Профіль верифіко
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_brandPending = () => `Бренд очікує`
+export const onboarding_brandPending = () => `Бренд в очікуванні`
 
 
 /**
@@ -2565,7 +2565,7 @@ export const onboarding_paymentReady = () => `Платіж готовий`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_startExploring = () => `Почати дослідження`
+export const onboarding_startExploring = () => `Почати досліджувати`
 
 
 /**
@@ -2573,7 +2573,15 @@ export const onboarding_startExploring = () => `Почати досліджен�
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_goToDashboard = () => `Перейти в панель & Підписатися`
+export const onboarding_goToDashboard = () => `Перейти до панелі та підписатися`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_brandSetupComplete = () => `Ваш бренд-профіль налаштовано! Щоб активувати повні функції бренду та значок верифікації, вам потрібно підписатися на наш план для брендів з вашої панелі керування.`
 
 
 /**
