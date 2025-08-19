@@ -4,18 +4,26 @@
   import { LoginSchema } from '$lib/validation/auth.js';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
+  import { clientLogin } from '$lib/client/auth';
+  import { browser } from '$app/environment';
 
   let { data }: { data: PageData } = $props();
+  let clientError = $state('');
   
   const { form, errors, constraints, submitting, enhance } = superForm(data.form, {
     validators: zodClient(LoginSchema),
     resetForm: false,
     taintedMessage: null,
     validationMethod: 'oninput',
-    onError: ({ result }) => {
-      // Handle errors gracefully to prevent unhandled rejections
-      // Errors are already displayed in the UI via $errors
-      // This prevents promise rejection warnings
+    onError: async ({ result }) => {
+      // If form action fails (404), try client-side auth
+      if (browser) {
+        console.log('[LOGIN] Form action failed, trying client-side auth');
+        const response = await clientLogin($form.email, $form.password);
+        if (!response.success) {
+          clientError = response.error || 'Login failed';
+        }
+      }
     }
   });
 </script>
@@ -42,7 +50,7 @@
     </div>
   {/if}
 
-  {#if $errors?._errors?.length}
+  {#if $errors?._errors?.length || clientError}
     <div class="bg-red-50 border border-red-200 rounded-md p-4">
       <div class="flex">
         <div class="flex-shrink-0">
@@ -51,7 +59,7 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-red-800">{$errors._errors[0]}</p>
+          <p class="text-sm text-red-800">{clientError || $errors._errors[0]}</p>
         </div>
       </div>
     </div>
