@@ -5,9 +5,11 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/publi
 import * as Sentry from '@sentry/sveltekit';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
+  let body: any = null;
+  
   try {
     // Parse request body
-    const body = await request.json().catch(e => {
+    body = await request.json().catch(e => {
       console.error('[API LOGIN] Failed to parse request:', e);
       return null;
     });
