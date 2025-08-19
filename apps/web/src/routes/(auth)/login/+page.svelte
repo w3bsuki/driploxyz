@@ -2,29 +2,26 @@
   import { superForm } from 'sveltekit-superforms';
   import { zodClient } from 'sveltekit-superforms/adapters';
   import { LoginSchema } from '$lib/validation/auth.js';
-  import type { PageData } from './$types';
+  import type { PageData, ActionData } from './$types';
   import * as i18n from '@repo/i18n';
-  import { clientLogin } from '$lib/client/auth';
-  import { browser } from '$app/environment';
-  import { goto, invalidateAll } from '$app/navigation';
 
-  let { data }: { data: PageData } = $props();
-  let clientError = $state('');
+  let { data, form: actionResult }: { data: PageData; form: ActionData } = $props();
   
-  const { form, errors, constraints, submitting, enhance } = superForm(data.form, {
+  const { form, errors, constraints, submitting, enhance, message } = superForm(data.form, {
     validators: zodClient(LoginSchema),
     resetForm: false,
     taintedMessage: null,
     validationMethod: 'oninput',
-    onError: async ({ result }) => {
-      // If form action fails (404), try client-side auth
-      if (browser) {
-        console.log('[LOGIN] Form action failed, trying client-side auth');
-        const response = await clientLogin($form.email, $form.password);
-        if (!response.success) {
-          clientError = response.error || 'Login failed';
-        }
+    onResult: ({ result }) => {
+      // Handle successful login - let SvelteKit handle the redirect
+      if (result.type === 'redirect') {
+        // Redirect will be handled automatically by SvelteKit
+        return;
       }
+    },
+    onError: ({ result }) => {
+      // Errors are handled via $errors from server
+      // No need for additional error handling here
     }
   });
 </script>
@@ -51,7 +48,7 @@
     </div>
   {/if}
 
-  {#if $errors?._errors?.length || clientError}
+  {#if $errors?._errors?.length}
     <div class="bg-red-50 border border-red-200 rounded-md p-4">
       <div class="flex">
         <div class="flex-shrink-0">
@@ -60,28 +57,14 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-red-800">{clientError || $errors._errors[0]}</p>
+          <p class="text-sm text-red-800">{$errors._errors[0]}</p>
         </div>
       </div>
     </div>
   {/if}
 
   <!-- Email/Password Form -->
-  <form 
-    on:submit|preventDefault={async (e) => {
-      // Handle form submission client-side
-      if (browser) {
-        clientError = '';
-        const response = await clientLogin($form.email, $form.password);
-        if (!response.success) {
-          clientError = response.error || 'Login failed';
-        } else {
-          // Invalidate all data and redirect on success
-          await invalidateAll();
-          await goto('/', { replaceState: true });
-        }
-      }
-    }}>
+  <form method="POST" action="?/signin" use:enhance>
     <div class="space-y-1">
       <div>
         <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">

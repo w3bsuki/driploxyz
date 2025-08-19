@@ -9,27 +9,24 @@
 
   let { data, form: actionResult }: { data: PageData; form: ActionData } = $props();
   
-  let success = $state(false);
-  let successEmail = $state('');
-  let successMessage = $state('');
+  // Check for success from action result
+  let success = $state(actionResult?.success || false);
+  let successEmail = $state(actionResult?.email || '');
+  let successMessage = $state(actionResult?.message || '');
   
-  const { form, errors, constraints, submitting, enhance, message } = superForm(data.form, {
+  const { form, errors, constraints, submitting, enhance } = superForm(data.form, {
     validators: zodClient(SignupSchema),
     resetForm: false,
     taintedMessage: null,
-    validationMethod: 'oninput',
-    onResult: ({ result }) => {
-      // Handle success from server
-      if (result.type === 'success' && result.data?.success) {
-        success = true;
-        successEmail = result.data.email;
-        successMessage = result.data.message;
-      }
-    },
-    onError: ({ result }) => {
-      // Handle errors gracefully to prevent unhandled rejections
-      // Errors are already displayed in the UI via $errors
-      success = false;
+    validationMethod: 'oninput'
+  });
+  
+  // Watch for successful submission
+  $effect(() => {
+    if (actionResult?.success) {
+      success = true;
+      successEmail = actionResult.email || '';
+      successMessage = actionResult.message || 'Account created successfully! Please check your email to verify your account.';
     }
   });
 </script>
