@@ -10,6 +10,20 @@
       "env": {
         "SUPABASE_ACCESS_TOKEN": "sbp_50db74f013698957a547fa20d5b0bbbbee4f56d9"
       }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest"
+      ]
+    },
+    "svelte-docs": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-svelte-docs"
+      ]
     }
   }
 }

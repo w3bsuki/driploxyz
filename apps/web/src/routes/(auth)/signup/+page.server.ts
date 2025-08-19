@@ -18,9 +18,17 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
 
 export const actions: Actions = {
   signup: async ({ request, locals: { supabase }, cookies }) => {
+    console.log('[SIGNUP] ========== SIGNUP ACTION START ==========');
+    console.log('[SIGNUP] Timestamp:', new Date().toISOString());
+    console.log('[SIGNUP] Request method:', request.method);
+    console.log('[SIGNUP] Request URL:', request.url);
+    console.log('[SIGNUP] Headers:', Object.fromEntries(request.headers.entries()));
+    
     const form = await superValidate(request, zod(SignupSchema));
+    console.log('[SIGNUP] Form validation result:', { valid: form.valid, data: form.data, errors: form.errors });
     
     if (!form.valid) {
+      console.log('[SIGNUP] Form invalid - returning fail with errors');
       return fail(400, { form });
     }
     
@@ -32,7 +40,15 @@ export const actions: Actions = {
     const userLocale = localeCookie || detectLanguage(acceptLanguage);
 
     try {
+      console.log('[SIGNUP] Attempting signup for email:', email);
+      console.log('[SIGNUP] Full name:', fullName);
+      console.log('[SIGNUP] Terms accepted:', terms);
+      console.log('[SIGNUP] User locale:', userLocale);
+      console.log('[SIGNUP] Supabase client exists:', !!supabase);
+      console.log('[SIGNUP] Supabase auth exists:', !!supabase?.auth);
+      
       // Create user with proper error handling
+      console.log('[SIGNUP] Calling supabase.auth.signUp...');
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -42,6 +58,12 @@ export const actions: Actions = {
           }
         }
       });
+      
+      console.log('[SIGNUP] Auth response received');
+      console.log('[SIGNUP] Has data:', !!data);
+      console.log('[SIGNUP] Has user:', !!data?.user);
+      console.log('[SIGNUP] User ID:', data?.user?.id);
+      console.log('[SIGNUP] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
 
       if (error) {
         // Handle specific Supabase auth errors
@@ -85,12 +107,19 @@ export const actions: Actions = {
       }
 
       // Success - redirect to email verification page
+      console.log('[SIGNUP] Signup successful! Redirecting to verification');
+      console.log('[SIGNUP] ========== SIGNUP ACTION END ==========');
       throw redirect(303, `/auth/verify-email?email=${encodeURIComponent(email)}`);
 
     } catch (e: any) {
       // Check if it's a SvelteKit redirect (has status 303)
-      if (e?.status === 303 || e?.location) throw e;
+      if (e?.status === 303 || e?.location) {
+        console.log('[SIGNUP] Throwing redirect');
+        throw e;
+      }
       
+      console.error('[SIGNUP] Exception:', e);
+      console.log('[SIGNUP] ========== SIGNUP ACTION END (ERROR) ==========');
       return setError(form, '', 'Account creation service temporarily unavailable');
     }
   }

@@ -41,24 +41,42 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 
 export const actions: Actions = {
   signin: async ({ request, locals: { supabase }, url }) => {
-    console.log('[LOGIN] Action called');
+    console.log('[LOGIN] ========== LOGIN ACTION START ==========');
+    console.log('[LOGIN] Timestamp:', new Date().toISOString());
+    console.log('[LOGIN] Request method:', request.method);
+    console.log('[LOGIN] Request URL:', request.url);
+    console.log('[LOGIN] Headers:', Object.fromEntries(request.headers.entries()));
+    
     const form = await superValidate(request, zod(LoginSchema));
+    console.log('[LOGIN] Form validation result:', { valid: form.valid, data: form.data, errors: form.errors });
     
     if (!form.valid) {
-      console.log('[LOGIN] Form invalid:', form.errors);
+      console.log('[LOGIN] Form invalid - returning fail with errors');
       return fail(400, { form });
     }
     
     const { email, password } = form.data;
-    console.log('[LOGIN] Attempting login for:', email);
+    console.log('[LOGIN] Attempting login for email:', email);
+    console.log('[LOGIN] Supabase client exists:', !!supabase);
+    console.log('[LOGIN] Supabase auth exists:', !!supabase?.auth);
     
-    // Sign in with Supabase
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    try {
+      // Sign in with Supabase
+      console.log('[LOGIN] Calling supabase.auth.signInWithPassword...');
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-    console.log('[LOGIN] Auth response:', { data: !!data, error: error?.message });
+      console.log('[LOGIN] Auth response received');
+      console.log('[LOGIN] Has data:', !!data);
+      console.log('[LOGIN] Has user:', !!data?.user);
+      console.log('[LOGIN] Has session:', !!data?.session);
+      console.log('[LOGIN] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
+    } catch (e: any) {
+      console.error('[LOGIN] Exception during auth:', e);
+      return setError(form, '', `Authentication exception: ${e.message}`);
+    }
 
     if (error) {
       // Handle specific error cases
@@ -96,6 +114,8 @@ export const actions: Actions = {
     }
     
     // Success - redirect to homepage
+    console.log('[LOGIN] Login successful! Redirecting to homepage');
+    console.log('[LOGIN] ========== LOGIN ACTION END ==========');
     throw redirect(303, '/');
   }
 };
