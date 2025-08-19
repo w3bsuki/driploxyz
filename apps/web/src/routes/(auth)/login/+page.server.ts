@@ -2,7 +2,7 @@ import { redirect, fail } from '@sveltejs/kit';
 import { superValidate, setError } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { LoginSchema } from '$lib/validation/auth';
-import { dev } from '$app/environment';
+import { dev, building } from '$app/environment';
 import type { Actions, PageServerLoad } from './$types';
 
 const DEBUG = dev;
@@ -44,40 +44,39 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 
 export const actions: Actions = {
   signin: async ({ request, locals: { supabase }, url }) => {
-    if (DEBUG) {
-      console.log('[LOGIN] ========== LOGIN ACTION START ==========');
-      console.log('[LOGIN] Timestamp:', new Date().toISOString());
-    }
+    // Always log in production to debug Vercel issues
+    console.log('[LOGIN] ========== LOGIN ACTION START ==========');
+    console.log('[LOGIN] Timestamp:', new Date().toISOString());
+    console.log('[LOGIN] Request method:', request.method);
+    console.log('[LOGIN] Request URL:', request.url);
+    console.log('[LOGIN] Site URL origin:', url.origin);
+    console.log('[LOGIN] Environment:', { dev, building: typeof building !== 'undefined' ? building : 'undefined' });
+    console.log('[LOGIN] Has supabase client:', !!supabase);
+    console.log('[LOGIN] Headers:', Object.fromEntries(request.headers.entries()));
     
     const form = await superValidate(request, zod(LoginSchema));
-    if (DEBUG) {
-      console.log('[LOGIN] Form validation result:', { valid: form.valid, errors: form.errors });
-    }
+    console.log('[LOGIN] Form validation result:', { valid: form.valid, data: form.data, errors: form.errors });
     
     if (!form.valid) {
-      if (DEBUG) console.log('[LOGIN] Form invalid - returning fail with errors');
+      console.log('[LOGIN] Form invalid - returning fail with errors');
       return fail(400, { form });
     }
     
     const { email, password } = form.data;
-    if (DEBUG) {
-      console.log('[LOGIN] Attempting login');
-      console.log('[LOGIN] Supabase client exists:', !!supabase);
-    }
+    console.log('[LOGIN] Attempting login');
+    console.log('[LOGIN] Supabase client exists:', !!supabase);
     
-    if (DEBUG) console.log('[LOGIN] Calling supabase.auth.signInWithPassword...');
+    console.log('[LOGIN] Calling supabase.auth.signInWithPassword...');
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
 
-    if (DEBUG) {
-      console.log('[LOGIN] Auth response received');
-      console.log('[LOGIN] Has data:', !!data);
-      console.log('[LOGIN] Has user:', !!data?.user);
-      console.log('[LOGIN] Has session:', !!data?.session);
-      console.log('[LOGIN] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
-    }
+    console.log('[LOGIN] Auth response received');
+    console.log('[LOGIN] Has data:', !!data);
+    console.log('[LOGIN] Has user:', !!data?.user);
+    console.log('[LOGIN] Has session:', !!data?.session);
+    console.log('[LOGIN] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
 
     if (error) {
       // Handle specific error cases
@@ -117,10 +116,8 @@ export const actions: Actions = {
     }
     
     // Success - redirect to homepage
-    if (DEBUG) {
-      console.log('[LOGIN] Login successful! Redirecting to homepage');
-      console.log('[LOGIN] ========== LOGIN ACTION END ==========');
-    }
+    console.log('[LOGIN] Login successful! Redirecting to homepage');
+    console.log('[LOGIN] ========== LOGIN ACTION END ==========');
     throw redirect(303, '/');
   }
 };
