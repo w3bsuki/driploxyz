@@ -110,32 +110,8 @@ export const actions: Actions = {
         });
       }
 
-      // Check onboarding status (non-blocking with error handling)
-      let profile = null;
-      try {
-        const profileResponse = await supabase
-          .from('profiles')
-          .select('onboarding_completed')
-          .eq('id', data.user.id)
-          .single();
-        profile = profileResponse.data;
-        console.log('[LOGIN] Profile check:', { profile, error: profileResponse.error });
-      } catch (profileError) {
-        console.warn('[LOGIN] Profile check failed:', profileError);
-        // Continue with login even if profile check fails
-      }
-      
-      // Success - use redirect properly with SvelteKit
-      if (!profile || profile.onboarding_completed !== true) {
-        console.log('[LOGIN] Login successful! User needs onboarding');
-        console.log('[LOGIN] ========== LOGIN ACTION END ==========');
-        
-        // Use standard SvelteKit redirect after successful authentication
-        throw redirect(303, '/onboarding');
-      }
-      
-      // Success - use standard redirect
-      console.log('[LOGIN] Login successful! User already onboarded');
+      // EMERGENCY: Skip profile check to avoid service role issues
+      console.log('[LOGIN] Login successful! Redirecting to dashboard');
       console.log('[LOGIN] ========== LOGIN ACTION END ==========');
       
       // Use standard SvelteKit redirect after successful authentication
