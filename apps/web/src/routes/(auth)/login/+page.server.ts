@@ -127,28 +127,21 @@ export const actions: Actions = {
         // Continue with login even if profile check fails
       }
       
-      // CRITICAL: Always return message with form for success cases
+      // Success - use redirect properly with SvelteKit
       if (!profile || profile.onboarding_completed !== true) {
-        // Return success message with onboarding redirect - MATCHING SIGNUP PATTERN
         console.log('[LOGIN] Login successful! User needs onboarding');
-        console.log('[LOGIN] Returning message with form for onboarding redirect');
         console.log('[LOGIN] ========== LOGIN ACTION END ==========');
-        return message(form, {
-          type: 'success',
-          text: 'Login successful! Redirecting to complete your profile...',
-          redirect: '/onboarding'
-        });
+        
+        // Use standard SvelteKit redirect after successful authentication
+        throw redirect(303, '/onboarding');
       }
       
-      // Success - return success message with home redirect - MATCHING SIGNUP PATTERN
+      // Success - use standard redirect
       console.log('[LOGIN] Login successful! User already onboarded');
-      console.log('[LOGIN] Returning message with form for home redirect');
       console.log('[LOGIN] ========== LOGIN ACTION END ==========');
-      return message(form, {
-        type: 'success',
-        text: 'Login successful! Welcome back.',
-        redirect: '/'
-      });
+      
+      // Use standard SvelteKit redirect after successful authentication
+      throw redirect(303, '/');
       
     } catch (unexpectedError) {
       console.error('[LOGIN] Unexpected error:', unexpectedError);
