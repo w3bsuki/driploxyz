@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
+import { getServerSession, createSupabaseServerClient } from '$lib/server/auth';
 
 const REDIRECT_PATHS_TO_SKIP = [
   '/onboarding',
@@ -10,8 +11,10 @@ const REDIRECT_PATHS_TO_SKIP = [
   '/auth'
 ];
 
-export const load: LayoutServerLoad = async ({ locals: { safeGetSession, supabase }, url, cookies }) => {
-  const { session, user } = await safeGetSession();
+export const load: LayoutServerLoad = async ({ url, cookies }) => {
+  // Always create fresh Supabase client and get session
+  const { session, user } = await getServerSession(cookies);
+  const supabase = createSupabaseServerClient(cookies);
 
   let profile = null;
   

@@ -37,16 +37,6 @@ if (SENTRY_DSN) {
 }
 
 const supabase: Handle = async ({ event, resolve }) => {
-  // Log all incoming requests for debugging
-  if (event.url.pathname.includes('login') || event.url.pathname.includes('signup')) {
-    console.log('[HOOKS] ========== REQUEST START ==========');
-    console.log('[HOOKS] Method:', event.request.method);
-    console.log('[HOOKS] Path:', event.url.pathname);
-    console.log('[HOOKS] Search:', event.url.search);
-    console.log('[HOOKS] Full URL:', event.url.toString());
-    console.log('[HOOKS] Route ID:', event.route.id);
-  }
-  
   // Mobile detection for cookie compatibility
   const userAgent = event.request.headers.get('user-agent') || '';
   const isMobile = /Mobile|Android|iPhone|iPad/i.test(userAgent);
@@ -67,10 +57,13 @@ const supabase: Handle = async ({ event, resolve }) => {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              // CRITICAL: Only set path, let Supabase handle all other cookie options
+              // Set cookies with proper options for Vercel
               event.cookies.set(name, value, {
                 ...options,
-                path: '/' // Required for SvelteKit
+                path: '/',
+                secure: true,
+                sameSite: 'lax',
+                httpOnly: true
               });
             });
           },
