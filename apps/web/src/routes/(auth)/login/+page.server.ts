@@ -41,43 +41,51 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 
 export const actions: Actions = {
   signin: async ({ request, locals: { supabase }, url }) => {
+    console.log('🔴 LOGIN ACTION CALLED');
+    console.log('Request method:', request.method);
+    console.log('Request URL:', request.url);
+    
     const form = await superValidate(request, zod(LoginSchema));
+    console.log('Form validation result:', form.valid);
+    console.log('Form data:', form.data);
     
     if (!form.valid) {
+      console.log('❌ Form validation failed:', form.errors);
       return fail(400, { form });
     }
     
     const { email, password } = form.data;
+    console.log('🔐 Attempting login for:', email);
     
     // Sign in with Supabase
+    console.log('📡 Calling Supabase signInWithPassword...');
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     });
+    console.log('📡 Supabase response:', { data: !!data, error: !!error });
 
     if (error) {
       console.error('Supabase auth error:', error);
       
       // Handle specific error cases
       if (error.message.includes('Invalid login credentials')) {
-        return setError(form, '', 'Invalid email or password');
+        setError(form, '', 'Invalid email or password');
+        return fail(400, { form });
       }
       if (error.message.includes('Email not confirmed')) {
-        return setError(form, '', 'Please verify your email before logging in');
+        setError(form, '', 'Please verify your email before logging in');
+        return fail(400, { form });
       }
       
       // Return fail with form for superforms to handle properly
-      return fail(400, {
-        form,
-        message: error.message || 'Unable to sign in'
-      });
+      setError(form, '', error.message || 'Unable to sign in');
+      return fail(400, { form });
     }
 
     if (!data.user || !data.session) {
-      return fail(400, {
-        form,
-        message: 'Authentication failed. Please try again.'
-      });
+      setError(form, '', 'Authentication failed. Please try again.');
+      return fail(400, { form });
     }
 
     // Check onboarding status (non-blocking)

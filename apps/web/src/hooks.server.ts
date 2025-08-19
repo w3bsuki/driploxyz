@@ -28,12 +28,15 @@ if (SENTRY_DSN) {
 }
 
 const supabase: Handle = async ({ event, resolve }) => {
+  console.log('🔷 HOOKS: Processing request:', event.url.pathname);
+  
   // Mobile detection for cookie compatibility
   const userAgent = event.request.headers.get('user-agent') || '';
   const isMobile = /Mobile|Android|iPhone|iPad/i.test(userAgent);
   
   // CRITICAL: Fail fast with clear error message
   if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
+    console.error('❌ HOOKS: Missing Supabase environment variables');
     throw error(500, 'Server configuration error. Please contact support.');
   }
 
