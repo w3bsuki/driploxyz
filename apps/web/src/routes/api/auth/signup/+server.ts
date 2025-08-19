@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServerClient } from '@supabase/ssr';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 import { dev } from '$app/environment';
 
 const DEBUG = dev;
@@ -16,8 +16,8 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     
     // Create Supabase client directly
     const supabase = createServerClient(
-      PUBLIC_SUPABASE_URL,
-      PUBLIC_SUPABASE_ANON_KEY,
+      env.PUBLIC_SUPABASE_URL,
+      env.PUBLIC_SUPABASE_ANON_KEY,
       {
         cookies: {
           getAll() {

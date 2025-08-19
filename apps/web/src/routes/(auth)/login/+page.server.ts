@@ -44,19 +44,21 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 
 export const actions: Actions = {
   signin: async ({ request, locals: { supabase }, url }) => {
-    // Always log in production to debug Vercel issues (matching signup pattern)
-    console.log('[LOGIN] ========== LOGIN ACTION START ==========');
-    console.log('[LOGIN] Timestamp:', new Date().toISOString());
-    console.log('[LOGIN] Version: v4-redirect-only-fix');
-    console.log('[LOGIN] Request method:', request.method);
-    console.log('[LOGIN] Request URL:', request.url);
-    console.log('[LOGIN] Site URL origin:', url.origin);
-    console.log('[LOGIN] Environment:', { dev, building: typeof building !== 'undefined' ? building : 'undefined' });
-    console.log('[LOGIN] Has supabase client:', !!supabase);
-    console.log('[LOGIN] Headers:', Object.fromEntries(request.headers.entries()));
-    
-    const form = await superValidate(request, zod(LoginSchema));
-    console.log('[LOGIN] Form validation result:', { valid: form.valid, data: form.data, errors: form.errors });
+    // CRITICAL: Top-level try-catch to prevent 500 errors that break Superforms
+    try {
+      // Always log in production to debug Vercel issues (matching signup pattern)
+      console.log('[LOGIN] ========== LOGIN ACTION START ==========');
+      console.log('[LOGIN] Timestamp:', new Date().toISOString());
+      console.log('[LOGIN] Version: v5-bulletproof-error-handling');
+      console.log('[LOGIN] Request method:', request.method);
+      console.log('[LOGIN] Request URL:', request.url);
+      console.log('[LOGIN] Site URL origin:', url.origin);
+      console.log('[LOGIN] Environment:', { dev, building: typeof building !== 'undefined' ? building : 'undefined' });
+      console.log('[LOGIN] Has supabase client:', !!supabase);
+      console.log('[LOGIN] Headers:', Object.fromEntries(request.headers.entries()));
+      
+      const form = await superValidate(request, zod(LoginSchema));
+      console.log('[LOGIN] Form validation result:', { valid: form.valid, data: form.data, errors: form.errors });
     
     if (!form.valid) {
       console.log('[LOGIN] Form invalid - returning fail with errors');
@@ -141,8 +143,22 @@ export const actions: Actions = {
       
     } catch (unexpectedError) {
       console.error('[LOGIN] Unexpected error:', unexpectedError);
-      return fail(500, {
-        form: setError(form, '', 'An unexpected error occurred. Please try again.')
+      
+      // CRITICAL: Never return 500 status - it breaks Superforms
+      // Always return fail(400) so the form can handle the error properly
+      return fail(400, {
+        form: setError(form, '', 'Unable to sign in. Please check your credentials and try again.')
+      });
+    }
+    
+    } catch (topLevelError) {
+      // EMERGENCY: Catch any unhandled errors to prevent 500 responses
+      console.error('[LOGIN] TOP LEVEL ERROR - This should never happen:', topLevelError);
+      
+      // Create a minimal form for error response
+      const errorForm = await superValidate(zod(LoginSchema));
+      return fail(400, {
+        form: setError(errorForm, '', 'Login service is temporarily unavailable. Please try again.')
       });
     }
   }
