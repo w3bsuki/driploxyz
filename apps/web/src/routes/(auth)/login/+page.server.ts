@@ -43,19 +43,24 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 };
 
 export const actions: Actions = {
-  signin: async ({ request, locals: { supabase }, url }) => {
-    // EMERGENCY TEST: Skip all auth logic to test form serialization
-    const form = await superValidate(request, zod(LoginSchema));
-    
-    if (!form.valid) {
-      return fail(400, { form });
+  signin: async ({ request }) => {
+    // ABSOLUTE MINIMAL TEST - Skip everything
+    try {
+      const formData = await request.formData();
+      const email = formData.get('email');
+      const password = formData.get('password');
+      
+      // Just return success without any validation or processing
+      return {
+        type: 'success',
+        message: `TEST SUCCESS: Email ${email} received`
+      };
+    } catch (error) {
+      return {
+        type: 'error', 
+        message: `Error: ${error.message}`
+      };
     }
-    
-    // Test success message without any Supabase calls
-    return message(form, {
-      type: 'success',
-      text: 'TEST: Form processing works! Auth temporarily disabled for debugging.'
-    });
     
     // CRITICAL: Top-level try-catch to prevent 500 errors that break Superforms
     /* try {
