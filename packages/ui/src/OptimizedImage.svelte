@@ -2,56 +2,29 @@
   interface Props {
     src: string;
     alt: string;
-    width?: number;
-    height?: number;
-    sizes?: string;
-    quality?: number;
-    priority?: boolean;
+    class?: string;
+    aspectRatio?: 'square' | 'auto';
     loading?: 'lazy' | 'eager';
     placeholder?: string;
-    fallback?: string;
-    class?: string;
+    sizes?: string;
     onclick?: () => void;
+    showSkeleton?: boolean;
   }
 
   let { 
     src,
     alt,
-    width,
-    height,
-    sizes = '100vw',
-    quality = 85,
-    priority = false,
-    loading = 'lazy',
-    placeholder = '/placeholder-image.svg',
-    fallback = '/placeholder-image.svg',
     class: className = '',
-    onclick
+    aspectRatio = 'auto',
+    loading = 'lazy',
+    placeholder = '/placeholder-product.svg',
+    sizes = '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
+    onclick,
+    showSkeleton = true
   }: Props = $props();
 
   let imageLoaded = $state(false);
   let imageError = $state(false);
-  let imgElement: HTMLImageElement;
-
-  // Generate responsive image URLs (this would integrate with your image service)
-  function generateSrcSet(baseSrc: string, widths: number[] = [320, 640, 768, 1024, 1280, 1920]) {
-    if (!baseSrc || baseSrc.startsWith('data:') || baseSrc.startsWith('blob:')) {
-      return baseSrc;
-    }
-
-    // For demo purposes, returning the original src
-    // In production, you'd integrate with an image optimization service like:
-    // - Supabase Storage with transform params
-    // - Cloudinary
-    // - Next.js Image Optimization
-    // - Custom image service
-    return widths
-      .map(w => `${baseSrc}?w=${w}&q=${quality} ${w}w`)
-      .join(', ');
-  }
-
-  const srcSet = $derived(generateSrcSet(src));
-  const currentSrc = $derived(imageError ? fallback : src);
 
   function handleLoad() {
     imageLoaded = true;
@@ -67,122 +40,125 @@
     onclick?.();
   }
 
-  // Intersection Observer for lazy loading optimization
-  let observer: IntersectionObserver | null = null;
-  let isInView = $state(false);
+  // Computed classes for aspect ratio and styling
+  const containerClasses = $derived(
+    `relative overflow-hidden ${aspectRatio === 'square' ? 'aspect-square' : ''} ${onclick ? 'cursor-pointer' : ''} ${className}`.trim()
+  );
 
-  $effect(() => {
-    if (!priority && imgElement && 'IntersectionObserver' in window) {
-      observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              isInView = true;
-              observer?.disconnect();
-            }
-          });
-        },
-        { 
-          rootMargin: '50px',
-          threshold: 0.1 
-        }
-      );
-
-      observer.observe(imgElement);
-    } else {
-      isInView = true;
-    }
-
-    return () => {
-      observer?.disconnect();
-    };
-  });
-
-  const shouldLoad = $derived(priority || isInView);
+  // Show skeleton when we should show skeleton AND image hasn't loaded yet AND no error
+  const shouldShowSkeleton = $derived(showSkeleton && !imageLoaded && !imageError);
 </script>
 
 <div 
-  class="optimized-image-container relative overflow-hidden {className}"
-  class:cursor-pointer={onclick}
+  class={containerClasses}
   onclick={handleClick}
   role={onclick ? 'button' : undefined}
   tabindex={onclick ? 0 : undefined}
 >
-  <!-- Placeholder/Loading State -->
-  {#if !imageLoaded && !imageError}
-    <div 
-      class="absolute inset-0 bg-gray-100 flex items-center justify-center"
-      style={width && height ? `aspect-ratio: ${width}/${height}` : ''}
-    >
+  <!-- Animated Shimmer Skeleton Loading State -->
+  {#if shouldShowSkeleton}
+    <div class="skeleton-container absolute inset-0">
+      <div class="skeleton-shimmer"></div>
+      <!-- Optional placeholder image overlay -->
       {#if placeholder}
         <img
           src={placeholder}
           alt=""
-          class="w-full h-full object-cover opacity-50"
+          class="absolute inset-0 w-full h-full object-cover opacity-20"
           aria-hidden="true"
         />
-      {:else}
-        <div class="animate-pulse bg-gray-200 w-full h-full"></div>
       {/if}
     </div>
   {/if}
 
-  <!-- Main Image -->
+  <!-- Standard Image -->
   <img
-    bind:this={imgElement}
-    src={shouldLoad ? currentSrc : placeholder}
-    srcset={shouldLoad ? srcSet : undefined}
-    {sizes}
+    {src}
     {alt}
-    {width}
-    {height}
-    loading={priority ? 'eager' : loading}
+    {sizes}
+    loading={loading}
     decoding="async"
     onload={handleLoad}
     onerror={handleError}
-    class="w-full h-full object-cover transition-opacity duration-300
-      {imageLoaded ? 'opacity-100' : 'opacity-0'}"
+    class="w-full h-full object-cover transition-all duration-500 ease-out
+      {imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'}"
   />
 
   <!-- Error State -->
   {#if imageError && !imageLoaded}
-    <div class="absolute inset-0 bg-gray-100 flex flex-col items-center justify-center text-gray-500">
+    <div class="absolute inset-0 bg-gray-50 flex flex-col items-center justify-center text-gray-400 transition-opacity duration-300">
       <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+          d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
       </svg>
-      <span class="text-sm">Failed to load image</span>
-    </div>
-  {/if}
-
-  <!-- Loading Indicator for Priority Images -->
-  {#if priority && !imageLoaded && !imageError}
-    <div class="absolute inset-0 flex items-center justify-center bg-gray-50">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+      <span class="text-xs font-medium">Image unavailable</span>
     </div>
   {/if}
 </div>
 
 <style>
-  .optimized-image-container {
-    /* Ensure proper aspect ratio handling */
+  /* Shimmer Skeleton Animation */
+  .skeleton-container {
+    background: linear-gradient(110deg, #f1f5f9 8%, #e2e8f0 18%, #f1f5f9 33%);
+    border-radius: 0; /* Inherit container border radius */
     position: relative;
-    display: block;
+    overflow: hidden;
   }
 
-  .optimized-image-container img {
-    /* Prevent layout shift */
-    max-width: 100%;
-    height: auto;
+  .skeleton-shimmer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      110deg,
+      transparent 0%,
+      transparent 40%,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(255, 255, 255, 0.9) 55%,
+      rgba(255, 255, 255, 0.7) 60%,
+      transparent 70%,
+      transparent 100%
+    );
+    animation: shimmer 1.5s ease-in-out infinite;
+    transform: translateX(-100%);
+    will-change: transform;
   }
 
-  /* Smooth loading animation */
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
   }
 
-  .optimized-image-container img[data-loaded="true"] {
-    animation: fadeIn 0.3s ease-in-out;
+  /* Responsive optimizations */
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton-shimmer {
+      animation: none;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .skeleton-container {
+      background: #e5e7eb;
+    }
+    
+    .skeleton-shimmer {
+      background: linear-gradient(
+        110deg,
+        transparent 0%,
+        transparent 40%,
+        rgba(0, 0, 0, 0.1) 50%,
+        rgba(0, 0, 0, 0.15) 55%,
+        rgba(0, 0, 0, 0.1) 60%,
+        transparent 70%,
+        transparent 100%
+      );
+    }
   }
 </style>

@@ -11,6 +11,24 @@ import * as i18n from '@repo/i18n';
 // import { authLimiter, apiLimiter } from '$lib/server/rate-limiter';
 // import { CSRFProtection } from '$lib/server/csrf';
 
+// Environment variable validation - critical for production
+const requiredEnvVars = [
+  'PUBLIC_SUPABASE_URL',
+  'PUBLIC_SUPABASE_ANON_KEY',
+  'SUPABASE_SERVICE_ROLE_KEY'
+];
+
+// Only validate in production or when explicitly testing
+if (!building && !dev) {
+  requiredEnvVars.forEach(envVar => {
+    if (!process.env[envVar]) {
+      console.error(`❌ Missing required environment variable: ${envVar}`);
+      throw new Error(`Missing required environment variable: ${envVar}`);
+    }
+  });
+  console.log('✅ All required environment variables are present');
+}
+
 // Debug flag for controlled logging - use dev mode as default
 const isDebug = dev;
 

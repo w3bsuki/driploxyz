@@ -11,10 +11,18 @@ interface Props {
         unknownSeller?: string;
         currency?: string;
         addToFavorites?: string;
+        removeFromFavorites?: string;
         new?: string;
         likeNew?: string;
         good?: string;
         fair?: string;
+        soldItem?: string;
+        viewSellerProfile?: string;
+        ratingOutOfFive?: string;
+        conditionExcellent?: string;
+        conditionVeryGood?: string;
+        conditionGood?: string;
+        conditionFair?: string;
         formatPrice?: (price: number) => string;
     };
 }

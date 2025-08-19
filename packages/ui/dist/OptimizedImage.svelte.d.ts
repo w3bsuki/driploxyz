@@ -1,16 +1,13 @@
 interface Props {
     src: string;
     alt: string;
-    width?: number;
-    height?: number;
-    sizes?: string;
-    quality?: number;
-    priority?: boolean;
+    class?: string;
+    aspectRatio?: 'square' | 'auto';
     loading?: 'lazy' | 'eager';
     placeholder?: string;
-    fallback?: string;
-    class?: string;
+    sizes?: string;
     onclick?: () => void;
+    showSkeleton?: boolean;
 }
 declare const OptimizedImage: import("svelte").Component<Props, {}, "">;
 type OptimizedImage = ReturnType<typeof OptimizedImage>;

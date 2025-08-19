@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+// import nodemailer from 'nodemailer'; // TODO: Install nodemailer if SMTP email is needed
 import { welcomeEmailTemplate } from './templates/welcome';
 import { baseEmailTemplate } from './templates/base-template';
 
@@ -59,7 +59,7 @@ class EmailService {
       });
       
       // Verify connection
-      this.transporter.verify((error, success) => {
+      this.transporter.verify((error: any, success: any) => {
         if (error) {
           console.error('SMTP connection error:', error);
         } else {

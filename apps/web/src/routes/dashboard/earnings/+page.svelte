@@ -291,8 +291,9 @@
       
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Amount (BGN)</label>
+          <label for="payout-amount" class="block text-sm font-medium text-gray-700 mb-1">Amount (BGN)</label>
           <Input
+            id="payout-amount"
             bind:value={payoutAmount}
             type="number"
             min="20"
@@ -306,7 +307,7 @@
         </div>
         
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Payout Method</label>
+          <div class="text-sm font-medium text-gray-700 mb-1">Payout Method</div>
           <div class="text-sm text-gray-900 p-3 bg-gray-50 rounded-lg">
             {formatPayoutMethod(data.profile?.payout_method)}
           </div>

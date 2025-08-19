@@ -114,3 +114,14 @@ export interface Order {
   created_at: string;
   updated_at: string;
 }
+
+export interface OptimizedImageProps {
+  src: string;
+  alt: string;
+  class?: string;
+  aspectRatio?: 'square' | 'auto';
+  loading?: 'lazy' | 'eager';
+  placeholder?: string;
+  sizes?: string;
+  onclick?: () => void;
+}

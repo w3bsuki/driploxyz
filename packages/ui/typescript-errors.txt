@@ -1,0 +1,3356 @@
+
+> @repo/ui@0.0.0 check-types K:\driplo-turbo-1\packages\ui
+> svelte-check --tsconfig ./tsconfig.json
+
+Loading svelte-check in workspace: k:\driplo-turbo-1\packages\ui
+Getting Svelte diagnostics...
+
+k:\driplo-turbo-1\packages\ui\[32mdist\BrandPaymentModal.svelte[39m:135:9
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m      <div class="mb-4">
+        [35m<label class="block text-sm font-medium text-gray-700 mb-1">
+          Payment Details
+        </label>[36m
+        <div bind:this={cardContainer} class="p-2.5 border border-gray-300 rounded-sm bg-white text-sm"></div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\Card.svelte[39m:24:1
+[33mWarn[39m: noninteractive element cannot have nonnegative tabIndex value
+https://svelte.dev/e/a11y_no_noninteractive_tabindex (svelte)
+[36m
+[35m<div 
+  class={classes} 
+  {onclick}
+  role={onclick ? "button" : undefined}
+  tabindex={onclick ? 0 : undefined}
+  onkeydown={(e) => {
+    if (onclick && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onclick();
+    }
+  }}
+>
+  {@render children?.()}
+</div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\CategorySidebar.svelte[39m:116:15
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m              </span>
+              [35m<button
+                onclick={() => onCategorySelect?.(null)}
+                class="p-1 hover:bg-gray-100 rounded-sm transition-colors"
+              >
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>[36m
+            </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\CategorySidebar.svelte[39m:130:15
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m              <span class="text-sm text-gray-700">{selectedSubcategory}</span>
+              [35m<button
+                onclick={() => onSubcategorySelect?.(null, selectedCategory)}
+                class="p-1 hover:bg-gray-100 rounded-sm transition-colors"
+              >
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>[36m
+            </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\CategorySidebar.svelte[39m:147:17
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m                </span>
+                [35m<button
+                  onclick={() => onFilterRemove?.(type)}
+                  class="p-1 hover:bg-gray-100 rounded-sm transition-colors"
+                >
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>[36m
+              </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\CategorySidebar.svelte[39m:117:51
+[31mError[39m: Argument of type 'null' is not assignable to parameter of type 'string'. (ts)
+[36m              <button
+                onclick={() => onCategorySelect?.([35mnull[36m)}
+                class="p-1 hover:bg-gray-100 rounded-sm transition-colors"[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\CategorySidebar.svelte[39m:131:54
+[31mError[39m: Argument of type 'null' is not assignable to parameter of type 'string'. (ts)
+[36m              <button
+                onclick={() => onSubcategorySelect?.([35mnull[36m, selectedCategory)}
+                class="p-1 hover:bg-gray-100 rounded-sm transition-colors"[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\CategorySidebar.svelte[39m:145:20
+[31mError[39m: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ categories?: string | undefined; filters?: string | undefined; clearAll?: string | undefined; size?: string | undefined; brand?: string | undefined; condition?: string | undefined; priceRange?: string | undefined; allCategories?: string | undefined; }'.
+  No index signature with a parameter of type 'string' was found on type '{ categories?: string | undefined; filters?: string | undefined; clearAll?: string | undefined; size?: string | undefined; brand?: string | undefined; condition?: string | undefined; priceRange?: string | undefined; allCategories?: string | undefined; }'. (ts)
+[36m                <span class="text-sm text-gray-700">
+                  {[35mtranslations[type][36m}: {formatFilterValue(type, value)}
+                </span>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\CategorySidebar.svelte[39m:171:45
+[31mError[39m: Argument of type 'null' is not assignable to parameter of type 'string'. (ts)
+[36m        <button
+          onclick={() => onCategorySelect?.([35mnull[36m)}
+          class="w-full text-left px-3 py-2 rounded-lg transition-colors {[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\CategorySidebar.svelte[39m:200:20
+[31mError[39m: 'category.subcategories.length' is possibly 'undefined'. (ts)
+[36m              
+              {#if [35mcategory.subcategories?.length[36m > 0}
+                <svg[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ConditionReport.svelte[39m:203:27
+[31mError[39m: Property 'notes' does not exist on type '{ aspect: string; rating: number; }'. (ts)
+[36m              <span class="text-sm font-medium text-gray-900">{detail.aspect}</span>
+              {#if detail.[35mnotes[36m}
+                <p class="text-xs text-gray-600 mt-0.5">{detail.notes}</p>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ConditionReport.svelte[39m:204:65
+[31mError[39m: Property 'notes' does not exist on type '{ aspect: string; rating: number; }'. (ts)
+[36m              {#if detail.notes}
+                <p class="text-xs text-gray-600 mt-0.5">{detail.[35mnotes[36m}</p>
+              {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ConditionSelector.svelte[39m:85:5
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m  {#if label}
+    [35m<label class="block text-sm font-medium text-gray-700 mb-2">
+      {label}
+      {#if required}
+        <span class="text-red-500">*</span>
+      {/if}
+    </label>[36m
+  {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\CookieConsentAdvanced.svelte[39m:246:2
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m	<!-- Glass morphism backdrop -->
+	[35m<div class="fixed inset-0 bg-black/40 backdrop-blur-xs z-40" onclick={() => {}}>
+		
+		<!-- Locale Detection Modal (shows first if detected) -->
+		{#if showLocaleModal && detectedLocation}
+			<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md">
+				<div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-6">
+					<div class="text-center mb-6">
+						<div class="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-full mb-4">
+							<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+						</div>
+						<h2 class="text-2xl font-bold bg-linear-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+							Welcome to Driplo
+						</h2>
+						<p class="text-gray-600 mt-2">
+							We detected you're visiting from <strong>{detectedLocation.country}</strong>
+						</p>
+					</div>
+					
+					<div class="space-y-3">
+						<p class="text-sm text-gray-600 text-center">Choose your preferred language:</p>
+						
+						<div class="grid grid-cols-2 gap-2">
+							{#each availableLocales as locale}
+								<button
+									onclick={() => selectLocale(locale.code)}
+									class="flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all hover:scale-105
+										{selectedLocale === locale.code 
+											? 'border-blue-500 bg-blue-50' 
+											: 'border-gray-200 hover:border-gray-300 bg-white'}"
+								>
+									<span class="text-2xl">{locale.flag}</span>
+									<span class="font-medium">{locale.name}</span>
+									{#if locale.code === detectedLocation.suggestedLocale}
+										<span class="ml-auto text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+											Suggested
+										</span>
+									{/if}
+								</button>
+							{/each}
+						</div>
+						
+						<button
+							onclick={() => { showLocaleModal = false }}
+							class="w-full mt-4 px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
+						>
+							Continue with {availableLocales.find(l => l.code === selectedLocale)?.name || 'English'}
+						</button>
+					</div>
+				</div>
+			</div>
+		{:else}
+			<!-- Cookie Consent Banner -->
+			<div class="fixed bottom-0 left-0 right-0 z-50">
+				<div class="bg-white/95 backdrop-blur-xl border-t border-white/20 shadow-2xl">
+					<div class="max-w-7xl mx-auto p-6">
+						<div class="flex flex-col lg:flex-row gap-6">
+							<!-- Main Content -->
+							<div class="flex-1">
+								<div class="flex items-start gap-4">
+									<div class="hidden sm:block">
+										<div class="w-12 h-12 bg-linear-to-br from-black to-gray-700 rounded-xl flex items-center justify-center">
+											<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+											</svg>
+										</div>
+									</div>
+									<div class="flex-1">
+										<h3 class="text-xl font-bold mb-2">We value your privacy 🔒</h3>
+										<p class="text-gray-600 text-sm leading-relaxed">
+											We use cookies and similar technologies to help personalize content, tailor and measure ads, 
+											and provide a better experience. By clicking accept, you agree to this, as outlined in our 
+											<a href={privacyUrl} class="text-blue-600 hover:underline">Cookie Policy</a>.
+										</p>
+									</div>
+								</div>
+								
+								<!-- Cookie Categories -->
+								{#if showDetails}
+									<div class="mt-6 space-y-4">
+										<!-- Necessary -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													checked 
+													disabled 
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Essential Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Required for the website to function. Cannot be disabled.
+													</p>
+												</div>
+												<span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full">
+													Always On
+												</span>
+											</label>
+										</div>
+										
+										<!-- Functional -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													bind:checked={preferences.functional}
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Functional Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Enable enhanced functionality like language preferences and saved items.
+													</p>
+												</div>
+											</label>
+										</div>
+										
+										<!-- Analytics -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													bind:checked={preferences.analytics}
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Analytics Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Help us understand how visitors interact with our website.
+													</p>
+												</div>
+											</label>
+										</div>
+										
+										<!-- Marketing -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													bind:checked={preferences.marketing}
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Marketing Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Used to deliver personalized advertisements and measure campaigns.
+													</p>
+												</div>
+											</label>
+										</div>
+									</div>
+								{/if}
+							</div>
+							
+							<!-- Actions -->
+							<div class="flex flex-col gap-3 lg:w-64">
+								<button
+									onclick={acceptAll}
+									class="px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-all hover:scale-105"
+								>
+									Accept All
+								</button>
+								
+								<button
+									onclick={acceptNecessary}
+									class="px-6 py-3 bg-white text-gray-700 rounded-xl font-medium border-2 border-gray-200 hover:border-gray-300 transition-all"
+								>
+									Necessary Only
+								</button>
+								
+								{#if !showDetails}
+									<button
+										onclick={() => showDetails = true}
+										class="px-6 py-3 text-gray-600 hover:text-gray-900 font-medium transition-colors"
+									>
+										Manage Preferences
+									</button>
+								{:else}
+									<button
+										onclick={acceptSelected}
+										class="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all"
+									>
+										Save Preferences
+									</button>
+								{/if}
+								
+								<!-- GDPR Info -->
+								<div class="text-xs text-gray-500 text-center mt-2">
+									<p>GDPR Compliant</p>
+									<p>Your data, your choice</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{/if}
+	</div>[36m
+{/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\CookieConsentAdvanced.svelte[39m:246:2
+[33mWarn[39m: `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+[36m	<!-- Glass morphism backdrop -->
+	[35m<div class="fixed inset-0 bg-black/40 backdrop-blur-xs z-40" onclick={() => {}}>
+		
+		<!-- Locale Detection Modal (shows first if detected) -->
+		{#if showLocaleModal && detectedLocation}
+			<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md">
+				<div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-6">
+					<div class="text-center mb-6">
+						<div class="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-full mb-4">
+							<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+						</div>
+						<h2 class="text-2xl font-bold bg-linear-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+							Welcome to Driplo
+						</h2>
+						<p class="text-gray-600 mt-2">
+							We detected you're visiting from <strong>{detectedLocation.country}</strong>
+						</p>
+					</div>
+					
+					<div class="space-y-3">
+						<p class="text-sm text-gray-600 text-center">Choose your preferred language:</p>
+						
+						<div class="grid grid-cols-2 gap-2">
+							{#each availableLocales as locale}
+								<button
+									onclick={() => selectLocale(locale.code)}
+									class="flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all hover:scale-105
+										{selectedLocale === locale.code 
+											? 'border-blue-500 bg-blue-50' 
+											: 'border-gray-200 hover:border-gray-300 bg-white'}"
+								>
+									<span class="text-2xl">{locale.flag}</span>
+									<span class="font-medium">{locale.name}</span>
+									{#if locale.code === detectedLocation.suggestedLocale}
+										<span class="ml-auto text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+											Suggested
+										</span>
+									{/if}
+								</button>
+							{/each}
+						</div>
+						
+						<button
+							onclick={() => { showLocaleModal = false }}
+							class="w-full mt-4 px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
+						>
+							Continue with {availableLocales.find(l => l.code === selectedLocale)?.name || 'English'}
+						</button>
+					</div>
+				</div>
+			</div>
+		{:else}
+			<!-- Cookie Consent Banner -->
+			<div class="fixed bottom-0 left-0 right-0 z-50">
+				<div class="bg-white/95 backdrop-blur-xl border-t border-white/20 shadow-2xl">
+					<div class="max-w-7xl mx-auto p-6">
+						<div class="flex flex-col lg:flex-row gap-6">
+							<!-- Main Content -->
+							<div class="flex-1">
+								<div class="flex items-start gap-4">
+									<div class="hidden sm:block">
+										<div class="w-12 h-12 bg-linear-to-br from-black to-gray-700 rounded-xl flex items-center justify-center">
+											<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+											</svg>
+										</div>
+									</div>
+									<div class="flex-1">
+										<h3 class="text-xl font-bold mb-2">We value your privacy 🔒</h3>
+										<p class="text-gray-600 text-sm leading-relaxed">
+											We use cookies and similar technologies to help personalize content, tailor and measure ads, 
+											and provide a better experience. By clicking accept, you agree to this, as outlined in our 
+											<a href={privacyUrl} class="text-blue-600 hover:underline">Cookie Policy</a>.
+										</p>
+									</div>
+								</div>
+								
+								<!-- Cookie Categories -->
+								{#if showDetails}
+									<div class="mt-6 space-y-4">
+										<!-- Necessary -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													checked 
+													disabled 
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Essential Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Required for the website to function. Cannot be disabled.
+													</p>
+												</div>
+												<span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full">
+													Always On
+												</span>
+											</label>
+										</div>
+										
+										<!-- Functional -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													bind:checked={preferences.functional}
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Functional Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Enable enhanced functionality like language preferences and saved items.
+													</p>
+												</div>
+											</label>
+										</div>
+										
+										<!-- Analytics -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													bind:checked={preferences.analytics}
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Analytics Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Help us understand how visitors interact with our website.
+													</p>
+												</div>
+											</label>
+										</div>
+										
+										<!-- Marketing -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													bind:checked={preferences.marketing}
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Marketing Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Used to deliver personalized advertisements and measure campaigns.
+													</p>
+												</div>
+											</label>
+										</div>
+									</div>
+								{/if}
+							</div>
+							
+							<!-- Actions -->
+							<div class="flex flex-col gap-3 lg:w-64">
+								<button
+									onclick={acceptAll}
+									class="px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-all hover:scale-105"
+								>
+									Accept All
+								</button>
+								
+								<button
+									onclick={acceptNecessary}
+									class="px-6 py-3 bg-white text-gray-700 rounded-xl font-medium border-2 border-gray-200 hover:border-gray-300 transition-all"
+								>
+									Necessary Only
+								</button>
+								
+								{#if !showDetails}
+									<button
+										onclick={() => showDetails = true}
+										class="px-6 py-3 text-gray-600 hover:text-gray-900 font-medium transition-colors"
+									>
+										Manage Preferences
+									</button>
+								{:else}
+									<button
+										onclick={acceptSelected}
+										class="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all"
+									>
+										Save Preferences
+									</button>
+								{/if}
+								
+								<!-- GDPR Info -->
+								<div class="text-xs text-gray-500 text-center mt-2">
+									<p>GDPR Compliant</p>
+									<p>Your data, your choice</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{/if}
+	</div>[36m
+{/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\CookieConsentAdvanced.svelte[39m:5:24
+[31mError[39m: Cannot find module '@repo/i18n' or its corresponding type declarations. (ts)
+[36m	import Button from './Button.svelte';
+	import * as i18n from [35m'@repo/i18n'[36m;[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\CookieConsentAdvanced.svelte[39m:176:11
+[31mError[39m: Property 'gtag' does not exist on type 'Window & typeof globalThis'. (ts)
+[36m			// Enable analytics cookies (GA, etc)
+			window.[35mgtag[36m?.('consent', 'update', {
+				'analytics_storage': 'granted'[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\CookieConsentAdvanced.svelte[39m:183:11
+[31mError[39m: Property 'gtag' does not exist on type 'Window & typeof globalThis'. (ts)
+[36m			// Enable marketing cookies
+			window.[35mgtag[36m?.('consent', 'update', {
+				'ad_storage': 'granted',[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ImageUploader.svelte[39m:355:3
+[33mWarn[39m: Do not use empty rulesets (css)
+[36m<style>
+  [35m.image-uploader[36m {
+    /* Component styles */[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\Input.svelte[39m:67:6
+[31mError[39m: Type 'string | undefined' is not assignable to type 'FullAutoFill | null | undefined'.
+  Type 'string' is not assignable to type 'FullAutoFill | null | undefined'. (ts)
+[36m    {name}
+    {[35mautocomplete[36m}
+    id={inputId}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\LiveActivity.svelte[39m:74:12
+[31mError[39m: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ view: string; cart: string; purchase: string; favorite: string; offer: string; }'.
+  No index signature with a parameter of type 'string' was found on type '{ view: string; cart: string; purchase: string; favorite: string; offer: string; }'. (ts)
+[36m    };
+    return [35micons[type][36m || '👀';
+  }[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\LiveActivity.svelte[39m:104:12
+[31mError[39m: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ view: string; cart: string; purchase: string; favorite: string; offer: string; }'.
+  No index signature with a parameter of type 'string' was found on type '{ view: string; cart: string; purchase: string; favorite: string; offer: string; }'. (ts)
+[36m    };
+    return [35mcolors[type][36m || 'text-gray-600';
+  }[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\LiveActivity.svelte[39m:114:9
+[31mError[39m: This comparison appears to be unintentional because the types '() => "high" | "medium" | "low"' and 'string' have no overlap. (ts)
+[36m  const urgencyMessage = $derived(() => {
+    if ([35murgencyLevel === 'high'[36m) return 'High demand! Multiple people have this in their cart';
+    if (urgencyLevel === 'medium') return 'Popular item - others are interested';[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\LiveActivity.svelte[39m:115:9
+[31mError[39m: This comparison appears to be unintentional because the types '() => "high" | "medium" | "low"' and 'string' have no overlap. (ts)
+[36m    if (urgencyLevel === 'high') return 'High demand! Multiple people have this in their cart';
+    if ([35murgencyLevel === 'medium'[36m) return 'Popular item - others are interested';
+    return '';[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\LiveActivity.svelte[39m:149:54
+[31mError[39m: This comparison appears to be unintentional because the types '() => "high" | "medium" | "low"' and 'string' have no overlap. (ts)
+[36m    <div 
+      class="flex items-center gap-2 p-3 rounded-lg {[35murgencyLevel === 'high'[36m ? 'bg-red-50 text-red-800' : 'bg-orange-50 text-orange-800'}"
+      in:fly={{ y: -10, duration: 300, easing: quintOut }}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\LocaleDetectionBanner.svelte[39m:2:36
+[31mError[39m: Cannot find module '@repo/i18n' or its corresponding type declarations. (ts)
+[36m<script lang="ts">
+  import type { LanguageTag } from [35m'@repo/i18n'[36m;[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\MegaMenu.svelte[39m:63:3
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m  <!-- Backdrop BEHIND the dropdown -->
+  [35m<div 
+    class="fixed inset-0 z-40"
+    onclick={onClose}
+  ></div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\MegaMenu.svelte[39m:63:3
+[33mWarn[39m: `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+[36m  <!-- Backdrop BEHIND the dropdown -->
+  [35m<div 
+    class="fixed inset-0 z-40"
+    onclick={onClose}
+  ></div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\MegaMenu.svelte[39m:70:5
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m  <div class="absolute top-full left-0 right-0 mt-2 z-50">
+    [35m<div 
+      class="bg-white rounded-xl shadow-2xl border border-gray-200 max-h-[calc(100vh-200px)] sm:max-h-[70vh] overflow-y-auto {className}"
+      onclick={(e) => e.stopPropagation()}>
+      <div class="p-4">
+        <!-- Header with clear button -->
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold text-gray-900">Shop by Category</h3>
+          <div class="flex gap-2">
+            {#if selectedCategory}
+              <button
+                onclick={clearAll}
+                class="text-xs px-2 py-1 text-gray-500 hover:text-gray-700"
+              >
+                Clear
+              </button>
+            {/if}
+            <button
+              onclick={onClose}
+              class="p-1 hover:bg-gray-100 rounded-lg"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main categories -->
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4">
+          {#each mainCategories as cat}
+            {@const category = categories[cat.key]}
+            {#if category}
+              <button
+                onclick={(e) => {
+                  e.stopPropagation();
+                  selectCategory(cat.key);
+                }}
+                class="flex flex-col items-center p-3 rounded-lg transition-all {
+                  selectedCategory === cat.key 
+                    ? 'bg-black text-white' 
+                    : 'bg-gray-50 hover:bg-gray-100'
+                }"
+              >
+                <span class="text-2xl mb-1">{cat.icon}</span>
+                <span class="text-xs font-medium">{category.name}</span>
+              </button>
+            {/if}
+          {/each}
+        </div>
+
+        <!-- Subcategories for selected category -->
+        {#if selectedCategory && categories[selectedCategory]?.subcategories}
+          <div class="border-t pt-3">
+            <p class="text-xs text-gray-500 font-medium mb-2 uppercase">
+              {categories[selectedCategory].name} Categories
+            </p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+              <button
+                onclick={() => selectSubcategory(null, selectedCategory)}
+                class="px-3 py-2 text-sm rounded-lg {
+                  !selectedSubcategory 
+                    ? 'bg-black text-white' 
+                    : 'bg-gray-100 hover:bg-gray-200'
+                }"
+              >
+                All {categories[selectedCategory].name}
+              </button>
+              {#each categories[selectedCategory].subcategories as subcat}
+                <button
+                  onclick={() => selectSubcategory(subcat.name, selectedCategory)}
+                  class="px-3 py-2 text-sm rounded-lg truncate {
+                    selectedSubcategory === subcat.name
+                      ? 'bg-black text-white'
+                      : 'bg-gray-100 hover:bg-gray-200'
+                  }"
+                >
+                  {subcat.name}
+                </button>
+              {/each}
+            </div>
+          </div>
+        {/if}
+
+        <!-- Quick actions -->
+        <div class="flex gap-2 mt-4 pt-3 border-t">
+          <button 
+            onclick={() => { 
+              onCategorySelect?.('sale'); 
+              onSubcategorySelect?.(null, 'sale');
+              onClose?.(); 
+            }}
+            class="flex-1 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600"
+          >
+            🔥 On Sale
+          </button>
+          <button 
+            onclick={() => { 
+              onCategorySelect?.('new'); 
+              onSubcategorySelect?.(null, 'new');
+              onClose?.(); 
+            }}
+            class="flex-1 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600"
+          >
+            ✨ New Items
+          </button>
+          <button 
+            onclick={() => { 
+              onCategorySelect?.('trending'); 
+              onSubcategorySelect?.(null, 'trending');
+              onClose?.(); 
+            }}
+            class="flex-1 py-2 bg-purple-500 text-white rounded-lg text-sm font-medium hover:bg-purple-600"
+          >
+            📈 Trending
+          </button>
+        </div>
+      </div>
+    </div>[36m
+  </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\MegaMenu.svelte[39m:70:5
+[33mWarn[39m: `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+[36m  <div class="absolute top-full left-0 right-0 mt-2 z-50">
+    [35m<div 
+      class="bg-white rounded-xl shadow-2xl border border-gray-200 max-h-[calc(100vh-200px)] sm:max-h-[70vh] overflow-y-auto {className}"
+      onclick={(e) => e.stopPropagation()}>
+      <div class="p-4">
+        <!-- Header with clear button -->
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold text-gray-900">Shop by Category</h3>
+          <div class="flex gap-2">
+            {#if selectedCategory}
+              <button
+                onclick={clearAll}
+                class="text-xs px-2 py-1 text-gray-500 hover:text-gray-700"
+              >
+                Clear
+              </button>
+            {/if}
+            <button
+              onclick={onClose}
+              class="p-1 hover:bg-gray-100 rounded-lg"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main categories -->
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4">
+          {#each mainCategories as cat}
+            {@const category = categories[cat.key]}
+            {#if category}
+              <button
+                onclick={(e) => {
+                  e.stopPropagation();
+                  selectCategory(cat.key);
+                }}
+                class="flex flex-col items-center p-3 rounded-lg transition-all {
+                  selectedCategory === cat.key 
+                    ? 'bg-black text-white' 
+                    : 'bg-gray-50 hover:bg-gray-100'
+                }"
+              >
+                <span class="text-2xl mb-1">{cat.icon}</span>
+                <span class="text-xs font-medium">{category.name}</span>
+              </button>
+            {/if}
+          {/each}
+        </div>
+
+        <!-- Subcategories for selected category -->
+        {#if selectedCategory && categories[selectedCategory]?.subcategories}
+          <div class="border-t pt-3">
+            <p class="text-xs text-gray-500 font-medium mb-2 uppercase">
+              {categories[selectedCategory].name} Categories
+            </p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+              <button
+                onclick={() => selectSubcategory(null, selectedCategory)}
+                class="px-3 py-2 text-sm rounded-lg {
+                  !selectedSubcategory 
+                    ? 'bg-black text-white' 
+                    : 'bg-gray-100 hover:bg-gray-200'
+                }"
+              >
+                All {categories[selectedCategory].name}
+              </button>
+              {#each categories[selectedCategory].subcategories as subcat}
+                <button
+                  onclick={() => selectSubcategory(subcat.name, selectedCategory)}
+                  class="px-3 py-2 text-sm rounded-lg truncate {
+                    selectedSubcategory === subcat.name
+                      ? 'bg-black text-white'
+                      : 'bg-gray-100 hover:bg-gray-200'
+                  }"
+                >
+                  {subcat.name}
+                </button>
+              {/each}
+            </div>
+          </div>
+        {/if}
+
+        <!-- Quick actions -->
+        <div class="flex gap-2 mt-4 pt-3 border-t">
+          <button 
+            onclick={() => { 
+              onCategorySelect?.('sale'); 
+              onSubcategorySelect?.(null, 'sale');
+              onClose?.(); 
+            }}
+            class="flex-1 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600"
+          >
+            🔥 On Sale
+          </button>
+          <button 
+            onclick={() => { 
+              onCategorySelect?.('new'); 
+              onSubcategorySelect?.(null, 'new');
+              onClose?.(); 
+            }}
+            class="flex-1 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600"
+          >
+            ✨ New Items
+          </button>
+          <button 
+            onclick={() => { 
+              onCategorySelect?.('trending'); 
+              onSubcategorySelect?.(null, 'trending');
+              onClose?.(); 
+            }}
+            class="flex-1 py-2 bg-purple-500 text-white rounded-lg text-sm font-medium hover:bg-purple-600"
+          >
+            📈 Trending
+          </button>
+        </div>
+      </div>
+    </div>[36m
+  </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\MegaMenu.svelte[39m:86:13
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m            {/if}
+            [35m<button
+              onclick={onClose}
+              class="p-1 hover:bg-gray-100 rounded-lg"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>[36m
+          </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\MegaMenu.svelte[39m:128:50
+[31mError[39m: Argument of type 'null' is not assignable to parameter of type 'string'. (ts)
+[36m              <button
+                onclick={() => selectSubcategory([35mnull[36m, selectedCategory)}
+                class="px-3 py-2 text-sm rounded-lg {[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\MessageNotificationToast.svelte[39m:69:9
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m        </div>
+        [35m<button 
+          onclick={onDismiss}
+          class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100/50"
+        >
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>[36m
+      </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\MessageNotificationToast.svelte[39m:143:5
+[33mWarn[39m: Also define the standard property 'line-clamp' for compatibility (css)
+[36m    display: -webkit-box;
+    [35m-webkit-line-clamp[36m: 3;
+    -webkit-box-orient: vertical;[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\NotificationPanel.svelte[39m:94:3
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m  <!-- Glass Morphism Backdrop -->
+  [35m<div 
+    class="fixed inset-0 bg-black/20 backdrop-blur-xs z-40"
+    onclick={onClose}
+    role="button"
+    tabindex="-1"
+  ></div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\NotificationPanel.svelte[39m:125:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m          {/if}
+          [35m<button 
+            onclick={onClose}
+            class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100/50"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>[36m
+        </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\NotificationPanel.svelte[39m:247:5
+[33mWarn[39m: Also define the standard property 'line-clamp' for compatibility (css)
+[36m    display: -webkit-box;
+    [35m-webkit-line-clamp[36m: 2;
+    -webkit-box-orient: vertical;[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\OptimizedImage.svelte[39m:62:1
+[33mWarn[39m: noninteractive element cannot have nonnegative tabIndex value
+https://svelte.dev/e/a11y_no_noninteractive_tabindex (svelte)
+[36m
+[35m<div 
+  class={containerClasses()}
+  onclick={handleClick}
+  role={onclick ? 'button' : undefined}
+  tabindex={onclick ? 0 : undefined}
+>
+  <!-- Animated Shimmer Skeleton Loading State -->
+  {#if shouldShowSkeleton}
+    <div class="skeleton-container absolute inset-0">
+      <div class="skeleton-shimmer"></div>
+      <!-- Optional placeholder image overlay -->
+      {#if placeholder}
+        <img
+          src={placeholder}
+          alt=""
+          class="absolute inset-0 w-full h-full object-cover opacity-20"
+          aria-hidden="true"
+        />
+      {/if}
+    </div>
+  {/if}
+
+  <!-- Enhanced Image with webp/avif support -->
+  <img
+    use:enhanced={{
+      src,
+      formats: ['webp', 'avif'],
+      widths: [320, 640, 768, 1024, 1280],
+      quality: 85
+    }}
+    {alt}
+    {sizes}
+    loading={loading}
+    decoding="async"
+    onloadstart={handleImageStart}
+    onload={handleLoad}
+    onerror={handleError}
+    class="image-main w-full h-full object-cover transition-all duration-500 ease-out
+      {imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'}"
+  />
+
+  <!-- Error State -->
+  {#if imageError && !imageLoaded}
+    <div class="absolute inset-0 bg-gray-50 flex flex-col items-center justify-center text-gray-400 transition-opacity duration-300">
+      <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+          d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+      </svg>
+      <span class="text-xs font-medium">Image unavailable</span>
+    </div>
+  {/if}
+</div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\OptimizedImage.svelte[39m:2:12
+[31mError[39m: Module '"@sveltejs/enhanced-img"' has no exported member 'enhanced'. (ts)
+[36m<script lang="ts">
+  import { [35menhanced[36m } from '@sveltejs/enhanced-img';[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\PayoutMethodSelector.svelte[39m:120:9
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m      <div class="bg-white rounded-xl border border-gray-200 p-4">
+        [35m<label class="block text-sm font-medium text-gray-700 mb-2">
+          {currentMethod.name} Details
+        </label>[36m
+        <Input[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\PayoutMethodSelector.svelte[39m:133:9
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m      <div class="bg-white rounded-xl border border-gray-200 p-4">
+        [35m<label class="block text-sm font-medium text-gray-700 mb-2">
+          Display Name (Optional)
+        </label>[36m
+        <Input[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductCard.svelte[39m:183:13
+[33mWarn[39m: Unknown role 'text'
+https://svelte.dev/e/a11y_unknown_role (svelte)
+[36m            id="seller-info-{product.id}"
+            [35mrole="text"[36m
+          >[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductCard.svelte[39m:199:9
+[33mWarn[39m: Unknown role 'text'
+https://svelte.dev/e/a11y_unknown_role (svelte)
+[36m        class="inline-flex items-center px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full text-xs sm:text-xs font-extrabold uppercase tracking-wide {conditionColors[product.condition]} leading-none transform transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg will-change-transform"
+        [35mrole="text"[36m
+        aria-label="{conditionLabels[product.condition]}: {conditionDescriptions[product.condition]}"[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductCard.svelte[39m:135:15
+[31mError[39m: Type '() => string' is not assignable to type 'string'. (ts)
+[36m  tabindex="0"
+  aria-label={[35mproductSummary[36m}
+  onkeydown={(e) => {[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductCard.svelte[39m:148:14
+[31mError[39m: Type '() => string' is not assignable to type 'string'. (ts)
+[36m        src={product.images[0] || '/placeholder-product.svg'} 
+        alt={[35mimageAltText[36m}
+        aspectRatio="square"[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductCard.svelte[39m:176:13
+[31mError[39m: Type '(e: any) => any' is not assignable to type '() => void'.
+  Target signature provides too few arguments. Expected 1 or more, but got 0. (ts)
+[36m            size="sm"
+            [35monclick[36m={(e) => e.stopPropagation()}
+          />[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductCard.svelte[39m:176:23
+[31mError[39m: Parameter 'e' implicitly has an 'any' type. (ts)
+[36m            size="sm"
+            onclick={([35me[36m) => e.stopPropagation()}
+          />[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductCard.svelte[39m:243:20
+[31mError[39m: Property 'subcategory' does not exist on type 'Product'. Did you mean 'category'? (ts)
+[36m    <div class="text-sm sm:text-xs text-gray-500 truncate leading-relaxed">
+      {#if product.[35msubcategory[36m}<span class="uppercase">{product.subcategory}</span>{/if}{#if product.subcategory && (product.brand || product.size)}<span class="mx-1.5">•</span>{/if}{#if product.brand}<span class="font-medium text-gray-600">{product.brand}</span>{/if}{#if product.brand && product.size}<span class="mx-1.5">•</span>{/if}{#if product.size}Size {product.size}{/if}
+    </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductCard.svelte[39m:243:65
+[31mError[39m: Property 'subcategory' does not exist on type 'Product'. Did you mean 'category'? (ts)
+[36m    <div class="text-sm sm:text-xs text-gray-500 truncate leading-relaxed">
+      {#if product.subcategory}<span class="uppercase">{product.[35msubcategory[36m}</span>{/if}{#if product.subcategory && (product.brand || product.size)}<span class="mx-1.5">•</span>{/if}{#if product.brand}<span class="font-medium text-gray-600">{product.brand}</span>{/if}{#if product.brand && product.size}<span class="mx-1.5">•</span>{/if}{#if product.size}Size {product.size}{/if}
+    </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductCard.svelte[39m:243:102
+[31mError[39m: Property 'subcategory' does not exist on type 'Product'. Did you mean 'category'? (ts)
+[36m    <div class="text-sm sm:text-xs text-gray-500 truncate leading-relaxed">
+      {#if product.subcategory}<span class="uppercase">{product.subcategory}</span>{/if}{#if product.[35msubcategory[36m && (product.brand || product.size)}<span class="mx-1.5">•</span>{/if}{#if product.brand}<span class="font-medium text-gray-600">{product.brand}</span>{/if}{#if product.brand && product.size}<span class="mx-1.5">•</span>{/if}{#if product.size}Size {product.size}{/if}
+    </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductGallery.svelte[39m:107:3
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m  <!-- Main Image Container -->
+  [35m<div 
+    class="relative h-full bg-gray-50 overflow-hidden cursor-zoom-{isZoomed ? 'out' : 'in'}"
+    onclick={handleImageClick}
+    ontouchstart={handleTouchStart}
+    ontouchend={handleTouchEnd}
+    role="button"
+    tabindex="0"
+    aria-label="Product image gallery - click to zoom"
+  >
+    {#key selectedIndex}
+      <img 
+        bind:this={imageRef}
+        src={selectedImage}
+        alt="{title} - Image {selectedIndex + 1}"
+        class="w-full h-full object-contain transition-transform duration-300 ease-out
+               {isZoomed ? 'scale-150' : 'scale-100'}"
+        draggable="false"
+      />
+    {/key}
+
+    <!-- Condition Badge -->
+    {#if condition}
+      <div class="absolute top-4 left-4 z-10">
+        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold shadow-lg backdrop-blur-xs {conditionColors}">
+          {conditionLabels}
+        </span>
+      </div>
+    {/if}
+
+    <!-- Navigation Arrows (Desktop) -->
+    {#if images.length > 1}
+      <div class="hidden md:block">
+        <!-- Previous -->
+        {#if selectedIndex > 0}
+          <button
+            onclick={() => selectedIndex--}
+            class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 z-10"
+            aria-label="Previous image"
+          >
+            <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+        {/if}
+
+        <!-- Next -->
+        {#if selectedIndex < images.length - 1}
+          <button
+            onclick={() => selectedIndex++}
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 z-10"
+            aria-label="Next image"
+          >
+            <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        {/if}
+      </div>
+    {/if}
+
+    <!-- Image Counter -->
+    {#if images.length > 1}
+      <div class="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-xs">
+        {selectedIndex + 1} / {images.length}
+      </div>
+    {/if}
+
+    <!-- Zoom Indicator -->
+    {#if isZoomed}
+      <div class="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm backdrop-blur-xs">
+        Click to zoom out • ESC to exit
+      </div>
+    {/if}
+  </div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductGallery.svelte[39m:36:7
+[33mWarn[39m: `imageRef` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update (svelte)
+[36m  let galleryRef: HTMLDivElement;
+  let [35mimageRef: HTMLImageElement[36m;[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductSheet.svelte[39m:120:3
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m{#if isVisible}
+  [35m<div 
+    class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+    onclick={onClose}
+    in:fade={{ duration: 200 }}
+    out:fade={{ duration: 200 }}
+  ></div>[36m
+{/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductSheet.svelte[39m:120:3
+[33mWarn[39m: `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+[36m{#if isVisible}
+  [35m<div 
+    class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+    onclick={onClose}
+    in:fade={{ duration: 200 }}
+    out:fade={{ duration: 200 }}
+  ></div>[36m
+{/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductSheet.svelte[39m:149:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m        <div class="flex items-center gap-3">
+          [35m<button
+            onclick={onClose}
+            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductSheet.svelte[39m:160:13
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m          <div class="flex items-center gap-2">
+            [35m<button
+              onclick={onShare}
+              class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 01-7.432 0m9.032-4.026A9.001 9.001 0 0112 3c-4.474 0-8.268 3.12-9.032 7.326m0 0A9.001 9.001 0 0012 21c4.474 0 8.268-3.12 9.032-7.326"/>
+              </svg>
+            </button>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductSheet.svelte[39m:169:13
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m            
+            [35m<button
+              onclick={onFavorite}
+              class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+              </svg>
+            </button>[36m
+          </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductSheet.svelte[39m:189:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m          
+          [35m<button
+            onclick={toggleFullscreen}
+            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4a4 4 0 114 4H4zM20 8V4a4 4 0 10-4 4h4zM4 16v4a4 4 0 104-4H4zM20 16v4a4 4 0 01-4-4h4z"/>
+            </svg>
+          </button>[36m
+        </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductSheet.svelte[39m:55:7
+[33mWarn[39m: `sheetRef` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update (svelte)
+[36m
+  let [35msheetRef: HTMLDivElement[36m;
+  let isDragging = $state(false);[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductSheet.svelte[39m:133:12
+[31mError[39m: Type '() => string' is not assignable to type 'string'. (ts)
+[36m    class="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl z-50 lg:hidden {sheetHeight} {className}"
+    style={[35mtransformStyle[36m}
+    ontouchstart={handleTouchStart}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductSheet.svelte[39m:254:30
+[31mError[39m: Type 'string' is not assignable to type '"condition" | "seller" | "info"'. (ts)
+[36m            <button
+              onclick={() => [35mcurrentSection[36m = section}
+              class="flex-1 py-3 px-4 text-sm font-medium capitalize transition-colors[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductSheet.svelte[39m:309:15
+[31mError[39m: Type 'string' is not assignable to type '"new" | "like-new" | "good" | "fair"'. (ts)
+[36m            <ConditionReport 
+              [35mcondition[36m={product.condition}
+              authenticatedBy="Driplo"[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductSoldManager.svelte[39m:59:26
+[31mError[39m: Type '{ id: string; product: Product; buyer?: { id: string; username: string; avatar_url?: string | undefined; } | undefined; timestamp: number; } | { id: string; product: { id: string; title: string; image: string; price: number; }; buyer: { ...; } | undefined; timestamp: number; }' is not assignable to type '{ id: string; product: Product; buyer?: { id: string; username: string; avatar_url?: string | undefined; } | undefined; timestamp: number; }'.
+  Type '{ id: string; product: { id: string; title: string; image: string; price: number; }; buyer: { id: string; username: string; avatar_url?: string; } | undefined; timestamp: number; }' is not assignable to type '{ id: string; product: Product; buyer?: { id: string; username: string; avatar_url?: string | undefined; } | undefined; timestamp: number; }'.
+    Types of property 'product' are incompatible.
+      Type '{ id: string; title: string; image: string; price: number; }' is missing the following properties from type 'Product': description, images, size, condition, and 5 more. (ts)
+[36m
+    soldNotifications = [[35m...soldNotifications[36m, notification];[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductSoldManager.svelte[39m:59:48
+[31mError[39m: Type '{ id: string; product: { id: string; title: string; image: string; price: number; }; buyer: { id: string; username: string; avatar_url?: string; } | undefined; timestamp: number; }' is not assignable to type '{ id: string; product: Product; buyer?: { id: string; username: string; avatar_url?: string | undefined; } | undefined; timestamp: number; }'.
+  Types of property 'product' are incompatible.
+    Type '{ id: string; title: string; image: string; price: number; }' is missing the following properties from type 'Product': description, images, size, condition, and 5 more. (ts)
+[36m
+    soldNotifications = [...soldNotifications, [35mnotification[36m];[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\ProductSoldManager.svelte[39m:97:5
+[31mError[39m: Property 'image' is missing in type 'Product' but required in type '{ id: string; title: string; image: string; price: number; }'. (ts)
+[36m    show={true}
+    [35mproduct[36m={notification.product}
+    buyer={notification.buyer}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\QuickActions.svelte[39m:143:7
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m    {#if onMessage}
+      [35m<button
+        onclick={onMessage}
+        class="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 hover:shadow-xl"
+        in:fly={{ x: position === 'right' ? 20 : -20, duration: 300, delay: 300, easing: quintOut }}
+      >
+        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+      </button>[36m
+    {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\QuickActions.svelte[39m:196:5
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m    <!-- Share -->
+    [35m<button
+      onclick={handleShare}
+      class="p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-all duration-200 active:scale-95"
+      title="Share product"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 01-7.432 0m9.032-4.026A9.001 9.001 0 0112 3c-4.474 0-8.268 3.12-9.032 7.326m0 0A9.001 9.001 0 0012 21c4.474 0 8.268-3.12 9.032-7.326"/>
+      </svg>
+    </button>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\QuickActions.svelte[39m:231:7
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m    {#if onMessage}
+      [35m<button
+        onclick={onMessage}
+        class="p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-all duration-200 active:scale-95"
+        title="Message seller"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+      </button>[36m
+    {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SearchBar.svelte[39m:138:17
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m              {#if value}
+                [35m<button
+                  type="button"
+                  onclick={handleClear}
+                  class="p-1.5 hover:bg-gray-200 rounded-full transition-colors mr-1"
+                >
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>[36m
+              {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SearchBar.svelte[39m:194:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m        {#if value}
+          [35m<button
+            type="button"
+            onclick={handleClear}
+            class="absolute right-2 p-1 hover:bg-gray-200 rounded-full transition-colors"
+          >
+            <svg class="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>[36m
+        {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SearchBar.svelte[39m:229:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m        {#if value}
+          [35m<button
+            type="button"
+            onclick={handleClear}
+            class="absolute right-24 p-1 hover:bg-gray-200 rounded-full transition-colors"
+          >
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>[36m
+        {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SearchBar.svelte[39m:241:9
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m        <!-- Filter Button -->
+        [35m<button
+          type="button"
+          onclick={onFilter}
+          class="absolute right-2 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+        </button>[36m
+      </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SearchBar.svelte[39m:40:7
+[33mWarn[39m: `inputElement` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update (svelte)
+[36m  let showCategories = $state(false);
+  let [35minputElement: HTMLInputElement[36m;[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SellerCard.svelte[39m:131:1
+[33mWarn[39m: `<div>` with a mouseenter or mouseleave handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+[36m
+[35m<div 
+  class="bg-white border rounded-xl p-4 transition-all duration-200 hover:shadow-md {className}"
+  onmouseenter={() => isHovering = true}
+  onmouseleave={() => isHovering = false}
+>
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">{translations.soldBy || 'Sold by'}</h3>
+    <span class="text-xs text-gray-500">{formatLastActive(stats.lastActive)}</span>
+  </div>
+
+  <!-- Seller Info -->
+  <div class="flex items-start gap-3 mb-4">
+    <!-- Avatar with Activity Indicator -->
+    <div class="relative">
+      <Avatar 
+        name={name} 
+        src={avatar} 
+        size="lg"
+        class="ring-2 ring-white shadow-xs"
+      />
+      <!-- Activity Indicator -->
+      <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 {activityColor} rounded-full border-2 border-white"></div>
+      
+      <!-- Verification Badge -->
+      {#if stats.verificationLevel !== 'basic'}
+        <div 
+          class="absolute -top-1 -right-1 w-6 h-6 {verificationData.bgColor} rounded-full flex items-center justify-center text-xs border-2 border-white"
+          title={verificationData.description}
+          in:scale={{ duration: 300, delay: 200, easing: quintOut }}
+        >
+          {verificationData.icon}
+        </div>
+      {/if}
+    </div>
+
+    <!-- Seller Details -->
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2 mb-1">
+        <h4 class="font-semibold text-gray-900 truncate">{name}</h4>
+        {#if stats.verificationLevel !== 'basic'}
+          <span 
+            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {verificationData.bgColor} {verificationData.color}"
+            in:fly={{ x: 10, duration: 300, delay: 100, easing: quintOut }}
+          >
+            {verificationData.label}
+          </span>
+        {/if}
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="space-y-1 text-sm text-gray-600">
+        <!-- Rating -->
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+          </svg>
+          <span class="font-medium text-gray-900">{stats.rating?.toFixed(1) || '0.0'}</span>
+          <span>({stats.totalSales} {translations.sales || 'sales'})</span>
+        </div>
+
+        <!-- Response Time -->
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>{formatResponseTime(stats.responseTime)}</span>
+        </div>
+
+        <!-- Membership -->
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 12v-6m6 6h-8a2 2 0 01-2-2v-6a2 2 0 012-2h8a2 2 0 012 2v6a2 2 0 01-2 2z"/>
+          </svg>
+          <span>{formatJoinDate(stats.joinedDate)}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="grid grid-cols-2 gap-2 mb-3">
+    <button
+      onclick={onMessage}
+      class="flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+      </svg>
+      {translations.message || 'Message'}
+    </button>
+    
+    <button
+      onclick={onFollow}
+      class="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all
+             {isFollowing 
+               ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
+               : 'bg-black text-white hover:bg-gray-800'}"
+    >
+      {#if isFollowing}
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+        </svg>
+        {translations.following || 'Following'}
+      {:else}
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        {translations.follow || 'Follow'}
+      {/if}
+    </button>
+  </div>
+
+  <!-- View Profile Link -->
+  <button
+    onclick={onViewProfile}
+    class="w-full flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+  >
+    {translations.viewFullProfile || 'View full profile'}
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+  </button>
+
+  <!-- Extended Stats (if enabled) -->
+  {#if showFullStats}
+    <div 
+      class="mt-4 pt-4 border-t border-gray-100 space-y-3"
+      in:fade={{ duration: 300, delay: 200 }}
+    >
+      <!-- Trust Metrics -->
+      <div class="grid grid-cols-2 gap-4 text-xs">
+        <div class="text-center p-2 bg-gray-50 rounded-lg">
+          <div class="font-semibold text-gray-900">98%</div>
+          <div class="text-gray-600">{translations.positiveReviews || 'Positive reviews'}</div>
+        </div>
+        <div class="text-center p-2 bg-gray-50 rounded-lg">
+          <div class="font-semibold text-gray-900">24h</div>
+          <div class="text-gray-600">{translations.avgShipping || 'Avg shipping'}</div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="text-xs text-gray-600">
+        <div class="font-medium text-gray-900 mb-1">{translations.recentActivity || 'Recent activity'}</div>
+        <div class="space-y-1">
+          <div>• Sold 3 items this week</div>
+          <div>• 100% of orders shipped on time</div>
+          <div>• Responds to messages in 2 hours</div>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Hover Animation -->
+  {#if isHovering}
+    <div 
+      class="absolute inset-0 rounded-xl bg-linear-to-r from-blue-50 to-purple-50 opacity-30 pointer-events-none"
+      in:fade={{ duration: 200 }}
+    ></div>
+  {/if}
+</div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SocialLinksEditor.svelte[39m:77:15
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m            <div>
+              [35m<label class="block text-sm font-medium text-gray-700 mb-1">Platform</label>[36m
+              <select[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SocialLinksEditor.svelte[39m:90:15
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m            <div>
+              [35m<label class="block text-sm font-medium text-gray-700 mb-1">URL/Username</label>[36m
+              <Input[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SocialLinksEditor.svelte[39m:101:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m          <!-- Remove Button -->
+          [35m<button
+            onclick={() => removeLink(index)}
+            class="shrink-0 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 opacity-0 group-hover:opacity-100"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </button>[36m
+        </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SocialLinksEditor.svelte[39m:80:60
+[31mError[39m: 'e.target' is possibly 'null'. (ts)
+[36m                bind:value={link.type}
+                onchange={(e) => updateLink(index, 'type', [35me.target[36m.value)}
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80"[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SocialLinksEditor.svelte[39m:80:69
+[31mError[39m: Property 'value' does not exist on type 'EventTarget'. (ts)
+[36m                bind:value={link.type}
+                onchange={(e) => updateLink(index, 'type', e.target.[35mvalue[36m)}
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80"[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SocialLinksEditor.svelte[39m:94:63
+[31mError[39m: Argument of type 'Event' is not assignable to parameter of type 'string'. (ts)
+[36m                placeholder={platformInfo.placeholder}
+                onchange={(value) => updateLink(index, 'url', [35mvalue[36m)}
+                class="bg-white/80"[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SoldNotificationPanel.svelte[39m:93:3
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m  <!-- Glass Morphism Backdrop -->
+  [35m<div 
+    class="fixed inset-0 bg-black/20 backdrop-blur-xs z-40"
+    onclick={onClose}
+    role="button"
+    tabindex="-1"
+  ></div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SoldNotificationPanel.svelte[39m:132:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m          {/if}
+          [35m<button 
+            onclick={onClose}
+            class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100/50"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>[36m
+        </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\SoldNotificationToast.svelte[39m:57:9
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m        </div>
+        [35m<button 
+          onclick={onDismiss}
+          class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100/50"
+        >
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>[36m
+      </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\WelcomeModal.svelte[39m:141:15
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m            {#each effectiveSteps as step, index}
+              [35m<button
+                onclick={() => currentStep = index}
+                class="w-2 h-2 rounded-full transition-all duration-300 {index === currentStep ? 'bg-black w-8' : 'bg-gray-300 hover:bg-gray-400'}"
+              ></button>[36m
+            {/each}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\components\PricingCard.svelte[39m:56:7
+[33mWarn[39m: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+[36m    {#if glassEffect}
+      [35m<div
+        aria-hidden="true"
+        class="absolute inset-x-0 top-0 h-48 rounded-[inherit]"
+        style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
+      />[36m
+    {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32mdist\lib\utils.js[39m:3:20
+[31mError[39m: Rest parameter 'inputs' implicitly has an 'any[]' type. 
+[36mimport { twMerge } from 'tailwind-merge';
+export function cn([35m...inputs[36m) {
+    return twMerge(clsx(inputs));[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\BrandPaymentModal.svelte[39m:135:9
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m      <div class="mb-4">
+        [35m<label class="block text-sm font-medium text-gray-700 mb-1">
+          Payment Details
+        </label>[36m
+        <div bind:this={cardContainer} class="p-2.5 border border-gray-300 rounded-sm bg-white text-sm"></div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\Card.svelte[39m:24:1
+[33mWarn[39m: noninteractive element cannot have nonnegative tabIndex value
+https://svelte.dev/e/a11y_no_noninteractive_tabindex (svelte)
+[36m
+[35m<div 
+  class={classes} 
+  {onclick}
+  role={onclick ? "button" : undefined}
+  tabindex={onclick ? 0 : undefined}
+  onkeydown={(e) => {
+    if (onclick && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onclick();
+    }
+  }}
+>
+  {@render children?.()}
+</div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\CategorySidebar.svelte[39m:116:15
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m              </span>
+              [35m<button
+                onclick={() => onCategorySelect?.(null)}
+                class="p-1 hover:bg-gray-100 rounded-sm transition-colors"
+              >
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>[36m
+            </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\CategorySidebar.svelte[39m:130:15
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m              <span class="text-sm text-gray-700">{selectedSubcategory}</span>
+              [35m<button
+                onclick={() => onSubcategorySelect?.(null, selectedCategory)}
+                class="p-1 hover:bg-gray-100 rounded-sm transition-colors"
+              >
+                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>[36m
+            </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\CategorySidebar.svelte[39m:147:17
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m                </span>
+                [35m<button
+                  onclick={() => onFilterRemove?.(type)}
+                  class="p-1 hover:bg-gray-100 rounded-sm transition-colors"
+                >
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>[36m
+              </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\CategorySidebar.svelte[39m:117:51
+[31mError[39m: Argument of type 'null' is not assignable to parameter of type 'string'. (ts)
+[36m              <button
+                onclick={() => onCategorySelect?.([35mnull[36m)}
+                class="p-1 hover:bg-gray-100 rounded-sm transition-colors"[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\CategorySidebar.svelte[39m:131:54
+[31mError[39m: Argument of type 'null' is not assignable to parameter of type 'string'. (ts)
+[36m              <button
+                onclick={() => onSubcategorySelect?.([35mnull[36m, selectedCategory)}
+                class="p-1 hover:bg-gray-100 rounded-sm transition-colors"[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\CategorySidebar.svelte[39m:145:20
+[31mError[39m: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ categories?: string | undefined; filters?: string | undefined; clearAll?: string | undefined; size?: string | undefined; brand?: string | undefined; condition?: string | undefined; priceRange?: string | undefined; allCategories?: string | undefined; }'.
+  No index signature with a parameter of type 'string' was found on type '{ categories?: string | undefined; filters?: string | undefined; clearAll?: string | undefined; size?: string | undefined; brand?: string | undefined; condition?: string | undefined; priceRange?: string | undefined; allCategories?: string | undefined; }'. (ts)
+[36m                <span class="text-sm text-gray-700">
+                  {[35mtranslations[type][36m}: {formatFilterValue(type, value)}
+                </span>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\CategorySidebar.svelte[39m:171:45
+[31mError[39m: Argument of type 'null' is not assignable to parameter of type 'string'. (ts)
+[36m        <button
+          onclick={() => onCategorySelect?.([35mnull[36m)}
+          class="w-full text-left px-3 py-2 rounded-lg transition-colors {[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\CategorySidebar.svelte[39m:200:20
+[31mError[39m: 'category.subcategories.length' is possibly 'undefined'. (ts)
+[36m              
+              {#if [35mcategory.subcategories?.length[36m > 0}
+                <svg[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ConditionReport.svelte[39m:203:27
+[31mError[39m: Property 'notes' does not exist on type '{ aspect: string; rating: number; }'. (ts)
+[36m              <span class="text-sm font-medium text-gray-900">{detail.aspect}</span>
+              {#if detail.[35mnotes[36m}
+                <p class="text-xs text-gray-600 mt-0.5">{detail.notes}</p>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ConditionReport.svelte[39m:204:65
+[31mError[39m: Property 'notes' does not exist on type '{ aspect: string; rating: number; }'. (ts)
+[36m              {#if detail.notes}
+                <p class="text-xs text-gray-600 mt-0.5">{detail.[35mnotes[36m}</p>
+              {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ConditionSelector.svelte[39m:85:5
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m  {#if label}
+    [35m<label class="block text-sm font-medium text-gray-700 mb-2">
+      {label}
+      {#if required}
+        <span class="text-red-500">*</span>
+      {/if}
+    </label>[36m
+  {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\CookieConsentAdvanced.svelte[39m:246:2
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m	<!-- Glass morphism backdrop -->
+	[35m<div class="fixed inset-0 bg-black/40 backdrop-blur-xs z-40" onclick={() => {}}>
+		
+		<!-- Locale Detection Modal (shows first if detected) -->
+		{#if showLocaleModal && detectedLocation}
+			<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md">
+				<div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-6">
+					<div class="text-center mb-6">
+						<div class="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-full mb-4">
+							<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+						</div>
+						<h2 class="text-2xl font-bold bg-linear-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+							Welcome to Driplo
+						</h2>
+						<p class="text-gray-600 mt-2">
+							We detected you're visiting from <strong>{detectedLocation.country}</strong>
+						</p>
+					</div>
+					
+					<div class="space-y-3">
+						<p class="text-sm text-gray-600 text-center">Choose your preferred language:</p>
+						
+						<div class="grid grid-cols-2 gap-2">
+							{#each availableLocales as locale}
+								<button
+									onclick={() => selectLocale(locale.code)}
+									class="flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all hover:scale-105
+										{selectedLocale === locale.code 
+											? 'border-blue-500 bg-blue-50' 
+											: 'border-gray-200 hover:border-gray-300 bg-white'}"
+								>
+									<span class="text-2xl">{locale.flag}</span>
+									<span class="font-medium">{locale.name}</span>
+									{#if locale.code === detectedLocation.suggestedLocale}
+										<span class="ml-auto text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+											Suggested
+										</span>
+									{/if}
+								</button>
+							{/each}
+						</div>
+						
+						<button
+							onclick={() => { showLocaleModal = false }}
+							class="w-full mt-4 px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
+						>
+							Continue with {availableLocales.find(l => l.code === selectedLocale)?.name || 'English'}
+						</button>
+					</div>
+				</div>
+			</div>
+		{:else}
+			<!-- Cookie Consent Banner -->
+			<div class="fixed bottom-0 left-0 right-0 z-50">
+				<div class="bg-white/95 backdrop-blur-xl border-t border-white/20 shadow-2xl">
+					<div class="max-w-7xl mx-auto p-6">
+						<div class="flex flex-col lg:flex-row gap-6">
+							<!-- Main Content -->
+							<div class="flex-1">
+								<div class="flex items-start gap-4">
+									<div class="hidden sm:block">
+										<div class="w-12 h-12 bg-linear-to-br from-black to-gray-700 rounded-xl flex items-center justify-center">
+											<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+											</svg>
+										</div>
+									</div>
+									<div class="flex-1">
+										<h3 class="text-xl font-bold mb-2">We value your privacy 🔒</h3>
+										<p class="text-gray-600 text-sm leading-relaxed">
+											We use cookies and similar technologies to help personalize content, tailor and measure ads, 
+											and provide a better experience. By clicking accept, you agree to this, as outlined in our 
+											<a href={privacyUrl} class="text-blue-600 hover:underline">Cookie Policy</a>.
+										</p>
+									</div>
+								</div>
+								
+								<!-- Cookie Categories -->
+								{#if showDetails}
+									<div class="mt-6 space-y-4">
+										<!-- Necessary -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													checked 
+													disabled 
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Essential Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Required for the website to function. Cannot be disabled.
+													</p>
+												</div>
+												<span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full">
+													Always On
+												</span>
+											</label>
+										</div>
+										
+										<!-- Functional -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													bind:checked={preferences.functional}
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Functional Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Enable enhanced functionality like language preferences and saved items.
+													</p>
+												</div>
+											</label>
+										</div>
+										
+										<!-- Analytics -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													bind:checked={preferences.analytics}
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Analytics Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Help us understand how visitors interact with our website.
+													</p>
+												</div>
+											</label>
+										</div>
+										
+										<!-- Marketing -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													bind:checked={preferences.marketing}
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Marketing Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Used to deliver personalized advertisements and measure campaigns.
+													</p>
+												</div>
+											</label>
+										</div>
+									</div>
+								{/if}
+							</div>
+							
+							<!-- Actions -->
+							<div class="flex flex-col gap-3 lg:w-64">
+								<button
+									onclick={acceptAll}
+									class="px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-all hover:scale-105"
+								>
+									Accept All
+								</button>
+								
+								<button
+									onclick={acceptNecessary}
+									class="px-6 py-3 bg-white text-gray-700 rounded-xl font-medium border-2 border-gray-200 hover:border-gray-300 transition-all"
+								>
+									Necessary Only
+								</button>
+								
+								{#if !showDetails}
+									<button
+										onclick={() => showDetails = true}
+										class="px-6 py-3 text-gray-600 hover:text-gray-900 font-medium transition-colors"
+									>
+										Manage Preferences
+									</button>
+								{:else}
+									<button
+										onclick={acceptSelected}
+										class="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all"
+									>
+										Save Preferences
+									</button>
+								{/if}
+								
+								<!-- GDPR Info -->
+								<div class="text-xs text-gray-500 text-center mt-2">
+									<p>GDPR Compliant</p>
+									<p>Your data, your choice</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{/if}
+	</div>[36m
+{/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\CookieConsentAdvanced.svelte[39m:246:2
+[33mWarn[39m: `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+[36m	<!-- Glass morphism backdrop -->
+	[35m<div class="fixed inset-0 bg-black/40 backdrop-blur-xs z-40" onclick={() => {}}>
+		
+		<!-- Locale Detection Modal (shows first if detected) -->
+		{#if showLocaleModal && detectedLocation}
+			<div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md">
+				<div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 p-6">
+					<div class="text-center mb-6">
+						<div class="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-blue-500 to-purple-600 rounded-full mb-4">
+							<svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+							</svg>
+						</div>
+						<h2 class="text-2xl font-bold bg-linear-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+							Welcome to Driplo
+						</h2>
+						<p class="text-gray-600 mt-2">
+							We detected you're visiting from <strong>{detectedLocation.country}</strong>
+						</p>
+					</div>
+					
+					<div class="space-y-3">
+						<p class="text-sm text-gray-600 text-center">Choose your preferred language:</p>
+						
+						<div class="grid grid-cols-2 gap-2">
+							{#each availableLocales as locale}
+								<button
+									onclick={() => selectLocale(locale.code)}
+									class="flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all hover:scale-105
+										{selectedLocale === locale.code 
+											? 'border-blue-500 bg-blue-50' 
+											: 'border-gray-200 hover:border-gray-300 bg-white'}"
+								>
+									<span class="text-2xl">{locale.flag}</span>
+									<span class="font-medium">{locale.name}</span>
+									{#if locale.code === detectedLocation.suggestedLocale}
+										<span class="ml-auto text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+											Suggested
+										</span>
+									{/if}
+								</button>
+							{/each}
+						</div>
+						
+						<button
+							onclick={() => { showLocaleModal = false }}
+							class="w-full mt-4 px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
+						>
+							Continue with {availableLocales.find(l => l.code === selectedLocale)?.name || 'English'}
+						</button>
+					</div>
+				</div>
+			</div>
+		{:else}
+			<!-- Cookie Consent Banner -->
+			<div class="fixed bottom-0 left-0 right-0 z-50">
+				<div class="bg-white/95 backdrop-blur-xl border-t border-white/20 shadow-2xl">
+					<div class="max-w-7xl mx-auto p-6">
+						<div class="flex flex-col lg:flex-row gap-6">
+							<!-- Main Content -->
+							<div class="flex-1">
+								<div class="flex items-start gap-4">
+									<div class="hidden sm:block">
+										<div class="w-12 h-12 bg-linear-to-br from-black to-gray-700 rounded-xl flex items-center justify-center">
+											<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+											</svg>
+										</div>
+									</div>
+									<div class="flex-1">
+										<h3 class="text-xl font-bold mb-2">We value your privacy 🔒</h3>
+										<p class="text-gray-600 text-sm leading-relaxed">
+											We use cookies and similar technologies to help personalize content, tailor and measure ads, 
+											and provide a better experience. By clicking accept, you agree to this, as outlined in our 
+											<a href={privacyUrl} class="text-blue-600 hover:underline">Cookie Policy</a>.
+										</p>
+									</div>
+								</div>
+								
+								<!-- Cookie Categories -->
+								{#if showDetails}
+									<div class="mt-6 space-y-4">
+										<!-- Necessary -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													checked 
+													disabled 
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Essential Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Required for the website to function. Cannot be disabled.
+													</p>
+												</div>
+												<span class="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded-full">
+													Always On
+												</span>
+											</label>
+										</div>
+										
+										<!-- Functional -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													bind:checked={preferences.functional}
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Functional Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Enable enhanced functionality like language preferences and saved items.
+													</p>
+												</div>
+											</label>
+										</div>
+										
+										<!-- Analytics -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													bind:checked={preferences.analytics}
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Analytics Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Help us understand how visitors interact with our website.
+													</p>
+												</div>
+											</label>
+										</div>
+										
+										<!-- Marketing -->
+										<div class="bg-gray-50 rounded-xl p-4">
+											<label class="flex items-start gap-3">
+												<input 
+													type="checkbox" 
+													bind:checked={preferences.marketing}
+													class="mt-1 w-5 h-5 rounded-sm border-gray-300 text-black focus:ring-black"
+												/>
+												<div class="flex-1">
+													<div class="font-semibold text-gray-900">Marketing Cookies</div>
+													<p class="text-sm text-gray-600 mt-1">
+														Used to deliver personalized advertisements and measure campaigns.
+													</p>
+												</div>
+											</label>
+										</div>
+									</div>
+								{/if}
+							</div>
+							
+							<!-- Actions -->
+							<div class="flex flex-col gap-3 lg:w-64">
+								<button
+									onclick={acceptAll}
+									class="px-6 py-3 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-all hover:scale-105"
+								>
+									Accept All
+								</button>
+								
+								<button
+									onclick={acceptNecessary}
+									class="px-6 py-3 bg-white text-gray-700 rounded-xl font-medium border-2 border-gray-200 hover:border-gray-300 transition-all"
+								>
+									Necessary Only
+								</button>
+								
+								{#if !showDetails}
+									<button
+										onclick={() => showDetails = true}
+										class="px-6 py-3 text-gray-600 hover:text-gray-900 font-medium transition-colors"
+									>
+										Manage Preferences
+									</button>
+								{:else}
+									<button
+										onclick={acceptSelected}
+										class="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all"
+									>
+										Save Preferences
+									</button>
+								{/if}
+								
+								<!-- GDPR Info -->
+								<div class="text-xs text-gray-500 text-center mt-2">
+									<p>GDPR Compliant</p>
+									<p>Your data, your choice</p>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		{/if}
+	</div>[36m
+{/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\CookieConsentAdvanced.svelte[39m:5:24
+[31mError[39m: Cannot find module '@repo/i18n' or its corresponding type declarations. (ts)
+[36m	import Button from './Button.svelte';
+	import * as i18n from [35m'@repo/i18n'[36m;[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\CookieConsentAdvanced.svelte[39m:176:11
+[31mError[39m: Property 'gtag' does not exist on type 'Window & typeof globalThis'. (ts)
+[36m			// Enable analytics cookies (GA, etc)
+			window.[35mgtag[36m?.('consent', 'update', {
+				'analytics_storage': 'granted'[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\CookieConsentAdvanced.svelte[39m:183:11
+[31mError[39m: Property 'gtag' does not exist on type 'Window & typeof globalThis'. (ts)
+[36m			// Enable marketing cookies
+			window.[35mgtag[36m?.('consent', 'update', {
+				'ad_storage': 'granted',[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ImageUploader.svelte[39m:355:3
+[33mWarn[39m: Do not use empty rulesets (css)
+[36m<style>
+  [35m.image-uploader[36m {
+    /* Component styles */[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\Input.svelte[39m:67:6
+[31mError[39m: Type 'string | undefined' is not assignable to type 'FullAutoFill | null | undefined'.
+  Type 'string' is not assignable to type 'FullAutoFill | null | undefined'. (ts)
+[36m    {name}
+    {[35mautocomplete[36m}
+    id={inputId}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\LiveActivity.svelte[39m:74:12
+[31mError[39m: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ view: string; cart: string; purchase: string; favorite: string; offer: string; }'.
+  No index signature with a parameter of type 'string' was found on type '{ view: string; cart: string; purchase: string; favorite: string; offer: string; }'. (ts)
+[36m    };
+    return [35micons[type][36m || '👀';
+  }[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\LiveActivity.svelte[39m:104:12
+[31mError[39m: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ view: string; cart: string; purchase: string; favorite: string; offer: string; }'.
+  No index signature with a parameter of type 'string' was found on type '{ view: string; cart: string; purchase: string; favorite: string; offer: string; }'. (ts)
+[36m    };
+    return [35mcolors[type][36m || 'text-gray-600';
+  }[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\LiveActivity.svelte[39m:114:9
+[31mError[39m: This comparison appears to be unintentional because the types '() => "high" | "medium" | "low"' and 'string' have no overlap. (ts)
+[36m  const urgencyMessage = $derived(() => {
+    if ([35murgencyLevel === 'high'[36m) return 'High demand! Multiple people have this in their cart';
+    if (urgencyLevel === 'medium') return 'Popular item - others are interested';[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\LiveActivity.svelte[39m:115:9
+[31mError[39m: This comparison appears to be unintentional because the types '() => "high" | "medium" | "low"' and 'string' have no overlap. (ts)
+[36m    if (urgencyLevel === 'high') return 'High demand! Multiple people have this in their cart';
+    if ([35murgencyLevel === 'medium'[36m) return 'Popular item - others are interested';
+    return '';[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\LiveActivity.svelte[39m:149:54
+[31mError[39m: This comparison appears to be unintentional because the types '() => "high" | "medium" | "low"' and 'string' have no overlap. (ts)
+[36m    <div 
+      class="flex items-center gap-2 p-3 rounded-lg {[35murgencyLevel === 'high'[36m ? 'bg-red-50 text-red-800' : 'bg-orange-50 text-orange-800'}"
+      in:fly={{ y: -10, duration: 300, easing: quintOut }}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\LocaleDetectionBanner.svelte[39m:2:36
+[31mError[39m: Cannot find module '@repo/i18n' or its corresponding type declarations. (ts)
+[36m<script lang="ts">
+  import type { LanguageTag } from [35m'@repo/i18n'[36m;[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\MegaMenu.svelte[39m:63:3
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m  <!-- Backdrop BEHIND the dropdown -->
+  [35m<div 
+    class="fixed inset-0 z-40"
+    onclick={onClose}
+  ></div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\MegaMenu.svelte[39m:63:3
+[33mWarn[39m: `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+[36m  <!-- Backdrop BEHIND the dropdown -->
+  [35m<div 
+    class="fixed inset-0 z-40"
+    onclick={onClose}
+  ></div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\MegaMenu.svelte[39m:70:5
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m  <div class="absolute top-full left-0 right-0 mt-2 z-50">
+    [35m<div 
+      class="bg-white rounded-xl shadow-2xl border border-gray-200 max-h-[calc(100vh-200px)] sm:max-h-[70vh] overflow-y-auto {className}"
+      onclick={(e) => e.stopPropagation()}>
+      <div class="p-4">
+        <!-- Header with clear button -->
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold text-gray-900">Shop by Category</h3>
+          <div class="flex gap-2">
+            {#if selectedCategory}
+              <button
+                onclick={clearAll}
+                class="text-xs px-2 py-1 text-gray-500 hover:text-gray-700"
+              >
+                Clear
+              </button>
+            {/if}
+            <button
+              onclick={onClose}
+              class="p-1 hover:bg-gray-100 rounded-lg"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main categories -->
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4">
+          {#each mainCategories as cat}
+            {@const category = categories[cat.key]}
+            {#if category}
+              <button
+                onclick={(e) => {
+                  e.stopPropagation();
+                  selectCategory(cat.key);
+                }}
+                class="flex flex-col items-center p-3 rounded-lg transition-all {
+                  selectedCategory === cat.key 
+                    ? 'bg-black text-white' 
+                    : 'bg-gray-50 hover:bg-gray-100'
+                }"
+              >
+                <span class="text-2xl mb-1">{cat.icon}</span>
+                <span class="text-xs font-medium">{category.name}</span>
+              </button>
+            {/if}
+          {/each}
+        </div>
+
+        <!-- Subcategories for selected category -->
+        {#if selectedCategory && categories[selectedCategory]?.subcategories}
+          <div class="border-t pt-3">
+            <p class="text-xs text-gray-500 font-medium mb-2 uppercase">
+              {categories[selectedCategory].name} Categories
+            </p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+              <button
+                onclick={() => selectSubcategory(null, selectedCategory)}
+                class="px-3 py-2 text-sm rounded-lg {
+                  !selectedSubcategory 
+                    ? 'bg-black text-white' 
+                    : 'bg-gray-100 hover:bg-gray-200'
+                }"
+              >
+                All {categories[selectedCategory].name}
+              </button>
+              {#each categories[selectedCategory].subcategories as subcat}
+                <button
+                  onclick={() => selectSubcategory(subcat.name, selectedCategory)}
+                  class="px-3 py-2 text-sm rounded-lg truncate {
+                    selectedSubcategory === subcat.name
+                      ? 'bg-black text-white'
+                      : 'bg-gray-100 hover:bg-gray-200'
+                  }"
+                >
+                  {subcat.name}
+                </button>
+              {/each}
+            </div>
+          </div>
+        {/if}
+
+        <!-- Quick actions -->
+        <div class="flex gap-2 mt-4 pt-3 border-t">
+          <button 
+            onclick={() => { 
+              onCategorySelect?.('sale'); 
+              onSubcategorySelect?.(null, 'sale');
+              onClose?.(); 
+            }}
+            class="flex-1 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600"
+          >
+            🔥 On Sale
+          </button>
+          <button 
+            onclick={() => { 
+              onCategorySelect?.('new'); 
+              onSubcategorySelect?.(null, 'new');
+              onClose?.(); 
+            }}
+            class="flex-1 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600"
+          >
+            ✨ New Items
+          </button>
+          <button 
+            onclick={() => { 
+              onCategorySelect?.('trending'); 
+              onSubcategorySelect?.(null, 'trending');
+              onClose?.(); 
+            }}
+            class="flex-1 py-2 bg-purple-500 text-white rounded-lg text-sm font-medium hover:bg-purple-600"
+          >
+            📈 Trending
+          </button>
+        </div>
+      </div>
+    </div>[36m
+  </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\MegaMenu.svelte[39m:70:5
+[33mWarn[39m: `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+[36m  <div class="absolute top-full left-0 right-0 mt-2 z-50">
+    [35m<div 
+      class="bg-white rounded-xl shadow-2xl border border-gray-200 max-h-[calc(100vh-200px)] sm:max-h-[70vh] overflow-y-auto {className}"
+      onclick={(e) => e.stopPropagation()}>
+      <div class="p-4">
+        <!-- Header with clear button -->
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="font-semibold text-gray-900">Shop by Category</h3>
+          <div class="flex gap-2">
+            {#if selectedCategory}
+              <button
+                onclick={clearAll}
+                class="text-xs px-2 py-1 text-gray-500 hover:text-gray-700"
+              >
+                Clear
+              </button>
+            {/if}
+            <button
+              onclick={onClose}
+              class="p-1 hover:bg-gray-100 rounded-lg"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main categories -->
+        <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4">
+          {#each mainCategories as cat}
+            {@const category = categories[cat.key]}
+            {#if category}
+              <button
+                onclick={(e) => {
+                  e.stopPropagation();
+                  selectCategory(cat.key);
+                }}
+                class="flex flex-col items-center p-3 rounded-lg transition-all {
+                  selectedCategory === cat.key 
+                    ? 'bg-black text-white' 
+                    : 'bg-gray-50 hover:bg-gray-100'
+                }"
+              >
+                <span class="text-2xl mb-1">{cat.icon}</span>
+                <span class="text-xs font-medium">{category.name}</span>
+              </button>
+            {/if}
+          {/each}
+        </div>
+
+        <!-- Subcategories for selected category -->
+        {#if selectedCategory && categories[selectedCategory]?.subcategories}
+          <div class="border-t pt-3">
+            <p class="text-xs text-gray-500 font-medium mb-2 uppercase">
+              {categories[selectedCategory].name} Categories
+            </p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+              <button
+                onclick={() => selectSubcategory(null, selectedCategory)}
+                class="px-3 py-2 text-sm rounded-lg {
+                  !selectedSubcategory 
+                    ? 'bg-black text-white' 
+                    : 'bg-gray-100 hover:bg-gray-200'
+                }"
+              >
+                All {categories[selectedCategory].name}
+              </button>
+              {#each categories[selectedCategory].subcategories as subcat}
+                <button
+                  onclick={() => selectSubcategory(subcat.name, selectedCategory)}
+                  class="px-3 py-2 text-sm rounded-lg truncate {
+                    selectedSubcategory === subcat.name
+                      ? 'bg-black text-white'
+                      : 'bg-gray-100 hover:bg-gray-200'
+                  }"
+                >
+                  {subcat.name}
+                </button>
+              {/each}
+            </div>
+          </div>
+        {/if}
+
+        <!-- Quick actions -->
+        <div class="flex gap-2 mt-4 pt-3 border-t">
+          <button 
+            onclick={() => { 
+              onCategorySelect?.('sale'); 
+              onSubcategorySelect?.(null, 'sale');
+              onClose?.(); 
+            }}
+            class="flex-1 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600"
+          >
+            🔥 On Sale
+          </button>
+          <button 
+            onclick={() => { 
+              onCategorySelect?.('new'); 
+              onSubcategorySelect?.(null, 'new');
+              onClose?.(); 
+            }}
+            class="flex-1 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600"
+          >
+            ✨ New Items
+          </button>
+          <button 
+            onclick={() => { 
+              onCategorySelect?.('trending'); 
+              onSubcategorySelect?.(null, 'trending');
+              onClose?.(); 
+            }}
+            class="flex-1 py-2 bg-purple-500 text-white rounded-lg text-sm font-medium hover:bg-purple-600"
+          >
+            📈 Trending
+          </button>
+        </div>
+      </div>
+    </div>[36m
+  </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\MegaMenu.svelte[39m:86:13
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m            {/if}
+            [35m<button
+              onclick={onClose}
+              class="p-1 hover:bg-gray-100 rounded-lg"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>[36m
+          </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\MegaMenu.svelte[39m:128:50
+[31mError[39m: Argument of type 'null' is not assignable to parameter of type 'string'. (ts)
+[36m              <button
+                onclick={() => selectSubcategory([35mnull[36m, selectedCategory)}
+                class="px-3 py-2 text-sm rounded-lg {[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\MessageNotificationToast.svelte[39m:69:9
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m        </div>
+        [35m<button 
+          onclick={onDismiss}
+          class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100/50"
+        >
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>[36m
+      </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\MessageNotificationToast.svelte[39m:143:5
+[33mWarn[39m: Also define the standard property 'line-clamp' for compatibility (css)
+[36m    display: -webkit-box;
+    [35m-webkit-line-clamp[36m: 3;
+    -webkit-box-orient: vertical;[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\NotificationPanel.svelte[39m:94:3
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m  <!-- Glass Morphism Backdrop -->
+  [35m<div 
+    class="fixed inset-0 bg-black/20 backdrop-blur-xs z-40"
+    onclick={onClose}
+    role="button"
+    tabindex="-1"
+  ></div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\NotificationPanel.svelte[39m:125:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m          {/if}
+          [35m<button 
+            onclick={onClose}
+            class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100/50"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>[36m
+        </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\NotificationPanel.svelte[39m:247:5
+[33mWarn[39m: Also define the standard property 'line-clamp' for compatibility (css)
+[36m    display: -webkit-box;
+    [35m-webkit-line-clamp[36m: 2;
+    -webkit-box-orient: vertical;[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\OptimizedImage.svelte[39m:62:1
+[33mWarn[39m: noninteractive element cannot have nonnegative tabIndex value
+https://svelte.dev/e/a11y_no_noninteractive_tabindex (svelte)
+[36m
+[35m<div 
+  class={containerClasses()}
+  onclick={handleClick}
+  role={onclick ? 'button' : undefined}
+  tabindex={onclick ? 0 : undefined}
+>
+  <!-- Animated Shimmer Skeleton Loading State -->
+  {#if shouldShowSkeleton}
+    <div class="skeleton-container absolute inset-0">
+      <div class="skeleton-shimmer"></div>
+      <!-- Optional placeholder image overlay -->
+      {#if placeholder}
+        <img
+          src={placeholder}
+          alt=""
+          class="absolute inset-0 w-full h-full object-cover opacity-20"
+          aria-hidden="true"
+        />
+      {/if}
+    </div>
+  {/if}
+
+  <!-- Enhanced Image with webp/avif support -->
+  <img
+    use:enhanced={{
+      src,
+      formats: ['webp', 'avif'],
+      widths: [320, 640, 768, 1024, 1280],
+      quality: 85
+    }}
+    {alt}
+    {sizes}
+    loading={loading}
+    decoding="async"
+    onloadstart={handleImageStart}
+    onload={handleLoad}
+    onerror={handleError}
+    class="image-main w-full h-full object-cover transition-all duration-500 ease-out
+      {imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'}"
+  />
+
+  <!-- Error State -->
+  {#if imageError && !imageLoaded}
+    <div class="absolute inset-0 bg-gray-50 flex flex-col items-center justify-center text-gray-400 transition-opacity duration-300">
+      <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+          d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+      </svg>
+      <span class="text-xs font-medium">Image unavailable</span>
+    </div>
+  {/if}
+</div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\OptimizedImage.svelte[39m:2:12
+[31mError[39m: Module '"@sveltejs/enhanced-img"' has no exported member 'enhanced'. (ts)
+[36m<script lang="ts">
+  import { [35menhanced[36m } from '@sveltejs/enhanced-img';[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\PayoutMethodSelector.svelte[39m:120:9
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m      <div class="bg-white rounded-xl border border-gray-200 p-4">
+        [35m<label class="block text-sm font-medium text-gray-700 mb-2">
+          {currentMethod.name} Details
+        </label>[36m
+        <Input[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\PayoutMethodSelector.svelte[39m:133:9
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m      <div class="bg-white rounded-xl border border-gray-200 p-4">
+        [35m<label class="block text-sm font-medium text-gray-700 mb-2">
+          Display Name (Optional)
+        </label>[36m
+        <Input[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductCard.svelte[39m:183:13
+[33mWarn[39m: Unknown role 'text'
+https://svelte.dev/e/a11y_unknown_role (svelte)
+[36m            id="seller-info-{product.id}"
+            [35mrole="text"[36m
+          >[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductCard.svelte[39m:199:9
+[33mWarn[39m: Unknown role 'text'
+https://svelte.dev/e/a11y_unknown_role (svelte)
+[36m        class="inline-flex items-center px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-full text-xs sm:text-xs font-extrabold uppercase tracking-wide {conditionColors[product.condition]} leading-none transform transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg will-change-transform"
+        [35mrole="text"[36m
+        aria-label="{conditionLabels[product.condition]}: {conditionDescriptions[product.condition]}"[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductCard.svelte[39m:135:15
+[31mError[39m: Type '() => string' is not assignable to type 'string'. (ts)
+[36m  tabindex="0"
+  aria-label={[35mproductSummary[36m}
+  onkeydown={(e) => {[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductCard.svelte[39m:148:14
+[31mError[39m: Type '() => string' is not assignable to type 'string'. (ts)
+[36m        src={product.images[0] || '/placeholder-product.svg'} 
+        alt={[35mimageAltText[36m}
+        aspectRatio="square"[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductCard.svelte[39m:176:13
+[31mError[39m: Type '(e: any) => any' is not assignable to type '() => void'.
+  Target signature provides too few arguments. Expected 1 or more, but got 0. (ts)
+[36m            size="sm"
+            [35monclick[36m={(e) => e.stopPropagation()}
+          />[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductCard.svelte[39m:176:23
+[31mError[39m: Parameter 'e' implicitly has an 'any' type. (ts)
+[36m            size="sm"
+            onclick={([35me[36m) => e.stopPropagation()}
+          />[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductCard.svelte[39m:243:20
+[31mError[39m: Property 'subcategory' does not exist on type 'Product'. Did you mean 'category'? (ts)
+[36m    <div class="text-sm sm:text-xs text-gray-500 truncate leading-relaxed">
+      {#if product.[35msubcategory[36m}<span class="uppercase">{product.subcategory}</span>{/if}{#if product.subcategory && (product.brand || product.size)}<span class="mx-1.5">•</span>{/if}{#if product.brand}<span class="font-medium text-gray-600">{product.brand}</span>{/if}{#if product.brand && product.size}<span class="mx-1.5">•</span>{/if}{#if product.size}Size {product.size}{/if}
+    </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductCard.svelte[39m:243:65
+[31mError[39m: Property 'subcategory' does not exist on type 'Product'. Did you mean 'category'? (ts)
+[36m    <div class="text-sm sm:text-xs text-gray-500 truncate leading-relaxed">
+      {#if product.subcategory}<span class="uppercase">{product.[35msubcategory[36m}</span>{/if}{#if product.subcategory && (product.brand || product.size)}<span class="mx-1.5">•</span>{/if}{#if product.brand}<span class="font-medium text-gray-600">{product.brand}</span>{/if}{#if product.brand && product.size}<span class="mx-1.5">•</span>{/if}{#if product.size}Size {product.size}{/if}
+    </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductCard.svelte[39m:243:102
+[31mError[39m: Property 'subcategory' does not exist on type 'Product'. Did you mean 'category'? (ts)
+[36m    <div class="text-sm sm:text-xs text-gray-500 truncate leading-relaxed">
+      {#if product.subcategory}<span class="uppercase">{product.subcategory}</span>{/if}{#if product.[35msubcategory[36m && (product.brand || product.size)}<span class="mx-1.5">•</span>{/if}{#if product.brand}<span class="font-medium text-gray-600">{product.brand}</span>{/if}{#if product.brand && product.size}<span class="mx-1.5">•</span>{/if}{#if product.size}Size {product.size}{/if}
+    </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductGallery.svelte[39m:107:3
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m  <!-- Main Image Container -->
+  [35m<div 
+    class="relative h-full bg-gray-50 overflow-hidden cursor-zoom-{isZoomed ? 'out' : 'in'}"
+    onclick={handleImageClick}
+    ontouchstart={handleTouchStart}
+    ontouchend={handleTouchEnd}
+    role="button"
+    tabindex="0"
+    aria-label="Product image gallery - click to zoom"
+  >
+    {#key selectedIndex}
+      <img 
+        bind:this={imageRef}
+        src={selectedImage}
+        alt="{title} - Image {selectedIndex + 1}"
+        class="w-full h-full object-contain transition-transform duration-300 ease-out
+               {isZoomed ? 'scale-150' : 'scale-100'}"
+        draggable="false"
+      />
+    {/key}
+
+    <!-- Condition Badge -->
+    {#if condition}
+      <div class="absolute top-4 left-4 z-10">
+        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold shadow-lg backdrop-blur-xs {conditionColors}">
+          {conditionLabels}
+        </span>
+      </div>
+    {/if}
+
+    <!-- Navigation Arrows (Desktop) -->
+    {#if images.length > 1}
+      <div class="hidden md:block">
+        <!-- Previous -->
+        {#if selectedIndex > 0}
+          <button
+            onclick={() => selectedIndex--}
+            class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 z-10"
+            aria-label="Previous image"
+          >
+            <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+        {/if}
+
+        <!-- Next -->
+        {#if selectedIndex < images.length - 1}
+          <button
+            onclick={() => selectedIndex++}
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 z-10"
+            aria-label="Next image"
+          >
+            <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
+        {/if}
+      </div>
+    {/if}
+
+    <!-- Image Counter -->
+    {#if images.length > 1}
+      <div class="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-xs">
+        {selectedIndex + 1} / {images.length}
+      </div>
+    {/if}
+
+    <!-- Zoom Indicator -->
+    {#if isZoomed}
+      <div class="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm backdrop-blur-xs">
+        Click to zoom out • ESC to exit
+      </div>
+    {/if}
+  </div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductGallery.svelte[39m:36:7
+[33mWarn[39m: `imageRef` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update (svelte)
+[36m  let galleryRef: HTMLDivElement;
+  let [35mimageRef: HTMLImageElement[36m;[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SellerCard.svelte[39m:131:1
+[33mWarn[39m: `<div>` with a mouseenter or mouseleave handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+[36m
+[35m<div 
+  class="bg-white border rounded-xl p-4 transition-all duration-200 hover:shadow-md {className}"
+  onmouseenter={() => isHovering = true}
+  onmouseleave={() => isHovering = false}
+>
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-3">
+    <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">{translations.soldBy || 'Sold by'}</h3>
+    <span class="text-xs text-gray-500">{formatLastActive(stats.lastActive)}</span>
+  </div>
+
+  <!-- Seller Info -->
+  <div class="flex items-start gap-3 mb-4">
+    <!-- Avatar with Activity Indicator -->
+    <div class="relative">
+      <Avatar 
+        name={name} 
+        src={avatar} 
+        size="lg"
+        class="ring-2 ring-white shadow-xs"
+      />
+      <!-- Activity Indicator -->
+      <div class="absolute -bottom-0.5 -right-0.5 w-4 h-4 {activityColor} rounded-full border-2 border-white"></div>
+      
+      <!-- Verification Badge -->
+      {#if stats.verificationLevel !== 'basic'}
+        <div 
+          class="absolute -top-1 -right-1 w-6 h-6 {verificationData.bgColor} rounded-full flex items-center justify-center text-xs border-2 border-white"
+          title={verificationData.description}
+          in:scale={{ duration: 300, delay: 200, easing: quintOut }}
+        >
+          {verificationData.icon}
+        </div>
+      {/if}
+    </div>
+
+    <!-- Seller Details -->
+    <div class="flex-1 min-w-0">
+      <div class="flex items-center gap-2 mb-1">
+        <h4 class="font-semibold text-gray-900 truncate">{name}</h4>
+        {#if stats.verificationLevel !== 'basic'}
+          <span 
+            class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {verificationData.bgColor} {verificationData.color}"
+            in:fly={{ x: 10, duration: 300, delay: 100, easing: quintOut }}
+          >
+            {verificationData.label}
+          </span>
+        {/if}
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="space-y-1 text-sm text-gray-600">
+        <!-- Rating -->
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+          </svg>
+          <span class="font-medium text-gray-900">{stats.rating?.toFixed(1) || '0.0'}</span>
+          <span>({stats.totalSales} {translations.sales || 'sales'})</span>
+        </div>
+
+        <!-- Response Time -->
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span>{formatResponseTime(stats.responseTime)}</span>
+        </div>
+
+        <!-- Membership -->
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a4 4 0 118 0v4m-4 12v-6m6 6h-8a2 2 0 01-2-2v-6a2 2 0 012-2h8a2 2 0 012 2v6a2 2 0 01-2 2z"/>
+          </svg>
+          <span>{formatJoinDate(stats.joinedDate)}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="grid grid-cols-2 gap-2 mb-3">
+    <button
+      onclick={onMessage}
+      class="flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+      </svg>
+      {translations.message || 'Message'}
+    </button>
+    
+    <button
+      onclick={onFollow}
+      class="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all
+             {isFollowing 
+               ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
+               : 'bg-black text-white hover:bg-gray-800'}"
+    >
+      {#if isFollowing}
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+        </svg>
+        {translations.following || 'Following'}
+      {:else}
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        {translations.follow || 'Follow'}
+      {/if}
+    </button>
+  </div>
+
+  <!-- View Profile Link -->
+  <button
+    onclick={onViewProfile}
+    class="w-full flex items-center justify-center gap-2 text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+  >
+    {translations.viewFullProfile || 'View full profile'}
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+  </button>
+
+  <!-- Extended Stats (if enabled) -->
+  {#if showFullStats}
+    <div 
+      class="mt-4 pt-4 border-t border-gray-100 space-y-3"
+      in:fade={{ duration: 300, delay: 200 }}
+    >
+      <!-- Trust Metrics -->
+      <div class="grid grid-cols-2 gap-4 text-xs">
+        <div class="text-center p-2 bg-gray-50 rounded-lg">
+          <div class="font-semibold text-gray-900">98%</div>
+          <div class="text-gray-600">{translations.positiveReviews || 'Positive reviews'}</div>
+        </div>
+        <div class="text-center p-2 bg-gray-50 rounded-lg">
+          <div class="font-semibold text-gray-900">24h</div>
+          <div class="text-gray-600">{translations.avgShipping || 'Avg shipping'}</div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="text-xs text-gray-600">
+        <div class="font-medium text-gray-900 mb-1">{translations.recentActivity || 'Recent activity'}</div>
+        <div class="space-y-1">
+          <div>• Sold 3 items this week</div>
+          <div>• 100% of orders shipped on time</div>
+          <div>• Responds to messages in 2 hours</div>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Hover Animation -->
+  {#if isHovering}
+    <div 
+      class="absolute inset-0 rounded-xl bg-linear-to-r from-blue-50 to-purple-50 opacity-30 pointer-events-none"
+      in:fade={{ duration: 200 }}
+    ></div>
+  {/if}
+</div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductSheet.svelte[39m:120:3
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m{#if isVisible}
+  [35m<div 
+    class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+    onclick={onClose}
+    in:fade={{ duration: 200 }}
+    out:fade={{ duration: 200 }}
+  ></div>[36m
+{/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductSheet.svelte[39m:120:3
+[33mWarn[39m: `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+[36m{#if isVisible}
+  [35m<div 
+    class="fixed inset-0 bg-black/50 z-40 lg:hidden"
+    onclick={onClose}
+    in:fade={{ duration: 200 }}
+    out:fade={{ duration: 200 }}
+  ></div>[36m
+{/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductSheet.svelte[39m:149:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m        <div class="flex items-center gap-3">
+          [35m<button
+            onclick={onClose}
+            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductSheet.svelte[39m:160:13
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m          <div class="flex items-center gap-2">
+            [35m<button
+              onclick={onShare}
+              class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 01-7.432 0m9.032-4.026A9.001 9.001 0 0112 3c-4.474 0-8.268 3.12-9.032 7.326m0 0A9.001 9.001 0 0012 21c4.474 0 8.268-3.12 9.032-7.326"/>
+              </svg>
+            </button>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductSheet.svelte[39m:169:13
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m            
+            [35m<button
+              onclick={onFavorite}
+              class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+              </svg>
+            </button>[36m
+          </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductSheet.svelte[39m:189:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m          
+          [35m<button
+            onclick={toggleFullscreen}
+            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4a4 4 0 114 4H4zM20 8V4a4 4 0 10-4 4h4zM4 16v4a4 4 0 104-4H4zM20 16v4a4 4 0 01-4-4h4z"/>
+            </svg>
+          </button>[36m
+        </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductSheet.svelte[39m:55:7
+[33mWarn[39m: `sheetRef` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update (svelte)
+[36m
+  let [35msheetRef: HTMLDivElement[36m;
+  let isDragging = $state(false);[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductSheet.svelte[39m:133:12
+[31mError[39m: Type '() => string' is not assignable to type 'string'. (ts)
+[36m    class="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl z-50 lg:hidden {sheetHeight} {className}"
+    style={[35mtransformStyle[36m}
+    ontouchstart={handleTouchStart}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductSheet.svelte[39m:254:30
+[31mError[39m: Type 'string' is not assignable to type '"condition" | "seller" | "info"'. (ts)
+[36m            <button
+              onclick={() => [35mcurrentSection[36m = section}
+              class="flex-1 py-3 px-4 text-sm font-medium capitalize transition-colors[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductSheet.svelte[39m:309:15
+[31mError[39m: Type 'string' is not assignable to type '"new" | "like-new" | "good" | "fair"'. (ts)
+[36m            <ConditionReport 
+              [35mcondition[36m={product.condition}
+              authenticatedBy="Driplo"[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SoldNotificationToast.svelte[39m:57:9
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m        </div>
+        [35m<button 
+          onclick={onDismiss}
+          class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100/50"
+        >
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>[36m
+      </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductSoldManager.svelte[39m:59:26
+[31mError[39m: Type '{ id: string; product: Product; buyer?: { id: string; username: string; avatar_url?: string | undefined; } | undefined; timestamp: number; } | { id: string; product: { id: string; title: string; image: string; price: number; }; buyer: { ...; } | undefined; timestamp: number; }' is not assignable to type '{ id: string; product: Product; buyer?: { id: string; username: string; avatar_url?: string | undefined; } | undefined; timestamp: number; }'.
+  Type '{ id: string; product: { id: string; title: string; image: string; price: number; }; buyer: { id: string; username: string; avatar_url?: string; } | undefined; timestamp: number; }' is not assignable to type '{ id: string; product: Product; buyer?: { id: string; username: string; avatar_url?: string | undefined; } | undefined; timestamp: number; }'.
+    Types of property 'product' are incompatible.
+      Type '{ id: string; title: string; image: string; price: number; }' is missing the following properties from type 'Product': description, images, size, condition, and 5 more. (ts)
+[36m
+    soldNotifications = [[35m...soldNotifications[36m, notification];[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductSoldManager.svelte[39m:59:48
+[31mError[39m: Type '{ id: string; product: { id: string; title: string; image: string; price: number; }; buyer: { id: string; username: string; avatar_url?: string; } | undefined; timestamp: number; }' is not assignable to type '{ id: string; product: Product; buyer?: { id: string; username: string; avatar_url?: string | undefined; } | undefined; timestamp: number; }'.
+  Types of property 'product' are incompatible.
+    Type '{ id: string; title: string; image: string; price: number; }' is missing the following properties from type 'Product': description, images, size, condition, and 5 more. (ts)
+[36m
+    soldNotifications = [...soldNotifications, [35mnotification[36m];[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\ProductSoldManager.svelte[39m:97:5
+[31mError[39m: Property 'image' is missing in type 'Product' but required in type '{ id: string; title: string; image: string; price: number; }'. (ts)
+[36m    show={true}
+    [35mproduct[36m={notification.product}
+    buyer={notification.buyer}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\QuickActions.svelte[39m:143:7
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m    {#if onMessage}
+      [35m<button
+        onclick={onMessage}
+        class="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 hover:shadow-xl"
+        in:fly={{ x: position === 'right' ? 20 : -20, duration: 300, delay: 300, easing: quintOut }}
+      >
+        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+      </button>[36m
+    {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\QuickActions.svelte[39m:196:5
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m    <!-- Share -->
+    [35m<button
+      onclick={handleShare}
+      class="p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-all duration-200 active:scale-95"
+      title="Share product"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 01-7.432 0m9.032-4.026A9.001 9.001 0 0112 3c-4.474 0-8.268 3.12-9.032 7.326m0 0A9.001 9.001 0 0012 21c4.474 0 8.268-3.12 9.032-7.326"/>
+      </svg>
+    </button>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\QuickActions.svelte[39m:231:7
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m    {#if onMessage}
+      [35m<button
+        onclick={onMessage}
+        class="p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-all duration-200 active:scale-95"
+        title="Message seller"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+      </button>[36m
+    {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SearchBar.svelte[39m:138:17
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m              {#if value}
+                [35m<button
+                  type="button"
+                  onclick={handleClear}
+                  class="p-1.5 hover:bg-gray-200 rounded-full transition-colors mr-1"
+                >
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>[36m
+              {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SearchBar.svelte[39m:194:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m        {#if value}
+          [35m<button
+            type="button"
+            onclick={handleClear}
+            class="absolute right-2 p-1 hover:bg-gray-200 rounded-full transition-colors"
+          >
+            <svg class="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>[36m
+        {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SearchBar.svelte[39m:229:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m        {#if value}
+          [35m<button
+            type="button"
+            onclick={handleClear}
+            class="absolute right-24 p-1 hover:bg-gray-200 rounded-full transition-colors"
+          >
+            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>[36m
+        {/if}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SearchBar.svelte[39m:241:9
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m        <!-- Filter Button -->
+        [35m<button
+          type="button"
+          onclick={onFilter}
+          class="absolute right-2 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+        </button>[36m
+      </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SearchBar.svelte[39m:40:7
+[33mWarn[39m: `inputElement` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update (svelte)
+[36m  let showCategories = $state(false);
+  let [35minputElement: HTMLInputElement[36m;[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SocialLinksEditor.svelte[39m:77:15
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m            <div>
+              [35m<label class="block text-sm font-medium text-gray-700 mb-1">Platform</label>[36m
+              <select[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SocialLinksEditor.svelte[39m:90:15
+[33mWarn[39m: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+[36m            <div>
+              [35m<label class="block text-sm font-medium text-gray-700 mb-1">URL/Username</label>[36m
+              <Input[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SocialLinksEditor.svelte[39m:101:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m          <!-- Remove Button -->
+          [35m<button
+            onclick={() => removeLink(index)}
+            class="shrink-0 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors duration-200 opacity-0 group-hover:opacity-100"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </button>[36m
+        </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SocialLinksEditor.svelte[39m:80:60
+[31mError[39m: 'e.target' is possibly 'null'. (ts)
+[36m                bind:value={link.type}
+                onchange={(e) => updateLink(index, 'type', [35me.target[36m.value)}
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80"[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SocialLinksEditor.svelte[39m:80:69
+[31mError[39m: Property 'value' does not exist on type 'EventTarget'. (ts)
+[36m                bind:value={link.type}
+                onchange={(e) => updateLink(index, 'type', e.target.[35mvalue[36m)}
+                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80"[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SocialLinksEditor.svelte[39m:94:63
+[31mError[39m: Argument of type 'Event' is not assignable to parameter of type 'string'. (ts)
+[36m                placeholder={platformInfo.placeholder}
+                onchange={(value) => updateLink(index, 'url', [35mvalue[36m)}
+                class="bg-white/80"[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SoldNotificationPanel.svelte[39m:93:3
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m  <!-- Glass Morphism Backdrop -->
+  [35m<div 
+    class="fixed inset-0 bg-black/20 backdrop-blur-xs z-40"
+    onclick={onClose}
+    role="button"
+    tabindex="-1"
+  ></div>[36m[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\SoldNotificationPanel.svelte[39m:132:11
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m          {/if}
+          [35m<button 
+            onclick={onClose}
+            class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100/50"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>[36m
+        </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\WelcomeModal.svelte[39m:141:15
+[33mWarn[39m: Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label (svelte)
+[36m            {#each effectiveSteps as step, index}
+              [35m<button
+                onclick={() => currentStep = index}
+                class="w-2 h-2 rounded-full transition-all duration-300 {index === currentStep ? 'bg-black w-8' : 'bg-gray-300 hover:bg-gray-400'}"
+              ></button>[36m
+            {/each}[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\components\PricingCard.svelte[39m:56:7
+[33mWarn[39m: Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag (svelte)
+[36m    {#if glassEffect}
+      [35m<div
+        aria-hidden="true"
+        class="absolute inset-x-0 top-0 h-48 rounded-[inherit]"
+        style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
+      />[36m
+    {/if}[39m
+
+====================================
+[31msvelte-check found 71 errors and 100 warnings in 55 files
+[39m ELIFECYCLE  Command failed with exit code 1.
