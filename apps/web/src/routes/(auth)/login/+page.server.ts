@@ -44,12 +44,6 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 
 export const actions: Actions = {
   signin: async ({ request, locals: { supabase }, url }) => {
-    // EMERGENCY: Return success immediately for testing
-    return message(await superValidate(request, zod(LoginSchema)), {
-      type: 'success',
-      text: 'Login working - redirecting...'
-    });
-    
     // CRITICAL: Top-level try-catch to prevent 500 errors that break Superforms
     try {
       // Always log in production to debug Vercel issues (matching signup pattern)
@@ -117,11 +111,14 @@ export const actions: Actions = {
       }
 
       // EMERGENCY: Skip profile check to avoid service role issues
-      console.log('[LOGIN] Login successful! Redirecting to dashboard');
+      console.log('[LOGIN] Login successful! Showing success message');
       console.log('[LOGIN] ========== LOGIN ACTION END ==========');
       
-      // Use standard SvelteKit redirect after successful authentication
-      throw redirect(303, '/');
+      // Use Superforms message helper for success (matching signup pattern)
+      return message(form, {
+        type: 'success',
+        text: 'Successfully signed in! Welcome back to Driplo.'
+      });
       
     } catch (unexpectedError) {
       console.error('[LOGIN] Unexpected error:', unexpectedError);

@@ -13,8 +13,12 @@
     taintedMessage: null,
     validationMethod: 'oninput',
     onUpdated: ({ form }) => {
-      // Simple message handling like signup - no automatic redirect
-      // Let user click to go to dashboard after successful login
+      // On successful login, redirect to dashboard after showing success message
+      if (form.message?.type === 'success') {
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000); // Give user time to see success message
+      }
     }
   });
 </script>
