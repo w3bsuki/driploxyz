@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServerClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import * as Sentry from '@sentry/sveltekit';
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
   try {
@@ -52,9 +53,23 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     });
     
     if (error) {
+      // Map Supabase auth errors to user-friendly messages
+      let userError = 'Invalid email or password';
+      
+      if (error.message.includes('Invalid login credentials')) {
+        userError = 'Invalid email or password';
+      } else if (error.message.includes('Email not confirmed')) {
+        userError = 'Please verify your email address before signing in';
+      } else if (error.message.includes('User not found')) {
+        userError = 'No account found with this email address';
+      } else if (error.message.includes('too many requests')) {
+        userError = 'Too many login attempts. Please try again later';
+      }
+      
+      
       return json({ 
         success: false, 
-        error: error.message 
+        error: userError
       }, { status: 401 });
     }
     
@@ -65,10 +80,15 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     });
     
   } catch (e: any) {
-    console.error('[API LOGIN] Unexpected error:', e);
+    // Capture error in Sentry (will be filtered for sensitive data)
+    Sentry.captureException(e, {
+      tags: { component: 'auth-login' },
+      extra: { email: body?.email }
+    });
+    
     return json({ 
       success: false, 
-      error: e.message || 'Internal server error' 
+      error: 'Internal server error' 
     }, { status: 500 });
   }
 };

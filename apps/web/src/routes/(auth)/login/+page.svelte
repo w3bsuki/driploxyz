@@ -71,10 +71,12 @@
       // Handle form submission client-side
       if (browser) {
         clientError = '';
-        // submitting is a store from superforms, access it differently
         const response = await clientLogin($form.email, $form.password);
         if (!response.success) {
           clientError = response.error || 'Login failed';
+        } else {
+          // Redirect on success
+          window.location.href = '/';
         }
       }
     }}>

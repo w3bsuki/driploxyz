@@ -29,8 +29,7 @@ export async function clientLogin(email: string, password: string) {
     console.log('[CLIENT AUTH] Response:', data);
     
     if (response.ok && data.success) {
-      // Force page reload to update auth state
-      window.location.href = '/';
+      // Let the auth state change handler update the UI naturally
       return { success: true };
     } else {
       return { success: false, error: data.error || 'Invalid email or password' };

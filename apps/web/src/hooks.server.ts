@@ -29,11 +29,28 @@ if (SENTRY_DSN) {
     dsn: SENTRY_DSN,
     environment: dev ? 'development' : 'production',
     tracesSampleRate: dev ? 1.0 : 0.1,
-    debug: !dev, // Enable debug in production to see what's happening
+    debug: dev,
+    integrations: [
+      // Capture all unhandled errors
+      new Sentry.Integrations.Http({ tracing: true }),
+      new Sentry.Integrations.OnUncaughtException(),
+      new Sentry.Integrations.OnUnhandledRejection(),
+    ],
+    beforeSend(event) {
+      // Don't send errors in development
+      if (dev) return null;
+      
+      // Filter sensitive data
+      if (event.exception) {
+        const error = event.exception.values?.[0];
+        if (error?.value?.includes('password') || error?.value?.includes('token')) {
+          return null; // Don't send sensitive auth errors
+        }
+      }
+      
+      return event;
+    }
   });
-  console.log('[SENTRY] Initialized with DSN');
-} else {
-  console.log('[SENTRY] No DSN found - error tracking disabled');
 }
 
 const supabase: Handle = async ({ event, resolve }) => {
@@ -57,13 +74,10 @@ const supabase: Handle = async ({ event, resolve }) => {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              // Set cookies with proper options for Vercel
+              // Use Supabase's cookie options as-is
               event.cookies.set(name, value, {
                 ...options,
-                path: '/',
-                secure: true,
-                sameSite: 'lax',
-                httpOnly: true
+                path: '/'
               });
             });
           },

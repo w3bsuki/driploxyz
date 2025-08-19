@@ -7,7 +7,7 @@ import type { Database } from '$lib/types/database.types';
  * Create a Supabase client for server-side operations
  * This ensures consistent auth handling across all server contexts
  */
-export function createSupabaseServerClient(cookies: Cookies) {
+export function createSupabaseServerClient(cookies: Cookies, fetch?: typeof globalThis.fetch) {
   return createServerClient<Database>(
     PUBLIC_SUPABASE_URL,
     PUBLIC_SUPABASE_ANON_KEY,
@@ -20,14 +20,14 @@ export function createSupabaseServerClient(cookies: Cookies) {
           cookiesToSet.forEach(({ name, value, options }) => {
             cookies.set(name, value, {
               ...options,
-              path: '/',
-              secure: true,
-              sameSite: 'lax',
-              httpOnly: true
+              path: '/'
             });
           });
         },
       },
+      global: {
+        fetch: fetch || globalThis.fetch
+      }
     }
   );
 }

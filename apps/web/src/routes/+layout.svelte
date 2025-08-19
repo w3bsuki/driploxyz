@@ -30,12 +30,13 @@
   const supabase = $derived(data?.supabase);
   const isAuthPage = $derived($page.route.id?.includes('(auth)'));
 
-  // SSR-friendly auth initialization - no complex client-side logic
+  // SSR-friendly auth initialization - sync server data to stores
   $effect(() => {
-    // Simply sync server data to stores without complex initialization
-    if (data?.user !== undefined) user.set(data.user);
-    if (data?.session !== undefined) session.set(data.session);  
-    if (data?.profile !== undefined) profile.set(data.profile);
+    
+    // Always sync server data to stores
+    user.set(data?.user || null);
+    session.set(data?.session || null);  
+    profile.set(data?.profile || null);
     if (data?.supabase) setSupabaseClient(data.supabase);
     authLoading.set(false);
   });
@@ -44,13 +45,22 @@
     if (!supabase) return;
     
     // Set up auth state listener for session changes
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       console.log('Auth state changed:', event, newSession?.user?.email);
       
-      // Invalidate all load functions that depend on auth
-      // This ensures the page reloads with new session data
+      // Update stores immediately for instant UI feedback
+      if (event === 'SIGNED_IN' && newSession) {
+        user.set(newSession.user);
+        session.set(newSession);
+      } else if (event === 'SIGNED_OUT') {
+        user.set(null);
+        session.set(null);
+        profile.set(null);
+      }
+      
+      // Invalidate and reload server data for consistency
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
-        invalidate('supabase:auth');
+        await invalidate('supabase:auth');
       }
     });
 

@@ -40,10 +40,23 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     });
     
     if (error) {
-      console.log('[API SIGNUP] Auth error:', error.message);
+      // Map Supabase signup errors to user-friendly messages
+      let userError = 'Failed to create account';
+      
+      if (error.message.includes('User already registered')) {
+        userError = 'An account with this email already exists';
+      } else if (error.message.includes('Password should be at least')) {
+        userError = 'Password must be at least 6 characters long';
+      } else if (error.message.includes('Invalid email')) {
+        userError = 'Please enter a valid email address';
+      } else if (error.message.includes('too many requests')) {
+        userError = 'Too many signup attempts. Please try again later';
+      }
+      
+      
       return json({ 
         success: false, 
-        error: error.message 
+        error: userError 
       }, { status: 400 });
     }
     
