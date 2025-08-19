@@ -47,7 +47,7 @@ export const actions: Actions = {
     // Always log in production to debug Vercel issues (matching signup pattern)
     console.log('[LOGIN] ========== LOGIN ACTION START ==========');
     console.log('[LOGIN] Timestamp:', new Date().toISOString());
-    console.log('[LOGIN] Version: v2-fixed');
+    console.log('[LOGIN] Version: v3-bulletproof-matching-signup');
     console.log('[LOGIN] Request method:', request.method);
     console.log('[LOGIN] Request URL:', request.url);
     console.log('[LOGIN] Site URL origin:', url.origin);
@@ -67,68 +67,90 @@ export const actions: Actions = {
     console.log('[LOGIN] Attempting login for email:', email);
     console.log('[LOGIN] Supabase client exists:', !!supabase);
     
-    console.log('[LOGIN] Calling supabase.auth.signInWithPassword...');
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+    // Bulletproof error handling with explicit form returns
+    try {
+      console.log('[LOGIN] Calling supabase.auth.signInWithPassword...');
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
 
-    console.log('[LOGIN] Auth response received');
-    console.log('[LOGIN] Has data:', !!data);
-    console.log('[LOGIN] Has user:', !!data?.user);
-    console.log('[LOGIN] Has session:', !!data?.session);
-    console.log('[LOGIN] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
+      console.log('[LOGIN] Auth response received');
+      console.log('[LOGIN] Has data:', !!data);
+      console.log('[LOGIN] Has user:', !!data?.user);
+      console.log('[LOGIN] Has session:', !!data?.session);
+      console.log('[LOGIN] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
 
-    if (error) {
-      // Handle specific error cases
-      if (error.message.includes('Invalid login credentials')) {
+      if (error) {
+        console.log('[LOGIN] Auth error - returning fail with form');
+        // Handle specific error cases - ALWAYS return with form
+        if (error.message.includes('Invalid login credentials')) {
+          return fail(400, {
+            form: setError(form, '', 'Invalid email or password')
+          });
+        }
+        if (error.message.includes('Email not confirmed')) {
+          return fail(400, {
+            form: setError(form, '', 'Please verify your email before logging in')
+          });
+        }
+        
+        // Return fail with form for superforms to handle properly
         return fail(400, {
-          form: setError(form, '', 'Invalid email or password')
+          form: setError(form, '', error.message || 'Unable to sign in')
         });
       }
-      if (error.message.includes('Email not confirmed')) {
+
+      if (!data.user || !data.session) {
+        console.log('[LOGIN] No user or session - returning fail with form');
         return fail(400, {
-          form: setError(form, '', 'Please verify your email before logging in')
+          form: setError(form, '', 'Authentication failed. Please try again.')
+        });
+      }
+
+      // Check onboarding status (non-blocking with error handling)
+      let profile = null;
+      try {
+        const profileResponse = await supabase
+          .from('profiles')
+          .select('onboarding_completed')
+          .eq('id', data.user.id)
+          .single();
+        profile = profileResponse.data;
+        console.log('[LOGIN] Profile check:', { profile, error: profileResponse.error });
+      } catch (profileError) {
+        console.warn('[LOGIN] Profile check failed:', profileError);
+        // Continue with login even if profile check fails
+      }
+      
+      // CRITICAL: Always return message with form for success cases
+      if (!profile || profile.onboarding_completed !== true) {
+        // Return success message with onboarding redirect - MATCHING SIGNUP PATTERN
+        console.log('[LOGIN] Login successful! User needs onboarding');
+        console.log('[LOGIN] Returning message with form for onboarding redirect');
+        console.log('[LOGIN] ========== LOGIN ACTION END ==========');
+        return message(form, {
+          type: 'success',
+          text: 'Login successful! Redirecting to complete your profile...',
+          redirect: '/onboarding'
         });
       }
       
-      // Return fail with form for superforms to handle properly
-      return fail(400, {
-        form: setError(form, '', error.message || 'Unable to sign in')
-      });
-    }
-
-    if (!data.user || !data.session) {
-      return fail(400, {
-        form: setError(form, '', 'Authentication failed. Please try again.')
-      });
-    }
-
-    // Check onboarding status (non-blocking)
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('onboarding_completed')
-      .eq('id', data.user.id)
-      .single();
-    
-    if (!profile || profile.onboarding_completed !== true) {
-      // Return success message with onboarding redirect
-      console.log('[LOGIN] Login successful! User needs onboarding');
+      // Success - return success message with home redirect - MATCHING SIGNUP PATTERN
+      console.log('[LOGIN] Login successful! User already onboarded');
+      console.log('[LOGIN] Returning message with form for home redirect');
       console.log('[LOGIN] ========== LOGIN ACTION END ==========');
       return message(form, {
         type: 'success',
-        text: 'Login successful! Redirecting to complete your profile...',
-        redirect: '/onboarding'
+        text: 'Login successful! Welcome back.',
+        redirect: '/'
+      });
+      
+    } catch (unexpectedError) {
+      console.error('[LOGIN] Unexpected error:', unexpectedError);
+      return fail(500, {
+        form: setError(form, '', 'An unexpected error occurred. Please try again.')
       });
     }
-    
-    // Success - return success message with home redirect
-    console.log('[LOGIN] Login successful! User already onboarded');
-    console.log('[LOGIN] ========== LOGIN ACTION END ==========');
-    return message(form, {
-      type: 'success',
-      text: 'Login successful! Welcome back.',
-      redirect: '/'
-    });
   }
 };

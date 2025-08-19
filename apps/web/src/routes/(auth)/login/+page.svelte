@@ -13,7 +13,7 @@
     taintedMessage: null,
     validationMethod: 'oninput',
     onUpdated: ({ form }) => {
-      // Handle success message with redirect
+      // Handle success message with redirect - EXACTLY MATCHING SIGNUP PATTERN
       if (form.message && form.message.type === 'success' && form.message.redirect) {
         // Small delay to show success message before redirect
         setTimeout(() => {

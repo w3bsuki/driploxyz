@@ -1,6 +1,29 @@
 {
-  "framework": "sveltekit",
-  "buildCommand": "pnpm build",
-  "installCommand": "pnpm install",
-  "devCommand": "pnpm dev"
+  "version": 2,
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "framework": "svelte-kit",
+  "git": {
+    "deploymentEnabled": true
+  },
+  "functions": {
+    "src/routes/**/*.server.ts": {
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "env": {
+    "BUILD_TIMESTAMP": "@now"
+  }
 }
