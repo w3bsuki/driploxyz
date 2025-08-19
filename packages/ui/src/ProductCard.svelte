@@ -55,10 +55,10 @@
   }
 
   const conditionColors = {
-    'new': 'bg-green-500 text-white',
-    'like-new': 'bg-blue-500 text-white',
-    'good': 'bg-yellow-500 text-white',
-    'fair': 'bg-orange-500 text-white'
+    'new': 'bg-success text-white',
+    'like-new': 'bg-info text-white', 
+    'good': 'bg-warning text-white',
+    'fair': 'bg-accent-orange text-white'
   };
   
   const conditionLabels = {
@@ -83,10 +83,10 @@
       soldAt={product.sold_at} 
     />
     
-    <!-- Seller Avatar Bottom Left on Image -->
-    <div class="absolute bottom-2 left-2">
+    <!-- Seller Avatar Bottom Left on Image - Mobile-First Fix -->
+    <div class="absolute bottom-1 left-1 sm:bottom-2 sm:left-2">
       <div 
-        class="flex items-center bg-white/90 backdrop-blur-sm rounded-full shadow-xs transition-all duration-200 ease-out cursor-pointer {showSellerName ? 'pr-3' : ''}"
+        class="flex items-center bg-white/90 backdrop-blur-sm rounded-full shadow-xs transition-all duration-200 ease-out cursor-pointer {showSellerName ? 'pr-2 sm:pr-3' : ''}"
         onmouseenter={() => showSellerName = true}
         onmouseleave={() => showSellerName = false}
         onclick={(e) => e.stopPropagation()}
@@ -110,16 +110,16 @@
       </div>
     </div>
     
-    <!-- Condition Badge Bottom Right on Image -->
-    <div class="absolute bottom-2 right-2">
-      <span class="inline-flex items-center px-3 py-1.5 rounded-md text-xs font-bold shadow-lg {conditionColors[product.condition]}">
+    <!-- Condition Badge Bottom Right on Image - Mobile-First Fix -->
+    <div class="absolute bottom-1 right-1 sm:bottom-2 sm:right-2 badge-mobile-fix">
+      <span class="inline-flex items-center px-2 py-1 sm:px-3 sm:py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-lg {conditionColors[product.condition]} leading-none">
         {conditionLabels[product.condition] || product.condition}
       </span>
     </div>
     
   </div>
   
-  <div class="p-3 space-y-1">
+  <div class="p-3 sm:p-3 space-y-1.5 sm:space-y-1">
     <!-- Top Row: Category and Wishlist -->
     <div class="flex items-center justify-between">
       {#if product.category}
@@ -131,11 +131,11 @@
       {#if onFavorite}
         <button 
           onclick={handleFavorite}
-          class="p-0.5 hover:bg-gray-100 rounded-full transition-colors -mr-1"
+          class="p-1.5 sm:p-0.5 hover:bg-gray-100 rounded-full transition-colors -mr-1 touch-manipulation"
           aria-label={translations.addToFavorites}
         >
           <svg 
-            class="w-4 h-4 transition-colors {favorited ? 'text-red-500 fill-current' : 'text-gray-400 hover:text-red-500'}" 
+            class="w-4 h-4 sm:w-4 sm:h-4 transition-colors {favorited ? 'text-red-500 fill-current' : 'text-gray-400 hover:text-red-500'}" 
             viewBox="0 0 20 20"
           >
             <path 
@@ -149,7 +149,7 @@
     </div>
     
     <!-- Product Title -->
-    <h3 class="font-semibold text-sm text-gray-900 leading-tight truncate">{product.title}</h3>
+    <h3 class="font-semibold text-sm sm:text-sm text-gray-900 leading-tight line-clamp-2 sm:truncate">{product.title}</h3>
     
     <!-- Subcategory, Brand and Size - SINGLE ROW -->
     <div class="text-xs text-gray-500 truncate">
@@ -158,7 +158,7 @@
     
     <!-- Price -->
     <div class="pt-1">
-      <span class="text-base font-bold text-gray-900">
+      <span class="text-base sm:text-base font-bold text-gray-900">
         {translations.formatPrice ? translations.formatPrice(product.price) : `${translations.currency}${typeof product.price === 'number' ? product.price.toFixed(2) : product.price}`}
       </span>
     </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
+  const browser = typeof window !== 'undefined';
 
   interface Props {
     show: boolean;

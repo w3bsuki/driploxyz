@@ -14,6 +14,115 @@ export type Database = {
   }
   public: {
     Tables: {
+      badges: {
+        Row: {
+          badge_description: string | null
+          badge_icon: string | null
+          badge_name: string
+          badge_type: string
+          created_at: string | null
+          earned_at: string | null
+          expires_at: string | null
+          id: string
+          metadata: Json | null
+          profile_id: string
+        }
+        Insert: {
+          badge_description?: string | null
+          badge_icon?: string | null
+          badge_name: string
+          badge_type: string
+          created_at?: string | null
+          earned_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          profile_id: string
+        }
+        Update: {
+          badge_description?: string | null
+          badge_icon?: string | null
+          badge_name?: string
+          badge_type?: string
+          created_at?: string | null
+          earned_at?: string | null
+          expires_at?: string | null
+          id?: string
+          metadata?: Json | null
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "badges_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brands: {
+        Row: {
+          brand_description: string | null
+          brand_logo_url: string | null
+          brand_name: string
+          business_registration: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string | null
+          id: string
+          profile_id: string
+          subscription_active: boolean | null
+          tax_id: string | null
+          updated_at: string | null
+          verification_documents: Json | null
+          verified_brand: boolean | null
+          website_url: string | null
+        }
+        Insert: {
+          brand_description?: string | null
+          brand_logo_url?: string | null
+          brand_name: string
+          business_registration?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          id?: string
+          profile_id: string
+          subscription_active?: boolean | null
+          tax_id?: string | null
+          updated_at?: string | null
+          verification_documents?: Json | null
+          verified_brand?: boolean | null
+          website_url?: string | null
+        }
+        Update: {
+          brand_description?: string | null
+          brand_logo_url?: string | null
+          brand_name?: string
+          business_registration?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
+          id?: string
+          profile_id?: string
+          subscription_active?: boolean | null
+          tax_id?: string | null
+          updated_at?: string | null
+          verification_documents?: Json | null
+          verified_brand?: boolean | null
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brands_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string | null
@@ -377,6 +486,7 @@ export type Database = {
           account_type: string | null
           avatar_url: string | null
           bio: string | null
+          brand_status: string | null
           created_at: string | null
           date_of_birth: string | null
           full_name: string | null
@@ -384,6 +494,8 @@ export type Database = {
           is_verified: boolean | null
           last_active_at: string | null
           location: string | null
+          onboarding_completed: boolean | null
+          payout_method: Json | null
           phone: string | null
           premium_boosts_remaining: number | null
           purchases_count: number | null
@@ -391,14 +503,17 @@ export type Database = {
           review_count: number | null
           role: Database["public"]["Enums"]["user_role"] | null
           sales_count: number | null
+          social_links: Json | null
           subscription_tier: string | null
           updated_at: string | null
           username: string
+          verified: boolean | null
         }
         Insert: {
           account_type?: string | null
           avatar_url?: string | null
           bio?: string | null
+          brand_status?: string | null
           created_at?: string | null
           date_of_birth?: string | null
           full_name?: string | null
@@ -406,6 +521,8 @@ export type Database = {
           is_verified?: boolean | null
           last_active_at?: string | null
           location?: string | null
+          onboarding_completed?: boolean | null
+          payout_method?: Json | null
           phone?: string | null
           premium_boosts_remaining?: number | null
           purchases_count?: number | null
@@ -413,14 +530,17 @@ export type Database = {
           review_count?: number | null
           role?: Database["public"]["Enums"]["user_role"] | null
           sales_count?: number | null
+          social_links?: Json | null
           subscription_tier?: string | null
           updated_at?: string | null
           username: string
+          verified?: boolean | null
         }
         Update: {
           account_type?: string | null
           avatar_url?: string | null
           bio?: string | null
+          brand_status?: string | null
           created_at?: string | null
           date_of_birth?: string | null
           full_name?: string | null
@@ -428,6 +548,8 @@ export type Database = {
           is_verified?: boolean | null
           last_active_at?: string | null
           location?: string | null
+          onboarding_completed?: boolean | null
+          payout_method?: Json | null
           phone?: string | null
           premium_boosts_remaining?: number | null
           purchases_count?: number | null
@@ -435,9 +557,11 @@ export type Database = {
           review_count?: number | null
           role?: Database["public"]["Enums"]["user_role"] | null
           sales_count?: number | null
+          social_links?: Json | null
           subscription_tier?: string | null
           updated_at?: string | null
           username?: string
+          verified?: boolean | null
         }
         Relationships: []
       }
@@ -686,6 +810,17 @@ export type Database = {
       get_seller_analytics: {
         Args: { days_back?: number; seller_id_param: string }
         Returns: Json
+      }
+      get_user_messages: {
+        Args: { user_id: string }
+        Returns: {
+          content: string
+          created_at: string
+          id: string
+          product_id: string
+          receiver_id: string
+          sender_id: string
+        }[]
       }
       gtrgm_compress: {
         Args: { "": unknown }

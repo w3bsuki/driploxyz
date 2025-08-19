@@ -17,9 +17,9 @@
 <!-- Product Grid -->
 <div class="px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
   
-  <!-- Featured Products Grid -->
+  <!-- Featured Products Grid - Mobile-First Responsive -->
   {#if products.length > 0}
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
       {#each products as product}
         <ProductCard 
           {product}

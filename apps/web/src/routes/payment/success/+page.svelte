@@ -48,7 +48,7 @@
 
 			<div class="space-y-3">
 				<Button
-					on:click={goToOrders}
+					onclick={goToOrders}
 					variant="primary"
 					class="w-full"
 				>
@@ -56,7 +56,7 @@
 				</Button>
 				
 				<Button
-					on:click={continueShopping}
+					onclick={continueShopping}
 					variant="outline"
 					class="w-full"
 				>
