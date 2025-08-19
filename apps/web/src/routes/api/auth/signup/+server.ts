@@ -2,14 +2,17 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServerClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { dev } from '$app/environment';
+
+const DEBUG = dev;
 
 export const POST: RequestHandler = async ({ request, cookies }) => {
-  console.log('[API SIGNUP] Signup endpoint called');
+  if (DEBUG) console.log('[API SIGNUP] Signup endpoint called');
   
   try {
     const { email, password, fullName } = await request.json();
     
-    console.log('[API SIGNUP] Attempting signup for:', email);
+    if (DEBUG) console.log('[API SIGNUP] Attempting signup');
     
     // Create Supabase client directly
     const supabase = createServerClient(
@@ -61,14 +64,14 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
     }
     
     if (!data.user) {
-      console.log('[API SIGNUP] No user in response');
+      if (DEBUG) console.log('[API SIGNUP] No user in response');
       return json({ 
         success: false, 
         error: 'Failed to create account' 
       }, { status: 400 });
     }
     
-    console.log('[API SIGNUP] Signup successful for user:', data.user.id);
+    if (DEBUG) console.log('[API SIGNUP] Signup successful for user:', data.user.id);
     
     // Create profile
     try {
@@ -83,7 +86,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
           onboarding_completed: false
         });
     } catch (profileErr) {
-      console.log('[API SIGNUP] Profile creation failed (non-fatal):', profileErr);
+      if (DEBUG) console.log('[API SIGNUP] Profile creation failed (non-fatal):', profileErr);
     }
     
     return json({ 

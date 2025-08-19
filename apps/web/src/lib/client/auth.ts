@@ -1,11 +1,13 @@
 import { goto } from '$app/navigation';
-import { browser } from '$app/environment';
+import { browser, dev } from '$app/environment';
+
+const DEBUG = dev;
 
 export async function clientLogin(email: string, password: string) {
   if (!browser) return { success: false, error: 'Client-side only' };
   
   try {
-    console.log('[CLIENT AUTH] Attempting login for:', email);
+    if (DEBUG) console.log('[CLIENT AUTH] Attempting login');
     
     // Use fetch directly to bypass form actions
     const response = await fetch('/api/auth/login', {
@@ -22,11 +24,11 @@ export async function clientLogin(email: string, password: string) {
     try {
       data = JSON.parse(text);
     } catch {
-      console.error('[CLIENT AUTH] Non-JSON response:', text);
+      if (DEBUG) console.error('[CLIENT AUTH] Non-JSON response:', text);
       return { success: false, error: 'Server error - please try again' };
     }
     
-    console.log('[CLIENT AUTH] Response:', data);
+    if (DEBUG) console.log('[CLIENT AUTH] Response:', data);
     
     if (response.ok && data.success) {
       // Let the auth state change handler update the UI naturally
@@ -44,7 +46,7 @@ export async function clientSignup(email: string, password: string, fullName: st
   if (!browser) return { success: false, error: 'Client-side only' };
   
   try {
-    console.log('[CLIENT AUTH] Attempting signup for:', email);
+    if (DEBUG) console.log('[CLIENT AUTH] Attempting signup');
     
     const response = await fetch('/api/auth/signup', {
       method: 'POST',
@@ -55,7 +57,7 @@ export async function clientSignup(email: string, password: string, fullName: st
     });
     
     const data = await response.json();
-    console.log('[CLIENT AUTH] Response:', data);
+    if (DEBUG) console.log('[CLIENT AUTH] Response:', data);
     
     if (data.success) {
       // Redirect to verification page

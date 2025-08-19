@@ -20,7 +20,7 @@ export const actions: Actions = {
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${url.origin}/auth/reset-password`
+      redirectTo: `${url.origin}/reset-password`
     });
 
     if (error) {

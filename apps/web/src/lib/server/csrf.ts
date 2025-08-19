@@ -1,14 +1,14 @@
 import { dev } from '$app/environment';
+import { CSRF_SECRET } from '$env/static/private';
 
 // CSRF token generation and validation
 export class CSRFProtection {
-	private static SECRET = 'default-csrf-secret-change-in-production';
+	private static SECRET = CSRF_SECRET || 'fallback-dev-secret-change-in-prod';
 	
-	// Generate a CSRF token using Web Crypto API
+	// Generate a CSRF token using crypto
 	static generateToken(sessionId: string): string {
 		const timestamp = Date.now();
-		// Simple token without crypto for now
-		const randomPart = Math.random().toString(36).substring(2, 15);
+		const randomPart = crypto.randomUUID().replace(/-/g, '');
 		const token = `${timestamp}:${sessionId}:${randomPart}`;
 		
 		// Token includes timestamp for expiration checking
@@ -83,8 +83,8 @@ export class CSRFProtection {
 			if (dev) {
 				console.error('[CSRF] No token provided');
 			}
-			// Allow for now to not break forms
-			return true;
+			// In production, reject missing tokens
+			return dev;
 		}
 		
 		return this.validateToken(token, sessionId);

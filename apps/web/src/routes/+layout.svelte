@@ -3,7 +3,7 @@
   import '$lib/styles/cyrillic-typography.css';
   import { invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
-  import { browser } from '$app/environment';
+  import { browser, dev } from '$app/environment';
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
@@ -46,7 +46,7 @@
     
     // Set up auth state listener for session changes
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      console.log('Auth state changed:', event, newSession?.user?.email);
+      if (dev) console.log('Auth state changed:', event);
       
       // Update stores immediately for instant UI feedback
       if (event === 'SIGNED_IN' && newSession) {

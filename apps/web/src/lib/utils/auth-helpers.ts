@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { redirect } from '@sveltejs/kit';
+import { redirect, type Redirect } from '@sveltejs/kit';
 
 interface RetryOptions {
   maxAttempts?: number;
@@ -24,8 +24,8 @@ export async function retryWithBackoff<T>(
     } catch (error) {
       lastError = error as Error;
       
-      // Don't retry on certain errors
-      if (error instanceof redirect) throw error;
+      // Don't retry on redirects (check status property)
+      if (typeof error === 'object' && error !== null && 'status' in error && error.status === 303) throw error;
       if (error instanceof Error) {
         if (error.message.includes('Invalid login credentials')) throw error;
         if (error.message.includes('Email not confirmed')) throw error;

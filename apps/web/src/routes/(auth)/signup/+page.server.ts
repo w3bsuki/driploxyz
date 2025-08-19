@@ -2,8 +2,11 @@ import { redirect, fail } from '@sveltejs/kit';
 import { superValidate, setError } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { SignupSchema } from '$lib/validation/auth.js';
+import { dev } from '$app/environment';
 import type { Actions, PageServerLoad } from './$types';
 import { detectLanguage } from '@repo/i18n';
+
+const DEBUG = dev;
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
   const { session } = await safeGetSession();
@@ -40,15 +43,15 @@ export const actions: Actions = {
     const userLocale = localeCookie || detectLanguage(acceptLanguage);
 
     try {
-      console.log('[SIGNUP] Attempting signup for email:', email);
-      console.log('[SIGNUP] Full name:', fullName);
-      console.log('[SIGNUP] Terms accepted:', terms);
-      console.log('[SIGNUP] User locale:', userLocale);
-      console.log('[SIGNUP] Supabase client exists:', !!supabase);
-      console.log('[SIGNUP] Supabase auth exists:', !!supabase?.auth);
+      if (DEBUG) {
+        console.log('[SIGNUP] Attempting signup');
+        console.log('[SIGNUP] Terms accepted:', terms);
+        console.log('[SIGNUP] User locale:', userLocale);
+        console.log('[SIGNUP] Supabase client exists:', !!supabase);
+      }
       
       // Create user with proper error handling
-      console.log('[SIGNUP] Calling supabase.auth.signUp...');
+      if (DEBUG) console.log('[SIGNUP] Calling supabase.auth.signUp...');
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -59,11 +62,13 @@ export const actions: Actions = {
         }
       });
       
-      console.log('[SIGNUP] Auth response received');
-      console.log('[SIGNUP] Has data:', !!data);
-      console.log('[SIGNUP] Has user:', !!data?.user);
-      console.log('[SIGNUP] User ID:', data?.user?.id);
-      console.log('[SIGNUP] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
+      if (DEBUG) {
+        console.log('[SIGNUP] Auth response received');
+        console.log('[SIGNUP] Has data:', !!data);
+        console.log('[SIGNUP] Has user:', !!data?.user);
+        console.log('[SIGNUP] User ID:', data?.user?.id);
+        console.log('[SIGNUP] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
+      }
 
       if (error) {
         // Handle specific Supabase auth errors
@@ -107,9 +112,11 @@ export const actions: Actions = {
       }
 
       // Success - redirect to email verification page
-      console.log('[SIGNUP] Signup successful! Redirecting to verification');
-      console.log('[SIGNUP] ========== SIGNUP ACTION END ==========');
-      throw redirect(303, `/auth/verify-email?email=${encodeURIComponent(email)}`);
+      if (DEBUG) {
+        console.log('[SIGNUP] Signup successful! Redirecting to verification');
+        console.log('[SIGNUP] ========== SIGNUP ACTION END ==========');
+      }
+      throw redirect(303, `/verify-email?email=${encodeURIComponent(email)}`);
 
     } catch (e: any) {
       // Check if it's a SvelteKit redirect (has status 303)

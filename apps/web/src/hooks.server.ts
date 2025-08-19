@@ -6,7 +6,6 @@ import type { Database } from '$lib/types/database.types';
 import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
-// Temporarily disable rate limiting and CSRF
 // import { authLimiter, apiLimiter } from '$lib/server/rate-limiter';
 // import { CSRFProtection } from '$lib/server/csrf';
 
@@ -124,7 +123,7 @@ const supabase: Handle = async ({ event, resolve }) => {
   });
 };
 
-// Temporarily disabled
+// Temporarily disabled due to rate limiter syntax issues
 // const rateLimiter: Handle = async ({ event, resolve }) => {
 //   // Apply rate limiting to auth endpoints
 //   if (event.url.pathname.includes('/login') || event.url.pathname.includes('/signup')) {
@@ -194,8 +193,6 @@ const authGuard: Handle = async ({ event, resolve }) => {
   return resolve(event);
 };
 
-// Temporarily disable rate limiting and CSRF
-// export const handle = SENTRY_DSN ? sequence(sentryHandle(), rateLimiter, csrfProtection, supabase, authGuard) : sequence(rateLimiter, csrfProtection, supabase, authGuard);
 export const handle = SENTRY_DSN ? sequence(sentryHandle(), supabase, authGuard) : sequence(supabase, authGuard);
 
 // Sentry error handler (only if DSN configured)
