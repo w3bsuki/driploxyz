@@ -36,7 +36,7 @@
       >
         <span class="font-medium">{item.title}</span>
         <svg
-          class="w-5 h-5 transform transition-transform {openItems.has(index) ? 'rotate-180' : ''}"
+          class="w-5 h-5 transform {openItems.has(index) ? 'rotate-180' : ''}"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

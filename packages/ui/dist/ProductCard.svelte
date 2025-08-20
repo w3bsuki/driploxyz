@@ -112,7 +112,7 @@
     {#if onFavorite}
       <button 
         onclick={handleFavorite}
-        class="absolute top-2 right-2 p-2 bg-white/90 rounded-full hover:bg-white transition-colors"
+        class="absolute top-2 right-2 p-2 bg-white/90 rounded-full hover:bg-white"
         aria-label={favorited ? translations.removeFromFavorites : translations.addToFavorites}
       >
         <svg 
@@ -156,20 +156,14 @@
 <style>
   .product-card {
     position: relative;
-    transition: all 0.3s ease;
+    /* Optimized for speed - no transitions */
+    contain: layout style paint;
   }
   
-  .product-card:hover img {
-    transform: scale(1.02);
-    transition: transform 0.2s ease-out;
-  }
-  
-  /* Premium highlighted product border */
+  /* Simple highlighted product border - no animations */
   .product-card.highlighted {
     padding: 3px;
-    background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700, #FFA500);
-    background-size: 300% 300%;
-    animation: shimmer 3s ease infinite;
+    background: #FFD700;
     border-radius: 0.75rem;
   }
   
@@ -183,55 +177,6 @@
   }
   
   .product-card.highlighted > div:first-child {
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
   }
-  
-  /* Shimmer animation for premium feel */
-  @keyframes shimmer {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-  
-  /* Alternative premium border styles - uncomment to use */
-  
-  /* Style 2: Gradient outline with glow */
-  /*
-  .product-card.highlighted {
-    position: relative;
-    padding: 2px;
-    background: linear-gradient(45deg, #FFD700, #FF6B6B, #4ECDC4, #FFD700);
-    background-size: 400% 400%;
-    animation: gradient-shift 4s ease infinite;
-    border-radius: 0.75rem;
-  }
-  
-  @keyframes gradient-shift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-  }
-  */
-  
-  /* Style 3: Luxury black and gold */
-  /*
-  .product-card.highlighted {
-    border: 2px solid transparent;
-    background: linear-gradient(white, white) padding-box,
-                linear-gradient(135deg, #FFD700 0%, #1a1a1a 25%, #FFD700 50%, #1a1a1a 75%, #FFD700 100%) border-box;
-    background-size: 100% 100%, 300% 300%;
-    animation: luxury-border 3s linear infinite;
-    border-radius: 0.75rem;
-  }
-  
-  @keyframes luxury-border {
-    0% { background-position: 0% 0%, 0% 50%; }
-    100% { background-position: 0% 0%, 100% 50%; }
-  }
-  */
 </style>

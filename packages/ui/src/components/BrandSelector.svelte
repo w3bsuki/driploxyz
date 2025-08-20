@@ -51,8 +51,7 @@
           <button
             type="button"
             onclick={() => selectBrand(brand)}
-            class="px-3 py-2 text-sm rounded-lg border transition-all
-              {value === brand 
+            class="px-3 py-2 text-sm rounded-lg border {value === brand 
                 ? 'border-blue-500 bg-blue-50 text-blue-700 font-medium' 
                 : 'border-gray-200 hover:border-gray-300 text-gray-700'}"
           >

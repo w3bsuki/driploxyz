@@ -1,6 +1,4 @@
 import { redirect, fail, error } from '@sveltejs/kit';
-import { superValidate, setError } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
 import { LoginSchema } from '$lib/validation/auth';
 import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
 import type { Actions, PageServerLoad } from './$types';
@@ -11,8 +9,6 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
   if (session) {
     throw redirect(303, '/');
   }
-  
-  const form = await superValidate(zod(LoginSchema));
   
   // Handle auth callback errors
   const error = url.searchParams.get('error');
@@ -37,18 +33,29 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
     }
   }
   
-  return { form, errorMessage };
+  return { errorMessage };
 };
 
 export const actions: Actions = {
   signin: async ({ request, locals: { supabase }, getClientAddress }) => {
-    const form = await superValidate(request, zod(LoginSchema));
+    const formData = await request.formData();
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
 
-    if (!form.valid) {
-      return fail(400, { form });
+    // Manual validation using Zod schema
+    const validation = LoginSchema.safeParse({ email, password });
+    
+    if (!validation.success) {
+      const errors: Record<string, string> = {};
+      validation.error.errors.forEach((error) => {
+        if (error.path.length > 0) {
+          errors[error.path[0]] = error.message;
+        }
+      });
+      return fail(400, { errors, values: { email, password } });
     }
     
-    const { email, password } = form.data;
+    const { email: validatedEmail, password: validatedPassword } = validation.data;
     
     // Rate limiting by IP address
     const clientIp = getClientAddress();
@@ -56,34 +63,40 @@ export const actions: Actions = {
     const { allowed, retryAfter } = checkRateLimit(rateLimitKey, 'login');
     
     if (!allowed) {
-      setError(form, '', `Too many login attempts. Please try again in ${retryAfter} seconds.`);
-      return fail(429, { form });
+      return fail(429, { 
+        errors: { _form: `Too many login attempts. Please try again in ${retryAfter} seconds.` }, 
+        values: { email: validatedEmail, password: '' } 
+      });
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email: email.toLowerCase().trim(), // Normalize email
-      password
+      email: validatedEmail.toLowerCase().trim(), // Normalize email
+      password: validatedPassword
     });
 
     if (error) {
       console.error('Login error:', error.message);
       
+      let errorMessage = 'Unable to sign in';
       if (error.message.includes('Invalid login credentials')) {
-        setError(form, '', 'Invalid email or password');
-        return fail(400, { form });
-      }
-      if (error.message.includes('Email not confirmed')) {
-        setError(form, '', 'Please verify your email before logging in');
-        return fail(400, { form });
+        errorMessage = 'Invalid email or password';
+      } else if (error.message.includes('Email not confirmed')) {
+        errorMessage = 'Please verify your email before logging in';
+      } else if (error.message) {
+        errorMessage = error.message;
       }
       
-      setError(form, '', error.message || 'Unable to sign in');
-      return fail(400, { form });
+      return fail(400, { 
+        errors: { _form: errorMessage }, 
+        values: { email: validatedEmail, password: '' } 
+      });
     }
 
     if (!data.user || !data.session) {
-      setError(form, '', 'Authentication failed. Please try again.');
-      return fail(400, { form });
+      return fail(400, { 
+        errors: { _form: 'Authentication failed. Please try again.' }, 
+        values: { email: validatedEmail, password: '' } 
+      });
     }
     
     // Reset rate limit on successful login

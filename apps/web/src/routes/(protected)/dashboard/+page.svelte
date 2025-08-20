@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Avatar, ProductCard, type Product } from '@repo/ui';
+  import { Button, Avatar, ProductCard, ProductCardSkeleton, ListItemSkeleton, type Product } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
   
@@ -8,6 +8,9 @@
   }
   
   let { data }: Props = $props();
+  
+  let isLoading = $state(false);
+  let tabLoading = $state(false);
   
   // Calculate stats from real data
   const stats = $derived(() => {
@@ -72,6 +75,15 @@
   });
   
   let activeTab = $state<'overview' | 'listings' | 'orders' | 'analytics' | 'settings'>('overview');
+  
+  async function changeTab(newTab: typeof activeTab) {
+    if (newTab === activeTab) return;
+    
+    tabLoading = true;
+    await new Promise(resolve => setTimeout(resolve, 200)); // Simulate loading
+    activeTab = newTab;
+    tabLoading = false;
+  }
   
   const timeAgo = (date: string) => {
     const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
@@ -195,7 +207,7 @@
     <div class="border-b border-gray-200 mb-6">
       <nav class="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto">
         <button
-          onclick={() => activeTab = 'overview'}
+          onclick={() => changeTab('overview')}
           class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
             {activeTab === 'overview' 
               ? 'border-black text-gray-900' 
@@ -204,7 +216,7 @@
           Overview
         </button>
         <button
-          onclick={() => activeTab = 'listings'}
+          onclick={() => changeTab('listings')}
           class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
             {activeTab === 'listings' 
               ? 'border-black text-gray-900' 
@@ -213,7 +225,7 @@
           Listings ({stats().activeListings})
         </button>
         <button
-          onclick={() => activeTab = 'orders'}
+          onclick={() => changeTab('orders')}
           class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
             {activeTab === 'orders' 
               ? 'border-black text-gray-900' 
@@ -222,7 +234,7 @@
           Orders
         </button>
         <button
-          onclick={() => activeTab = 'analytics'}
+          onclick={() => changeTab('analytics')}
           class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
             {activeTab === 'analytics' 
               ? 'border-black text-gray-900' 
@@ -231,7 +243,7 @@
           Analytics
         </button>
         <button
-          onclick={() => activeTab = 'settings'}
+          onclick={() => changeTab('settings')}
           class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
             {activeTab === 'settings' 
               ? 'border-black text-gray-900' 
@@ -344,20 +356,28 @@
             </div>
           </div>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4 sm:p-6">
-          {#each activeListings() as product}
-            <div class="relative group">
-              <ProductCard {product} onclick={() => window.location.href = `/product/${product.id}`} />
-              <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button aria-label="Edit product" class="p-1 bg-white rounded-full shadow-lg">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                  </svg>
-                </button>
+        {#if tabLoading}
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4 sm:p-6">
+            {#each Array(8) as _}
+              <ProductCardSkeleton />
+            {/each}
+          </div>
+        {:else}
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4 sm:p-6">
+            {#each activeListings() as product}
+              <div class="relative group">
+                <ProductCard {product} onclick={() => window.location.href = `/product/${product.id}`} />
+                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button aria-label="Edit product" class="p-1 bg-white rounded-full shadow-lg">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                </div>
               </div>
-            </div>
-          {/each}
-        </div>
+            {/each}
+          </div>
+        {/if}
       </div>
 
     {:else if activeTab === 'orders'}

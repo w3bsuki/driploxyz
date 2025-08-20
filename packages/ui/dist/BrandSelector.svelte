@@ -64,7 +64,7 @@
 
   function getButtonClasses(brand: string) {
     const isSelected = value === brand || (brand === 'Other' && showCustomInput);
-    const base = 'px-3 py-2 text-sm rounded-lg border-2 transition-all duration-200 font-medium';
+    const base = 'px-3 py-2 text-sm rounded-lg border-2 font-medium';
     
     if (disabled) {
       return `${base} opacity-50 cursor-not-allowed border-gray-200 bg-gray-50`;
@@ -112,7 +112,7 @@
         oninput={handleCustomInput}
         {placeholder}
         {disabled}
-        class="block w-full rounded-lg border px-3 py-2 text-sm placeholder-gray-500 transition-colors focus:outline-hidden focus:ring-1
+        class="block w-full rounded-lg border px-3 py-2 text-sm placeholder-gray-500 focus:outline-hidden focus:ring-1
           {error 
             ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
             : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'}"

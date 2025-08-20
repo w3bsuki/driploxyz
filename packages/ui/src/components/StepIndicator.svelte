@@ -26,18 +26,38 @@
 
 <div class="w-full">
   <!-- Mobile View -->
-  <div class="flex items-center justify-between sm:hidden">
-    <div class="flex items-center space-x-2">
-      <span class="text-sm text-gray-500">Step</span>
-      <span class="text-sm font-medium">{currentStep} of {steps.length}</span>
+  <div class="sm:hidden">
+    <div class="flex items-center justify-between mb-2">
+      <div class="flex items-center space-x-2">
+        <span class="text-sm text-gray-500">Step</span>
+        <span class="text-sm font-medium">{currentStep} of {steps.length}</span>
+      </div>
+      <span class="text-xs text-gray-400">
+        {Math.round((currentStep / steps.length) * 100)}%
+      </span>
     </div>
-    <div class="flex-1 mx-4">
+    
+    <div class="mb-3">
       <div class="bg-gray-200 rounded-full h-2">
         <div 
-          class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+          class="bg-blue-600 h-2 rounded-full"
           style="width: {(currentStep / steps.length) * 100}%"
         />
       </div>
+    </div>
+    
+    <div class="text-center">
+      {#if steps.find(s => s.id === currentStep)}
+        {@const currentStepData = steps.find(s => s.id === currentStep)}
+        <h3 class="text-sm font-medium text-gray-900">
+          {currentStepData.title}
+        </h3>
+        {#if currentStepData.description}
+          <p class="text-xs text-gray-500 mt-1">
+            {currentStepData.description}
+          </p>
+        {/if}
+      {/if}
     </div>
   </div>
 
@@ -89,7 +109,7 @@
           <div class="flex-1 mx-4">
             <div class="h-0.5 bg-gray-200">
               <div 
-                class="h-0.5 transition-all duration-300
+                class="h-0.5
                   {completedSteps.includes(step.id) ? 'bg-green-500' : 'bg-gray-200'}"
                 style="width: {completedSteps.includes(step.id) ? '100%' : '0%'}"
               />

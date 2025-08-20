@@ -90,13 +90,20 @@
     {/each}
   </div>
 
-  <!-- Step Titles -->
-  <div class="flex justify-between text-xs">
+  <!-- Step Titles - Mobile optimized -->
+  <div class="flex justify-between text-xs gap-1">
     {#each steps as step}
       {@const state = getStepState(step.id)}
-      <div class="text-center flex-1">
-        <p class="font-medium {state === 'current' ? 'text-gray-900' : 'text-gray-600'}">
-          {step.title}
+      <div class="text-center flex-1 min-w-0">
+        <p class="font-medium truncate px-1 {state === 'current' ? 'text-gray-900' : 'text-gray-600'}">
+          <span class="hidden sm:inline">{step.title}</span>
+          <span class="sm:hidden">
+            {#if step.title.includes('&')}
+              {step.title.split('&')[0]}
+            {:else}
+              {step.title.split(' ')[0]}
+            {/if}
+          </span>
         </p>
         {#if step.description && state === 'current'}
           <p class="text-gray-500 mt-0.5 hidden sm:block">{step.description}</p>

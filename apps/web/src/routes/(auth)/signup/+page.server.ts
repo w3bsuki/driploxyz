@@ -1,6 +1,4 @@
 import { redirect, fail } from '@sveltejs/kit';
-import { superValidate, setError, message } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
 import { SignupSchema } from '$lib/validation/auth';
 import { dev, building } from '$app/environment';
 import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
@@ -16,8 +14,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
     throw redirect(303, '/');
   }
   
-  const form = await superValidate(zod(SignupSchema));
-  return { form };
+  return {};
 };
 
 export const actions: Actions = {
@@ -37,15 +34,39 @@ export const actions: Actions = {
     console.log('[SIGNUP] Has supabase client:', !!supabase);
     console.log('[SIGNUP] Headers:', Object.fromEntries(request.headers.entries()));
     
-    const form = await superValidate(request, zod(SignupSchema));
-    console.log('[SIGNUP] Form validation result:', { valid: form.valid, data: form.data, errors: form.errors });
+    const formData = await request.formData();
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
+    const confirmPassword = formData.get('confirmPassword') as string;
+    const fullName = formData.get('fullName') as string;
+    const terms = formData.get('terms') === 'on';
     
-    if (!form.valid) {
+    // Manual validation using Zod schema
+    const validation = SignupSchema.safeParse({ 
+      email, 
+      password, 
+      confirmPassword, 
+      fullName, 
+      terms 
+    });
+    
+    console.log('[SIGNUP] Form validation result:', { valid: validation.success });
+    
+    if (!validation.success) {
       console.log('[SIGNUP] Form invalid - returning fail with errors');
-      return fail(400, { form });
+      const errors: Record<string, string> = {};
+      validation.error.errors.forEach((error) => {
+        if (error.path.length > 0) {
+          errors[error.path[0]] = error.message;
+        }
+      });
+      return fail(400, { 
+        errors, 
+        values: { email, fullName, password: '', confirmPassword: '' } 
+      });
     }
     
-    const { email, password, fullName, terms } = form.data;
+    const { email: validatedEmail, password: validatedPassword, fullName: validatedFullName } = validation.data;
     
     // Rate limiting by IP address
     const clientIp = getClientAddress();
@@ -53,8 +74,10 @@ export const actions: Actions = {
     const { allowed, retryAfter } = checkRateLimit(rateLimitKey, 'signup');
     
     if (!allowed) {
-      setError(form, '', `Too many signup attempts. Please try again in ${retryAfter} seconds.`);
-      return fail(429, { form });
+      return fail(429, { 
+        errors: { _form: `Too many signup attempts. Please try again in ${retryAfter} seconds.` }, 
+        values: { email: validatedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
+      });
     }
     
     // Get user's locale from cookie or Accept-Language header
@@ -64,7 +87,7 @@ export const actions: Actions = {
 
     if (DEBUG) {
       console.log('[SIGNUP] Attempting signup');
-      console.log('[SIGNUP] Terms accepted:', terms);
+      console.log('[SIGNUP] Terms accepted:', validation.data.terms);
       console.log('[SIGNUP] User locale:', userLocale);
       console.log('[SIGNUP] Supabase client exists:', !!supabase);
     }
@@ -82,7 +105,7 @@ export const actions: Actions = {
     if (DEBUG) console.log('[SIGNUP] Checking if user already exists...');
     
     // Normalize email to lowercase for consistency
-    const normalizedEmail = email.toLowerCase().trim();
+    const normalizedEmail = validatedEmail.toLowerCase().trim();
     
     // First, attempt to sign up - this will tell us if the user exists
     if (DEBUG) console.log('[SIGNUP] Attempting signUp with normalized email:', normalizedEmail);
@@ -90,10 +113,10 @@ export const actions: Actions = {
     // Create user with proper error handling
     const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
-      password,
+      password: validatedPassword,
       options: {
         data: {
-          full_name: fullName
+          full_name: validatedFullName
         },
         emailRedirectTo
       }
@@ -110,22 +133,30 @@ export const actions: Actions = {
     if (error) {
       // Handle specific Supabase auth errors
       if (error.message.includes('User already registered')) {
-        setError(form, 'email', 'An account with this email already exists. Please sign in instead.');
-        return fail(400, { form });
+        return fail(400, { 
+          errors: { email: 'An account with this email already exists. Please sign in instead.' }, 
+          values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
+        });
       }
       if (error.message.includes('Password should be at least')) {
-        setError(form, 'password', 'Password must be at least 6 characters');
-        return fail(400, { form });
+        return fail(400, { 
+          errors: { password: 'Password must be at least 6 characters' }, 
+          values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
+        });
       }
       if (error.message.includes('Signup is disabled')) {
-        setError(form, '', 'Account creation is temporarily disabled');
-        return fail(503, { form });
+        return fail(503, { 
+          errors: { _form: 'Account creation is temporarily disabled' }, 
+          values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
+        });
       }
       
       // Log the full error for debugging
       console.error('[SIGNUP] Error during signup:', error);
-      setError(form, '', error.message || 'Failed to create account');
-      return fail(400, { form });
+      return fail(400, { 
+        errors: { _form: error.message || 'Failed to create account' }, 
+        values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
+      });
     }
     
     // IMPORTANT: Check if this was actually a new signup or an existing user
@@ -138,13 +169,17 @@ export const actions: Actions = {
       if (DEBUG) console.log('[SIGNUP] User already existed! Supabase signed them in');
       // Sign them out immediately
       await supabase.auth.signOut();
-      setError(form, 'email', 'An account with this email already exists. Please sign in instead.');
-      return fail(400, { form });
+      return fail(400, { 
+        errors: { email: 'An account with this email already exists. Please sign in instead.' }, 
+        values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
+      });
     }
 
     if (!data.user) {
-      setError(form, '', 'Failed to create account. Please try again');
-      return fail(400, { form });
+      return fail(400, { 
+        errors: { _form: 'Failed to create account. Please try again' }, 
+        values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
+      });
     }
 
     // Generate a unique username based on name and user ID
@@ -156,7 +191,7 @@ export const actions: Actions = {
       .insert({
         id: data.user.id,
         username,
-        full_name: fullName,
+        full_name: validatedFullName,
         locale: userLocale,
         onboarding_completed: false
       });
@@ -171,10 +206,10 @@ export const actions: Actions = {
       console.log('[SIGNUP] ========== SIGNUP ACTION END ==========');
     }
     
-    // Use Superforms message helper for success
-    return message(form, {
-      type: 'success',
-      text: `Account created successfully! We've sent a verification email to ${normalizedEmail}. Please check your inbox to complete your registration.`
-    });
+    // Return success response
+    return {
+      success: true,
+      message: `Account created successfully! We've sent a verification email to ${normalizedEmail}. Please check your inbox to complete your registration.`
+    };
   }
 };

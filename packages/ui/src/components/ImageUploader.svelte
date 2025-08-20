@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  
   interface Props {
     id?: string;
     images?: string[];
@@ -8,6 +6,7 @@
     maxImages?: number;
     error?: string;
     helpText?: string;
+    onProcessingChange?: (isProcessing: boolean) => void;
   }
 
   let { 
@@ -16,12 +15,12 @@
     files = $bindable([]),
     maxImages = 10,
     error,
-    helpText
+    helpText,
+    onProcessingChange
   }: Props = $props();
 
   let fileInput: HTMLInputElement;
   let isDragging = $state(false);
-  let uploadedFiles = $state<File[]>([]);
 
   function handleFileSelect(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -43,11 +42,17 @@
     const remainingSlots = maxImages - images.length;
     const filesToProcess = newFiles.slice(0, remainingSlots);
 
+    if (filesToProcess.length > 0) {
+      onProcessingChange?.(true);
+    }
+
+    let processedCount = 0;
+    const totalFiles = filesToProcess.length;
+
     filesToProcess.forEach(file => {
       if (file.type.startsWith('image/')) {
-        // Store the file
-        uploadedFiles.push(file);
-        files = [...uploadedFiles];
+        // Add the file immediately
+        files = [...files, file];
         
         // Create preview
         const reader = new FileReader();
@@ -55,16 +60,25 @@
           if (e.target?.result) {
             images = [...images, e.target.result as string];
           }
+          
+          processedCount++;
+          if (processedCount === totalFiles) {
+            onProcessingChange?.(false);
+          }
         };
         reader.readAsDataURL(file);
+      } else {
+        processedCount++;
+        if (processedCount === totalFiles) {
+          onProcessingChange?.(false);
+        }
       }
     });
   }
 
   function removeImage(index: number) {
     images = images.filter((_, i) => i !== index);
-    uploadedFiles = uploadedFiles.filter((_, i) => i !== index);
-    files = [...uploadedFiles];
+    files = files.filter((_, i) => i !== index);
   }
 
   function handleDragOver(event: DragEvent) {

@@ -1,20 +1,17 @@
 <script lang="ts">
-  import { superForm } from 'sveltekit-superforms';
-  import { zodClient } from 'sveltekit-superforms/adapters';
-  import { LoginSchema } from '$lib/validation/auth';
+  import { enhance } from '$app/forms';
   import type { PageData, ActionData } from './$types';
   import * as i18n from '@repo/i18n';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import { toasts } from '@repo/ui';
 
-  let { data, form: actionResult }: { data: PageData; form: ActionData } = $props();
+  let { data, form }: { data: PageData; form: ActionData } = $props();
   
-  const { form, errors, constraints, submitting, enhance, message } = superForm(data.form, {
-    validators: zodClient(LoginSchema),
-    resetForm: false,
-    taintedMessage: null,
-    validationMethod: 'oninput'
+  let submitting = $state(false);
+  let formData = $state({
+    email: form?.values?.email || '',
+    password: form?.values?.password || ''
   });
 
   onMount(() => {
@@ -60,7 +57,7 @@
 
 
 
-  {#if $errors?._errors?.length}
+  {#if form?.errors?._form}
     <div class="bg-red-50 border border-red-200 rounded-md p-4">
       <div class="flex">
         <div class="shrink-0">
@@ -69,14 +66,24 @@
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-red-800">{$errors._errors[0]}</p>
+          <p class="text-sm text-red-800">{form.errors._form}</p>
         </div>
       </div>
     </div>
   {/if}
 
   <!-- Email/Password Form -->
-  <form method="POST" action="?/signin" use:enhance>
+  <form 
+    method="POST" 
+    action="?/signin" 
+    use:enhance={() => {
+      submitting = true;
+      return async ({ update }) => {
+        await update();
+        submitting = false;
+      };
+    }}
+  >
     <div class="space-y-1">
       <div>
         <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
@@ -88,20 +95,19 @@
           type="email"
           autocomplete="email"
           required
-          bind:value={$form.email}
-          aria-invalid={$errors.email ? 'true' : undefined}
-          aria-describedby={$errors.email ? 'email-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {$errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
+          bind:value={formData.email}
+          aria-invalid={form?.errors?.email ? 'true' : undefined}
+          aria-describedby={form?.errors?.email ? 'email-error' : undefined}
+          class="appearance-none block w-full px-3 py-2 border {form?.errors?.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
           placeholder="Enter your email"
-          {...$constraints.email}
         />
         <div class="mt-1 h-2">
-          {#if $errors.email}
+          {#if form?.errors?.email}
             <div id="email-error" class="text-sm text-red-600 flex items-center gap-1">
               <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
-              <span>{$errors.email}</span>
+              <span>{form.errors.email}</span>
             </div>
           {/if}
         </div>
@@ -117,20 +123,19 @@
           type="password"
           autocomplete="current-password"
           required
-          bind:value={$form.password}
-          aria-invalid={$errors.password ? 'true' : undefined}
-          aria-describedby={$errors.password ? 'password-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {$errors.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
+          bind:value={formData.password}
+          aria-invalid={form?.errors?.password ? 'true' : undefined}
+          aria-describedby={form?.errors?.password ? 'password-error' : undefined}
+          class="appearance-none block w-full px-3 py-2 border {form?.errors?.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
           placeholder="Enter your password"
-          {...$constraints.password}
         />
         <div class="mt-1 h-2">
-          {#if $errors.password}
+          {#if form?.errors?.password}
             <div id="password-error" class="text-sm text-red-600 flex items-center gap-1">
               <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
-              <span>{$errors.password}</span>
+              <span>{form.errors.password}</span>
             </div>
           {/if}
         </div>
@@ -147,10 +152,10 @@
       <div>
         <button
           type="submit"
-          disabled={$submitting}
+          disabled={submitting}
           class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-blue-600 hover:bg-blue-700 text-white focus-visible:ring-blue-500 px-4 py-2.5 text-sm transition-all duration-200"
         >
-          {#if $submitting}
+          {#if submitting}
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>

@@ -1,10 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
-import { superValidate, message } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
 import { ProductSchema } from '$lib/validation/product';
 import type { PageServerLoad, Actions } from './$types';
 import { createServices } from '$lib/services';
-import { processImageToWebP } from '$lib/utils/image-processing';
 
 export const load: PageServerLoad = async ({ locals }) => {
   console.log('[SELL DEBUG] Starting load function');
@@ -68,11 +65,6 @@ export const load: PageServerLoad = async ({ locals }) => {
       console.error('[SELL DEBUG] Plans error:', plansError);
     }
 
-    console.log('[SELL DEBUG] Initializing form...');
-    // Initialize empty form with default values
-    const form = await superValidate(null, zod(ProductSchema));
-    console.log('[SELL DEBUG] Form initialized:', !!form);
-
     console.log('[SELL DEBUG] Returning data successfully');
     return {
       user: session.user,
@@ -80,14 +72,10 @@ export const load: PageServerLoad = async ({ locals }) => {
       categories: categories || [],
       canListProducts,
       plans: plans || [],
-      needsBrandSubscription: profile?.account_type === 'brand' && !canListProducts,
-      form
+      needsBrandSubscription: profile?.account_type === 'brand' && !canListProducts
     };
   } catch (error) {
     console.error('[SELL DEBUG] Load error:', error);
-    
-    // Still initialize form even on error
-    const form = await superValidate(null, zod(ProductSchema));
     
     return {
       user: session.user,
@@ -95,8 +83,7 @@ export const load: PageServerLoad = async ({ locals }) => {
       categories: [],
       canListProducts: true,
       plans: [],
-      needsBrandSubscription: false,
-      form
+      needsBrandSubscription: false
     };
   }
 };
@@ -108,8 +95,7 @@ export const actions: Actions = {
     if (!session) {
       console.log('[SELL ACTION] No session found');
       return fail(401, { 
-        form: await superValidate(request, zod(ProductSchema)),
-        error: 'Not authenticated' 
+        errors: { _form: 'Not authenticated' }
       });
     }
 
@@ -117,110 +103,102 @@ export const actions: Actions = {
     console.log('[SELL ACTION] Form data received');
     console.log('[SELL ACTION] Form fields:', Array.from(formData.keys()));
     
+    // Extract form values
+    const title = formData.get('title') as string;
+    const description = formData.get('description') as string || '';
+    const category_id = formData.get('category_id') as string;
+    const subcategory_id = formData.get('subcategory_id') as string || '';
+    const brand = formData.get('brand') as string;
+    const size = formData.get('size') as string;
+    const condition = formData.get('condition') as string;
+    const color = formData.get('color') as string || '';
+    const material = formData.get('material') as string || '';
+    const price = parseFloat(formData.get('price') as string);
+    const shipping_cost = parseFloat(formData.get('shipping_cost') as string || '0');
+    const tags = JSON.parse(formData.get('tags') as string || '[]');
+    const use_premium_boost = formData.get('use_premium_boost') === 'true';
+    
+    // Get the already uploaded image URLs and paths from Supabase
+    const photo_urls = JSON.parse(formData.get('photo_urls') as string || '[]');
+    const photo_paths = JSON.parse(formData.get('photo_paths') as string || '[]');
+    
     // Log key form values
     console.log('[SELL ACTION] Key values:', {
-      title: formData.get('title'),
-      category_id: formData.get('category_id'),
-      brand: formData.get('brand'),
-      size: formData.get('size'),
-      price: formData.get('price'),
+      title,
+      category_id,
+      brand,
+      size,
+      price,
       photos: formData.getAll('photos').length
     });
     
-    const form = await superValidate(formData, zod(ProductSchema));
-    console.log('[SELL ACTION] Form validation:', form.valid ? 'VALID' : 'INVALID');
+    // Manual validation using Zod schema
+    const validation = ProductSchema.safeParse({
+      title,
+      description,
+      category_id,
+      subcategory_id,
+      brand,
+      size,
+      condition,
+      color,
+      material,
+      price,
+      shipping_cost,
+      tags,
+      use_premium_boost
+    });
     
-    if (!form.valid) {
-      console.error('Validation errors:', form.errors);
-      return fail(400, { form });
+    console.log('[SELL ACTION] Form validation:', validation.success ? 'VALID' : 'INVALID');
+    
+    if (!validation.success) {
+      console.error('Validation errors:', validation.error);
+      const errors: Record<string, string> = {};
+      validation.error.errors.forEach((error) => {
+        if (error.path.length > 0) {
+          errors[error.path[0]] = error.message;
+        }
+      });
+      return fail(400, { 
+        errors,
+        values: {
+          title, description, category_id, subcategory_id, brand, size, 
+          condition, color, material, price, shipping_cost, tags, use_premium_boost
+        }
+      });
     }
 
     try {
-      // Get files from formData
-      const files = formData.getAll('photos') as File[];
-
       // Validate we have at least one image
-      if (files.length === 0 || (files.length === 1 && !files[0].size)) {
+      if (!photo_urls || photo_urls.length === 0) {
         return fail(400, {
-          form,
-          error: 'At least one photo is required'
+          errors: { photos: 'At least one photo is required' },
+          values: {
+            title, description, category_id, subcategory_id, brand, size, 
+            condition, color, material, price, shipping_cost, tags, use_premium_boost
+          }
         });
       }
-
-      // Upload images to Supabase Storage with WebP conversion
-      const uploadedUrls: string[] = [];
       
-      for (const [index, file] of files.entries()) {
-        if (!file.size) continue; // Skip empty files
-        
-        const fileExt = file.name.split('.').pop()?.toLowerCase();
-        if (!['jpg', 'jpeg', 'png', 'webp'].includes(fileExt || '')) {
-          throw new Error(`Invalid file type: ${fileExt}`);
-        }
-        
-        try {
-          // Convert image to WebP format
-          console.log(`[SELL] Converting image ${index + 1} to WebP...`);
-          const webpBuffer = await processImageToWebP(file, {
-            maxWidth: 1200,
-            maxHeight: 1200,
-            quality: 85
-          });
-          
-          // Always save as .webp regardless of input format
-          const fileName = `${session.user.id}/${Date.now()}_${index}.webp`;
-          
-          const { data: uploadData, error: uploadError } = await supabase.storage
-            .from('product-images')
-            .upload(fileName, webpBuffer, {
-              cacheControl: '3600',
-              upsert: false,
-              contentType: 'image/webp'
-            });
-
-          if (uploadError) {
-            console.error('Upload error:', uploadError);
-            throw new Error(`Failed to upload image: ${uploadError.message}`);
-          }
-
-          // Get public URL
-          const { data: { publicUrl } } = supabase.storage
-            .from('product-images')
-            .getPublicUrl(fileName);
-          
-          uploadedUrls.push(publicUrl);
-          console.log(`[SELL] Successfully uploaded WebP image: ${fileName}`);
-        } catch (conversionError) {
-          console.error(`Error processing image ${index + 1}:`, conversionError);
-          throw new Error(`Failed to process image ${index + 1}: ${conversionError instanceof Error ? conversionError.message : 'Unknown error'}`);
-        }
-      }
-
-      // Ensure price and shipping_cost are numbers
-      const price = typeof form.data.price === 'string' 
-        ? parseFloat(form.data.price) 
-        : form.data.price;
-      const shippingCost = typeof form.data.shipping_cost === 'string'
-        ? parseFloat(form.data.shipping_cost || '0')
-        : form.data.shipping_cost;
+      console.log('[SELL ACTION] Using pre-uploaded images:', photo_urls.length);
 
       // Create product in database
       const { data: product, error: productError } = await supabase
         .from('products')
         .insert({
-          title: form.data.title.trim(),
-          description: form.data.description?.trim() || '',
+          title: title.trim(),
+          description: description.trim() || '',
           price: price,
-          category_id: form.data.subcategory_id || form.data.category_id,
-          condition: form.data.condition,
-          brand: form.data.brand !== 'Other' ? form.data.brand : null,
-          size: form.data.size || null,
+          category_id: subcategory_id || category_id,
+          condition: condition,
+          brand: brand !== 'Other' ? brand : null,
+          size: size || null,
           location: null,
           seller_id: session.user.id,
-          shipping_cost: shippingCost,
-          tags: form.data.tags?.length > 0 ? form.data.tags : null,
-          color: form.data.color?.trim() || null,
-          material: form.data.material?.trim() || null,
+          shipping_cost: shipping_cost,
+          tags: tags?.length > 0 ? tags : null,
+          color: color?.trim() || null,
+          material: material?.trim() || null,
           is_active: true,
           is_sold: false,
           view_count: 0,
@@ -235,12 +213,12 @@ export const actions: Actions = {
       }
 
       // Add product images with error handling
-      if (uploadedUrls.length > 0) {
-        const imageInserts = uploadedUrls.map((url, index) => ({
+      if (photo_urls.length > 0) {
+        const imageInserts = photo_urls.map((url: string, index: number) => ({
           product_id: product.id,
           image_url: url,
           sort_order: index,
-          alt_text: `${form.data.title} - Image ${index + 1}`
+          alt_text: `${title} - Image ${index + 1}`
         }));
 
         const { error: imagesError } = await supabase
@@ -251,12 +229,18 @@ export const actions: Actions = {
           console.error('Images insert error:', imagesError);
           // Try to delete the product if images fail
           await supabase.from('products').delete().eq('id', product.id);
+          // Also try to delete uploaded images from storage
+          if (photo_paths && photo_paths.length > 0) {
+            await supabase.storage
+              .from('product-images')
+              .remove(photo_paths);
+          }
           throw new Error(`Failed to save images: ${imagesError.message}`);
         }
       }
 
       // Handle premium boost if selected
-      if (form.data.use_premium_boost) {
+      if (use_premium_boost) {
         const { data: profile } = await supabase
           .from('profiles')
           .select('premium_boosts_remaining')
@@ -284,8 +268,11 @@ export const actions: Actions = {
         }
       }
 
-      // Return success with redirect to success page
-      throw redirect(303, `/sell/success?id=${product.id}`);
+      // Return success with product ID for frontend to handle navigation
+      return {
+        success: true,
+        productId: product.id
+      };
 
     } catch (error) {
       // If it's a redirect, re-throw it
@@ -296,8 +283,11 @@ export const actions: Actions = {
       console.error('Form submission error:', error);
       
       return fail(500, {
-        form,
-        error: error instanceof Error ? error.message : 'Failed to create product'
+        errors: { _form: error instanceof Error ? error.message : 'Failed to create product' },
+        values: {
+          title, description, category_id, subcategory_id, brand, size, 
+          condition, color, material, price, shipping_cost, tags, use_premium_boost
+        }
       });
     }
   }

@@ -13,6 +13,7 @@
     id?: string;
     name?: string;
     autocomplete?: string;
+    inputmode?: 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
     oninput?: (event: Event) => void;
     onchange?: (event: Event) => void;
     onfocus?: (event: FocusEvent) => void;
@@ -31,6 +32,7 @@
     id,
     name,
     autocomplete,
+    inputmode,
     oninput,
     onchange,
     onfocus,
@@ -38,9 +40,10 @@
   }: Props = $props();
 
   const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
+  
 
   // Use text-base (16px) to prevent mobile zoom on focus
-  const baseClasses = 'block w-full rounded-lg border px-3 py-2 text-base sm:text-sm placeholder-gray-500 transition-colors focus:outline-hidden focus:ring-1';
+  const baseClasses = 'block w-full rounded-lg border px-3 py-2 text-base sm:text-sm placeholder-gray-500 focus:outline-hidden focus:ring-1';
   const stateClasses = $derived(error 
     ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
     : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500');
@@ -65,6 +68,7 @@
     {required}
     {name}
     {autocomplete}
+    inputmode={inputmode || (type === 'email' ? 'email' : type === 'tel' ? 'tel' : type === 'number' ? 'numeric' : undefined)}
     id={inputId}
     class={classes}
     {oninput}

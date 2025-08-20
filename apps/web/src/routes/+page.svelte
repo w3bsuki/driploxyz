@@ -118,8 +118,6 @@
 	async function navigateToCategory(categorySlug: string) {
 		loadingCategory = categorySlug;
 		
-		// Add a small delay for UX (to show the loading state)
-		await new Promise(resolve => setTimeout(resolve, 300));
 		
 		try {
 			await goto(`/category/${categorySlug}`);
@@ -131,8 +129,6 @@
 	async function navigateToAllSearch() {
 		loadingCategory = 'all';
 		
-		// Add a small delay for UX
-		await new Promise(resolve => setTimeout(resolve, 200));
 		
 		try {
 			await goto('/search');
@@ -186,7 +182,7 @@
 
 	<!-- Compact Sticky Search Bar -->
 	{#if showCompactSearch}
-		<div class="fixed top-14 sm:top-16 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-xs transition-all duration-300">
+		<div class="fixed top-14 sm:top-16 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-xs">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5">
 				<SearchBar 
 					bind:value={searchQuery}
@@ -223,7 +219,7 @@
 					<button 
 						onclick={navigateToAllSearch}
 						disabled={loadingCategory === 'all'}
-						class="category-nav-pill shrink-0 px-5 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-gray-900 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center"
+						class="category-nav-pill shrink-0 px-5 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-gray-900 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center"
 						style="width: 80px; height: 44px;"
 					>
 						{#if loadingCategory === 'all'}
@@ -239,7 +235,7 @@
 						<button 
 							onclick={() => navigateToCategory(category.slug)}
 							disabled={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center"
+							class="category-nav-pill shrink-0 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center"
 							style="min-width: 80px; height: 44px;"
 							{...prefetchRoute(`/category/${category.slug}`)}
 						>
@@ -258,7 +254,7 @@
 				
 				<!-- Discovery Dropdown (Trending + Top Sellers) -->
 				{#if showCategoryDropdown}
-					<div class="bg-white rounded-2xl border border-gray-200 p-1 shadow-xs backdrop-blur-xl transition-all duration-300 ease-out">
+					<div class="bg-white rounded-2xl border border-gray-200 p-1 shadow-xs backdrop-blur-xl">
 						<div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
 							<div 
 								aria-hidden="true"

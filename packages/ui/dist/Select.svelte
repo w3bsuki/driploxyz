@@ -42,7 +42,7 @@
     )
   );
 
-  const baseClasses = 'block w-full rounded-lg border px-3 py-2 text-sm bg-white transition-colors focus:outline-hidden focus:ring-1 appearance-none cursor-pointer';
+  const baseClasses = 'block w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-hidden focus:ring-1 appearance-none cursor-pointer';
   const stateClasses = $derived(error 
     ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
     : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500');

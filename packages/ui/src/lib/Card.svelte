@@ -15,9 +15,9 @@
     children
   }: Props = $props();
 
-  const baseClasses = 'bg-white rounded-lg shadow-sm transition-all duration-300 ease-out';
+  const baseClasses = 'bg-white rounded-lg shadow-sm';
   const paddingClasses = $derived(padding ? 'p-6' : '');
-  const hoverClasses = $derived(hover ? 'cursor-pointer hover:shadow-xl hover:-translate-y-1 active:scale-[0.98] touch-manipulation will-change-transform' : '');
+  const hoverClasses = $derived(hover ? 'cursor-pointer hover:shadow-lg' : '');
   const classes = $derived(`${baseClasses} ${paddingClasses} ${hoverClasses} ${className}`);
 </script>
 

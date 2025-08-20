@@ -95,7 +95,7 @@
       sessionStorage.setItem('selectedLocale', lang);
       
       // 3. Wait a tiny bit for cookie to be set before refreshing
-      await new Promise(resolve => setTimeout(resolve, 50));
+      await new Promise(resolve => setTimeout(resolve, 10));
       
       // 4. Force hard navigation to bypass any auth state listeners
       // Use replace to prevent back button issues

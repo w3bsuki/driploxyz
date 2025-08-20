@@ -11,6 +11,7 @@ interface Props {
     id?: string;
     name?: string;
     autocomplete?: string;
+    inputmode?: 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
     oninput?: (event: Event) => void;
     onchange?: (event: Event) => void;
     onfocus?: (event: FocusEvent) => void;

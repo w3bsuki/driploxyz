@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ProductCard, Button } from '@repo/ui';
+  import { ProductCard, Button, ProductCardSkeleton } from '@repo/ui';
   import { goto } from '$app/navigation';
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
@@ -7,18 +7,26 @@
   interface Props {
     products: any[];
     errors?: { products?: string };
+    loading?: boolean;
     onProductClick: (product: any) => void;
     onFavorite: (product: any) => void;
   }
 
-  let { products, errors, onProductClick, onFavorite }: Props = $props();
+  let { products, errors, loading = false, onProductClick, onFavorite }: Props = $props();
 </script>
 
 <!-- Product Grid -->
 <div class="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
   
+  <!-- Loading State -->
+  {#if loading}
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-3 lg:gap-4">
+      {#each Array(10) as _}
+        <ProductCardSkeleton />
+      {/each}
+    </div>
   <!-- Featured Products Grid - Mobile-First Responsive -->
-  {#if products.length > 0}
+  {:else if products.length > 0}
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-3 lg:gap-4">
       {#each products as product}
         <ProductCard 

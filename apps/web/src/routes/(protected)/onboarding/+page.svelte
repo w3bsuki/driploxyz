@@ -19,6 +19,7 @@
   import { initializeLanguage } from '$lib/utils/language';
   import { page } from '$app/stores';
   import { toasts } from '@repo/ui';
+  import { uploadAvatar } from '$lib/supabase/storage';
   import type { PageData } from './$types';
 
   interface Props {
@@ -149,6 +150,32 @@
 
   function handleAvatarSelect(url: string) {
     avatarUrl = url;
+  }
+
+  async function handleAvatarUpload(file: File) {
+    if (!data.user) return;
+    
+    try {
+      // Show loading state
+      submitting = true;
+      toasts.info('Uploading avatar...');
+      
+      // Upload avatar to Supabase Storage
+      const uploadedUrl = await uploadAvatar(data.supabase, file, data.user.id);
+      
+      // Update the avatar URL with the uploaded URL
+      avatarUrl = uploadedUrl;
+      
+      toasts.success('Avatar uploaded successfully!');
+    } catch (error) {
+      console.error('Avatar upload failed:', error);
+      toasts.error('Failed to upload avatar. Please try again.');
+      
+      // Reset to default avatar if upload fails
+      avatarUrl = '';
+    } finally {
+      submitting = false;
+    }
   }
 
   function handleSocialLinksUpdate(links: Array<{ type: string; url: string }>) {
@@ -410,6 +437,8 @@
       <AvatarSelector
         bind:selected={avatarUrl}
         uploadEnabled={true}
+        onSelect={handleAvatarSelect}
+        onUpload={handleAvatarUpload}
         class="mb-8"
       />
 

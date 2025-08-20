@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ProductCard, Button, SearchBar, MegaMenu, CategorySidebar, type Product, type CategoryData } from '@repo/ui';
+  import { ProductCard, Button, SearchBar, MegaMenu, CategorySidebar, ProductCardSkeleton, type Product, type CategoryData } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import BottomNav from '$lib/components/BottomNav.svelte';
   import { goto } from '$app/navigation';
@@ -23,6 +23,8 @@
   let sortBy = $state('relevance');
   let showFilters = $state(false);
   let showMegaMenu = $state(false);
+  let isLoading = $state(false);
+  let isSearching = $state(false);
   
   let { data }: Props = $props();
   
@@ -327,8 +329,11 @@
     priceMax = '';
   }
   
-  function handleSearch(query: string) {
+  async function handleSearch(query: string) {
+    isSearching = true;
     searchQuery = query;
+    // Removed artificial delay - instant search
+    isSearching = false;
   }
   
   function handleFilter() {
@@ -692,7 +697,13 @@
     {/if}
     
     <!-- Products Grid -->
-    {#if filteredProducts().length > 0}
+    {#if isSearching || isLoading}
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
+        {#each Array(12) as _}
+          <ProductCardSkeleton />
+        {/each}
+      </div>
+    {:else if filteredProducts().length > 0}
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
         {#each filteredProducts() as product}
           <ProductCard 

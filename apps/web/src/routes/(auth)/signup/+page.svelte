@@ -1,35 +1,28 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { superForm } from 'sveltekit-superforms';
-  import { zodClient } from 'sveltekit-superforms/adapters';
-  import { SignupSchema } from '$lib/validation/auth';
+  import { enhance } from '$app/forms';
   import type { PageData, ActionData } from './$types';
   import * as i18n from '@repo/i18n';
   import { browser } from '$app/environment';
 
-  let { data }: { data: PageData } = $props();
+  let { data, form }: { data: PageData; form: ActionData } = $props();
   
   import { toasts } from '@repo/ui';
   import { onMount } from 'svelte';
   
-  const { form, errors, constraints, submitting, enhance, message } = superForm(data.form, {
-    validators: zodClient(SignupSchema),
-    resetForm: false,
-    taintedMessage: null,
-    validationMethod: 'oninput',
-    onUpdated: ({ form }) => {
-      // Handle errors with toast notifications
-      if ($errors?._errors?.length) {
-        toasts.error($errors._errors[0]);
-      }
-      // Handle field-specific errors
-      if ($errors?.email && $errors.email.includes('already exists')) {
-        toasts.error($errors.email);
-      }
-      // Handle success messages
-      if (form.message && form.message.type === 'success') {
-        toasts.success(form.message.text || 'Account created successfully!');
-      }
+  let submitting = $state(false);
+  let formData = $state({
+    fullName: form?.values?.fullName || '',
+    email: form?.values?.email || '',
+    password: form?.values?.password || '',
+    confirmPassword: form?.values?.confirmPassword || '',
+    terms: false
+  });
+
+  // Handle success messages
+  $effect(() => {
+    if (form?.success && form?.message) {
+      toasts.success(form.message);
     }
   });
 </script>
@@ -41,9 +34,33 @@
 
 <div class="space-y-4">
 
+  {#if form?.errors?._form}
+    <div class="bg-red-50 border border-red-200 rounded-md p-4">
+      <div class="flex">
+        <div class="shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          <p class="text-sm text-red-800">{form.errors._form}</p>
+        </div>
+      </div>
+    </div>
+  {/if}
 
   <!-- Signup Form -->
-  <form method="POST" action="?/signup" use:enhance>
+  <form 
+    method="POST" 
+    action="?/signup" 
+    use:enhance={() => {
+      submitting = true;
+      return async ({ update }) => {
+        await update();
+        submitting = false;
+      };
+    }}
+  >
     <div class="space-y-1">
       <!-- Full Name -->
       <div>
@@ -55,20 +72,19 @@
           name="fullName"
           type="text"
           required
-          bind:value={$form.fullName}
-          aria-invalid={$errors.fullName ? 'true' : undefined}
-          aria-describedby={$errors.fullName ? 'fullName-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {$errors.fullName ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
+          bind:value={formData.fullName}
+          aria-invalid={form?.errors?.fullName ? 'true' : undefined}
+          aria-describedby={form?.errors?.fullName ? 'fullName-error' : undefined}
+          class="appearance-none block w-full px-3 py-2 border {form?.errors?.fullName ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
           placeholder="John Doe"
-          {...$constraints.fullName}
         />
         <div class="mt-1 h-2">
-          {#if $errors.fullName}
+          {#if form?.errors?.fullName}
             <div id="fullName-error" class="text-sm text-red-600 flex items-center gap-1">
               <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
-              <span>{$errors.fullName}</span>
+              <span>{form.errors.fullName}</span>
             </div>
           {/if}
         </div>
@@ -85,20 +101,19 @@
           type="email"
           autocomplete="email"
           required
-          bind:value={$form.email}
-          aria-invalid={$errors.email ? 'true' : undefined}
-          aria-describedby={$errors.email ? 'email-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {$errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
+          bind:value={formData.email}
+          aria-invalid={form?.errors?.email ? 'true' : undefined}
+          aria-describedby={form?.errors?.email ? 'email-error' : undefined}
+          class="appearance-none block w-full px-3 py-2 border {form?.errors?.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
           placeholder="john@example.com"
-          {...$constraints.email}
         />
         <div class="mt-1 h-2">
-          {#if $errors.email}
+          {#if form?.errors?.email}
             <div id="email-error" class="text-sm text-red-600 flex items-center gap-1">
               <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
-              <span>{$errors.email}</span>
+              <span>{form.errors.email}</span>
             </div>
           {/if}
         </div>
@@ -115,20 +130,19 @@
           type="password"
           autocomplete="new-password"
           required
-          bind:value={$form.password}
-          aria-invalid={$errors.password ? 'true' : undefined}
-          aria-describedby={$errors.password ? 'password-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {$errors.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
+          bind:value={formData.password}
+          aria-invalid={form?.errors?.password ? 'true' : undefined}
+          aria-describedby={form?.errors?.password ? 'password-error' : undefined}
+          class="appearance-none block w-full px-3 py-2 border {form?.errors?.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
           placeholder="Minimum 8 characters"
-          {...$constraints.password}
         />
         <div class="mt-1 h-2">
-          {#if $errors.password}
+          {#if form?.errors?.password}
             <div id="password-error" class="text-sm text-red-600 flex items-center gap-1">
               <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
-              <span>{$errors.password}</span>
+              <span>{form.errors.password}</span>
             </div>
           {/if}
         </div>
@@ -144,20 +158,19 @@
           type="password"
           autocomplete="new-password"
           required
-          bind:value={$form.confirmPassword}
-          aria-invalid={$errors.confirmPassword ? 'true' : undefined}
-          aria-describedby={$errors.confirmPassword ? 'confirmPassword-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {$errors.confirmPassword ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
+          bind:value={formData.confirmPassword}
+          aria-invalid={form?.errors?.confirmPassword ? 'true' : undefined}
+          aria-describedby={form?.errors?.confirmPassword ? 'confirmPassword-error' : undefined}
+          class="appearance-none block w-full px-3 py-2 border {form?.errors?.confirmPassword ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
           placeholder="Re-enter your password"
-          {...$constraints.confirmPassword}
         />
         <div class="mt-1 h-2">
-          {#if $errors.confirmPassword}
+          {#if form?.errors?.confirmPassword}
             <div id="confirmPassword-error" class="text-sm text-red-600 flex items-center gap-1">
               <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
-              <span>{$errors.confirmPassword}</span>
+              <span>{form.errors.confirmPassword}</span>
             </div>
           {/if}
         </div>
@@ -169,18 +182,18 @@
           id="terms"
           name="terms"
           type="checkbox"
-          bind:checked={$form.terms}
-          aria-invalid={$errors.terms ? 'true' : undefined}
-          aria-describedby={$errors.terms ? 'terms-error' : undefined}
+          bind:checked={formData.terms}
+          aria-invalid={form?.errors?.terms ? 'true' : undefined}
+          aria-describedby={form?.errors?.terms ? 'terms-error' : undefined}
           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-sm"
         />
         <div class="mt-1 h-2">
-          {#if $errors.terms}
+          {#if form?.errors?.terms}
             <div id="terms-error" class="text-sm text-red-600 flex items-center gap-1">
               <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
-              <span>{$errors.terms}</span>
+              <span>{form.errors.terms}</span>
             </div>
           {/if}
         </div>
@@ -196,10 +209,10 @@
       <div>
         <button
           type="submit"
-          disabled={$submitting}
+          disabled={submitting}
           class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-blue-600 hover:bg-blue-700 text-white focus-visible:ring-blue-500 px-4 py-2.5 text-sm transition-all duration-200"
         >
-          {#if $submitting}
+          {#if submitting}
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 0 1 4 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>

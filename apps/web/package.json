@@ -35,7 +35,6 @@
 		"sharp": "^0.34.3",
 		"stripe": "^18.4.0",
 		"sveltekit-rate-limiter": "^0.7.0",
-		"sveltekit-superforms": "^2.27.1",
 		"zod": "^3"
 	},
 	"devDependencies": {

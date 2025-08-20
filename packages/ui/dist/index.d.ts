@@ -37,9 +37,10 @@ export { default as SoldNotificationToast } from './SoldNotificationToast.svelte
 export { default as ProductSoldManager } from './ProductSoldManager.svelte';
 export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte';
 export { default as OptimizedImage } from './OptimizedImage.svelte';
-export { default as ProductCardSkeleton } from './ProductCardSkeleton.svelte';
-export { default as SellerCardSkeleton } from './SellerCardSkeleton.svelte';
-export { default as CategoryCardSkeleton } from './CategoryCardSkeleton.svelte';
+export { default as ImageOptimized } from './ImageOptimized.svelte';
+export { default as SearchDebounced } from './SearchDebounced.svelte';
+export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';
+export { ProductCardSkeleton, ProductDetailSkeleton, SellerCardSkeleton, CategoryCardSkeleton, ListItemSkeleton, TextSkeleton, ImageSkeleton } from './skeleton/index';
 export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
 export { default as CookieConsent } from './CookieConsent.svelte';
 export { default as LocaleDetectionBanner } from './LocaleDetectionBanner.svelte';
@@ -50,11 +51,12 @@ export { default as StepIndicator } from './StepIndicator.svelte';
 export { default as ConditionSelector } from './ConditionSelector.svelte';
 export { default as BrandSelector } from './BrandSelector.svelte';
 export { default as ImageUploader } from './ImageUploader.svelte';
+export { default as ImageUploaderSupabase } from './ImageUploaderSupabase.svelte';
 export { default as PriceInput } from './PriceInput.svelte';
 export { default as TagInput } from './TagInput.svelte';
 export { default as ToastContainer } from './ToastContainer.svelte';
-export { toasts } from './toast-store.js';
-export type { ToastMessage } from './toast-store.js';
+export { toasts } from './toast-store';
+export type { ToastMessage } from './toast-store';
 export { default as PricingCard } from './PricingCard.svelte';
 export { default as Accordion } from './Accordion.svelte';
 //# sourceMappingURL=index.d.ts.map

@@ -50,11 +50,24 @@ export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte
 
 // Image upload components
 export { default as OptimizedImage } from './OptimizedImage.svelte';
+export { default as ImageOptimized } from './ImageOptimized.svelte';
+
+// Search components
+export { default as SearchDebounced } from './SearchDebounced.svelte';
+
+// Virtual scrolling components
+export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';
 
 // Skeleton loading components
-export { default as ProductCardSkeleton } from './ProductCardSkeleton.svelte';
-export { default as SellerCardSkeleton } from './SellerCardSkeleton.svelte';
-export { default as CategoryCardSkeleton } from './CategoryCardSkeleton.svelte';
+export { 
+  ProductCardSkeleton,
+  ProductDetailSkeleton,
+  SellerCardSkeleton,
+  CategoryCardSkeleton,
+  ListItemSkeleton,
+  TextSkeleton,
+  ImageSkeleton
+} from './skeleton/index';
 
 // Language switcher
 export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
@@ -75,13 +88,14 @@ export { default as StepIndicator } from './StepIndicator.svelte';
 export { default as ConditionSelector } from './ConditionSelector.svelte';
 export { default as BrandSelector } from './BrandSelector.svelte';
 export { default as ImageUploader } from './ImageUploader.svelte';
+export { default as ImageUploaderSupabase } from './ImageUploaderSupabase.svelte';
 export { default as PriceInput } from './PriceInput.svelte';
 export { default as TagInput } from './TagInput.svelte';
 
 // Toast components
 export { default as ToastContainer } from './ToastContainer.svelte';
-export { toasts } from './toast-store.js';
-export type { ToastMessage } from './toast-store.js';
+export { toasts } from './toast-store';
+export type { ToastMessage } from './toast-store';
 
 // Pricing and subscription components
 export { default as PricingCard } from './PricingCard.svelte';

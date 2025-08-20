@@ -57,8 +57,10 @@
       // Create a URL for the file to preview it
       const fileUrl = URL.createObjectURL(file);
       currentBlobUrl = fileUrl;
+      
+      // Only set selected to blob URL for preview - onUpload should handle the actual upload
+      // and call onSelect with the final URL when upload is complete
       selected = fileUrl;
-      onSelect?.(fileUrl);
       onUpload?.(file);
     }
   }

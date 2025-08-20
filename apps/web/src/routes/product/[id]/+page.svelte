@@ -3,7 +3,9 @@
     Button, 
     Avatar, 
     ProductCard,
-    ProductGallery
+    ProductGallery,
+    ProductDetailSkeleton,
+    ProductCardSkeleton
   } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';

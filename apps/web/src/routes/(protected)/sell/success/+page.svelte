@@ -17,11 +17,13 @@
   let showShare = $state(false);
   
   const productId = $derived($page.url.searchParams.get('id'));
+  const isProcessing = $derived($page.url.searchParams.get('status') === 'processing');
+  const isTemp = $derived(productId?.startsWith('temp_'));
   
   const stats = [
-    { icon: '👁', label: 'Getting views' },
-    { icon: '💬', label: 'Ready for offers' },
-    { icon: '📦', label: 'Ready to ship' }
+    { icon: '👁', label: isProcessing ? 'Publishing...' : 'Getting views' },
+    { icon: '💬', label: isProcessing ? 'Almost ready...' : 'Ready for offers' },
+    { icon: '📦', label: isProcessing ? 'Finalizing...' : 'Ready to ship' }
   ];
   
   const tips = [
@@ -73,9 +75,9 @@
       setTimeout(() => showShare = true, 600);
     });
     
-    // Auto-redirect after 7 seconds
+    // Auto-redirect after 7 seconds (only if not processing)
     const timer = setTimeout(() => {
-      if (productId) {
+      if (productId && !isTemp) {
         goto(`/product/${productId}`);
       }
     }, 7000);
@@ -123,8 +125,12 @@
     
     <!-- Success Message -->
     <div class="text-center mb-8 transform transition-all duration-500 {isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}">
-      <h2 class="text-2xl font-bold text-gray-900 mb-2">Your item is live!</h2>
-      <p class="text-gray-600">Buyers can now discover and purchase your item</p>
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">
+        {isProcessing ? 'Publishing your item...' : 'Your item is live!'}
+      </h2>
+      <p class="text-gray-600">
+        {isProcessing ? 'Just a moment while we finalize your listing' : 'Buyers can now discover and purchase your item'}
+      </p>
     </div>
     
     <!-- Stats Grid -->
@@ -164,10 +170,19 @@
       <Button 
         variant="primary" 
         size="lg" 
-        onclick={() => productId && goto(`/product/${productId}`)}
+        onclick={() => !isTemp && productId && goto(`/product/${productId}`)}
+        disabled={isTemp}
         class="w-full py-4 text-base font-semibold"
       >
-        View Your Listing
+        {#if isProcessing}
+          <svg class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Publishing...
+        {:else}
+          View Your Listing
+        {/if}
       </Button>
       
       <Button 
@@ -181,30 +196,44 @@
     </div>
     
     <!-- Share Section -->
-    <div class="transform transition-all duration-500 {showShare ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}">
-      <p class="text-center text-sm text-gray-600 mb-4">Share your listing</p>
-      <div class="flex justify-center space-x-3">
-        {#each sharePlatforms as platform}
-          <button
-            onclick={platform.action}
-            class="w-12 h-12 rounded-full {platform.color} text-white flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 touch-manipulation"
-            aria-label="Share on {platform.name}"
-          >
-            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-              <path d={platform.icon} />
-            </svg>
-          </button>
-        {/each}
+    {#if !isProcessing}
+      <div class="transform transition-all duration-500 {showShare ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}">
+        <p class="text-center text-sm text-gray-600 mb-4">Share your listing</p>
+        <div class="flex justify-center space-x-3">
+          {#each sharePlatforms as platform}
+            <button
+              onclick={platform.action}
+              class="w-12 h-12 rounded-full {platform.color} text-white flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 touch-manipulation"
+              aria-label="Share on {platform.name}"
+            >
+              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d={platform.icon} />
+              </svg>
+            </button>
+          {/each}
+        </div>
       </div>
-    </div>
+    {/if}
     
     <!-- Auto-redirect notice -->
-    <div class="mt-8 text-center">
-      <p class="text-xs text-gray-500">Redirecting to your listing in a moment...</p>
-      <div class="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden max-w-xs mx-auto">
-        <div class="h-full bg-green-500 rounded-full animate-progress"></div>
+    {#if !isProcessing}
+      <div class="mt-8 text-center">
+        <p class="text-xs text-gray-500">Redirecting to your listing in a moment...</p>
+        <div class="mt-2 h-1 bg-gray-200 rounded-full overflow-hidden max-w-xs mx-auto">
+          <div class="h-full bg-green-500 rounded-full animate-progress"></div>
+        </div>
       </div>
-    </div>
+    {:else}
+      <div class="mt-8 text-center">
+        <p class="text-xs text-gray-500">Finalizing your listing...</p>
+        <div class="mt-2 flex justify-center">
+          <svg class="w-4 h-4 animate-spin text-blue-500" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </div>
+      </div>
+    {/if}
   </div>
 </div>
 
