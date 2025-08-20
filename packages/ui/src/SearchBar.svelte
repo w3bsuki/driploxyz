@@ -125,14 +125,14 @@
               bind:value
               {placeholder}
               type="search"
-              class="flex-1 bg-transparent text-base sm:text-sm placeholder-gray-500 focus:outline-hidden min-w-0"
+              class="flex-1 bg-transparent text-base sm:text-sm placeholder-gray-500 focus:outline-hidden min-w-0 pr-2"
               oninput={handleInput}
               onfocus={handleFocus}
               onblur={handleBlur}
             />
             
             <!-- Right side buttons container -->
-            <div class="flex items-center pr-2">
+            <div class="flex items-center pr-3 gap-2">
               <!-- Clear Button -->
               {#if value}
                 <button
@@ -151,7 +151,7 @@
               <button
                 type="button"
                 onclick={showMegaMenuButton ? onOpenMegaMenu : onFilter}
-                class="px-3 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center space-x-1 ring-1 ring-gray-200 whitespace-nowrap"
+                class="px-3 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center gap-1.5 ring-1 ring-gray-200 whitespace-nowrap"
               >
                 {#if showMegaMenuButton}
                   <svg class="w-4 h-4 text-gray-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -220,7 +220,7 @@
           bind:value
           {placeholder}
           type="search"
-          class="w-full bg-transparent pl-11 pr-32 py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-hidden"
+          class="w-full bg-transparent pl-12 pr-24 py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-hidden"
           oninput={handleInput}
           onfocus={handleFocus}
           onblur={handleBlur}
@@ -231,7 +231,7 @@
           <button
             type="button"
             onclick={handleClear}
-            class="absolute right-24 p-1 hover:bg-gray-200 rounded-full transition-colors"
+            class="absolute right-20 p-1 hover:bg-gray-200 rounded-full transition-colors"
             aria-label="Clear search"
           >
             <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -244,7 +244,7 @@
         <button
           type="button"
           onclick={onFilter}
-          class="absolute right-2 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center"
+          class="absolute right-3 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center"
           aria-label="Filter results"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

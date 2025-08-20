@@ -47,7 +47,7 @@ export { default as SoldNotificationToast } from './SoldNotificationToast.svelte
 export { default as ProductSoldManager } from './ProductSoldManager.svelte';
 export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte';
 // Image upload components
-export { default as ImageUploader } from './ImageUploader.svelte';
+export { default as ImageUploader } from './components/ImageUploader.svelte';
 export { default as OptimizedImage } from './OptimizedImage.svelte';
 // Language switcher
 export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
@@ -62,11 +62,11 @@ export { default as MegaMenu } from './MegaMenu.svelte';
 export { default as CategorySidebar } from './CategorySidebar.svelte';
 // Form components
 export { default as Select } from './Select.svelte';
-export { default as StepIndicator } from './StepIndicator.svelte';
-export { default as ConditionSelector } from './ConditionSelector.svelte';
-export { default as BrandSelector } from './BrandSelector.svelte';
-export { default as PriceInput } from './PriceInput.svelte';
-export { default as TagInput } from './TagInput.svelte';
+export { default as StepIndicator } from './components/StepIndicator.svelte';
+export { default as ConditionSelector } from './components/ConditionSelector.svelte';
+export { default as BrandSelector } from './components/BrandSelector.svelte';
+export { default as PriceInput } from './components/PriceInput.svelte';
+export { default as TagInput } from './components/TagInput.svelte';
 // Toast notification system
 export { default as Toast } from './components/toast/Toast.svelte';
 export { default as ToastContainer } from './components/toast/ToastContainer.svelte';

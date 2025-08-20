@@ -162,19 +162,21 @@
   import { goto, invalidate } from '$app/navigation';
   import { browser } from '$app/environment';
   
-  let selectedConversation = $state<string | null>(null);
-  
-  // Auto-select conversation from data
-  $effect(() => {
+  // Get selected conversation from URL
+  const selectedConversation = $derived(() => {
+    const convParam = $page.url.searchParams.get('conversation');
+    if (convParam) {
+      return convParam;
+    }
+    // Legacy support for conversationParam from server
     if (data.conversationParam) {
       const [sellerId, productId] = data.conversationParam.split('__');
-      // Find the OTHER user ID (not the current user)
       const otherUserId = sellerId === data.user?.id ? 
         data.conversationUser?.id || sellerId : 
         sellerId;
-      const conversationKey = `${otherUserId}__${productId || 'general'}`;
-      selectedConversation = conversationKey;
+      return `${otherUserId}__${productId || 'general'}`;
     }
+    return null;
   });
   let messageText = $state('');
   let activeTab = $state<'all' | 'buying' | 'selling' | 'offers' | 'unread'>('all');
@@ -183,11 +185,11 @@
   let typingUsers = $state<Record<string, string>>({});
   
   const selectedConvMessages = $derived(() => {
-    if (!selectedConversation) {
+    if (!selectedConversation()) {
       return [];
     }
     const convs = conversations();
-    const conv = convs.find(c => c.id === selectedConversation);
+    const conv = convs.find(c => c.id === selectedConversation());
     const messages = conv?.messages?.sort((a, b) => 
       new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
     ) || [];
@@ -206,7 +208,7 @@
   
   // Handle typing indicator
   function handleTyping() {
-    if (!selectedConversation || !data.user) return;
+    if (!selectedConversation() || !data.user) return;
     
     // Clear existing timeout
     if (typingTimeout) {
@@ -228,7 +230,7 @@
 
   async function sendMessage() {
     
-    if (!messageText.trim() || !selectedConversation || !data.user) {
+    if (!messageText.trim() || !selectedConversation() || !data.user) {
       return;
     }
     
@@ -239,7 +241,7 @@
     }
     
     // Extract user ID and product ID from conversation key
-    const [recipientId, productId] = selectedConversation.split('__');
+    const [recipientId, productId] = selectedConversation().split('__');
     
     if (recipientId === data.user.id) {
       alert('Cannot send message to yourself!');
@@ -302,8 +304,8 @@
   <Header />
   
   <!-- Page Header - Only show when no conversation selected -->
-  {#if !selectedConversation}
-    <div class="bg-white border-b sticky top-14 sm:top-16 z-30">
+  {#if !selectedConversation()}
+    <div class="bg-white border-b border-gray-200 sticky top-14 sm:top-16 z-30">
       <div class="max-w-7xl mx-auto">
         <div class="px-4 sm:px-6 lg:px-8 py-3">
           <h1 class="text-lg font-semibold text-gray-900">{i18n.messages_inbox()}</h1>
@@ -356,10 +358,10 @@
     </div>
   {/if}
 
-  <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 {selectedConversation ? '' : 'pb-20 sm:pb-0'}">
-    <div class="sm:grid sm:grid-cols-3 lg:grid-cols-4 {selectedConversation ? 'sm:h-[calc(100vh-80px)]' : 'sm:h-[calc(100vh-180px)]'}">
+  <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 {selectedConversation() ? '' : 'pb-20 sm:pb-0'}">
+    <div class="sm:grid sm:grid-cols-3 lg:grid-cols-4 {selectedConversation() ? 'sm:h-[calc(100vh-80px)]' : 'sm:h-[calc(100vh-180px)]'}">
       <!-- Conversations List -->
-      <div class="sm:col-span-1 lg:col-span-1 bg-white sm:border-r overflow-y-auto {selectedConversation ? 'hidden sm:block' : ''} {selectedConversation ? '' : 'h-[calc(100vh-160px)] sm:h-auto'}">
+      <div class="sm:col-span-1 lg:col-span-1 bg-white sm:border-r sm:border-gray-200 overflow-y-auto {selectedConversation() ? 'hidden sm:block' : ''} {selectedConversation() ? '' : 'h-[calc(100vh-160px)] sm:h-auto'}">
         {#if conversations().length === 0}
           <div class="p-4 text-center text-gray-500">
             No conversations yet.
@@ -367,12 +369,12 @@
         {/if}
         {#each conversations() as conv}
           <div
-            class="w-full px-4 py-4 hover:bg-gray-50 border-b transition-colors text-left min-h-[68px] cursor-pointer
-              {selectedConversation === conv.id ? 'bg-gray-50' : ''}"
-            onclick={() => selectedConversation = conv.id}
+            class="w-full px-4 py-4 hover:bg-gray-50 border-b border-gray-200 transition-colors text-left min-h-[68px] cursor-pointer
+              {selectedConversation() === conv.id ? 'bg-gray-50' : ''}"
+            onclick={() => goto(`/messages?conversation=${conv.id}`)}
             role="button"
             tabindex="0"
-            onkeydown={(e) => e.key === 'Enter' && (selectedConversation = conv.id)}
+            onkeydown={(e) => e.key === 'Enter' && goto(`/messages?conversation=${conv.id}`)}
           >
             <div class="flex items-start space-x-3">
               <div class="relative shrink-0">
@@ -419,15 +421,15 @@
       </div>
 
       <!-- Chat View -->
-      {#if selectedConversation}
-        {@const conv = conversations().find(c => c.id === selectedConversation)}
-        <div class="sm:col-span-2 lg:col-span-3 bg-white flex flex-col {selectedConversation ? 'fixed sm:relative inset-0 top-14 sm:top-0 z-40 sm:z-auto h-[calc(100vh-56px)] sm:h-full' : 'h-full'}">
+      {#if selectedConversation()}
+        {@const conv = conversations().find(c => c.id === selectedConversation())}
+        <div class="sm:col-span-2 lg:col-span-3 bg-white flex flex-col {selectedConversation() ? 'fixed sm:relative inset-0 top-14 sm:top-0 z-40 sm:z-auto h-[calc(100vh-56px)] sm:h-full' : 'h-full'}">
           <!-- Chat Header - Sticky -->
-          <div class="bg-white border-b px-4 py-3 shrink-0">
+          <div class="bg-white border-b border-gray-200 px-4 py-3 shrink-0">
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-3">
                 <button
-                  onclick={() => selectedConversation = null}
+                  onclick={() => goto('/messages')}
                   class="sm:hidden -ml-2"
                   aria-label="Back to conversations"
                 >
@@ -513,7 +515,7 @@
             {#each selectedConvMessages() as message}
               <div class="flex {message.sender_id === data.user?.id ? 'justify-end' : 'justify-start'} px-1">
                 <div class="max-w-[80%] sm:max-w-[70%]">
-                  <div class="{message.sender_id === data.user?.id ? 'bg-black text-white rounded-2xl rounded-br-md' : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-xs border'} px-4 py-3">
+                  <div class="{message.sender_id === data.user?.id ? 'bg-black text-white rounded-2xl rounded-br-md' : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-xs border border-gray-200'} px-4 py-3">
                     <p class="text-sm leading-relaxed">{message.content}</p>
                   </div>
                   <div class="flex items-center justify-between mt-1.5 px-2">
@@ -543,16 +545,16 @@
             {/each}
             
             <!-- Typing Indicator -->
-            {#if selectedConversation && typingUsers[selectedConversation]}
+            {#if selectedConversation() && typingUsers[selectedConversation()]}
               <TypingIndicator 
                 show={true}
-                username={typingUsers[selectedConversation]}
+                username={typingUsers[selectedConversation()]}
               />
             {/if}
           </div>
 
           <!-- Message Input - Fixed at Bottom -->
-          <div class="bg-white border-t p-4 pb-6 sm:pb-3 shrink-0">
+          <div class="bg-white border-t border-gray-200 p-4 pb-6 sm:pb-3 shrink-0">
             <!-- Quick Actions -->
             <div class="flex gap-2 mb-2 overflow-x-auto scrollbar-hide">
               <button class="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap">
@@ -589,7 +591,7 @@
                   oninput={handleTyping}
                   placeholder={i18n.messages_messageInput()}
                   aria-label="Type a message"
-                  class="w-full px-4 py-2.5 bg-gray-50 rounded-full text-base placeholder-gray-500 focus:outline-hidden focus:ring-2 focus:ring-black focus:bg-white"
+                  class="w-full px-4 py-2.5 bg-gray-50 rounded-full text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:bg-white"
                 />
               </div>
               <button 
@@ -621,7 +623,7 @@
   </div>
   
   <!-- Bottom Navigation - Hide in chat -->
-  {#if !selectedConversation}
+  {#if !selectedConversation()}
     <BottomNav />
   {/if}
 </div>

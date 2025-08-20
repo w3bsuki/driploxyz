@@ -15,6 +15,19 @@
 <!-- Promoted Listings / Highlights -->
 <div class="bg-white border-b border-gray-200">
   <div class="px-4 sm:px-6 lg:px-8 py-4">
+    <!-- Promoted header -->
+    <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-semibold text-gray-900 uppercase tracking-wide">Promoted</span>
+        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full font-medium">Featured</span>
+      </div>
+      <div class="flex items-center gap-1 text-gray-400">
+        <span class="text-xs">Scroll</span>
+        <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+    </div>
     <div class="overflow-x-auto scrollbar-hide">
       <div class="flex space-x-3 -mx-4 px-4 sm:mx-0 sm:px-0">
         <!-- Promoted Products -->
@@ -34,42 +47,49 @@
                 })}
                 class="block promoted-highlight"
               >
-              <!-- Premium container without gold border -->
-              <div class="relative rounded-2xl shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300 bg-white p-1">
-                <!-- Inner glass frame -->
-                <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
-                  <div 
-                    aria-hidden="true"
-                    class="absolute inset-x-0 top-0 h-32 rounded-[inherit]"
-                    style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
-                  />
-                  <!-- Product image -->
-                  <div class="w-32 h-32 sm:w-40 sm:h-40 relative">
-                    <img 
-                      src={product.images[0]?.image_url || '/placeholder-product.svg'} 
-                      alt={product.title}
-                      class="w-full h-full object-cover"
+              <!-- Premium container with clean design -->
+              <div class="group">
+                <div class="relative rounded-2xl shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300 bg-white p-1">
+                  <!-- Inner glass frame -->
+                  <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
+                    <div 
+                      aria-hidden="true"
+                      class="absolute inset-x-0 top-0 h-32 rounded-[inherit]"
+                      style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
                     />
-                    
-                    <!-- Small promoted crown icon -->
-                    <div class="absolute top-2 right-2 w-6 h-6 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center">
-                      <svg class="w-3.5 h-3.5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/>
-                      </svg>
-                    </div>
-                    
-                    <!-- Seller avatar -->
-                    <div class="absolute bottom-2 left-2 w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm">
-                      <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
-                        {product.seller_name?.charAt(0).toUpperCase() || 'S'}
+                    <!-- Product image -->
+                    <div class="w-32 h-32 sm:w-40 sm:h-40 relative">
+                      <img 
+                        src={product.images[0]?.image_url || '/placeholder-product.svg'} 
+                        alt={product.title}
+                        class="w-full h-full object-cover"
+                      />
+                      
+                      <!-- Small promoted crown icon -->
+                      <div class="absolute top-2 right-2 w-6 h-6 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/>
+                        </svg>
+                      </div>
+                      
+                      <!-- Seller avatar bottom left -->
+                      <div class="absolute bottom-2 left-2 w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm">
+                        <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
+                          {product.seller_name?.charAt(0).toUpperCase() || 'S'}
+                        </div>
                       </div>
                     </div>
-                    
-                    <!-- Price badge -->
-                    <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg shadow-sm">
-                      {product.price}{i18n.common_currency()}
-                    </div>
                   </div>
+                </div>
+                
+                <!-- Title and price below -->
+                <div class="mt-2 px-1 w-32 sm:w-40">
+                  <p class="text-xs text-gray-700 truncate">
+                    {product.title}
+                  </p>
+                  <p class="text-sm font-bold text-gray-900 mt-0.5">
+                    {product.price}{i18n.common_currency()}
+                  </p>
                 </div>
               </div>
             </button>
