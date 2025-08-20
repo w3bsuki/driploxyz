@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { superForm } from 'sveltekit-superforms';
-  import { zodClient } from 'sveltekit-superforms/adapters';
+  import { createProduct, getPriceSuggestions } from '$lib/remote/products.remote';
   import { ProductSchema, POPULAR_BRANDS, SIZE_CATEGORIES } from '$lib/validation/product';
   import type { PageData } from './$types';
   import { 
@@ -24,31 +23,33 @@
 
   let { data }: Props = $props();
   
-  // Superforms setup
-  const { form, errors, constraints, submitting, enhance, message: formMessage } = superForm(data.form, {
-    validators: zodClient(ProductSchema),
-    resetForm: false,
-    taintedMessage: null,
-    multipleSubmits: 'prevent',
-    validationMethod: 'oninput',
-    clearOnSubmit: 'errors',
-    onResult: ({ result }) => {
-      if (result.type === 'success') {
-        toasts.add({
-          type: 'success',
-          message: 'Product listed successfully!',
-          duration: 5000
-        });
-      }
-    },
-    onError: ({ error }) => {
-      toasts.add({
-        type: 'error',
-        message: error?.message || 'Failed to create listing',
-        duration: 5000
-      });
-    }
+  // Form state using runes
+  let formData = $state({
+    title: '',
+    description: '',
+    category_id: '',
+    subcategory_id: '',
+    brand: '',
+    size: '',
+    condition: 'good' as const,
+    color: '',
+    material: '',
+    price: 0,
+    shipping_cost: 0,
+    tags: [] as string[],
+    use_premium_boost: false
   });
+  
+  let submitting = $state(false);
+  let errors = $state<Record<string, string>>({});
+  let priceSuggestion = $state<{
+    suggested: number | null;
+    range: { min: number; max: number } | null;
+    confidence: 'low' | 'medium' | 'high';
+  } | null>(null);
+  
+  // Create form function
+  const productForm = createProduct.form();
 
   // Multi-step form state
   let currentStep = $state(1);
@@ -75,13 +76,13 @@
   // Completed steps tracking
   const completedSteps = $derived(() => {
     const completed = [];
-    if (photoUrls.length > 0 && $form.title && $form.category_id) {
+    if (photoUrls.length > 0 && formData.title && formData.category_id) {
       completed.push(1);
     }
-    if ($form.brand && $form.size && $form.condition) {
+    if (formData.brand && formData.size && formData.condition) {
       completed.push(2);
     }
-    if ($form.price && $form.shipping_cost >= 0) {
+    if (formData.price && formData.shipping_cost >= 0) {
       completed.push(3);
     }
     return completed;
@@ -112,11 +113,11 @@
   function canProceedToNext() {
     switch(currentStep) {
       case 1: 
-        return photoUrls.length > 0 && $form.title && $form.category_id;
+        return photoUrls.length > 0 && formData.title && formData.category_id;
       case 2: 
-        return $form.brand && $form.size && $form.condition;
+        return formData.brand && formData.size && formData.condition;
       case 3: 
-        return $form.price && $form.shipping_cost >= 0;
+        return formData.price && formData.shipping_cost >= 0;
       case 4:
         return true; // Review step can always submit
       default: 
@@ -130,19 +131,11 @@
     if (files) {
       photoFiles = files;
     }
-    $form.photos_count = images.length;
   }
 
-  // Handle form submission
-  function handleFormSubmit({ formData, cancel }) {
-    console.log('[CLIENT DEBUG] Form submission started');
-    console.log('[CLIENT DEBUG] Current step:', currentStep);
-    console.log('[CLIENT DEBUG] Photo files:', photoFiles.length);
-    console.log('[CLIENT DEBUG] Photo URLs:', photoUrls.length);
-    
-    // Only allow submission from review step
+  // Handle form submission using remote functions
+  async function handleFormSubmit() {
     if (currentStep !== 4) {
-      cancel();
       toasts.add({
         type: 'error',
         message: 'Please review your listing before publishing',
@@ -151,10 +144,7 @@
       return;
     }
     
-    // Check for photos
     if (photoFiles.length === 0) {
-      console.log('[CLIENT DEBUG] No photo files found, canceling');
-      cancel();
       toasts.add({
         type: 'error',
         message: 'At least one photo is required',
@@ -163,21 +153,89 @@
       return;
     }
     
-    // Add photo files to form data
-    console.log('[CLIENT DEBUG] Adding photos to form data');
-    photoFiles.forEach((file, index) => {
-      console.log(`[CLIENT DEBUG] Adding photo ${index}:`, file.name, file.size);
-      formData.append('photos', file);
-    });
+    submitting = true;
+    errors = {};
     
-    console.log('[CLIENT DEBUG] Form data keys after adding photos:', Array.from(formData.keys()));
-    console.log('[CLIENT DEBUG] Photos in form data:', formData.getAll('photos').length);
+    try {
+      // Validate form data
+      const validation = ProductSchema.extend({
+        photos: ProductSchema.shape.photos || ProductSchema.shape.photos_count
+      }).safeParse({
+        ...formData,
+        photos: photoFiles
+      });
+      
+      if (!validation.success) {
+        validation.error.errors.forEach(err => {
+          if (err.path.length > 0) {
+            errors[err.path[0]] = err.message;
+          }
+        });
+        toasts.add({
+          type: 'error',
+          message: 'Please fix the form errors',
+          duration: 5000
+        });
+        return;
+      }
+      
+      // Submit using remote function
+      const result = await productForm({
+        ...formData,
+        photos: photoFiles
+      });
+      
+      if (result.success) {
+        toasts.add({
+          type: 'success',
+          message: 'Product listed successfully!',
+          duration: 5000
+        });
+        
+        // Redirect to success page
+        goto(`/sell/success?id=${result.product.id}`);
+      } else {
+        throw new Error('Failed to create product');
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+      toasts.add({
+        type: 'error',
+        message: error instanceof Error ? error.message : 'Failed to create listing',
+        duration: 5000
+      });
+    } finally {
+      submitting = false;
+    }
   }
   
   // Get category name by ID
   function getCategoryName(id: string) {
     return (data.categories || []).find(c => c.id === id)?.name || '';
   }
+  
+  // Get price suggestions when category, brand, and condition change
+  async function updatePriceSuggestions() {
+    if (!formData.category_id || !formData.condition) return;
+    
+    try {
+      priceSuggestion = await getPriceSuggestions({
+        categoryId: formData.category_id,
+        brand: formData.brand || undefined,
+        condition: formData.condition,
+        size: formData.size || undefined
+      });
+    } catch (error) {
+      console.error('Failed to get price suggestions:', error);
+    }
+  }
+  
+  // Watch for changes that should trigger price suggestions
+  $effect(() => {
+    if (formData.category_id && formData.condition && formData.brand) {
+      updatePriceSuggestions();
+    }
+  });
 
   // Tag suggestions
   const tagSuggestions = [
@@ -239,13 +297,20 @@
   <!-- Form Content -->
   <div class="max-w-4xl mx-auto px-4 py-6">
     <!-- Error Messages -->
-    {#if $formMessage}
+    {#if Object.keys(errors).length > 0}
       <div class="mb-4">
         <div class="bg-red-50 text-red-600 p-4 rounded-lg flex items-start space-x-3">
           <svg class="w-5 h-5 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
           </svg>
-          <p class="text-red-800">{$formMessage}</p>
+          <div>
+            <p class="text-red-800 font-medium">Please fix the following errors:</p>
+            <ul class="mt-1 text-sm list-disc list-inside">
+              {#each Object.entries(errors) as [field, message]}
+                <li>{message}</li>
+              {/each}
+            </ul>
+          </div>
         </div>
       </div>
     {/if}
@@ -315,38 +380,8 @@
         </div>
       </div>
     {:else}
-      <!-- Form Messages -->
-      {#if $errors._errors?.length}
-        <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <div class="flex">
-            <svg class="w-5 h-5 text-red-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-            </svg>
-            <p class="text-red-800">{$errors._errors[0]}</p>
-          </div>
-        </div>
-      {/if}
-
       <!-- Multi-step Form -->
-      <form method="POST" use:enhance={handleFormSubmit} enctype="multipart/form-data">
-        <!-- Hidden inputs to ensure all form data is submitted -->
-        <input type="hidden" name="title" bind:value={$form.title} />
-        <input type="hidden" name="description" bind:value={$form.description} />
-        <input type="hidden" name="category_id" bind:value={$form.category_id} />
-        <input type="hidden" name="subcategory_id" bind:value={$form.subcategory_id} />
-        <input type="hidden" name="brand" bind:value={$form.brand} />
-        <input type="hidden" name="size" bind:value={$form.size} />
-        <input type="hidden" name="condition" bind:value={$form.condition} />
-        <input type="hidden" name="color" bind:value={$form.color} />
-        <input type="hidden" name="material" bind:value={$form.material} />
-        <input type="hidden" name="price" bind:value={$form.price} />
-        <input type="hidden" name="shipping_cost" bind:value={$form.shipping_cost} />
-        <input type="hidden" name="use_premium_boost" bind:value={$form.use_premium_boost} />
-        {#if $form.tags}
-          {#each $form.tags as tag, i}
-            <input type="hidden" name="tags[{i}]" bind:value={$form.tags[i]} />
-          {/each}
-        {/if}
+      <div>
         
         <div class="bg-white rounded-lg shadow-sm">
           {#if currentStep === 1}
@@ -361,7 +396,7 @@
                   bind:images={photoUrls}
                   bind:files={photoFiles}
                   maxImages={10}
-                  error={$errors.photos_count}
+                  error={errors.photos}
                   helpText="Add up to 10 photos. First photo will be the cover image."
                 />
               </div>
@@ -372,17 +407,17 @@
                   Title <span class="text-red-500">*</span>
                 </label>
                 <input
-                  bind:value={$form.title}
+                  bind:value={formData.title}
                   type="text"
                   placeholder="e.g. Vintage Levi's Denim Jacket"
                   class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1
-                    {$errors.title 
+                    {errors.title 
                       ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
                       : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'}"
-                  {...$constraints.title}
+                  maxlength="50"
                 />
-                {#if $errors.title}
-                  <p class="mt-1 text-sm text-red-600">{$errors.title}</p>
+                {#if errors.title}
+                  <p class="mt-1 text-sm text-red-600">{errors.title}</p>
                 {/if}
               </div>
 
@@ -392,17 +427,17 @@
                   Description
                 </label>
                 <textarea
-                  bind:value={$form.description}
+                  bind:value={formData.description}
                   rows="4"
                   placeholder="Describe your item, including any flaws or special features..."
                   class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1
-                    {$errors.description 
+                    {errors.description 
                       ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
                       : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'}"
-                  {...$constraints.description}
+                  maxlength="500"
                 ></textarea>
-                {#if $errors.description}
-                  <p class="mt-1 text-sm text-red-600">{$errors.description}</p>
+                {#if errors.description}
+                  <p class="mt-1 text-sm text-red-600">{errors.description}</p>
                 {/if}
               </div>
 
@@ -412,33 +447,32 @@
                   Category <span class="text-red-500">*</span>
                 </label>
                 <select
-                  bind:value={$form.category_id}
+                  bind:value={formData.category_id}
                   class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1
-                    {$errors.category_id 
+                    {errors.category_id 
                       ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
                       : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'}"
-                  {...$constraints.category_id}
                 >
                   <option value="">Select category</option>
                   {#each mainCategories as category}
                     <option value={category.id}>{category.name}</option>
                   {/each}
                 </select>
-                {#if $errors.category_id}
-                  <p class="mt-1 text-sm text-red-600">{$errors.category_id}</p>
+                {#if errors.category_id}
+                  <p class="mt-1 text-sm text-red-600">{errors.category_id}</p>
                 {/if}
               </div>
 
               <!-- Subcategory -->
-              {#if $form.category_id}
-                {@const subcategories = getSubcategories($form.category_id)}
+              {#if formData.category_id}
+                {@const subcategories = getSubcategories(formData.category_id)}
                 {#if subcategories.length > 0}
                   <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                       Subcategory
                     </label>
                     <select
-                      bind:value={$form.subcategory_id}
+                      bind:value={formData.subcategory_id}
                       class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                     >
                       <option value="">Select subcategory</option>
@@ -456,10 +490,10 @@
             <div class="p-6 space-y-6">
               <!-- Brand -->
               <BrandSelector
-                bind:value={$form.brand}
+                bind:value={formData.brand}
                 popularBrands={POPULAR_BRANDS}
                 label="Brand"
-                error={$errors.brand}
+                error={errors.brand}
                 required
               />
 
@@ -469,28 +503,27 @@
                   Size <span class="text-red-500">*</span>
                 </label>
                 <select
-                  bind:value={$form.size}
+                  bind:value={formData.size}
                   class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1
-                    {$errors.size 
+                    {errors.size 
                       ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
                       : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'}"
-                  {...$constraints.size}
                 >
                   <option value="">Select size</option>
                   {#each SIZE_CATEGORIES.clothing as size}
                     <option value={size.value}>{size.label}</option>
                   {/each}
                 </select>
-                {#if $errors.size}
-                  <p class="mt-1 text-sm text-red-600">{$errors.size}</p>
+                {#if errors.size}
+                  <p class="mt-1 text-sm text-red-600">{errors.size}</p>
                 {/if}
               </div>
 
               <!-- Condition -->
               <ConditionSelector
-                bind:value={$form.condition}
+                bind:value={formData.condition}
                 label="Condition"
-                error={$errors.condition}
+                error={errors.condition}
                 required
               />
 
@@ -501,11 +534,11 @@
                     Color
                   </label>
                   <input
-                    bind:value={$form.color}
+                    bind:value={formData.color}
                     type="text"
                     placeholder="e.g. Blue, Red, Multi"
                     class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                    {...$constraints.color}
+                    maxlength="30"
                   />
                 </div>
                 
@@ -514,11 +547,11 @@
                     Material
                   </label>
                   <input
-                    bind:value={$form.material}
+                    bind:value={formData.material}
                     type="text"
                     placeholder="e.g. Cotton, Polyester"
                     class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                    {...$constraints.material}
+                    maxlength="50"
                   />
                 </div>
               </div>
@@ -528,32 +561,62 @@
             <!-- Step 3: Price & Publish -->
             <div class="p-6 space-y-6">
               <!-- Price -->
-              <PriceInput
-                bind:value={$form.price}
-                label="Price"
-                error={$errors.price}
-                required
-                showCalculation={true}
-                feePercentage={5}
-                helpText="Set a competitive price to sell faster"
-              />
+              <div>
+                <PriceInput
+                  bind:value={formData.price}
+                  label="Price"
+                  error={errors.price}
+                  required
+                  showCalculation={true}
+                  feePercentage={5}
+                  helpText="Set a competitive price to sell faster"
+                />
+                
+                <!-- Price Suggestions -->
+                {#if priceSuggestion && priceSuggestion.suggested}
+                  <div class="mt-2 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div class="flex items-center space-x-2 mb-1">
+                      <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span class="text-sm font-medium text-blue-900">Price Suggestion</span>
+                      <span class="px-2 py-0.5 bg-blue-200 text-blue-800 text-xs rounded-full">
+                        {priceSuggestion.confidence} confidence
+                      </span>
+                    </div>
+                    <p class="text-sm text-blue-800">
+                      Similar items sold for <strong>${priceSuggestion.suggested}</strong>
+                      {#if priceSuggestion.range}
+                        (range: ${priceSuggestion.range.min} - ${priceSuggestion.range.max})
+                      {/if}
+                    </p>
+                    <button
+                      type="button"
+                      onclick={() => formData.price = priceSuggestion?.suggested || 0}
+                      class="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
+                    >
+                      Use suggested price
+                    </button>
+                  </div>
+                {/if}
+              </div>
 
               <!-- Shipping Price -->
               <PriceInput
-                bind:value={$form.shipping_cost}
+                bind:value={formData.shipping_cost}
                 label="Shipping Cost"
-                error={$errors.shipping_cost}
+                error={errors.shipping_cost}
                 required
                 helpText="Buyer pays shipping. Set to 0 for free shipping."
               />
 
               <!-- Tags -->
               <TagInput
-                bind:tags={$form.tags}
+                bind:tags={formData.tags}
                 label="Tags"
                 placeholder="Add tags to help buyers find your item"
                 suggestions={tagSuggestions}
-                error={$errors.tags}
+                error={errors.tags}
                 helpText="Add relevant keywords to improve discoverability"
               />
 
@@ -564,7 +627,7 @@
                     <label class="flex items-start space-x-3 cursor-pointer">
                       <input 
                         type="checkbox" 
-                        bind:checked={$form.use_premium_boost}
+                        bind:checked={formData.use_premium_boost}
                         class="mt-1 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
                       />
                       <div class="flex-1">
@@ -606,53 +669,53 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <span class="text-xs text-gray-500">Title</span>
-                    <p class="font-medium text-gray-900">{$form.title}</p>
+                    <p class="font-medium text-gray-900">{formData.title}</p>
                   </div>
                   
                   <div>
                     <span class="text-xs text-gray-500">Category</span>
                     <p class="font-medium text-gray-900">
-                      {getCategoryName($form.category_id)}
-                      {#if $form.subcategory_id}
-                        / {getCategoryName($form.subcategory_id)}
+                      {getCategoryName(formData.category_id)}
+                      {#if formData.subcategory_id}
+                        / {getCategoryName(formData.subcategory_id)}
                       {/if}
                     </p>
                   </div>
                   
                   <div>
                     <span class="text-xs text-gray-500">Brand</span>
-                    <p class="font-medium text-gray-900">{$form.brand}</p>
+                    <p class="font-medium text-gray-900">{formData.brand}</p>
                   </div>
                   
                   <div>
                     <span class="text-xs text-gray-500">Size</span>
-                    <p class="font-medium text-gray-900">{$form.size}</p>
+                    <p class="font-medium text-gray-900">{formData.size}</p>
                   </div>
                   
                   <div>
                     <span class="text-xs text-gray-500">Condition</span>
-                    <p class="font-medium text-gray-900 capitalize">{$form.condition}</p>
+                    <p class="font-medium text-gray-900 capitalize">{formData.condition}</p>
                   </div>
                   
-                  {#if $form.color}
+                  {#if formData.color}
                     <div>
                       <span class="text-xs text-gray-500">Color</span>
-                      <p class="font-medium text-gray-900">{$form.color}</p>
+                      <p class="font-medium text-gray-900">{formData.color}</p>
                     </div>
                   {/if}
                   
-                  {#if $form.material}
+                  {#if formData.material}
                     <div>
                       <span class="text-xs text-gray-500">Material</span>
-                      <p class="font-medium text-gray-900">{$form.material}</p>
+                      <p class="font-medium text-gray-900">{formData.material}</p>
                     </div>
                   {/if}
                 </div>
                 
-                {#if $form.description}
+                {#if formData.description}
                   <div>
                     <span class="text-xs text-gray-500">Description</span>
-                    <p class="text-sm text-gray-700 mt-1">{$form.description}</p>
+                    <p class="text-sm text-gray-700 mt-1">{formData.description}</p>
                   </div>
                 {/if}
                 
@@ -660,40 +723,40 @@
                 <div class="border-t pt-4">
                   <div class="flex justify-between items-center mb-2">
                     <span class="text-sm text-gray-600">Item Price</span>
-                    <span class="font-medium text-gray-900">${$form.price?.toFixed(2) || '0.00'}</span>
+                    <span class="font-medium text-gray-900">${formData.price?.toFixed(2) || '0.00'}</span>
                   </div>
                   <div class="flex justify-between items-center mb-2">
                     <span class="text-sm text-gray-600">Shipping Cost</span>
                     <span class="font-medium text-gray-900">
-                      {$form.shipping_cost > 0 ? `$${$form.shipping_cost.toFixed(2)}` : 'Free'}
+                      {formData.shipping_cost > 0 ? `$${formData.shipping_cost.toFixed(2)}` : 'Free'}
                     </span>
                   </div>
                   <div class="flex justify-between items-center pt-2 border-t">
                     <span class="text-sm font-medium text-gray-900">Buyer Pays</span>
                     <span class="text-lg font-bold text-gray-900">
-                      ${(($form.price || 0) + ($form.shipping_cost || 0)).toFixed(2)}
+                      ${((formData.price || 0) + (formData.shipping_cost || 0)).toFixed(2)}
                     </span>
                   </div>
                   <div class="flex justify-between items-center mt-1">
                     <span class="text-xs text-gray-500">You receive (after 5% fee)</span>
                     <span class="text-sm font-medium text-green-600">
-                      ${(($form.price || 0) * 0.95).toFixed(2)}
+                      ${((formData.price || 0) * 0.95).toFixed(2)}
                     </span>
                   </div>
                 </div>
                 
-                {#if $form.tags?.length > 0}
+                {#if formData.tags?.length > 0}
                   <div>
                     <span class="text-xs text-gray-500">Tags</span>
                     <div class="flex flex-wrap gap-1 mt-1">
-                      {#each $form.tags as tag}
+                      {#each formData.tags as tag}
                         <span class="px-2 py-1 bg-gray-100 text-xs rounded-full">{tag}</span>
                       {/each}
                     </div>
                   </div>
                 {/if}
                 
-                {#if $form.use_premium_boost}
+                {#if formData.use_premium_boost}
                   <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                     <div class="flex items-center space-x-2">
                       <span class="text-lg">✨</span>
@@ -744,11 +807,12 @@
               </Button>
             {:else}
               <Button 
-                type="submit"
-                disabled={$submitting || !canProceedToNext()}
+                type="button"
+                onclick={handleFormSubmit}
+                disabled={submitting || !canProceedToNext()}
                 class="flex-1 sm:flex-none h-12 text-base font-medium"
               >
-                {#if $submitting}
+                {#if submitting}
                   <svg class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -761,7 +825,7 @@
             {/if}
           </div>
         </div>
-      </form>
+      </div>
     {/if}
   </div>
 </div>

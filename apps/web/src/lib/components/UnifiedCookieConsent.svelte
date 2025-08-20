@@ -35,11 +35,14 @@
   onMount(async () => {
     if (!browser) return;
     
+    console.log('[COOKIE CONSENT] Initializing...');
+    
     consentManager = ProductionCookieManager.getInstance();
     localeManager = ProductionLocaleManager.getInstance();
     
     // Check existing consent
     const existingConsent = consentManager.getConsent();
+    console.log('[COOKIE CONSENT] Existing consent:', existingConsent);
     
     if (existingConsent) {
       hasExistingConsent = true;
@@ -53,17 +56,21 @@
       // Check if consent needs renewal (365 days)
       const age = Date.now() - existingConsent.timestamp;
       if (age > 365 * 24 * 60 * 60 * 1000) {
+        console.log('[COOKIE CONSENT] Consent expired, showing banner');
         showBanner = true;
       }
     } else {
       // First visit - detect location for language suggestion
+      console.log('[COOKIE CONSENT] First visit, detecting location...');
       await detectLocation();
       showBanner = true;
       showLanguageSelector = true;
     }
     
     // Get current locale
-    selectedLocale = localeManager.getLocale();
+    const currentLocale = localeManager.getLocale();
+    console.log('[COOKIE CONSENT] Current locale:', currentLocale);
+    selectedLocale = currentLocale;
   });
   
   async function detectLocation() {
@@ -91,12 +98,7 @@
   }
   
   async function acceptAll() {
-    // Save language preference first
-    if (showLanguageSelector && preferences.functional !== false) {
-      preferences.functional = true; // Enable functional for language
-      await saveLanguage();
-    }
-    
+    // Update consent first
     consentManager.updateConsent({
       necessary: true,
       functional: true,
@@ -104,12 +106,28 @@
       marketing: true
     });
     
-    showBanner = false;
-    showLanguageSelector = false;
+    // Save language preference if language selector was shown
+    if (showLanguageSelector && selectedLocale) {
+      console.log('[COOKIE CONSENT] Setting language to:', selectedLocale);
+      try {
+        // Set the locale cookie directly
+        document.cookie = `locale=${selectedLocale}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+        
+        // Force reload to apply language
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+      } catch (e) {
+        console.error('[COOKIE CONSENT] Failed to set language:', e);
+      }
+    } else {
+      showBanner = false;
+      showLanguageSelector = false;
+    }
   }
   
   async function acceptNecessary() {
-    // Language won't be saved without functional cookies
+    // Update consent
     consentManager.updateConsent({
       necessary: true,
       functional: false,
@@ -117,32 +135,55 @@
       marketing: false
     });
     
+    // Note: Language preference cannot be saved without functional cookies
+    // But we still close the banner
+    console.log('[COOKIE CONSENT] Essential only - language preference not saved (requires functional cookies)');
+    
     showBanner = false;
     showLanguageSelector = false;
   }
   
   async function savePreferences() {
-    // Save language if functional cookies enabled
-    if (preferences.functional && selectedLocale !== localeManager.getLocale()) {
-      await saveLanguage();
-    }
-    
+    // Update consent
     consentManager.updateConsent(preferences);
-    showBanner = false;
-    showPreferences = false;
-    showLanguageSelector = false;
-  }
-  
-  async function saveLanguage() {
-    if (selectedLocale !== localeManager.getLocale()) {
+    
+    // Save language if functional cookies enabled and language selector was shown
+    if (preferences.functional && showLanguageSelector && selectedLocale) {
+      console.log('[COOKIE CONSENT] Setting language to:', selectedLocale);
       try {
-        await localeManager.setLocale(selectedLocale, true);
-        // Small delay before reload to ensure cookie is set
+        // Set the locale cookie directly
+        document.cookie = `locale=${selectedLocale}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+        
+        // Force reload to apply language
         setTimeout(() => {
           window.location.reload();
         }, 100);
       } catch (e) {
-        console.error('Failed to set language:', e);
+        console.error('[COOKIE CONSENT] Failed to set language:', e);
+        showBanner = false;
+        showPreferences = false;
+        showLanguageSelector = false;
+      }
+    } else {
+      showBanner = false;
+      showPreferences = false;
+      showLanguageSelector = false;
+    }
+  }
+  
+  async function saveLanguage() {
+    console.log('[COOKIE CONSENT] saveLanguage called with locale:', selectedLocale);
+    if (selectedLocale) {
+      try {
+        // Always set the locale, don't check if it's different
+        await localeManager.setLocale(selectedLocale, false); // false = will reload
+      } catch (e) {
+        console.error('[COOKIE CONSENT] Failed to set language:', e);
+        // Fallback: set cookie directly
+        document.cookie = `locale=${selectedLocale}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
       }
     }
   }
