@@ -118,8 +118,11 @@
   }
 
   // Handle image changes
-  function handleImagesChange(images: string[]) {
+  function handleImagesChange(images: string[], files?: File[]) {
     photoUrls = images;
+    if (files) {
+      photoFiles = files;
+    }
     $form.photos_count = images.length;
   }
 
@@ -286,12 +289,11 @@
                   Photos <span class="text-red-500">*</span>
                 </label>
                 <ImageUploader
-                  images={photoUrls}
-                  onImagesChange={handleImagesChange}
+                  bind:images={photoUrls}
+                  bind:files={photoFiles}
                   maxImages={10}
                   error={$errors.photos_count}
                   helpText="Add up to 10 photos. First photo will be the cover image."
-                  convertToWebP={true}
                 />
               </div>
 

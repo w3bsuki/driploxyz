@@ -4,26 +4,24 @@
   interface Props {
     id?: string;
     images?: string[];
+    files?: File[];
     maxImages?: number;
     error?: string;
     helpText?: string;
-    convertToWebP?: boolean;
-    onImagesChange: (images: string[]) => void;
   }
 
   let { 
     id = 'image-uploader',
-    images = [],
+    images = $bindable([]),
+    files = $bindable([]),
     maxImages = 10,
     error,
-    helpText,
-    convertToWebP = false,
-    onImagesChange
+    helpText
   }: Props = $props();
 
   let fileInput: HTMLInputElement;
   let isDragging = $state(false);
-  let uploadedImages = $state<string[]>([...images]);
+  let uploadedFiles = $state<File[]>([]);
 
   function handleFileSelect(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -41,17 +39,21 @@
     }
   }
 
-  function processFiles(files: File[]) {
-    const remainingSlots = maxImages - uploadedImages.length;
-    const filesToProcess = files.slice(0, remainingSlots);
+  function processFiles(newFiles: File[]) {
+    const remainingSlots = maxImages - images.length;
+    const filesToProcess = newFiles.slice(0, remainingSlots);
 
     filesToProcess.forEach(file => {
       if (file.type.startsWith('image/')) {
+        // Store the file
+        uploadedFiles.push(file);
+        files = [...uploadedFiles];
+        
+        // Create preview
         const reader = new FileReader();
         reader.onload = (e) => {
           if (e.target?.result) {
-            uploadedImages = [...uploadedImages, e.target.result as string];
-            onImagesChange(uploadedImages);
+            images = [...images, e.target.result as string];
           }
         };
         reader.readAsDataURL(file);
@@ -60,8 +62,9 @@
   }
 
   function removeImage(index: number) {
-    uploadedImages = uploadedImages.filter((_, i) => i !== index);
-    onImagesChange(uploadedImages);
+    images = images.filter((_, i) => i !== index);
+    uploadedFiles = uploadedFiles.filter((_, i) => i !== index);
+    files = [...uploadedFiles];
   }
 
   function handleDragOver(event: DragEvent) {
@@ -76,9 +79,9 @@
 </script>
 
 <div class="w-full">
-  {#if uploadedImages.length > 0}
+  {#if images.length > 0}
     <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 mb-4">
-      {#each uploadedImages as image, index}
+      {#each images as image, index}
         <div class="relative aspect-square group">
           <img 
             src={image} 
@@ -105,7 +108,7 @@
     </div>
   {/if}
 
-  {#if uploadedImages.length < maxImages}
+  {#if images.length < maxImages}
     <div
       role="button"
       tabindex="0"
@@ -125,7 +128,7 @@
         Click to upload or drag and drop
       </p>
       <p class="text-xs text-gray-500 mt-1">
-        {uploadedImages.length}/{maxImages} images • JPG, PNG up to 5MB
+        {images.length}/{maxImages} images • JPG, PNG up to 5MB
       </p>
     </div>
   {/if}
