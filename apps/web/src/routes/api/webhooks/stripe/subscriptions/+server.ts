@@ -3,7 +3,8 @@ import type { RequestHandler } from './$types';
 import { stripe } from '$lib/stripe/server.js';
 import { createServiceClient } from '$lib/server/supabase.server';
 import { SubscriptionService } from '$lib/services/subscriptions.js';
-import { STRIPE_WEBHOOK_SECRET } from '$env/static/private';
+import { env } from '$env/dynamic/private';
+const STRIPE_WEBHOOK_SECRET = env.STRIPE_WEBHOOK_SECRET;
 import { dev } from '$app/environment';
 
 const isDebug = dev;
