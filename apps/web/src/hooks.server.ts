@@ -74,7 +74,7 @@ const validateJWT = (token: string): boolean => {
     const parts = token.split('.');
     if (parts.length !== 3) return false;
     
-    const payload = JSON.parse(atob(parts[1]));
+    const payload = JSON.parse(atob(parts[1] || ''));
     const now = Math.floor(Date.now() / 1000);
     return payload.exp && payload.exp > now; // Check if token hasn't expired
   } catch {
@@ -335,11 +335,11 @@ const languageHandler: Handle = async ({ event, resolve }) => {
     }
   }
   
-  event.locals.locale = i18n.languageTag();
+  (event.locals as any).locale = i18n.languageTag();
   
   return resolve(event, {
     transformPageChunk: ({ html }) => 
-      html.replace('<html', `<html lang="${event.locals.locale}"`)
+      html.replace('<html', `<html lang="${(event.locals as any).locale}"`)
   });
 };
 

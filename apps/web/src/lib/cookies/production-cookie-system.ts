@@ -156,7 +156,7 @@ export class ProductionCookieManager {
   private getCookie(name: string): string | null {
     if (!browser) return null;
     const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
-    return match ? match[2] : null;
+    return match ? decodeURIComponent(match[2]) : null;
   }
   
   /**
@@ -223,16 +223,17 @@ export class ProductionCookieManager {
    * Update consent and apply immediately
    */
   updateConsent(consent: Partial<ConsentState>): void {
-    this.consent = {
-      essential: true, // Always true
+    const newConsent: ConsentState = {
+      essential: true,
       functional: consent.functional ?? false,
       analytics: consent.analytics ?? false,
       marketing: consent.marketing ?? false,
       timestamp: Date.now(),
-      version: this.CONSENT_VERSION,
-      ip: consent.ip,
-      userAgent: browser ? navigator.userAgent : undefined
+      version: this.CONSENT_VERSION
     };
+    if (consent.ip) newConsent.ip = consent.ip;
+    if (browser && navigator.userAgent) newConsent.userAgent = navigator.userAgent;
+    this.consent = newConsent;
     
     // Save consent
     this.setCookie(COOKIES.CONSENT, JSON.stringify(this.consent), {
