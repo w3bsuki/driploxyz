@@ -340,6 +340,42 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string | null
+          data: Json | null
+          expires_at: string | null
+          id: string
+          message: string
+          read: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          data?: Json | null
+          expires_at?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json | null
+          expires_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           buyer_id: string
@@ -415,6 +451,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      payouts: {
+        Row: {
+          amount: number
+          created_at: string | null
+          currency: string
+          failed_reason: string | null
+          id: string
+          method: string
+          method_details: Json
+          processed_at: string | null
+          seller_id: string
+          status: string
+          stripe_transfer_id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          currency?: string
+          failed_reason?: string | null
+          id?: string
+          method: string
+          method_details?: Json
+          processed_at?: string | null
+          seller_id: string
+          status?: string
+          stripe_transfer_id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          currency?: string
+          failed_reason?: string | null
+          id?: string
+          method?: string
+          method_details?: Json
+          processed_at?: string | null
+          seller_id?: string
+          status?: string
+          stripe_transfer_id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       product_images: {
         Row: {
@@ -797,6 +878,62 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount_total: number
+          buyer_id: string
+          commission_amount: number
+          created_at: string | null
+          currency: string
+          id: string
+          metadata: Json | null
+          order_id: string
+          seller_earnings: number
+          seller_id: string
+          status: string
+          stripe_payment_intent_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          amount_total: number
+          buyer_id: string
+          commission_amount?: number
+          created_at?: string | null
+          currency?: string
+          id?: string
+          metadata?: Json | null
+          order_id: string
+          seller_earnings?: number
+          seller_id: string
+          status?: string
+          stripe_payment_intent_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          amount_total?: number
+          buyer_id?: string
+          commission_amount?: number
+          created_at?: string | null
+          currency?: string
+          id?: string
+          metadata?: Json | null
+          order_id?: string
+          seller_earnings?: number
+          seller_id?: string
+          status?: string
+          stripe_payment_intent_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_subscriptions: {
         Row: {

@@ -36,7 +36,7 @@ export const POST: RequestHandler = async ({ request }) => {
       case 'customer.subscription.updated':
       case 'customer.subscription.deleted':
         if (isDebug) console.log(`[Webhook] Processing: ${event.type}`);
-        await subscriptionService.handleStripeWebhook(event);
+        await subscriptionService.handleStripeWebhook(event, stripe);
         break;
 
       case 'invoice.payment_succeeded':
@@ -45,7 +45,7 @@ export const POST: RequestHandler = async ({ request }) => {
           await subscriptionService.handleStripeWebhook({
             type: 'customer.subscription.updated',
             data: { object: event.data.object.subscription }
-          });
+          }, stripe);
         }
         break;
 
@@ -55,7 +55,7 @@ export const POST: RequestHandler = async ({ request }) => {
         await subscriptionService.handleStripeWebhook({
           type: 'customer.subscription.updated',
           data: { object: subscription }
-        });
+        }, stripe);
         break;
 
       default:

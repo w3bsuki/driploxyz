@@ -5,11 +5,19 @@ import type { Database } from '@repo/database';
 import { ProductService } from './products';
 import { CategoryService } from './categories';
 import { ProfileService } from './profiles';
+import { SubscriptionService } from './subscriptions';
+import { TransactionService } from './transactions';
+import { PayoutService } from './payouts';
+import { createStripeService, StripeService } from './stripe';
 
 // Service class exports
 export { ProductService } from './products';
 export { CategoryService } from './categories';
 export { ProfileService } from './profiles';
+export { SubscriptionService } from './subscriptions';
+export { TransactionService } from './transactions';
+export { PayoutService } from './payouts';
+export { createStripeService, StripeService } from './stripe';
 
 // Type exports
 export type {
@@ -36,7 +44,11 @@ export function createServices(supabase: SupabaseClient<Database>) {
   return {
     products: new ProductService(supabase),
     categories: new CategoryService(supabase),
-    profiles: new ProfileService(supabase)
+    profiles: new ProfileService(supabase),
+    subscriptions: new SubscriptionService(supabase),
+    transactions: new TransactionService(supabase),
+    payouts: new PayoutService(supabase),
+    stripe: createStripeService(supabase)
   };
 }
 
@@ -47,11 +59,19 @@ export class ServiceManager {
   public products: ProductService;
   public categories: CategoryService;
   public profiles: ProfileService;
+  public subscriptions: SubscriptionService;
+  public transactions: TransactionService;
+  public payouts: PayoutService;
+  public stripe: StripeService;
 
   constructor(private supabase: SupabaseClient<Database>) {
     this.products = new ProductService(supabase);
     this.categories = new CategoryService(supabase);
     this.profiles = new ProfileService(supabase);
+    this.subscriptions = new SubscriptionService(supabase);
+    this.transactions = new TransactionService(supabase);
+    this.payouts = new PayoutService(supabase);
+    this.stripe = createStripeService(supabase);
   }
 
   /**
@@ -62,6 +82,10 @@ export class ServiceManager {
     this.products = new ProductService(supabase);
     this.categories = new CategoryService(supabase);
     this.profiles = new ProfileService(supabase);
+    this.subscriptions = new SubscriptionService(supabase);
+    this.transactions = new TransactionService(supabase);
+    this.payouts = new PayoutService(supabase);
+    this.stripe = createStripeService(supabase);
   }
 }
 

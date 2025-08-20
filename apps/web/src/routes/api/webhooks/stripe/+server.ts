@@ -1,9 +1,11 @@
 import { json } from '@sveltejs/kit';
 import { stripe } from '$lib/stripe/server.js';
-import { env } from '$env/dynamic/private';
+import { STRIPE_WEBHOOK_SECRET } from '$env/static/private';
 import type { RequestHandler } from './$types.js';
 import { createServerClient } from '@supabase/ssr';
 import { TransactionService } from '$lib/services/transactions.js';
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const body = await request.text();
@@ -16,12 +18,11 @@ export const POST: RequestHandler = async ({ request }) => {
 	let event;
 
 	try {
-		const webhookSecret = env.STRIPE_WEBHOOK_SECRET;
-		if (!webhookSecret) {
+		if (!STRIPE_WEBHOOK_SECRET) {
 			console.warn('STRIPE_WEBHOOK_SECRET not configured - skipping signature verification');
 			event = JSON.parse(body);
 		} else {
-			event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+			event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
 		}
 	} catch (err) {
 		console.error('Webhook signature verification failed:', err);
@@ -59,8 +60,8 @@ async function handlePaymentSuccess(paymentIntent: any) {
 		try {
 			// Initialize Supabase client
 			const supabase = createServerClient(
-				env.PUBLIC_SUPABASE_URL!,
-				env.SUPABASE_SERVICE_ROLE_KEY!,
+				PUBLIC_SUPABASE_URL!,
+				SUPABASE_SERVICE_ROLE_KEY!,
 				{
 					cookies: {
 						getAll: () => [],

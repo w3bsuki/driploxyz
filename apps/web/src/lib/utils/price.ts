@@ -1,35 +1,65 @@
 import * as i18n from '@repo/i18n';
 
+// Currency mappings for each locale
+const CURRENCY_MAP = {
+  'en': 'USD',
+  'bg': 'BGN', 
+  'ru': 'RUB',
+  'ua': 'UAH'
+} as const;
+
+// Locale mappings for Intl formatting
+const LOCALE_MAP = {
+  'en': 'en-US',
+  'bg': 'bg-BG',
+  'ru': 'ru-RU', 
+  'ua': 'uk-UA'
+} as const;
+
 /**
- * Format price with proper locale-specific formatting
- * For Bulgarian: "123 лв" instead of "лв.123.00"
- * For English: "$123" instead of "$123.00" (for whole numbers)
+ * Format price using Intl.NumberFormat for proper locale-specific formatting
+ * Supports different currencies and locales with proper number formatting
  */
 export function formatPrice(price: number, locale?: string): string {
-  const currentLocale = locale || i18n.languageTag();
+  const currentLocale = locale || i18n.languageTag() as keyof typeof CURRENCY_MAP;
+  const currency = CURRENCY_MAP[currentLocale] || 'USD';
+  const intlLocale = LOCALE_MAP[currentLocale] || 'en-US';
   
-  // Bulgarian formatting
-  if (currentLocale === 'bg') {
-    const roundedPrice = Math.round(price);
-    return `${roundedPrice} ${i18n.common_currency()}`;
+  try {
+    return new Intl.NumberFormat(intlLocale, {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: price % 1 === 0 ? 0 : 2,
+      maximumFractionDigits: 2
+    }).format(price);
+  } catch (error) {
+    // Fallback to simple formatting if Intl fails
+    console.warn('Currency formatting failed, using fallback:', error);
+    return formatPriceFallback(price, currentLocale);
   }
+}
+
+/**
+ * Fallback currency formatting if Intl.NumberFormat fails
+ */
+function formatPriceFallback(price: number, locale: string): string {
+  const roundedPrice = price % 1 === 0 ? Math.round(price) : price.toFixed(2);
   
-  // Russian formatting
-  if (currentLocale === 'ru') {
-    const roundedPrice = Math.round(price);
-    return `${roundedPrice} ₽`;
+  switch (locale) {
+    case 'bg': return `${roundedPrice} лв.`;
+    case 'ru': return `${roundedPrice} ₽`;
+    case 'ua': return `${roundedPrice} ₴`;
+    default: return `$${roundedPrice}`;
   }
-  
-  // Ukrainian formatting  
-  if (currentLocale === 'ua') {
-    const roundedPrice = Math.round(price);
-    return `${roundedPrice} ₴`;
-  }
-  
-  // Default English formatting
-  const hasDecimals = price % 1 !== 0;
-  const formattedPrice = hasDecimals ? price.toFixed(2) : Math.round(price).toString();
-  return `$${formattedPrice}`;
+}
+
+/**
+ * Format price range with proper currency formatting
+ */
+export function formatPriceRange(minPrice: number, maxPrice: number, locale?: string): string {
+  const min = formatPrice(minPrice, locale);
+  const max = formatPrice(maxPrice, locale);
+  return `${min} - ${max}`;
 }
 
 /**

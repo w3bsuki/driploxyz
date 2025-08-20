@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
+import { calculateCommission as calculateCommissionUtil } from '$lib/utils/payments.js';
 
 type Tables = Database['public']['Tables'];
 type Transaction = Tables['transactions']['Row'];
@@ -12,16 +13,8 @@ export class TransactionService {
 	 * Calculate commission and seller amount for a transaction
 	 */
 	calculateCommission(productPrice: number, shippingCost: number = 0, commissionRate: number = 0.05) {
-		const totalAmount = productPrice + shippingCost;
-		const commissionAmount = Math.round(productPrice * commissionRate * 100) / 100; // Round to 2 decimals
-		const sellerAmount = Math.round((productPrice - commissionAmount + shippingCost) * 100) / 100;
-		
-		return {
-			totalAmount,
-			commissionAmount,
-			sellerAmount,
-			commissionRate
-		};
+		// Use centralized calculation utility
+		return calculateCommissionUtil(productPrice, shippingCost, commissionRate);
 	}
 
 	/**

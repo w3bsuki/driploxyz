@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
-import { stripe } from '$lib/stripe/server.js';
+import { createStripeService } from './stripe.js';
+import type { SubscriptionCreateParams } from '$lib/stripe/types.js';
 
 type Tables = Database['public']['Tables'];
 type SubscriptionPlan = Tables['subscription_plans']['Row'];
@@ -58,106 +59,32 @@ export class SubscriptionService {
 	async createStripeSubscription(
 		userId: string,
 		planId: string,
+		stripeInstance: any,
 		discountPercent: number = 0
 	): Promise<{ subscriptionId?: string; clientSecret?: string; error?: Error }> {
-		// Starting subscription creation
 		try {
-			// Get user email for Stripe customer
-			const { data: profile } = await this.supabase
-				.from('profiles')
-				.select('username')
-				.eq('id', userId)
-				.single();
-
-			if (!profile) {
-				throw new Error('User profile not found');
+			if (!stripeInstance) {
+				return { error: new Error('Stripe instance required') };
 			}
-
-			// Get subscription plan details
-			const { data: plan } = await this.supabase
-				.from('subscription_plans')
-				.select('*')
-				.eq('id', planId)
-				.single();
-
-			// Retrieved plan data
-			if (!plan) {
-				throw new Error('Subscription plan not found');
-			}
-
-			// Calculate price with discount
-			let price = plan.price_monthly;
-			if (discountPercent > 0) {
-				price = price * (1 - discountPercent / 100);
-			}
-
-			// Create Stripe customer
-			const customer = await stripe.customers.create({
-				metadata: {
-					supabase_user_id: userId,
-					username: profile.username
-				}
-			});
-			// Customer created successfully
-
-			// Create Stripe product first (separate from price)
-			const stripeProduct = await stripe.products.create({
-				name: plan.name,
-				description: plan.description || undefined // Use undefined instead of null/empty string
-			});
-			// Product created successfully
-
-			// Then create price using the product ID
-			const priceAmount = Math.round(price * 100);
-			const stripePrice = await stripe.prices.create({
-				unit_amount: priceAmount, // Convert to cents
-				currency: plan.currency.toLowerCase(),
-				recurring: { interval: 'month' },
-				product: stripeProduct.id
-			});
-			// Price created successfully
-
-			// Create Stripe subscription
-			const subscription = await stripe.subscriptions.create({
-				customer: customer.id,
-				items: [{ price: stripePrice.id }],
-				payment_behavior: 'default_incomplete',
-				payment_settings: { save_default_payment_method: 'on_subscription' },
-				expand: ['latest_invoice.payment_intent'],
-				metadata: {
-					supabase_user_id: userId,
-					plan_id: planId,
-					plan_type: plan.plan_type,
-					discount_percent: discountPercent.toString()
-				}
-			});
-			// Subscription created successfully
-
-			// Create subscription record in our database
-			const subscriptionData: UserSubscriptionInsert = {
-				user_id: userId,
-				plan_id: planId,
-				stripe_subscription_id: subscription.id,
-				status: 'trialing', // Will be updated by webhook
-				current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-				current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-				discount_percent: discountPercent
+			
+			const stripeService = createStripeService(this.supabase, stripeInstance);
+			
+			const params: SubscriptionCreateParams = {
+				userId,
+				planId,
+				discountPercent
 			};
 
-			await this.supabase
-				.from('user_subscriptions')
-				.insert(subscriptionData);
+			const result = await stripeService.createSubscription(params);
 
-			const invoice = subscription.latest_invoice as any;
-			const paymentIntent = invoice?.payment_intent;
-			
-			// Payment intent and subscription setup completed
+			if (result.error) {
+				return { error: result.error };
+			}
 
 			return {
-				subscriptionId: subscription.id,
-				clientSecret: paymentIntent?.client_secret
+				subscriptionId: result.subscription?.id,
+				clientSecret: result.clientSecret
 			};
-
 		} catch (error) {
 			console.error('Error creating Stripe subscription:', error);
 			return { error: error as Error };
@@ -167,92 +94,34 @@ export class SubscriptionService {
 	/**
 	 * Cancel user subscription
 	 */
-	async cancelSubscription(userId: string, subscriptionId: string) {
+	async cancelSubscription(userId: string, subscriptionId: string, stripeInstance: any) {
 		try {
-			// Cancel in Stripe
-			await stripe.subscriptions.update(subscriptionId, {
-				cancel_at_period_end: true
-			});
-
-			// Update our database
-			await this.supabase
-				.from('user_subscriptions')
-				.update({ status: 'canceled' })
-				.eq('user_id', userId)
-				.eq('stripe_subscription_id', subscriptionId);
-
-			return { success: true };
+			if (!stripeInstance) {
+				return { error: new Error('Stripe instance required'), success: false };
+			}
+			
+			const stripeService = createStripeService(this.supabase, stripeInstance);
+			return await stripeService.cancelSubscription(userId, subscriptionId);
 		} catch (error) {
 			console.error('Error canceling subscription:', error);
-			return { error: error as Error };
+			return { error: error as Error, success: false };
 		}
 	}
 
 	/**
 	 * Handle Stripe webhook for subscription updates
 	 */
-	async handleStripeWebhook(event: any) {
-		const subscription = event.data.object;
-		const { supabase_user_id, plan_id } = subscription.metadata;
-
-		if (!supabase_user_id || !plan_id) {
-			console.warn('Missing metadata in subscription webhook');
-			return;
-		}
-
-		const updates: any = {
-			status: subscription.status,
-			current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-			current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-			updated_at: new Date().toISOString()
-		};
-
-		// Handle trial end
-		if (subscription.trial_end) {
-			updates.trial_end = new Date(subscription.trial_end * 1000).toISOString();
-		}
-
-		await this.supabase
-			.from('user_subscriptions')
-			.update(updates)
-			.eq('user_id', supabase_user_id)
-			.eq('stripe_subscription_id', subscription.id);
-
-		// Update user profile subscription tier
-		if (subscription.status === 'active') {
-			const { data: plan } = await this.supabase
-				.from('subscription_plans')
-				.select('plan_type')
-				.eq('id', plan_id)
-				.single();
-
-			if (plan) {
-				await this.supabase
-					.from('profiles')
-					.update({
-						subscription_tier: plan.plan_type,
-						subscription_expires_at: updates.current_period_end
-					})
-					.eq('id', supabase_user_id);
-
-				// Reset premium boosts for premium users
-				if (plan.plan_type === 'premium') {
-					await this.supabase
-						.from('profiles')
-						.update({ premium_boosts_remaining: 10 })
-						.eq('id', supabase_user_id);
-				}
+	async handleStripeWebhook(event: any, stripeInstance: any) {
+		try {
+			if (!stripeInstance) {
+				return { success: false, error: new Error('Stripe instance required') };
 			}
-		} else if (['canceled', 'past_due', 'unpaid'].includes(subscription.status)) {
-			// Downgrade user
-			await this.supabase
-				.from('profiles')
-				.update({
-					subscription_tier: 'free',
-					premium_boosts_remaining: 0,
-					subscription_expires_at: null
-				})
-				.eq('id', supabase_user_id);
+			
+			const stripeService = createStripeService(this.supabase, stripeInstance);
+			return await stripeService.processWebhook(event);
+		} catch (error) {
+			console.error('Error handling subscription webhook:', error);
+			return { success: false, error: error as Error };
 		}
 	}
 

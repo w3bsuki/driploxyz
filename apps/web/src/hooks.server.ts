@@ -249,10 +249,20 @@ const languageHandler: Handle = async ({ event, resolve }) => {
     }
   });
   
-  // Get locale from cookie
-  let locale = event.cookies.get(COOKIES.LOCALE);
+  // Get locale from URL parameter first (highest priority)
+  let locale = event.url.searchParams.get('locale');
   
-  // Detect from headers if no cookie
+  // Validate URL locale parameter
+  if (locale && !i18n.isAvailableLanguageTag(locale)) {
+    locale = null;
+  }
+  
+  // Fallback to cookie if no valid URL locale
+  if (!locale) {
+    locale = event.cookies.get(COOKIES.LOCALE);
+  }
+  
+  // Detect from headers if no cookie or URL param
   if (!locale) {
     const acceptLang = event.request.headers.get('accept-language');
     if (acceptLang) {
@@ -261,17 +271,26 @@ const languageHandler: Handle = async ({ event, resolve }) => {
     } else {
       locale = 'en';
     }
-    
-    // Set cookie only if functional consent exists
-    if (checkServerConsent(event.cookies, 'functional')) {
-      event.cookies.set(COOKIES.LOCALE, locale, {
-        path: '/',
-        maxAge: 365 * 24 * 60 * 60,
-        httpOnly: false,
-        sameSite: 'lax',
-        secure: !dev
-      });
-    }
+  }
+  
+  // Update cookie if locale was set via URL parameter and consent exists
+  if (event.url.searchParams.get('locale') && checkServerConsent(event.cookies, 'functional')) {
+    event.cookies.set(COOKIES.LOCALE, locale, {
+      path: '/',
+      maxAge: 365 * 24 * 60 * 60,
+      httpOnly: false,
+      sameSite: 'lax',
+      secure: !dev
+    });
+  } else if (!event.cookies.get(COOKIES.LOCALE) && checkServerConsent(event.cookies, 'functional')) {
+    // Set cookie only if functional consent exists and no cookie already set
+    event.cookies.set(COOKIES.LOCALE, locale, {
+      path: '/',
+      maxAge: 365 * 24 * 60 * 60,
+      httpOnly: false,
+      sameSite: 'lax',
+      secure: !dev
+    });
   }
   
   // Apply locale

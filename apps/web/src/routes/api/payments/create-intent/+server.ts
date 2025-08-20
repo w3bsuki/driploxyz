@@ -1,34 +1,47 @@
 import { json } from '@sveltejs/kit';
+import { createStripeService } from '$lib/services/stripe.js';
 import { stripe } from '$lib/stripe/server.js';
 import type { RequestHandler } from './$types.js';
+import type { PaymentIntentCreateParams } from '$lib/stripe/types.js';
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
+		const { session } = await locals.safeGetSession();
+		if (!session?.user) {
+			return json({ error: 'Authentication required' }, { status: 401 });
+		}
+
+		const { amount, currency = 'eur', productId, sellerId, metadata = {} } = await request.json();
+
+		if (!amount || !productId || !sellerId) {
+			return json({ error: 'Missing required parameters' }, { status: 400 });
+		}
+
 		if (!stripe) {
-			return json({ error: 'Payment processing not available' }, { status: 503 });
+			return json({ error: 'Stripe not configured' }, { status: 500 });
 		}
 
-		const { amount, currency = 'eur', productId, metadata = {} } = await request.json();
-
-		if (!amount || amount < 50) {
-			return json({ error: 'Amount must be at least 50 cents' }, { status: 400 });
-		}
-
-		const paymentIntent = await stripe.paymentIntents.create({
+		const stripeService = createStripeService(locals.supabase, stripe);
+		
+		const params: PaymentIntentCreateParams = {
 			amount,
-			currency,
-			automatic_payment_methods: {
-				enabled: true
-			},
-			metadata: {
-				productId,
-				...metadata
-			}
-		});
+			currency: currency as any,
+			productId,
+			sellerId,
+			buyerId: session.user.id,
+			metadata
+		};
+
+		const result = await stripeService.createPaymentIntent(params);
+
+		if (result.error) {
+			console.error('Error creating payment intent:', result.error);
+			return json({ error: result.error.message }, { status: 500 });
+		}
 
 		return json({
-			client_secret: paymentIntent.client_secret,
-			id: paymentIntent.id
+			client_secret: result.clientSecret,
+			id: result.paymentIntent?.id
 		});
 	} catch (error) {
 		console.error('Error creating payment intent:', error);
