@@ -14,7 +14,7 @@
 
 <!-- Promoted Listings / Highlights -->
 <div class="bg-white border-b border-gray-200">
-  <div class="px-4 sm:px-6 lg:px-8 pt-4 pb-6">
+  <div class="px-4 sm:px-6 lg:px-8 py-4">
     <div class="overflow-x-auto scrollbar-hide">
       <div class="flex space-x-3 -mx-4 px-4 sm:mx-0 sm:px-0">
         <!-- Promoted Products -->
@@ -34,12 +34,10 @@
                 })}
                 class="block promoted-highlight"
               >
-              <!-- Premium container with animated gold border -->
-              <div class="promoted-card rounded-2xl shadow-lg group-hover:scale-105 transition-all duration-300">
-                <!-- White padding layer -->
-                <div class="bg-white p-1 rounded-xl">
-                  <!-- Inner glass frame -->
-                  <div class="bg-gray-50/80 relative rounded-lg border border-gray-100 overflow-hidden">
+              <!-- Premium container without gold border -->
+              <div class="relative rounded-2xl shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300 bg-white p-1">
+                <!-- Inner glass frame -->
+                <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
                   <div 
                     aria-hidden="true"
                     class="absolute inset-x-0 top-0 h-32 rounded-[inherit]"
@@ -52,17 +50,25 @@
                       alt={product.title}
                       class="w-full h-full object-cover"
                     />
+                    
+                    <!-- Small promoted crown icon -->
+                    <div class="absolute top-2 right-2 w-6 h-6 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center">
+                      <svg class="w-3.5 h-3.5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/>
+                      </svg>
+                    </div>
+                    
                     <!-- Seller avatar -->
-                    <div class="absolute bottom-2 left-2 w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
+                    <div class="absolute bottom-2 left-2 w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm">
                       <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
                         {product.seller_name?.charAt(0).toUpperCase() || 'S'}
                       </div>
                     </div>
+                    
                     <!-- Price badge -->
-                    <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg border border-gray-200 shadow-sm">
+                    <div class="absolute bottom-2 right-2 bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg shadow-sm">
                       {product.price}{i18n.common_currency()}
                     </div>
-                  </div>
                   </div>
                 </div>
               </div>
@@ -99,42 +105,12 @@
 </div>
 
 <style>
-  /* Premium gold animated border for promoted items */
-  .promoted-card {
-    position: relative;
-    padding: 2px;
-    background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700, #FFA500);
-    background-size: 300% 300%;
-    animation: shimmer 3s ease infinite;
+  /* Clean hover effect for promoted items */
+  .promoted-highlight:hover {
+    transform: scale(1.02);
   }
   
-  .promoted-card::before {
-    content: '';
-    position: absolute;
-    inset: 2px;
-    background: white;
-    border-radius: 0.875rem;
-    z-index: 0;
-  }
-  
-  .promoted-card > div {
-    position: relative;
-    z-index: 1;
-  }
-  
-  .promoted-card:hover {
-    box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
-  }
-  
-  @keyframes shimmer {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
+  .promoted-highlight:active {
+    transform: scale(0.98);
   }
 </style>

@@ -26,6 +26,11 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
   if (data.session && data.user) {
     // Force refresh session to ensure we have the correct user
     await supabase.auth.refreshSession();
+    
+    // Check if this is email verification (user just verified their email)
+    const isEmailVerification = data.user.email_confirmed_at && 
+      new Date(data.user.email_confirmed_at).getTime() > Date.now() - 60000; // Within last minute
+    
     // Check or create profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
@@ -45,9 +50,16 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
         });
       
       if (!insertError) {
-        // Profile created, redirect to onboarding
-        throw redirect(303, '/onboarding');
+        // New user - redirect to onboarding
+        throw redirect(303, '/onboarding?welcome=true');
       }
+    }
+
+    // If email was just verified, always show success message first
+    if (isEmailVerification) {
+      // Sign out and redirect to login with success message
+      await supabase.auth.signOut();
+      throw redirect(303, '/login?verified=true');
     }
 
     // Check if onboarding is needed
@@ -55,7 +67,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
       throw redirect(303, '/onboarding');
     }
 
-    // Safe next redirect
+    // Safe next redirect for returning users
     let redirectPath = '/';
     if (next && next !== 'undefined' && next !== 'null') {
       if (next.startsWith('/') && !next.includes('://')) {

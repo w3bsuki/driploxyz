@@ -25,20 +25,49 @@
   Removed global border-color override that was causing black borders
 */
 
-/* NUKE ALL INPUT BORDERS AND FOCUS STATES */
+/* CRITICAL: Prevent mobile zoom on input focus */
 @layer base {
-  input[type="search"],
+  /* Force 16px minimum font size on ALL inputs to prevent iOS/Android zoom */
   input[type="text"],
-  input {
-    border: none !important; 
-    outline: none !important; 
-    box-shadow: none !important; /* KILL FOCUS BOX SHADOW */
-    ring: none !important; /* KILL TAILWIND FOCUS RING */
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  input[type="number"],
+  input[type="date"],
+  textarea,
+  select {
+    font-size: 16px !important; /* Prevents zoom on mobile */
   }
   
-  input[type="search"]:focus,
-  input[type="text"]:focus,
-  input:focus {
+  /* Allow smaller font size on desktop */
+  @media (min-width: 640px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="number"],
+    input[type="date"],
+    textarea,
+    select {
+      font-size: 14px !important; /* sm:text-sm for desktop */
+    }
+  }
+  
+  /* Only remove borders from search inputs in the header */
+  .search-input input[type="search"],
+  .search-input input[type="text"] {
+    border: none !important; 
+    outline: none !important; 
+    box-shadow: none !important;
+    ring: none !important;
+  }
+  
+  .search-input input[type="search"]:focus,
+  .search-input input[type="text"]:focus {
     border: none !important;
     outline: none !important;
     box-shadow: none !important;
@@ -49,6 +78,65 @@
   input[type="search"]::-webkit-search-cancel-button {
     -webkit-appearance: none !important;
     display: none !important;
+  }
+  
+  /* Enhanced form input states for better UX */
+  input[type="text"]:not(.search-input input),
+  input[type="email"]:not(.search-input input),
+  input[type="password"]:not(.search-input input),
+  input[type="tel"]:not(.search-input input),
+  input[type="url"]:not(.search-input input),
+  input[type="number"]:not(.search-input input),
+  textarea:not(.search-input textarea),
+  select:not(.search-input select) {
+    @apply border-gray-300 transition-all duration-200;
+  }
+  
+  /* Focus states with visible borders */
+  input[type="text"]:focus:not(.search-input input),
+  input[type="email"]:focus:not(.search-input input),
+  input[type="password"]:focus:not(.search-input input),
+  input[type="tel"]:focus:not(.search-input input),
+  input[type="url"]:focus:not(.search-input input),
+  input[type="number"]:focus:not(.search-input input),
+  textarea:focus:not(.search-input textarea),
+  select:focus:not(.search-input select) {
+    @apply border-blue-500 ring-2 ring-blue-500/20 outline-none;
+  }
+  
+  /* Hover states */
+  input[type="text"]:hover:not(:focus):not(.search-input input),
+  input[type="email"]:hover:not(:focus):not(.search-input input),
+  input[type="password"]:hover:not(:focus):not(.search-input input),
+  input[type="tel"]:hover:not(:focus):not(.search-input input),
+  input[type="url"]:hover:not(:focus):not(.search-input input),
+  input[type="number"]:hover:not(:focus):not(.search-input input),
+  textarea:hover:not(:focus):not(.search-input textarea),
+  select:hover:not(:focus):not(.search-input select) {
+    @apply border-gray-400;
+  }
+  
+  /* Error states */
+  input[aria-invalid="true"],
+  textarea[aria-invalid="true"],
+  select[aria-invalid="true"] {
+    @apply border-red-500 focus:border-red-500 focus:ring-red-500/20;
+  }
+  
+  /* Checkbox and radio button enhancements */
+  input[type="checkbox"],
+  input[type="radio"] {
+    @apply border-gray-300 text-blue-600 focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-0 transition-all duration-200;
+  }
+  
+  input[type="checkbox"]:hover,
+  input[type="radio"]:hover {
+    @apply border-gray-400;
+  }
+  
+  input[type="checkbox"]:checked,
+  input[type="radio"]:checked {
+    @apply border-blue-600 bg-blue-600;
   }
 }
 

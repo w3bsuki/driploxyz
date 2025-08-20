@@ -3,6 +3,7 @@ import { superValidate, setError, message } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { SignupSchema } from '$lib/validation/auth';
 import { dev, building } from '$app/environment';
+import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
 import type { Actions, PageServerLoad } from './$types';
 import { detectLanguage } from '@repo/i18n';
 
@@ -46,6 +47,16 @@ export const actions: Actions = {
     
     const { email, password, fullName, terms } = form.data;
     
+    // Rate limiting by IP address
+    const clientIp = getClientAddress();
+    const rateLimitKey = `signup:${clientIp}`;
+    const { allowed, retryAfter } = checkRateLimit(rateLimitKey, 'signup');
+    
+    if (!allowed) {
+      setError(form, '', `Too many signup attempts. Please try again in ${retryAfter} seconds.`);
+      return fail(429, { form });
+    }
+    
     // Get user's locale from cookie or Accept-Language header
     const localeCookie = cookies.get('locale');
     const acceptLanguage = request.headers.get('accept-language') || '';
@@ -66,8 +77,25 @@ export const actions: Actions = {
       console.log('[SIGNUP] Email redirect URL constructed:', emailRedirectTo);
     }
     
+    // CRITICAL: Check if user already exists BEFORE signup
+    // Supabase's signUp auto-signs in existing users which is a security issue
+    if (DEBUG) console.log('[SIGNUP] Checking if user already exists...');
+    
+    // Try to sign in with the email (using a wrong password to just check existence)
+    const { error: checkError } = await supabase.auth.signInWithPassword({
+      email,
+      password: 'CHECK_USER_EXISTS_DUMMY_PASSWORD_' + Date.now()
+    });
+    
+    // If we get "Invalid login credentials" it means the user exists
+    if (checkError && checkError.message.includes('Invalid login credentials')) {
+      if (DEBUG) console.log('[SIGNUP] User already exists!');
+      setError(form, 'email', 'An account with this email already exists. Please sign in instead.');
+      return fail(400, { form });
+    }
+    
     // Create user with proper error handling
-    if (DEBUG) console.log('[SIGNUP] Calling supabase.auth.signUp...');
+    if (DEBUG) console.log('[SIGNUP] User does not exist, calling supabase.auth.signUp...');
     const { data, error } = await supabase.auth.signUp({
       email,
       password,

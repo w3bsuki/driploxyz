@@ -1,7 +1,8 @@
-import { redirect, fail } from '@sveltejs/kit';
+import { redirect, fail, error } from '@sveltejs/kit';
 import { superValidate, setError, message } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { LoginSchema } from '$lib/validation/auth';
+import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) => {
@@ -40,7 +41,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
 };
 
 export const actions: Actions = {
-  signin: async ({ request, locals: { supabase } }) => {
+  signin: async ({ request, locals: { supabase }, getClientAddress }) => {
     const form = await superValidate(request, zod(LoginSchema));
 
     if (!form.valid) {
@@ -48,6 +49,16 @@ export const actions: Actions = {
     }
     
     const { email, password } = form.data;
+    
+    // Rate limiting by IP address
+    const clientIp = getClientAddress();
+    const rateLimitKey = `login:${clientIp}`;
+    const { allowed, retryAfter } = checkRateLimit(rateLimitKey, 'login');
+    
+    if (!allowed) {
+      setError(form, '', `Too many login attempts. Please try again in ${retryAfter} seconds.`);
+      return fail(429, { form });
+    }
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -72,6 +83,9 @@ export const actions: Actions = {
       setError(form, '', 'Authentication failed. Please try again.');
       return fail(400, { form });
     }
+    
+    // Reset rate limit on successful login
+    rateLimiter.reset(rateLimitKey);
     
     // Use message pattern exactly like signup
     return message(form, {

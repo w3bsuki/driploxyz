@@ -99,7 +99,7 @@
   }
 </script>
 
-<div class="relative {className}">
+<div class="search-input relative {className}">
   <form onsubmit={handleSubmit}>
     {#if variant === 'hero'}
       <!-- Glass morphism container for hero variant -->

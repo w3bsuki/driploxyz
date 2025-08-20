@@ -457,7 +457,7 @@
             
             <!-- Product/Offer Info -->
             {#if conv?.isOffer}
-              <div class="mt-3 bg-linear-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
+              <div class="mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
                 <div class="flex justify-between items-start mb-2">
                   <div>
                     <p class="text-xs font-semibold text-blue-900 uppercase tracking-wide">{i18n.messages_bundleOffer()}</p>
@@ -474,7 +474,7 @@
                 {/if}
               </div>
             {:else if conv?.isProductConversation && conv?.productTitle}
-              <div class="mt-3 bg-linear-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
+              <div class="mt-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
                 <div class="flex items-center space-x-2 mb-2">
                   <span class="text-xs font-semibold text-blue-900 uppercase tracking-wide">Product Conversation</span>
                   <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-sm font-medium">Active</span>

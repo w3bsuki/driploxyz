@@ -7,7 +7,7 @@
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
-  import { MessageNotificationToast, FollowNotificationToast, CookieConsentBanner, LanguageSwitcher } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast, CookieConsentBanner, LanguageSwitcher, ToastContainer } from '@repo/ui';
   import { page } from '$app/stores';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import { initializeLanguage } from '$lib/utils/language';
@@ -71,6 +71,9 @@
   <EarlyBirdBanner />
 {/if}
 {@render children?.()}
+
+<!-- Global Toast Notifications -->
+<ToastContainer />
 
 <!-- PRODUCTION-READY Cookie Consent -->
 <CookieConsentBanner 

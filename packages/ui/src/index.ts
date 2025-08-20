@@ -80,4 +80,10 @@ export { default as BrandSelector } from './BrandSelector.svelte';
 export { default as PriceInput } from './PriceInput.svelte';
 export { default as TagInput } from './TagInput.svelte';
 
+// Toast notification system
+export { default as Toast } from './components/toast/Toast.svelte';
+export { default as ToastContainer } from './components/toast/ToastContainer.svelte';
+export { toasts } from './components/toast/toast-store.js';
+export type { ToastMessage } from './components/toast/toast-store.js';
+
 export * from './types.js';

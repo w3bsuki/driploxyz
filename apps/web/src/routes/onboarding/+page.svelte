@@ -17,6 +17,8 @@
   import { browser } from '$app/environment';
   import * as m from '@repo/i18n';
   import { initializeLanguage } from '$lib/utils/language';
+  import { page } from '$app/stores';
+  import { toasts } from '@repo/ui';
   import type { PageData } from './$types';
 
   interface Props {
@@ -58,7 +60,20 @@
 
   // Show welcome modal on mount
   onMount(() => {
-    showWelcome = true;
+    // Check for welcome parameter from auth flow
+    if ($page.url.searchParams.get('welcome') === 'true') {
+      toasts.success('Welcome to Driplo! Let\'s set up your profile.');
+    }
+    
+    // Only show welcome modal after language is initialized
+    const checkLanguageAndShowModal = () => {
+      if (languageInitialized) {
+        showWelcome = true;
+      } else {
+        setTimeout(checkLanguageAndShowModal, 50);
+      }
+    };
+    checkLanguageAndShowModal();
     
     // Check if user paid for brand account
     const urlParams = new URLSearchParams(window.location.search);
@@ -208,9 +223,10 @@
 
       // Show success modal
       showSuccessModal = true;
+      toasts.success('Profile setup complete! Welcome to Driplo!');
     } catch (error) {
       console.error('Onboarding error:', error);
-      alert('Something went wrong. Please try again.');
+      toasts.error('Something went wrong. Please try again.');
     } finally {
       submitting = false;
     }
@@ -514,6 +530,7 @@
 <!-- Brand Payment Modal -->
 <BrandPaymentModal
   show={showBrandPayment}
+  stripePublishableKey={import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY}
   onSuccess={handleBrandPaymentSuccess}
   onCancel={handleBrandPaymentCancel}
   onClose={() => showBrandPayment = false}

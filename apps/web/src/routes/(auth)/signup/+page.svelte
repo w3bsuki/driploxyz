@@ -9,15 +9,26 @@
 
   let { data }: { data: PageData } = $props();
   
+  import { toasts } from '@repo/ui';
+  import { onMount } from 'svelte';
+  
   const { form, errors, constraints, submitting, enhance, message } = superForm(data.form, {
     validators: zodClient(SignupSchema),
     resetForm: false,
     taintedMessage: null,
     validationMethod: 'oninput',
     onUpdated: ({ form }) => {
-      // Message will be available here if needed for additional handling
+      // Handle errors with toast notifications
+      if ($errors?._errors?.length) {
+        toasts.error($errors._errors[0]);
+      }
+      // Handle field-specific errors
+      if ($errors?.email && $errors.email.includes('already exists')) {
+        toasts.error($errors.email);
+      }
+      // Handle success messages
       if (form.message && form.message.type === 'success') {
-        // Success is handled via the $message store below
+        toasts.success(form.message.text || 'Account created successfully!');
       }
     }
   });
@@ -30,44 +41,6 @@
 
 <div class="space-y-4">
 
-  {#if $errors?._errors?.length}
-    <div class="bg-red-50 border border-red-200 rounded-md p-4">
-      <div class="flex">
-        <div class="shrink-0">
-          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <p class="text-sm text-red-800">{$errors._errors[0]}</p>
-        </div>
-      </div>
-    </div>
-  {/if}
-
-  {#if $message}
-    <div class="bg-green-50 border border-green-200 rounded-md p-4 mb-6">
-      <div class="flex">
-        <div class="shrink-0">
-          <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.236 4.53L7.53 10.53a.75.75 0 00-1.06 1.06l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <h3 class="text-sm font-medium text-green-800">Success!</h3>
-          <p class="mt-2 text-sm text-green-700">{$message.text || $message}</p>
-          <div class="mt-4 space-x-4">
-            <a href="/login" class="text-sm font-medium text-green-600 hover:text-green-500">
-              Go to login →
-            </a>
-            <a href="/verify-email" class="text-sm font-medium text-green-600 hover:text-green-500">
-              Didn't receive email? →
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  {/if}
 
   <!-- Signup Form -->
   <form method="POST" action="?/signup" use:enhance>
