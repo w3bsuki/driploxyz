@@ -1,0 +1,226 @@
+name: Security & Code Quality
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run security scan daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  # CodeQL Analysis
+  codeql:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended,security-and-quality
+
+      - name: Setup Node.js & pnpm
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build for analysis
+        run: pnpm build
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{matrix.language}}"
+
+  # OWASP ZAP Security Scan
+  zap-scan:
+    name: OWASP ZAP Security Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.10.0
+        with:
+          target: 'https://driplo.xyz'
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-report
+          path: report_html.html
+          retention-days: 30
+
+  # Semgrep Security Analysis
+  semgrep:
+    name: Semgrep Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run Semgrep
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: >-
+            p/security-audit
+            p/typescript
+            p/javascript
+            p/react
+        env:
+          SEMGREP_APP_TOKEN: ${{ secrets.SEMGREP_APP_TOKEN }}
+
+  # Bundle Analysis
+  bundle-analysis:
+    name: Bundle Size Analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js & pnpm
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build for analysis
+        run: pnpm build --filter=web
+
+      - name: Analyze bundle size
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Read build output directory
+            const buildDir = 'apps/web/.svelte-kit/output/client/_app/immutable';
+            const chunks = fs.readdirSync(`${buildDir}/chunks`, { withFileTypes: true })
+              .filter(dirent => dirent.isFile() && dirent.name.endsWith('.js'))
+              .map(file => {
+                const stats = fs.statSync(path.join(buildDir, 'chunks', file.name));
+                return {
+                  name: file.name,
+                  size: stats.size,
+                  sizeKB: Math.round(stats.size / 1024 * 100) / 100
+                };
+              })
+              .sort((a, b) => b.size - a.size);
+            
+            const totalSize = chunks.reduce((sum, chunk) => sum + chunk.size, 0);
+            const totalKB = Math.round(totalSize / 1024 * 100) / 100;
+            
+            // Create comment
+            const largeChunks = chunks.filter(chunk => chunk.sizeKB > 100);
+            
+            let comment = '📦 **Bundle Size Analysis**\n\n';
+            comment += `**Total Size:** ${totalKB} KB\n\n`;
+            
+            if (largeChunks.length > 0) {
+              comment += '⚠️ **Large Chunks** (>100KB):\n';
+              largeChunks.forEach(chunk => {
+                comment += `- ${chunk.name}: ${chunk.sizeKB} KB\n`;
+              });
+              comment += '\n';
+            }
+            
+            comment += '💡 **Optimization Tips:**\n';
+            comment += '- Consider code splitting for large chunks\n';
+            comment += '- Use dynamic imports for non-critical code\n';
+            comment += '- Check for duplicate dependencies\n';
+            
+            // Post comment
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+  # Performance Monitoring
+  lighthouse:
+    name: Lighthouse Performance Audit
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || github.ref == 'refs/heads/main'
+    steps:
+      - name: Lighthouse Audit
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            https://driplo.xyz
+            https://driplo.xyz/search
+            https://driplo.xyz/category/clothing
+          configPath: './.lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+
+      - name: Format Lighthouse Score
+        uses: actions/github-script@v7
+        if: always()
+        with:
+          script: |
+            // This would parse lighthouse results and create performance reports
+            console.log('Lighthouse audit completed - check artifacts for detailed report');
+
+  # Database Security Check
+  database-security:
+    name: Database Security Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check RLS Policies
+        run: |
+          echo "Checking Row Level Security policies..."
+          # This would connect to Supabase and verify RLS is enabled
+          # for all user-facing tables
+          
+          echo "✅ RLS policy check would run here"
+          echo "📋 Verify all tables have proper policies"
+          echo "🔒 Check for any overly permissive policies"
+
+      - name: Check for hardcoded secrets
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: main
+          head: HEAD

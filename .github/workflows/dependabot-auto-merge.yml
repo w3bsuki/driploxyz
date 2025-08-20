@@ -1,0 +1,63 @@
+name: Dependabot Auto-merge
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  dependabot:
+    name: Auto-merge Dependabot PRs
+    runs-on: ubuntu-latest
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Auto-merge for patch updates
+        if: steps.metadata.outputs.update-type == 'version-update:semver-patch'
+        run: |
+          echo "Auto-merging patch update: ${{ steps.metadata.outputs.dependency-names }}"
+          gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Auto-merge for minor dev dependencies
+        if: |
+          steps.metadata.outputs.update-type == 'version-update:semver-minor' &&
+          steps.metadata.outputs.dependency-type == 'direct:development'
+        run: |
+          echo "Auto-merging minor dev dependency: ${{ steps.metadata.outputs.dependency-names }}"
+          gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on major updates
+        if: steps.metadata.outputs.update-type == 'version-update:semver-major'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🔄 **Major Dependency Update**\n\n' +
+                    '⚠️ This is a major version update for: **${{ steps.metadata.outputs.dependency-names }}**\n\n' +
+                    '📋 **Action Required:**\n' +
+                    '- Review breaking changes in the changelog\n' +
+                    '- Test thoroughly before merging\n' +
+                    '- Check for any migration guides\n\n' +
+                    '🔍 **Testing Checklist:**\n' +
+                    '- [ ] Unit tests pass\n' +
+                    '- [ ] E2E tests pass\n' +
+                    '- [ ] Manual testing completed\n' +
+                    '- [ ] No breaking changes in production'
+            })

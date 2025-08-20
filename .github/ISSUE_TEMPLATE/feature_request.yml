@@ -1,0 +1,94 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement for Driplo
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a new feature! Please provide as much detail as possible.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve?
+      placeholder: Describe the problem this feature would solve...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like to see
+      placeholder: Describe your proposed solution...
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature?
+      options:
+        - Low - Nice to have
+        - Medium - Would improve UX
+        - High - Critical for business
+    validations:
+      required: true
+
+  - type: dropdown
+    id: user-type
+    attributes:
+      label: User Type
+      description: Who would benefit from this feature?
+      options:
+        - Buyers
+        - Sellers
+        - Both Buyers and Sellers
+        - Administrators
+        - Developers
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User Story
+      description: Write a user story for this feature
+      placeholder: "As a [user type], I want [feature] so that [benefit]"
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What conditions must be met for this feature to be complete?
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative Solutions
+      description: Have you considered any alternative solutions?
+      placeholder: Describe alternative approaches...
+
+  - type: textarea
+    id: technical-notes
+    attributes:
+      label: Technical Considerations
+      description: Any technical details, constraints, or dependencies?
+      placeholder: Technical implementation notes...
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups/Examples
+      description: Any mockups, wireframes, or examples from other apps?
+      placeholder: Attach mockups or provide examples...
