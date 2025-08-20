@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
+import type { Stripe } from 'stripe';
 
 // Service imports
 import { ProductService } from './products';
@@ -39,8 +40,10 @@ export type {
 
 /**
  * Service factory to create all services with a Supabase client
+ * @param supabase - Supabase client instance
+ * @param stripeInstance - Optional Stripe instance (required for payment operations)
  */
-export function createServices(supabase: SupabaseClient<Database>) {
+export function createServices(supabase: SupabaseClient<Database>, stripeInstance?: Stripe | null) {
   return {
     products: new ProductService(supabase),
     categories: new CategoryService(supabase),
@@ -48,7 +51,7 @@ export function createServices(supabase: SupabaseClient<Database>) {
     subscriptions: new SubscriptionService(supabase),
     transactions: new TransactionService(supabase),
     payouts: new PayoutService(supabase),
-    stripe: createStripeService(supabase)
+    stripe: stripeInstance ? createStripeService(supabase, stripeInstance) : null
   };
 }
 
@@ -62,30 +65,31 @@ export class ServiceManager {
   public subscriptions: SubscriptionService;
   public transactions: TransactionService;
   public payouts: PayoutService;
-  public stripe: StripeService;
+  public stripe: StripeService | null;
 
-  constructor(private supabase: SupabaseClient<Database>) {
+  constructor(private supabase: SupabaseClient<Database>, private stripeInstance?: Stripe | null) {
     this.products = new ProductService(supabase);
     this.categories = new CategoryService(supabase);
     this.profiles = new ProfileService(supabase);
     this.subscriptions = new SubscriptionService(supabase);
     this.transactions = new TransactionService(supabase);
     this.payouts = new PayoutService(supabase);
-    this.stripe = createStripeService(supabase);
+    this.stripe = stripeInstance ? createStripeService(supabase, stripeInstance) : null;
   }
 
   /**
    * Update the Supabase client for all services
    */
-  updateClient(supabase: SupabaseClient<Database>) {
+  updateClient(supabase: SupabaseClient<Database>, stripeInstance?: Stripe | null) {
     this.supabase = supabase;
+    this.stripeInstance = stripeInstance;
     this.products = new ProductService(supabase);
     this.categories = new CategoryService(supabase);
     this.profiles = new ProfileService(supabase);
     this.subscriptions = new SubscriptionService(supabase);
     this.transactions = new TransactionService(supabase);
     this.payouts = new PayoutService(supabase);
-    this.stripe = createStripeService(supabase);
+    this.stripe = stripeInstance ? createStripeService(supabase, stripeInstance) : null;
   }
 }
 

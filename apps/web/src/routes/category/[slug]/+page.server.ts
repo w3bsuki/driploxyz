@@ -4,7 +4,7 @@ import { createServices } from '$lib/services';
 
 export const load: PageServerLoad = async ({ params, url, locals: { supabase } }) => {
   const { slug } = params;
-  const services = createServices(supabase);
+  const services = createServices(supabase, null); // No stripe needed for category viewing
 
   try {
     // Get category by slug

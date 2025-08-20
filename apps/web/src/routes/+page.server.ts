@@ -31,7 +31,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
     };
   }
 
-  const services = createServices(supabase);
+  const services = createServices(supabase, null); // No stripe needed for homepage
 
   try {
     // Load data in parallel but with error handling for each

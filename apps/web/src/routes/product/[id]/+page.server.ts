@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import { createServices } from '$lib/services';
 
 export const load: PageServerLoad = async ({ params, locals: { supabase, session } }) => {
-  const services = createServices(supabase);
+  const services = createServices(supabase, null); // No stripe needed for product viewing
 
   // Get the product with images and seller info
   const { data: product, error: productError } = await services.products.getProduct(params.id);

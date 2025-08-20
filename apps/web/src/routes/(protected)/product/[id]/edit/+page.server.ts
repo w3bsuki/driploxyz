@@ -7,7 +7,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, session
     throw redirect(303, `/login?redirect=/product/${params.id}/edit`);
   }
 
-  const services = createServices(supabase);
+  const services = createServices(supabase, null); // No stripe needed for product editing
 
   // Get the product
   const { data: product, error } = await services.products.getProduct(params.id);
@@ -37,7 +37,7 @@ export const actions: Actions = {
     }
 
     const formData = await request.formData();
-    const services = createServices(supabase);
+    const services = createServices(supabase, null); // No stripe needed for product updates
 
     const updates = {
       title: formData.get('title') as string,
@@ -71,7 +71,7 @@ export const actions: Actions = {
       return fail(401, { error: 'Not authenticated' });
     }
 
-    const services = createServices(supabase);
+    const services = createServices(supabase, null); // No stripe needed for product deletion
     const { error } = await services.products.deleteProduct(params.id, session.user.id);
 
     if (error) {

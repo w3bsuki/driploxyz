@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     throw redirect(303, '/login?redirect=/sell');
   }
 
-  const services = createServices(supabase);
+  const services = createServices(supabase, null); // No stripe needed for selling products
 
   try {
     console.log('[SELL DEBUG] Fetching user profile...');

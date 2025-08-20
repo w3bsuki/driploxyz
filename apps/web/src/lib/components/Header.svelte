@@ -15,7 +15,6 @@
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import { RealtimeNotificationService } from '$lib/services/realtime-notifications';
-  import { ProductionLocaleManager } from '$lib/cookies/production-cookie-system';
   
   interface Props {
     showSearch?: boolean;
@@ -27,8 +26,7 @@
   let userMenuOpen = $state(false);
   let notificationService: RealtimeNotificationService | null = null;
   
-  // Language
-  const localeManager = ProductionLocaleManager.getInstance();
+  // Language - Simple working approach
   let currentLang = $state(i18n.languageTag());
   
   const languages = [
@@ -39,12 +37,19 @@
   ];
   
   async function switchLanguage(lang: string) {
-    try {
-      await localeManager.setLocale(lang, false);
-    } catch (e) {
-      console.error('Language switch failed:', e);
-      alert('Please accept functional cookies to save your language preference');
-    }
+    console.log('Switching language to:', lang);
+    
+    // Update UI state immediately
+    currentLang = lang;
+    i18n.setLanguageTag(lang as any);
+    
+    // Save to cookie and navigate with locale parameter
+    document.cookie = `locale=${lang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax; Secure=${location.protocol === 'https:'}`;
+    
+    // Navigate with locale parameter to trigger server-side handling
+    const url = new URL(window.location.href);
+    url.searchParams.set('locale', lang);
+    window.location.href = url.toString();
   }
   
   // Animated emoji for logo
@@ -77,12 +82,10 @@
     userMenuOpen = false;
   }
 
-  // Initialize language and notification service
+  // Initialize notification service
   onMount(() => {
-    // Initialize locale
-    if (browser) {
-      currentLang = localeManager.initializeClient();
-    }
+    // Update current language from runtime
+    currentLang = i18n.languageTag();
     
     // Subscribe to auth state for notifications
     const unsubscribe = authState.subscribe(state => {

@@ -4,7 +4,7 @@ import type { RequestHandler } from './$types.js';
 
 export const GET: RequestHandler = async ({ params, locals: { supabase } }) => {
 	try {
-		const services = createServices(supabase);
+		const services = createServices(supabase, null); // No stripe needed for product API
 		
 		// Get the product with images and seller info
 		const { data: product, error: productError } = await services.products.getProduct(params.id);
