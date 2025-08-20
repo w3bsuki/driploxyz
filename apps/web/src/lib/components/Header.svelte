@@ -26,8 +26,16 @@
   let userMenuOpen = $state(false);
   let notificationService: RealtimeNotificationService | null = null;
   
-  // Language - Simple working approach
+  // Language - REACTIVE tracking
   let currentLang = $state(i18n.languageTag());
+  
+  // CRITICAL: Update currentLang when language changes
+  $effect(() => {
+    const newLang = i18n.languageTag();
+    if (newLang !== currentLang) {
+      currentLang = newLang;
+    }
+  });
   
   const languages = [
     { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -64,14 +72,18 @@
         return; // Don't proceed with language switch until consent given
       }
       
-      // SIMPLE APPROACH: Save cookie and refresh page
+      // CRITICAL FIX: Prevent auth state from overriding language
       console.log('Setting language and refreshing:', lang);
       
-      // 1. Save the locale cookie FIRST
+      // 1. Save the locale cookie FIRST with proper settings
       document.cookie = `locale=${lang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax; Secure=${location.protocol === 'https:'}`;
       
-      // 2. Refresh the page to apply the language properly
-      window.location.reload();
+      // 2. Also save to sessionStorage as backup (survives auth refreshes)
+      sessionStorage.setItem('selectedLocale', lang);
+      
+      // 3. Force hard navigation to bypass any auth state listeners
+      // Use replace to prevent back button issues
+      window.location.replace(window.location.pathname + window.location.search);
       
     } catch (error) {
       console.error('Language switch failed:', error);
@@ -134,9 +146,6 @@
 
   // Initialize notification service
   onMount(() => {
-    // Update current language from runtime
-    currentLang = i18n.languageTag();
-    
     // Subscribe to auth state for notifications
     const unsubscribe = authState.subscribe(state => {
       if (state.user && state.supabase && !notificationService) {

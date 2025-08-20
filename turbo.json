@@ -32,6 +32,30 @@
     "dev": {
       "cache": false,
       "persistent": true
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "src/**/*.{test,spec}.{js,ts}", "tests/**/*.{js,ts}"],
+      "outputs": ["coverage/**"]
+    },
+    "test:unit": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "src/**/*.{test,spec}.{js,ts}"],
+      "outputs": ["coverage/**"]
+    },
+    "test:integration": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "tests/**/*.{js,ts}", "playwright.config.ts"],
+      "outputs": ["test-results/**", "playwright-report/**"]
+    },
+    "test:ui": {
+      "cache": false,
+      "persistent": true
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "src/**/*.{test,spec}.{js,ts}"],
+      "outputs": ["coverage/**"]
     }
   }
 }

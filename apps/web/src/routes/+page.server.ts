@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { createServices } from '$lib/services';
 import { redirect } from '@sveltejs/kit';
+import { cacheWarming } from '$lib/cache';
 
 export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
   // Check if this is an auth callback that went to the wrong URL
@@ -15,6 +16,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
     }
     throw redirect(303, `/auth/callback?${params.toString()}`);
   }
+  
   // Handle missing Supabase configuration
   if (!supabase) {
     return {
@@ -34,109 +36,96 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
   const services = createServices(supabase, null); // No stripe needed for homepage
 
   try {
-    // Test service calls one by one to identify the problematic one
-    console.log('[HOMEPAGE] Testing categories service...');
+    // Use optimized RPC function for single-query homepage data
+    console.log('[HOMEPAGE] Loading homepage data with optimized RPC...');
     
-    let categories = [];
-    let categoriesError = null;
-    
-    try {
-      const result = await services.categories.getMainCategories();
-      categories = result.data || [];
-      categoriesError = result.error;
-      console.log('[HOMEPAGE] Categories loaded successfully:', categories.length);
-    } catch (err) {
-      console.error('Categories failed:', err);
-      categoriesError = 'Failed to load categories';
-    }
+    const { data: homepageData, error: rpcError } = await supabase
+      .rpc('get_homepage_data', {
+        promoted_limit: 8,
+        featured_limit: 12,
+        top_sellers_limit: 8
+      });
 
-    console.log('[HOMEPAGE] Testing top sellers service...');
-    let topSellers = [];
-    let sellersError = null;
-    
-    try {
-      const result = await services.profiles.getTopSellers(8);
-      topSellers = result.data || [];
-      sellersError = result.error;
-      console.log('[HOMEPAGE] Top sellers loaded successfully:', topSellers.length);
-    } catch (err) {
-      console.error('Top sellers failed:', err);
-      sellersError = 'Failed to load sellers';
-    }
+    if (rpcError) {
+      console.error('[HOMEPAGE] RPC Error:', rpcError);
+      
+      // Fallback to parallel individual queries if RPC fails
+      const [categoriesResult, topSellersResult, promotedResult, featuredResult] = await Promise.allSettled([
+        services.categories.getMainCategories(),
+        services.profiles.getTopSellers(8),
+        services.products.getPromotedProducts(8),
+        supabase
+          .from('products')
+          .select(`
+            *,
+            product_images (*),
+            categories (name),
+            profiles!products_seller_id_fkey (username, rating, avatar_url)
+          `)
+          .eq('is_active', true)
+          .eq('is_sold', false)
+          .order('created_at', { ascending: false })
+          .limit(12)
+      ]);
 
-    console.log('[HOMEPAGE] Testing promoted products service...');
-    let promotedProducts = [];
-    let promotedError = null;
-    
-    try {
-      const result = await services.products.getPromotedProducts(8);
-      promotedProducts = result.data || [];
-      promotedError = result.error;
-      console.log('[HOMEPAGE] Promoted products loaded successfully:', promotedProducts.length);
-    } catch (err) {
-      console.error('Promoted products failed:', err);
-      promotedError = 'Failed to load promoted products';
-    }
-    
-    console.log('[HOMEPAGE] Loading featured products with safe fallback...');
-    let featuredProducts = [];
-    let productsError = null;
-    
-    try {
-      // Use the same query structure as promoted products which works
-      const { data: rawProducts, error: dbError } = await supabase
-        .from('products')
-        .select(`
-          *,
-          product_images (*),
-          categories (name),
-          profiles!products_seller_id_fkey (username, rating, avatar_url)
-        `)
-        .eq('is_active', true)
-        .eq('is_sold', false)
-        .order('created_at', { ascending: false })
-        .limit(12);
-
-      if (dbError) {
-        console.error('Featured products DB error:', dbError);
-        productsError = 'Database error';
-        featuredProducts = [];
-      } else if (rawProducts) {
-        // Transform data exactly like promoted products
-        featuredProducts = rawProducts.map(item => ({
-          ...item,
-          images: item.product_images || [],
-          category_name: item.categories?.name,
-          seller_name: item.profiles?.username,
-          seller_rating: item.profiles?.rating,
-          seller_avatar: item.profiles?.avatar_url
-        }));
-        console.log('[HOMEPAGE] Featured products loaded:', featuredProducts.length);
-        console.log('[HOMEPAGE] First product sample:', {
-          id: featuredProducts[0]?.id,
-          title: featuredProducts[0]?.title,
-          images: featuredProducts[0]?.images,
-          product_images: rawProducts[0]?.product_images
-        });
+      // Process fallback results
+      const categories = categoriesResult.status === 'fulfilled' ? (categoriesResult.value.data || []) : [];
+      const topSellers = topSellersResult.status === 'fulfilled' ? (topSellersResult.value.data || []) : [];
+      const promotedProducts = promotedResult.status === 'fulfilled' ? (promotedResult.value.data || []) : [];
+      
+      let featuredProducts = [];
+      if (featuredResult.status === 'fulfilled') {
+        const { data: rawProducts } = featuredResult.value;
+        if (rawProducts) {
+          featuredProducts = rawProducts.map(item => ({
+            ...item,
+            images: item.product_images || [],
+            category_name: item.categories?.name,
+            seller_name: item.profiles?.username,
+            seller_rating: item.profiles?.rating,
+            seller_avatar: item.profiles?.avatar_url
+          }));
+        }
       }
-    } catch (err) {
-      console.error('Featured products error:', err);
-      featuredProducts = [];
-      productsError = 'Failed to load';
+
+      return {
+        promotedProducts,
+        featuredProducts,
+        categories,
+        topSellers,
+        errors: {
+          promoted: promotedResult.status === 'rejected' ? 'Failed to load' : null,
+          products: featuredResult.status === 'rejected' ? 'Failed to load' : null,
+          categories: categoriesResult.status === 'rejected' ? 'Failed to load' : null,
+          sellers: topSellersResult.status === 'rejected' ? 'Failed to load' : null
+        }
+      };
     }
+
+    // RPC success - use optimized single-query data
+    console.log('[HOMEPAGE] RPC success, data loaded efficiently');
+    const data = homepageData || {};
     
+    console.log('[HOMEPAGE] RPC Data loaded:', {
+      promoted: data.promoted_products?.length || 0,
+      featured: data.featured_products?.length || 0,
+      categories: data.categories?.length || 0,
+      sellers: data.top_sellers?.length || 0
+    });
+
     return {
-      promotedProducts,
-      featuredProducts,
-      categories,
-      topSellers,
+      promotedProducts: data.promoted_products || [],
+      featuredProducts: data.featured_products || [],
+      categories: data.categories || [],
+      topSellers: data.top_sellers || [],
       errors: {
-        promoted: promotedError,
-        products: productsError,
-        categories: categoriesError,
-        sellers: sellersError
+        promoted: null,
+        products: null,
+        categories: null,
+        sellers: null
       }
     };
+    
   } catch (error) {
     console.error('Error loading homepage data:', error);
     return {

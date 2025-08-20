@@ -10,7 +10,7 @@
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
-  import { MessageNotificationToast, FollowNotificationToast, CookieConsentBanner, LanguageSwitcher, ToastContainer } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast, CookieConsent, LanguageSwitcher, ToastContainer } from '@repo/ui';
   import { page } from '$app/stores';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import { initializeLanguage } from '$lib/utils/language';
@@ -24,9 +24,40 @@
   $effect(() => {
     if (browser) {
       console.log('🌍 Client: Initializing language with server data:', data?.language);
-      // Use server language from SSR - never override
-      initializeLanguage(data?.language);
-      console.log('🌍 Client: Language set to:', i18n.languageTag());
+      console.log('🌍 Client: Full data object:', data);
+      
+      // Force language detection if server data is missing
+      const serverLang = data?.language;
+      if (!serverLang) {
+        console.log('🌍 Client: Server language missing, checking fallbacks');
+        
+        // Check sessionStorage first (survives auth refreshes)
+        const sessionLang = sessionStorage.getItem('selectedLocale');
+        if (sessionLang && i18n.isAvailableLanguageTag(sessionLang)) {
+          console.log('🌍 Client: Using sessionStorage language:', sessionLang);
+          initializeLanguage(sessionLang);
+        } else {
+          // Fallback to cookie
+          const cookieMatch = document.cookie.match(/locale=([^;]+)/);
+          const cookieLang = cookieMatch ? cookieMatch[1] : null;
+          console.log('🌍 Client: Cookie language:', cookieLang);
+          
+          if (cookieLang && i18n.isAvailableLanguageTag(cookieLang)) {
+            initializeLanguage(cookieLang);
+          } else {
+            initializeLanguage('en');
+          }
+        }
+      } else {
+        // Use server language from SSR
+        initializeLanguage(serverLang);
+        // Also save to sessionStorage for consistency
+        if (i18n.isAvailableLanguageTag(serverLang)) {
+          sessionStorage.setItem('selectedLocale', serverLang);
+        }
+      }
+      
+      console.log('🌍 Client: Final language set to:', i18n.languageTag());
     }
   });
 
@@ -52,19 +83,27 @@
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       if (dev) console.log('Auth state changed:', event);
       
+      // CRITICAL FIX: Don't invalidate on INITIAL_SESSION or TOKEN_REFRESHED
+      // These happen during language switches and cause the page to reload
+      if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
+        // Just update stores, don't invalidate
+        if (newSession) {
+          user.set(newSession.user);
+          session.set(newSession);
+        }
+        return; // STOP HERE - no invalidation
+      }
+      
       // Update stores immediately for instant UI feedback
       if (event === 'SIGNED_IN' && newSession) {
         user.set(newSession.user);
         session.set(newSession);
+        await invalidate('supabase:auth'); // Only invalidate on real sign in
       } else if (event === 'SIGNED_OUT') {
         user.set(null);
         session.set(null);
         profile.set(null);
-      }
-      
-      // Invalidate and reload server data for consistency
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED') {
-        await invalidate('supabase:auth');
+        await invalidate('supabase:auth'); // Only invalidate on real sign out
       }
     });
 
@@ -77,7 +116,7 @@
 {/if}
 {@render children?.()}
 
-<!-- Global Toast Notifications -->
+<!-- Toast Container -->
 <ToastContainer />
 
 <NavigationLoader />

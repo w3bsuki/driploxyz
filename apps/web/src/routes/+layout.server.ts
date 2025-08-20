@@ -12,6 +12,10 @@ const REDIRECT_PATHS_TO_SKIP = [
 
 export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fetch }) => {
   depends('supabase:auth');
+  depends('app:homepage');
+  depends('app:products');
+  depends('app:categories');
+  depends('app:profiles');
   
   // Use the session from hooks instead of creating new client
   const { session, user } = await locals.safeGetSession();
@@ -46,16 +50,23 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
     }
   }
 
-  // Get current language from server hooks (they handle the logic correctly)
-  const language = locals.locale || cookies.get('locale') || 'en';
+  // CRITICAL FIX: Always get language from cookie FIRST, then locals
+  // This ensures language persists through auth invalidations
+  const cookieLocale = cookies.get('locale');
+  const language = cookieLocale || locals.locale || 'en';
   
-  console.log('🌍 Layout Server: locals.locale =', locals.locale, ', cookie =', cookies.get('locale'), ', final language =', language);
+  console.log('🌍 Layout Server: Cookie locale =', cookieLocale, ', locals.locale =', locals.locale, ', final =', language);
+  
+  // Ensure we're always returning a valid language
+  if (!['en', 'bg', 'ru', 'ua'].includes(language)) {
+    console.warn('🌍 Layout Server: Invalid language detected, falling back to English:', language);
+  }
   
   return {
     session,
     user,
     profile,
-    language,
+    language, // Always return the determined language
     cookies: cookies.getAll(), // Pass cookies for SSR hydration
   };
 };

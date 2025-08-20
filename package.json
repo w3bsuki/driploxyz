@@ -6,7 +6,18 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write .",
-    "check-types": "turbo run check-types"
+    "format:check": "prettier --check .",
+    "check-types": "turbo run check-types",
+    "test": "turbo run test",
+    "test:unit": "turbo run test:unit",
+    "test:integration": "turbo run test:integration",
+    "test:e2e": "turbo run test:e2e",
+    "test:ui": "turbo run test:ui",
+    "test:coverage": "turbo run test:coverage",
+    "test:a11y": "turbo run test:a11y",
+    "test:visual": "turbo run test:visual",
+    "analyze": "turbo run analyze",
+    "ci": "pnpm install --frozen-lockfile && pnpm build && pnpm test"
   },
   "devDependencies": {
     "prettier": "^3.6.0",

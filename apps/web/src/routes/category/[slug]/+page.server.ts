@@ -7,18 +7,21 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase } }
   const services = createServices(supabase, null); // No stripe needed for category viewing
 
   try {
-    // Get category by slug
+    // Get category by slug first (required for other queries)
     const { data: category, error: categoryError } = await services.categories.getCategoryBySlug(slug);
     
     if (categoryError || !category) {
       throw error(404, 'Category not found');
     }
 
-    // Get category breadcrumb
-    const { data: breadcrumb } = await services.categories.getCategoryBreadcrumb(category.id);
+    // Parallel fetch breadcrumb and subcategories for performance
+    const [breadcrumbResult, subcategoriesResult] = await Promise.allSettled([
+      services.categories.getCategoryBreadcrumb(category.id),
+      services.categories.getSubcategories(category.id)
+    ]);
 
-    // Get subcategories
-    const { data: subcategories } = await services.categories.getSubcategories(category.id);
+    const breadcrumb = breadcrumbResult.status === 'fulfilled' ? breadcrumbResult.value.data || [] : [];
+    const subcategories = subcategoriesResult.status === 'fulfilled' ? subcategoriesResult.value.data || [] : [];
 
     // Parse query parameters for filtering
     const searchParams = url.searchParams;
@@ -70,8 +73,8 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase } }
 
     return {
       category,
-      breadcrumb: breadcrumb || [],
-      subcategories: subcategories || [],
+      breadcrumb,
+      subcategories,
       products: products || [],
       pagination: {
         page,

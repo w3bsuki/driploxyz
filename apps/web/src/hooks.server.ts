@@ -260,6 +260,7 @@ const languageHandler: Handle = async ({ event, resolve }) => {
   // Fallback to cookie if no valid URL locale
   // ALWAYS try to get locale from cookie, regardless of consent
   if (!locale) {
+    // Try both cookie names (production and fallback)
     locale = event.cookies.get(COOKIES.LOCALE) || event.cookies.get('locale');
     if (isDebug && locale) {
       console.log(`🌍 Language from cookie: ${locale}`);
@@ -307,11 +308,31 @@ const languageHandler: Handle = async ({ event, resolve }) => {
     });
   }
   
-  // Apply locale
-  if (locale && i18n.isAvailableLanguageTag(locale)) {
-    i18n.setLanguageTag(locale as any);
-  } else {
-    i18n.setLanguageTag('en');
+  // Apply locale with error handling
+  try {
+    if (locale && i18n.isAvailableLanguageTag(locale)) {
+      if (isDebug) {
+        console.log(`🌍 Setting language tag to: ${locale}`);
+      }
+      i18n.setLanguageTag(locale as any);
+      if (isDebug) {
+        console.log(`🌍 Successfully set language tag. Current tag: ${i18n.languageTag()}`);
+      }
+    } else {
+      if (isDebug) {
+        console.log(`🌍 Invalid locale '${locale}', falling back to English`);
+      }
+      i18n.setLanguageTag('en');
+    }
+  } catch (error) {
+    console.error(`❌ Failed to set language tag '${locale}':`, error);
+    // Fallback to English if language setting fails
+    try {
+      i18n.setLanguageTag('en');
+    } catch (fallbackError) {
+      console.error(`❌ Critical: Failed to set fallback language 'en':`, fallbackError);
+      throw new Error(`Language system failure: ${fallbackError}`);
+    }
   }
   
   event.locals.locale = i18n.languageTag();

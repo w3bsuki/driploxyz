@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { SearchBar } from '@repo/ui';
 	import * as i18n from '@repo/i18n';
-	import { initializeLanguage, getStoredLanguage } from '$lib/utils/language';
-	import { onMount } from 'svelte';
 	import Header from '$lib/components/Header.svelte';
 	import BottomNav from '$lib/components/BottomNav.svelte';
 	import QuickViewDialog from '$lib/components/QuickViewDialog.svelte';
@@ -25,15 +23,17 @@
 	let heroSearchElement: HTMLElement = $state();
 	let loadingCategory = $state<string | null>(null);
 
-	// Language state
-	let currentLang = $state(getStoredLanguage() || 'en');
+	// Language state - already initialized in +layout.svelte
+	let currentLang = $state(i18n.languageTag());
 	let updateKey = $state(0);
 
-	// Initialize language on mount
-	onMount(() => {
-		initializeLanguage();
-		currentLang = i18n.languageTag();
-		updateKey++;
+	// Track language changes
+	$effect(() => {
+		const newLang = i18n.languageTag();
+		if (newLang !== currentLang) {
+			currentLang = newLang;
+			updateKey++;
+		}
 	});
 
 	// Transform promoted products for highlights
