@@ -45,21 +45,13 @@ export const ProductSchema = z.object({
     .nullable(),
   
   // Step 3: Price & Publish
-  price: z.string()
-    .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, {
-      message: 'Price must be a positive number'
-    })
-    .refine((val) => parseFloat(val) <= 10000, {
-      message: 'Price cannot exceed $10,000'
-    }),
+  price: z.number()
+    .min(0.01, 'Price must be at least $0.01')
+    .max(10000, 'Price cannot exceed $10,000'),
   
-  shipping_cost: z.string()
-    .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, {
-      message: 'Shipping cost must be 0 or positive'
-    })
-    .refine((val) => parseFloat(val) <= 100, {
-      message: 'Shipping cost cannot exceed $100'
-    }),
+  shipping_cost: z.number()
+    .min(0, 'Shipping cost must be 0 or positive')
+    .max(100, 'Shipping cost cannot exceed $100'),
   
   tags: z.array(z.string().trim())
     .max(10, 'Maximum 10 tags allowed')

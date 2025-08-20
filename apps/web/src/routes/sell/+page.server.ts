@@ -121,14 +121,14 @@ export const actions: Actions = {
         .insert({
           title: form.data.title,
           description: form.data.description || null,
-          price: parseFloat(form.data.price),
+          price: form.data.price,
           category_id: form.data.subcategory_id || form.data.category_id,
           condition: form.data.condition,
           brand: form.data.brand !== 'Other' ? form.data.brand : null,
           size: form.data.size || null,
           location: null,
           seller_id: session.user.id,
-          shipping_cost: parseFloat(form.data.shipping_cost || '0'),
+          shipping_cost: form.data.shipping_cost,
           tags: form.data.tags?.length > 0 ? form.data.tags : null,
           color: form.data.color || null,
           material: form.data.material || null
