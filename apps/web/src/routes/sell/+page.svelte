@@ -29,8 +29,9 @@
     validators: zodClient(ProductSchema),
     resetForm: false,
     taintedMessage: null,
-    validationMethod: 'oninput',
+    validationMethod: 'submit-only',
     multipleSubmits: 'prevent',
+    defaultValidator: 'clear',
     onResult: ({ result }) => {
       if (result.type === 'success') {
         toasts.add({

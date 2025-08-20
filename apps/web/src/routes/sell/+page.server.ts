@@ -41,8 +41,14 @@ export const load: PageServerLoad = async ({ locals: { supabase, session } }) =>
       .eq('is_active', true)
       .order('price_monthly', { ascending: true });
 
-    // Initialize form with Superforms
-    const form = await superValidate(zod(ProductSchema));
+    // Initialize form with Superforms and default values
+    const form = await superValidate({
+      price: 0,
+      shipping_cost: 0,
+      tags: [],
+      use_premium_boost: false,
+      photos_count: 0
+    }, zod(ProductSchema));
 
     return {
       user: session.user,
@@ -55,8 +61,14 @@ export const load: PageServerLoad = async ({ locals: { supabase, session } }) =>
     };
   } catch (error) {
     
-    // Still initialize form even on error
-    const form = await superValidate(zod(ProductSchema));
+    // Still initialize form even on error with default values
+    const form = await superValidate({
+      price: 0,
+      shipping_cost: 0,
+      tags: [],
+      use_premium_boost: false,
+      photos_count: 0
+    }, zod(ProductSchema));
     
     return {
       user: session.user,

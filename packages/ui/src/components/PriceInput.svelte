@@ -21,11 +21,25 @@
     currency = '$'
   }: Props = $props();
 
-  let inputValue = $state(value ? value.toString() : '');
+  let inputValue = $state(value !== undefined ? value.toString() : '');
 
   $effect(() => {
-    const numValue = parseFloat(inputValue) || 0;
-    value = numValue;
+    // Only update value if inputValue has content
+    if (inputValue !== '') {
+      const numValue = parseFloat(inputValue);
+      if (!isNaN(numValue)) {
+        value = numValue;
+      }
+    } else {
+      value = 0;
+    }
+  });
+
+  // Sync inputValue when value changes externally
+  $effect(() => {
+    if (value !== undefined && value !== parseFloat(inputValue)) {
+      inputValue = value.toString();
+    }
   });
 
   const fee = $derived(value * (feePercentage / 100));
@@ -47,7 +61,7 @@
       type="number"
       bind:value={inputValue}
       step="0.01"
-      min="0"
+      min="0.01"
       placeholder="0.00"
       class="w-full pl-8 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1
         {error 
