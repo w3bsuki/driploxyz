@@ -135,6 +135,11 @@
 
   // Handle form submission
   function handleFormSubmit({ formData, cancel }) {
+    console.log('[CLIENT DEBUG] Form submission started');
+    console.log('[CLIENT DEBUG] Current step:', currentStep);
+    console.log('[CLIENT DEBUG] Photo files:', photoFiles.length);
+    console.log('[CLIENT DEBUG] Photo URLs:', photoUrls.length);
+    
     // Only allow submission from review step
     if (currentStep !== 4) {
       cancel();
@@ -148,6 +153,7 @@
     
     // Check for photos
     if (photoFiles.length === 0) {
+      console.log('[CLIENT DEBUG] No photo files found, canceling');
       cancel();
       toasts.add({
         type: 'error',
@@ -158,18 +164,14 @@
     }
     
     // Add photo files to form data
-    photoFiles.forEach(file => {
+    console.log('[CLIENT DEBUG] Adding photos to form data');
+    photoFiles.forEach((file, index) => {
+      console.log(`[CLIENT DEBUG] Adding photo ${index}:`, file.name, file.size);
       formData.append('photos', file);
     });
     
-    console.log('Submitting form with data:', {
-      title: formData.get('title'),
-      category_id: formData.get('category_id'),
-      brand: formData.get('brand'),
-      size: formData.get('size'),
-      price: formData.get('price'),
-      photos: photoFiles.length
-    });
+    console.log('[CLIENT DEBUG] Form data keys after adding photos:', Array.from(formData.keys()));
+    console.log('[CLIENT DEBUG] Photos in form data:', formData.getAll('photos').length);
   }
   
   // Get category name by ID

@@ -12,8 +12,8 @@
       priceMin?: string;
       priceMax?: string;
     };
-    onCategorySelect?: (category: string | null) => void;
-    onSubcategorySelect?: (subcategory: string | null, category: string | null) => void;
+    onCategorySelect?: (category: string) => void;
+    onSubcategorySelect?: (subcategory: string, category: string) => void;
     onFilterRemove?: (filterType: string) => void;
     onClearAll?: () => void;
     translations?: {
@@ -25,7 +25,6 @@
       condition?: string;
       priceRange?: string;
       allCategories?: string;
-      [key: string]: string | undefined;
     };
     class?: string;
   }
@@ -201,7 +200,7 @@
                 {/if}
               </div>
               
-              {#if category.subcategories && category.subcategories.length > 0}
+              {#if category.subcategories?.length > 0}
                 <svg 
                   class="w-4 h-4 text-gray-400 transition-transform {
                     expandedCategories.has(key) ? 'rotate-180' : ''
