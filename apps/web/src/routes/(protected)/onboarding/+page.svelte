@@ -65,6 +65,11 @@
       toasts.success('Welcome to Driplo! Let\'s set up your profile.');
     }
     
+    // Check if user just verified their email
+    if ($page.url.searchParams.get('verified') === 'true') {
+      toasts.success('Email verified successfully! Welcome to Driplo!');
+    }
+    
     // Only show welcome modal after language is initialized
     const checkLanguageAndShowModal = () => {
       if (languageInitialized) {

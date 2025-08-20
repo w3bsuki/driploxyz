@@ -80,23 +80,7 @@
 
 <NavigationLoader />
 
-<!-- PRODUCTION-READY Cookie Consent -->
-<CookieConsentBanner 
-  onAccept={() => {
-    if (browser) {
-      window.dispatchEvent(new CustomEvent('cookieConsentUpdate', { detail: { accepted: true } }));
-    }
-  }}
-  onDecline={() => {
-    if (browser) {
-      window.dispatchEvent(new CustomEvent('cookieConsentUpdate', { detail: { accepted: false } }));
-      // Clear language cookie if declined
-      document.cookie = 'locale=; path=/; max-age=0';
-    }
-  }}
-/>
-
-<!-- Unified Cookie & Language Consent -->
+<!-- Unified Cookie & Language Consent (handles everything) -->
 <UnifiedCookieConsent />
 
 <!-- Global Message Notification Toast -->

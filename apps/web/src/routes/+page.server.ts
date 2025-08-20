@@ -1,7 +1,20 @@
 import type { PageServerLoad } from './$types';
 import { createServices } from '$lib/services';
+import { redirect } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ locals: { supabase } }) => {
+export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
+  // Check if this is an auth callback that went to the wrong URL
+  const code = url.searchParams.get('code');
+  if (code) {
+    console.log('[HOME] Detected auth code in URL, redirecting to auth callback');
+    // Preserve all query params and redirect to the proper callback URL
+    const params = new URLSearchParams(url.searchParams);
+    // Add next parameter if not present
+    if (!params.has('next')) {
+      params.set('next', '/onboarding');
+    }
+    throw redirect(303, `/auth/callback?${params.toString()}`);
+  }
   // Handle missing Supabase configuration
   if (!supabase) {
     return {
