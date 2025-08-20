@@ -1,0 +1,105 @@
+{
+  "ci": {
+    "collect": {
+      "url": [
+        "http://localhost:3000",
+        "http://localhost:3000/search",
+        "http://localhost:3000/category/women",
+        "http://localhost:3000/login",
+        "http://localhost:3000/signup"
+      ],
+      "startServerCommand": "pnpm build && pnpm preview",
+      "startServerReadyPattern": "Local:.*http://localhost:3000",
+      "numberOfRuns": 3,
+      "settings": {
+        "chromeFlags": "--no-sandbox --disable-dev-shm-usage --headless",
+        "preset": "desktop",
+        "throttling": {
+          "rttMs": 40,
+          "throughputKbps": 10240,
+          "cpuSlowdownMultiplier": 1
+        },
+        "emulatedFormFactor": "desktop",
+        "screenEmulation": {
+          "mobile": false,
+          "width": 1350,
+          "height": 940,
+          "deviceScaleFactor": 1,
+          "disabled": false
+        }
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", {"minScore": 0.85}],
+        "categories:accessibility": ["error", {"minScore": 0.95}],
+        "categories:best-practices": ["error", {"minScore": 0.90}],
+        "categories:seo": ["error", {"minScore": 0.90}],
+        "categories:pwa": ["warn", {"minScore": 0.50}],
+        
+        "first-contentful-paint": ["warn", {"maxNumericValue": 2000}],
+        "largest-contentful-paint": ["error", {"maxNumericValue": 3000}],
+        "cumulative-layout-shift": ["error", {"maxNumericValue": 0.1}],
+        "total-blocking-time": ["warn", {"maxNumericValue": 300}],
+        "speed-index": ["warn", {"maxNumericValue": 3000}],
+        
+        "interactive": ["warn", {"maxNumericValue": 4000}],
+        "first-meaningful-paint": ["warn", {"maxNumericValue": 2500}],
+        
+        "uses-http2": "error",
+        "uses-text-compression": "error",
+        "uses-responsive-images": "error",
+        "efficient-animated-content": "warn",
+        "offscreen-images": "warn",
+        "render-blocking-resources": "warn",
+        "unminified-css": "error",
+        "unminified-javascript": "error",
+        "unused-css-rules": "warn",
+        "unused-javascript": "warn",
+        "modern-image-formats": "warn",
+        "uses-optimized-images": "warn",
+        "uses-webp-images": "warn",
+        "uses-rel-preconnect": "warn",
+        "uses-rel-preload": "warn",
+        
+        "color-contrast": "error",
+        "image-alt": "error",
+        "label": "error",
+        "link-name": "error",
+        "button-name": "error",
+        "document-title": "error",
+        "duplicate-id-aria": "error",
+        "heading-order": "warn",
+        "html-has-lang": "error",
+        "html-lang-valid": "error",
+        "landmark-one-main": "error",
+        "meta-description": "error",
+        "meta-viewport": "error",
+        "tabindex": "warn",
+        
+        "canonical": "warn",
+        "meta-description": "error",
+        "http-status-code": "error",
+        "is-crawlable": "error",
+        "robots-txt": "warn",
+        "structured-data": "warn",
+        "hreflang": "warn"
+      },
+      "preset": "lighthouse:no-pwa"
+    },
+    "upload": {
+      "target": "lhci",
+      "serverBaseUrl": "https://lhci.driplo.xyz",
+      "token": "BUILD_TOKEN_PLACEHOLDER",
+      "ignoreDuplicateBuildFailure": true
+    },
+    "server": {
+      "port": 9001,
+      "storage": {
+        "storageMethod": "sql",
+        "sqlDialect": "postgres",
+        "sqlConnectionUrl": "postgresql://user:password@localhost:5432/lhci"
+      }
+    }
+  }
+}

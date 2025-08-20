@@ -1,0 +1,217 @@
+name: ✨ Feature Request
+description: Suggest a new feature or improvement for Driplo
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+assignees: ["driplo/product-team"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to suggest a new feature! Please fill out the sections below to help us understand your idea.
+
+  - type: checkboxes
+    id: existing-features
+    attributes:
+      label: Existing Features
+      description: Have you searched for similar feature requests?
+      options:
+        - label: I have searched existing issues and this feature hasn't been requested
+          required: true
+
+  - type: dropdown
+    id: feature-area
+    attributes:
+      label: Feature Area
+      description: Which part of the application would this feature affect?
+      options:
+        - Authentication & User Management
+        - Product Management & Listing
+        - Search & Discovery
+        - Shopping Cart & Checkout
+        - Payment & Transactions
+        - User Dashboard & Profile
+        - Messaging & Communication
+        - Mobile Experience
+        - Admin & Moderation Tools
+        - Analytics & Reporting
+        - Performance & Optimization
+        - Accessibility
+        - Internationalization
+        - API & Integrations
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Critical (Blocking core functionality)
+        - High (Significantly improves user experience)
+        - Medium (Nice to have improvement)
+        - Low (Minor enhancement)
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve? What pain point are you experiencing?
+      placeholder: |
+        Describe the problem or limitation you're facing...
+        
+        Example: "As a seller, I find it difficult to manage multiple product listings because..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the feature you'd like to see implemented
+      placeholder: |
+        Describe your proposed solution in detail...
+        
+        Example: "I would like to see a bulk product management interface that allows..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative solutions or workarounds?
+      placeholder: Describe any alternative solutions you've thought about...
+
+  - type: textarea
+    id: user-stories
+    attributes:
+      label: User Stories
+      description: Write user stories that describe how this feature would be used
+      placeholder: |
+        Example:
+        - As a [type of user], I want [goal] so that [benefit]
+        - As a seller, I want to bulk edit product prices so that I can quickly adjust prices during sales
+        - As a buyer, I want to save searches so that I can easily find new items in my favorite categories
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups/Screenshots
+      description: If you have mockups, wireframes, or examples from other apps, please share them
+      placeholder: Drag and drop images here or paste image URLs...
+
+  - type: dropdown
+    id: user-type
+    attributes:
+      label: Primary User Type
+      description: Who would primarily benefit from this feature?
+      options:
+        - Buyers
+        - Sellers
+        - Both Buyers and Sellers
+        - Admins/Moderators
+        - All Users
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: platforms
+    attributes:
+      label: Platforms
+      description: Which platforms should this feature support?
+      options:
+        - label: Web Desktop
+        - label: Web Mobile
+        - label: Mobile App (future)
+        - label: Admin Dashboard
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: What would need to be true for this feature to be considered complete?
+      placeholder: |
+        List the specific criteria that would make this feature complete:
+        
+        - [ ] Users can access the feature from [location]
+        - [ ] The feature works on mobile and desktop
+        - [ ] Error handling is implemented for [scenarios]
+        - [ ] Analytics tracking is in place
+        - [ ] Tests are written and passing
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Estimated Complexity
+      description: How complex do you think this feature would be to implement?
+      options:
+        - Simple (Few hours to a day)
+        - Medium (A few days to a week)
+        - Complex (Multiple weeks)
+        - Very Complex (Multiple months)
+        - Not sure
+
+  - type: textarea
+    id: business-value
+    attributes:
+      label: Business Value
+      description: How would this feature benefit the Driplo platform and its users?
+      placeholder: |
+        Describe the business value and impact:
+        - Increased user engagement
+        - Improved conversion rates
+        - Reduced support burden
+        - Competitive advantage
+        - etc.
+
+  - type: textarea
+    id: technical-considerations
+    attributes:
+      label: Technical Considerations
+      description: Any technical aspects or constraints to consider?
+      placeholder: |
+        Consider:
+        - Database changes needed
+        - API changes required
+        - Third-party integrations
+        - Performance implications
+        - Security considerations
+        - Scalability concerns
+
+  - type: checkboxes
+    id: implementation
+    attributes:
+      label: Implementation Help
+      description: Are you willing to help implement this feature?
+      options:
+        - label: I can help with design/mockups
+        - label: I can help with frontend development
+        - label: I can help with backend development
+        - label: I can help with testing
+        - label: I can help with documentation
+        - label: I'm not available to help with implementation
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context, links, or information about the feature request
+      placeholder: |
+        Any additional information that might be helpful:
+        - Links to similar features in other apps
+        - Research or market analysis
+        - User feedback or requests
+        - Related issues or discussions
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

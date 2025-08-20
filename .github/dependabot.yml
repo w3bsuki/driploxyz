@@ -1,0 +1,210 @@
+version: 2
+updates:
+  # Main package.json dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "@driplo/core-team"
+    assignees:
+      - "@driplo/maintainers" 
+    commit-message:
+      prefix: "deps"
+      prefix-development: "deps-dev"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "automated"
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    ignore:
+      # Ignore major version updates for these critical packages
+      - dependency-name: "svelte"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@sveltejs/kit"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "vite"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "turbo"
+        update-types: ["version-update:semver-major"]
+
+  # Web application dependencies
+  - package-ecosystem: "npm"
+    directory: "/apps/web"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "04:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 8
+    reviewers:
+      - "@driplo/frontend-team"
+    commit-message:
+      prefix: "deps(web)"
+      prefix-development: "deps-dev(web)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "web-app"
+      - "automated"
+    allow:
+      - dependency-type: "direct"
+      - dependency-type: "indirect"
+    ignore:
+      # Critical UI framework versions
+      - dependency-name: "svelte"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@sveltejs/kit"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
+      # Payment processing - handle manually
+      - dependency-name: "@stripe/stripe-js"
+        update-types: ["version-update:semver-major"]
+      # Database client - handle carefully
+      - dependency-name: "@supabase/supabase-js"
+        update-types: ["version-update:semver-major"]
+
+  # Docs application dependencies
+  - package-ecosystem: "npm"
+    directory: "/apps/docs"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "04:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "@driplo/docs-team"
+    commit-message:
+      prefix: "deps(docs)"
+      prefix-development: "deps-dev(docs)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docs-app"
+      - "automated"
+
+  # UI package dependencies
+  - package-ecosystem: "npm"
+    directory: "/packages/ui"
+    schedule:
+      interval: "weekly"
+      day: "thursday"
+      time: "04:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "@driplo/ui-team"
+    commit-message:
+      prefix: "deps(ui)"
+      prefix-development: "deps-dev(ui)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "ui-package"
+      - "automated"
+
+  # ESLint config package dependencies
+  - package-ecosystem: "npm"
+    directory: "/packages/eslint-config"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "04:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(eslint)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "tooling"
+      - "automated"
+
+  # TypeScript config package dependencies  
+  - package-ecosystem: "npm"
+    directory: "/packages/typescript-config"
+    schedule:
+      interval: "weekly"
+      day: "friday"
+      time: "04:30"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "deps(typescript)"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "tooling"
+      - "automated"
+
+  # GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "saturday"
+      time: "04:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "@driplo/devops-team"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    labels:
+      - "ci/cd"
+      - "github-actions"
+      - "automated"
+
+  # Docker dependencies (if Dockerfile exists)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+      time: "04:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    reviewers:
+      - "@driplo/devops-team"
+    commit-message:
+      prefix: "docker"
+      include: "scope"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "automated"
+
+# Global configuration
+registries:
+  npm-github:
+    type: npm-registry
+    url: https://npm.pkg.github.com
+    token: ${{secrets.GITHUB_TOKEN}}
+
+# Update strategies by dependency type
+enable-beta-ecosystems: true
+
+# Security-only updates for production dependencies
+security-updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    reviewers:
+      - "@driplo/security-team"
+    labels:
+      - "security"
+      - "high-priority"
+      - "dependencies"
+    commit-message:
+      prefix: "security"
+      include: "scope"
