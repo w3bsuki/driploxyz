@@ -1,7 +1,7 @@
 interface Props {
     value?: number;
     label?: string;
-    error?: string;
+    error?: string | string[];
     required?: boolean;
     helpText?: string;
     showCalculation?: boolean;

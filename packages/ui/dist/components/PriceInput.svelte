@@ -2,7 +2,7 @@
   interface Props {
     value?: number;
     label?: string;
-    error?: string;
+    error?: string | string[];
     required?: boolean;
     helpText?: string;
     showCalculation?: boolean;
@@ -21,26 +21,16 @@
     currency = '$'
   }: Props = $props();
 
-  let inputValue = $state(value !== undefined ? value.toString() : '');
-
-  $effect(() => {
-    // Only update value if inputValue has content
-    if (inputValue !== '') {
-      const numValue = parseFloat(inputValue);
-      if (!isNaN(numValue)) {
-        value = numValue;
-      }
-    } else {
+  // Handle input change directly
+  function handleInput(e: Event) {
+    const target = e.target as HTMLInputElement;
+    const numValue = parseFloat(target.value);
+    if (!isNaN(numValue)) {
+      value = numValue;
+    } else if (target.value === '') {
       value = 0;
     }
-  });
-
-  // Sync inputValue when value changes externally
-  $effect(() => {
-    if (value !== undefined && value !== parseFloat(inputValue)) {
-      inputValue = value.toString();
-    }
-  });
+  }
 
   const fee = $derived(value * (feePercentage / 100));
   const earnings = $derived(value - fee);
@@ -59,7 +49,8 @@
     </span>
     <input
       type="number"
-      bind:value={inputValue}
+      value={value || ''}
+      oninput={handleInput}
       step="0.01"
       min="0.01"
       placeholder="0.00"
@@ -92,6 +83,6 @@
   {/if}
 
   {#if error}
-    <p class="mt-2 text-sm text-red-600">{error}</p>
+    <p class="mt-2 text-sm text-red-600">{Array.isArray(error) ? error[0] : error}</p>
   {/if}
 </div>
