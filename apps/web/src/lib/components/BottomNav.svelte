@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page, navigating } from '$app/stores';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import * as i18n from '@repo/i18n';
   
@@ -39,7 +39,7 @@
       showBadge: true
     },
     {
-      href: '/profile/me',
+      href: '/profile',
       label: i18n.nav_profile(),
       icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
       matchPath: '/profile'
@@ -57,8 +57,9 @@
       return 'flex items-center justify-center py-1.5 min-h-[48px]';
     }
     const active = isActive(item);
-    return `flex flex-col items-center py-2 px-1 min-h-[48px] transition-colors ${
-      active ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'
+    const isNavigatingTo = $navigating && $navigating.to?.url.pathname === item.href;
+    return `flex flex-col items-center py-2 px-1 min-h-[48px] transition-all duration-200 ${
+      active ? 'text-gray-900' : isNavigatingTo ? 'text-gray-700 opacity-70' : 'text-gray-500 hover:text-gray-700'
     }`;
   }
 </script>
@@ -70,23 +71,25 @@
         href={item.href}
         class={getItemClasses(item)}
         aria-label={item.label}
+        data-sveltekit-preload-data="hover"
+        data-sveltekit-preload-code="hover"
       >
         {#if item.isSpecial}
-          <div class="bg-gray-900 text-white rounded-full p-2.5 shadow-lg transform {isActive(item) ? 'scale-105' : ''} transition-transform hover:bg-gray-800">
+          <div class="bg-gray-900 text-white rounded-full p-2.5 shadow-lg transform {isActive(item) ? 'scale-105' : ''} {$navigating && $navigating.to?.url.pathname === item.href ? 'opacity-70' : ''} transition-all duration-200 hover:bg-gray-800">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
             </svg>
           </div>
         {:else}
           <div class="relative">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
             </svg>
             {#if item.showBadge && $unreadMessageCount > 0}
               <span class="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full animate-pulse"></span>
             {/if}
           </div>
-          <span class="text-[10px] mt-0.5 font-medium">{item.label}</span>
+          <span class="text-[10px] mt-0.5 font-medium transition-opacity duration-200">{item.label}</span>
         {/if}
       </a>
     {/each}

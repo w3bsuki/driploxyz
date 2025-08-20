@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
   import UnifiedCookieConsent from '$lib/components/UnifiedCookieConsent.svelte';
+  import NavigationLoader from '$lib/components/NavigationLoader.svelte';
   import '../app.css';
   import '$lib/styles/cyrillic-typography.css';
   import { invalidate } from '$app/navigation';
@@ -76,6 +77,8 @@
 
 <!-- Global Toast Notifications -->
 <ToastContainer />
+
+<NavigationLoader />
 
 <!-- PRODUCTION-READY Cookie Consent -->
 <CookieConsentBanner 

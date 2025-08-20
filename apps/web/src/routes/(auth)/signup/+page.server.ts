@@ -78,26 +78,18 @@ export const actions: Actions = {
     }
     
     // CRITICAL: Check if user already exists BEFORE signup
-    // Supabase's signUp auto-signs in existing users which is a security issue
+    // Supabase's signUp has a security issue where it auto-signs in existing users
     if (DEBUG) console.log('[SIGNUP] Checking if user already exists...');
     
-    // Try to sign in with the email (using a wrong password to just check existence)
-    const { error: checkError } = await supabase.auth.signInWithPassword({
-      email,
-      password: 'CHECK_USER_EXISTS_DUMMY_PASSWORD_' + Date.now()
-    });
+    // Normalize email to lowercase for consistency
+    const normalizedEmail = email.toLowerCase().trim();
     
-    // If we get "Invalid login credentials" it means the user exists
-    if (checkError && checkError.message.includes('Invalid login credentials')) {
-      if (DEBUG) console.log('[SIGNUP] User already exists!');
-      setError(form, 'email', 'An account with this email already exists. Please sign in instead.');
-      return fail(400, { form });
-    }
+    // First, attempt to sign up - this will tell us if the user exists
+    if (DEBUG) console.log('[SIGNUP] Attempting signUp with normalized email:', normalizedEmail);
     
     // Create user with proper error handling
-    if (DEBUG) console.log('[SIGNUP] User does not exist, calling supabase.auth.signUp...');
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: normalizedEmail,
       password,
       options: {
         data: {
@@ -118,7 +110,7 @@ export const actions: Actions = {
     if (error) {
       // Handle specific Supabase auth errors
       if (error.message.includes('User already registered')) {
-        setError(form, 'email', 'An account with this email already exists');
+        setError(form, 'email', 'An account with this email already exists. Please sign in instead.');
         return fail(400, { form });
       }
       if (error.message.includes('Password should be at least')) {
@@ -130,7 +122,23 @@ export const actions: Actions = {
         return fail(503, { form });
       }
       
+      // Log the full error for debugging
+      console.error('[SIGNUP] Error during signup:', error);
       setError(form, '', error.message || 'Failed to create account');
+      return fail(400, { form });
+    }
+    
+    // IMPORTANT: Check if this was actually a new signup or an existing user
+    // Supabase returns success even for existing users (security issue)
+    if (data?.user && !data?.session) {
+      // User was created successfully (new user)
+      if (DEBUG) console.log('[SIGNUP] New user created successfully');
+    } else if (data?.user && data?.session) {
+      // This means the user already existed and was signed in
+      if (DEBUG) console.log('[SIGNUP] User already existed! Supabase signed them in');
+      // Sign them out immediately
+      await supabase.auth.signOut();
+      setError(form, 'email', 'An account with this email already exists. Please sign in instead.');
       return fail(400, { form });
     }
 
@@ -166,7 +174,7 @@ export const actions: Actions = {
     // Use Superforms message helper for success
     return message(form, {
       type: 'success',
-      text: `Account created successfully! We've sent a verification email to ${email}. Please check your inbox to complete your registration.`
+      text: `Account created successfully! We've sent a verification email to ${normalizedEmail}. Please check your inbox to complete your registration.`
     });
   }
 };
