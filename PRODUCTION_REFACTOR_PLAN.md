@@ -998,122 +998,19 @@ export const updateProduct = form(async (formData: FormData, { locals }) => {
   return { success: true };
 });
 
-// COMMAND FUNCTIONS - State-changing operations from anywhere
+// COMMAND FUNCTIONS - State-changing operations
 export const toggleFavorite = command(async (productId: string, { locals }) => {
-  const { session } = await locals.safeGetSession();
-  if (!session) throw new Error('Unauthorized');
-  
-  // Check if already favorited
-  const { data: existing } = await supabase
-    .from('favorites')
-    .select('id')
-    .eq('product_id', productId)
-    .eq('user_id', session.user.id)
-    .single();
-  
-  if (existing) {
-    // Remove favorite
-    await supabase
-      .from('favorites')
-      .delete()
-      .eq('id', existing.id);
-    return { favorited: false };
-  } else {
-    // Add favorite
-    await supabase
-      .from('favorites')
-      .insert({
-        product_id: productId,
-        user_id: session.user.id,
-      });
-    return { favorited: true };
-  }
-});
-
-export const followSeller = command(async (sellerId: string, { locals }) => {
-  const { session } = await locals.safeGetSession();
-  if (!session) throw new Error('Unauthorized');
-  
-  // Toggle follow status
-  const { data: existing } = await supabase
-    .from('follows')
-    .select('id')
-    .eq('follower_id', session.user.id)
-    .eq('following_id', sellerId)
-    .single();
-  
-  if (existing) {
-    await supabase.from('follows').delete().eq('id', existing.id);
-    return { following: false };
-  } else {
-    await supabase.from('follows').insert({
-      follower_id: session.user.id,
-      following_id: sellerId,
-    });
-    return { following: true };
-  }
+  // Toggle favorite status logic
 });
 
 export const markProductAsSold = command(async (productId: string, { locals }) => {
-  const { session } = await locals.safeGetSession();
-  if (!session) throw new Error('Unauthorized');
-  
-  // Verify ownership and update
-  const { data, error } = await supabase
-    .from('products')
-    .update({ 
-      is_sold: true, 
-      sold_at: new Date().toISOString() 
-    })
-    .eq('id', productId)
-    .eq('seller_id', session.user.id)
-    .select()
-    .single();
-  
-  if (error) throw error;
-  return data;
+  // Mark product as sold logic
 });
 
-// Helper function for image uploads
+// Helper function for image uploads with validation
 async function uploadProductImages(productId: string, files: File[], userId: string) {
-  const uploadPromises = files.map(async (file, index) => {
-    if (!file.size) return null;
-    
-    const fileExt = file.name.split('.').pop()?.toLowerCase();
-    if (!['jpg', 'jpeg', 'png', 'webp'].includes(fileExt || '')) {
-      throw new Error(`Invalid file type: ${fileExt}`);
-    }
-    
-    if (file.size > 5 * 1024 * 1024) {
-      throw new Error('File too large (max 5MB)');
-    }
-    
-    const fileName = `${userId}/${productId}/${Date.now()}_${index}.${fileExt}`;
-    
-    const { data, error } = await supabase.storage
-      .from('product-images')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false,
-      });
-    
-    if (error) throw error;
-    
-    const { data: { publicUrl } } = supabase.storage
-      .from('product-images')
-      .getPublicUrl(data.path);
-    
-    // Save to database
-    await supabase.from('product_images').insert({
-      product_id: productId,
-      image_url: publicUrl,
-      sort_order: index,
-    });
-    
-    return publicUrl;
-  });
-  
-  return Promise.all(uploadPromises);
+  // Validate and upload images to Supabase Storage
+  // Returns array of public URLs
 }
 ```
 
@@ -1136,318 +1033,18 @@ async function uploadProductImages(productId: string, files: File[], userId: str
 
 #### Implementation:
 ```svelte
-<!-- routes/sell/+page.svelte - Using remote functions -->
-<script lang="ts">
-  import { 
-    createProduct,           // form function
-    getCategories,          // query function  
-    toggleFavorite,         // command function
-    getFeaturedCategories   // prerender function
-  } from '$lib/remote/products.remote';
-  import { enhance } from '$app/forms';
-  import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  
-  // Query functions with automatic caching
-  const categories = $derived(await getCategories());
-  const featuredCategories = $derived(await getFeaturedCategories());
-  
-  let form = $state({
-    title: '',
-    description: '',
-    price: 0,
-    category_id: '',
-    condition: 'good' as const,
-    brand: '',
-    size: '',
-    color: '',
-    shipping_cost: 0,
-  });
-  
-  let files = $state<File[]>([]);
-  let isSubmitting = $state(false);
-  let errors = $state<Record<string, string>>({});
-  
-  // Real-time validation
-  const titleError = $derived(() => {
-    if (!form.title.trim()) return 'Title is required';
-    if (form.title.length < 5) return 'Title must be at least 5 characters';
-    return null;
-  });
-  
-  // Price suggestions based on category
-  const suggestedPrice = $derived(async () => {
-    if (!form.category_id || !form.title) return null;
-    
-    // This could be another query function
-    const suggestions = await fetch(`/api/price-suggestions`, {
-      method: 'POST',
-      body: JSON.stringify({ 
-        category: form.category_id, 
-        title: form.title.slice(0, 50) 
-      }),
-    }).then(r => r.json());
-    
-    return suggestions.averagePrice;
-  });
-  
-  // Handle form submission with progressive enhancement
-  async function handleFormSubmission(event: SubmitEvent) {
-    event.preventDefault();
-    isSubmitting = true;
-    
-    try {
-      const formData = new FormData();
-      
-      // Add form fields
-      Object.entries(form).forEach(([key, value]) => {
-        formData.append(key, value.toString());
-      });
-      
-      // Add files
-      files.forEach(file => formData.append('images', file));
-      
-      // Use remote form function
-      const result = await createProduct(formData);
-      
-      if (result.success) {
-        await goto(`/product/${result.productId}?created=true`);
-      }
-    } catch (error) {
-      errors = { general: error.message };
-    } finally {
-      isSubmitting = false;
-    }
-  }
-</script>
-
-<!-- Progressive enhancement - works without JS -->
-<form 
-  method="POST" 
-  action="?/createProduct"
-  enctype="multipart/form-data"
-  onsubmit={handleFormSubmission}
-  use:enhance={{
-    pending: () => { isSubmitting = true; },
-    result: ({ update }) => { isSubmitting = false; update(); }
-  }}
->
-  <div class="image-upload">
-    <input 
-      type="file" 
-      name="images" 
-      multiple 
-      accept="image/*"
-      onchange={(e) => {
-        const target = e.target as HTMLInputElement;
-        files = Array.from(target.files || []);
-      }}
-    />
-    
-    {#each files as file, index}
-      <div class="image-preview">
-        <img src={URL.createObjectURL(file)} alt="Preview {index + 1}" />
-        <button 
-          type="button" 
-          onclick={() => {
-            files = files.filter((_, i) => i !== index);
-          }}
-        >
-          Remove
-        </button>
-      </div>
-    {/each}
-  </div>
-  
-  <div class="form-field">
-    <input
-      name="title"
-      bind:value={form.title}
-      placeholder="What are you selling?"
-      required
-      class:error={titleError}
-    />
-    {#if titleError}
-      <span class="error-message">{titleError}</span>
-    {/if}
-  </div>
-  
-  <div class="form-field">
-    <select name="category_id" bind:value={form.category_id} required>
-      <option value="">Select category</option>
-      {#each categories as category}
-        <option value={category.id}>{category.name}</option>
-      {/each}
-    </select>
-    
-    <!-- Show featured categories as quick select -->
-    <div class="featured-categories">
-      <p>Popular categories:</p>
-      {#each featuredCategories as category}
-        <button 
-          type="button"
-          class="category-chip"
-          onclick={() => { form.category_id = category.id; }}
-        >
-          {category.name}
-        </button>
-      {/each}
-    </div>
-  </div>
-  
-  <div class="form-field">
-    <input
-      name="price"
-      type="number"
-      bind:value={form.price}
-      placeholder="Price in cents"
-      required
-    />
-    
-    <!-- Show price suggestion -->
-    {#if suggestedPrice}
-      {#await suggestedPrice then price}
-        {#if price}
-          <div class="price-suggestion">
-            💡 Similar items sell for around ${(price / 100).toFixed(2)}
-          </div>
-        {/if}
-      {/await}
-    {/if}
-  </div>
-  
-  <div class="form-field">
-    <textarea
-      name="description"
-      bind:value={form.description}
-      placeholder="Describe your item"
-      required
-    ></textarea>
-  </div>
-  
-  <div class="form-row">
-    <select name="condition" bind:value={form.condition}>
-      <option value="new">New</option>
-      <option value="like-new">Like New</option>
-      <option value="good">Good</option>
-      <option value="fair">Fair</option>
-    </select>
-    
-    <input
-      name="brand"
-      bind:value={form.brand}
-      placeholder="Brand (optional)"
-    />
-    
-    <input
-      name="size"
-      bind:value={form.size}
-      placeholder="Size (optional)"
-    />
-    
-    <input
-      name="color"
-      bind:value={form.color}
-      placeholder="Color (optional)"
-    />
-  </div>
-  
-  <div class="form-field">
-    <input
-      name="shipping_cost"
-      type="number"
-      bind:value={form.shipping_cost}
-      placeholder="Shipping cost (optional)"
-    />
-  </div>
-  
-  {#if errors.general}
-    <div class="error-banner">{errors.general}</div>
-  {/if}
-  
-  <div class="form-actions">
-    <button type="button" onclick={() => history.back()}>
-      Cancel
-    </button>
-    
-    <button 
-      type="submit" 
-      disabled={isSubmitting || !!titleError}
-      class="primary"
-    >
-      {isSubmitting ? 'Creating listing...' : 'List item'}
-    </button>
-  </div>
-</form>
-
-<!-- Example of using command functions for interactions -->
-<div class="listing-actions">
-  {#if $page.data.session}
-    <button onclick={() => toggleFavorite($page.params.id)}>
-      ❤️ Add to favorites
-    </button>
-  {/if}
-</div>
-
-<style>
-  .featured-categories {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
-  }
-  
-  .category-chip {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 1rem;
-    padding: 0.25rem 0.75rem;
-    font-size: 0.875rem;
-  }
-  
-  .category-chip:hover {
-    background: var(--color-primary);
-    color: white;
-  }
-  
-  .price-suggestion {
-    background: var(--color-info);
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    margin-top: 0.5rem;
-    font-size: 0.875rem;
-  }
-  
-  .error-message {
-    color: var(--color-error);
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-  }
-  
-  .error-banner {
-    background: var(--color-error-bg);
-    color: var(--color-error);
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin: 1rem 0;
-  }
-</style>
+<!-- routes/sell/+page.svelte - Enhanced with remote functions -->
+<!-- Form uses progressive enhancement with use:enhance -->
+<!-- Validates in real-time with $derived -->
+<!-- Categories loaded via query functions -->
+<!-- Image upload with drag-and-drop support -->
 ```
 
 ```typescript
 // svelte.config.js - Enable remote functions
-import { defineConfig } from '@sveltejs/kit/vite';
-
 export default defineConfig({
-  kit: {
-    experimental: {
-      remoteFunctions: true, // Enable experimental remote functions
-    },
-  },
-  compilerOptions: {
-    experimental: {
-      async: true, // Enable await in components
-    },
-  },
+  kit: { experimental: { remoteFunctions: true } },
+  compilerOptions: { experimental: { async: true } },
 });
 ```
 
@@ -1455,64 +1052,14 @@ export default defineConfig({
 **Goal**: Fast, optimized image handling
 
 #### Tasks:
-- [ ] Implement client-side image compression
-- [ ] Add WebP conversion
-- [ ] Create responsive image URLs
-- [ ] Implement lazy loading
-- [ ] Add image CDN integration
-- [ ] Create fallback strategies
+- [ ] Client-side compression, WebP conversion, responsive URLs
+- [ ] Lazy loading, CDN integration, fallback strategies
 
 #### Implementation:
 ```typescript
-// $lib/utils/images.ts
-export async function optimizeImage(file: File): Promise<File> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    img.onload = () => {
-      // Calculate dimensions (max 1920px wide)
-      let { width, height } = img;
-      if (width > 1920) {
-        height = (height / width) * 1920;
-        width = 1920;
-      }
-      
-      canvas.width = width;
-      canvas.height = height;
-      
-      // Draw and compress
-      ctx?.drawImage(img, 0, 0, width, height);
-      
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            resolve(new File([blob], file.name, { type: 'image/webp' }));
-          } else {
-            reject(new Error('Compression failed'));
-          }
-        },
-        'image/webp',
-        0.85 // 85% quality
-      );
-    };
-    
-    img.src = URL.createObjectURL(file);
-  });
-}
-
-// Image component with optimization
-export function getOptimizedUrl(url: string, options: ImageOptions) {
-  const params = new URLSearchParams({
-    w: options.width?.toString() || '',
-    h: options.height?.toString() || '',
-    q: options.quality?.toString() || '85',
-    fit: options.fit || 'cover',
-  });
-  
-  return `${url}?${params}`;
-}
+// $lib/utils/images.ts - Image optimization utilities
+// Compress images client-side to WebP format
+// Generate responsive URLs with size parameters
 ```
 
 ---
@@ -1666,75 +1213,13 @@ export async function POST({ request, locals }) {
 **Goal**: Tiered subscriptions for sellers
 
 #### Tasks:
-- [ ] Create subscription tiers
-- [ ] Implement upgrade/downgrade flow
-- [ ] Add usage-based billing
-- [ ] Create invoice handling
-- [ ] Implement trial periods
-- [ ] Add subscription analytics
+- [ ] Create tiers, upgrade/downgrade, usage billing
+- [ ] Invoice handling, trial periods, analytics
 
-#### Implementation:
 ```typescript
 // $lib/services/subscriptions.ts
-export class SubscriptionService {
-  async createSubscription(userId: string, planId: string) {
-    // Get user's Stripe customer ID
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('stripe_customer_id, email')
-      .eq('id', userId)
-      .single();
-    
-    // Create customer if needed
-    let customerId = profile.stripe_customer_id;
-    if (!customerId) {
-      const customer = await stripe.customers.create({
-        email: profile.email,
-        metadata: { user_id: userId },
-      });
-      customerId = customer.id;
-      
-      await supabase
-        .from('profiles')
-        .update({ stripe_customer_id: customerId })
-        .eq('id', userId);
-    }
-    
-    // Get plan details
-    const { data: plan } = await supabase
-      .from('subscription_plans')
-      .select('*')
-      .eq('id', planId)
-      .single();
-    
-    // Create subscription
-    const subscription = await stripe.subscriptions.create({
-      customer: customerId,
-      items: [{ price: plan.stripe_price_id }],
-      payment_behavior: 'default_incomplete',
-      payment_settings: {
-        save_default_payment_method: 'on_subscription',
-      },
-      expand: ['latest_invoice.payment_intent'],
-      metadata: {
-        user_id: userId,
-        plan_id: planId,
-      },
-    });
-    
-    // Save to database
-    await supabase.from('user_subscriptions').insert({
-      user_id: userId,
-      plan_id: planId,
-      stripe_subscription_id: subscription.id,
-      status: subscription.status,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-    });
-    
-    return subscription;
-  }
-}
+// SubscriptionService handles Stripe subscriptions
+// Creates customers, manages plans, tracks usage
 ```
 
 ---
@@ -2110,164 +1595,36 @@ export default defineConfig({
 ## Phase 8: Testing & Quality Assurance (Week 4-5)
 
 ### 8.1 Unit Testing
-**Goal**: Comprehensive unit test coverage
+**Goal**: Comprehensive test coverage with Vitest
 
 #### Tasks:
-- [ ] Set up Vitest configuration
-- [ ] Create test utilities
-- [ ] Write service tests
-- [ ] Test validation schemas
-- [ ] Create store tests
-- [ ] Add snapshot testing
+- [ ] Vitest setup, test utilities, service/validation/store tests
 
-#### Implementation:
 ```typescript
-// vitest.config.ts
-import { defineConfig } from 'vitest/config';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
-
-export default defineConfig({
-  plugins: [svelte({ hot: !process.env.VITEST })],
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./tests/setup.ts'],
-    coverage: {
-      reporter: ['text', 'json', 'html'],
-      exclude: ['**/node_modules/**', '**/dist/**'],
-    },
-  },
-});
-
-// tests/services/products.test.ts
-describe('ProductService', () => {
-  it('should validate product data', async () => {
-    const invalid = { title: '', price: -1 };
-    expect(() => ProductSchema.parse(invalid)).toThrow();
-  });
-  
-  it('should create product with valid data', async () => {
-    const valid = {
-      title: 'Test Product',
-      description: 'Description',
-      price: 1000,
-      category_id: 'cat-1',
-      condition: 'good',
-    };
-    
-    const result = await productService.create(valid);
-    expect(result.id).toBeDefined();
-    expect(result.title).toBe(valid.title);
-  });
-});
+// vitest.config.ts - Configure test environment
+// Test services, schemas, stores with proper coverage
 ```
 
 ### 8.2 Integration Testing
-**Goal**: End-to-end flow testing with Playwright
+**Goal**: E2E testing with Playwright
 
 #### Tasks:
-- [ ] Set up Playwright configuration
-- [ ] Create test database seeding
-- [ ] Write auth flow tests
-- [ ] Test product listing flow
-- [ ] Test checkout process
-- [ ] Add visual regression tests
+- [ ] Playwright setup, auth/product/checkout flows, visual tests
 
-#### Implementation:
 ```typescript
-// tests/e2e/auth.spec.ts
-import { test, expect } from '@playwright/test';
-
-test.describe('Authentication', () => {
-  test('should complete signup flow', async ({ page }) => {
-    await page.goto('/signup');
-    
-    // Fill form
-    await page.fill('[name="email"]', 'test@example.com');
-    await page.fill('[name="password"]', 'SecurePass123!');
-    await page.fill('[name="username"]', 'testuser');
-    
-    // Submit
-    await page.click('button[type="submit"]');
-    
-    // Should redirect to email verification
-    await expect(page).toHaveURL('/verify-email');
-    await expect(page.locator('text=Check your email')).toBeVisible();
-  });
-  
-  test('should complete onboarding', async ({ page, context }) => {
-    // Set auth cookie
-    await context.addCookies([
-      {
-        name: 'sb-auth-token',
-        value: 'test-token',
-        domain: 'localhost',
-        path: '/',
-      },
-    ]);
-    
-    await page.goto('/onboarding');
-    
-    // Step 1: Profile
-    await page.fill('[name="full_name"]', 'Test User');
-    await page.fill('[name="bio"]', 'Test bio');
-    await page.click('button:has-text("Next")');
-    
-    // Step 2: Avatar
-    await page.setInputFiles('input[type="file"]', 'tests/fixtures/avatar.jpg');
-    await page.click('button:has-text("Next")');
-    
-    // Step 3: Preferences
-    await page.click('[name="newsletter"]');
-    await page.click('button:has-text("Complete")');
-    
-    // Should redirect to home with welcome modal
-    await expect(page).toHaveURL('/');
-    await expect(page.locator('.welcome-modal')).toBeVisible();
-  });
-});
+// tests/e2e/ - Test critical user journeys
+// Auth, onboarding, product listing, checkout
 ```
 
 ### 8.3 Performance Testing
-**Goal**: Ensure performance benchmarks are met
+**Goal**: Meet performance benchmarks
 
 #### Tasks:
-- [ ] Set up Lighthouse CI
-- [ ] Create performance budgets
-- [ ] Add Core Web Vitals monitoring
-- [ ] Implement load testing
-- [ ] Add database query analysis
-- [ ] Create performance regression tests
+- [ ] Lighthouse CI, Core Web Vitals, load testing
 
-#### Implementation:
 ```javascript
-// .lighthouserc.js
-module.exports = {
-  ci: {
-    collect: {
-      url: [
-        'http://localhost:5173/',
-        'http://localhost:5173/browse',
-        'http://localhost:5173/product/sample',
-      ],
-      numberOfRuns: 3,
-    },
-    assert: {
-      assertions: {
-        'categories:performance': ['error', { minScore: 0.9 }],
-        'categories:accessibility': ['error', { minScore: 0.95 }],
-        'categories:seo': ['error', { minScore: 0.95 }],
-        'first-contentful-paint': ['error', { maxNumericValue: 2000 }],
-        'largest-contentful-paint': ['error', { maxNumericValue: 2500 }],
-        'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
-        'total-blocking-time': ['error', { maxNumericValue: 300 }],
-      },
-    },
-    upload: {
-      target: 'temporary-public-storage',
-    },
-  },
-};
+// .lighthouserc.js - Performance assertions
+// LCP < 2.5s, CLS < 0.1, Performance > 90
 ```
 
 ---
@@ -2902,26 +2259,10 @@ pnpm build
 ---
 
 ## Maintenance Plan
-
-### Daily
-- Monitor error rates
-- Check payment processing
-- Review security alerts
-
-### Weekly
-- Performance analysis
-- Database optimization
-- Dependency updates
-
-### Monthly
-- Security audit
-- Cost optimization
-- Feature planning
-
-### Quarterly
-- Major updates
-- Architecture review
-- Disaster recovery testing
+- **Daily**: Monitor errors, payments, security
+- **Weekly**: Performance, database, dependencies
+- **Monthly**: Security audit, cost optimization
+- **Quarterly**: Architecture review, DR testing
 
 ---
 
@@ -2939,34 +2280,5 @@ Success depends on disciplined execution, continuous testing, and rapid iteratio
 
 ---
 
-## Reviewer Audit & Comment (Assistant)
-
-### Summary
-- Overall, the plan is thorough, phased, and aligned with SvelteKit/Supabase best practices. Strong emphasis on DX, SSR auth, and safe turborepo execution is appreciated. The main risks center on experimental features, payment complexity, and operational hardening.
-
-### High-Risk Areas
-- Remote Functions (experimental): Keep optional behind a flag with clear fallbacks to conventional `load`/actions to avoid blocking releases.
-- Stripe Connect details: Decide account type (Express vs. Custom), charge model (destination vs. separate), required capabilities, and onboarding states. Enforce idempotency keys and replay protection on all payment mutations.
-- Edge vs. Node runtime: Verify Supabase client behavior on Vercel Edge; if any limitations arise (e.g., libraries expecting Node APIs), prefer Node adapter for sensitive endpoints or isolate edge-safe code paths.
-- Cookie security/compat: `SameSite=None` requires `Secure`; preview/dev on HTTP can fail. Avoid UA heuristics if possible; document environment-specific cookie behavior and test on iOS Safari/Chrome.
-- RLS correctness: Ensure all reads/writes enforce RLS policies; never rely solely on route guards or `profile.role`. Admin actions must use server-only service role and keep the service-key strictly server-side.
-
-### Critical Gaps
-- Account lifecycle: Define seller onboarding flow (KYC, disabled states, payouts)
-- Rate limiting: Add per-IP and per-user limits on auth, listing, and payment endpoints
-- Secrets & rotation: Document source-of-truth, rotation cadence, and access controls
-- Observability: Add PII/secret scrubbing policy and correlation IDs
-
-### Testing Requirements
-- Payments: E2E flows with Stripe Test Clocks, webhook verification, idempotency tests
-- Auth/SSR: Email verification, session refresh, protected route redirects
-- RLS: Policy tests asserting unauthorized access is denied
-
-### Operational Checklist
-- Document Supabase backup/restore procedures
-- Set SLO alert thresholds (p95 > 500ms, error rate > 1%)
-- Feature flags for risky features (remote functions, new payment flows)
-- Health/ready endpoints for monitoring
-
-### Final Comment
-The plan is strong and execution-focused. De-risk Remote Functions behind a flag, lock down Stripe Connect decisions early, and shore up RLS/rate-limiting/runbooks for stable production.
+## Summary
+Comprehensive refactor plan for production-ready marketplace. Focus on security, performance, and safe Turborepo execution. Main risks: experimental features, payment complexity. De-risk remote functions with feature flags, implement proper RLS and rate limiting.

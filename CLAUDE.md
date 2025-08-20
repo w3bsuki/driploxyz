@@ -355,6 +355,108 @@ let { product, onSelect }: Props = $props();
 - Payment processing handled by Stripe
 - Environment variables properly secured
 
+## CRITICAL AUTH RULES - NEVER BREAK AUTHENTICATION
+
+### 🚨 ABSOLUTE AUTHENTICATION RULES - VIOLATION WILL BREAK PRODUCTION 🚨
+
+### ⚠️ SUPABASE AUTH - DO NOT MODIFY
+The authentication system is working correctly. Follow these rules to prevent breaking it:
+
+#### 1. NEVER MODIFY AUTH TABLES DIRECTLY
+- **NEVER** run migrations on `auth.users` table
+- **NEVER** alter columns in `auth` schema tables
+- **NEVER** modify `confirmation_token`, `recovery_token`, `email_change_token_new`, `email_change_token_current`
+- These columns must handle NULL values - Supabase manages them internally
+
+#### 2. AUTH ERROR HANDLING
+If you encounter "Database error querying schema" with auth:
+- This means auth.users has NULL token values
+- Fix with: `UPDATE auth.users SET confirmation_token = COALESCE(confirmation_token, ''), recovery_token = COALESCE(recovery_token, ''), email_change_token_new = COALESCE(email_change_token_new, ''), email_change_token_current = COALESCE(email_change_token_current, '')`
+- Contact Supabase support if the issue persists
+
+#### 3. HOOKS.SERVER.TS - DO NOT BREAK
+Critical auth setup in `hooks.server.ts`:
+```typescript
+// NEVER remove or modify this auth flow
+event.locals.supabase = createServerClient(...)
+event.locals.safeGetSession = async () => {...}
+```
+
+#### 4. AUTH FLOW REQUIREMENTS
+- Always use `locals.safeGetSession()` not `getSession()`
+- Always normalize emails: `email.toLowerCase().trim()`
+- Check `onboarding_completed` after successful login
+- Redirect to `/onboarding` if not completed
+
+#### 5. TESTING AUTH
+Before any auth changes:
+1. Test login with existing user
+2. Test signup with new user
+3. Check Supabase logs: `mcp__supabase__get_logs` with service "auth"
+4. Verify no "converting NULL to string" errors
+
+#### 6. IF AUTH BREAKS
+1. DO NOT panic or create scripts
+2. Check logs first: `mcp__supabase__get_logs`
+3. Run the NULL fix migration if needed
+4. Test with a simple login attempt
+5. Revert any recent auth-related changes
+
+### 🔒 PRODUCTION AUTH SAFEGUARDS
+
+#### BEFORE ANY CODE CHANGES:
+1. **NEVER touch these files without testing:**
+   - `/hooks.server.ts` - Contains critical auth middleware
+   - `/routes/(auth)/login/+page.server.ts` - Login logic
+   - `/routes/(auth)/signup/+page.server.ts` - Signup logic
+   - `/lib/supabase/server.ts` - Server client setup
+   - `/lib/supabase/client.ts` - Client setup
+
+2. **NEVER change these patterns:**
+   ```typescript
+   // This MUST stay exactly as is:
+   const { session, user } = await event.locals.safeGetSession();
+   
+   // Email normalization MUST happen:
+   email.toLowerCase().trim()
+   
+   // Onboarding check MUST occur after login:
+   if (!profile?.onboarding_completed) {
+     throw redirect(303, '/onboarding');
+   }
+   ```
+
+3. **ALWAYS test auth after ANY deployment:**
+   - Can a user sign up?
+   - Can a user log in?
+   - Does onboarding redirect work?
+   - Check logs for any 500 errors
+
+#### THE NULL TOKEN BUG - PERMANENT FIX:
+```sql
+-- Run this if you EVER see "converting NULL to string is unsupported"
+DO $$
+BEGIN
+  UPDATE auth.users 
+  SET 
+    confirmation_token = COALESCE(confirmation_token, ''),
+    recovery_token = COALESCE(recovery_token, ''),
+    email_change_token_new = COALESCE(email_change_token_new, ''),
+    email_change_token_current = COALESCE(email_change_token_current, '')
+  WHERE 
+    confirmation_token IS NULL 
+    OR recovery_token IS NULL
+    OR email_change_token_new IS NULL
+    OR email_change_token_current IS NULL;
+END $$;
+```
+
+#### REMEMBER:
+- Auth was working perfectly as of commit `21f8386`
+- The NULL token issue is a Supabase backend bug, NOT our code
+- NEVER try to "improve" or "refactor" auth without extensive testing
+- If auth works, DO NOT TOUCH IT
+
 ## Performance Optimization
 - Lazy loading for product images
 - Virtual scrolling for large product lists
