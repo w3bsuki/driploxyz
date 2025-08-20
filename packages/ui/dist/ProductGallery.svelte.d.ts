@@ -1,5 +1,9 @@
 interface Props {
-    images: string[];
+    images: Array<{
+        image_url: string;
+        alt_text?: string;
+        id?: string;
+    }> | string[];
     title: string;
     condition?: string;
     isAuthenticated?: boolean;

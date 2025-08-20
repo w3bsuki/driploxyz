@@ -4,6 +4,7 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { ProductSchema } from '$lib/validation/product';
 import type { PageServerLoad, Actions } from './$types';
 import { createServices } from '$lib/services';
+import { processImageToWebP } from '$lib/utils/image-processing';
 
 export const load: PageServerLoad = async ({ locals }) => {
   console.log('[SELL DEBUG] Starting load function');
@@ -146,7 +147,7 @@ export const actions: Actions = {
         });
       }
 
-      // Upload images to Supabase Storage
+      // Upload images to Supabase Storage with WebP conversion
       const uploadedUrls: string[] = [];
       
       for (const [index, file] of files.entries()) {
@@ -157,26 +158,42 @@ export const actions: Actions = {
           throw new Error(`Invalid file type: ${fileExt}`);
         }
         
-        const fileName = `${session.user.id}/${Date.now()}_${index}.${fileExt}`;
-        
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('product-images')
-          .upload(fileName, file, {
-            cacheControl: '3600',
-            upsert: false
+        try {
+          // Convert image to WebP format
+          console.log(`[SELL] Converting image ${index + 1} to WebP...`);
+          const webpBuffer = await processImageToWebP(file, {
+            maxWidth: 1200,
+            maxHeight: 1200,
+            quality: 85
           });
+          
+          // Always save as .webp regardless of input format
+          const fileName = `${session.user.id}/${Date.now()}_${index}.webp`;
+          
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('product-images')
+            .upload(fileName, webpBuffer, {
+              cacheControl: '3600',
+              upsert: false,
+              contentType: 'image/webp'
+            });
 
-        if (uploadError) {
-          console.error('Upload error:', uploadError);
-          throw new Error(`Failed to upload image: ${uploadError.message}`);
+          if (uploadError) {
+            console.error('Upload error:', uploadError);
+            throw new Error(`Failed to upload image: ${uploadError.message}`);
+          }
+
+          // Get public URL
+          const { data: { publicUrl } } = supabase.storage
+            .from('product-images')
+            .getPublicUrl(fileName);
+          
+          uploadedUrls.push(publicUrl);
+          console.log(`[SELL] Successfully uploaded WebP image: ${fileName}`);
+        } catch (conversionError) {
+          console.error(`Error processing image ${index + 1}:`, conversionError);
+          throw new Error(`Failed to process image ${index + 1}: ${conversionError instanceof Error ? conversionError.message : 'Unknown error'}`);
         }
-
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('product-images')
-          .getPublicUrl(fileName);
-        
-        uploadedUrls.push(publicUrl);
       }
 
       // Ensure price and shipping_cost are numbers

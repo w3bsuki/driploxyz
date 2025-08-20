@@ -258,8 +258,18 @@ const languageHandler: Handle = async ({ event, resolve }) => {
   }
   
   // Fallback to cookie if no valid URL locale
+  // ALWAYS try to get locale from cookie, regardless of consent
   if (!locale) {
-    locale = event.cookies.get(COOKIES.LOCALE);
+    locale = event.cookies.get(COOKIES.LOCALE) || event.cookies.get('locale');
+    if (isDebug && locale) {
+      console.log(`🌍 Language from cookie: ${locale}`);
+    }
+  }
+  
+  // Check functional consent status for debugging
+  const hasFunctionalConsent = checkServerConsent(event.cookies, 'functional');
+  if (isDebug) {
+    console.log(`🍪 Functional consent: ${hasFunctionalConsent}, locale cookie: ${event.cookies.get(COOKIES.LOCALE) || event.cookies.get('locale')}`);
   }
   
   // Detect from headers if no cookie or URL param
@@ -273,8 +283,12 @@ const languageHandler: Handle = async ({ event, resolve }) => {
     }
   }
   
+  if (isDebug) {
+    console.log(`🌍 Final locale: ${locale}`);
+  }
+  
   // Update cookie if locale was set via URL parameter and consent exists
-  if (event.url.searchParams.get('locale') && checkServerConsent(event.cookies, 'functional')) {
+  if (event.url.searchParams.get('locale') && hasFunctionalConsent) {
     event.cookies.set(COOKIES.LOCALE, locale, {
       path: '/',
       maxAge: 365 * 24 * 60 * 60,
@@ -282,7 +296,7 @@ const languageHandler: Handle = async ({ event, resolve }) => {
       sameSite: 'lax',
       secure: !dev
     });
-  } else if (!event.cookies.get(COOKIES.LOCALE) && checkServerConsent(event.cookies, 'functional')) {
+  } else if (!event.cookies.get(COOKIES.LOCALE) && hasFunctionalConsent) {
     // Set cookie only if functional consent exists and no cookie already set
     event.cookies.set(COOKIES.LOCALE, locale, {
       path: '/',

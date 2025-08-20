@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, session
   });
 
   // Filter out the current product from similar products
-  const filteredSimilar = similarProducts.filter(p => p.id !== params.id);
+  const filteredSimilar = (similarProducts || []).filter(p => p.id !== params.id);
 
   // Get more products from the same seller
   const { data: sellerProducts } = await services.products.getSellerProducts(
@@ -30,7 +30,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, session
   );
 
   // Filter out the current product from seller products
-  const filteredSellerProducts = sellerProducts.filter(p => p.id !== params.id);
+  const filteredSellerProducts = (sellerProducts || []).filter(p => p.id !== params.id);
 
   // Check if current user owns this product
   const isOwner = session?.user?.id === product.seller_id;

@@ -23,8 +23,10 @@
   // Language initialization - Header component handles switching
   $effect(() => {
     if (browser) {
+      console.log('🌍 Client: Initializing language with server data:', data?.language);
       // Use server language from SSR - never override
       initializeLanguage(data?.language);
+      console.log('🌍 Client: Language set to:', i18n.languageTag());
     }
   });
 

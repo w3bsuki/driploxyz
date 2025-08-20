@@ -24,7 +24,6 @@ export { default as CheckoutSummary } from './CheckoutSummary.svelte';
 
 // Pricing components
 export { default as PricingCard } from './components/PricingCard.svelte';
-export { default as Accordion } from './components/Accordion.svelte';
 
 // Notification components
 export { default as NotificationBell } from './NotificationBell.svelte';

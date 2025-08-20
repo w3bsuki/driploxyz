@@ -21,7 +21,7 @@
   let showFullDescription = $state(false);
   
   const productImages = $derived(
-    data.product.images?.map(img => img.image_url) || ['/placeholder-product.svg']
+    data.product.images || []
   );
   
   function getCategoryTranslation(categoryName: string) {
@@ -299,7 +299,7 @@
               <ProductCard 
                 product={{
                   ...product,
-                  images: product.images.map(img => img.image_url),
+                  images: (product.images || []).map(img => img.image_url),
                   sellerName: product.seller_name,
                   sellerRating: product.seller_rating,
                   sellerAvatar: product.seller_avatar
@@ -337,7 +337,7 @@
               <ProductCard 
                 product={{
                   ...product,
-                  images: product.images.map(img => img.image_url),
+                  images: (product.images || []).map(img => img.image_url),
                   sellerName: product.seller_name,
                   sellerRating: product.seller_rating,
                   sellerAvatar: product.seller_avatar

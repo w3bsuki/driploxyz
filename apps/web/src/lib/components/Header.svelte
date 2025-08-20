@@ -39,17 +39,67 @@
   async function switchLanguage(lang: string) {
     console.log('Switching language to:', lang);
     
-    // Update UI state immediately
-    currentLang = lang;
-    i18n.setLanguageTag(lang as any);
-    
-    // Save to cookie and navigate with locale parameter
-    document.cookie = `locale=${lang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax; Secure=${location.protocol === 'https:'}`;
-    
-    // Navigate with locale parameter to trigger server-side handling
-    const url = new URL(window.location.href);
-    url.searchParams.set('locale', lang);
-    window.location.href = url.toString();
+    try {
+      // Use ProductionLocaleManager for proper GDPR-compliant locale switching
+      const { ProductionCookieManager } = await import('$lib/cookies/production-cookie-system');
+      const cookieManager = ProductionCookieManager.getInstance();
+      
+      // Check if functional cookies are enabled
+      if (!cookieManager.hasConsent('functional')) {
+        console.log('Functional cookies not enabled - showing cookie banner for language switching');
+        
+        // Store the desired language for after consent
+        sessionStorage.setItem('pendingLanguageSwitch', lang);
+        
+        // Trigger cookie banner to reappear
+        const event = new CustomEvent('requestCookieConsent', {
+          detail: { 
+            reason: 'language_switch', 
+            targetLanguage: lang,
+            message: `To switch to ${languages.find(l => l.code === lang)?.name || lang}, please enable functional cookies.`
+          }
+        });
+        window.dispatchEvent(event);
+        
+        return; // Don't proceed with language switch until consent given
+      }
+      
+      // SIMPLE APPROACH: Save cookie and refresh page
+      console.log('Setting language and refreshing:', lang);
+      
+      // 1. Save the locale cookie FIRST
+      document.cookie = `locale=${lang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax; Secure=${location.protocol === 'https:'}`;
+      
+      // 2. Refresh the page to apply the language properly
+      window.location.reload();
+      
+    } catch (error) {
+      console.error('Language switch failed:', error);
+      
+      // Check if error is due to missing functional cookies
+      if (error.message?.includes('Functional cookies required')) {
+        // Store the desired language
+        sessionStorage.setItem('pendingLanguageSwitch', lang);
+        
+        // Show a user-friendly message and trigger cookie banner
+        const event = new CustomEvent('requestCookieConsent', {
+          detail: { 
+            reason: 'language_switch', 
+            targetLanguage: lang,
+            message: `To save your language preference, please enable functional cookies.`
+          }
+        });
+        window.dispatchEvent(event);
+        return;
+      }
+      
+      // Fallback: Set cookie and use URL parameter
+      document.cookie = `locale=${lang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax; Secure=${location.protocol === 'https:'}`;
+      
+      const url = new URL(window.location.href);
+      url.searchParams.set('locale', lang);
+      window.location.href = url.toString();
+    }
   }
   
   // Animated emoji for logo

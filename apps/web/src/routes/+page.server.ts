@@ -34,59 +34,97 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
   const services = createServices(supabase, null); // No stripe needed for homepage
 
   try {
-    // Load data in parallel but with error handling for each
-    let promotedProducts = [];
-    let promotedError = null;
-    let featuredProducts = [];
-    let productsError = null;
+    // Test service calls one by one to identify the problematic one
+    console.log('[HOMEPAGE] Testing categories service...');
+    
     let categories = [];
     let categoriesError = null;
-    let topSellers = [];
-    let sellersError = null;
-
-    // Get promoted products with error handling
-    try {
-      const result = await services.products.getPromotedProducts(8);
-      promotedProducts = result.data || [];
-      promotedError = result.error;
-    } catch (err) {
-      console.error('Promoted products failed:', err);
-      promotedError = 'Failed to load promoted products';
-    }
-
-    // Get featured products with error handling
-    try {
-      const result = await services.products.getProducts({
-        sort: { by: 'created_at', direction: 'desc' },
-        limit: 12
-      });
-      featuredProducts = result.data || [];
-      productsError = result.error;
-    } catch (err) {
-      console.error('Featured products failed:', err);
-      productsError = 'Failed to load products';
-    }
-
-    // Get categories with error handling
+    
     try {
       const result = await services.categories.getMainCategories();
       categories = result.data || [];
       categoriesError = result.error;
+      console.log('[HOMEPAGE] Categories loaded successfully:', categories.length);
     } catch (err) {
       console.error('Categories failed:', err);
       categoriesError = 'Failed to load categories';
     }
 
-    // Get top sellers with error handling
+    console.log('[HOMEPAGE] Testing top sellers service...');
+    let topSellers = [];
+    let sellersError = null;
+    
     try {
       const result = await services.profiles.getTopSellers(8);
       topSellers = result.data || [];
       sellersError = result.error;
+      console.log('[HOMEPAGE] Top sellers loaded successfully:', topSellers.length);
     } catch (err) {
       console.error('Top sellers failed:', err);
       sellersError = 'Failed to load sellers';
     }
 
+    console.log('[HOMEPAGE] Testing promoted products service...');
+    let promotedProducts = [];
+    let promotedError = null;
+    
+    try {
+      const result = await services.products.getPromotedProducts(8);
+      promotedProducts = result.data || [];
+      promotedError = result.error;
+      console.log('[HOMEPAGE] Promoted products loaded successfully:', promotedProducts.length);
+    } catch (err) {
+      console.error('Promoted products failed:', err);
+      promotedError = 'Failed to load promoted products';
+    }
+    
+    console.log('[HOMEPAGE] Loading featured products with safe fallback...');
+    let featuredProducts = [];
+    let productsError = null;
+    
+    try {
+      // Use the same query structure as promoted products which works
+      const { data: rawProducts, error: dbError } = await supabase
+        .from('products')
+        .select(`
+          *,
+          product_images (*),
+          categories (name),
+          profiles!products_seller_id_fkey (username, rating, avatar_url)
+        `)
+        .eq('is_active', true)
+        .eq('is_sold', false)
+        .order('created_at', { ascending: false })
+        .limit(12);
+
+      if (dbError) {
+        console.error('Featured products DB error:', dbError);
+        productsError = 'Database error';
+        featuredProducts = [];
+      } else if (rawProducts) {
+        // Transform data exactly like promoted products
+        featuredProducts = rawProducts.map(item => ({
+          ...item,
+          images: item.product_images || [],
+          category_name: item.categories?.name,
+          seller_name: item.profiles?.username,
+          seller_rating: item.profiles?.rating,
+          seller_avatar: item.profiles?.avatar_url
+        }));
+        console.log('[HOMEPAGE] Featured products loaded:', featuredProducts.length);
+        console.log('[HOMEPAGE] First product sample:', {
+          id: featuredProducts[0]?.id,
+          title: featuredProducts[0]?.title,
+          images: featuredProducts[0]?.images,
+          product_images: rawProducts[0]?.product_images
+        });
+      }
+    } catch (err) {
+      console.error('Featured products error:', err);
+      featuredProducts = [];
+      productsError = 'Failed to load';
+    }
+    
     return {
       promotedProducts,
       featuredProducts,

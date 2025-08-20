@@ -26,6 +26,23 @@
   let imageLoaded = $state(false);
   let imageError = $state(false);
 
+  // Generate WebP URLs for optimization
+  const webpSources = $derived(() => {
+    if (!src || src.includes('placeholder')) {
+      return [];
+    }
+
+    const sources = [];
+    
+    // Try .webp extension replacement for Supabase images
+    if (src.includes('supabase.co/storage') && /\.(jpe?g|png)$/i.test(src)) {
+      const webpUrl = src.replace(/\.(jpe?g|png)$/i, '.webp');
+      sources.push(webpUrl);
+    }
+    
+    return sources;
+  });
+
   function handleLoad() {
     imageLoaded = true;
     imageError = false;
@@ -71,18 +88,38 @@
     </div>
   {/if}
 
-  <!-- Standard Image -->
-  <img
-    {src}
-    {alt}
-    {sizes}
-    loading={loading}
-    decoding="async"
-    onload={handleLoad}
-    onerror={handleError}
-    class="w-full h-full object-cover transition-all duration-500 ease-out
-      {imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'}"
-  />
+  <!-- Optimized Image with WebP Support -->
+  {#if webpSources.length > 0}
+    <picture>
+      {#each webpSources as webpSrc}
+        <source srcset={webpSrc} type="image/webp" {sizes} />
+      {/each}
+      <img
+        {src}
+        {alt}
+        {sizes}
+        loading={loading}
+        decoding="async"
+        onload={handleLoad}
+        onerror={handleError}
+        class="w-full h-full object-cover transition-all duration-500 ease-out
+          {imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'}"
+      />
+    </picture>
+  {:else}
+    <!-- Standard Image -->
+    <img
+      {src}
+      {alt}
+      {sizes}
+      loading={loading}
+      decoding="async"
+      onload={handleLoad}
+      onerror={handleError}
+      class="w-full h-full object-cover transition-all duration-500 ease-out
+        {imageLoaded ? 'opacity-100 scale-100' : 'opacity-0 scale-105'}"
+    />
+  {/if}
 
   <!-- Error State -->
   {#if imageError && !imageLoaded}

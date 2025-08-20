@@ -90,11 +90,10 @@
 >
   <!-- Image Container -->
   <div class="relative aspect-square bg-gray-50 overflow-hidden rounded-lg">
-    <enhanced:img 
-      src={product.images?.[0]?.image_url || '/placeholder-product.svg'} 
+    <img 
+      src={typeof product.images?.[0] === 'string' ? product.images[0] : product.images?.[0]?.image_url || '/placeholder-product.svg'} 
       alt={product.title}
       class="w-full h-full object-cover"
-      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
       loading="lazy"
     />
     

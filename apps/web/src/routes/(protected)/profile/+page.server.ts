@@ -1,13 +1,23 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import { ProfileService } from '$lib/services/profiles';
 
-export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
-  const { user } = await safeGetSession();
+export const load: PageServerLoad = async ({ locals }) => {
+  const { user } = await locals.safeGetSession();
   
   if (!user) {
     throw redirect(302, '/login');
   }
 
-  // Direct redirect to user's profile, avoiding double redirect
-  throw redirect(302, `/profile/${user.id}`);
+  // Get user's profile to find their username
+  const profileService = new ProfileService(locals.supabase);
+  const { data: profile, error } = await profileService.getProfile(user.id);
+  
+  if (error || !profile || !profile.username) {
+    // If no username found, redirect to onboarding to complete profile
+    throw redirect(302, '/onboarding');
+  }
+
+  // Redirect to user's profile using their username
+  throw redirect(302, `/profile/${profile.username}`);
 };

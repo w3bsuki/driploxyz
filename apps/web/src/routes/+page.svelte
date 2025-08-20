@@ -56,7 +56,7 @@
 			title: product.title,
 			description: product.description,
 			price: product.price,
-			images: product.images.map(img => img.image_url),
+			images: product.images?.map(img => img.image_url) || [],
 			brand: product.brand,
 			size: product.size,
 			condition: product.condition as ProductDisplay['condition'],
@@ -143,7 +143,7 @@
 
 	// Get only top-level categories for navigation pills (excluding Pets)
 	const mainCategories = $derived(
-		data.categories
+		(data.categories || [])
 			.filter(cat => !cat.parent_id && cat.slug !== 'pets') // Only top-level categories, exclude pets
 			.sort((a, b) => a.sort_order - b.sort_order) // Sort by order
 			.slice(0, 3) // Take first 3 (Women, Men, Kids)

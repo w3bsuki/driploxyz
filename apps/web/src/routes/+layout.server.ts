@@ -46,8 +46,10 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
     }
   }
 
-  // Get current language
-  const language = cookies.get('locale') || 'en';
+  // Get current language from server hooks (they handle the logic correctly)
+  const language = locals.locale || cookies.get('locale') || 'en';
+  
+  console.log('🌍 Layout Server: locals.locale =', locals.locale, ', cookie =', cookies.get('locale'), ', final language =', language);
   
   return {
     session,

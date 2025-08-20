@@ -18,7 +18,6 @@ export { default as TabGroup } from './TabGroup.svelte';
 export { default as PaymentForm } from './PaymentForm.svelte';
 export { default as CheckoutSummary } from './CheckoutSummary.svelte';
 export { default as PricingCard } from './components/PricingCard.svelte';
-export { default as Accordion } from './components/Accordion.svelte';
 export { default as NotificationBell } from './NotificationBell.svelte';
 export { default as NotificationPanel } from './NotificationPanel.svelte';
 export { default as MessageNotificationToast } from './MessageNotificationToast.svelte';

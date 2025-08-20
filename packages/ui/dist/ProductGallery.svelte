@@ -3,7 +3,7 @@
   import { cubicOut, quintOut } from 'svelte/easing';
 
   interface Props {
-    images: string[];
+    images: Array<{ image_url: string; alt_text?: string; id?: string }> | string[];
     title: string;
     condition?: string;
     isAuthenticated?: boolean;
@@ -35,21 +35,30 @@
   let galleryRef: HTMLDivElement;
   let imageRef: HTMLImageElement;
 
-  const selectedImage = $derived(images[selectedIndex] || '/placeholder-product.svg');
+  let selectedImage = $state('/placeholder-product.svg');
   
-  const conditionColors = $derived({
+  $effect(() => {
+    if (!images || !images[selectedIndex]) {
+      selectedImage = '/placeholder-product.svg';
+    } else {
+      const image = images[selectedIndex];
+      selectedImage = typeof image === 'string' ? image : image.image_url;
+    }
+  });
+  
+  const conditionColors = $derived(({
     'new': 'bg-emerald-500 text-white',
     'like-new': 'bg-blue-500 text-white', 
     'good': 'bg-amber-500 text-white',
     'fair': 'bg-orange-500 text-white'
-  }[condition || ''] || 'bg-gray-500 text-white');
+  }[condition || ''] || 'bg-gray-500 text-white'));
 
-  const conditionLabels = $derived({
+  const conditionLabels = $derived(({
     'new': translations.new || 'New with tags',
     'like-new': translations.likeNew || 'Like new',
     'good': translations.good || 'Good condition',
     'fair': translations.fair || 'Fair condition'
-  }[condition || ''] || condition);
+  }[condition || ''] || condition));
 
   function handleImageClick() {
     isZoomed = !isZoomed;
@@ -58,7 +67,7 @@
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'ArrowLeft' && selectedIndex > 0) {
       selectedIndex--;
-    } else if (event.key === 'ArrowRight' && selectedIndex < images.length - 1) {
+    } else if (event.key === 'ArrowRight' && images && selectedIndex < images.length - 1) {
       selectedIndex++;
     } else if (event.key === 'Escape') {
       isZoomed = false;
@@ -87,7 +96,7 @@
     const swipeThreshold = 50;
     const diff = touchStartX - touchEndX;
     
-    if (Math.abs(diff) > swipeThreshold) {
+    if (Math.abs(diff) > swipeThreshold && images) {
       if (diff > 0 && selectedIndex < images.length - 1) {
         selectedIndex++;
       } else if (diff < 0 && selectedIndex > 0) {
@@ -112,13 +121,12 @@
     aria-label="Product image gallery - click to zoom"
   >
     {#key selectedIndex}
-      <enhanced:img 
+      <img 
         bind:this={imageRef}
         src={selectedImage}
         alt="{title} - Image {selectedIndex + 1}"
         class="w-full h-full object-contain transition-transform duration-300 ease-out
                {isZoomed ? 'scale-150' : 'scale-100'}"
-        sizes="(max-width: 768px) 100vw, 50vw"
         draggable="false"
       />
     {/key}
@@ -133,7 +141,7 @@
     {/if}
 
     <!-- Navigation Arrows (Desktop) -->
-    {#if images.length > 1}
+    {#if images && images.length > 1}
       <div class="hidden md:block">
         <!-- Previous -->
         {#if selectedIndex > 0}
@@ -164,9 +172,9 @@
     {/if}
 
     <!-- Image Counter -->
-    {#if images.length > 1}
+    {#if images && images.length > 1}
       <div class="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-xs">
-        {selectedIndex + 1} / {images.length}
+        {selectedIndex + 1} / {images?.length || 0}
       </div>
     {/if}
 
@@ -179,7 +187,7 @@
   </button>
 
   <!-- Thumbnail Strip -->
-  {#if images.length > 1}
+  {#if images && images.length > 1}
     <div class="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/20 to-transparent">
       <div class="flex gap-2 overflow-x-auto scrollbar-hide">
         {#each images as image, index}
@@ -189,11 +197,10 @@
                    {selectedIndex === index ? 'ring-white scale-105' : 'ring-transparent hover:ring-white/50'}"
             aria-label="View image {index + 1}"
           >
-            <enhanced:img 
-              src={image} 
+            <img 
+              src={typeof image === 'string' ? image : image.image_url} 
               alt="{title} thumbnail {index + 1}"
               class="w-full h-full object-cover"
-              sizes="64px"
             />
           </button>
         {/each}

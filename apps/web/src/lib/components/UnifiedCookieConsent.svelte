@@ -71,6 +71,28 @@
     const currentLocale = localeManager.getLocale();
     console.log('[COOKIE CONSENT] Current locale:', currentLocale);
     selectedLocale = currentLocale;
+    
+    // Listen for requests to show cookie consent (e.g., for language switching)
+    const handleCookieConsentRequest = (event: CustomEvent) => {
+      console.log('[COOKIE CONSENT] Request received:', event.detail);
+      
+      // Check if there's a pending language switch
+      const pendingLang = sessionStorage.getItem('pendingLanguageSwitch');
+      if (pendingLang) {
+        selectedLocale = pendingLang;
+        showLanguageSelector = true;
+      }
+      
+      // Show the banner
+      showBanner = true;
+      showPreferences = true; // Open preferences so user can see functional cookies toggle
+    };
+    
+    window.addEventListener('requestCookieConsent', handleCookieConsentRequest);
+    
+    return () => {
+      window.removeEventListener('requestCookieConsent', handleCookieConsentRequest);
+    };
   });
   
   async function detectLocation() {
@@ -106,19 +128,38 @@
       marketing: true
     });
     
-    // Save language preference if language selector was shown
-    if (showLanguageSelector && selectedLocale) {
-      console.log('[COOKIE CONSENT] Setting language to:', selectedLocale);
+    // Check if there's a pending language switch that can now be completed
+    const pendingLang = sessionStorage.getItem('pendingLanguageSwitch');
+    
+    // Save language preference if language selector was shown or there's a pending switch
+    if (showLanguageSelector && selectedLocale || pendingLang) {
+      const targetLang = pendingLang || selectedLocale;
+      console.log('[COOKIE CONSENT] Setting language to:', targetLang);
       try {
-        // Set the locale cookie directly
-        document.cookie = `locale=${selectedLocale}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+        // Simple approach: Set cookie and refresh
+        document.cookie = `locale=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+        
+        // Clear the pending language switch
+        sessionStorage.removeItem('pendingLanguageSwitch');
+        
+        // Close banner and refresh to apply language
+        showBanner = false;
+        showLanguageSelector = false;
+        
+        // Refresh to apply the language change
+        setTimeout(() => {
+          window.location.reload();
+        }, 100);
+        
+      } catch (e) {
+        console.error('[COOKIE CONSENT] Failed to set language:', e);
+        // Fallback: Set the locale cookie directly
+        document.cookie = `locale=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
         
         // Force reload to apply language
         setTimeout(() => {
           window.location.reload();
         }, 100);
-      } catch (e) {
-        console.error('[COOKIE CONSENT] Failed to set language:', e);
       }
     } else {
       showBanner = false;
@@ -147,22 +188,38 @@
     // Update consent
     consentManager.updateConsent(preferences);
     
-    // Save language if functional cookies enabled and language selector was shown
-    if (preferences.functional && showLanguageSelector && selectedLocale) {
-      console.log('[COOKIE CONSENT] Setting language to:', selectedLocale);
+    // Check if there's a pending language switch that can now be completed
+    const pendingLang = sessionStorage.getItem('pendingLanguageSwitch');
+    
+    // Save language if functional cookies enabled
+    if (preferences.functional && (showLanguageSelector && selectedLocale || pendingLang)) {
+      const targetLang = pendingLang || selectedLocale;
+      console.log('[COOKIE CONSENT] Setting language to:', targetLang);
       try {
-        // Set the locale cookie directly
-        document.cookie = `locale=${selectedLocale}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+        // Use the proper locale manager now that functional cookies are enabled
+        await localeManager.setLocale(targetLang, true); // true = skip reload for instant switching
+        
+        // Clear the pending language switch
+        sessionStorage.removeItem('pendingLanguageSwitch');
+        
+        // Trigger a manual UI update
+        const { invalidateAll } = await import('$app/navigation');
+        await invalidateAll();
+        
+        // Close banner
+        showBanner = false;
+        showPreferences = false;
+        showLanguageSelector = false;
+        
+      } catch (e) {
+        console.error('[COOKIE CONSENT] Failed to set language:', e);
+        // Fallback: Set the locale cookie directly
+        document.cookie = `locale=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
         
         // Force reload to apply language
         setTimeout(() => {
           window.location.reload();
         }, 100);
-      } catch (e) {
-        console.error('[COOKIE CONSENT] Failed to set language:', e);
-        showBanner = false;
-        showPreferences = false;
-        showLanguageSelector = false;
       }
     } else {
       showBanner = false;
@@ -175,15 +232,16 @@
     console.log('[COOKIE CONSENT] saveLanguage called with locale:', selectedLocale);
     if (selectedLocale) {
       try {
-        // Always set the locale, don't check if it's different
-        await localeManager.setLocale(selectedLocale, false); // false = will reload
-      } catch (e) {
-        console.error('[COOKIE CONSENT] Failed to set language:', e);
-        // Fallback: set cookie directly
+        // Simple approach: Set cookie and refresh
         document.cookie = `locale=${selectedLocale}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+        
         setTimeout(() => {
           window.location.reload();
         }, 100);
+      } catch (e) {
+        console.error('[COOKIE CONSENT] Failed to set language:', e);
+        // Fallback: Force refresh anyway
+        window.location.reload();
       }
     }
   }
