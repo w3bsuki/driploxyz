@@ -1,3 +1,10 @@
 {
-	"extends": ["@repo/typescript-config/svelte.json", "./.svelte-kit/tsconfig.json"]
+	"extends": ["@repo/typescript-config/svelte.json", "./.svelte-kit/tsconfig.json"],
+	"compilerOptions": {
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+		"noImplicitOverride": true,
+		"forceConsistentCasingInFileNames": true
+	}
 }

@@ -1,0 +1,169 @@
+import { z } from 'zod';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
+import { building } from '$app/environment';
+
+// Public environment variables (available to client and server)
+const publicEnvSchema = z.object({
+	PUBLIC_SUPABASE_URL: z.string().url().min(1, 'PUBLIC_SUPABASE_URL is required'),
+	PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, 'PUBLIC_SUPABASE_ANON_KEY is required'),
+	PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().startsWith('pk_').optional(),
+});
+
+// Server-only environment variables
+const serverEnvSchema = z.object({
+	// Supabase
+	SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, 'SUPABASE_SERVICE_ROLE_KEY is required'),
+	
+	// Stripe (required for production)
+	STRIPE_SECRET_KEY: z.string().startsWith('sk_').optional(),
+	STRIPE_WEBHOOK_SECRET: z.string().startsWith('whsec_').optional(),
+	
+	// Security
+	RATE_LIMIT_SECRET: z.string().min(32).optional(),
+	CSRF_SECRET: z.string().min(32).optional(),
+	
+	// Email (optional)
+	RESEND_API_KEY: z.string().optional(),
+	SENDGRID_API_KEY: z.string().optional(),
+	
+	// Monitoring (optional but recommended)
+	SENTRY_DSN: z.string().url().optional(),
+	SENTRY_AUTH_TOKEN: z.string().optional(),
+	
+	// Analytics (optional)
+	GOOGLE_ANALYTICS_ID: z.string().startsWith('G-').optional(),
+	MIXPANEL_TOKEN: z.string().optional(),
+	
+	// Storage (optional)
+	CLOUDINARY_URL: z.string().url().optional(),
+	AWS_S3_BUCKET: z.string().optional(),
+	AWS_ACCESS_KEY_ID: z.string().optional(),
+	AWS_SECRET_ACCESS_KEY: z.string().optional(),
+	
+	// Environment
+	NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+	VERCEL_ENV: z.enum(['development', 'preview', 'production']).optional(),
+});
+
+// Combined environment schema
+const envSchema = z.object({
+	...publicEnvSchema.shape,
+	...serverEnvSchema.shape,
+});
+
+export type PublicEnv = z.infer<typeof publicEnvSchema>;
+export type ServerEnv = z.infer<typeof serverEnvSchema>;
+export type Env = z.infer<typeof envSchema>;
+
+/**
+ * Validates public environment variables
+ * These are available in both client and server contexts
+ */
+export function validatePublicEnv(): PublicEnv {
+	// Skip validation during build
+	if (building) {
+		return {
+			PUBLIC_SUPABASE_URL: '',
+			PUBLIC_SUPABASE_ANON_KEY: '',
+			PUBLIC_STRIPE_PUBLISHABLE_KEY: '',
+		};
+	}
+	
+	try {
+		return publicEnvSchema.parse({
+			PUBLIC_SUPABASE_URL,
+			PUBLIC_SUPABASE_ANON_KEY,
+			PUBLIC_STRIPE_PUBLISHABLE_KEY,
+		});
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			console.error('❌ Invalid public environment variables:');
+			error.errors.forEach(e => {
+				console.error(`  - ${e.path.join('.')}: ${e.message}`);
+			});
+			throw new Error('Invalid public environment configuration');
+		}
+		throw error;
+	}
+}
+
+/**
+ * Validates server-only environment variables
+ * Only available in server context (+page.server.ts, +server.ts, hooks.server.ts)
+ */
+export function validateServerEnv(): ServerEnv {
+	// Skip validation during build
+	if (building) {
+		return {
+			SUPABASE_SERVICE_ROLE_KEY: '',
+			NODE_ENV: 'development',
+		} as ServerEnv;
+	}
+	
+	try {
+		return serverEnvSchema.parse(process.env);
+	} catch (error) {
+		if (error instanceof z.ZodError) {
+			console.error('❌ Invalid server environment variables:');
+			error.errors.forEach(e => {
+				console.error(`  - ${e.path.join('.')}: ${e.message}`);
+			});
+			
+			// In development, provide helpful hints
+			if (process.env.NODE_ENV === 'development') {
+				console.error('\n💡 Hint: Check your .env or .env.local file');
+				console.error('📝 See .env.example for required variables');
+			}
+			
+			throw new Error('Invalid server environment configuration');
+		}
+		throw error;
+	}
+}
+
+/**
+ * Validates all environment variables
+ * Call this once at application startup
+ */
+export function validateEnv(): Env {
+	const publicEnv = validatePublicEnv();
+	const serverEnv = validateServerEnv();
+	
+	// Additional cross-validation
+	if (serverEnv.NODE_ENV === 'production') {
+		// Enforce required variables in production
+		if (!serverEnv.STRIPE_SECRET_KEY) {
+			throw new Error('STRIPE_SECRET_KEY is required in production');
+		}
+		if (!serverEnv.SENTRY_DSN) {
+			console.warn('⚠️ Warning: SENTRY_DSN not configured for production');
+		}
+		if (!serverEnv.RATE_LIMIT_SECRET) {
+			console.warn('⚠️ Warning: RATE_LIMIT_SECRET not configured for production');
+		}
+	}
+	
+	return {
+		...publicEnv,
+		...serverEnv,
+	};
+}
+
+// Helper function to check if we're in production
+export function isProduction(): boolean {
+	return process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production';
+}
+
+// Helper function to check if we're in development
+export function isDevelopment(): boolean {
+	return process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'development';
+}
+
+// Helper function to get safe environment variables for client
+export function getClientEnv(): PublicEnv {
+	return validatePublicEnv();
+}
+
+// Export validated environment (server-side only)
+// This will be available in server contexts
+export const env = building ? ({} as Env) : validateEnv();
