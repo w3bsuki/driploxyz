@@ -127,7 +127,48 @@ export const POPULAR_BRANDS = [
 
 // Size categories
 export const SIZE_CATEGORIES = {
-  clothing: ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL', '3XL'],
-  shoes: ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12'],
-  kids: ['0-3M', '3-6M', '6-12M', '12-18M', '18-24M', '2T', '3T', '4T', '5', '6', '7', '8', '10', '12', '14']
+  clothing: [
+    { value: 'XXS', label: 'XXS' },
+    { value: 'XS', label: 'XS' },
+    { value: 'S', label: 'S' },
+    { value: 'M', label: 'M' },
+    { value: 'L', label: 'L' },
+    { value: 'XL', label: 'XL' },
+    { value: 'XXL', label: 'XXL' },
+    { value: '3XL', label: '3XL' }
+  ],
+  shoes: [
+    { value: '5', label: 'US 5' },
+    { value: '5.5', label: 'US 5.5' },
+    { value: '6', label: 'US 6' },
+    { value: '6.5', label: 'US 6.5' },
+    { value: '7', label: 'US 7' },
+    { value: '7.5', label: 'US 7.5' },
+    { value: '8', label: 'US 8' },
+    { value: '8.5', label: 'US 8.5' },
+    { value: '9', label: 'US 9' },
+    { value: '9.5', label: 'US 9.5' },
+    { value: '10', label: 'US 10' },
+    { value: '10.5', label: 'US 10.5' },
+    { value: '11', label: 'US 11' },
+    { value: '11.5', label: 'US 11.5' },
+    { value: '12', label: 'US 12' }
+  ],
+  kids: [
+    { value: '0-3M', label: '0-3 Months' },
+    { value: '3-6M', label: '3-6 Months' },
+    { value: '6-12M', label: '6-12 Months' },
+    { value: '12-18M', label: '12-18 Months' },
+    { value: '18-24M', label: '18-24 Months' },
+    { value: '2T', label: '2T' },
+    { value: '3T', label: '3T' },
+    { value: '4T', label: '4T' },
+    { value: '5', label: 'Size 5' },
+    { value: '6', label: 'Size 6' },
+    { value: '7', label: 'Size 7' },
+    { value: '8', label: 'Size 8' },
+    { value: '10', label: 'Size 10' },
+    { value: '12', label: 'Size 12' },
+    { value: '14', label: 'Size 14' }
+  ]
 } as const;

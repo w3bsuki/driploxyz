@@ -65,30 +65,28 @@
                         class="w-full h-full object-cover"
                       />
                       
-                      <!-- Small promoted crown icon -->
-                      <div class="absolute top-2 right-2 w-6 h-6 bg-black/80 backdrop-blur-sm rounded-full flex items-center justify-center">
-                        <svg class="w-3.5 h-3.5 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5z"/>
-                        </svg>
-                      </div>
-                      
-                      <!-- Seller avatar bottom left -->
-                      <div class="absolute bottom-2 left-2 w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm">
-                        <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
-                          {product.seller_name?.charAt(0).toUpperCase() || 'S'}
+                      <!-- Bottom row: avatar left, price right -->
+                      <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+                        <!-- Seller avatar -->
+                        <div class="w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm">
+                          <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
+                            {product.seller_name?.charAt(0).toUpperCase() || 'S'}
+                          </div>
+                        </div>
+                        
+                        <!-- Price badge -->
+                        <div class="bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg shadow-sm">
+                          {product.price}{i18n.common_currency()}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
                 
-                <!-- Title and price below -->
-                <div class="mt-2 px-1 w-32 sm:w-40">
+                <!-- Title below -->
+                <div class="mt-1.5 px-1 w-32 sm:w-40">
                   <p class="text-xs text-gray-700 truncate">
                     {product.title}
-                  </p>
-                  <p class="text-sm font-bold text-gray-900 mt-0.5">
-                    {product.price}{i18n.common_currency()}
                   </p>
                 </div>
               </div>

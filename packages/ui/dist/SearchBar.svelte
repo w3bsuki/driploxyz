@@ -111,9 +111,9 @@
             class="absolute inset-0 rounded-full pointer-events-none"
             style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
           ></div>
-          <div class="relative flex items-center py-3" style="min-height: 48px;">
+          <div class="relative flex items-center" style="min-height: 48px;">
             <!-- Search Icon -->
-            <div class="pl-4 pr-3 flex items-center justify-center">
+            <div class="absolute left-3 flex items-center justify-center pointer-events-none">
               <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -125,14 +125,14 @@
               bind:value
               {placeholder}
               type="search"
-              class="flex-1 bg-transparent text-base sm:text-sm placeholder-gray-500 focus:outline-hidden min-w-0 pr-2"
+              class="flex-1 bg-transparent text-base sm:text-sm placeholder-gray-500 focus:outline-hidden min-w-0 pl-10 pr-2 py-3"
               oninput={handleInput}
               onfocus={handleFocus}
               onblur={handleBlur}
             />
             
             <!-- Right side buttons container -->
-            <div class="flex items-center pr-3 gap-2">
+            <div class="flex items-center pr-2 gap-1">
               <!-- Clear Button -->
               {#if value}
                 <button
@@ -151,7 +151,7 @@
               <button
                 type="button"
                 onclick={showMegaMenuButton ? onOpenMegaMenu : onFilter}
-                class="px-3 py-2 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center gap-1.5 ring-1 ring-gray-200 whitespace-nowrap"
+                class="px-3 py-1.5 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center gap-1 ring-1 ring-gray-200 whitespace-nowrap"
               >
                 {#if showMegaMenuButton}
                   <svg class="w-4 h-4 text-gray-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,7 +208,7 @@
       <!-- Regular variant -->
       <div class="relative flex items-center bg-white rounded-lg border border-gray-200 focus-within:border-gray-400 transition-colors">
         <!-- Search Icon -->
-        <div class="absolute left-4 flex items-center justify-center pointer-events-none">
+        <div class="absolute left-3 flex items-center justify-center pointer-events-none">
           <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -220,7 +220,7 @@
           bind:value
           {placeholder}
           type="search"
-          class="w-full bg-transparent pl-12 pr-24 py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-hidden"
+          class="w-full bg-transparent pl-10 pr-24 py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-hidden"
           oninput={handleInput}
           onfocus={handleFocus}
           onblur={handleBlur}

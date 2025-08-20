@@ -15,13 +15,13 @@
 
   const conditions = [
     {
-      value: 'new_with_tags',
+      value: 'new',
       label: 'New with tags',
       description: 'Brand new, never worn, with original tags',
       icon: '🏷️'
     },
     {
-      value: 'like_new',
+      value: 'like-new',
       label: 'Like new',
       description: 'Worn once or twice, excellent condition',
       icon: '✨'
