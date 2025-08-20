@@ -33,8 +33,14 @@
   ];
 
   let fileInput = $state<HTMLInputElement>();
+  let currentBlobUrl = $state<string | null>(null);
 
   function handleAvatarSelect(avatarUrl: string) {
+    // Clean up any existing blob URL when selecting a different avatar
+    if (currentBlobUrl) {
+      URL.revokeObjectURL(currentBlobUrl);
+      currentBlobUrl = null;
+    }
     selected = avatarUrl;
     onSelect?.(avatarUrl);
   }
@@ -43,13 +49,28 @@
     const target = event.target as HTMLInputElement;
     const file = target.files?.[0];
     if (file) {
+      // Clean up any existing blob URL
+      if (currentBlobUrl) {
+        URL.revokeObjectURL(currentBlobUrl);
+      }
+      
       // Create a URL for the file to preview it
       const fileUrl = URL.createObjectURL(file);
+      currentBlobUrl = fileUrl;
       selected = fileUrl;
       onSelect?.(fileUrl);
       onUpload?.(file);
     }
   }
+
+  // Cleanup when component is destroyed
+  $effect(() => {
+    return () => {
+      if (currentBlobUrl) {
+        URL.revokeObjectURL(currentBlobUrl);
+      }
+    };
+  });
 
   function triggerUpload() {
     fileInput?.click();
