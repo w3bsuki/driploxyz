@@ -16,7 +16,7 @@ const requiredEnvVars = [
   'PUBLIC_SUPABASE_URL',
   'PUBLIC_SUPABASE_ANON_KEY',
   'SUPABASE_SERVICE_ROLE_KEY'
-] as const;
+];
 
 // Only validate in production or when explicitly testing
 if (!building && !dev) {
@@ -68,43 +68,22 @@ if (SENTRY_DSN) {
   });
 }
 
-// JWT validation utility
-const validateJWT = (token: string): boolean => {
-  try {
-    const parts = token.split('.');
-    if (parts.length !== 3) return false;
-    
-    const payload = JSON.parse(atob(parts[1]));
-    const now = Math.floor(Date.now() / 1000);
-    return payload.exp && payload.exp > now; // Check if token hasn't expired
-  } catch {
-    return false; // Invalid token format
-  }
-};
-
-// Mobile detection utility
-const detectMobile = (userAgent: string): boolean => {
-  return /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
-};
-
 const supabase: Handle = async ({ event, resolve }) => {
   // Skip during build time
   if (building) {
     return resolve(event);
   }
   
-  // Enhanced mobile detection for cookie compatibility
+  // Mobile detection for cookie compatibility
   const userAgent = event.request.headers.get('user-agent') || '';
-  const isMobile = detectMobile(userAgent);
+  const isMobile = /Mobile|Android|iPhone|iPad/i.test(userAgent);
   
   // CRITICAL: Fail fast with clear error message
   if (!env.PUBLIC_SUPABASE_URL || !env.PUBLIC_SUPABASE_ANON_KEY) {
-    if (isDebug) console.error('❌ Supabase environment variables not configured');
     throw error(500, 'Server configuration error. Please contact support.');
   }
 
   try {
-    // CRITICAL AUTH PATTERN: NEVER remove or modify this auth flow
     event.locals.supabase = createServerClient<Database>(
       env.PUBLIC_SUPABASE_URL,
       env.PUBLIC_SUPABASE_ANON_KEY,
@@ -114,23 +93,12 @@ const supabase: Handle = async ({ event, resolve }) => {
             return event.cookies.getAll();
           },
           setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value, options = {} }) => {
-              // Enhanced cookie settings for mobile compatibility and security
-              const cookieOptions = {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              // Preserve Supabase's secure cookie options - NEVER override httpOnly
+              event.cookies.set(name, value, {
                 path: '/',
-                // Mobile-specific adjustments
-                ...(isMobile ? {
-                  secure: !dev, // Allow non-secure cookies in dev for mobile testing
-                  sameSite: 'lax' as const, // More permissive for mobile
-                } : {
-                  secure: true,
-                  sameSite: 'strict' as const,
-                }),
-                // Preserve Supabase's security settings - NEVER override httpOnly
                 ...options // Options AFTER path to preserve Supabase's security settings
-              };
-              
-              event.cookies.set(name, value, cookieOptions);
+              });
             });
           },
         },
@@ -140,15 +108,13 @@ const supabase: Handle = async ({ event, resolve }) => {
       }
     );
   } catch (err) {
-    if (isDebug) console.error('❌ Failed to initialize Supabase client:', err);
     throw error(500, 'Failed to initialize authentication');
   }
 
   /**
-   * CRITICAL AUTH PATTERN: NEVER remove or modify this auth flow
    * Unlike `supabase.auth.getSession()`, which returns the session _without_
    * validating the JWT, this function also calls `getUser()` to validate the
-   * JWT before returning the session with enhanced JWT validation.
+   * JWT before returning the session.
    */
   event.locals.safeGetSession = async () => {
     try {
@@ -160,25 +126,17 @@ const supabase: Handle = async ({ event, resolve }) => {
         return { session: null, user: null };
       }
 
-      // Enhanced JWT validation before making API call
-      if (session.access_token && !validateJWT(session.access_token)) {
-        if (isDebug) console.warn('⚠️ Invalid or expired JWT token detected');
-        return { session: null, user: null };
-      }
-
       const {
         data: { user },
         error,
       } = await event.locals.supabase.auth.getUser();
 
       if (error || !user) {
-        if (isDebug && error) console.warn('⚠️ Auth validation error:', error.message);
         return { session: null, user: null };
       }
 
       return { session, user };
     } catch (err) {
-      if (isDebug) console.warn('⚠️ Session validation failed:', err);
       return { session: null, user: null };
     }
   };
@@ -290,34 +248,19 @@ const languageHandler: Handle = async ({ event, resolve }) => {
 };
 
 const authGuard: Handle = async ({ event, resolve }) => {
-  // CRITICAL AUTH PATTERN: This MUST stay exactly as is
   const { session, user } = await event.locals.safeGetSession();
   event.locals.session = session;
   event.locals.user = user;
 
-  // Performance optimization: Skip auth checks for static assets and public routes
-  const pathname = event.url.pathname;
-  const publicRoutes = ['/api/health', '/api/debug', '/api/webhooks'];
-  const staticPaths = ['/favicon.ico', '/_app/', '/images/', '/assets/'];
-  
-  if (publicRoutes.some(route => pathname.startsWith(route)) || 
-      staticPaths.some(path => pathname.startsWith(path))) {
+  // Skip auth checks for public and API routes
+  const publicRoutes = ['/api/health', '/api/debug'];
+  if (publicRoutes.some(route => event.url.pathname.startsWith(route))) {
     return resolve(event);
   }
 
-  // Only protect explicitly protected routes - preserving existing logic
+  // Only protect explicitly protected routes
   if (!session && event.route.id?.startsWith('/(protected)')) {
-    if (isDebug) console.log(`🔒 Redirecting unauthenticated user from ${pathname} to /login`);
     throw redirect(303, '/login');
-  }
-
-  // Performance: Add session context for downstream handlers
-  if (session && user) {
-    // Add performance metadata for monitoring
-    const sessionAge = Date.now() - new Date(session.expires_at || 0).getTime();
-    if (isDebug && sessionAge > 0) {
-      console.log(`⏱️ Session expires in ${Math.floor(sessionAge / 1000 / 60)} minutes`);
-    }
   }
 
   // Let individual page load functions handle their own redirect logic
@@ -327,46 +270,11 @@ const authGuard: Handle = async ({ event, resolve }) => {
 
 export const handle = SENTRY_DSN ? sequence(sentryHandle(), languageHandler, supabase, authGuard) : sequence(languageHandler, supabase, authGuard);
 
-// Enhanced error handler with better debugging and user experience
+// Sentry error handler (only if DSN configured)
 export const handleError: HandleServerError = SENTRY_DSN ? handleErrorWithSentry() : (async ({ error, event }) => {
-  const errorId = Math.random().toString(36).substring(2, 15);
-  
-  // Enhanced error logging for debugging
-  if (isDebug) {
-    console.error(`❌ Error [${errorId}] on ${event.url.pathname}:`, {
-      message: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-      userAgent: event.request.headers.get('user-agent'),
-      timestamp: new Date().toISOString()
-    });
-  }
-
-  // Categorize errors for better user experience
-  let userMessage = 'Internal Server Error';
-  
-  if (error instanceof Error) {
-    const message = error.message.toLowerCase();
-    
-    // Auth-related errors
-    if (message.includes('supabase') || message.includes('auth') || message.includes('session')) {
-      userMessage = 'Authentication service error. Please try refreshing the page or logging in again.';
-    }
-    // Database errors
-    else if (message.includes('database') || message.includes('postgres')) {
-      userMessage = 'Database service temporarily unavailable. Please try again in a moment.';
-    }
-    // Network/timeout errors
-    else if (message.includes('timeout') || message.includes('fetch') || message.includes('network')) {
-      userMessage = 'Network error. Please check your connection and try again.';
-    }
-    // Rate limiting
-    else if (message.includes('rate limit') || message.includes('too many')) {
-      userMessage = 'Too many requests. Please wait a moment before trying again.';
-    }
-  }
-
   return {
-    message: userMessage,
-    ...(isDebug && { errorId, details: error instanceof Error ? error.message : String(error) })
+    message: error instanceof Error && error.message.includes('Supabase') 
+      ? 'Authentication service error. Please try again.' 
+      : 'Internal Server Error'
   };
 });
