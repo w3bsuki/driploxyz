@@ -60,7 +60,7 @@ jobs:
           scope: ${{ secrets.VERCEL_ORG_ID }}
 
       - name: Create Sentry release
-        if: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        if: ${{ secrets.SENTRY_AUTH_TOKEN != '' }}
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
