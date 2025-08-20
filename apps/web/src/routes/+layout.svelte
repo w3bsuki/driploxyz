@@ -3,7 +3,7 @@
   import UnifiedCookieConsent from '$lib/components/UnifiedCookieConsent.svelte';
   import NavigationLoader from '$lib/components/NavigationLoader.svelte';
   import '../app.css';
-  // Force deployment trigger
+  // Deploy to driplo.xyz
   import '$lib/styles/cyrillic-typography.css';
   import { invalidate } from '$app/navigation';
   import { onMount } from 'svelte';
