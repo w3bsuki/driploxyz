@@ -26,12 +26,10 @@
   
   // Superforms setup
   const { form, errors, constraints, submitting, enhance, message: formMessage } = superForm(data.form, {
-    validators: zodClient(ProductSchema),
     resetForm: false,
     taintedMessage: null,
-    validationMethod: 'submit-only',
     multipleSubmits: 'prevent',
-    defaultValidator: 'clear',
+    validators: false,
     onResult: ({ result }) => {
       if (result.type === 'success') {
         toasts.add({
