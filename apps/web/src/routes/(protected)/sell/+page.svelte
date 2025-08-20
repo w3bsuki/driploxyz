@@ -49,7 +49,20 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
   // Track if user is currently uploading images to prevent form submission
   let isUploadingImages = $state(false);
   
-  // Track which fields have been touched by user
+  // Store uploaded images separately
+  interface UploadedImage {
+    url: string;
+    path: string;
+  }
+  let uploadedImages = $state<UploadedImage[]>([]);
+  
+  // Initialize Supabase client
+  const supabase = createBrowserSupabaseClient();
+  
+  // Current step in form
+  let currentStep = $state(1);
+  
+  // Track which fields have been touched for validation
   let touched = $state({
     title: false,
     category_id: false,
@@ -58,138 +71,104 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
     condition: false,
     price: false,
     shipping_cost: false,
-    photos: false,
-    tags: false
+    photos: false
   });
   
-  // Track if user has attempted to submit or move to next step
-  let hasAttemptedSubmit = $state(false);
+  // Computed values for derived state
+  const selectedCategory = $derived(
+    data.categories?.find(cat => cat.id === formData.category_id)
+  );
   
-  // Use errors from form ActionData
-  const errors = $derived(form?.errors || {});
+  const subcategories = $derived(
+    selectedCategory?.subcategories || []
+  );
   
-  // Real-time validation errors
+  // Computed errors based on validation
   const validationErrors = $derived(() => {
     const errors: Record<string, string> = {};
     
+    // Step 1 validation
     if (touched.title && formData.title) {
       if (formData.title.length < 3) {
         errors.title = 'Title must be at least 3 characters';
+      } else if (formData.title.length > 50) {
+        errors.title = 'Title must be less than 50 characters';
       }
     }
     
-    if (touched.price && formData.price !== null && formData.price !== undefined) {
-      if (formData.price <= 0) {
-        errors.price = 'Price must be greater than 0';
-      }
+    if (touched.category_id && !formData.category_id) {
+      errors.category_id = 'Please select a category';
     }
     
     if (touched.photos && uploadedImages.length === 0) {
       errors.photos = 'At least one photo is required';
     }
     
-    return errors;
-  });
-
-  // Only show errors if field has been touched and user has attempted submission
-  const showError = (field: keyof typeof touched) => {
-    return (hasAttemptedSubmit && touched[field] && errors[field]) || 
-           (touched[field] && validationErrors()[field]);
-  };
-  let priceSuggestion = $state<{
-    suggested: number | null;
-    range: { min: number; max: number } | null;
-    confidence: 'low' | 'medium' | 'high';
-  } | null>(null);
-  
-  // Use regular form submission to server action
-
-  // Multi-step form state
-  let currentStep = $state(1);
-  const totalSteps = 4;
-  let isReviewing = $state(false);
-  
-  // File handling for photos
-  interface UploadedImage {
-    url: string;
-    path: string;
-  }
-  let uploadedImages = $state<UploadedImage[]>([]);
-  const supabase = createBrowserSupabaseClient();
-  
-  // Get categories from server data
-  const mainCategories = $derived((data.categories || []).filter(c => !c.parent_id));
-  const getSubcategories = (parentId: string) => 
-    (data.categories || []).filter(c => c.parent_id === parentId);
-
-  // Steps configuration
-  const steps = [
-    { id: 1, title: 'Photos & Details', description: 'Upload images and basic info' },
-    { id: 2, title: 'Product Info', description: 'Brand, size, and condition' },
-    { id: 3, title: 'Pricing', description: 'Set your price' },
-    { id: 4, title: 'Review', description: 'Review and publish' }
-  ];
-
-  // Completed steps tracking
-  const completedSteps = $derived(() => {
-    const completed = [];
-    if (uploadedImages.length > 0 && formData.title && formData.category_id) {
-      completed.push(1);
+    // Step 2 validation
+    if (touched.brand && !formData.brand) {
+      errors.brand = 'Please select or enter a brand';
     }
-    if (formData.brand && formData.size && formData.condition) {
-      completed.push(2);
-    }
-    if (formData.price && formData.shipping_cost >= 0) {
-      completed.push(3);
-    }
-    return completed;
-  });
-
-  // Navigation functions
-  function nextStep() {
-    // Mark current step fields as touched and attempted
-    hasAttemptedSubmit = true;
-    markCurrentStepFieldsAsTouched();
     
-    if (currentStep < totalSteps && canProceedToNext()) {
-      currentStep++;
+    if (touched.size && !formData.size) {
+      errors.size = 'Please select a size';
     }
+    
+    if (touched.condition && !formData.condition) {
+      errors.condition = 'Please select a condition';
+    }
+    
+    // Step 3 validation
+    if (touched.price) {
+      if (!formData.price || formData.price <= 0) {
+        errors.price = 'Price must be greater than 0';
+      } else if (formData.price > 10000) {
+        errors.price = 'Price cannot exceed $10,000';
+      }
+    }
+    
+    if (touched.shipping_cost && formData.shipping_cost < 0) {
+      errors.shipping_cost = 'Shipping cost cannot be negative';
+    }
+    
+    return errors;
+  })();
+  
+  const errors = $derived(validationErrors);
+  
+  // Helper to show errors only for touched fields
+  function showError(field: keyof typeof touched): boolean {
+    return touched[field] && !!errors[field];
   }
   
-  // Mark current step fields as touched
-  function markCurrentStepFieldsAsTouched() {
-    switch(currentStep) {
-      case 1:
-        touched.title = true;
-        touched.category_id = true;
-        touched.photos = true;
-        break;
-      case 2:
-        touched.brand = true;
-        touched.size = true;
-        touched.condition = true;
-        break;
-      case 3:
-        touched.price = true;
-        touched.shipping_cost = true;
-        touched.tags = true;
-        break;
-    }
-  }
-
-  function prevStep() {
+  function handlePrev() {
     if (currentStep > 1) {
       currentStep--;
     }
   }
-
-  function goToStep(step: number) {
-    if (step <= currentStep || completedSteps().includes(step - 1)) {
-      currentStep = step;
+  
+  function handleNext() {
+    // Mark current step fields as touched
+    if (currentStep === 1) {
+      touched.title = true;
+      touched.category_id = true;
+      touched.photos = true;
+    } else if (currentStep === 2) {
+      touched.brand = true;
+      touched.size = true;
+      touched.condition = true;
+    } else if (currentStep === 3) {
+      touched.price = true;
+      touched.shipping_cost = true;
+    }
+    
+    // Check if can proceed
+    if (canProceedToNext()) {
+      currentStep++;
     }
   }
-
+  
   function canProceedToNext() {
+    console.log('[SELL] canProceedToNext check:', { currentStep, uploadedImages: $state.snapshot(uploadedImages).length, formData: $state.snapshot(formData) });
     switch(currentStep) {
       case 1: 
         return uploadedImages.length > 0 && 
@@ -218,7 +197,7 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
   // Handle image upload to Supabase
   async function handleImageUpload(files: File[]): Promise<UploadedImage[]> {
     console.log('[SELL] handleImageUpload called with', files.length, 'files');
-    console.log('[SELL] Current uploadedImages before upload:', uploadedImages.length);
+    console.log('[SELL] Current uploadedImages before upload:', $state.snapshot(uploadedImages).length);
     isUploadingImages = true;
     
     try {
@@ -232,7 +211,7 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
       // UPDATE THE uploadedImages array!
       uploadedImages = [...uploadedImages, ...uploaded];
       console.log('[SELL] Images uploaded successfully:', uploaded.length, 'new images');
-      console.log('[SELL] Total images now:', uploadedImages.length);
+      console.log('[SELL] Total images now:', $state.snapshot(uploadedImages).length);
       
       touched.photos = true;
       return uploaded;
@@ -247,238 +226,186 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
     if (success) {
       // Remove from uploadedImages array
       uploadedImages = uploadedImages.filter(img => img.path !== path);
-      console.log('[SELL] Image deleted, remaining:', uploadedImages.length);
     }
     return success;
   }
-
-
-  // Generate a temporary product ID for optimistic UI
-  function generateTempId() {
-    return 'temp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-  }
-
-  // Form submission handler - optimistic UI approach
+  
+  // Validate and handle form submission
   function handleSubmit() {
-    console.log('[SELL] handleSubmit called, uploadedImages:', uploadedImages);
+    console.log('[SELL] handleSubmit called, uploadedImages:', $state.snapshot(uploadedImages));
     console.log('[SELL] uploadedImages.length:', uploadedImages.length);
     console.log('[SELL] currentStep:', currentStep);
     
-    // Prevent submission if currently uploading images
-    if (isUploadingImages) {
-      console.log('[SELL] Preventing submission - images are being uploaded');
-      return false;
-    }
-    
-    // Mark all fields as touched and attempted
-    hasAttemptedSubmit = true;
-    touched.title = true;
-    touched.category_id = true;
-    touched.brand = true;
-    touched.size = true;
-    touched.condition = true;
-    touched.price = true;
-    touched.shipping_cost = true;
-    touched.photos = true;
-    touched.tags = true;
-    
+    // Make sure we're on the review step
     if (currentStep !== 4) {
-      toasts.error('Please review your listing before publishing');
+      console.log('[SELL] Not on review step, skipping submit');
       return false;
     }
     
+    // Mark all fields as touched to show validation errors
+    touched = {
+      title: true,
+      category_id: true,
+      brand: true,
+      size: true,
+      condition: true,
+      price: true,
+      shipping_cost: true,
+      photos: true
+    };
+    
+    // Check if form is valid
+    const hasErrors = Object.keys(errors).length > 0;
+    if (hasErrors) {
+      console.log('[SELL] Form has validation errors:', errors);
+      toasts.error('Please fix all errors before submitting');
+      currentStep = 1; // Go back to first step with errors
+      return false;
+    }
+    
+    // Check if we have images
     if (uploadedImages.length === 0) {
-      console.log('[SELL] ERROR: No uploaded images found!');
-      toasts.error('At least one photo is required');
+      console.log('[SELL] No images uploaded');
+      toasts.error('Please upload at least one image');
+      currentStep = 1;
       return false;
     }
     
-    console.log('[SELL] All validations passed - showing success page optimistically');
-    
-    // Generate temporary ID and navigate to success immediately
-    const tempId = generateTempId();
-    goto(`/sell/success?id=${tempId}&status=processing`);
-    
-    // Let the form submit in background
+    console.log('[SELL] All validations passed, submitting form');
     return true;
   }
   
-  // Get category name by ID
-  function getCategoryName(id: string) {
-    return (data.categories || []).find(c => c.id === id)?.name || '';
-  }
+  // Price suggestion state
+  let priceSuggestion = $state<{
+    suggested: number | null;
+    range: { min: number; max: number } | null;
+    confidence: 'low' | 'medium' | 'high';
+  } | null>(null);
   
-  // Get price suggestions when category, brand, and condition change
+  // Update price suggestions when relevant fields change
   async function updatePriceSuggestions() {
-    if (!formData.category_id || !formData.condition) return;
-    
-    try {
-      priceSuggestion = await getPriceSuggestions({
-        categoryId: formData.category_id,
-        brand: formData.brand || undefined,
-        condition: formData.condition,
-        size: formData.size || undefined
-      });
-    } catch (error) {
-      console.error('Failed to get price suggestions:', error);
+    if (formData.category_id && formData.condition) {
+      try {
+        const suggestions = await getPriceSuggestions({
+          categoryId: formData.category_id,
+          brand: formData.brand,
+          condition: formData.condition,
+          size: formData.size
+        });
+        priceSuggestion = suggestions;
+      } catch (error) {
+        console.error('Failed to get price suggestions:', error);
+        priceSuggestion = null;
+      }
     }
   }
   
-  // Watch for changes that should trigger price suggestions
+  // Update price suggestions when relevant fields change
   $effect(() => {
-    if (formData.category_id && formData.condition && formData.brand) {
-      updatePriceSuggestions();
-    }
+    updatePriceSuggestions();
   });
   
-  // Real-time validation happens through the showError derived function
-  // Errors automatically hide when field becomes valid and has been touched
-  
-  // Note: Fields are marked as touched through user interactions, not automatic changes
-
-  // Show toast error messages when form errors occur (but not during successful submissions)
-  $effect(() => {
-    if (errors._form && !submitting) {
-      toasts.error(errors._form);
+  // Get size options based on selected category
+  const sizeOptions = $derived(() => {
+    if (!selectedCategory) return SIZE_CATEGORIES.clothing;
+    
+    const categoryName = selectedCategory.name.toLowerCase();
+    if (categoryName.includes('shoe') || categoryName.includes('sneaker') || categoryName.includes('boot')) {
+      return SIZE_CATEGORIES.shoes;
+    } else if (categoryName.includes('kid') || categoryName.includes('baby')) {
+      return SIZE_CATEGORIES.kids;
     }
-  });
-
-  // Tag suggestions
-  const tagSuggestions = [
-    'vintage', 'designer', 'streetwear', 'minimalist', 'boho', 
-    'formal', 'casual', 'summer', 'winter', 'retro', 'y2k',
-    'sustainable', 'handmade', 'limited edition', 'rare', 'authentic'
+    return SIZE_CATEGORIES.clothing;
+  })();
+  
+  const steps = [
+    { id: 1, title: 'Photos & Details' },
+    { id: 2, title: 'Product Info' },
+    { id: 3, title: 'Price & Publish' },
+    { id: 4, title: 'Review' }
   ];
+  
+  // Handle errors from form action
+  $effect(() => {
+    if (form?.errors) {
+      // Map server errors to touched fields
+      Object.keys(form.errors).forEach(key => {
+        if (key in touched) {
+          touched[key as keyof typeof touched] = true;
+        }
+      });
+      
+      // Go to first step with errors
+      if (currentStep === 4) {
+        currentStep = 1;
+      }
+    }
+  });
 </script>
 
 <svelte:head>
-  <title>Sell Your Item - Driplo</title>
+  <title>Sell an Item - Driplo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 </svelte:head>
 
-<div class="min-h-screen bg-gray-50 flex flex-col">
-  <Header />
-  
-
-  <!-- Progress Indicator -->
-  <div class="bg-white border-b shadow-sm">
-    <div class="max-w-4xl mx-auto px-4 py-3">
-      <!-- Mobile Step Indicator -->
-      <div class="sm:hidden">
-        <div class="flex items-center justify-between mb-3">
-          <div class="flex items-center gap-2">
-            <span class="text-sm font-medium text-gray-900">{steps[currentStep - 1].title}</span>
-            <span class="text-xs text-gray-500">({currentStep}/{totalSteps})</span>
-          </div>
-          <div class="flex gap-1">
-            {#each steps as step}
-              <div 
-                class="h-1.5 w-6 rounded-full transition-colors"
-                class:bg-blue-500={step.id <= currentStep}
-                class:bg-gray-200={step.id > currentStep}
-              />
-            {/each}
-          </div>
-        </div>
-        <p class="text-xs text-gray-500">{steps[currentStep - 1].description}</p>
-      </div>
+<div class="h-screen flex flex-col bg-white">
+  <!-- Mobile Header -->
+  <div class="sticky top-0 z-20 bg-white border-b px-4 py-3">
+    <div class="flex items-center justify-between">
+      <button 
+        onclick={() => goto('/')}
+        class="p-2 -ml-2 text-gray-600 hover:text-gray-900"
+        aria-label="Go back"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+      </button>
       
-      <!-- Desktop Step Indicator -->
-      <div class="hidden sm:block">
-        <StepIndicator 
-          {steps} 
-          {currentStep} 
-          completedSteps={completedSteps()}
-          onStepClick={goToStep}
-        />
-      </div>
+      <h1 class="text-lg font-semibold">List an Item</h1>
+      
+      <button 
+        class="p-2 -mr-2 text-gray-600 hover:text-gray-900"
+        aria-label="Get help"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </button>
     </div>
   </div>
 
-  <!-- Form Content - Flex grow to take available space -->
-  <div class="flex-1">
-    <div class="max-w-4xl mx-auto px-4 py-4 sm:py-6 pb-20 sm:pb-6">
-    <!-- Error Messages - Only show if user has attempted submission and there are visible errors -->
-    {#if hasAttemptedSubmit}
-      {@const visibleErrors = Object.entries(errors).filter(([field, message]) => 
-        field !== '_form' && hasAttemptedSubmit && touched[field] && message
-      )}
-      {#if visibleErrors.length > 0}
-        <div class="mb-4">
-          <div class="bg-red-50 text-red-600 p-4 rounded-lg flex items-start space-x-3">
-            <svg class="w-5 h-5 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-          </svg>
-          <div>
-            <p class="text-red-800 font-medium">Please fix the following errors:</p>
-            <ul class="mt-1 text-sm list-disc list-inside">
-              {#each visibleErrors as [field, message]}
-                <li>{message}</li>
-              {/each}
-            </ul>
-          </div>
-        </div>
-      </div>
-      {/if}
-    {/if}
-    
+  <div class="flex-1 overflow-hidden flex flex-col">
     {#if data.needsBrandSubscription}
-      <!-- Brand Subscription Required -->
-      <div class="bg-white rounded-lg shadow-sm p-6 text-center">
-        <div class="max-w-md mx-auto space-y-4">
-          <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
-            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      <!-- Brand subscription required message -->
+      <div class="flex-1 flex items-center justify-center p-6">
+        <div class="text-center max-w-md">
+          <div class="mb-6">
+            <svg class="w-20 h-20 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
           
-          <div>
-            <h2 class="text-xl font-semibold text-gray-900">Brand Subscription Required</h2>
-            <p class="text-gray-600 mt-2">
-              To list products as a business account, you need an active Brand subscription.
-            </p>
-          </div>
-
-          {#if data.plans.find(p => p.plan_type === 'brand')}
-            {@const brandPlan = data.plans.find(p => p.plan_type === 'brand')}
-            <div class="bg-gray-50 rounded-lg p-4">
-              <div class="text-2xl font-bold text-gray-900">
-                ${brandPlan.price_monthly}/month
-              </div>
-              <ul class="mt-3 space-y-2 text-sm text-gray-600">
-                <li class="flex items-start">
-                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                  Unlimited product listings
-                </li>
-                <li class="flex items-start">
-                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                  Brand verification badge
-                </li>
-                <li class="flex items-start">
-                  <svg class="w-4 h-4 text-green-500 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                  Priority customer support
-                </li>
-              </ul>
-            </div>
-          {/if}
-
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">Brand Account Subscription Required</h2>
+          <p class="text-gray-600 mb-6">
+            To list products with a brand account, you need an active brand subscription. 
+            Upgrade now to start selling your products.
+          </p>
+          
           <div class="space-y-3">
             <Button 
-              href="/dashboard/upgrade" 
-              class="w-full h-12 text-base font-medium"
+              variant="primary" 
+              size="lg" 
+              onclick={() => goto('/settings/subscription')}
+              class="w-full"
             >
               Upgrade to Brand Plan
             </Button>
+            
             <Button 
-              href="/profile/edit" 
-              variant="outline" 
-              class="w-full h-12 text-base font-medium"
+              variant="ghost" 
+              onclick={() => goto('/settings/account')}
+              class="w-full"
             >
               Switch to Personal Account
             </Button>
@@ -491,587 +418,419 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
         method="POST"
         enctype="multipart/form-data"
         class="h-full flex flex-col"
-        use:enhance={({ submitter, cancel }) => {
-          console.log('[SELL] Form submission triggered', { submitter: submitter?.type, isUploading: isUploadingImages });
-          
-          // Only allow actual submit button clicks, not other form events
-          if (!submitter || submitter.type !== 'submit') {
-            console.log('[SELL] Form submission prevented - not from submit button');
-            cancel();
-            return;
-          }
-          
-          // Prevent submission if currently uploading images
-          if (isUploadingImages) {
-            console.log('[SELL] Form submission prevented - uploading images');
-            cancel();
-            return;
-          }
-          
+        use:enhance={({ cancel, formData }) => {
           const canSubmit = handleSubmit();
-          if (!canSubmit) {
-            console.log('[SELL] Form submission prevented - validation failed');
+          if (!canSubmit || isUploadingImages) {
             cancel();
             return;
           }
           
           submitting = true;
           
-          return async ({ update, formData: serverFormData, result }) => {
-            // Add photo URLs and paths to FormData
-            serverFormData.append('photo_urls', JSON.stringify(uploadedImages.map(img => img.url)));
-            serverFormData.append('photo_paths', JSON.stringify(uploadedImages.map(img => img.path)));
-            // Add tags as JSON string
-            serverFormData.append('tags', JSON.stringify(formData.tags));
-            
-            console.log('[SELL] Form result type:', result.type);
-            
-            // Handle successful submissions
-            if (result.type === 'success' && result.data?.success && result.data?.productId) {
-              console.log('[SELL] Form submission successful, navigating to success page');
-              submitting = false;
-              goto(`/sell/success?id=${result.data.productId}`);
-              return;
-            }
-            
-            // Handle successful redirects (fallback)
-            if (result.type === 'redirect') {
-              console.log('[SELL] Successful redirect to:', result.location);
-              submitting = false;
-              return;
-            }
-            
-            // Handle errors
-            if (result.type === 'failure') {
-              console.log('[SELL] Form submission failed:', result.data);
-              submitting = false;
-              await update();
-              return;
-            }
-            
-            // Default handling
+          // Add data before submission
+          formData.append('photo_urls', JSON.stringify(uploadedImages.map(img => img.url)));
+          formData.append('photo_paths', JSON.stringify(uploadedImages.map(img => img.path)));
+          formData.append('tags', JSON.stringify(formData.tags));
+          
+          return async ({ result }) => {
             submitting = false;
-            await update();
+            
+            // The server returns a redirect on success
+            if (result.type === 'redirect') {
+              const match = result.location?.match(/id=([^&]+)/);
+              if (match) {
+                await goto(`/sell/success?id=${match[1]}`);
+              } else {
+                await goto('/dashboard');
+              }
+            } else if (result.type === 'failure') {
+              toasts.error(result.data?.errors?._form || 'Failed to create listing');
+              currentStep = 1;
+            }
           };
         }}
       >
-        <div class="bg-white rounded-lg shadow-sm flex-1 flex flex-col">
-          <!-- Form-level errors -->
-          {#if errors._form}
-            <div class="p-6 pb-0">
-              <div class="bg-red-50 border border-red-200 rounded-md p-4">
-                <div class="flex">
-                  <div class="shrink-0">
-                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
-                    </svg>
-                  </div>
-                  <div class="ml-3">
-                    <p class="text-sm text-red-800">{errors._form}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          {/if}
-          
-          <!-- Step Content Container - Viewport optimized -->
-          <div class="flex-1">
-            {#if currentStep === 1}
-              <!-- Step 1: Photos & Details -->
-              <div class="h-[calc(100vh-200px)] p-3 sm:p-6 flex flex-col gap-3">
-              <!-- Image Upload -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                  Photos <span class="text-red-500">*</span>
-                </label>
-                <ImageUploaderSupabase
-                  bind:images={uploadedImages}
-                  bind:uploading={isUploadingImages}
-                  onUpload={handleImageUpload}
-                  onDelete={handleImageDelete}
-                  maxImages={10}
-                  error={showError('photos') ? errors.photos : undefined}
-                  helpText="Add up to 10 photos. First photo will be the cover image."
-                />
-              </div>
-
-              <!-- Title & Category Row -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <!-- Title -->
+        <!-- Progress Steps -->
+        <div class="px-4 py-3 border-b bg-gray-50">
+          <StepIndicator 
+            {steps}
+            current={currentStep}
+            completed={currentStep - 1}
+            variant="minimal"
+          />
+        </div>
+        
+        <!-- Form Content -->
+        <div class="flex-1 overflow-hidden flex flex-col">
+          {#if currentStep === 1}
+            <!-- Step 1: Photos & Details -->
+            <div class="h-[calc(100vh-120px)] p-3 sm:p-6 flex flex-col justify-between gap-3">
+              <div class="space-y-3 overflow-y-auto">
+                <!-- Image Upload -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                    Title <span class="text-red-500">*</span>
+                    Photos <span class="text-red-500">*</span>
                   </label>
-                  <input
-                    bind:value={formData.title}
-                    type="text"
-                    placeholder="e.g. Vintage Levi's Denim Jacket"
-                    class="w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-1
-                      {showError('title') 
-                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
-                        : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'}"
-                    maxlength="50"
-                    oninput={() => touched.title = true}
+                  <ImageUploaderSupabase
+                    maxImages={10}
+                    images={uploadedImages}
+                    onUpload={handleImageUpload}
+                    onDelete={handleImageDelete}
+                    uploading={isUploadingImages}
+                    class="mb-2"
                   />
-                  {#if showError('title')}
-                    <p class="mt-1 text-sm text-red-600">{errors.title || validationErrors().title}</p>
+                  {#if showError('photos')}
+                    <p class="text-sm text-red-600 mt-1">{errors.photos}</p>
                   {/if}
+                </div>
+
+                <!-- Title -->
+                <div>
+                  <Input
+                    type="text"
+                    label="Title"
+                    placeholder="What are you selling?"
+                    bind:value={formData.title}
+                    error={showError('title') ? errors.title : ''}
+                    required
+                    maxlength={50}
+                    onblur={() => touched.title = true}
+                    name="title"
+                  />
                 </div>
 
                 <!-- Category -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                    Category <span class="text-red-500">*</span>
-                  </label>
-                  <select
+                  <Select
+                    label="Category"
                     bind:value={formData.category_id}
-                    class="w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-1
-                      {showError('category_id') 
-                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
-                        : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'}"
-                    onchange={() => touched.category_id = true}
+                    error={showError('category_id') ? errors.category_id : ''}
+                    required
+                    onchange={() => {
+                      touched.category_id = true;
+                      formData.subcategory_id = '';
+                    }}
+                    name="category_id"
                   >
-                    <option value="">Select category</option>
-                    {#each mainCategories as category}
+                    <option value="">Select a category</option>
+                    {#each data.categories || [] as category}
                       <option value={category.id}>{category.name}</option>
                     {/each}
-                  </select>
-                  {#if showError('category_id')}
-                    <p class="mt-1 text-sm text-red-600">{errors.category_id}</p>
-                  {/if}
+                  </Select>
                 </div>
-              </div>
 
-              <!-- Subcategory (if available) -->
-              {#if formData.category_id}
-                {@const subcategories = getSubcategories(formData.category_id)}
+                <!-- Subcategory (if available) -->
                 {#if subcategories.length > 0}
                   <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                      Subcategory
-                    </label>
-                    <select
+                    <Select
+                      label="Subcategory"
                       bind:value={formData.subcategory_id}
-                      class="w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      name="subcategory_id"
                     >
-                      <option value="">Select subcategory</option>
+                      <option value="">Select a subcategory (optional)</option>
                       {#each subcategories as subcategory}
                         <option value={subcategory.id}>{subcategory.name}</option>
                       {/each}
-                    </select>
+                    </Select>
                   </div>
                 {/if}
-              {/if}
 
-              <!-- Description (Compact) -->
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                  Description
-                </label>
-                <textarea
-                  bind:value={formData.description}
-                  rows="2"
-                  placeholder="Describe your item, including any flaws..."
-                  class="w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500 resize-none"
-                  maxlength="500"
-                ></textarea>
+                <!-- Description -->
+                <div>
+                  <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+                    Description (optional)
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    bind:value={formData.description}
+                    placeholder="Add details about condition, measurements, flaws..."
+                    rows="3"
+                    maxlength="500"
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                  />
+                  <p class="text-xs text-gray-500 mt-1">{formData.description.length}/500</p>
+                </div>
               </div>
-              </div>
+            </div>
 
-            {:else if currentStep === 2}
-              <!-- Step 2: Product Info -->
-              <div class="h-[calc(100vh-200px)] p-3 sm:p-6 flex flex-col gap-3">
-              <!-- Brand -->
-              <div>
-                <BrandSelector
-                  bind:value={formData.brand}
-                  popularBrands={POPULAR_BRANDS}
-                  label="Brand"
-                  error={showError('brand') ? errors.brand : undefined}
-                  required
-                />
-              </div>
+          {:else if currentStep === 2}
+            <!-- Step 2: Product Info -->
+            <div class="h-[calc(100vh-120px)] p-3 sm:p-6 flex flex-col justify-between gap-3">
+              <div class="space-y-3 overflow-y-auto">
+                <!-- Brand -->
+                <div>
+                  <BrandSelector
+                    bind:value={formData.brand}
+                    brands={POPULAR_BRANDS}
+                    label="Brand"
+                    error={showError('brand') ? errors.brand : ''}
+                    required
+                    onchange={() => touched.brand = true}
+                    name="brand"
+                  />
+                </div>
 
-              <!-- Size & Condition Row -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <!-- Size -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                    Size <span class="text-red-500">*</span>
-                  </label>
-                  <select
+                  <Select
+                    label="Size"
                     bind:value={formData.size}
-                    class="w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-1
-                      {showError('size') 
-                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
-                        : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'}"
+                    error={showError('size') ? errors.size : ''}
+                    required
                     onchange={() => touched.size = true}
+                    name="size"
                   >
                     <option value="">Select size</option>
-                    {#each SIZE_CATEGORIES.clothing as size}
+                    {#each sizeOptions as size}
                       <option value={size.value}>{size.label}</option>
                     {/each}
-                  </select>
-                  {#if showError('size')}
-                    <p class="mt-1 text-sm text-red-600">{errors.size}</p>
-                  {/if}
+                  </Select>
                 </div>
 
-                <!-- Condition Compact -->
+                <!-- Condition -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                    Condition <span class="text-red-500">*</span>
-                  </label>
-                  <select
+                  <ConditionSelector
                     bind:value={formData.condition}
-                    class="w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-1
-                      {showError('condition') 
-                        ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
-                        : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'}"
+                    label="Condition"
+                    error={showError('condition') ? errors.condition : ''}
+                    required
+                    name="condition"
                     onchange={() => touched.condition = true}
-                  >
-                    <option value="">Select condition</option>
-                    <option value="new">New with tags</option>
-                    <option value="like_new">Like new</option>
-                    <option value="excellent">Excellent</option>
-                    <option value="good">Good</option>
-                    <option value="fair">Fair</option>
-                    <option value="poor">Poor</option>
-                  </select>
-                  {#if showError('condition')}
-                    <p class="mt-1 text-sm text-red-600">{errors.condition}</p>
-                  {/if}
+                  />
                 </div>
-              </div>
 
-              <!-- Color & Material Row -->
-              <div class="grid grid-cols-2 gap-3">
+                <!-- Color (optional) -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                    Color
-                  </label>
-                  <input
+                  <Input
+                    type="text"
+                    label="Color (optional)"
+                    placeholder="e.g., Black, Red, Multi"
                     bind:value={formData.color}
-                    type="text"
-                    placeholder="e.g. Blue, Red"
-                    class="w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                    maxlength="30"
+                    maxlength={30}
+                    name="color"
                   />
                 </div>
-                
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1.5">
-                    Material
-                  </label>
-                  <input
-                    bind:value={formData.material}
-                    type="text"
-                    placeholder="e.g. Cotton"
-                    class="w-full px-3 py-2.5 border rounded-lg text-sm focus:outline-none focus:ring-1 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                    maxlength="50"
-                  />
-                </div>
-              </div>
-              </div>
 
-            {:else if currentStep === 3}
-              <!-- Step 3: Price & Publish -->
-              <div class="h-[calc(100vh-200px)] p-3 sm:p-6 flex flex-col gap-3">
-              <!-- Price & Shipping Row -->
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <!-- Material (optional) -->
+                <div>
+                  <Input
+                    type="text"
+                    label="Material (optional)"
+                    placeholder="e.g., Cotton, Leather, Polyester"
+                    bind:value={formData.material}
+                    maxlength={50}
+                    name="material"
+                  />
+                </div>
+              </div>
+            </div>
+
+          {:else if currentStep === 3}
+            <!-- Step 3: Price & Publish -->
+            <div class="h-[calc(100vh-120px)] p-3 sm:p-6 flex flex-col justify-between gap-3">
+              <div class="space-y-3 overflow-y-auto">
                 <!-- Price -->
                 <div>
                   <PriceInput
                     bind:value={formData.price}
                     label="Price"
-                    error={showError('price') ? errors.price : undefined}
+                    error={showError('price') ? errors.price : ''}
                     required
-                    showCalculation={true}
-                    feePercentage={5}
-                    helpText="Set competitive price"
-                    oninput={() => touched.price = true}
+                    suggestion={priceSuggestion}
+                    onchange={() => touched.price = true}
+                    name="price"
                   />
                 </div>
 
-                <!-- Shipping Price -->
+                <!-- Shipping Cost -->
                 <div>
                   <PriceInput
                     bind:value={formData.shipping_cost}
                     label="Shipping Cost"
-                    error={showError('shipping_cost') ? errors.shipping_cost : undefined}
-                    required
-                    helpText="Set to 0 for free shipping"
+                    error={showError('shipping_cost') ? errors.shipping_cost : ''}
+                    placeholder="0.00"
+                    name="shipping_cost"
+                    onchange={() => touched.shipping_cost = true}
                   />
                 </div>
-              </div>
-                
-                <!-- Price Suggestions -->
-                {#if priceSuggestion && priceSuggestion.suggested}
-                  <div class="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                    <div class="flex items-center space-x-2 mb-1">
-                      <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span class="text-sm font-medium text-blue-900">Price Suggestion</span>
-                      <span class="px-2 py-0.5 bg-blue-200 text-blue-800 text-xs rounded-full">
-                        {priceSuggestion.confidence} confidence
-                      </span>
-                    </div>
-                    <p class="text-sm text-blue-800">
-                      Similar items sold for <strong>${priceSuggestion.suggested}</strong>
-                      {#if priceSuggestion.range}
-                        (range: ${priceSuggestion.range.min} - ${priceSuggestion.range.max})
-                      {/if}
-                    </p>
-                    <button
-                      type="button"
-                      onclick={() => formData.price = priceSuggestion?.suggested || 0}
-                      class="mt-2 text-xs text-blue-600 hover:text-blue-800 underline"
-                    >
-                      Use suggested price
-                    </button>
-                  </div>
-                {/if}
 
-              <!-- Tags -->
-              <div>
-                <TagInput
-                  bind:tags={formData.tags}
-                  label="Tags"
-                  placeholder="Add tags to help buyers find your item"
-                  suggestions={tagSuggestions}
-                  error={showError('tags') ? errors.tags : undefined}
-                  helpText="Add relevant keywords"
-                />
-              </div>
+                <!-- Tags -->
+                <div>
+                  <TagInput
+                    bind:tags={formData.tags}
+                    label="Tags (optional)"
+                    placeholder="Add tags for better discoverability"
+                    maxTags={10}
+                  />
+                </div>
 
-              <!-- Premium Boost -->
-              {#if data.profile?.subscription_tier === 'premium' && data.profile?.premium_boosts_remaining > 0}
-                <div class="bg-gradient-to-r from-yellow-50 to-orange-50 p-3 rounded-lg border border-yellow-200">
-                  <label class="flex items-start space-x-3 cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      bind:checked={formData.use_premium_boost}
-                      class="mt-1 rounded border-gray-300 text-yellow-600 focus:ring-yellow-500"
-                    />
-                    <div class="flex-1">
-                      <div class="flex items-center space-x-2">
-                        <span class="text-lg">✨</span>
-                        <span class="font-medium text-gray-900">Boost this listing</span>
-                        <span class="px-2 py-0.5 bg-yellow-200 text-yellow-800 text-xs rounded-full">
-                          {data.profile.premium_boosts_remaining} left
-                        </span>
+                <!-- Premium Boost -->
+                {#if data.profile?.premium_boosts_remaining > 0}
+                  <div class="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200">
+                    <label class="flex items-start">
+                      <input
+                        type="checkbox"
+                        bind:checked={formData.use_premium_boost}
+                        name="use_premium_boost"
+                        class="mt-1 w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                      />
+                      <div class="ml-3">
+                        <span class="font-medium text-gray-900">Use Premium Boost</span>
+                        <p class="text-sm text-gray-600 mt-0.5">
+                          Get 7 days of increased visibility
+                        </p>
+                        <p class="text-xs text-purple-600 mt-1">
+                          {data.profile.premium_boosts_remaining} boosts remaining
+                        </p>
                       </div>
-                      <p class="text-sm text-gray-600 mt-1">
-                        Get 3x more visibility for 7 days
-                      </p>
-                    </div>
-                  </label>
-                </div>
-              {/if}
+                    </label>
+                  </div>
+                {/if}
               </div>
-            {:else if currentStep === 4}
-              <!-- Step 4: Review & Publish -->
-              <div class="h-[calc(100vh-200px)] p-3 sm:p-6 flex flex-col gap-3 overflow-y-auto">
-              <h2 class="text-lg font-semibold text-gray-900">Review Your Listing</h2>
-              
-              <!-- Photos Preview -->
-              <div>
-                <h3 class="text-sm font-medium text-gray-700 mb-2">Photos</h3>
-                <div class="grid grid-cols-4 sm:grid-cols-5 gap-2">
-                  {#each uploadedImages as image, index}
-                    <div class="aspect-square rounded-lg overflow-hidden bg-gray-100">
-                      <img src={image.url} alt="Product {index + 1}" class="w-full h-full object-cover" />
-                    </div>
-                  {/each}
+            </div>
+
+          {:else if currentStep === 4}
+            <!-- Step 4: Review -->
+            <div class="h-[calc(100vh-200px)] p-3 sm:p-6 overflow-y-auto">
+              <div class="space-y-4">
+                <h2 class="text-lg font-semibold">Review Your Listing</h2>
+                
+                <!-- Photos Preview -->
+                <div>
+                  <h3 class="text-sm font-medium text-gray-700 mb-2">Photos</h3>
+                  <div class="grid grid-cols-3 gap-2">
+                    {#each uploadedImages.slice(0, 3) as image}
+                      <img 
+                        src={image.url} 
+                        alt="Product" 
+                        class="aspect-square object-cover rounded-lg"
+                      />
+                    {/each}
+                    {#if uploadedImages.length > 3}
+                      <div class="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                        <span class="text-gray-600 text-sm">+{uploadedImages.length - 3} more</span>
+                      </div>
+                    {/if}
+                  </div>
                 </div>
-              </div>
-              
-              <!-- Product Details -->
-              <div class="space-y-3 border-t pt-3">
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                  <div>
-                    <span class="text-xs text-gray-500">Title</span>
-                    <p class="font-medium text-gray-900 truncate">{formData.title}</p>
+
+                <!-- Details -->
+                <div class="space-y-2">
+                  <div class="flex justify-between py-2 border-b">
+                    <span class="text-sm text-gray-600">Title</span>
+                    <span class="text-sm font-medium">{formData.title}</span>
                   </div>
-                  
-                  <div>
-                    <span class="text-xs text-gray-500">Category</span>
-                    <p class="font-medium text-gray-900 truncate">
-                      {getCategoryName(formData.category_id)}
-                      {#if formData.subcategory_id}
-                        / {getCategoryName(formData.subcategory_id)}
-                      {/if}
-                    </p>
+                  <div class="flex justify-between py-2 border-b">
+                    <span class="text-sm text-gray-600">Category</span>
+                    <span class="text-sm font-medium">
+                      {data.categories?.find(c => c.id === formData.category_id)?.name || 'N/A'}
+                    </span>
                   </div>
-                  
-                  <div>
-                    <span class="text-xs text-gray-500">Brand</span>
-                    <p class="font-medium text-gray-900">{formData.brand}</p>
+                  <div class="flex justify-between py-2 border-b">
+                    <span class="text-sm text-gray-600">Brand</span>
+                    <span class="text-sm font-medium">{formData.brand}</span>
                   </div>
-                  
-                  <div>
-                    <span class="text-xs text-gray-500">Size</span>
-                    <p class="font-medium text-gray-900">{formData.size}</p>
+                  <div class="flex justify-between py-2 border-b">
+                    <span class="text-sm text-gray-600">Size</span>
+                    <span class="text-sm font-medium">{formData.size}</span>
                   </div>
-                  
-                  <div>
-                    <span class="text-xs text-gray-500">Condition</span>
-                    <p class="font-medium text-gray-900 capitalize">{formData.condition}</p>
+                  <div class="flex justify-between py-2 border-b">
+                    <span class="text-sm text-gray-600">Condition</span>
+                    <span class="text-sm font-medium capitalize">{formData.condition?.replace('-', ' ')}</span>
                   </div>
-                  
-                  {#if formData.color}
-                    <div>
-                      <span class="text-xs text-gray-500">Color</span>
-                      <p class="font-medium text-gray-900">{formData.color}</p>
-                    </div>
-                  {/if}
-                  
-                  {#if formData.material}
-                    <div>
-                      <span class="text-xs text-gray-500">Material</span>
-                      <p class="font-medium text-gray-900">{formData.material}</p>
+                  <div class="flex justify-between py-2 border-b">
+                    <span class="text-sm text-gray-600">Price</span>
+                    <span class="text-sm font-medium">${formData.price.toFixed(2)}</span>
+                  </div>
+                  <div class="flex justify-between py-2 border-b">
+                    <span class="text-sm text-gray-600">Shipping</span>
+                    <span class="text-sm font-medium">${formData.shipping_cost.toFixed(2)}</span>
+                  </div>
+                  {#if formData.use_premium_boost}
+                    <div class="flex justify-between py-2 border-b">
+                      <span class="text-sm text-gray-600">Premium Boost</span>
+                      <span class="text-sm font-medium text-purple-600">Active</span>
                     </div>
                   {/if}
                 </div>
-                
-                {#if formData.description}
-                  <div>
-                    <span class="text-xs text-gray-500">Description</span>
-                    <p class="text-sm text-gray-700 mt-1 line-clamp-3">{formData.description}</p>
-                  </div>
-                {/if}
-                
-                <!-- Pricing Compact -->
-                <div class="border-t pt-3">
-                  <div class="space-y-1 text-sm">
-                    <div class="flex justify-between">
-                      <span class="text-gray-600">Item Price</span>
-                      <span class="font-medium">${Number(formData.price || 0).toFixed(2)}</span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-gray-600">Shipping</span>
-                      <span class="font-medium">
-                        {Number(formData.shipping_cost) > 0 ? `$${Number(formData.shipping_cost).toFixed(2)}` : 'Free'}
-                      </span>
-                    </div>
-                    <div class="flex justify-between border-t pt-1">
-                      <span class="font-medium text-gray-900">Buyer Pays</span>
-                      <span class="text-lg font-bold text-gray-900">
-                        ${(Number(formData.price || 0) + Number(formData.shipping_cost || 0)).toFixed(2)}
-                      </span>
-                    </div>
-                    <div class="flex justify-between">
-                      <span class="text-xs text-gray-500">You receive (after 5% fee)</span>
-                      <span class="text-sm font-medium text-green-600">
-                        ${(Number(formData.price || 0) * 0.95).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                
-                {#if formData.tags?.length > 0}
-                  <div>
-                    <span class="text-xs text-gray-500">Tags</span>
-                    <div class="flex flex-wrap gap-1 mt-1">
-                      {#each formData.tags as tag}
-                        <span class="px-2 py-1 bg-gray-100 text-xs rounded-full">{tag}</span>
-                      {/each}
-                    </div>
-                  </div>
-                {/if}
-                
-                {#if formData.use_premium_boost}
-                  <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-2">
-                    <div class="flex items-center space-x-2">
-                      <span class="text-lg">✨</span>
-                      <span class="text-sm font-medium text-gray-900">Premium Boost Applied</span>
-                    </div>
-                    <p class="text-xs text-gray-600 mt-1">3x more visibility for 7 days</p>
-                  </div>
-                {/if}
               </div>
-              
-              <!-- Terms Notice -->
-              <div class="p-3 bg-blue-50 rounded-lg">
-                <p class="text-xs text-blue-800">
-                  By publishing, you agree to our terms of service and confirm that this item is authentic and accurately described.
-                </p>
-              </div>
-              </div>
+            </div>
+          {/if}
+          
+          <!-- Fallback for old browsers - hidden select for condition -->
+          {#if currentStep === 2}
+            <div class="hidden">
+              <label for="condition-fallback" class="sr-only">Condition (Fallback)</label>
+              <select
+                id="condition-fallback"
+                name="condition"
+                bind:value={formData.condition}
+                class="sr-only"
+              >
+                <option value="">Select condition</option>
+                <option value="new">New with tags</option>
+                <option value="like-new">Like new</option>
+                <option value="good">Good</option>
+                <option value="fair">Fair</option>
+              </select>
+            </div>
+          {/if}
+        </div>
+        
+        <!-- Bottom Navigation -->
+        <div class="sticky bottom-0 bg-white border-t px-4 py-3">
+          <div class="flex gap-3 max-w-lg mx-auto">
+            {#if currentStep > 1}
+              <Button
+                type="button"
+                variant="ghost"
+                onclick={handlePrev}
+                disabled={submitting}
+                class="flex-1"
+              >
+                Back
+              </Button>
+            {/if}
+            
+            {#if currentStep < 4}
+              <Button
+                type="button"
+                variant="primary"
+                onclick={handleNext}
+                disabled={!canProceedToNext() || submitting}
+                class="flex-1"
+              >
+                Next
+              </Button>
+            {:else}
+              <Button
+                type="submit"
+                variant="primary"
+                disabled={submitting || !canProceedToNext()}
+                class="flex-1"
+              >
+                {#if submitting}
+                  Publishing...
+                {:else}
+                  Publish Item
+                {/if}
+              </Button>
             {/if}
           </div>
         </div>
-        
-        <!-- Navigation Buttons - Fixed Bottom Sheet on Mobile -->
-        <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg z-50 sm:relative sm:bottom-auto sm:left-auto sm:right-auto sm:bg-transparent sm:border-0 sm:shadow-none sm:z-auto sm:mt-6">
-          <div class="max-w-4xl mx-auto px-4 py-3 sm:px-0 sm:py-0">
-            <div class="flex gap-2">
-              {#if currentStep > 1}
-                <Button 
-                  type="button"
-                  onclick={prevStep}
-                  variant="outline"
-                  class="sm:flex-none h-12 text-sm font-medium px-4"
-                >
-                  <svg class="w-4 h-4 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                  </svg>
-                  Back
-                </Button>
-              {/if}
-              
-              {#if currentStep < totalSteps}
-                <Button 
-                  type="button"
-                  onclick={nextStep}
-                  disabled={!canProceedToNext()}
-                  class="flex-1 sm:flex-none h-12 text-sm font-medium px-6"
-                >
-                  Continue
-                  <svg class="w-4 h-4 ml-1 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </Button>
-              {:else}
-                <Button 
-                  type="submit"
-                  disabled={submitting || !canProceedToNext()}
-                  class="flex-1 sm:flex-none h-12 text-sm font-medium px-6"
-                >
-                  {#if submitting}
-                    <svg class="w-4 h-4 mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Publishing...
-                  {:else}
-                    Publish Listing
-                  {/if}
-                </Button>
-              {/if}
-            </div>
-          </div>
-        </div>
-        
-        <!-- Hidden form inputs -->
-        <input type="hidden" name="title" bind:value={formData.title} />
-        <input type="hidden" name="description" bind:value={formData.description} />
-        <input type="hidden" name="category_id" bind:value={formData.category_id} />
-        <input type="hidden" name="subcategory_id" bind:value={formData.subcategory_id} />
-        <input type="hidden" name="brand" bind:value={formData.brand} />
-        <input type="hidden" name="size" bind:value={formData.size} />
-        <input type="hidden" name="condition" bind:value={formData.condition} />
-        <input type="hidden" name="color" bind:value={formData.color} />
-        <input type="hidden" name="material" bind:value={formData.material} />
-        <input type="hidden" name="price" bind:value={formData.price} />
-        <input type="hidden" name="shipping_cost" bind:value={formData.shipping_cost} />
-        <input type="hidden" name="use_premium_boost" bind:value={formData.use_premium_boost} />
-        <input type="hidden" name="tags" value={JSON.stringify(formData.tags)} />
-        <input type="hidden" name="photo_urls" value={JSON.stringify(uploadedImages.map(img => img.url))} />
-        <input type="hidden" name="photo_paths" value={JSON.stringify(uploadedImages.map(img => img.path))} />
       </form>
     {/if}
-    </div>
   </div>
 </div>
+
+<style>
+  /* Hide scrollbar but keep functionality */
+  .overflow-y-auto {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .overflow-y-auto::-webkit-scrollbar {
+    display: none;
+  }
+</style>

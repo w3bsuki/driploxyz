@@ -19,7 +19,7 @@ const shippingSchema = z.union([
   })
 ]);
 
-// Condition types
+// Condition types - must match database enum exactly
 export const ProductCondition = z.enum(['new', 'like-new', 'good', 'fair']);
 
 // Product form schema with all fields

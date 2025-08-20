@@ -268,11 +268,8 @@ export const actions: Actions = {
         }
       }
 
-      // Return success with product ID for frontend to handle navigation
-      return {
-        success: true,
-        productId: product.id
-      };
+      // Redirect to dashboard with success message
+      throw redirect(303, `/dashboard?success=listing&id=${product.id}`);
 
     } catch (error) {
       // If it's a redirect, re-throw it
