@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { screen, fireEvent } from '@testing-library/svelte';
-import ProductGallery from '../ProductGallery.svelte';
+import ProductGallery from '../lib/ProductGallery.svelte';
 import {
   renderSvelte5Component,
   createMockProduct,

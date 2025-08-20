@@ -36,5 +36,6 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     session: data?.session || null,
     user: data?.user || null,
     profile: data?.profile || null,
+    language: data?.language || 'en', // Pass through the language from server
   };
 };

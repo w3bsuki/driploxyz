@@ -182,7 +182,7 @@
 
 {#key currentLang}
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
-	<Header />
+	<Header initialLanguage={data.language} />
 
 	<!-- Compact Sticky Search Bar -->
 	{#if showCompactSearch}

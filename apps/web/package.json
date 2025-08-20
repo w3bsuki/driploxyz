@@ -65,6 +65,7 @@
 		"svelte": "^5.36.12",
 		"svelte-check": "^4.3.0",
 		"tailwindcss": "^4.1.12",
+		"terser": "^5.43.1",
 		"tslib": "^2.8.1",
 		"typescript": "5.8.2",
 		"vite": "^7.0.0",

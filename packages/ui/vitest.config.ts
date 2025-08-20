@@ -3,7 +3,14 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [svelte({ hot: !process.env.VITEST })],
+  plugins: [
+    svelte({ 
+      hot: !process.env.VITEST,
+      compilerOptions: {
+        dev: true
+      }
+    })
+  ],
   test: {
     globals: true,
     environment: 'jsdom',
@@ -23,6 +30,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, 'src'),
       '$lib': path.resolve(__dirname, 'src')
-    }
+    },
+    conditions: process.env.VITEST ? ['browser'] : []
   }
 });

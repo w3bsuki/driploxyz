@@ -20,40 +20,27 @@
 
   let { data, children }: { data: LayoutData; children?: Snippet } = $props();
 
+  // CRITICAL: Initialize language IMMEDIATELY on mount, before any child components
+  // This runs synchronously during component initialization
+  if (browser && data?.language) {
+    console.log('🌍 Client: Initializing language IMMEDIATELY with:', data.language);
+    initializeLanguage(data.language);
+    if (i18n.isAvailableLanguageTag(data.language)) {
+      sessionStorage.setItem('selectedLocale', data.language);
+    }
+  }
+  
   // Language initialization - Header component handles switching
   $effect(() => {
     if (browser) {
-      console.log('🌍 Client: Initializing language with server data:', data?.language);
-      console.log('🌍 Client: Full data object:', data);
+      console.log('🌍 Client: Effect - checking language with server data:', data?.language);
       
-      // Force language detection if server data is missing
-      const serverLang = data?.language;
-      if (!serverLang) {
-        console.log('🌍 Client: Server language missing, checking fallbacks');
-        
-        // Check sessionStorage first (survives auth refreshes)
-        const sessionLang = sessionStorage.getItem('selectedLocale');
-        if (sessionLang && i18n.isAvailableLanguageTag(sessionLang)) {
-          console.log('🌍 Client: Using sessionStorage language:', sessionLang);
-          initializeLanguage(sessionLang);
-        } else {
-          // Fallback to cookie
-          const cookieMatch = document.cookie.match(/locale=([^;]+)/);
-          const cookieLang = cookieMatch ? cookieMatch[1] : null;
-          console.log('🌍 Client: Cookie language:', cookieLang);
-          
-          if (cookieLang && i18n.isAvailableLanguageTag(cookieLang)) {
-            initializeLanguage(cookieLang);
-          } else {
-            initializeLanguage('en');
-          }
-        }
-      } else {
-        // Use server language from SSR
-        initializeLanguage(serverLang);
-        // Also save to sessionStorage for consistency
-        if (i18n.isAvailableLanguageTag(serverLang)) {
-          sessionStorage.setItem('selectedLocale', serverLang);
+      // Only initialize if not already set correctly
+      if (data?.language && i18n.languageTag() !== data.language) {
+        console.log('🌍 Client: Language mismatch, setting to:', data.language);
+        initializeLanguage(data.language);
+        if (i18n.isAvailableLanguageTag(data.language)) {
+          sessionStorage.setItem('selectedLocale', data.language);
         }
       }
       

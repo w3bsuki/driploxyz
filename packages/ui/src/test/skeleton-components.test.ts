@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { screen } from '@testing-library/svelte';
-import ProductCardSkeleton from '../ProductCardSkeleton.svelte';
-import SellerCardSkeleton from '../SellerCardSkeleton.svelte';
-import CategoryCardSkeleton from '../CategoryCardSkeleton.svelte';
+import ProductCardSkeleton from '../lib/ProductCardSkeleton.svelte';
+import SellerCardSkeleton from '../lib/SellerCardSkeleton.svelte';
+import CategoryCardSkeleton from '../lib/CategoryCardSkeleton.svelte';
 import {
   renderSvelte5Component,
   setupGlobalMocks,

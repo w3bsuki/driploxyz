@@ -36,18 +36,35 @@ export default defineConfig({
 						// Group vendor libraries
 						if (id.includes('@repo/ui')) return 'vendor-ui';
 						if (id.includes('zod') || id.includes('sveltekit-superforms')) return 'vendor-utils';
-						// Let SvelteKit handle Supabase and Stripe externally
+						if (id.includes('@supabase')) return 'vendor-supabase';
+						if (id.includes('stripe')) return 'vendor-stripe';
+						// Let SvelteKit handle other vendor libraries
 						return 'vendor';
 					}
-				}
+				},
+				// Optimize chunk names for caching
+				chunkFileNames: '_app/immutable/chunks/[name]-[hash].js',
+				entryFileNames: '_app/immutable/entry/[name]-[hash].js',
+				assetFileNames: '_app/immutable/assets/[name]-[hash][extname]'
 			}
 		},
-		// Optimize build performance
-		sourcemap: process.env.NODE_ENV === 'development',
-		minify: 'esbuild', // Use esbuild minifier (default)
+		// Production optimizations
+		sourcemap: process.env.NODE_ENV === 'development' ? true : 'hidden',
+		minify: 'terser',
+		terserOptions: {
+			compress: {
+				drop_console: process.env.NODE_ENV === 'production',
+				drop_debugger: true,
+				pure_funcs: process.env.NODE_ENV === 'production' ? ['console.log', 'console.info'] : []
+			}
+		},
 		// Asset optimization
 		assetsInlineLimit: 4096, // 4KB threshold for inlining assets
-		cssCodeSplit: true
+		cssCodeSplit: true,
+		// Report compressed size
+		reportCompressedSize: false,
+		// Chunk size warnings
+		chunkSizeWarningLimit: 500
 	},
 	// Image optimization settings
 	server: {

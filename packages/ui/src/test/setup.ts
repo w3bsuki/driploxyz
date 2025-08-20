@@ -68,6 +68,23 @@ Object.defineProperty(window, 'CSS', {
   }
 });
 
+// Mock animation API
+if (typeof Element.prototype.animate === 'undefined') {
+  Element.prototype.animate = vi.fn().mockReturnValue({
+    play: vi.fn(),
+    pause: vi.fn(),
+    cancel: vi.fn(),
+    finish: vi.fn(),
+    startTime: 0,
+    currentTime: 0,
+    playbackRate: 1,
+    playState: 'idle',
+    pending: false,
+    ready: Promise.resolve(),
+    finished: Promise.resolve()
+  });
+}
+
 // Global error handler for unhandled promise rejections
 process.on('unhandledRejection', (reason, promise) => {
   console.warn('Unhandled promise rejection:', reason, promise);

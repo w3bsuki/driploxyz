@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { screen } from '@testing-library/svelte';
-import SellerCard from '../SellerCard.svelte';
+import SellerCard from '../lib/SellerCard.svelte';
 import {
   renderSvelte5Component,
   createMockHandlers,

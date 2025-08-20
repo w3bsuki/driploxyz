@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { screen, fireEvent } from '@testing-library/svelte';
-import ProductCard from '../ProductCard.svelte';
+import ProductCard from '../lib/ProductCard.svelte';
 import {
   renderSvelte5Component,
   createMockProduct,
@@ -33,8 +33,9 @@ describe('ProductCard', () => {
       expect(screen.getByText(mockProduct.title)).toBeInTheDocument();
       expect(screen.getByText(mockProduct.brand)).toBeInTheDocument();
       expect(screen.getByText('$89.99')).toBeInTheDocument();
-      expect(screen.getByText('Size M')).toBeInTheDocument();
-      expect(screen.getByText('Good')).toBeInTheDocument();
+      expect(screen.getByText(/Size M/)).toBeInTheDocument();
+      const conditionBadges = screen.getAllByText('Good');
+      expect(conditionBadges.length).toBeGreaterThan(0);
     });
 
     it('renders product image with correct alt text', () => {

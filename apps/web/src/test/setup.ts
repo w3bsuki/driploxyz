@@ -13,6 +13,13 @@ vi.mock('$env/static/private', () => ({
 	STRIPE_SECRET_KEY: 'sk_test_stripe_secret'
 }));
 
+vi.mock('$env/dynamic/public', () => ({
+	env: {
+		PUBLIC_SUPABASE_URL: 'https://test.supabase.co',
+		PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key'
+	}
+}));
+
 // Mock SvelteKit stores
 vi.mock('$app/stores', () => ({
 	page: {

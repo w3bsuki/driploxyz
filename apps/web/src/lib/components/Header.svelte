@@ -19,15 +19,24 @@
   interface Props {
     showSearch?: boolean;
     minimal?: boolean;
+    initialLanguage?: string;
   }
   
-  let { showSearch = false, minimal = false }: Props = $props();
+  let { showSearch = false, minimal = false, initialLanguage }: Props = $props();
   let mobileMenuOpen = $state(false);
   let userMenuOpen = $state(false);
   let notificationService: RealtimeNotificationService | null = null;
   
-  // Language - REACTIVE tracking
-  let currentLang = $state(i18n.languageTag());
+  // Language - REACTIVE tracking with initial value from server
+  let currentLang = $state(initialLanguage || i18n.languageTag());
+  
+  // Initialize language if provided from server
+  $effect(() => {
+    if (initialLanguage && initialLanguage !== i18n.languageTag()) {
+      i18n.setLanguageTag(initialLanguage);
+      currentLang = initialLanguage;
+    }
+  });
   
   // CRITICAL: Update currentLang when language changes
   $effect(() => {
@@ -75,13 +84,20 @@
       // CRITICAL FIX: Prevent auth state from overriding language
       console.log('Setting language and refreshing:', lang);
       
-      // 1. Save the locale cookie FIRST with proper settings
-      document.cookie = `locale=${lang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax; Secure=${location.protocol === 'https:'}`;
+      // 1. Use the ProductionCookieManager to set the cookie properly
+      cookieManager.setCookie('locale', lang, {
+        maxAge: 365 * 24 * 60 * 60,
+        sameSite: 'lax',
+        secure: location.protocol === 'https:'
+      });
       
       // 2. Also save to sessionStorage as backup (survives auth refreshes)
       sessionStorage.setItem('selectedLocale', lang);
       
-      // 3. Force hard navigation to bypass any auth state listeners
+      // 3. Wait a tiny bit for cookie to be set before refreshing
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      // 4. Force hard navigation to bypass any auth state listeners
       // Use replace to prevent back button issues
       window.location.replace(window.location.pathname + window.location.search);
       
