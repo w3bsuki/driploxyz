@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { createProduct, getPriceSuggestions } from '$lib/remote/products.remote';
+  import { getPriceSuggestions } from '$lib/client/products';
   import { ProductSchema, POPULAR_BRANDS, SIZE_CATEGORIES } from '$lib/validation/product';
   import type { PageData } from './$types';
   import { 
@@ -48,8 +48,7 @@
     confidence: 'low' | 'medium' | 'high';
   } | null>(null);
   
-  // Create form function
-  const productForm = createProduct.form();
+  // Use regular form submission to server action
 
   // Multi-step form state
   let currentStep = $state(1);
@@ -133,7 +132,7 @@
     }
   }
 
-  // Handle form submission using remote functions
+  // Handle form submission - create FormData and submit to server action
   async function handleFormSubmit() {
     if (currentStep !== 4) {
       toasts.add({
@@ -157,33 +156,46 @@
     errors = {};
     
     try {
-      // Validate form data
-      const validation = ProductSchema.extend({
-        photos: ProductSchema.shape.photos || ProductSchema.shape.photos_count
-      }).safeParse({
-        ...formData,
-        photos: photoFiles
+      // Create FormData for submission
+      const formDataToSubmit = new FormData();
+      
+      // Add form fields
+      formDataToSubmit.append('title', formData.title);
+      formDataToSubmit.append('description', formData.description || '');
+      formDataToSubmit.append('category_id', formData.category_id);
+      formDataToSubmit.append('subcategory_id', formData.subcategory_id || '');
+      formDataToSubmit.append('brand', formData.brand);
+      formDataToSubmit.append('size', formData.size);
+      formDataToSubmit.append('condition', formData.condition);
+      formDataToSubmit.append('color', formData.color || '');
+      formDataToSubmit.append('material', formData.material || '');
+      formDataToSubmit.append('price', formData.price.toString());
+      formDataToSubmit.append('shipping_cost', formData.shipping_cost.toString());
+      formDataToSubmit.append('use_premium_boost', formData.use_premium_boost.toString());
+      
+      // Add tags
+      formData.tags.forEach((tag, index) => {
+        formDataToSubmit.append(`tags[${index}]`, tag);
       });
       
-      if (!validation.success) {
-        validation.error.errors.forEach(err => {
-          if (err.path.length > 0) {
-            errors[err.path[0]] = err.message;
-          }
-        });
-        toasts.add({
-          type: 'error',
-          message: 'Please fix the form errors',
-          duration: 5000
-        });
+      // Add photos
+      photoFiles.forEach(file => {
+        formDataToSubmit.append('photos', file);
+      });
+      
+      // Submit to server action
+      const response = await fetch(window.location.href, {
+        method: 'POST',
+        body: formDataToSubmit
+      });
+      
+      if (response.redirected) {
+        // Success - redirect to success page
+        window.location.href = response.url;
         return;
       }
       
-      // Submit using remote function
-      const result = await productForm({
-        ...formData,
-        photos: photoFiles
-      });
+      const result = await response.json();
       
       if (result.success) {
         toasts.add({
@@ -191,11 +203,9 @@
           message: 'Product listed successfully!',
           duration: 5000
         });
-        
-        // Redirect to success page
-        goto(`/sell/success?id=${result.product.id}`);
+        goto(`/sell/success?id=${result.product?.id}`);
       } else {
-        throw new Error('Failed to create product');
+        throw new Error(result.error || 'Failed to create listing');
       }
     } catch (error) {
       console.error('Form submission error:', error);

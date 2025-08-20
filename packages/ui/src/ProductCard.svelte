@@ -74,6 +74,17 @@
       handleClick();
     }
   }}
+  onmouseenter={() => {
+    // Prefetch product page data on hover for better performance
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback(() => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = `/product/${product.id}`;
+        document.head.appendChild(link);
+      });
+    }
+  }}
   role="button"
   tabindex={0}
 >

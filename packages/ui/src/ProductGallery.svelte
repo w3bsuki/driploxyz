@@ -112,12 +112,13 @@
     aria-label="Product image gallery - click to zoom"
   >
     {#key selectedIndex}
-      <img 
+      <enhanced:img 
         bind:this={imageRef}
         src={selectedImage}
         alt="{title} - Image {selectedIndex + 1}"
         class="w-full h-full object-contain transition-transform duration-300 ease-out
                {isZoomed ? 'scale-150' : 'scale-100'}"
+        sizes="(max-width: 768px) 100vw, 50vw"
         draggable="false"
       />
     {/key}
@@ -188,10 +189,11 @@
                    {selectedIndex === index ? 'ring-white scale-105' : 'ring-transparent hover:ring-white/50'}"
             aria-label="View image {index + 1}"
           >
-            <img 
+            <enhanced:img 
               src={image} 
               alt="{title} thumbnail {index + 1}"
               class="w-full h-full object-cover"
+              sizes="64px"
             />
           </button>
         {/each}

@@ -74,15 +74,27 @@
       handleClick();
     }
   }}
+  onmouseenter={() => {
+    // Prefetch product page data on hover for better performance
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback(() => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        link.href = `/product/${product.id}`;
+        document.head.appendChild(link);
+      });
+    }
+  }}
   role="button"
   tabindex={0}
 >
   <!-- Image Container -->
   <div class="relative aspect-square bg-gray-50 overflow-hidden rounded-lg">
-    <img 
+    <enhanced:img 
       src={product.images[0] || '/placeholder-product.svg'} 
       alt={product.title}
       class="w-full h-full object-cover"
+      sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
       loading="lazy"
     />
     

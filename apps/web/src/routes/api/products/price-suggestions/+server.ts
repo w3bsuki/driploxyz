@@ -1,0 +1,28 @@
+import { json } from '@sveltejs/kit';
+import { z } from 'zod';
+import { getPriceSuggestions } from '$lib/server/products';
+import type { RequestHandler } from './$types';
+
+const PriceSuggestionSchema = z.object({
+  categoryId: z.string().uuid(),
+  brand: z.string().optional(),
+  condition: z.enum(['new', 'like-new', 'good', 'fair']),
+  size: z.string().optional()
+});
+
+export const POST: RequestHandler = async ({ request, locals }) => {
+  try {
+    const body = await request.json();
+    const params = PriceSuggestionSchema.parse(body);
+    
+    const suggestions = await getPriceSuggestions(locals.supabase, params);
+    
+    return json(suggestions);
+  } catch (error) {
+    console.error('Price suggestion error:', error);
+    return json(
+      { error: 'Failed to get price suggestions' },
+      { status: 500 }
+    );
+  }
+};

@@ -8,6 +8,7 @@
 	import QuickViewDialog from '$lib/components/QuickViewDialog.svelte';
 	import PromotedHighlights from '$lib/components/PromotedHighlights.svelte';
 	import FeaturedProducts from '$lib/components/FeaturedProducts.svelte';
+	import { prefetchRoute } from '$lib/utils/performance';
 	import { goto } from '$app/navigation';
 	import { serviceUtils } from '$lib/services';
 	import type { PageData } from './$types';
@@ -240,6 +241,7 @@
 							disabled={loadingCategory === category.slug}
 							class="category-nav-pill shrink-0 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center"
 							style="min-width: 80px; height: 44px;"
+							{...prefetchRoute(`/category/${category.slug}`)}
 						>
 							{#if loadingCategory === category.slug}
 								<svg class="animate-spin h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
