@@ -197,62 +197,54 @@ const supabase: Handle = async ({ event, resolve }) => {
 //   return resolve(event);
 // };
 
+import { checkServerConsent, COOKIES } from '$lib/cookies/production-cookie-system';
+
 const languageHandler: Handle = async ({ event, resolve }) => {
-  // Use standard 'locale' cookie name consistently
-  const langCookie = event.cookies.get('locale');
+  // Clean up legacy cookies
+  ['driplo_language', 'language', 'lang'].forEach(old => {
+    if (event.cookies.get(old)) {
+      event.cookies.delete(old, { path: '/' });
+    }
+  });
   
-  // Clean up old driplo_language cookie if it exists
-  const oldLangCookie = event.cookies.get('driplo_language');
-  if (oldLangCookie && !langCookie) {
-    event.cookies.set('locale', oldLangCookie, {
-      path: '/',
-      maxAge: 365 * 24 * 60 * 60,
-      httpOnly: false,
-      sameSite: 'lax'
-    });
-    event.cookies.delete('driplo_language', { path: '/' });
-  }
+  // Get locale from cookie
+  let locale = event.cookies.get(COOKIES.LOCALE);
   
-  const finalLangCookie = event.cookies.get('locale');
-  
-  // Set language on server side
-  if (finalLangCookie && i18n.isAvailableLanguageTag(finalLangCookie)) {
-    i18n.setLanguageTag(finalLangCookie as any);
-  } else {
-    // Try to detect from Accept-Language header
-    const acceptLanguage = event.request.headers.get('accept-language');
-    if (acceptLanguage) {
-      const browserLang = acceptLanguage.split(',')[0].split('-')[0].toLowerCase();
-      if (i18n.isAvailableLanguageTag(browserLang)) {
-        i18n.setLanguageTag(browserLang as any);
-        // Set cookie for next time
-        event.cookies.set('locale', browserLang, {
-          path: '/',
-          maxAge: 365 * 24 * 60 * 60,
-          httpOnly: false, // Allow JS to read it
-          sameSite: 'lax'
-        });
-      } else {
-        i18n.setLanguageTag('en');
-        event.cookies.set('locale', 'en', {
-          path: '/',
-          maxAge: 365 * 24 * 60 * 60,
-          httpOnly: false,
-          sameSite: 'lax'
-        });
-      }
+  // Detect from headers if no cookie
+  if (!locale) {
+    const acceptLang = event.request.headers.get('accept-language');
+    if (acceptLang) {
+      const browserLang = acceptLang.split(',')[0].split('-')[0].toLowerCase();
+      locale = i18n.isAvailableLanguageTag(browserLang) ? browserLang : 'en';
     } else {
-      i18n.setLanguageTag('en');
-      event.cookies.set('locale', 'en', {
+      locale = 'en';
+    }
+    
+    // Set cookie only if functional consent exists
+    if (checkServerConsent(event.cookies, 'functional')) {
+      event.cookies.set(COOKIES.LOCALE, locale, {
         path: '/',
         maxAge: 365 * 24 * 60 * 60,
         httpOnly: false,
-        sameSite: 'lax'
+        sameSite: 'lax',
+        secure: !dev
       });
     }
   }
   
-  return resolve(event);
+  // Apply locale
+  if (locale && i18n.isAvailableLanguageTag(locale)) {
+    i18n.setLanguageTag(locale as any);
+  } else {
+    i18n.setLanguageTag('en');
+  }
+  
+  event.locals.locale = i18n.languageTag();
+  
+  return resolve(event, {
+    transformPageChunk: ({ html }) => 
+      html.replace('<html', `<html lang="${event.locals.locale}"`)
+  });
 };
 
 const authGuard: Handle = async ({ event, resolve }) => {

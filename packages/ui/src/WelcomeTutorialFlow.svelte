@@ -1,40 +1,58 @@
 <script lang="ts">
+  interface Translations {
+    welcomeTitle?: string;
+    welcomeContent?: string;
+    discoverTitle?: string;
+    discoverContent?: string;
+    listItemTitle?: string;
+    listItemContentBrand?: string;
+    listItemContentPersonal?: string;
+    stayConnectedTitle?: string;
+    stayConnectedContent?: string;
+    readyTitle?: string;
+    readyContent?: string;
+    skip?: string;
+    next?: string;
+    getStarted?: string;
+  }
+
   interface Props {
     show: boolean;
     accountType: 'personal' | 'brand';
     onComplete: () => void;
+    translations?: Translations;
   }
 
-  let { show, accountType, onComplete }: Props = $props();
+  let { show, accountType, onComplete, translations = {} }: Props = $props();
 
   let currentStep = $state(0);
 
   const tutorialSteps = [
     {
-      title: "Welcome to Driplo! 👋",
-      content: "You're all set up! Let's quickly show you how to make the most of our marketplace.",
+      title: translations.welcomeTitle || "Welcome to Driplo! 👋",
+      content: translations.welcomeContent || "You're all set up! Let's quickly show you how to make the most of our marketplace.",
       icon: "🎉"
     },
     {
-      title: "Discover Amazing Items",
-      content: "Use the search bar to find specific items or browse categories to discover unique clothing pieces.",
+      title: translations.discoverTitle || "Discover Amazing Items",
+      content: translations.discoverContent || "Use the search bar to find specific items or browse categories to discover unique clothing pieces.",
       icon: "🔍"
     },
     {
-      title: "List Your First Item", 
+      title: translations.listItemTitle || "List Your First Item", 
       content: accountType === 'brand' 
-        ? "As a brand account, you have access to bulk upload tools and advanced analytics for your listings."
-        : "Ready to sell? Click the '+' button to list your first item. Add great photos and honest descriptions.",
+        ? (translations.listItemContentBrand || "As a brand account, you have access to bulk upload tools and advanced analytics for your listings.")
+        : (translations.listItemContentPersonal || "Ready to sell? Click the '+' button to list your first item. Add great photos and honest descriptions."),
       icon: "📸"
     },
     {
-      title: "Stay Connected",
-      content: "Use our messaging system to chat with buyers/sellers. Get notifications for new messages and offers.",
+      title: translations.stayConnectedTitle || "Stay Connected",
+      content: translations.stayConnectedContent || "Use our messaging system to chat with buyers/sellers. Get notifications for new messages and offers.",
       icon: "💬"
     },
     {
-      title: "You're Ready!",
-      content: "Check your dashboard for your listings, messages, and account settings. Happy trading!",
+      title: translations.readyTitle || "You're Ready!",
+      content: translations.readyContent || "Check your dashboard for your listings, messages, and account settings. Happy trading!",
       icon: "✨"
     }
   ];
@@ -79,13 +97,13 @@
           onclick={skipTutorial}
           class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors"
         >
-          Skip
+          {translations.skip || 'Skip'}
         </button>
         <button 
           onclick={nextStep}
           class="flex-1 px-4 py-1.5 text-sm text-white bg-gray-900 rounded-sm hover:bg-gray-800 transition-colors"
         >
-          {currentStep < tutorialSteps.length - 1 ? 'Next' : 'Get Started'}
+          {currentStep < tutorialSteps.length - 1 ? (translations.next || 'Next') : (translations.getStarted || 'Get Started')}
         </button>
       </div>
     </div>

@@ -14,16 +14,7 @@
     validators: zodClient(LoginSchema),
     resetForm: false,
     taintedMessage: null,
-    validationMethod: 'oninput',
-    onUpdated: ({ form }) => {
-      // On successful login, redirect to dashboard after showing success message
-      if (form.message?.type === 'success') {
-        toasts.success('Login successful! Redirecting...');
-        setTimeout(() => {
-          window.location.href = '/';
-        }, 2000); // Give user time to see success message
-      }
-    }
+    validationMethod: 'oninput'
   });
 
   onMount(() => {

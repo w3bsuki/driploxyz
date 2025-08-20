@@ -541,4 +541,20 @@
   show={showTutorialFlow}
   accountType={accountType}
   onComplete={handleTutorialComplete}
+  translations={{
+    welcomeTitle: m.onboarding_tutorial_welcomeTitle(),
+    welcomeContent: m.onboarding_tutorial_welcomeContent(),
+    discoverTitle: m.onboarding_tutorial_discoverTitle(),
+    discoverContent: m.onboarding_tutorial_discoverContent(),
+    listItemTitle: m.onboarding_tutorial_listItemTitle(),
+    listItemContentBrand: m.onboarding_tutorial_listItemContentBrand(),
+    listItemContentPersonal: m.onboarding_tutorial_listItemContentPersonal(),
+    stayConnectedTitle: m.onboarding_tutorial_stayConnectedTitle(),
+    stayConnectedContent: m.onboarding_tutorial_stayConnectedContent(),
+    readyTitle: m.onboarding_tutorial_readyTitle(),
+    readyContent: m.onboarding_tutorial_readyContent(),
+    skip: m.onboarding_skip(),
+    next: m.onboarding_next(),
+    getStarted: m.onboarding_getStarted()
+  }}
 />

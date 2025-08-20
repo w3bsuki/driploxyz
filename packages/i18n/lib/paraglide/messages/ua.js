@@ -3843,3 +3843,25 @@ export { sell_month } from "./en.js"
 export { sell_next } from "./en.js"
 
 export { sell_previous } from "./en.js"
+
+export { onboarding_tutorial_welcomeTitle } from "./en.js"
+
+export { onboarding_tutorial_welcomeContent } from "./en.js"
+
+export { onboarding_tutorial_discoverTitle } from "./en.js"
+
+export { onboarding_tutorial_discoverContent } from "./en.js"
+
+export { onboarding_tutorial_listItemTitle } from "./en.js"
+
+export { onboarding_tutorial_listItemContentBrand } from "./en.js"
+
+export { onboarding_tutorial_listItemContentPersonal } from "./en.js"
+
+export { onboarding_tutorial_stayConnectedTitle } from "./en.js"
+
+export { onboarding_tutorial_stayConnectedContent } from "./en.js"
+
+export { onboarding_tutorial_readyTitle } from "./en.js"
+
+export { onboarding_tutorial_readyContent } from "./en.js"

@@ -44,7 +44,7 @@
     onError: ({ error }) => {
       toasts.add({
         type: 'error',
-        message: error.message || 'Failed to create listing',
+        message: error?.message || 'Failed to create listing',
         duration: 5000
       });
     }
@@ -52,22 +52,24 @@
 
   // Multi-step form state
   let currentStep = $state(1);
-  const totalSteps = 3;
+  const totalSteps = 4;
+  let isReviewing = $state(false);
   
   // File handling for photos
   let photoFiles = $state<File[]>([]);
   let photoUrls = $state<string[]>([]);
   
   // Get categories from server data
-  const mainCategories = $derived(data.categories.filter(c => !c.parent_id));
+  const mainCategories = $derived((data.categories || []).filter(c => !c.parent_id));
   const getSubcategories = (parentId: string) => 
-    data.categories.filter(c => c.parent_id === parentId);
+    (data.categories || []).filter(c => c.parent_id === parentId);
 
   // Steps configuration
   const steps = [
     { id: 1, title: 'Photos & Details', description: 'Upload images and basic info' },
     { id: 2, title: 'Product Info', description: 'Brand, size, and condition' },
-    { id: 3, title: 'Price & Publish', description: 'Set your price and go live' }
+    { id: 3, title: 'Pricing', description: 'Set your price' },
+    { id: 4, title: 'Review', description: 'Review and publish' }
   ];
 
   // Completed steps tracking
@@ -78,6 +80,9 @@
     }
     if ($form.brand && $form.size && $form.condition) {
       completed.push(2);
+    }
+    if ($form.price && $form.shipping_cost >= 0) {
+      completed.push(3);
     }
     return completed;
   });
@@ -112,6 +117,8 @@
         return $form.brand && $form.size && $form.condition;
       case 3: 
         return $form.price && $form.shipping_cost >= 0;
+      case 4:
+        return true; // Review step can always submit
       default: 
         return false;
     }
@@ -127,18 +134,47 @@
   }
 
   // Handle form submission
-  async function handleSubmit(e: Event) {
-    if (!canProceedToNext()) return;
+  function handleFormSubmit({ formData, cancel }) {
+    // Only allow submission from review step
+    if (currentStep !== 4) {
+      cancel();
+      toasts.add({
+        type: 'error',
+        message: 'Please review your listing before publishing',
+        duration: 5000
+      });
+      return;
+    }
     
-    const formElement = e.target as HTMLFormElement;
-    const formData = new FormData(formElement);
+    // Check for photos
+    if (photoFiles.length === 0) {
+      cancel();
+      toasts.add({
+        type: 'error',
+        message: 'At least one photo is required',
+        duration: 5000
+      });
+      return;
+    }
     
-    // Add photo files
+    // Add photo files to form data
     photoFiles.forEach(file => {
       formData.append('photos', file);
     });
     
-    return enhance(e);
+    console.log('Submitting form with data:', {
+      title: formData.get('title'),
+      category_id: formData.get('category_id'),
+      brand: formData.get('brand'),
+      size: formData.get('size'),
+      price: formData.get('price'),
+      photos: photoFiles.length
+    });
+  }
+  
+  // Get category name by ID
+  function getCategoryName(id: string) {
+    return (data.categories || []).find(c => c.id === id)?.name || '';
   }
 
   // Tag suggestions
@@ -200,6 +236,18 @@
 
   <!-- Form Content -->
   <div class="max-w-4xl mx-auto px-4 py-6">
+    <!-- Error Messages -->
+    {#if $formMessage}
+      <div class="mb-4">
+        <div class="bg-red-50 text-red-600 p-4 rounded-lg flex items-start space-x-3">
+          <svg class="w-5 h-5 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+          <p class="text-red-800">{$formMessage}</p>
+        </div>
+      </div>
+    {/if}
+    
     {#if data.needsBrandSubscription}
       <!-- Brand Subscription Required -->
       <div class="bg-white rounded-lg shadow-sm p-6 text-center">
@@ -278,7 +326,26 @@
       {/if}
 
       <!-- Multi-step Form -->
-      <form method="POST" use:enhance={handleSubmit} enctype="multipart/form-data">
+      <form method="POST" use:enhance={handleFormSubmit} enctype="multipart/form-data">
+        <!-- Hidden inputs to ensure all form data is submitted -->
+        <input type="hidden" name="title" bind:value={$form.title} />
+        <input type="hidden" name="description" bind:value={$form.description} />
+        <input type="hidden" name="category_id" bind:value={$form.category_id} />
+        <input type="hidden" name="subcategory_id" bind:value={$form.subcategory_id} />
+        <input type="hidden" name="brand" bind:value={$form.brand} />
+        <input type="hidden" name="size" bind:value={$form.size} />
+        <input type="hidden" name="condition" bind:value={$form.condition} />
+        <input type="hidden" name="color" bind:value={$form.color} />
+        <input type="hidden" name="material" bind:value={$form.material} />
+        <input type="hidden" name="price" bind:value={$form.price} />
+        <input type="hidden" name="shipping_cost" bind:value={$form.shipping_cost} />
+        <input type="hidden" name="use_premium_boost" bind:value={$form.use_premium_boost} />
+        {#if $form.tags}
+          {#each $form.tags as tag, i}
+            <input type="hidden" name="tags[{i}]" bind:value={$form.tags[i]} />
+          {/each}
+        {/if}
+        
         <div class="bg-white rounded-lg shadow-sm">
           {#if currentStep === 1}
             <!-- Step 1: Photos & Details -->
@@ -514,6 +581,133 @@
                   </div>
                 </div>
               {/if}
+            </div>
+          {:else if currentStep === 4}
+            <!-- Step 4: Review & Publish -->
+            <div class="p-6">
+              <h2 class="text-lg font-semibold text-gray-900 mb-4">Review Your Listing</h2>
+              
+              <!-- Photos Preview -->
+              <div class="mb-6">
+                <h3 class="text-sm font-medium text-gray-700 mb-2">Photos</h3>
+                <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  {#each photoUrls as url, index}
+                    <div class="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                      <img src={url} alt="Product {index + 1}" class="w-full h-full object-cover" />
+                    </div>
+                  {/each}
+                </div>
+              </div>
+              
+              <!-- Product Details -->
+              <div class="space-y-4 border-t pt-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <span class="text-xs text-gray-500">Title</span>
+                    <p class="font-medium text-gray-900">{$form.title}</p>
+                  </div>
+                  
+                  <div>
+                    <span class="text-xs text-gray-500">Category</span>
+                    <p class="font-medium text-gray-900">
+                      {getCategoryName($form.category_id)}
+                      {#if $form.subcategory_id}
+                        / {getCategoryName($form.subcategory_id)}
+                      {/if}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <span class="text-xs text-gray-500">Brand</span>
+                    <p class="font-medium text-gray-900">{$form.brand}</p>
+                  </div>
+                  
+                  <div>
+                    <span class="text-xs text-gray-500">Size</span>
+                    <p class="font-medium text-gray-900">{$form.size}</p>
+                  </div>
+                  
+                  <div>
+                    <span class="text-xs text-gray-500">Condition</span>
+                    <p class="font-medium text-gray-900 capitalize">{$form.condition}</p>
+                  </div>
+                  
+                  {#if $form.color}
+                    <div>
+                      <span class="text-xs text-gray-500">Color</span>
+                      <p class="font-medium text-gray-900">{$form.color}</p>
+                    </div>
+                  {/if}
+                  
+                  {#if $form.material}
+                    <div>
+                      <span class="text-xs text-gray-500">Material</span>
+                      <p class="font-medium text-gray-900">{$form.material}</p>
+                    </div>
+                  {/if}
+                </div>
+                
+                {#if $form.description}
+                  <div>
+                    <span class="text-xs text-gray-500">Description</span>
+                    <p class="text-sm text-gray-700 mt-1">{$form.description}</p>
+                  </div>
+                {/if}
+                
+                <!-- Pricing -->
+                <div class="border-t pt-4">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm text-gray-600">Item Price</span>
+                    <span class="font-medium text-gray-900">${$form.price?.toFixed(2) || '0.00'}</span>
+                  </div>
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm text-gray-600">Shipping Cost</span>
+                    <span class="font-medium text-gray-900">
+                      {$form.shipping_cost > 0 ? `$${$form.shipping_cost.toFixed(2)}` : 'Free'}
+                    </span>
+                  </div>
+                  <div class="flex justify-between items-center pt-2 border-t">
+                    <span class="text-sm font-medium text-gray-900">Buyer Pays</span>
+                    <span class="text-lg font-bold text-gray-900">
+                      ${(($form.price || 0) + ($form.shipping_cost || 0)).toFixed(2)}
+                    </span>
+                  </div>
+                  <div class="flex justify-between items-center mt-1">
+                    <span class="text-xs text-gray-500">You receive (after 5% fee)</span>
+                    <span class="text-sm font-medium text-green-600">
+                      ${(($form.price || 0) * 0.95).toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+                
+                {#if $form.tags?.length > 0}
+                  <div>
+                    <span class="text-xs text-gray-500">Tags</span>
+                    <div class="flex flex-wrap gap-1 mt-1">
+                      {#each $form.tags as tag}
+                        <span class="px-2 py-1 bg-gray-100 text-xs rounded-full">{tag}</span>
+                      {/each}
+                    </div>
+                  </div>
+                {/if}
+                
+                {#if $form.use_premium_boost}
+                  <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                    <div class="flex items-center space-x-2">
+                      <span class="text-lg">✨</span>
+                      <span class="text-sm font-medium text-gray-900">Premium Boost Applied</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mt-1">3x more visibility for 7 days</p>
+                  </div>
+                {/if}
+              </div>
+              
+              <!-- Terms Notice -->
+              <div class="mt-6 p-4 bg-blue-50 rounded-lg">
+                <p class="text-xs text-blue-800">
+                  By publishing, you agree to our terms of service and confirm that this item is authentic and accurately described.
+                </p>
+              </div>
             </div>
           {/if}
         </div>

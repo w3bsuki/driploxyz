@@ -1,5 +1,24 @@
 import { z } from 'zod';
 
+// Custom number validation that handles string inputs
+const priceSchema = z.union([
+  z.number(),
+  z.string().transform((val) => {
+    const num = parseFloat(val.replace(/[^0-9.]/g, ''));
+    if (isNaN(num)) throw new Error('Invalid price');
+    return num;
+  })
+]);
+
+const shippingSchema = z.union([
+  z.number(),
+  z.string().transform((val) => {
+    const num = parseFloat(val.replace(/[^0-9.]/g, ''));
+    if (isNaN(num)) return 0;
+    return num;
+  })
+]);
+
 // Condition types
 export const ProductCondition = z.enum(['new', 'like-new', 'good', 'fair']);
 
@@ -45,13 +64,15 @@ export const ProductSchema = z.object({
     .nullable(),
   
   // Step 3: Price & Publish
-  price: z.number()
-    .min(0.01, 'Price must be at least $0.01')
-    .max(10000, 'Price cannot exceed $10,000'),
+  price: priceSchema
+    .default(0)
+    .refine(val => val >= 0.01, 'Price must be at least $0.01')
+    .refine(val => val <= 10000, 'Price cannot exceed $10,000'),
   
-  shipping_cost: z.number()
-    .min(0, 'Shipping cost must be 0 or positive')
-    .max(100, 'Shipping cost cannot exceed $100'),
+  shipping_cost: shippingSchema
+    .default(0)
+    .refine(val => val >= 0, 'Shipping cost must be 0 or positive')
+    .refine(val => val <= 100, 'Shipping cost cannot exceed $100'),
   
   tags: z.array(z.string().trim())
     .max(10, 'Maximum 10 tags allowed')

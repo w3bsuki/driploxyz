@@ -4712,3 +4712,91 @@ export const sell_next = () => `Next`
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const sell_previous = () => `Previous`
+
+
+/**
+ * Failed to resolve message onboarding_tutorial_welcomeTitle for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_welcomeTitle = () => "onboarding_tutorial_welcomeTitle"
+
+
+/**
+ * Failed to resolve message onboarding_tutorial_welcomeContent for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_welcomeContent = () => "onboarding_tutorial_welcomeContent"
+
+
+/**
+ * Failed to resolve message onboarding_tutorial_discoverTitle for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_discoverTitle = () => "onboarding_tutorial_discoverTitle"
+
+
+/**
+ * Failed to resolve message onboarding_tutorial_discoverContent for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_discoverContent = () => "onboarding_tutorial_discoverContent"
+
+
+/**
+ * Failed to resolve message onboarding_tutorial_listItemTitle for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_listItemTitle = () => "onboarding_tutorial_listItemTitle"
+
+
+/**
+ * Failed to resolve message onboarding_tutorial_listItemContentBrand for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_listItemContentBrand = () => "onboarding_tutorial_listItemContentBrand"
+
+
+/**
+ * Failed to resolve message onboarding_tutorial_listItemContentPersonal for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_listItemContentPersonal = () => "onboarding_tutorial_listItemContentPersonal"
+
+
+/**
+ * Failed to resolve message onboarding_tutorial_stayConnectedTitle for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_stayConnectedTitle = () => "onboarding_tutorial_stayConnectedTitle"
+
+
+/**
+ * Failed to resolve message onboarding_tutorial_stayConnectedContent for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_stayConnectedContent = () => "onboarding_tutorial_stayConnectedContent"
+
+
+/**
+ * Failed to resolve message onboarding_tutorial_readyTitle for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_readyTitle = () => "onboarding_tutorial_readyTitle"
+
+
+/**
+ * Failed to resolve message onboarding_tutorial_readyContent for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_readyContent = () => "onboarding_tutorial_readyContent"

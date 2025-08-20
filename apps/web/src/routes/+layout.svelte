@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
+  import UnifiedCookieConsent from '$lib/components/UnifiedCookieConsent.svelte';
   import '../app.css';
   import '$lib/styles/cyrillic-typography.css';
   import { invalidate } from '$app/navigation';
@@ -91,7 +93,8 @@
   }}
 />
 
-<!-- Language selector removed - handled by Header component -->
+<!-- Unified Cookie & Language Consent -->
+<UnifiedCookieConsent />
 
 <!-- Global Message Notification Toast -->
 {#if $activeNotification}

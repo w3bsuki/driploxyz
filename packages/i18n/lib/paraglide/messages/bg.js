@@ -4388,3 +4388,91 @@ export const sell_next = () => `Напред`
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const sell_previous = () => `Назад`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_welcomeTitle = () => `Добре дошли в Driplo! 👋`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_welcomeContent = () => `Всичко е готово! Нека ви покажем как да се възползвате максимално от нашия пазар.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_discoverTitle = () => `Открийте невероятни артикули`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_discoverContent = () => `Използвайте лентата за търсене или разгледайте категориите, за да откриете уникални дрехи.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_listItemTitle = () => `Качете първия си артикул`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_listItemContentBrand = () => `Като бранд акаунт имате достъп до инструменти за масово качване и разширена аналитика.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_listItemContentPersonal = () => `Готови за продажба? Кликнете бутона '+' за да качите първия си артикул. Добавете качествени снимки и честни описания.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_stayConnectedTitle = () => `Останете свързани`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_stayConnectedContent = () => `Използвайте нашата система за съобщения за чат с купувачи/продавачи. Получавайте известия за нови съобщения и оферти.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_readyTitle = () => `Готови сте!`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_readyContent = () => `Проверете таблото си за вашите обяви, съобщения и настройки на акаунта. Приятна търговия!`

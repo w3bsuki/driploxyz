@@ -1,5 +1,5 @@
 import { redirect, fail, error } from '@sveltejs/kit';
-import { superValidate, setError, message } from 'sveltekit-superforms';
+import { superValidate, setError } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { LoginSchema } from '$lib/validation/auth';
 import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
@@ -61,11 +61,13 @@ export const actions: Actions = {
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
+      email: email.toLowerCase().trim(), // Normalize email
       password
     });
 
     if (error) {
+      console.error('Login error:', error.message);
+      
       if (error.message.includes('Invalid login credentials')) {
         setError(form, '', 'Invalid email or password');
         return fail(400, { form });
@@ -87,10 +89,18 @@ export const actions: Actions = {
     // Reset rate limit on successful login
     rateLimiter.reset(rateLimitKey);
     
-    // Use message pattern exactly like signup
-    return message(form, {
-      type: 'success',
-      text: 'Successfully signed in! Welcome back to Driplo.'
-    });
+    // Check if user has completed onboarding
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('onboarding_completed')
+      .eq('id', data.user.id)
+      .single();
+    
+    if (!profile || !profile.onboarding_completed) {
+      throw redirect(303, '/onboarding');
+    }
+    
+    // Redirect to home page after successful login
+    throw redirect(303, '/');
   }
 };
