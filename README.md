@@ -1,4 +1,4 @@
-# Driplo - C2C Clothing Marketplace
+# Driplo - C2C Clothing Marketplace - Deploy Test
 
 A modern consumer-to-consumer clothing marketplace built with Svelte 5 and SvelteKit 2. Driplo enables users to buy and sell pre-owned and new clothing items in a clean, minimal interface similar to Vinted.
 
