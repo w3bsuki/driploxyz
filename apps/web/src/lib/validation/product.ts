@@ -64,6 +64,7 @@ export const ProductSchema = z.object({
   photos_count: z.number()
     .min(1, 'At least one photo is required')
     .max(10, 'Maximum 10 photos allowed')
+    .optional()
 });
 
 // Step-specific validation schemas
