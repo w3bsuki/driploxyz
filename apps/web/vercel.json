@@ -6,11 +6,6 @@
   "devCommand": "pnpm dev",
   "outputDirectory": ".svelte-kit",
   "regions": ["iad1"],
-  "functions": {
-    "apps/web/.svelte-kit/vercel-tmp/fn/*.func": {
-      "maxDuration": 10
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
@@ -57,15 +52,5 @@
         }
       ]
     }
-  ],
-  "env": {
-    "PUBLIC_SUPABASE_URL": "@public_supabase_url",
-    "PUBLIC_SUPABASE_ANON_KEY": "@public_supabase_anon_key",
-    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
-    "PUBLIC_STRIPE_PUBLISHABLE_KEY": "@public_stripe_publishable_key",
-    "STRIPE_SECRET_KEY": "@stripe_secret_key",
-    "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret",
-    "PUBLIC_SENTRY_DSN": "@public_sentry_dsn",
-    "SENTRY_AUTH_TOKEN": "@sentry_auth_token"
-  }
+  ]
 }
