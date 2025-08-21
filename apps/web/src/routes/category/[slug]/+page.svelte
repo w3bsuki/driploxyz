@@ -143,59 +143,68 @@
   <Header />
 
   <!-- Category Hero with Sellers -->
-  <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <!-- Compact header with title and sellers in same row -->
-      <div class="flex items-center justify-between gap-4 mb-3">
-        <div class="flex items-center gap-6">
-          <div>
-            <h1 class="text-2xl sm:text-3xl font-bold">Sellers in {category.name}</h1>
-            <p class="text-sm opacity-90 mt-1">{category.description || `Discover amazing ${category.name.toLowerCase()} from our sellers`}</p>
-          </div>
-        </div>
-        
-        <!-- Sellers avatars inline -->
-        <div class="flex items-center gap-3">
-          <div class="flex -space-x-2 overflow-hidden">
-            {#if featuredSellers.length > 0}
-              {#each featuredSellers.slice(0, 10) as seller, i}
-                <a 
-                  href="/profile/{seller.id}" 
-                  class="relative inline-block hover:z-10 transition-transform hover:scale-110"
-                  title="{seller.name} - {seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}"
-                >
+  {@const categoryColors = {
+    'women': 'bg-pink-500',
+    'men': 'bg-blue-600',
+    'kids': 'bg-orange-500',
+    'unisex': 'bg-slate-600',
+    'default': 'bg-gray-700'
+  }}
+  {@const bgColor = categoryColors[categorySlug] || categoryColors['default']}
+  
+  <div class="{bgColor} text-white">
+    <div class="w-full px-4 sm:px-6 lg:px-8 py-6">
+      <!-- Centered header -->
+      <div class="text-center mb-4">
+        <h1 class="text-2xl sm:text-3xl font-bold mb-1">Sellers in {category.name}</h1>
+        <p class="text-sm opacity-90">{category.description || `Discover amazing ${category.name.toLowerCase()} from our sellers`}</p>
+      </div>
+      
+      <!-- Full width sellers display -->
+      <div class="flex justify-center items-center gap-3 overflow-x-auto scrollbar-hide pb-2">
+        {#if featuredSellers.length > 0}
+          <div class="flex items-center gap-3">
+            {#each featuredSellers as seller, i}
+              <a 
+                href="/profile/{seller.id}" 
+                class="flex flex-col items-center group shrink-0 hover:scale-105 transition-transform"
+                title="{seller.name} - {seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}"
+              >
+                <div class="relative">
                   <img 
                     src={seller.avatar} 
                     alt={seller.name} 
-                    class="w-10 h-10 rounded-full border-2 border-white shadow-sm" 
+                    class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-3 border-white/80 group-hover:border-white shadow-lg transition-all" 
                   />
                   {#if seller.itemCount === 1}
-                    <span class="absolute -bottom-1 -right-1 bg-green-500 text-white text-[9px] font-bold px-1 rounded-full">NEW</span>
+                    <span class="absolute -bottom-1 -right-1 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-white">NEW</span>
                   {/if}
-                </a>
-              {/each}
-              {#if featuredSellers.length > 10}
-                <a 
-                  href="/sellers?category={categorySlug}" 
-                  class="relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white hover:bg-white/30 transition-colors"
-                  title="View all sellers"
-                >
-                  <span class="text-xs font-semibold">+{featuredSellers.length - 10}</span>
-                </a>
-              {/if}
-            {:else}
-              <!-- Skeleton sellers -->
-              {#each Array(5) as _, i}
-                <div class="relative inline-block">
-                  <div class="w-10 h-10 rounded-full bg-white/20 animate-pulse border-2 border-white/30"></div>
                 </div>
-              {/each}
-            {/if}
+                <span class="text-xs mt-1.5 font-medium opacity-90 group-hover:opacity-100">{seller.name}</span>
+                <span class="text-[10px] opacity-75">{seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}</span>
+              </a>
+            {/each}
           </div>
-          {#if featuredSellers.length > 0}
-            <a href="/sellers?category={categorySlug}" class="text-xs opacity-75 hover:opacity-100 whitespace-nowrap">View all →</a>
+          {#if featuredSellers.length > 15}
+            <a 
+              href="/sellers?category={categorySlug}" 
+              class="ml-2 text-sm opacity-90 hover:opacity-100 font-medium whitespace-nowrap"
+            >
+              View all sellers →
+            </a>
           {/if}
-        </div>
+        {:else}
+          <!-- Skeleton sellers centered -->
+          <div class="flex items-center gap-3">
+            {#each Array(8) as _, i}
+              <div class="flex flex-col items-center shrink-0">
+                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/20 animate-pulse"></div>
+                <div class="h-3 w-14 bg-white/20 rounded mt-1.5 animate-pulse"></div>
+                <div class="h-2 w-10 bg-white/20 rounded mt-1 animate-pulse"></div>
+              </div>
+            {/each}
+          </div>
+        {/if}
       </div>
     </div>
   </div>
