@@ -11,7 +11,7 @@
 
 <div class="min-h-screen bg-linear-to-br from-blue-50 to-gray-100 flex flex-col justify-center px-4 py-6">
   <div class="w-full max-w-sm mx-auto">
-    <div class="bg-white shadow-xl rounded-2xl overflow-hidden">
+    <div class="bg-white shadow-xl rounded-2xl">
       <!-- Header -->
       <div class="px-4 pt-4 pb-2 text-center">
         <a href="/" class="inline-block">
@@ -36,7 +36,7 @@
       </div>
 
       <!-- Form content -->
-      <div class="px-4 pb-4">
+      <div class="px-6 pb-6">
         {@render children?.()}
       </div>
     </div>

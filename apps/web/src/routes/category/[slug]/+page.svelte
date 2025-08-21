@@ -37,8 +37,8 @@
     location: p.location || p.seller?.location || ''
   }));
   
-  // Extract featured sellers from products (top sellers in this category)
-  const featuredSellers = $derived(() => {
+  // Extract featured sellers from products (show all sellers with items in this category)
+  const featuredSellers = $derived.by(() => {
     const sellerMap = new Map();
     
     // Group products by seller
@@ -50,18 +50,27 @@
             name: p.seller.username || 'Unknown',
             avatar: p.seller.avatar_url || '/default-avatar.png',
             rating: p.seller.seller_rating || 0,
-            itemCount: 0
+            itemCount: 0,
+            createdAt: p.seller.created_at || p.created_at // Use seller creation date or product date
           });
         }
         sellerMap.get(p.seller_id).itemCount++;
       }
     });
     
-    // Convert to array and sort by item count
+    // Convert to array and sort - prioritize sellers with fewer items (newer sellers)
+    // Then by most recent activity
     return Array.from(sellerMap.values())
-      .sort((a, b) => b.itemCount - a.itemCount)
-      .slice(0, 6); // Get top 6 sellers
-  })();
+      .sort((a, b) => {
+        // If one is new (1 item) and other isn't, show new seller first
+        if (a.itemCount === 1 && b.itemCount > 1) return -1;
+        if (b.itemCount === 1 && a.itemCount > 1) return 1;
+        
+        // Otherwise sort by most recent activity
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      })
+      .slice(0, 8); // Show up to 8 sellers
+  });
   
   let selectedSubcategory = $state<string | null>(null);
   let sortBy = $state('popular');
@@ -129,14 +138,16 @@
   <Header />
 
   <!-- Category Hero -->
-  <div class="bg-linear-to-r from-purple-600 to-pink-600 text-white">
+  <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-3xl sm:text-4xl font-bold mb-2">{category.name}</h1>
-          <p class="text-lg opacity-90">{category.description}</p>
+          <p class="text-lg opacity-90">{category.description || `Shop the best ${category.name} items`}</p>
         </div>
-        <img src={category.image} alt={category.name} class="w-24 h-24 rounded-full opacity-80 hidden sm:block" />
+        {#if category.image_url}
+          <img src={category.image_url} alt={category.name} class="w-24 h-24 rounded-full opacity-80 hidden sm:block" />
+        {/if}
       </div>
     </div>
   </div>
@@ -152,60 +163,73 @@
   </div>
 
   <!-- Subcategories -->
-  <div class="bg-white border-b">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-      <div class="flex overflow-x-auto scrollbar-hide space-x-2">
-        <button
-          onclick={() => selectedSubcategory = null}
-          class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors
-            {selectedSubcategory === null 
-              ? 'bg-black text-white' 
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-        >
-          All
-        </button>
-        {#each subcategories as subcat}
+  {#if subcategories.length > 0}
+    <div class="bg-white border-b">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex overflow-x-auto scrollbar-hide space-x-2">
           <button
-            onclick={() => selectedSubcategory = subcat}
+            onclick={() => selectedSubcategory = null}
             class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors
-              {selectedSubcategory === subcat 
+              {selectedSubcategory === null 
                 ? 'bg-black text-white' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
           >
-            {subcat}
+            All
           </button>
-        {/each}
-      </div>
-    </div>
-  </div>
-
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Featured Sellers -->
-    <div class="mb-8">
-      <h2 class="text-xl font-semibold text-gray-900 mb-4">Top Sellers in {category.name}</h2>
-      <div class="overflow-x-auto scrollbar-hide">
-        <div class="flex space-x-4 pb-2">
-          {#each featuredSellers as seller}
-            <a href="/profile/{seller.id}" class="bg-white rounded-lg p-4 hover:shadow-md transition-shadow shrink-0 min-w-[140px]">
-              <img src={seller.avatar} alt={seller.name} class="w-16 h-16 rounded-full mx-auto mb-2" />
-              <h3 class="text-sm font-medium text-center truncate">{seller.name}</h3>
-              <p class="text-xs text-gray-500 text-center">{seller.itemCount} items</p>
-              <div class="flex items-center justify-center mt-1">
-                <svg class="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                </svg>
-                <span class="text-xs text-gray-600 ml-1">{seller.rating.toFixed(1)}</span>
-              </div>
-            </a>
+          {#each subcategories as subcat}
+            <button
+              onclick={() => selectedSubcategory = subcat.id}
+              class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors
+                {selectedSubcategory === subcat.id
+                  ? 'bg-black text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+            >
+              {subcat.name}
+            </button>
           {/each}
         </div>
       </div>
     </div>
+  {/if}
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Featured Sellers -->
+    {#if featuredSellers.length > 0}
+      <div class="mb-8">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">
+          Sellers in {category.name}
+          {#if featuredSellers.some(s => s.itemCount === 1)}
+            <span class="text-sm font-normal text-gray-500 ml-2">✨ New sellers featured</span>
+          {/if}
+        </h2>
+        <div class="overflow-x-auto scrollbar-hide">
+          <div class="flex space-x-4 pb-2">
+            {#each featuredSellers as seller}
+              <a href="/profile/{seller.id}" class="bg-white rounded-lg p-4 hover:shadow-md transition-shadow shrink-0 min-w-[140px]">
+                <img src={seller.avatar} alt={seller.name} class="w-16 h-16 rounded-full mx-auto mb-2 object-cover" />
+                <h3 class="text-sm font-medium text-center truncate">{seller.name}</h3>
+                <p class="text-xs text-gray-500 text-center">{seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}</p>
+                {#if seller.rating > 0}
+                  <div class="flex items-center justify-center mt-1">
+                    <svg class="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    <span class="text-xs text-gray-600 ml-1">{seller.rating.toFixed(1)}</span>
+                  </div>
+                {:else}
+                  <p class="text-xs text-gray-400 text-center mt-1">New seller</p>
+                {/if}
+              </a>
+            {/each}
+          </div>
+        </div>
+      </div>
+    {/if}
 
     <!-- Sort and Filter Bar -->
     <div class="flex justify-between items-center mb-6">
       <p class="text-sm text-gray-600">
-        {filteredProducts.length} items {selectedSubcategory ? `in ${selectedSubcategory}` : `in ${category.name}`}
+        {filteredProducts.length} items in {category.name}
       </p>
       <div class="flex items-center space-x-2">
         <select 

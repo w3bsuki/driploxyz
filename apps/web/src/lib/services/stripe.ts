@@ -75,11 +75,9 @@ export class StripeService {
 					serviceFee: calculation.serviceFee.toString(),
 					...metadata
 				},
-				description: `Purchase of ${product.title}`,
-				application_fee_amount: calculation.serviceFee,
-				transfer_data: {
-					destination: sellerId // Requires Connect account
-				}
+				description: `Purchase of ${product.title}`
+				// Note: Stripe Connect features (application_fee_amount, transfer_data) 
+				// removed until seller onboarding with Stripe Connect is implemented
 			});
 
 			return {

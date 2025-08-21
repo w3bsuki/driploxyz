@@ -51,8 +51,8 @@
 					amount: totalAmount,
 					currency: 'eur',
 					productId: product.id,
+					sellerId: product.sellerId,
 					metadata: {
-						sellerId: product.sellerId,
 						productTitle: product.title
 					}
 				})
