@@ -196,10 +196,10 @@
       </div>
     </div>
     
-    <!-- Beautiful Progress Bar -->
+    <!-- Progress Bar -->
     <div class="h-1 bg-gray-100">
       <div 
-        class="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500 ease-out"
+        class="h-full bg-blue-500 transition-all duration-500 ease-out"
         style="width: {(currentStep / 4) * 100}%"
       />
     </div>

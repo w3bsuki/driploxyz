@@ -166,7 +166,7 @@
 				showCompactSearch = !entry.isIntersecting;
 			},
 			{ 
-				rootMargin: '-50px 0px 0px 0px' // Trigger when hero is 50px out of view
+				rootMargin: '-64px 0px 0px 0px' // Trigger when hero is out of view (header is 64px)
 			}
 		);
 
@@ -176,30 +176,42 @@
 	});
 </script>
 
+<style>
+	/* Smooth transitions for sticky search */
+	.sticky-search-container {
+		will-change: transform;
+	}
+	
+	/* Optimize category pills scrolling */
+	.category-nav-pill {
+		transition: all 0.2s ease;
+	}
+</style>
+
 {#key currentLang}
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
 	<Header initialLanguage={data.language} />
 
-	<!-- Compact Sticky Search Bar - Position below header -->
-	{#if showCompactSearch}
-		<div class="fixed top-16 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
-			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+	<!-- Compact Sticky Search Bar - Positioned at top of viewport -->
+	<div class="sticky-search-container fixed top-0 left-0 right-0 z-40 transition-transform duration-300 ease-out {showCompactSearch ? 'translate-y-0' : '-translate-y-full'}">
+		<div class="bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
 				<SearchBar 
 					bind:value={searchQuery}
 					onSearch={handleSearch}
 					placeholder={i18n.nav_search()}
 					categoriesText={i18n.search_categories()}
 					variant="compact"
-					class="max-w-md mx-auto"
+					class="max-w-2xl mx-auto"
 				/>
 			</div>
 		</div>
-	{/if}
+	</div>
 
 	<main class="max-w-7xl mx-auto">
 		<!-- Hero Search -->
 		<div bind:this={heroSearchElement} class="bg-gray-50 border-b border-gray-200">
-			<div class="px-4 sm:px-6 lg:px-8 py-4 space-y-3">
+			<div class="px-4 sm:px-6 lg:px-8 py-3 space-y-2">
 				<!-- Search Bar -->
 				<div class="relative">
 					<SearchBar 
