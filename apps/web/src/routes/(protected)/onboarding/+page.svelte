@@ -35,7 +35,8 @@
   let showTutorialFlow = $state(false);
   let showBrandPayment = $state(false);
   let brandPaid = $state(false);
-  let accountType = $state<'personal' | 'brand'>('personal');
+  let accountType = $state<'personal' | 'premium' | 'brand'>('personal');
+  let discountCode = $state('');
   let username = $state('');
   let fullName = $state('');
   let avatarUrl = $state('');
@@ -139,13 +140,17 @@
     }
   }
 
-  function handleAccountTypeSelect(type: 'personal' | 'brand') {
-    if (type === 'brand' && !brandPaid) {
-      // Show payment modal for brand accounts
+  function handleAccountTypeSelect(type: 'personal' | 'premium' | 'brand') {
+    if ((type === 'brand' || type === 'premium') && !brandPaid) {
+      // Show payment modal for paid accounts
       showBrandPayment = true;
     } else {
       accountType = type;
     }
+  }
+  
+  function handleDiscountCodeChange(code: string) {
+    discountCode = code;
   }
 
   function handleAvatarSelect(url: string) {
@@ -200,8 +205,13 @@
     submitting = true;
     
     try {
-      // Determine brand status - if they paid during onboarding, they get full brand status
-      const brandStatus = accountType === 'brand' ? (brandPaid ? 'brand' : 'brand_pending') : null;
+      // Determine account status based on selection
+      let accountStatus = null;
+      if (accountType === 'brand') {
+        accountStatus = brandPaid ? 'brand' : 'brand_pending';
+      } else if (accountType === 'premium') {
+        accountStatus = brandPaid ? 'premium' : 'premium_pending';
+      }
       
       // Update profile - the badge will be assigned automatically via database trigger
       const { error: profileError } = await data.supabase
@@ -218,8 +228,9 @@
           } : null,
           social_links: socialLinks.filter(link => link.url.trim()),
           onboarding_completed: true,
-          verified: accountType === 'brand' && brandPaid, // Only verified if brand and paid
-          brand_status: brandStatus
+          verified: (accountType === 'brand' || accountType === 'premium') && brandPaid, // Verified if paid
+          brand_status: accountStatus,
+          account_type: accountType
         })
         .eq('id', data.user.id);
 
@@ -328,6 +339,9 @@
       <AccountTypeSelector
         selected={accountType}
         onSelect={handleAccountTypeSelect}
+        showDiscountCode={true}
+        onDiscountCodeChange={handleDiscountCodeChange}
+        discountCode={discountCode}
         class="mb-8"
         translations={{
           personalTitle: m.onboarding_personalAccount(),
@@ -564,6 +578,8 @@
 <!-- Brand Payment Modal -->
 <BrandPaymentModal
   show={showBrandPayment}
+  accountType={accountType === 'brand' ? 'brand' : 'premium'}
+  discountCode={discountCode}
   stripePublishableKey={import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY}
   onSuccess={handleBrandPaymentSuccess}
   onCancel={handleBrandPaymentCancel}

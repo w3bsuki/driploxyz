@@ -15,6 +15,8 @@
   let { data }: Props = $props();
   
   let messageChannel: RealtimeChannel | null = null;
+  let messagesContainer: HTMLDivElement | null = null;
+  let isKeyboardOpen = $state(false);
 
   // Set initial unread count from server data
   $effect(() => {
@@ -41,14 +43,43 @@
         async (payload) => {
           // Force reload the page data
           await invalidate('messages:all');
+          // Auto-scroll to bottom after new message
+          scrollToBottom();
         }
       )
       .subscribe();
+    
+    // Detect keyboard open/close on mobile
+    if (browser && window.visualViewport) {
+      const handleViewportChange = () => {
+        const hasKeyboard = window.visualViewport.height < window.innerHeight - 100;
+        isKeyboardOpen = hasKeyboard;
+      };
+      
+      window.visualViewport.addEventListener('resize', handleViewportChange);
+      return () => {
+        window.visualViewport?.removeEventListener('resize', handleViewportChange);
+      };
+    }
   });
   
   onDestroy(() => {
     if (messageChannel) {
       data.supabase?.removeChannel(messageChannel);
+    }
+  });
+  
+  // Simple scroll to bottom
+  function scrollToBottom() {
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  }
+  
+  // Scroll when conversation changes
+  $effect(() => {
+    if (selectedConversation() && messagesContainer) {
+      requestAnimationFrame(() => scrollToBottom());
     }
   });
   
@@ -278,6 +309,8 @@
       messageText = '';
       // Force refresh messages
       await invalidate('messages:all');
+      // Scroll to bottom after sending
+      requestAnimationFrame(() => scrollToBottom());
     } catch (err) {
       alert('Failed to send message: ' + (err?.message || 'Unknown error'));
     }
@@ -300,12 +333,15 @@
   <title>Messages - Driplo</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gray-50">
-  <Header />
-  
-  <!-- Page Header - Only show when no conversation selected -->
+<div class="h-screen bg-gray-50 flex flex-col overflow-hidden">
+  <!-- Header only for conversation list -->
   {#if !selectedConversation()}
-    <div class="bg-white border-b border-gray-200 sticky top-14 sm:top-16 z-30">
+    <div class="shrink-0">
+      <Header />
+    </div>
+    
+    <!-- Page Header -->
+    <div class="bg-white border-b border-gray-200 shrink-0">
       <div class="max-w-7xl mx-auto">
         <div class="px-4 sm:px-6 lg:px-8 py-3">
           <h1 class="text-lg font-semibold text-gray-900">{i18n.messages_inbox()}</h1>
@@ -358,10 +394,10 @@
     </div>
   {/if}
 
-  <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 {selectedConversation() ? '' : 'pb-20 sm:pb-0'}">
-    <div class="sm:grid sm:grid-cols-3 lg:grid-cols-4 {selectedConversation() ? 'sm:h-[calc(100vh-80px)]' : 'sm:h-[calc(100vh-180px)]'}">
+  <div class="flex-1 max-w-7xl mx-auto sm:px-6 lg:px-8 overflow-hidden flex flex-col w-full">
+    <div class="flex-1 sm:grid sm:grid-cols-3 lg:grid-cols-4 overflow-hidden">
       <!-- Conversations List -->
-      <div class="sm:col-span-1 lg:col-span-1 bg-white sm:border-r sm:border-gray-200 overflow-y-auto {selectedConversation() ? 'hidden sm:block' : ''} {selectedConversation() ? '' : 'h-[calc(100vh-160px)] sm:h-auto'}">
+      <div class="sm:col-span-1 lg:col-span-1 bg-white sm:border-r sm:border-gray-200 overflow-y-auto {selectedConversation() ? 'hidden sm:block' : ''} h-full">
         {#if conversations().length === 0}
           <div class="p-4 text-center text-gray-500">
             No conversations yet.
@@ -423,9 +459,9 @@
       <!-- Chat View -->
       {#if selectedConversation()}
         {@const conv = conversations().find(c => c.id === selectedConversation())}
-        <div class="sm:col-span-2 lg:col-span-3 bg-white flex flex-col {selectedConversation() ? 'fixed sm:relative inset-0 top-14 sm:top-0 z-40 sm:z-auto h-[calc(100vh-56px)] sm:h-full' : 'h-full'}">
-          <!-- Chat Header - Sticky -->
-          <div class="bg-white border-b border-gray-200 px-4 py-3 shrink-0">
+        <div class="sm:col-span-2 lg:col-span-3 bg-white flex flex-col h-full {selectedConversation() ? 'chat-mobile-full' : ''} sm:relative">
+          <!-- Chat Header - Fixed -->
+          <div class="bg-white border-b border-gray-200 px-4 py-3 shrink-0 {selectedConversation() ? 'sm:border-t-0' : ''}">
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-3">
                 <button
@@ -505,7 +541,7 @@
           </div>
 
           <!-- Messages - Scrollable Only -->
-          <div class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+          <div bind:this={messagesContainer} class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 messages-container" style="padding-bottom: 100px;">
             <!-- Date Separator -->
             <div class="flex items-center justify-center">
               <span class="text-[11px] text-gray-500 bg-white px-3 py-1 rounded-full">{i18n.messages_today()}</span>
@@ -554,7 +590,7 @@
           </div>
 
           <!-- Message Input - Fixed at Bottom -->
-          <div class="bg-white border-t border-gray-200 p-4 pb-6 sm:pb-3 shrink-0">
+          <div class="chat-input-fixed sm:relative sm:position-static border-t border-gray-200 p-4 bg-white">
             <!-- Quick Actions -->
             <div class="flex gap-2 mb-2 overflow-x-auto scrollbar-hide">
               <button class="flex items-center space-x-1.5 px-3 py-1.5 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors whitespace-nowrap">
@@ -624,7 +660,9 @@
   
   <!-- Bottom Navigation - Hide in chat -->
   {#if !selectedConversation()}
-    <BottomNav />
+    <div class="shrink-0">
+      <BottomNav />
+    </div>
   {/if}
 </div>
 

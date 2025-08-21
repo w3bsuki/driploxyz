@@ -267,7 +267,13 @@
           <div class="text-gray-600">{translations.positiveReviews || 'Positive reviews'}</div>
         </div>
         <div class="text-center p-2 bg-gray-50 rounded-lg">
-          <div class="font-semibold text-gray-900">24h</div>
+          <div class="font-semibold text-gray-900">
+            {#if stats.avgShippingHours}
+              {stats.avgShippingHours < 24 ? `${stats.avgShippingHours}h` : `${Math.ceil(stats.avgShippingHours / 24)}d`}
+            {:else}
+              N/A
+            {/if}
+          </div>
           <div class="text-gray-600">{translations.avgShipping || 'Avg shipping'}</div>
         </div>
       </div>
@@ -276,9 +282,17 @@
       <div class="text-xs text-gray-600">
         <div class="font-medium text-gray-900 mb-1">{translations.recentActivity || 'Recent activity'}</div>
         <div class="space-y-1">
-          <div>• Sold 3 items this week</div>
-          <div>• 100% of orders shipped on time</div>
-          <div>• Responds to messages in 2 hours</div>
+          {#if stats.weeklySales > 0}
+            <div>• Sold {stats.weeklySales} {stats.weeklySales === 1 ? 'item' : 'items'} this week</div>
+          {/if}
+          {#if stats.onTimeShippingRate !== null && stats.onTimeShippingRate !== undefined}
+            <div>• {stats.onTimeShippingRate}% of orders shipped on time</div>
+          {/if}
+          {#if stats.responseTime}
+            <div>• Responds to messages in {stats.responseTime} hours</div>
+          {:else}
+            <div>• New seller - building reputation</div>
+          {/if}
         </div>
       </div>
     </div>

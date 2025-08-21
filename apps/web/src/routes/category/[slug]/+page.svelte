@@ -5,87 +5,36 @@
   import Header from '$lib/components/Header.svelte';
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
+  import type { PageData } from './$types';
   
-  // Get category from URL
-  const categorySlug = $page.params.slug;
+  interface Props {
+    data: PageData;
+  }
   
-  // Category mapping
-  const categoryInfo: Record<string, { name: string; description: string; image: string }> = {
-    women: {
-      name: 'Women',
-      description: 'Discover amazing deals on women\'s fashion',
-      image: '/placeholder-product.svg'
-    },
-    men: {
-      name: 'Men',
-      description: 'Shop men\'s clothing and accessories',
-      image: '/placeholder-product.svg'
-    },
-    kids: {
-      name: 'Kids',
-      description: 'Adorable and affordable kids fashion',
-      image: '/placeholder-product.svg'
-    },
-    pets: {
-      name: 'Pets',
-      description: 'Everything your furry friends need',
-      image: '/placeholder-product.svg'
-    },
-    home: {
-      name: 'Home',
-      description: 'Transform your living space with great finds',
-      image: '/placeholder-product.svg'
-    },
-    sports: {
-      name: 'Sports',
-      description: 'Gear up for your active lifestyle',
-      image: '/placeholder-product.svg'
-    },
-    accessories: {
-      name: 'Accessories',
-      description: 'Complete your look with the perfect accessories',
-      image: '/placeholder-product.svg'
-    },
-    shoes: {
-      name: 'Shoes',
-      description: 'Step out in style with pre-loved footwear',
-      image: '/placeholder-product.svg'
-    }
-  };
+  let { data }: Props = $props();
   
-  const category = categoryInfo[categorySlug] || { name: 'Category', description: '', image: '' };
+  // Use real category data from server
+  const category = data.category;
+  const categorySlug = category.slug;
+  const subcategories = data.subcategories || [];
+  const products = data.products || [];
   
-  // Subcategories
-  const subcategories = [
-    'Tops', 'Bottoms', 'Dresses', 'Outerwear', 
-    'Activewear', 'Swimwear', 'Underwear', 'Sleepwear'
-  ];
-  
-  // Mock featured sellers
-  const featuredSellers = Array.from({ length: 6 }, (_, i) => ({
-    id: i + 1,
-    name: `Top Seller ${i + 1}`,
-    avatar: '/placeholder-product.svg',
-    itemCount: Math.floor(Math.random() * 100) + 20,
-    rating: 4 + Math.random()
-  }));
-  
-  // Mock products
-  const mockProducts: Product[] = Array.from({ length: 12 }, (_, i) => ({
-    id: `${categorySlug}-product-${i + 1}`,
-    title: `${category.name} Item ${i + 1}`,
-    description: 'Great condition item',
-    price: Math.floor(Math.random() * 200) + 20,
-    images: ['/placeholder-product.svg'],
-    brand: ['Nike', 'Adidas', 'Zara', 'H&M'][i % 4],
-    size: ['XS', 'S', 'M', 'L', 'XL'][i % 5],
-    condition: (['new', 'like-new', 'good', 'fair'] as const)[i % 4],
+  // Transform products for ProductCard component
+  const displayProducts: Product[] = products.map(p => ({
+    id: p.id,
+    title: p.title,
+    description: p.description || '',
+    price: p.price,
+    images: p.images?.map((img: any) => img.image_url || img) || [],
+    brand: p.brand,
+    size: p.size,
+    condition: p.condition,
     category: category.name,
-    sellerId: `seller-${i + 1}`,
-    sellerName: `Seller ${i + 1}`,
-    sellerRating: 4 + Math.random(),
-    createdAt: new Date().toISOString(),
-    location: 'New York, NY'
+    sellerId: p.seller_id,
+    sellerName: p.seller?.username || 'Unknown',
+    sellerRating: p.seller?.rating || 0,
+    createdAt: p.created_at,
+    location: p.location || p.seller?.location || ''
   }));
   
   let selectedSubcategory = $state<string | null>(null);
@@ -109,8 +58,8 @@
   
   // Filter products based on selected subcategory and filters
   let filteredProducts = $derived(
-    mockProducts.filter(p => {
-      if (selectedSubcategory && Math.random() > 0.7) return false;
+    displayProducts.filter(p => {
+      // Real subcategory filtering would be done server-side
       if (selectedSizes.length && !selectedSizes.includes(p.size)) return false;
       if (selectedBrands.length && !selectedBrands.includes(p.brand || '')) return false;
       if (selectedConditions.length && !selectedConditions.includes(p.condition)) return false;

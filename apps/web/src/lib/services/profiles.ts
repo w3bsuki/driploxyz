@@ -303,28 +303,45 @@ export class ProfileService {
   }
 
   /**
-   * Get top sellers (for now, just newest registered users)
+   * Get top sellers based on active listings count
    */
   async getTopSellers(limit = 10): Promise<{ data: any[]; error: string | null }> {
     try {
+      // Get sellers with their active listing counts
       const { data, error } = await this.supabase
-        .from('profiles')
-        .select('id, username, full_name, avatar_url, created_at')
-        .not('username', 'is', null)
-        .order('created_at', { ascending: false })
-        .limit(limit);
+        .rpc('get_sellers_by_listings', { limit_count: limit });
 
       if (error) {
         console.error('Error fetching top sellers:', error);
-        return { data: [], error: error.message };
+        
+        // Fallback to simple query if RPC doesn't exist
+        const { data: fallbackData, error: fallbackError } = await this.supabase
+          .from('profiles')
+          .select('id, username, full_name, avatar_url, created_at, rating, sales_count, followers_count')
+          .not('username', 'is', null)
+          .limit(limit);
+          
+        if (fallbackError) {
+          return { data: [], error: fallbackError.message };
+        }
+        
+        const fallbackSellers = (fallbackData || []).map(profile => ({
+          ...profile,
+          name: profile.username,
+          avatar: profile.avatar_url,
+          rating: profile.rating || 0,
+          product_count: 0
+        }));
+        
+        return { data: fallbackSellers, error: null };
       }
 
-      // Add mock ratings for display
+      // Use real data from database
       const sellersWithRatings = (data || []).map(profile => ({
         ...profile,
         name: profile.username,
         avatar: profile.avatar_url,
-        rating: Math.round((Math.random() * 1 + 4) * 10) / 10 // 4.0-5.0 range, rounded to 1 decimal
+        rating: profile.rating || 0
       }));
 
       return { data: sellersWithRatings, error: null };
@@ -385,6 +402,141 @@ export class ProfileService {
     } catch (error) {
       console.error('Error in updateLastActive:', error);
       return { error: 'Failed to update last active timestamp' };
+    }
+  }
+
+  /**
+   * Follow a user
+   */
+  async followUser(followerId: string, followingId: string): Promise<{ error: string | null }> {
+    try {
+      const { error } = await this.supabase
+        .from('followers')
+        .insert({ follower_id: followerId, following_id: followingId });
+
+      if (error) {
+        console.error('Error following user:', error);
+        return { error: error.message };
+      }
+
+      return { error: null };
+    } catch (error) {
+      console.error('Error in followUser:', error);
+      return { error: 'Failed to follow user' };
+    }
+  }
+
+  /**
+   * Unfollow a user
+   */
+  async unfollowUser(followerId: string, followingId: string): Promise<{ error: string | null }> {
+    try {
+      const { error } = await this.supabase
+        .from('followers')
+        .delete()
+        .eq('follower_id', followerId)
+        .eq('following_id', followingId);
+
+      if (error) {
+        console.error('Error unfollowing user:', error);
+        return { error: error.message };
+      }
+
+      return { error: null };
+    } catch (error) {
+      console.error('Error in unfollowUser:', error);
+      return { error: 'Failed to unfollow user' };
+    }
+  }
+
+  /**
+   * Check if user is following another user
+   */
+  async isFollowing(followerId: string, followingId: string): Promise<{ 
+    isFollowing: boolean; 
+    error: string | null 
+  }> {
+    try {
+      const { data, error } = await this.supabase
+        .from('followers')
+        .select('id')
+        .eq('follower_id', followerId)
+        .eq('following_id', followingId)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        console.error('Error checking follow status:', error);
+        return { isFollowing: false, error: error.message };
+      }
+
+      return { isFollowing: !!data, error: null };
+    } catch (error) {
+      console.error('Error in isFollowing:', error);
+      return { isFollowing: false, error: 'Failed to check follow status' };
+    }
+  }
+
+  /**
+   * Get user's followers
+   */
+  async getFollowers(userId: string, limit = 50): Promise<{ 
+    data: Profile[]; 
+    error: string | null 
+  }> {
+    try {
+      const { data, error } = await this.supabase
+        .from('followers')
+        .select(`
+          follower:profiles!follower_id (
+            id, username, full_name, avatar_url, bio, rating, sales_count
+          )
+        `)
+        .eq('following_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        console.error('Error fetching followers:', error);
+        return { data: [], error: error.message };
+      }
+
+      const followers = (data || []).map(item => item.follower).filter(Boolean) as Profile[];
+      return { data: followers, error: null };
+    } catch (error) {
+      console.error('Error in getFollowers:', error);
+      return { data: [], error: 'Failed to fetch followers' };
+    }
+  }
+
+  /**
+   * Get users that a user is following
+   */
+  async getFollowing(userId: string, limit = 50): Promise<{ 
+    data: Profile[]; 
+    error: string | null 
+  }> {
+    try {
+      const { data, error } = await this.supabase
+        .from('followers')
+        .select(`
+          following:profiles!following_id (
+            id, username, full_name, avatar_url, bio, rating, sales_count
+          )
+        `)
+        .eq('follower_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        console.error('Error fetching following:', error);
+        return { data: [], error: error.message };
+      }
+
+      const following = (data || []).map(item => item.following).filter(Boolean) as Profile[];
+      return { data: following, error: null };
+    } catch (error) {
+      console.error('Error in getFollowing:', error);
+      return { data: [], error: 'Failed to fetch following' };
     }
   }
 }

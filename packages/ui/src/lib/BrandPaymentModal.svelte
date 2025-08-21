@@ -4,12 +4,22 @@
   interface Props {
     show: boolean;
     stripePublishableKey?: string;
+    accountType?: 'premium' | 'brand';
+    discountCode?: string;
     onSuccess?: () => void;
     onCancel?: () => void;
     onClose?: () => void;
   }
 
-  let { show, stripePublishableKey, onSuccess, onCancel, onClose }: Props = $props();
+  let { 
+    show, 
+    stripePublishableKey, 
+    accountType = 'brand',
+    discountCode = '',
+    onSuccess, 
+    onCancel, 
+    onClose 
+  }: Props = $props();
 
   let loading = $state(false);
   let error = $state('');
@@ -17,9 +27,36 @@
   let elements: any = $state(null);
   let cardElement: any = $state(null);
   let cardContainer: HTMLDivElement | undefined = $state();
+  let discountAmount = $state(0);
+  let finalPrice = $state(0);
 
-  // Brand plan ID
-  const BRAND_PLAN_ID = 'd3735d51-cbba-4b77-9e21-e50bdf9e53e8';
+  // Plan IDs from database
+  const PREMIUM_PLAN_ID = 'c0587696-cbcd-4e6b-b6bc-ba84fb47ddce';
+  const BRAND_PLAN_ID = '989b722e-4050-4c63-ac8b-ab105f14027c';
+  
+  // Get the correct plan ID based on account type
+  const planId = accountType === 'premium' ? PREMIUM_PLAN_ID : BRAND_PLAN_ID;
+  const basePrice = accountType === 'premium' ? 25 : 50;
+
+  // Calculate discount when code changes
+  $effect(() => {
+    if (discountCode === 'Indecisive' && accountType === 'brand') {
+      discountAmount = 90;
+      finalPrice = basePrice * 0.1; // 90% off
+    } else if (discountCode === 'LAUNCH50') {
+      discountAmount = 50;
+      finalPrice = basePrice * 0.5; // 50% off
+    } else if (discountCode === 'PREMIUM25' && accountType === 'premium') {
+      discountAmount = 25;
+      finalPrice = basePrice * 0.75; // 25% off
+    } else if (discountCode === 'BRAND20' && accountType === 'brand') {
+      discountAmount = 20;
+      finalPrice = basePrice * 0.8; // 20% off
+    } else {
+      discountAmount = 0;
+      finalPrice = basePrice;
+    }
+  });
 
   // Initialize Stripe when modal shows
   $effect(() => {
@@ -73,13 +110,14 @@
     
     try {
       
-      // Create subscription on server
+      // Create subscription on server with discount
       const response = await fetch('/api/subscriptions/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          planId: BRAND_PLAN_ID,
-          discountPercent: 0
+          planId: planId,
+          discountPercent: discountAmount,
+          discountCode: discountCode
         })
       });
 
@@ -126,8 +164,25 @@
     <div class="w-full max-w-sm bg-white rounded-lg shadow-lg border border-gray-200 p-5">
       <!-- Header -->
       <div class="text-center mb-4">
-        <h3 class="text-lg font-semibold text-gray-900 mb-1">Brand Account</h3>
-        <p class="text-sm text-gray-600">50 BGN/month subscription</p>
+        <h3 class="text-lg font-semibold text-gray-900 mb-1">
+          {accountType === 'premium' ? 'Premium Account' : 'Brand Account'}
+        </h3>
+        <div class="space-y-1">
+          {#if discountAmount > 0}
+            <p class="text-sm text-gray-600">
+              <span class="line-through">{basePrice} BGN</span>
+              <span class="text-green-600 font-semibold ml-2">{finalPrice.toFixed(2)} BGN/month</span>
+            </p>
+            <p class="text-xs text-green-600 font-medium">
+              {discountAmount}% discount applied
+              {#if discountCode === 'Indecisive'}
+                (Family discount)
+              {/if}
+            </p>
+          {:else}
+            <p class="text-sm text-gray-600">{basePrice} BGN/month subscription</p>
+          {/if}
+        </div>
       </div>
 
       <!-- Card Input -->
@@ -165,7 +220,7 @@
               Processing...
             </div>
           {:else}
-            Pay 50 BGN
+            Pay {finalPrice.toFixed(2)} BGN
           {/if}
         </button>
       </div>

@@ -386,7 +386,7 @@
           <div class="space-y-2">
             <div class="flex justify-between items-center">
               <span class="text-sm text-gray-600">{monthlyStats.topCategory}</span>
-              <span class="text-sm font-medium">{Math.floor(Math.random() * 10 + 5)} sales</span>
+              <span class="text-sm font-medium">{monthlyStats.categorySales || 0} sales</span>
             </div>
             <div class="w-full bg-gray-200 rounded-full h-2">
               <div class="bg-blue-600 h-2 rounded-full" style="width: 65%"></div>

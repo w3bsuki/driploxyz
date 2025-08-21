@@ -1,6 +1,6 @@
 <script lang="ts">
   interface AccountType {
-    value: 'personal' | 'brand';
+    value: 'personal' | 'premium' | 'brand';
     title: string;
     description: string;
     features: string[];
@@ -10,13 +10,19 @@
   }
 
   interface Props {
-    selected?: 'personal' | 'brand';
-    onSelect?: (type: 'personal' | 'brand') => void;
+    selected?: 'personal' | 'premium' | 'brand';
+    onSelect?: (type: 'personal' | 'premium' | 'brand') => void;
     class?: string;
+    showDiscountCode?: boolean;
+    onDiscountCodeChange?: (code: string) => void;
+    discountCode?: string;
     translations?: {
       personalTitle?: string;
       personalDescription?: string;
       personalFeatures?: string[];
+      premiumTitle?: string;
+      premiumDescription?: string;
+      premiumFeatures?: string[];
       brandTitle?: string;
       brandDescription?: string;
       brandFeatures?: string[];
@@ -25,6 +31,8 @@
       popular?: string;
       selected?: string;
       select?: string;
+      haveDiscountCode?: string;
+      enterCode?: string;
     };
   }
 
@@ -32,8 +40,13 @@
     selected = 'personal',
     onSelect,
     class: className = '',
+    showDiscountCode = false,
+    onDiscountCodeChange,
+    discountCode = '',
     translations = {}
   }: Props = $props();
+  
+  let localDiscountCode = $state(discountCode);
 
   const accountTypes: AccountType[] = [
     {
@@ -41,13 +54,27 @@
       title: translations.personalTitle || 'Personal Account',
       description: translations.personalDescription || 'Perfect for individuals selling from their personal wardrobe',
       features: translations.personalFeatures || [
-        'List unlimited items',
+        'List up to 20 items',
         'Basic seller tools',
         'Community access',
         'Secure payments'
       ],
       price: translations.free || 'Free',
-      icon: '👤',
+      icon: '👤'
+    },
+    {
+      value: 'premium',
+      title: translations.premiumTitle || 'Premium Account',
+      description: translations.premiumDescription || 'Boost your visibility and sales',
+      features: translations.premiumFeatures || [
+        '10 boosted ads per month',
+        '3-7 days homepage visibility',
+        'Priority customer support',
+        'Advanced analytics',
+        'No ads in your listings'
+      ],
+      price: `25 BGN`,
+      icon: '⭐',
       popular: true
     },
     {
@@ -55,30 +82,36 @@
       title: translations.brandTitle || 'Brand Account',
       description: translations.brandDescription || 'Designed for businesses and professional sellers',
       features: translations.brandFeatures || [
-        'Advanced analytics',
+        'List unlimited products',
+        'Brand verification badge',
         'Bulk upload tools',
         'Priority support',
-        'Custom branding'
+        'Advanced analytics dashboard'
       ],
       price: `50 BGN`,
-      icon: '🏪'
+      icon: '🏢'
     }
   ];
 
-  function handleSelect(type: 'personal' | 'brand') {
+  function handleSelect(type: 'personal' | 'premium' | 'brand') {
     selected = type;
     onSelect?.(type);
+  }
+  
+  function handleDiscountCodeChange() {
+    onDiscountCodeChange?.(localDiscountCode);
   }
 </script>
 
 <!-- Copy exact upgrade cards layout -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center {className}">
-  {#each accountTypes as accountType}
-    <button
-      onclick={() => handleSelect(accountType.value)}
-      class="w-full text-left max-w-xs relative"
-    >
-      <div class="bg-white rounded-xl border p-1.5 shadow-xs backdrop-blur-xl transition-all {selected === accountType.value ? 'border-gray-400 shadow-md' : 'border-gray-200 hover:border-gray-300'}">
+<div class="space-y-6">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 justify-items-center {className}">
+    {#each accountTypes as accountType}
+      <button
+        onclick={() => handleSelect(accountType.value)}
+        class="w-full text-left max-w-xs relative"
+      >
+        <div class="bg-white rounded-xl border p-1.5 shadow-xs backdrop-blur-xl transition-all {selected === accountType.value ? 'border-gray-400 shadow-md' : 'border-gray-200 hover:border-gray-300'}">
         <!-- Popular badge -->
         {#if accountType.popular}
           <div class="absolute -top-2 left-4 z-10">
@@ -130,4 +163,32 @@
       </div>
     </button>
   {/each}
+  </div>
+  
+  {#if showDiscountCode && selected === 'brand'}
+    <div class="max-w-md mx-auto p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <label class="block text-sm font-medium text-gray-700 mb-2">
+        {translations.haveDiscountCode || 'Have a discount code?'}
+      </label>
+      <div class="flex gap-2">
+        <input
+          type="text"
+          bind:value={localDiscountCode}
+          placeholder={translations.enterCode || 'Enter code'}
+          class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          onblur={handleDiscountCodeChange}
+        />
+        <button
+          type="button"
+          onclick={handleDiscountCodeChange}
+          class="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+        >
+          Apply
+        </button>
+      </div>
+      {#if localDiscountCode === 'Indecisive'}
+        <p class="text-green-600 text-sm mt-2">✅ 90% discount will be applied!</p>
+      {/if}
+    </div>
+  {/if}
 </div>

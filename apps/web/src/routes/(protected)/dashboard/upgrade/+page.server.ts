@@ -21,6 +21,37 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
     if (plansError) {
       console.error('Error loading subscription plans:', plansError);
     }
+    
+    // Map proper plan names and descriptions based on plan_type
+    const plansWithProperNames = (plans || []).map(plan => {
+      let name = plan.name;
+      let description = plan.description;
+      
+      switch(plan.plan_type) {
+        case 'free':
+          name = 'Free Plan';
+          description = 'Start selling with basic features';
+          break;
+        case 'basic':
+          name = 'Basic Plan';
+          description = 'Essential tools for casual sellers';
+          break;
+        case 'premium':
+          name = 'Premium Plan';
+          description = 'Boost your visibility and sales';
+          break;
+        case 'brand':
+          name = 'Brand Plan';
+          description = 'Professional tools for businesses';
+          break;
+      }
+      
+      return {
+        ...plan,
+        name,
+        description
+      };
+    });
 
     // Get user's current subscriptions (only if user exists)
     let userSubscriptions = [];
@@ -74,7 +105,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
     return {
       user,
       profile,
-      plans: plans || [],
+      plans: plansWithProperNames || [],
       userSubscriptions: userSubscriptions || [],
       discountInfo
     };

@@ -53,6 +53,21 @@ export const load: PageServerLoad = async ({ locals }) => {
       console.log('[SELL DEBUG] Categories count:', categories?.length);
     }
 
+    // Add subcategories to each parent category
+    const categoriesWithSubcategories = await Promise.all(
+      (categories || []).map(async (category) => {
+        if (!category.parent_id) {
+          // This is a parent category, fetch its subcategories
+          const { data: subcategories } = await services.categories.getSubcategories(category.id);
+          return {
+            ...category,
+            subcategories: subcategories || []
+          };
+        }
+        return category;
+      })
+    );
+
     console.log('[SELL DEBUG] Fetching subscription plans...');
     // Get available subscription plans for upgrade prompt
     const { data: plans, error: plansError } = await supabase
@@ -69,7 +84,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     return {
       user: session.user,
       profile,
-      categories: categories || [],
+      categories: categoriesWithSubcategories || [],
       canListProducts,
       plans: plans || [],
       needsBrandSubscription: profile?.account_type === 'brand' && !canListProducts
@@ -77,6 +92,7 @@ export const load: PageServerLoad = async ({ locals }) => {
   } catch (error) {
     console.error('[SELL DEBUG] Load error:', error);
     
+    // Return empty but valid data structure
     return {
       user: session.user,
       profile: null,

@@ -6,8 +6,24 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   const { session } = await locals.safeGetSession();
   const profileService = new ProfileService(locals.supabase);
   
-  // Get the profile by username (the [id] param is actually the username)
-  const { data: profile, error: profileError } = await profileService.getProfileByUsername(params.id);
+  // Check if the ID is a UUID or username
+  // UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+  const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.id);
+  
+  let profile: any;
+  let profileError: string | null;
+  
+  if (isUUID) {
+    // Get profile by UUID
+    const result = await profileService.getProfile(params.id);
+    profile = result.data;
+    profileError = result.error;
+  } else {
+    // Get profile by username
+    const result = await profileService.getProfileByUsername(params.id);
+    profile = result.data;
+    profileError = result.error;
+  }
   
   if (profileError || !profile) {
     throw error(404, 'User not found');
@@ -55,16 +71,27 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     images: product.images?.map(img => img.image_url) || []
   })) || [];
 
+  // Check if current user is following this profile
+  let isFollowing = false;
+  if (session?.user && !isOwnProfile) {
+    const { isFollowing: followStatus } = await profileService.isFollowing(
+      session.user.id,
+      profile.id
+    );
+    isFollowing = followStatus;
+  }
+
   return {
     profile: {
       ...profile,
       products_count: products?.length || 0,
-      followers_count: 0, // TODO: implement followers
-      following_count: 0  // TODO: implement following
+      active_listings: products?.length || 0,
+      sold_listings: profile.sales_count || 0
     },
     products: productsWithImages,
     reviews: reviews || [],
     isOwnProfile,
-    currentUser: session?.user || null
+    currentUser: session?.user || null,
+    isFollowing
   };
 };

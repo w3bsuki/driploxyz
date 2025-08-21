@@ -31,7 +31,7 @@
       monthlySales: thisMonthOrders.length,
       activeListings: activeListings.length,
       totalViews: data.products?.reduce((sum, p) => sum + (p.view_count || 0), 0) || 0,
-      monthlyViews: Math.floor(Math.random() * 3000), // Mock for now
+      monthlyViews: data.profile?.monthly_views || 0,
       conversionRate: activeListings.length > 0 ? (allTimeOrders.length / activeListings.length * 100) : 0
     };
   });
@@ -459,7 +459,7 @@
                   <img src={product.images[0]} alt={product.title} class="w-10 h-10 rounded-sm object-cover" />
                   <div>
                     <p class="text-sm font-medium text-gray-900">{product.title}</p>
-                    <p class="text-xs text-gray-500">{Math.floor(Math.random() * 100)} views</p>
+                    <p class="text-xs text-gray-500">{product.view_count || 0} views</p>
                   </div>
                 </div>
                 <p class="text-sm font-bold">${product.price}</p>

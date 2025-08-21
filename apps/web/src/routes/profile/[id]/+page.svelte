@@ -13,15 +13,41 @@
   let { data }: Props = $props();
   
   let activeTab = $state<'posts' | 'reviews' | 'about'>('posts');
-  let isFollowing = $state(false);
+  let isFollowing = $state(data.isFollowing || false);
+  let showFollowersModal = $state(false);
+  let showFollowingModal = $state(false);
+  let followers = $state<any[]>([]);
+  let following = $state<any[]>([]);
+  let loadingFollowers = $state(false);
+  let loadingFollowing = $state(false);
   
-  function handleFollow() {
+  async function handleFollow() {
     if (!data.currentUser) {
       goto('/login');
       return;
     }
-    isFollowing = !isFollowing;
-    // TODO: Implement follow functionality
+    
+    const { supabase } = await import('$lib/supabase/client');
+    const { ProfileService } = await import('$lib/services/profiles');
+    const profileService = new ProfileService(supabase);
+    
+    if (isFollowing) {
+      const { error } = await profileService.unfollowUser(data.currentUser.id, data.profile.id);
+      if (!error) {
+        isFollowing = false;
+        // Update follower count locally
+        if (data.profile.followers_count) {
+          data.profile.followers_count--;
+        }
+      }
+    } else {
+      const { error } = await profileService.followUser(data.currentUser.id, data.profile.id);
+      if (!error) {
+        isFollowing = true;
+        // Update follower count locally
+        data.profile.followers_count = (data.profile.followers_count || 0) + 1;
+      }
+    }
   }
   
   function handleMessage() {
@@ -80,14 +106,46 @@
             <div class="text-lg font-semibold">{data.profile.active_listings || 0}</div>
             <div class="text-xs text-gray-600">{i18n.profile_posts()}</div>
           </div>
-          <div>
-            <div class="text-lg font-semibold">{data.profile.sold_listings || 0}</div>
-            <div class="text-xs text-gray-600">{i18n.profile_sold()}</div>
-          </div>
-          <div>
-            <div class="text-lg font-semibold">{data.profile.sales_count || 0}</div>
-            <div class="text-xs text-gray-600">{i18n.profile_sales()}</div>
-          </div>
+          <button 
+            onclick={async () => {
+              showFollowersModal = true;
+              if (!loadingFollowers && followers.length === 0) {
+                loadingFollowers = true;
+                const { supabase } = await import('$lib/supabase/client');
+                const { ProfileService } = await import('$lib/services/profiles');
+                const profileService = new ProfileService(supabase);
+                const result = await profileService.getFollowers(data.profile.id);
+                if (!result.error) {
+                  followers = result.data;
+                }
+                loadingFollowers = false;
+              }
+            }}
+            class="cursor-pointer hover:bg-gray-50 rounded-lg p-1 transition-colors"
+          >
+            <div class="text-lg font-semibold">{data.profile.followers_count || 0}</div>
+            <div class="text-xs text-gray-600">Followers</div>
+          </button>
+          <button 
+            onclick={async () => {
+              showFollowingModal = true;
+              if (!loadingFollowing && following.length === 0) {
+                loadingFollowing = true;
+                const { supabase } = await import('$lib/supabase/client');
+                const { ProfileService } = await import('$lib/services/profiles');
+                const profileService = new ProfileService(supabase);
+                const result = await profileService.getFollowing(data.profile.id);
+                if (!result.error) {
+                  following = result.data;
+                }
+                loadingFollowing = false;
+              }
+            }}
+            class="cursor-pointer hover:bg-gray-50 rounded-lg p-1 transition-colors"
+          >
+            <div class="text-lg font-semibold">{data.profile.following_count || 0}</div>
+            <div class="text-xs text-gray-600">Following</div>
+          </button>
         </div>
         
         <!-- Action Buttons -->
@@ -311,5 +369,103 @@
     {/if}
   </div>
 </div>
+
+  <!-- Followers Modal -->
+  {#if showFollowersModal}
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg max-w-md w-full max-h-[70vh] overflow-hidden">
+        <div class="p-4 border-b flex justify-between items-center">
+          <h2 class="font-semibold">Followers</h2>
+          <button 
+            onclick={() => showFollowersModal = false}
+            class="text-gray-500 hover:text-gray-700"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="overflow-y-auto max-h-[60vh]">
+          {#if loadingFollowers}
+            <div class="p-4 text-center text-gray-500">Loading...</div>
+          {:else if followers.length === 0}
+            <div class="p-4 text-center text-gray-500">No followers yet</div>
+          {:else}
+            {#each followers as follower}
+              <a 
+                href="/profile/{follower.username || follower.id}"
+                class="flex items-center p-3 hover:bg-gray-50 border-b"
+                onclick={() => showFollowersModal = false}
+              >
+                <Avatar 
+                  src={follower.avatar_url}
+                  name={follower.full_name || follower.username}
+                  size="sm"
+                />
+                <div class="ml-3 flex-1">
+                  <div class="font-medium text-sm">{follower.username}</div>
+                  {#if follower.full_name}
+                    <div class="text-xs text-gray-500">{follower.full_name}</div>
+                  {/if}
+                </div>
+                {#if follower.sales_count > 0}
+                  <div class="text-xs text-gray-500">{follower.sales_count} sales</div>
+                {/if}
+              </a>
+            {/each}
+          {/if}
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Following Modal -->
+  {#if showFollowingModal}
+    <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div class="bg-white rounded-lg max-w-md w-full max-h-[70vh] overflow-hidden">
+        <div class="p-4 border-b flex justify-between items-center">
+          <h2 class="font-semibold">Following</h2>
+          <button 
+            onclick={() => showFollowingModal = false}
+            class="text-gray-500 hover:text-gray-700"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="overflow-y-auto max-h-[60vh]">
+          {#if loadingFollowing}
+            <div class="p-4 text-center text-gray-500">Loading...</div>
+          {:else if following.length === 0}
+            <div class="p-4 text-center text-gray-500">Not following anyone yet</div>
+          {:else}
+            {#each following as user}
+              <a 
+                href="/profile/{user.username || user.id}"
+                class="flex items-center p-3 hover:bg-gray-50 border-b"
+                onclick={() => showFollowingModal = false}
+              >
+                <Avatar 
+                  src={user.avatar_url}
+                  name={user.full_name || user.username}
+                  size="sm"
+                />
+                <div class="ml-3 flex-1">
+                  <div class="font-medium text-sm">{user.username}</div>
+                  {#if user.full_name}
+                    <div class="text-xs text-gray-500">{user.full_name}</div>
+                  {/if}
+                </div>
+                {#if user.sales_count > 0}
+                  <div class="text-xs text-gray-500">{user.sales_count} sales</div>
+                {/if}
+              </a>
+            {/each}
+          {/if}
+        </div>
+      </div>
+    </div>
+  {/if}
 
 <BottomNav />

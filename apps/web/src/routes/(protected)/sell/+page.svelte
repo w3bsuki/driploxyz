@@ -162,19 +162,30 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
     }
     
     // Check if can proceed
-    if (canProceedToNext()) {
+    if (canProceedToNext) {
       currentStep++;
     }
   }
   
-  function canProceedToNext() {
-    console.log('[SELL] canProceedToNext check:', { currentStep, uploadedImages: $state.snapshot(uploadedImages).length, formData: $state.snapshot(formData) });
+  // Make this reactive using $derived so it updates when state changes
+  const canProceedToNext = $derived(() => {
+    console.log('[SELL] canProceedToNext check:', { 
+      currentStep, 
+      uploadedImagesCount: uploadedImages.length, 
+      title: formData.title,
+      titleLength: formData.title?.length,
+      categoryId: formData.category_id,
+      description: formData.description
+    });
+    
     switch(currentStep) {
       case 1: 
-        return uploadedImages.length > 0 && 
+        const step1Valid = uploadedImages.length > 0 && 
                formData.title && 
                formData.title.length >= 3 && 
                formData.category_id;
+        console.log('[SELL] Step 1 valid:', step1Valid);
+        return step1Valid;
       case 2: 
         return formData.brand && formData.size && formData.condition;
       case 3: 
@@ -192,7 +203,7 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
       default: 
         return false;
     }
-  }
+  });
 
   // Handle image upload to Supabase
   async function handleImageUpload(files: File[]): Promise<UploadedImage[]> {
@@ -796,7 +807,7 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
                 type="button"
                 variant="primary"
                 onclick={handleNext}
-                disabled={!canProceedToNext() || submitting}
+                disabled={!canProceedToNext || submitting}
                 class="flex-1"
               >
                 Next
@@ -805,7 +816,7 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
               <Button
                 type="submit"
                 variant="primary"
-                disabled={submitting || !canProceedToNext()}
+                disabled={submitting || !canProceedToNext}
                 class="flex-1"
               >
                 {#if submitting}

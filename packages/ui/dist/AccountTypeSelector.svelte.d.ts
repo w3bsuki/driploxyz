@@ -1,11 +1,17 @@
 interface Props {
-    selected?: 'personal' | 'brand';
-    onSelect?: (type: 'personal' | 'brand') => void;
+    selected?: 'personal' | 'premium' | 'brand';
+    onSelect?: (type: 'personal' | 'premium' | 'brand') => void;
     class?: string;
+    showDiscountCode?: boolean;
+    onDiscountCodeChange?: (code: string) => void;
+    discountCode?: string;
     translations?: {
         personalTitle?: string;
         personalDescription?: string;
         personalFeatures?: string[];
+        premiumTitle?: string;
+        premiumDescription?: string;
+        premiumFeatures?: string[];
         brandTitle?: string;
         brandDescription?: string;
         brandFeatures?: string[];
@@ -14,6 +20,8 @@ interface Props {
         popular?: string;
         selected?: string;
         select?: string;
+        haveDiscountCode?: string;
+        enterCode?: string;
     };
 }
 declare const AccountTypeSelector: import("svelte").Component<Props, {}, "">;

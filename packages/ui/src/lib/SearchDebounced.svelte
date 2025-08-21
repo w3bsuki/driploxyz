@@ -243,6 +243,7 @@
       role="combobox"
       aria-expanded={showSuggestionsDropdown}
       aria-haspopup="listbox"
+      aria-controls="search-suggestions"
       aria-describedby="search-description"
     />
 
@@ -281,8 +282,10 @@
           class="px-4 py-3 cursor-pointer transition-colors border-b border-gray-100 last:border-b-0
             {index === selectedSuggestionIndex ? 'bg-blue-50 text-blue-900' : 'hover:bg-gray-50'}"
           onclick={() => selectSuggestion(suggestion)}
+          onkeydown={(e) => e.key === 'Enter' && selectSuggestion(suggestion)}
           role="option"
           aria-selected={index === selectedSuggestionIndex}
+          tabindex="0"
         >
           <div class="flex items-center space-x-3">
             <span class="text-lg">{getSuggestionIcon(suggestion.type)}</span>

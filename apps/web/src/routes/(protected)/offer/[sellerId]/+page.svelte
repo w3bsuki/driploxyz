@@ -2,34 +2,33 @@
   import { page } from '$app/stores';
   import { Button, Avatar, type Product } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
+  import type { PageData } from './$types';
+  
+  interface Props {
+    data: PageData;
+  }
+  
+  let { data }: Props = $props();
   
   const sellerId = $page.params.sellerId;
+  const seller = data.seller;
   
-  // Mock seller data
-  const seller = {
-    id: sellerId,
-    name: 'VintageFinds',
-    avatar: '/placeholder-product.svg',
-    rating: 4.8,
-    responseTime: '< 1 hour'
-  };
-  
-  // Mock seller's products
-  const sellerProducts: Product[] = Array.from({ length: 12 }, (_, i) => ({
-    id: `product-${i + 1}`,
-    title: `Item ${i + 1}`,
-    description: 'Great condition item',
-    price: Math.floor(Math.random() * 100) + 20,
-    images: ['/placeholder-product.svg'],
-    brand: ['Levi\'s', 'Nike', 'Adidas', 'Zara'][i % 4],
-    size: ['S', 'M', 'L', 'XL'][i % 4],
-    condition: (['new', 'like-new', 'good', 'fair'] as const)[i % 4],
-    category: 'Clothing',
-    sellerId: seller.id,
-    sellerName: seller.name,
-    sellerRating: seller.rating,
-    createdAt: new Date().toISOString(),
-    location: 'New York, NY'
+  // Transform products for display
+  const sellerProducts: Product[] = data.products.map(p => ({
+    id: p.id,
+    title: p.title,
+    description: p.description || '',
+    price: p.price,
+    images: p.images || [],
+    brand: p.brand,
+    size: p.size,
+    condition: p.condition,
+    category: 'Clothing', // TODO: get category name from category_id
+    sellerId: p.sellerId,
+    sellerName: p.sellerName,
+    sellerRating: p.sellerRating,
+    createdAt: p.created_at,
+    location: p.location || ''
   }));
   
   // Bundle state

@@ -27,7 +27,8 @@
       "Bash(pnpm list:*)",
       "WebFetch(domain:tailwindcss.com)",
       "Bash(rm:*)",
-      "mcp__playwright__browser_take_screenshot"
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_type"
     ]
   },
   "enableAllProjectMcpServers": true,

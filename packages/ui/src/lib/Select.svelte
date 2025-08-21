@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
+  
   interface Option {
     value: string;
     label: string;
@@ -6,7 +8,7 @@
 
   interface Props {
     value?: string;
-    options: Option[] | string[];
+    options?: Option[] | string[];
     placeholder?: string;
     label?: string;
     error?: string;
@@ -16,6 +18,8 @@
     id?: string;
     name?: string;
     onchange?: (event: Event) => void;
+    onblur?: (event: Event) => void;
+    children?: Snippet;
   }
 
   let { 
@@ -29,17 +33,20 @@
     class: className = '',
     id,
     name,
-    onchange
+    onchange,
+    onblur,
+    children
   }: Props = $props();
 
   const selectId = $derived(id || `select-${Math.random().toString(36).substr(2, 9)}`);
 
+  // Support both options prop and children pattern
   const normalizedOptions = $derived(
-    options.map(opt => 
+    options ? options.map(opt => 
       typeof opt === 'string' 
         ? { value: opt, label: opt }
         : opt
-    )
+    ) : []
   );
 
   const baseClasses = 'block w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-hidden focus:ring-1 appearance-none cursor-pointer';
@@ -68,15 +75,20 @@
       id={selectId}
       class={classes}
       {onchange}
+      {onblur}
     >
-      <option value="" disabled selected={!value}>
-        {placeholder}
-      </option>
-      {#each normalizedOptions as option}
-        <option value={option.value}>
-          {option.label}
+      {#if children}
+        {@render children()}
+      {:else}
+        <option value="" disabled selected={!value}>
+          {placeholder}
         </option>
-      {/each}
+        {#each normalizedOptions as option}
+          <option value={option.value}>
+            {option.label}
+          </option>
+        {/each}
+      {/if}
     </select>
     
     <!-- Dropdown arrow -->

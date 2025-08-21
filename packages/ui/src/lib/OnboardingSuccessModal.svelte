@@ -63,13 +63,52 @@
         </div>
       </div>
 
-      <!-- Action Button -->
-      <button
-        onclick={onClose}
-        class="w-full bg-black text-white font-semibold py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors"
-      >
-        {isBrand ? (translations.goToDashboard || 'Go to Dashboard & Subscribe') : (translations.startExploring || 'Start Exploring')}
-      </button>
+      <!-- Action Buttons -->
+      <div class="space-y-3">
+        {#if !isBrand}
+          <!-- Buy/Sell CTAs for personal accounts -->
+          <div class="grid grid-cols-2 gap-3">
+            <button
+              onclick={() => {
+                window.location.href = '/';
+                onClose?.();
+              }}
+              class="bg-green-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+              </svg>
+              Купи
+            </button>
+            <button
+              onclick={() => {
+                window.location.href = '/sell';
+                onClose?.();
+              }}
+              class="bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Продай
+            </button>
+          </div>
+          <button
+            onclick={onClose}
+            class="w-full bg-gray-100 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            {translations.startExploring || 'Start Exploring'}
+          </button>
+        {:else}
+          <!-- Original button for brand accounts -->
+          <button
+            onclick={onClose}
+            class="w-full bg-black text-white font-semibold py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors"
+          >
+            {translations.goToDashboard || 'Go to Dashboard & Subscribe'}
+          </button>
+        {/if}
+      </div>
     </div>
   </div>
 {/if}
