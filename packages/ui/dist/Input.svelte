@@ -52,7 +52,7 @@
 
 <div>
   {#if label}
-    <label for={inputId} class="block text-sm font-medium text-gray-700">
+    <label for={inputId} class="block text-sm font-medium text-gray-700 mb-1">
       {label}
       {#if required}
         <span class="text-red-500">*</span>
@@ -60,7 +60,8 @@
     </label>
   {/if}
   
-  <input
+  <div class="p-[3px]">
+    <input
     {type}
     bind:value
     {placeholder}
@@ -75,7 +76,8 @@
     {onchange}
     {onfocus}
     {onblur}
-  />
+    />
+  </div>
   
   {#if error}
     <p class="text-sm text-red-600">{error}</p>

@@ -67,7 +67,8 @@
         <label for="fullName" class="block text-sm font-semibold text-gray-700 mb-2">
           {i18n.auth_firstName()} {i18n.auth_lastName()}
         </label>
-        <input
+        <div class="p-[3px]">
+          <input
           id="fullName"
           name="fullName"
           type="text"
@@ -77,7 +78,8 @@
           aria-describedby={form?.errors?.fullName ? 'fullName-error' : undefined}
           class="appearance-none block w-full px-3 py-2 border {form?.errors?.fullName ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
           placeholder="John Doe"
-        />
+          />
+        </div>
         <div class="mt-1 h-2">
           {#if form?.errors?.fullName}
             <div id="fullName-error" class="text-sm text-red-600 flex items-center gap-1">
@@ -95,7 +97,8 @@
         <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
           {i18n.auth_email()}
         </label>
-        <input
+        <div class="p-[3px]">
+          <input
           id="email"
           name="email"
           type="email"
@@ -106,7 +109,8 @@
           aria-describedby={form?.errors?.email ? 'email-error' : undefined}
           class="appearance-none block w-full px-3 py-2 border {form?.errors?.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
           placeholder="john@example.com"
-        />
+          />
+        </div>
         <div class="mt-1 h-2">
           {#if form?.errors?.email}
             <div id="email-error" class="text-sm text-red-600 flex items-center gap-1">
@@ -124,7 +128,8 @@
         <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
           {i18n.auth_password()}
         </label>
-        <input
+        <div class="p-[3px]">
+          <input
           id="password"
           name="password"
           type="password"
@@ -135,7 +140,8 @@
           aria-describedby={form?.errors?.password ? 'password-error' : undefined}
           class="appearance-none block w-full px-3 py-2 border {form?.errors?.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
           placeholder="Minimum 8 characters"
-        />
+          />
+        </div>
         <div class="mt-1 h-2">
           {#if form?.errors?.password}
             <div id="password-error" class="text-sm text-red-600 flex items-center gap-1">
@@ -152,7 +158,8 @@
         <label for="confirmPassword" class="block text-sm font-semibold text-gray-700 mb-2">
           {i18n.auth_confirmPassword()}
         </label>
-        <input
+        <div class="p-[3px]">
+          <input
           id="confirmPassword"
           name="confirmPassword"
           type="password"
@@ -163,7 +170,8 @@
           aria-describedby={form?.errors?.confirmPassword ? 'confirmPassword-error' : undefined}
           class="appearance-none block w-full px-3 py-2 border {form?.errors?.confirmPassword ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
           placeholder="Re-enter your password"
-        />
+          />
+        </div>
         <div class="mt-1 h-2">
           {#if form?.errors?.confirmPassword}
             <div id="confirmPassword-error" class="text-sm text-red-600 flex items-center gap-1">

@@ -142,10 +142,10 @@
   <!-- Unified Header -->
   <Header />
 
-  <!-- Category Hero -->
+  <!-- Category Hero with Sellers -->
   <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="flex items-center justify-between">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex items-center justify-between mb-6">
         <div>
           <h1 class="text-3xl sm:text-4xl font-bold mb-2">{category.name}</h1>
           <p class="text-lg opacity-90">{category.description || `Shop the best ${category.name} items`}</p>
@@ -153,6 +153,36 @@
         {#if category.image_url}
           <img src={category.image_url} alt={category.name} class="w-24 h-24 rounded-full opacity-80 hidden sm:block" />
         {/if}
+      </div>
+      
+      <!-- Top Sellers in Banner -->
+      <div class="border-t border-white/20 pt-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-sm font-medium opacity-90 mb-2">Top Sellers</h3>
+          {#if featuredSellers.length > 4}
+            <a href="/sellers" class="text-xs opacity-75 hover:opacity-100">View all →</a>
+          {/if}
+        </div>
+        <div class="flex space-x-3 overflow-x-auto scrollbar-hide">
+          {#if featuredSellers.length > 0}
+            {#each featuredSellers.slice(0, 8) as seller}
+              <a href="/profile/{seller.id}" class="flex flex-col items-center group shrink-0">
+                <img src={seller.avatar} alt={seller.name} class="w-12 h-12 rounded-full border-2 border-white/30 group-hover:border-white transition-colors" />
+                <span class="text-xs mt-1 opacity-90 group-hover:opacity-100">{seller.name}</span>
+                <span class="text-xs opacity-75">{seller.itemCount} items</span>
+              </a>
+            {/each}
+          {:else}
+            <!-- Skeleton sellers -->
+            {#each Array(6) as _, i}
+              <div class="flex flex-col items-center shrink-0">
+                <div class="w-12 h-12 rounded-full bg-white/20 animate-pulse"></div>
+                <div class="h-3 w-12 bg-white/20 rounded mt-1 animate-pulse"></div>
+                <div class="h-2 w-10 bg-white/20 rounded mt-1 animate-pulse"></div>
+              </div>
+            {/each}
+          {/if}
+        </div>
       </div>
     </div>
   </div>
@@ -198,48 +228,6 @@
   {/if}
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Featured Sellers -->
-    <div class="mb-8">
-      <h2 class="text-xl font-semibold text-gray-900 mb-4">
-        Sellers in {category.name}
-        {#if featuredSellers.some(s => s.itemCount === 1)}
-          <span class="text-sm font-normal text-gray-500 ml-2">✨ New sellers featured</span>
-        {/if}
-      </h2>
-      <div class="overflow-x-auto scrollbar-hide">
-        <div class="flex space-x-4 pb-2">
-          {#if featuredSellers.length > 0}
-            {#each featuredSellers as seller}
-              <a href="/profile/{seller.id}" class="bg-white rounded-lg p-4 hover:shadow-md transition-shadow shrink-0 min-w-[140px]">
-                <img src={seller.avatar} alt={seller.name} class="w-16 h-16 rounded-full mx-auto mb-2 object-cover" />
-                <h3 class="text-sm font-medium text-center truncate">{seller.name}</h3>
-                <p class="text-xs text-gray-500 text-center">{seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}</p>
-                {#if seller.rating > 0}
-                  <div class="flex items-center justify-center mt-1">
-                    <svg class="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                    </svg>
-                    <span class="text-xs text-gray-600 ml-1">{seller.rating.toFixed(1)}</span>
-                  </div>
-                {:else}
-                  <p class="text-xs text-gray-400 text-center mt-1">New seller</p>
-                {/if}
-              </a>
-            {/each}
-          {:else}
-            <!-- Show skeleton sellers when no real sellers -->
-            {#each Array(4) as _, i}
-              <div class="bg-white rounded-lg p-4 shrink-0 min-w-[140px] animate-pulse">
-                <div class="w-16 h-16 rounded-full mx-auto mb-2 bg-gray-200"></div>
-                <div class="h-4 bg-gray-200 rounded w-20 mx-auto mb-1"></div>
-                <div class="h-3 bg-gray-200 rounded w-16 mx-auto"></div>
-              </div>
-            {/each}
-          {/if}
-        </div>
-      </div>
-    </div>
-
     <!-- Sort and Filter Bar -->
     <div class="flex justify-between items-center mb-6">
       <p class="text-sm text-gray-600">
