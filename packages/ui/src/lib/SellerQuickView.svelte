@@ -1,6 +1,6 @@
 <script lang="ts">
   import Avatar from './Avatar.svelte';
-  
+  // Seller quick preview component
   interface SellerData {
     id: string;
     username: string;
