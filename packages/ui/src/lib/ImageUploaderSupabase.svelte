@@ -59,7 +59,6 @@
 
     try {
       const uploadedImages = await onUpload(filesToProcess);
-      // Update images here since we're using bind:images
       images = [...images, ...uploadedImages];
     } catch (error) {
       console.error('Upload failed:', error);

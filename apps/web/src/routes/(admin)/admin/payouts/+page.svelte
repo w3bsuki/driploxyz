@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import type { PageData } from './$types';
+  import * as i18n from '@repo/i18n';
 
   interface Props {
     data: PageData;
@@ -170,22 +171,22 @@
 <div class="space-y-6">
   <div class="flex items-center justify-between">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900">Payout Management</h1>
-      <p class="text-gray-600 text-sm mt-1">Track and process seller payouts</p>
+      <h1 class="text-2xl font-bold text-gray-900">{i18n.admin_payoutManagement()}</h1>
+      <p class="text-gray-600 text-sm mt-1">{i18n.admin_trackProcessPayouts()}</p>
     </div>
     <Button onclick={loadTransactions} variant="outline" disabled={loading}>
-      {loading ? 'Loading...' : 'Refresh'}
+      {loading ? i18n.admin_loading() : i18n.admin_refresh()}
     </Button>
   </div>
 
   <!-- Payout Statistics -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
     <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
-      <div class="text-sm font-medium text-gray-600">Pending Payouts</div>
+      <div class="text-sm font-medium text-gray-600">{i18n.admin_pendingPayouts()}</div>
       <div class="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">{transactions.filter(t => t.payout_status === 'pending').length}</div>
     </div>
     <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
-      <div class="text-sm font-medium text-gray-600">Processing</div>
+      <div class="text-sm font-medium text-gray-600">{i18n.admin_processing()}</div>
       <div class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{transactions.filter(t => t.payout_status === 'processing').length}</div>
     </div>
     <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">

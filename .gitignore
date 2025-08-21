@@ -32,7 +32,7 @@ yarn-error.log*
 .turbo
 
 dist
-packages/ui/dist
+# packages/ui/dist
 
 # vercel
 .vercel/

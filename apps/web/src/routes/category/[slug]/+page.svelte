@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { Button, ProductCard, Breadcrumb, SellerQuickView, type Product, type BreadcrumbItem } from '@repo/ui';
+  import { Button, ProductCard, Breadcrumb, SellerQuickView, SearchBar, type Product, type BreadcrumbItem } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
@@ -60,6 +60,7 @@
   let selectedSubcategory = $state<string | null>(null);
   let sortBy = $state('popular');
   let showFilters = $state(false);
+  let searchQuery = $state('');
   
   // Seller quick view modal state
   let selectedSeller = $state<any>(null);
@@ -90,10 +91,19 @@
     { value: 'fair', label: 'Fair' }
   ];
   
-  // Filter products based on selected subcategory and filters
+  // Filter products based on search query, subcategory and filters
   let filteredProducts = $derived(
     displayProducts.filter(p => {
-      // Real subcategory filtering would be done server-side
+      // Search filter
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase().trim();
+        const matchesTitle = p.title.toLowerCase().includes(query);
+        const matchesBrand = p.brand?.toLowerCase().includes(query) || false;
+        const matchesDescription = p.description?.toLowerCase().includes(query) || false;
+        if (!matchesTitle && !matchesBrand && !matchesDescription) return false;
+      }
+      
+      // Other filters
       if (selectedSizes.length && !selectedSizes.includes(p.size)) return false;
       if (selectedBrands.length && !selectedBrands.includes(p.brand || '')) return false;
       if (selectedConditions.length && !selectedConditions.includes(p.condition)) return false;
@@ -125,6 +135,12 @@
     selectedConditions = [];
     priceRange = { min: 0, max: 500 };
   }
+  
+  function handleSearch(query: string) {
+    if (query.trim()) {
+      goto(`/search?q=${encodeURIComponent(query)}&category=${categorySlug}`);
+    }
+  }
 </script>
 
 <svelte:head>
@@ -136,66 +152,8 @@
   <!-- Unified Header -->
   <Header />
 
-  <!-- Category Hero with Sellers -->
-  <div class="{categoryBgColor} text-white">
-    <div class="w-full px-4 sm:px-6 lg:px-8 py-6">
-      <!-- Centered header -->
-      <div class="text-center mb-4">
-        <h1 class="text-2xl sm:text-3xl font-bold mb-1">Sellers in {category.name}</h1>
-        <p class="text-sm opacity-90">{category.description || `Discover amazing ${category.name.toLowerCase()} from our sellers`}</p>
-      </div>
-      
-      <!-- Full width sellers display -->
-      <div class="flex justify-center items-center gap-3 overflow-x-auto scrollbar-hide pb-2">
-        {#if sellers.length > 0}
-          <div class="flex items-center gap-3">
-            {#each sellers as seller, i}
-              <button
-                onclick={() => openSellerModal(seller)}
-                class="flex flex-col items-center group shrink-0 hover:scale-105 transition-transform cursor-pointer"
-                title="{seller.username} - {seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}"
-              >
-                <div class="relative">
-                  <img 
-                    src={seller.avatar_url} 
-                    alt={seller.username} 
-                    class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-3 border-white/80 group-hover:border-white shadow-lg transition-all" 
-                  />
-                  {#if seller.itemCount === 1}
-                    <span class="absolute -bottom-1 -right-1 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-white">NEW</span>
-                  {/if}
-                </div>
-                <span class="text-xs mt-1.5 font-medium opacity-90 group-hover:opacity-100">{seller.username}</span>
-                <span class="text-[10px] opacity-75">{seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}</span>
-              </button>
-            {/each}
-          </div>
-          {#if sellers.length > 15}
-            <a 
-              href="/sellers?category={categorySlug}" 
-              class="ml-2 text-sm opacity-90 hover:opacity-100 font-medium whitespace-nowrap"
-            >
-              View all sellers →
-            </a>
-          {/if}
-        {:else}
-          <!-- Skeleton sellers centered -->
-          <div class="flex items-center gap-3">
-            {#each Array(8) as _, i}
-              <div class="flex flex-col items-center shrink-0">
-                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/20 animate-pulse"></div>
-                <div class="h-3 w-14 bg-white/20 rounded mt-1.5 animate-pulse"></div>
-                <div class="h-2 w-10 bg-white/20 rounded mt-1 animate-pulse"></div>
-              </div>
-            {/each}
-          </div>
-        {/if}
-      </div>
-    </div>
-  </div>
-
   <!-- Breadcrumb -->
-  <div class="bg-white border-b">
+  <div class="bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
       <Breadcrumb items={[
         { label: 'Home', href: '/' },
@@ -204,41 +162,92 @@
     </div>
   </div>
 
-  <!-- Subcategories -->
-  {#if subcategories.length > 0}
-    <div class="bg-white border-b">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div class="flex overflow-x-auto scrollbar-hide space-x-2">
-          <button
-            onclick={() => selectedSubcategory = null}
-            class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors
-              {selectedSubcategory === null 
-                ? 'bg-black text-white' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-          >
-            All
-          </button>
-          {#each subcategories as subcat}
+  <!-- Colored Category Section -->
+  <div class="{categoryBgColor} text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      
+      <!-- Top Avatars Centered -->
+      <div class="flex justify-center items-center gap-3 overflow-x-auto scrollbar-hide pb-4">
+        {#if sellers.length > 0}
+          {#each sellers.slice(0, 15) as seller}
             <button
-              onclick={() => selectedSubcategory = subcat.id}
-              class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors
-                {selectedSubcategory === subcat.id
-                  ? 'bg-black text-white' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+              onclick={() => openSellerModal(seller)}
+              class="flex flex-col items-center group shrink-0 hover:scale-105 transition-transform cursor-pointer"
+              title="{seller.username} - {seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}"
             >
-              {subcat.name}
+              <div class="relative">
+                <img 
+                  src={seller.avatar_url} 
+                  alt={seller.username} 
+                  class="w-12 h-12 rounded-full border-2 border-white/30 group-hover:border-white/60 shadow-sm transition-all" 
+                />
+                {#if seller.itemCount === 1}
+                  <span class="absolute -bottom-1 -right-1 bg-green-500 text-white text-[9px] font-bold px-1 py-0.5 rounded-full border border-white">NEW</span>
+                {/if}
+              </div>
+              <span class="text-xs mt-1 font-medium opacity-90 group-hover:opacity-100">{seller.username}</span>
+              <span class="text-[10px] opacity-75">{seller.itemCount} items</span>
             </button>
           {/each}
+        {:else}
+          {#each Array(8) as _}
+            <div class="flex flex-col items-center shrink-0">
+              <div class="w-12 h-12 rounded-full bg-white/20 animate-pulse"></div>
+              <div class="h-3 w-12 bg-white/20 rounded mt-1 animate-pulse"></div>
+              <div class="h-2 w-8 bg-white/20 rounded mt-1 animate-pulse"></div>
+            </div>
+          {/each}
+        {/if}
+      </div>
+      
+      <!-- Search Bar -->
+      <div class="pb-4">
+        <div class="max-w-2xl mx-auto">
+          <SearchBar 
+            bind:value={searchQuery}
+            onSearch={handleSearch}
+            placeholder={`Search in ${category.name}...`}
+            variant="default"
+            class="w-full"
+          />
         </div>
       </div>
-    </div>
-  {/if}
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Category Pills -->
+      {#if subcategories.length > 0}
+        <div class="flex justify-center">
+          <div class="flex overflow-x-auto scrollbar-hide space-x-2 px-4">
+            <button
+              onclick={() => selectedSubcategory = null}
+              class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors
+                {selectedSubcategory === null 
+                  ? 'bg-white text-gray-900' 
+                  : 'bg-white/20 text-white hover:bg-white/30'}"
+            >
+              All
+            </button>
+            {#each subcategories as subcat}
+              <button
+                onclick={() => selectedSubcategory = subcat.id}
+                class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors
+                  {selectedSubcategory === subcat.id
+                    ? 'bg-white text-gray-900' 
+                    : 'bg-white/20 text-white hover:bg-white/30'}"
+              >
+                {subcat.name}
+              </button>
+            {/each}
+          </div>
+        </div>
+      {/if}
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <!-- Sort and Filter Bar -->
-    <div class="flex justify-between items-center mb-6">
+    <div class="flex justify-between items-center mb-4">
       <p class="text-sm text-gray-600">
-        {filteredProducts.length} items in {category.name}
+        {filteredProducts.length} items
       </p>
       <div class="flex items-center space-x-2">
         <select 

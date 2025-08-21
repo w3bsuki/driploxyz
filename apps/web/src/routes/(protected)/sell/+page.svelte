@@ -110,45 +110,42 @@
   
   // Image handlers
   async function handleImageUpload(files: File[]): Promise<UploadedImage[]> {
-    console.log('🎯 handleImageUpload called with files:', files.map(f => `${f.name} (${(f.size / 1024).toFixed(1)} KB)`));
+    console.log('📸 Upload started with files:', files.map(f => f.name));
+    
+    // Check file size first
+    const tooLargeFiles = files.filter(f => f.size > 10 * 1024 * 1024); // 10MB limit
+    if (tooLargeFiles.length > 0) {
+      const fileNames = tooLargeFiles.map(f => `${f.name} (${(f.size / 1024 / 1024).toFixed(1)} MB)`);
+      toasts.error(`Images too large: ${fileNames.join(', ')}. Max 10MB per image.`);
+      return [];
+    }
+    
     isUploadingImages = true;
     
     try {
-      console.log('🔐 Getting user authentication...');
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
-      if (authError) {
-        console.error('❌ Auth error:', authError);
-        throw new Error(`Authentication error: ${authError.message}`);
+      if (!data.user) {
+        throw new Error('User not authenticated - please refresh the page');
       }
       
-      if (!user) {
-        console.error('❌ No user found');
-        throw new Error('User not authenticated');
-      }
-      
-      console.log('✅ User authenticated:', user.id);
-      
-      console.log('📡 Starting uploadImages...');
+      console.log('🚀 Starting uploadImages call...');
       const uploaded = await uploadImages(
         supabase, 
         files, 
         'product-images', 
-        user.id,
+        data.user.id,
         (current, total) => {
           console.log(`📊 Progress: ${current}/${total} images uploaded`);
         }
       );
       
-      console.log('🎉 Upload complete! Results:', uploaded);
+      console.log('✅ Upload completed:', uploaded);
       return uploaded;
     } catch (error) {
-      console.error('❌ handleImageUpload error:', error);
+      console.error('❌ Upload error:', error);
       toasts.error(`Failed to upload images: ${error instanceof Error ? error.message : 'Unknown error'}`);
       return [];
     } finally {
       isUploadingImages = false;
-      console.log('🏁 Upload process finished, isUploadingImages set to false');
     }
   }
   

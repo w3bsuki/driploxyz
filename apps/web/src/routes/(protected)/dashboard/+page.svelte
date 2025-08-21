@@ -4,6 +4,7 @@
   import type { PageData } from './$types';
   import { page } from '$app/stores';
   import { onMount } from 'svelte';
+  import * as i18n from '@repo/i18n';
   
   interface Props {
     data: PageData;
@@ -100,13 +101,13 @@
   
   const timeAgo = (date: string) => {
     const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
-    if (seconds < 60) return 'just now';
+    if (seconds < 60) return i18n.dashboard_justNow();
     const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
+    if (minutes < 60) return i18n.dashboard_minutesAgo({ minutes });
     const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
+    if (hours < 24) return i18n.dashboard_hoursAgo({ hours });
     const days = Math.floor(hours / 24);
-    return `${days}d ago`;
+    return i18n.dashboard_daysAgo({ days });
   };
   
   const getStatusColor = (status: string) => {
@@ -134,8 +135,8 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <!-- Welcome Section -->
     <div class="mb-6">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Welcome back, {data.profile?.username || data.profile?.full_name || 'User'}!</h1>
-      <p class="text-gray-600 text-sm sm:text-base mt-1">Here's what's happening with your shop today.</p>
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">{i18n.dashboard_welcomeBack({ username: data.profile?.username || data.profile?.full_name || 'User' })}</h1>
+      <p class="text-gray-600 text-sm sm:text-base mt-1">{i18n.dashboard_shopStatus()}</p>
     </div>
 
     <!-- Quick Actions -->
@@ -145,7 +146,7 @@
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
           </svg>
-          New Listing
+          {i18n.dashboard_newListing()}
         </Button>
       </a>
       <a href="/dashboard/sold">
@@ -153,7 +154,7 @@
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Sold Items
+          {i18n.dashboard_soldItems()}
         </Button>
       </a>
       <a href="/dashboard/earnings">
@@ -161,7 +162,7 @@
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
           </svg>
-          Earnings
+          {i18n.dashboard_earnings()}
         </Button>
       </a>
       <a href="/dashboard/upgrade">
@@ -169,7 +170,7 @@
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
           </svg>
-          Upgrade
+          {i18n.dashboard_upgrade()}
         </Button>
       </a>
       {#if data.profile?.role === 'admin'}
@@ -178,7 +179,7 @@
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
-            Admin Panel
+            {i18n.dashboard_adminPanel()}
           </Button>
         </a>
       {/if}
@@ -186,14 +187,14 @@
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
         </svg>
-        Analytics
+        {i18n.dashboard_analytics()}
       </Button>
       <Button variant="outline" class="w-full">
         <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
-        Settings
+        {i18n.dashboard_settings()}
       </Button>
     </div>
 
@@ -202,9 +203,9 @@
       <div class="bg-white rounded-lg p-4 sm:p-6 shadow-xs">
         <div class="flex justify-between items-start">
           <div>
-            <p class="text-sm text-gray-600">Available Balance</p>
+            <p class="text-sm text-gray-600">{i18n.dashboard_availableBalance()}</p>
             <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">${stats().totalRevenue.toFixed(2)}</p>
-            <p class="text-xs sm:text-sm text-gray-500 mt-2">Total earned</p>
+            <p class="text-xs sm:text-sm text-gray-500 mt-2">{i18n.dashboard_totalEarned()}</p>
           </div>
           <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -215,9 +216,9 @@
       <div class="bg-white rounded-lg p-4 sm:p-6 shadow-xs">
         <div class="flex justify-between items-start">
           <div>
-            <p class="text-sm text-gray-600">This Month's Sales</p>
+            <p class="text-sm text-gray-600">{i18n.dashboard_monthSales()}</p>
             <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{stats().monthlySales}</p>
-            <p class="text-xs sm:text-sm text-green-600 mt-2">+12% from last month</p>
+            <p class="text-xs sm:text-sm text-green-600 mt-2">{i18n.dashboard_lastMonthIncrease()}</p>
           </div>
           <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -236,7 +237,7 @@
               ? 'border-black text-gray-900' 
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
         >
-          Overview
+          {i18n.dashboard_overview()}
         </button>
         <button
           onclick={() => changeTab('listings')}
@@ -245,7 +246,7 @@
               ? 'border-black text-gray-900' 
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
         >
-          Listings ({stats().activeListings})
+          {i18n.dashboard_listings()} ({stats().activeListings})
         </button>
         <button
           onclick={() => changeTab('orders')}
@@ -254,7 +255,7 @@
               ? 'border-black text-gray-900' 
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
         >
-          Orders
+          {i18n.dashboard_orders()}
         </button>
         <button
           onclick={() => changeTab('analytics')}
@@ -263,7 +264,7 @@
               ? 'border-black text-gray-900' 
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
         >
-          Analytics
+          {i18n.dashboard_analytics()}
         </button>
         <button
           onclick={() => changeTab('settings')}
@@ -272,7 +273,7 @@
               ? 'border-black text-gray-900' 
               : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
         >
-          Settings
+          {i18n.dashboard_settings()}
         </button>
       </nav>
     </div>

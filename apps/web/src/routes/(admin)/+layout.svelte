@@ -4,6 +4,7 @@
   import { Button } from '@repo/ui';
   import type { LayoutData } from './$types';
   import type { Snippet } from 'svelte';
+  import * as i18n from '@repo/i18n';
 
   interface Props {
     data: LayoutData;
@@ -20,8 +21,8 @@
   let mobileMenuOpen = $state(false);
 
   const navItems = [
-    { href: '/admin', label: 'Dashboard', icon: '📊' },
-    { href: '/admin/payouts', label: 'Payouts', icon: '💳' }
+    { href: '/admin', label: i18n.dashboard_overview(), icon: '📊' },
+    { href: '/admin/payouts', label: i18n.admin_managePayouts(), icon: '💳' }
     // Transactions, Users, and Notifications pages to be implemented
   ];
 
@@ -55,7 +56,7 @@
           </button>
           
           <h1 class="text-lg sm:text-xl font-semibold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-            Driplo Admin
+            {i18n.admin_driploAdmin()}
           </h1>
           <span class="hidden sm:inline-block px-3 py-1 bg-gradient-to-r from-red-500/10 to-pink-500/10 text-red-600 text-xs font-medium rounded-full backdrop-blur-sm">
             ADMIN
@@ -67,8 +68,8 @@
             {data.profile?.username}
           </span>
           <Button href="/" variant="outline" size="sm" class="rounded-xl">
-            <span class="hidden sm:inline">Back to Site</span>
-            <span class="sm:hidden">Back</span>
+            <span class="hidden sm:inline">{i18n.admin_backToSite()}</span>
+            <span class="sm:hidden">{i18n.admin_back()}</span>
           </Button>
         </div>
       </div>

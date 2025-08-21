@@ -6,180 +6,105 @@ export interface UploadedImage {
   path: string;
 }
 
-/**
- * Optimize image for upload - resize and compress
- */
-async function optimizeImage(file: File): Promise<{ blob: Blob; extension: string }> {
+async function optimizeImageToWebP(file: File, quality: number = 0.8): Promise<File> {
   return new Promise((resolve, reject) => {
-    const img = new Image();
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Image optimization timeout after 10 seconds'));
+    }, 10000);
+
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: false });
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
     
-    // Clean up object URL when done
-    let objectUrl: string | null = null;
-    
-    const cleanup = () => {
-      if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
-        objectUrl = null;
-      }
-    };
-    
-    img.onload = async () => {
+    img.onload = () => {
       try {
-        // Calculate new dimensions (max 1920px for better performance)
-        const maxSize = 1920;
-        let width = img.width;
-        let height = img.height;
+        const maxWidth = 1200;
+        const maxHeight = 1200;
         
-        if (width > maxSize || height > maxSize) {
-          const ratio = Math.min(maxSize / width, maxSize / height);
-          width = Math.round(width * ratio);
-          height = Math.round(height * ratio);
+        let { width, height } = img;
+        
+        if (width > maxWidth || height > maxHeight) {
+          const ratio = Math.min(maxWidth / width, maxHeight / height);
+          width *= ratio;
+          height *= ratio;
         }
         
         canvas.width = width;
         canvas.height = height;
         
         if (!ctx) {
-          throw new Error('Could not get canvas context');
+          clearTimeout(timeoutId);
+          reject(new Error('Could not get canvas context'));
+          return;
         }
         
-        // Use better image smoothing
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        
-        // Draw the image
         ctx.drawImage(img, 0, 0, width, height);
         
-        // Try WebP first with timeout
-        const webpPromise = new Promise<Blob | null>((res) => {
-          const timeout = setTimeout(() => res(null), 3000); // 3 second timeout
-          canvas.toBlob(
-            (blob) => {
-              clearTimeout(timeout);
-              res(blob);
-            },
-            'image/webp',
-            0.85
-          );
-        });
-        
-        const webpBlob = await webpPromise;
-        
-        if (webpBlob) {
-          cleanup();
-          resolve({ blob: webpBlob, extension: 'webp' });
-        } else {
-          // Fallback to JPEG if WebP fails
-          canvas.toBlob(
-            (blob) => {
-              cleanup();
-              if (blob) {
-                resolve({ blob, extension: 'jpg' });
-              } else {
-                reject(new Error('Failed to compress image'));
-              }
-            },
-            'image/jpeg',
-            0.85
-          );
-        }
+        canvas.toBlob((blob) => {
+          clearTimeout(timeoutId);
+          if (!blob) {
+            reject(new Error('Failed to convert image to WebP'));
+            return;
+          }
+          
+          const webpFile = new File([blob], `${file.name.split('.')[0]}.webp`, {
+            type: 'image/webp',
+            lastModified: Date.now()
+          });
+          
+          resolve(webpFile);
+        }, 'image/webp', quality);
       } catch (error) {
-        cleanup();
+        clearTimeout(timeoutId);
         reject(error);
       }
     };
     
     img.onerror = () => {
-      cleanup();
+      clearTimeout(timeoutId);
       reject(new Error('Failed to load image'));
     };
     
-    objectUrl = URL.createObjectURL(file);
-    img.src = objectUrl;
+    img.src = URL.createObjectURL(file);
   });
 }
 
-/**
- * Upload a single image to Supabase Storage
- */
 export async function uploadImage(
   supabase: SupabaseClient,
   file: File,
   bucket: string = 'product-images',
   userId: string
 ): Promise<UploadedImage> {
-  console.log(`🚀 Starting upload for ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
+  console.log('Starting image upload process...', file.name);
   
   try {
-    let fileToUpload: Blob = file;
-    let fileExtension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-    let contentType = file.type;
+    // Always optimize to WebP
+    console.log('Optimizing image to WebP...');
+    const optimizedFile = await optimizeImageToWebP(file);
+    console.log('Image optimized successfully, size:', optimizedFile.size);
     
-    // Optimize images (compress and convert to WebP when possible)
-    if (file.type.startsWith('image/') && !file.type.includes('svg')) {
-      // Skip optimization for SVGs and already optimized WebP
-      if (!file.type.includes('webp') || file.size > 500000) { // Optimize if not WebP or larger than 500KB
-        console.log('🔄 Attempting to optimize image...');
-        
-        try {
-          // Add a global timeout for optimization
-          const optimizationPromise = optimizeImage(file);
-          const timeoutPromise = new Promise<typeof optimizationPromise>((_, reject) => 
-            setTimeout(() => reject(new Error('Optimization timeout')), 5000)
-          );
-          
-          const optimized = await Promise.race([optimizationPromise, timeoutPromise]) as Awaited<typeof optimizationPromise>;
-          fileToUpload = optimized.blob;
-          fileExtension = optimized.extension;
-          contentType = optimized.extension === 'webp' ? 'image/webp' : 'image/jpeg';
-          
-          // Log optimization success
-          const sizeDiff = ((file.size - fileToUpload.size) / file.size * 100).toFixed(1);
-          console.log(`✅ Image optimized: ${(file.size / 1024).toFixed(1)} KB → ${(fileToUpload.size / 1024).toFixed(1)} KB (${sizeDiff}% reduction)`);
-        } catch (error) {
-          console.warn('⚠️ Image optimization failed or timed out, using original:', error);
-          // Fall back to original file
-        }
-      } else {
-        console.log('⏭️ Skipping optimization (already WebP or small size)');
-      }
-    }
-    
-    // Generate unique filename
+    // Generate unique filename with .webp extension
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 9);
-    const fileName = `${userId}/${timestamp}-${randomId}.${fileExtension}`;
+    const fileName = `${userId}/${timestamp}-${randomId}.webp`;
     
-    console.log(`📂 Uploading to Supabase bucket "${bucket}": ${fileName}`);
-    console.log(`📋 File details: ${(fileToUpload.size / 1024).toFixed(1)} KB, type: ${contentType}`);
+    console.log('Uploading to Supabase...', fileName);
     
-    // Upload to Supabase
     const { data, error } = await supabase.storage
       .from(bucket)
-      .upload(fileName, fileToUpload, {
-        contentType,
+      .upload(fileName, optimizedFile, {
+        contentType: 'image/webp',
         cacheControl: '3600',
         upsert: false
       });
     
     if (error) {
-      console.error('❌ Supabase upload error:', error);
-      console.error('❌ Error details:', {
-        message: error.message,
-        statusCode: (error as any)?.statusCode,
-        details: (error as any)?.details
-      });
-      throw new Error(`Failed to upload image: ${error.message}`);
+      console.error('Supabase upload error:', error);
+      throw new Error(`Upload failed: ${error.message}`);
     }
     
-    console.log('📤 Supabase upload successful, data:', data);
-    
-    // Get public URL
     const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${data.path}`;
-    
-    console.log(`✅ Upload complete - URL: ${url}`);
+    console.log('Upload successful:', url);
     
     return {
       url,
@@ -191,9 +116,6 @@ export async function uploadImage(
   }
 }
 
-/**
- * Upload multiple images to Supabase Storage
- */
 export async function uploadImages(
   supabase: SupabaseClient,
   files: File[],
@@ -203,14 +125,18 @@ export async function uploadImages(
 ): Promise<UploadedImage[]> {
   const uploadedImages: UploadedImage[] = [];
   
+  console.log(`Starting batch upload of ${files.length} images...`);
+  
   for (let i = 0; i < files.length; i++) {
     try {
+      console.log(`Processing image ${i + 1}/${files.length}: ${files[i].name}`);
       const uploaded = await uploadImage(supabase, files[i], bucket, userId);
       uploadedImages.push(uploaded);
+      console.log(`Successfully uploaded image ${i + 1}/${files.length}`);
       onProgress?.(i + 1, files.length);
     } catch (error) {
       console.error(`Failed to upload image ${i + 1}:`, error);
-      // Continue with other uploads even if one fails
+      // Continue with other images instead of stopping completely
     }
   }
   
@@ -218,12 +144,10 @@ export async function uploadImages(
     throw new Error('Failed to upload any images');
   }
   
+  console.log(`Batch upload completed: ${uploadedImages.length}/${files.length} images uploaded successfully`);
   return uploadedImages;
 }
 
-/**
- * Delete an image from Supabase Storage
- */
 export async function deleteImage(
   supabase: SupabaseClient,
   path: string,
@@ -241,9 +165,6 @@ export async function deleteImage(
   return true;
 }
 
-/**
- * Delete multiple images from Supabase Storage
- */
 export async function deleteImages(
   supabase: SupabaseClient,
   paths: string[],
@@ -261,55 +182,27 @@ export async function deleteImages(
   return true;
 }
 
-/**
- * Upload avatar image to Supabase Storage
- */
 export async function uploadAvatar(
   supabase: SupabaseClient,
   file: File,
   userId: string
 ): Promise<string> {
-  try {
-    let fileToUpload: Blob = file;
-    let fileExtension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-    let contentType = file.type;
-    
-    // Optimize avatar images (smaller size for avatars)
-    if (file.type.startsWith('image/') && !file.type.includes('svg')) {
-      try {
-        const optimized = await optimizeImage(file);
-        fileToUpload = optimized.blob;
-        fileExtension = optimized.extension;
-        contentType = optimized.extension === 'webp' ? 'image/webp' : 'image/jpeg';
-      } catch (error) {
-        console.warn('Avatar optimization failed, using original:', error);
-      }
-    }
-    
-    // Generate unique filename for avatar
-    const timestamp = Date.now();
-    const fileName = `avatars/${userId}/${timestamp}.${fileExtension}`;
-    
-    // Upload to Supabase
-    const { data, error } = await supabase.storage
-      .from('avatars')
-      .upload(fileName, fileToUpload, {
-        contentType,
-        cacheControl: '3600',
-        upsert: true // Allow overwriting existing avatars
-      });
-    
-    if (error) {
-      console.error('Avatar upload error:', error);
-      throw new Error(`Failed to upload avatar: ${error.message}`);
-    }
-    
-    // Get public URL
-    const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${data.path}`;
-    
-    return url;
-  } catch (error) {
-    console.error('Avatar upload failed:', error);
-    throw error;
+  const timestamp = Date.now();
+  const fileName = `avatars/${userId}/${timestamp}.${file.name.split('.').pop()?.toLowerCase() || 'jpg'}`;
+  
+  const { data, error } = await supabase.storage
+    .from('avatars')
+    .upload(fileName, file, {
+      contentType: file.type,
+      cacheControl: '3600',
+      upsert: true
+    });
+  
+  if (error) {
+    throw new Error(`Failed to upload avatar: ${error.message}`);
   }
+  
+  const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${data.path}`;
+  
+  return url;
 }

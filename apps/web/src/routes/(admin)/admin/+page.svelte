@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Button } from '@repo/ui';
   import type { PageData } from './$types';
+  import * as i18n from '@repo/i18n';
 
   interface Props {
     data: PageData;
@@ -42,8 +43,8 @@
 <div class="space-y-6">
   <!-- Page Header -->
   <div>
-    <h1 class="text-2xl font-bold text-gray-900">Dashboard Overview</h1>
-    <p class="mt-1 text-sm text-gray-600">Monitor your platform's key metrics and activity</p>
+    <h1 class="text-2xl font-bold text-gray-900">{i18n.admin_dashboard()}</h1>
+    <p class="mt-1 text-sm text-gray-600">{i18n.admin_monitorMetrics()}</p>
   </div>
 
   <!-- Stats Grid -->
@@ -51,7 +52,7 @@
     <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-medium text-gray-600">Total Users</p>
+          <p class="text-sm font-medium text-gray-600">{i18n.admin_totalUsers()}</p>
           <p class="mt-2 text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             {stats.totalUsers.toLocaleString()}
           </p>
@@ -67,7 +68,7 @@
     <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-medium text-gray-600">Total Products</p>
+          <p class="text-sm font-medium text-gray-600">{i18n.admin_totalProducts()}</p>
           <p class="mt-2 text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
             {stats.totalProducts.toLocaleString()}
           </p>
@@ -83,7 +84,7 @@
     <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-medium text-gray-600">Total Orders</p>
+          <p class="text-sm font-medium text-gray-600">{i18n.admin_totalOrders()}</p>
           <p class="mt-2 text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             {stats.totalOrders.toLocaleString()}
           </p>
@@ -99,7 +100,7 @@
     <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-medium text-gray-600">Total Revenue</p>
+          <p class="text-sm font-medium text-gray-600">{i18n.admin_totalRevenue()}</p>
           <p class="mt-2 text-3xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
             {formatCurrency(stats.totalRevenue)}
           </p>
@@ -117,19 +118,19 @@
   <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg overflow-hidden">
     <div class="px-6 py-4 bg-gradient-to-r from-gray-50/50 to-transparent">
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-gray-900">Recent Orders</h2>
+        <h2 class="text-lg font-semibold text-gray-900">{i18n.admin_recentOrders()}</h2>
       </div>
     </div>
     <div class="overflow-x-auto">
       <table class="w-full">
         <thead class="bg-gradient-to-r from-gray-50/50 to-gray-100/50">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Buyer</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Seller</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{i18n.admin_orderId()}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{i18n.admin_buyer()}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{i18n.admin_seller()}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{i18n.admin_amount()}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{i18n.admin_status()}</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{i18n.admin_date()}</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100">
@@ -161,7 +162,7 @@
           {:else}
             <tr>
               <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500">
-                No orders yet
+                {i18n.admin_noOrders()}
               </td>
             </tr>
           {/if}
@@ -178,7 +179,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
       </div>
-      <span class="font-medium text-gray-700">Manage Payouts</span>
+      <span class="font-medium text-gray-700">{i18n.admin_managePayouts()}</span>
     </a>
     
     <a href="/" class="group backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center space-x-3">
@@ -187,7 +188,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
       </div>
-      <span class="font-medium text-gray-700">View Main Site</span>
+      <span class="font-medium text-gray-700">{i18n.admin_viewMainSite()}</span>
     </a>
   </div>
 </div>
