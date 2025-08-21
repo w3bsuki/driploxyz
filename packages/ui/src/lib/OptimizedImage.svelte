@@ -62,8 +62,8 @@
     `relative overflow-hidden ${aspectRatio === 'square' ? 'aspect-square' : ''} ${onclick ? 'cursor-pointer' : ''} ${className}`.trim()
   );
 
-  // Show skeleton when we should show skeleton AND image hasn't loaded yet AND no error
-  const shouldShowSkeleton = $derived(showSkeleton && !imageLoaded && !imageError);
+  // Show skeleton when we should show skeleton AND image hasn't loaded yet (regardless of error)
+  const shouldShowSkeleton = $derived(showSkeleton && !imageLoaded);
 </script>
 
 <div 
@@ -101,7 +101,7 @@
         decoding="async"
         onload={handleLoad}
         onerror={handleError}
-        class="w-full h-full object-cover {imageLoaded ? 'opacity-100' : 'opacity-0'}"
+        class="w-full h-full object-cover {imageLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200"
       />
     </picture>
   {:else}
@@ -114,7 +114,7 @@
       decoding="async"
       onload={handleLoad}
       onerror={handleError}
-      class="w-full h-full object-cover {imageLoaded ? 'opacity-100' : 'opacity-0'}"
+      class="w-full h-full object-cover {imageLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-200"
     />
   {/if}
 

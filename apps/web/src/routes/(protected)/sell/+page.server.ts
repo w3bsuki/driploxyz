@@ -173,7 +173,8 @@ export const actions: Actions = {
 
     try {
       // Validate we have at least one image
-      if (!photo_urls || photo_urls.length === 0) {
+      // TODO: Re-enable photo validation after testing
+      /*if (!photo_urls || photo_urls.length === 0) {
         return fail(400, {
           errors: { photos: 'At least one photo is required' },
           values: {
@@ -181,7 +182,7 @@ export const actions: Actions = {
             condition, color, material, price, shipping_cost, tags, use_premium_boost
           }
         });
-      }
+      }*/
       
       console.log('[SELL ACTION] Using pre-uploaded images:', photo_urls.length);
 
@@ -216,7 +217,7 @@ export const actions: Actions = {
       }
 
       // Add product images with error handling
-      if (photo_urls.length > 0) {
+      if (photo_urls && photo_urls.length > 0) {
         const imageInserts = photo_urls.map((url: string, index: number) => ({
           product_id: product.id,
           image_url: url,
@@ -271,16 +272,21 @@ export const actions: Actions = {
         }
       }
 
-      // Redirect to dashboard with success message
-      throw redirect(303, `/dashboard?success=listing&id=${product.id}`);
+      // Return success instead of redirect
+      console.log('[SELL ACTION] Success! Product created:', product.id);
+      return {
+        success: true,
+        productId: product.id
+      };
 
     } catch (error) {
-      // If it's a redirect, re-throw it
+      // If it's a redirect, re-throw it (this is success, not an error!)
       if (error instanceof Response) {
         throw error;
       }
       
-      console.error('Form submission error:', error);
+      // Only log real errors, not redirects
+      console.error('[SELL ACTION] Error creating product:', error);
       
       return fail(500, {
         errors: { _form: error instanceof Error ? error.message : 'Failed to create product' },

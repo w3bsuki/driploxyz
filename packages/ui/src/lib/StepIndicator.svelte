@@ -7,22 +7,36 @@
 
   interface Props {
     steps: Step[];
-    currentStep: number;
-    onStepClick?: (step: number) => void;
+    current?: number; // Accept both 'current' and 'currentStep'
+    currentStep?: number; // For backwards compatibility
+    completed?: number; // Accept both 'completed' and 'completedSteps'
     completedSteps?: number[];
+    onStepClick?: (step: number) => void;
+    variant?: 'default' | 'minimal' | 'compact';
     class?: string;
   }
 
   let { 
     steps,
-    currentStep,
-    onStepClick,
+    current,
+    currentStep: currentStepProp,
+    completed,
     completedSteps = [],
+    onStepClick,
+    variant = 'default',
     class: className = ''
   }: Props = $props();
 
+  // Support both prop names for flexibility
+  const currentStep = $derived(current ?? currentStepProp ?? 1);
+  const completedStepsArray = $derived(
+    completed !== undefined 
+      ? Array.from({ length: completed }, (_, i) => i + 1)
+      : completedSteps
+  );
+
   function getStepState(stepId: number) {
-    if (completedSteps.includes(stepId) || stepId < currentStep) {
+    if (completedStepsArray.includes(stepId) || stepId < currentStep) {
       return 'completed';
     }
     if (stepId === currentStep) {
@@ -32,7 +46,14 @@
   }
 
   function getStepClasses(state: string) {
-    const base = 'flex items-center justify-center w-8 h-8 rounded-full text-xs font-medium transition-all duration-200';
+    // Base size depends on variant
+    const sizeClasses = {
+      default: 'w-10 h-10 text-sm',
+      minimal: 'w-8 h-8 text-xs',
+      compact: 'w-6 h-6 text-xs'
+    };
+    
+    const base = `flex items-center justify-center ${sizeClasses[variant]} rounded-full font-medium transition-all duration-200`;
     
     switch (state) {
       case 'completed':
@@ -47,7 +68,7 @@
   }
 
   function getLineClasses(stepId: number) {
-    const isCompleted = stepId < currentStep || completedSteps.includes(stepId);
+    const isCompleted = stepId < currentStep || completedStepsArray.includes(stepId);
     return `flex-1 h-0.5 mx-2 transition-all duration-300 ${
       isCompleted ? 'bg-green-500' : 'bg-gray-200'
     }`;
@@ -90,27 +111,42 @@
     {/each}
   </div>
 
-  <!-- Step Titles - Mobile optimized -->
-  <div class="flex justify-between text-xs gap-1">
-    {#each steps as step}
-      {@const state = getStepState(step.id)}
-      <div class="text-center flex-1 min-w-0">
-        <p class="font-medium truncate px-1 {state === 'current' ? 'text-gray-900' : 'text-gray-600'}">
-          <span class="hidden sm:inline">{step.title}</span>
-          <span class="sm:hidden">
-            {#if step.title.includes('&')}
-              {step.title.split('&')[0]}
+  <!-- Step Titles - Mobile optimized, hidden for compact variant -->
+  {#if variant !== 'compact'}
+    <div class="flex justify-between text-xs gap-1 {variant === 'minimal' ? 'mt-1' : 'mt-2'}">
+      {#each steps as step}
+        {@const state = getStepState(step.id)}
+        <div class="text-center flex-1 min-w-0">
+          <p class="font-medium truncate px-1 {state === 'current' ? 'text-gray-900' : 'text-gray-600'}">
+            {#if variant === 'minimal'}
+              <!-- Show abbreviated titles on mobile for minimal variant -->
+              <span class="sm:hidden">
+                {#if step.title.includes('&')}
+                  {step.title.split('&')[0].substring(0, 5)}
+                {:else}
+                  {step.title.split(' ')[0].substring(0, 5)}
+                {/if}
+              </span>
+              <span class="hidden sm:inline">{step.title}</span>
             {:else}
-              {step.title.split(' ')[0]}
+              <!-- Default variant shows full titles on larger screens -->
+              <span class="hidden sm:inline">{step.title}</span>
+              <span class="sm:hidden">
+                {#if step.title.includes('&')}
+                  {step.title.split('&')[0]}
+                {:else}
+                  {step.title.split(' ')[0]}
+                {/if}
+              </span>
             {/if}
-          </span>
-        </p>
-        {#if step.description && state === 'current'}
-          <p class="text-gray-500 mt-0.5 hidden sm:block">{step.description}</p>
-        {/if}
-      </div>
-    {/each}
-  </div>
+          </p>
+          {#if step.description && state === 'current' && variant === 'default'}
+            <p class="text-gray-500 mt-0.5 hidden sm:block">{step.description}</p>
+          {/if}
+        </div>
+      {/each}
+    </div>
+  {/if}
 </div>
 
 <style>

@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { Button, ProductCard, SoldNotificationPanel } from '@repo/ui';
-  import * as i18n from '@repo/i18n';
+  import { Button, SoldNotificationPanel, OrderStatus, OrderTimeline, OrderActions } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
   import { onMount } from 'svelte';
@@ -11,9 +10,9 @@
   
   let { data }: Props = $props();
   
-  // Sold products state
-  let soldProducts = $state([]);
-  let recentlySold = $state([]);
+  // Orders state
+  let orders = $state([]);
+  let recentOrders = $state([]);
   let totalSoldAmount = $state(0);
   let totalEarnings = $state(0);
   let monthlyStats = $state({
@@ -24,47 +23,62 @@
   });
   
   let loading = $state(true);
-  let activeTab = $state<'all' | 'recent' | 'pending' | 'completed'>('recent');
-  let selectedPeriod = $state<'week' | 'month' | 'year' | 'all'>('month');
+  let activeTab = $state<'all' | 'recent' | 'needs_shipping' | 'shipped' | 'completed'>('needs_shipping');
   
   onMount(async () => {
-    await loadSoldProducts();
+    await loadOrders();
     await loadStats();
     loading = false;
   });
   
-  async function loadSoldProducts() {
-    const { data: products, error } = await data.supabase
-      .from('products')
+  async function loadOrders() {
+    const { data: orderData, error } = await data.supabase
+      .from('orders')
       .select(`
-        *,
-        category:categories(name),
-        orders!inner(
+        id,
+        status,
+        total_amount,
+        shipping_cost,
+        tracking_number,
+        notes,
+        created_at,
+        updated_at,
+        shipped_at,
+        delivered_at,
+        product:products (
           id,
-          buyer_id,
-          total_amount,
-          status,
-          created_at,
-          buyer:profiles!buyer_id(username, full_name, avatar_url)
+          title,
+          price,
+          condition,
+          size,
+          images,
+          category:categories(name)
+        ),
+        buyer:profiles!buyer_id (
+          id,
+          username,
+          full_name,
+          avatar_url
         )
       `)
       .eq('seller_id', data.user.id)
-      .eq('is_sold', true)
-      .order('updated_at', { ascending: false });
+      .in('status', ['paid', 'shipped', 'delivered'])
+      .order('created_at', { ascending: false });
     
-    if (!error && products) {
-      soldProducts = products;
+    if (!error && orderData) {
+      orders = orderData;
       
-      // Get recently sold (last 7 days)
+      // Get recent orders (last 7 days)
       const weekAgo = new Date();
       weekAgo.setDate(weekAgo.getDate() - 7);
-      recentlySold = products.filter(p => 
-        new Date(p.updated_at) > weekAgo
+      recentOrders = orderData.filter(o => 
+        new Date(o.created_at) > weekAgo
       );
       
       // Calculate totals
-      totalSoldAmount = products.reduce((sum, p) => sum + Number(p.price), 0);
-      totalEarnings = products.reduce((sum, p) => sum + (Number(p.price) * 0.95), 0); // After 5% fee
+      totalSoldAmount = orderData.reduce((sum, o) => sum + Number(o.total_amount), 0);
+      // Assuming 5% platform fee
+      totalEarnings = orderData.reduce((sum, o) => sum + (Number(o.total_amount) * 0.95), 0);
     }
   }
   
@@ -72,26 +86,28 @@
     const now = new Date();
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     
-    const { data: monthProducts, error } = await data.supabase
-      .from('products')
+    const { data: monthOrders, error } = await data.supabase
+      .from('orders')
       .select(`
-        price,
-        category:categories(name),
-        updated_at
+        total_amount,
+        product:products!inner (
+          category:categories(name)
+        ),
+        created_at
       `)
       .eq('seller_id', data.user.id)
-      .eq('is_sold', true)
-      .gte('updated_at', firstDayOfMonth.toISOString());
+      .in('status', ['paid', 'shipped', 'delivered'])
+      .gte('created_at', firstDayOfMonth.toISOString());
     
-    if (!error && monthProducts) {
+    if (!error && monthOrders) {
       // Calculate monthly stats
-      const count = monthProducts.length;
-      const revenue = monthProducts.reduce((sum, p) => sum + Number(p.price), 0);
+      const count = monthOrders.length;
+      const revenue = monthOrders.reduce((sum, o) => sum + Number(o.total_amount), 0);
       const avgPrice = count > 0 ? revenue / count : 0;
       
       // Find top category
-      const categoryCounts = monthProducts.reduce((acc, p) => {
-        const category = p.category?.name || 'Uncategorized';
+      const categoryCounts = monthOrders.reduce((acc, o) => {
+        const category = o.product?.category?.name || 'Uncategorized';
         acc[category] = (acc[category] || 0) + 1;
         return acc;
       }, {});
@@ -108,22 +124,36 @@
     }
   }
   
-  function getFilteredProducts() {
+  function getFilteredOrders() {
     switch (activeTab) {
       case 'recent':
-        return recentlySold;
-      case 'pending':
-        return soldProducts.filter(p => 
-          p.orders?.some(o => o.status === 'pending_shipment')
-        );
+        return recentOrders;
+      case 'needs_shipping':
+        return orders.filter(o => o.status === 'paid');
+      case 'shipped':
+        return orders.filter(o => o.status === 'shipped');
       case 'completed':
-        return soldProducts.filter(p => 
-          p.orders?.some(o => o.status === 'delivered')
-        );
+        return orders.filter(o => o.status === 'delivered');
       default:
-        return soldProducts;
+        return orders;
     }
   }
+
+  const handleOrderStatusChange = (orderId: string, newStatus: string) => {
+    // Find and update the order in our data
+    const orderIndex = orders.findIndex(o => o.id === orderId);
+    if (orderIndex !== -1) {
+      orders[orderIndex].status = newStatus;
+      orders[orderIndex].updated_at = new Date().toISOString();
+      
+      if (newStatus === 'shipped') {
+        orders[orderIndex].shipped_at = new Date().toISOString();
+      }
+      
+      // Force reactivity
+      orders = [...orders];
+    }
+  };
   
   function formatDate(date: string) {
     return new Date(date).toLocaleDateString('en-US', {
@@ -187,8 +217,8 @@
       <div class="bg-white rounded-lg p-4 sm:p-6 shadow-xs border">
         <div class="flex justify-between items-start">
           <div>
-            <p class="text-sm text-gray-600">Total Sold</p>
-            <p class="text-2xl font-bold text-gray-900 mt-1">{soldProducts.length}</p>
+            <p class="text-sm text-gray-600">Total Sales</p>
+            <p class="text-2xl font-bold text-gray-900 mt-1">{orders.length}</p>
             <p class="text-xs text-gray-500 mt-2">All time</p>
           </div>
           <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,7 +231,7 @@
         <div class="flex justify-between items-start">
           <div>
             <p class="text-sm text-gray-600">Total Revenue</p>
-            <p class="text-2xl font-bold text-gray-900 mt-1">${totalSoldAmount.toFixed(0)}</p>
+            <p class="text-2xl font-bold text-gray-900 mt-1">€{totalSoldAmount.toFixed(0)}</p>
             <p class="text-xs text-gray-500 mt-2">Before fees</p>
           </div>
           <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -215,7 +245,7 @@
           <div>
             <p class="text-sm text-gray-600">This Month</p>
             <p class="text-2xl font-bold text-gray-900 mt-1">{monthlyStats.count}</p>
-            <p class="text-xs text-green-600 mt-2">+${monthlyStats.revenue.toFixed(0)} earned</p>
+            <p class="text-xs text-green-600 mt-2">+€{monthlyStats.revenue.toFixed(0)} earned</p>
           </div>
           <svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -226,30 +256,35 @@
       <div class="bg-white rounded-lg p-4 sm:p-6 shadow-xs border">
         <div class="flex justify-between items-start">
           <div>
-            <p class="text-sm text-gray-600">Avg. Sale Price</p>
-            <p class="text-2xl font-bold text-gray-900 mt-1">${monthlyStats.avgPrice.toFixed(0)}</p>
-            <p class="text-xs text-gray-500 mt-2">This month</p>
+            <p class="text-sm text-gray-600">Needs Shipping</p>
+            <p class="text-2xl font-bold text-orange-600 mt-1">{orders.filter(o => o.status === 'paid').length}</p>
+            <p class="text-xs text-gray-500 mt-2">Awaiting shipment</p>
           </div>
           <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
           </svg>
         </div>
       </div>
     </div>
     
-    <!-- Recent Sold Notifications -->
-    {#if recentlySold.length > 0}
-      <div class="mb-6">
-        <SoldNotificationPanel 
-          soldProducts={recentlySold.slice(0, 3).map(p => ({
-            id: p.id,
-            title: p.title,
-            price: p.price,
-            soldAt: p.updated_at,
-            buyerName: p.orders?.[0]?.buyer?.username || 'Unknown',
-            image: p.images?.[0]?.image_url || '/placeholder-product.svg'
-          }))}
-        />
+    <!-- Recent Order Notifications -->
+    {#if recentOrders.length > 0}
+      <div class="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="ml-3 flex-1">
+            <h3 class="text-sm font-medium text-blue-800">
+              Recent Sales ({recentOrders.length} this week)
+            </h3>
+            <div class="mt-2 text-sm text-blue-700">
+              <p>You have {recentOrders.filter(o => o.status === 'paid').length} orders ready to ship.</p>
+            </div>
+          </div>
+        </div>
       </div>
     {/if}
     
@@ -257,31 +292,24 @@
     <div class="border-b border-gray-200 mb-6">
       <nav class="-mb-px flex space-x-4 sm:space-x-8">
         <button
-          onclick={() => activeTab = 'recent'}
+          onclick={() => activeTab = 'needs_shipping'}
           class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
-            {activeTab === 'recent' 
-              ? 'border-black text-gray-900' 
+            {activeTab === 'needs_shipping' 
+              ? 'border-orange-500 text-orange-600' 
               : 'border-transparent text-gray-500 hover:text-gray-700'}"
         >
-          Recently Sold ({recentlySold.length})
+          <span class="flex items-center gap-2">
+            📦 Needs Shipping ({orders.filter(o => o.status === 'paid').length})
+          </span>
         </button>
         <button
-          onclick={() => activeTab = 'all'}
+          onclick={() => activeTab = 'shipped'}
           class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
-            {activeTab === 'all' 
+            {activeTab === 'shipped' 
               ? 'border-black text-gray-900' 
               : 'border-transparent text-gray-500 hover:text-gray-700'}"
         >
-          All Sold ({soldProducts.length})
-        </button>
-        <button
-          onclick={() => activeTab = 'pending'}
-          class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
-            {activeTab === 'pending' 
-              ? 'border-black text-gray-900' 
-              : 'border-transparent text-gray-500 hover:text-gray-700'}"
-        >
-          Pending Shipment
+          Shipped ({orders.filter(o => o.status === 'shipped').length})
         </button>
         <button
           onclick={() => activeTab = 'completed'}
@@ -290,90 +318,133 @@
               ? 'border-black text-gray-900' 
               : 'border-transparent text-gray-500 hover:text-gray-700'}"
         >
-          Completed
+          Completed ({orders.filter(o => o.status === 'delivered').length})
+        </button>
+        <button
+          onclick={() => activeTab = 'all'}
+          class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
+            {activeTab === 'all' 
+              ? 'border-black text-gray-900' 
+              : 'border-transparent text-gray-500 hover:text-gray-700'}"
+        >
+          All Orders ({orders.length})
         </button>
       </nav>
     </div>
     
-    <!-- Products List -->
+    <!-- Orders List -->
     {#if loading}
       <div class="flex justify-center items-center py-12">
-        <div class="text-gray-500">Loading sold products...</div>
+        <div class="text-gray-500">Loading orders...</div>
       </div>
-    {:else if getFilteredProducts().length === 0}
-      <div class="bg-white rounded-lg shadow-xs p-8 text-center">
+    {:else if getFilteredOrders().length === 0}
+      <div class="bg-white rounded-lg shadow-xs border p-8 text-center">
         <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
-        <p class="text-gray-600">No products in this category yet</p>
-        <p class="text-sm text-gray-500 mt-1">Your sold items will appear here</p>
+        <p class="text-gray-600">No orders in this category yet</p>
+        <p class="text-sm text-gray-500 mt-1">Your orders will appear here</p>
       </div>
     {:else}
-      <div class="bg-white rounded-lg shadow-xs overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Buyer</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Earnings</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sold</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              {#each getFilteredProducts() as product}
-                {@const order = product.orders?.[0]}
-                <tr class="hover:bg-gray-50">
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center">
-                      <div class="h-10 w-10 shrink-0">
-                        <img 
-                          class="h-10 w-10 rounded-lg object-cover" 
-                          src={product.images?.[0]?.image_url || '/placeholder-product.svg'} 
-                          alt={product.title}
-                        />
-                      </div>
-                      <div class="ml-4">
-                        <div class="text-sm font-medium text-gray-900">{product.title}</div>
-                        <div class="text-xs text-gray-500">{product.category?.name || 'Uncategorized'}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{order?.buyer?.username || 'Unknown'}</div>
-                    <div class="text-xs text-gray-500">{order?.buyer?.full_name || ''}</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">${product.price}</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-green-600">${(product.price * 0.95).toFixed(2)}</div>
-                    <div class="text-xs text-gray-500">After 5% fee</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {getStatusColor(order?.status || 'pending')}">
-                      {order?.status?.replace('_', ' ') || 'Pending'}
+      <div class="space-y-4">
+        {#each getFilteredOrders() as order}
+          <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
+            <!-- Order Header -->
+            <div class="p-4 sm:p-6 border-b">
+              <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start space-y-3 sm:space-y-0">
+                <div>
+                  <div class="flex items-center space-x-3 mb-2">
+                    <h3 class="font-semibold text-gray-900">Order #{order.id.slice(0, 8)}</h3>
+                    <OrderStatus status={order.status} />
+                  </div>
+                  <p class="text-sm text-gray-600">Ordered on {formatDate(order.created_at)}</p>
+                  {#if order.tracking_number}
+                    <p class="text-sm text-gray-600">Tracking: {order.tracking_number}</p>
+                  {/if}
+                </div>
+                <div class="text-right">
+                  <p class="text-lg font-bold text-gray-900">€{Number(order.total_amount).toFixed(2)}</p>
+                  <p class="text-sm text-green-600">€{(Number(order.total_amount) * 0.95).toFixed(2)} earnings</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Product & Buyer Details -->
+            <div class="p-4 sm:p-6">
+              <div class="flex items-start space-x-4">
+                <img 
+                  src={order.product.images?.[0] || '/placeholder.jpg'} 
+                  alt={order.product.title}
+                  class="w-20 h-20 object-cover rounded-lg bg-gray-200"
+                />
+                <div class="flex-1">
+                  <h4 class="font-medium text-gray-900">{order.product.title}</h4>
+                  <p class="text-sm text-gray-600">
+                    Size: {order.product.size || 'N/A'} • 
+                    Condition: {order.product.condition} • 
+                    €{Number(order.product.price).toFixed(2)}
+                  </p>
+                  <div class="flex items-center space-x-2 mt-2">
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span class="text-sm text-gray-600">
+                      Buyer: {order.buyer.username}
+                      {#if order.buyer.full_name}({order.buyer.full_name}){/if}
                     </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {timeAgo(product.updated_at)}
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div class="flex space-x-2">
-                      <button class="text-blue-600 hover:text-blue-900">View</button>
-                      {#if order?.status === 'pending_shipment'}
-                        <button class="text-green-600 hover:text-green-900">Ship</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Order Timeline & Actions -->
+            <div class="border-t bg-gray-50">
+              <div class="p-4 sm:p-6">
+                <!-- Order Timeline -->
+                <div class="mb-4">
+                  <h4 class="text-sm font-medium text-gray-900 mb-3">Order Progress</h4>
+                  <OrderTimeline {order} userType="seller" className="mb-4" />
+                </div>
+
+                <!-- Seller Actions -->
+                {#if order.status === 'paid'}
+                  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                    <div class="text-sm text-orange-600 font-medium flex items-center gap-2">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.084 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                      Action required: Ship this order
+                    </div>
+                    <div class="flex-1 max-w-xs">
+                      <OrderActions 
+                        {order} 
+                        userType="seller" 
+                        userId={data.user.id} 
+                        onStatusChange={(newStatus) => handleOrderStatusChange(order.id, newStatus)}
+                      />
+                    </div>
+                  </div>
+                {:else}
+                  <div class="flex justify-between items-center">
+                    <div class="text-sm text-gray-500">
+                      {#if order.status === 'shipped'}
+                        Shipped on {formatDate(order.shipped_at)}
+                      {:else if order.status === 'delivered'}
+                        Completed on {formatDate(order.delivered_at || order.updated_at)}
                       {/if}
                     </div>
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
+                    <div class="flex space-x-2">
+                      <Button size="sm" variant="outline">View Details</Button>
+                      {#if order.status === 'delivered'}
+                        <Button size="sm" variant="outline">Request Review</Button>
+                      {/if}
+                    </div>
+                  </div>
+                {/if}
+              </div>
+            </div>
+          </div>
+        {/each}
       </div>
     {/if}
     

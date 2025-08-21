@@ -5,9 +5,12 @@ interface Step {
 }
 interface Props {
     steps: Step[];
-    currentStep: number;
-    onStepClick?: (step: number) => void;
+    current?: number;
+    currentStep?: number;
+    completed?: number;
     completedSteps?: number[];
+    onStepClick?: (step: number) => void;
+    variant?: 'default' | 'minimal' | 'compact';
     class?: string;
 }
 declare const StepIndicator: import("svelte").Component<Props, {}, "">;

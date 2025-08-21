@@ -180,9 +180,9 @@
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
 	<Header initialLanguage={data.language} />
 
-	<!-- Compact Sticky Search Bar -->
+	<!-- Compact Sticky Search Bar - Position below header -->
 	{#if showCompactSearch}
-		<div class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+		<div class="fixed top-16 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
 				<SearchBar 
 					bind:value={searchQuery}

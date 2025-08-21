@@ -103,3 +103,8 @@ export type { ToastMessage } from './toast-store';
 // Pricing and subscription components
 export { default as PricingCard } from './PricingCard.svelte';
 export { default as Accordion } from './Accordion.svelte';
+
+// Order management components
+export { default as OrderStatus } from './OrderStatus.svelte';
+export { default as OrderTimeline } from './OrderTimeline.svelte';
+export { default as OrderActions } from './OrderActions.svelte';

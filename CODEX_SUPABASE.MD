@@ -1,8 +1,3 @@
-diff --git a//dev/null b/supabase.md
-index 0000000000000000000000000000000000000000..814ad01ae9c102430237598fbaaedca78cedc100 100644
---- a//dev/null
-+++ b/supabase.md
-@@ -0,0 +1,37 @@
 +# Supabase Production Refactor
 +
 +> References: [Supabase Docs](https://supabase.com/docs) — updated August 2025
