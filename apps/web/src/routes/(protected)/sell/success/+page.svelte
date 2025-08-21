@@ -20,11 +20,11 @@
   const isProcessing = $derived($page.url.searchParams.get('status') === 'processing');
   const isTemp = $derived(productId?.startsWith('temp_'));
   
-  const stats = [
+  const stats = $derived([
     { icon: '👁', label: isProcessing ? 'Publishing...' : 'Getting views' },
     { icon: '💬', label: isProcessing ? 'Almost ready...' : 'Ready for offers' },
     { icon: '📦', label: isProcessing ? 'Finalizing...' : 'Ready to ship' }
-  ];
+  ]);
   
   const tips = [
     'Respond to messages within 1 hour',

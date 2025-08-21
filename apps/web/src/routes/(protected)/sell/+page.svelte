@@ -84,56 +84,56 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
   );
   
   // Computed errors based on validation
-  const validationErrors = $derived(() => {
-    const errors: Record<string, string> = {};
-    
-    // Step 1 validation
-    if (touched.title && formData.title) {
-      if (formData.title.length < 3) {
-        errors.title = 'Title must be at least 3 characters';
-      } else if (formData.title.length > 50) {
-        errors.title = 'Title must be less than 50 characters';
+  const errors = $derived({
+    ...(() => {
+      const errs: Record<string, string> = {};
+      
+      // Step 1 validation
+      if (touched.title && formData.title) {
+        if (formData.title.length < 3) {
+          errs.title = 'Title must be at least 3 characters';
+        } else if (formData.title.length > 50) {
+          errs.title = 'Title must be less than 50 characters';
+        }
       }
-    }
-    
-    if (touched.category_id && !formData.category_id) {
-      errors.category_id = 'Please select a category';
-    }
-    
-    if (touched.photos && uploadedImages.length === 0) {
-      errors.photos = 'At least one photo is required';
-    }
-    
-    // Step 2 validation
-    if (touched.brand && !formData.brand) {
-      errors.brand = 'Please select or enter a brand';
-    }
-    
-    if (touched.size && !formData.size) {
-      errors.size = 'Please select a size';
-    }
-    
-    if (touched.condition && !formData.condition) {
-      errors.condition = 'Please select a condition';
-    }
-    
-    // Step 3 validation
-    if (touched.price) {
-      if (!formData.price || formData.price <= 0) {
-        errors.price = 'Price must be greater than 0';
-      } else if (formData.price > 10000) {
-        errors.price = 'Price cannot exceed $10,000';
+      
+      if (touched.category_id && !formData.category_id) {
+        errs.category_id = 'Please select a category';
       }
-    }
-    
-    if (touched.shipping_cost && formData.shipping_cost < 0) {
-      errors.shipping_cost = 'Shipping cost cannot be negative';
-    }
-    
-    return errors;
-  })();
-  
-  const errors = $derived(validationErrors);
+      
+      if (touched.photos && uploadedImages.length === 0) {
+        errs.photos = 'At least one photo is required';
+      }
+      
+      // Step 2 validation
+      if (touched.brand && !formData.brand) {
+        errs.brand = 'Please select or enter a brand';
+      }
+      
+      if (touched.size && !formData.size) {
+        errs.size = 'Please select a size';
+      }
+      
+      if (touched.condition && !formData.condition) {
+        errs.condition = 'Please select a condition';
+      }
+      
+      // Step 3 validation
+      if (touched.price) {
+        if (!formData.price || formData.price <= 0) {
+          errs.price = 'Price must be greater than 0';
+        } else if (formData.price > 10000) {
+          errs.price = 'Price cannot exceed $10,000';
+        }
+      }
+      
+      if (touched.shipping_cost && formData.shipping_cost < 0) {
+        errs.shipping_cost = 'Shipping cost cannot be negative';
+      }
+      
+      return errs;
+    })()
+  });
   
   // Helper to show errors only for touched fields
   function showError(field: keyof typeof touched): boolean {
@@ -306,17 +306,15 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
   });
   
   // Get size options based on selected category
-  const sizeOptions = $derived(() => {
-    if (!selectedCategory) return SIZE_CATEGORIES.clothing;
-    
-    const categoryName = selectedCategory.name.toLowerCase();
-    if (categoryName.includes('shoe') || categoryName.includes('sneaker') || categoryName.includes('boot')) {
-      return SIZE_CATEGORIES.shoes;
-    } else if (categoryName.includes('kid') || categoryName.includes('baby')) {
-      return SIZE_CATEGORIES.kids;
-    }
-    return SIZE_CATEGORIES.clothing;
-  })();
+  const sizeOptions = $derived(
+    !selectedCategory ? SIZE_CATEGORIES.clothing :
+    selectedCategory.name.toLowerCase().includes('shoe') || 
+    selectedCategory.name.toLowerCase().includes('sneaker') || 
+    selectedCategory.name.toLowerCase().includes('boot') ? SIZE_CATEGORIES.shoes :
+    selectedCategory.name.toLowerCase().includes('kid') || 
+    selectedCategory.name.toLowerCase().includes('baby') ? SIZE_CATEGORIES.kids :
+    SIZE_CATEGORIES.clothing
+  );
   
   const steps = [
     { id: 1, title: 'Photos & Details' },
