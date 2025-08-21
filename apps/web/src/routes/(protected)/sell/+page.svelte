@@ -115,8 +115,20 @@
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
       
-      const uploaded = await uploadImages(supabase, files, 'product-images', user.id);
+      const uploaded = await uploadImages(
+        supabase, 
+        files, 
+        'product-images', 
+        user.id,
+        (current, total) => {
+          console.log(`Uploading image ${current} of ${total}`);
+        }
+      );
       return uploaded;
+    } catch (error) {
+      console.error('Upload error:', error);
+      toasts.error('Failed to upload images. Please try again.');
+      return [];
     } finally {
       isUploadingImages = false;
     }

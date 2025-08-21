@@ -110,6 +110,8 @@ export async function uploadImage(
   bucket: string = 'product-images',
   userId: string
 ): Promise<UploadedImage> {
+  console.log(`Starting upload for ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
+  
   try {
     let fileToUpload: Blob = file;
     let fileExtension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
@@ -119,19 +121,29 @@ export async function uploadImage(
     if (file.type.startsWith('image/') && !file.type.includes('svg')) {
       // Skip optimization for SVGs and already optimized WebP
       if (!file.type.includes('webp') || file.size > 500000) { // Optimize if not WebP or larger than 500KB
+        console.log('Attempting to optimize image...');
+        
         try {
-          const optimized = await optimizeImage(file);
+          // Add a global timeout for optimization
+          const optimizationPromise = optimizeImage(file);
+          const timeoutPromise = new Promise<typeof optimizationPromise>((_, reject) => 
+            setTimeout(() => reject(new Error('Optimization timeout')), 5000)
+          );
+          
+          const optimized = await Promise.race([optimizationPromise, timeoutPromise]) as Awaited<typeof optimizationPromise>;
           fileToUpload = optimized.blob;
           fileExtension = optimized.extension;
           contentType = optimized.extension === 'webp' ? 'image/webp' : 'image/jpeg';
           
           // Log optimization success
           const sizeDiff = ((file.size - fileToUpload.size) / file.size * 100).toFixed(1);
-          console.log(`Image optimized: ${file.size} → ${fileToUpload.size} bytes (${sizeDiff}% reduction)`);
+          console.log(`✅ Image optimized: ${(file.size / 1024).toFixed(1)} KB → ${(fileToUpload.size / 1024).toFixed(1)} KB (${sizeDiff}% reduction)`);
         } catch (error) {
-          console.warn('Image optimization failed, using original:', error);
+          console.warn('⚠️ Image optimization failed or timed out, using original:', error);
           // Fall back to original file
         }
+      } else {
+        console.log('Skipping optimization (already WebP or small size)');
       }
     }
     
@@ -139,6 +151,8 @@ export async function uploadImage(
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 9);
     const fileName = `${userId}/${timestamp}-${randomId}.${fileExtension}`;
+    
+    console.log(`Uploading to Supabase: ${fileName}`);
     
     // Upload to Supabase
     const { data, error } = await supabase.storage
@@ -150,12 +164,14 @@ export async function uploadImage(
       });
     
     if (error) {
-      console.error('Upload error:', error);
+      console.error('❌ Upload error:', error);
       throw new Error(`Failed to upload image: ${error.message}`);
     }
     
     // Get public URL
     const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${data.path}`;
+    
+    console.log(`✅ Upload successful: ${url}`);
     
     return {
       url,
