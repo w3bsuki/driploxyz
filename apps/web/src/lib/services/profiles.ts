@@ -56,7 +56,7 @@ export class ProfileService {
       const { data, error } = await this.supabase
         .from('profiles')
         .select('*')
-        .eq('username', username)
+        .ilike('username', username)
         .single();
 
       if (error) {

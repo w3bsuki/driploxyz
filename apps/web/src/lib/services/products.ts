@@ -10,6 +10,7 @@ export interface ProductWithImages extends Product {
   images: ProductImage[];
   category_name?: string;
   seller_name?: string;
+  seller_username?: string;
   seller_rating?: number;
 }
 
@@ -72,6 +73,7 @@ export class ProductService {
         images: data.product_images || [],
         category_name: data.categories?.name,
         seller_name: data.profiles?.username,
+        seller_username: data.profiles?.username,
         seller_rating: data.profiles?.rating
       };
 

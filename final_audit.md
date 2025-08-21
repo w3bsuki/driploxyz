@@ -34,21 +34,23 @@ Driplo.xyz has a solid foundation with good mobile responsiveness and working co
 
 ---
 
-### 🚨 2. Profile Pages Return 404 Error
+### 🚨 2. Profile Route UUID/Username Mismatch
 **Severity:** CRITICAL  
-**Impact:** Social features completely broken  
+**Impact:** Profile links broken from product pages  
 **Location:** `/profile/[id]` routes
 
-**Issue:** All profile links return 404 errors:
-- Profile links from products: ❌ 404
-- "View all →" seller links: ❌ 404  
-- Following/social features: ❌ Non-functional
+**Issue:** Profile route expects usernames but receives UUIDs:
+- Profile route works: `/profile/t123` ✅
+- Product links send: `/profile/fd5bc52a-101a-4ca7-b64f-7cf259e541cb` ❌
+- Mismatch causes 404 errors
 
 **Evidence:** Screenshot `profile-404-error.png`
 
-**URL Example:** `https://www.driplo.xyz/profile/fd5bc52a-101a-4ca7-b64f-7cf259e541cb`
+**Root Cause:** Profile route fetches by username, but product cards link with user UUIDs
 
-**Impact:** Users cannot view seller profiles, affecting trust and social commerce features
+**Solution:** Convert to username-based URLs for SEO + fix route to handle usernames properly
+
+**Impact:** Users cannot view seller profiles from product pages, breaking social commerce
 
 ---
 

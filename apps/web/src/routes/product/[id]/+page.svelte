@@ -206,7 +206,7 @@
       
       <!-- Seller strip -->
       <div class="flex items-center justify-between py-3 border-t border-b border-gray-100 mb-5">
-        <a href="/profile/{data.product.seller_id}" class="flex items-center gap-3">
+        <a href="/profile/{data.product.seller_username || data.product.seller_id}" class="flex items-center gap-3">
           <Avatar 
             src={data.product.seller_avatar} 
             alt={data.product.seller_name}
@@ -330,7 +330,7 @@
         <div class="mt-8">
           <div class="flex justify-between items-center mb-4">
             <h2 class="font-semibold">More from {data.product.seller_name}</h2>
-            <a href="/profile/{data.product.seller_id}" class="text-sm text-black font-medium">
+            <a href="/profile/{data.product.seller_username || data.product.seller_id}" class="text-sm text-black font-medium">
               View all →
             </a>
           </div>
