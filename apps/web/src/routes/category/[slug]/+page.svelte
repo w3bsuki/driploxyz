@@ -77,6 +77,18 @@
       .slice(0, 8); // Show up to 8 sellers
   });
   
+  // Determine background color based on category
+  const categoryBgColor = $derived.by(() => {
+    const categoryColors = {
+      'women': 'bg-pink-500',
+      'men': 'bg-blue-600',
+      'kids': 'bg-orange-500',
+      'unisex': 'bg-slate-600',
+      'default': 'bg-gray-700'
+    };
+    return categoryColors[categorySlug] || categoryColors['default'];
+  });
+  
   let selectedSubcategory = $state<string | null>(null);
   let sortBy = $state('popular');
   let showFilters = $state(false);
@@ -143,16 +155,7 @@
   <Header />
 
   <!-- Category Hero with Sellers -->
-  {@const categoryColors = {
-    'women': 'bg-pink-500',
-    'men': 'bg-blue-600',
-    'kids': 'bg-orange-500',
-    'unisex': 'bg-slate-600',
-    'default': 'bg-gray-700'
-  }}
-  {@const bgColor = categoryColors[categorySlug] || categoryColors['default']}
-  
-  <div class="{bgColor} text-white">
+  <div class="{categoryBgColor} text-white">
     <div class="w-full px-4 sm:px-6 lg:px-8 py-6">
       <!-- Centered header -->
       <div class="text-center mb-4">
