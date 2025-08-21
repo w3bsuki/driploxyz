@@ -42,22 +42,62 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <div class="flex items-center space-x-4">
-          <h1 class="text-xl font-semibold text-gray-900">Driplo Admin</h1>
-          <span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-sm">ADMIN</span>
+          <!-- Mobile menu button -->
+          <button
+            onclick={toggleMobileMenu}
+            class="lg:hidden p-2 rounded-md text-gray-600 hover:bg-gray-100"
+          >
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {#if mobileMenuOpen}
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              {:else}
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              {/if}
+            </svg>
+          </button>
+          
+          <h1 class="text-lg sm:text-xl font-semibold text-gray-900">Driplo Admin</h1>
+          <span class="hidden sm:inline-block px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-sm">ADMIN</span>
         </div>
         
-        <div class="flex items-center space-x-4">
-          <span class="text-sm text-gray-600">Welcome, {data.profile?.full_name || data.profile?.username}</span>
-          <Button href="/" variant="outline" size="sm">Back to Site</Button>
+        <div class="flex items-center space-x-2 sm:space-x-4">
+          <span class="hidden sm:inline text-sm text-gray-600">
+            {data.profile?.username}
+          </span>
+          <Button href="/" variant="outline" size="sm">
+            <span class="hidden sm:inline">Back to Site</span>
+            <span class="sm:hidden">Back</span>
+          </Button>
         </div>
       </div>
     </div>
   </header>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex gap-8">
-      <!-- Sidebar Navigation -->
-      <aside class="w-64 shrink-0">
+  <!-- Mobile Navigation Dropdown -->
+  {#if mobileMenuOpen}
+    <div class="lg:hidden bg-white border-b">
+      <nav class="px-4 py-2 space-y-1">
+        {#each navItems as item}
+          <a
+            href={item.href}
+            onclick={() => mobileMenuOpen = false}
+            class="flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors
+                   {$page.url.pathname === item.href 
+                     ? 'bg-black text-white' 
+                     : 'text-gray-600 hover:bg-gray-100'}"
+          >
+            <span class="text-lg">{item.icon}</span>
+            <span>{item.label}</span>
+          </a>
+        {/each}
+      </nav>
+    </div>
+  {/if}
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <div class="lg:flex lg:gap-8">
+      <!-- Desktop Sidebar Navigation -->
+      <aside class="hidden lg:block w-64 shrink-0">
         <nav class="space-y-2">
           {#each navItems as item}
             <a
@@ -75,7 +115,7 @@
       </aside>
 
       <!-- Main Content -->
-      <main class="flex-1">
+      <main class="flex-1 mt-4 lg:mt-0">
         {@render children?.()}
       </main>
     </div>
