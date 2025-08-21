@@ -107,7 +107,8 @@
 		const result = await response.json();
 		
 		if (result.success) {
-			await goto(`/payment/success?payment_intent=${paymentIntent.id}`);
+			// Redirect buyer to their purchases dashboard
+			await goto('/dashboard/purchases?success=true');
 		} else {
 			error = i18n.checkout_paymentFailed();
 		}
