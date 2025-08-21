@@ -75,7 +75,7 @@
           bind:value={formData.fullName}
           aria-invalid={form?.errors?.fullName ? 'true' : undefined}
           aria-describedby={form?.errors?.fullName ? 'fullName-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {form?.errors?.fullName ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border-2 {form?.errors?.fullName ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-base sm:text-sm"
           placeholder="John Doe"
         />
         <div class="mt-1 h-2">
@@ -104,7 +104,7 @@
           bind:value={formData.email}
           aria-invalid={form?.errors?.email ? 'true' : undefined}
           aria-describedby={form?.errors?.email ? 'email-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {form?.errors?.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border-2 {form?.errors?.email ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-base sm:text-sm"
           placeholder="john@example.com"
         />
         <div class="mt-1 h-2">
@@ -133,7 +133,7 @@
           bind:value={formData.password}
           aria-invalid={form?.errors?.password ? 'true' : undefined}
           aria-describedby={form?.errors?.password ? 'password-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {form?.errors?.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border-2 {form?.errors?.password ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-base sm:text-sm"
           placeholder="Minimum 8 characters"
         />
         <div class="mt-1 h-2">
@@ -161,7 +161,7 @@
           bind:value={formData.confirmPassword}
           aria-invalid={form?.errors?.confirmPassword ? 'true' : undefined}
           aria-describedby={form?.errors?.confirmPassword ? 'confirmPassword-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {form?.errors?.confirmPassword ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border-2 {form?.errors?.confirmPassword ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-base sm:text-sm"
           placeholder="Re-enter your password"
         />
         <div class="mt-1 h-2">

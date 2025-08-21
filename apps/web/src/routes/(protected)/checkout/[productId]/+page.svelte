@@ -108,7 +108,7 @@
 		
 		if (result.success) {
 			// Redirect buyer to their purchases dashboard
-			await goto('/dashboard/purchases?success=true');
+			await goto('/dashboard?tab=purchases&success=true');
 		} else {
 			error = i18n.checkout_paymentFailed();
 		}

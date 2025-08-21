@@ -9,7 +9,7 @@
   const isLogin = $derived($page.route.id?.includes('login'));
 </script>
 
-<div class="min-h-screen bg-linear-to-br from-blue-50 to-gray-100 flex flex-col justify-center px-4 py-6">
+<div class="min-h-screen bg-linear-to-br from-blue-50 to-gray-100 flex flex-col justify-center px-8 py-6">
   <div class="w-full max-w-sm mx-auto">
     <div class="bg-white shadow-xl rounded-2xl">
       <!-- Header -->

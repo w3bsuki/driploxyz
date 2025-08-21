@@ -10,8 +10,10 @@
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
+  import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications';
   import { MessageNotificationToast, FollowNotificationToast, CookieConsent, LanguageSwitcher, ToastContainer } from '@repo/ui';
   import PageLoader from '$lib/components/PageLoader.svelte';
+  import OrderNotificationToast from '$lib/components/OrderNotificationToast.svelte';
   import { page } from '$app/stores';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import { initializeLanguage } from '$lib/utils/language';
@@ -78,6 +80,8 @@
         if (newSession) {
           user.set(newSession.user);
           session.set(newSession);
+          // Subscribe to order notifications for logged in user
+          await orderNotificationActions.subscribeToNotifications(supabase, newSession.user.id);
         }
         return; // STOP HERE - no invalidation
       }
@@ -86,16 +90,30 @@
       if (event === 'SIGNED_IN' && newSession) {
         user.set(newSession.user);
         session.set(newSession);
+        // Subscribe to order notifications for newly signed in user
+        await orderNotificationActions.subscribeToNotifications(supabase, newSession.user.id);
         await invalidate('supabase:auth'); // Only invalidate on real sign in
       } else if (event === 'SIGNED_OUT') {
         user.set(null);
         session.set(null);
         profile.set(null);
+        // Unsubscribe from notifications on sign out
+        await orderNotificationActions.unsubscribe(supabase);
         await invalidate('supabase:auth'); // Only invalidate on real sign out
       }
     });
 
-    return () => authListener.subscription.unsubscribe();
+    // Subscribe to notifications if already logged in
+    if (data?.user?.id) {
+      await orderNotificationActions.subscribeToNotifications(supabase, data.user.id);
+    }
+
+    return () => {
+      authListener.subscription.unsubscribe();
+      if (data?.user?.id) {
+        orderNotificationActions.unsubscribe(supabase);
+      }
+    };
   });
 </script>
 
@@ -142,5 +160,17 @@
     followerAvatar={$activeFollowNotification.followerAvatar}
     onViewProfile={() => handleFollowNotificationClick($activeFollowNotification)}
     onDismiss={() => activeFollowNotification.set(null)}
+  />
+{/if}
+
+<!-- Global Order Notification Toast (Sales/Purchases) -->
+{#if $activeOrderNotification}
+  <OrderNotificationToast
+    show={true}
+    title={$activeOrderNotification.title}
+    message={$activeOrderNotification.message}
+    type={$activeOrderNotification.type}
+    onView={() => handleOrderNotificationClick($activeOrderNotification)}
+    onDismiss={() => activeOrderNotification.set(null)}
   />
 {/if}
