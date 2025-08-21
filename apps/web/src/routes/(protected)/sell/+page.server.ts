@@ -44,27 +44,24 @@ export const load: PageServerLoad = async ({ locals }) => {
     }
 
     console.log('[SELL DEBUG] Fetching categories...');
-    // Get all categories for the form
-    const { data: categories, error: categoriesError } = await services.categories.getCategories();
+    // Get only main categories (parent categories) for the form
+    const { data: mainCategories, error: categoriesError } = await services.categories.getMainCategories();
 
     if (categoriesError) {
       console.error('[SELL DEBUG] Categories error:', categoriesError);
     } else {
-      console.log('[SELL DEBUG] Categories count:', categories?.length);
+      console.log('[SELL DEBUG] Main categories count:', mainCategories?.length);
     }
 
     // Add subcategories to each parent category
     const categoriesWithSubcategories = await Promise.all(
-      (categories || []).map(async (category) => {
-        if (!category.parent_id) {
-          // This is a parent category, fetch its subcategories
-          const { data: subcategories } = await services.categories.getSubcategories(category.id);
-          return {
-            ...category,
-            subcategories: subcategories || []
-          };
-        }
-        return category;
+      (mainCategories || []).map(async (category) => {
+        // Fetch subcategories for each main category
+        const { data: subcategories } = await services.categories.getSubcategories(category.id);
+        return {
+          ...category,
+          subcategories: subcategories || []
+        };
       })
     );
 
