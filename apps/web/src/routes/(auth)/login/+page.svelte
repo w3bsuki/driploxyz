@@ -86,10 +86,10 @@
   >
     <div class="space-y-1">
       <div>
-        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+        <label for="email" class="block text-sm font-semibold text-gray-700 mb-1 pl-1">
           {i18n.auth_email()}
         </label>
-        <div class="p-[3px]">
+        <div class="p-1">
           <input
           id="email"
           name="email"
@@ -116,10 +116,10 @@
       </div>
 
       <div>
-        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
+        <label for="password" class="block text-sm font-semibold text-gray-700 mb-1 pl-1">
           {i18n.auth_password()}
         </label>
-        <div class="p-[3px]">
+        <div class="p-1">
           <input
           id="password"
           name="password"

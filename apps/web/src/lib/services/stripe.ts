@@ -412,14 +412,16 @@ export class StripeService {
 	 * Calculate payment amounts with fees
 	 */
 	private calculatePaymentAmounts(productPrice: number): PaymentCalculation {
-		const serviceFeeRate = 0.03; // 3%
+		// Buyer Protection Fee: 5% + €0.70 fixed (similar to Vinted)
+		const serviceFeeRate = 0.05; // 5% buyer protection
+		const fixedFee = 70; // €0.70 in cents
 		const shippingCost = 500; // €5.00 in cents
 		const taxRate = 0; // Can be configured based on location
 
-		const serviceFee = Math.round(productPrice * serviceFeeRate);
+		const serviceFee = Math.round(productPrice * serviceFeeRate) + fixedFee;
 		const taxAmount = Math.round(productPrice * taxRate);
 		const totalAmount = productPrice + serviceFee + shippingCost + taxAmount;
-		const sellerAmount = productPrice - serviceFee + shippingCost;
+		const sellerAmount = productPrice; // Seller gets full product price (we don't deduct fees from sellers)
 
 		return {
 			productPrice,

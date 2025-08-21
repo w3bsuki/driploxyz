@@ -58,7 +58,7 @@
 
 <div>
   {#if label}
-    <label for={selectId} class="block text-sm font-medium text-gray-700">
+    <label for={selectId} class="block text-sm font-medium text-gray-700 mb-1">
       {label}
       {#if required}
         <span class="text-red-500">*</span>
@@ -66,7 +66,8 @@
     </label>
   {/if}
   
-  <div class="relative">
+  <div class="p-1">
+    <div class="relative">
     <select
       bind:value
       {disabled}
@@ -96,6 +97,7 @@
       <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
       </svg>
+    </div>
     </div>
   </div>
   

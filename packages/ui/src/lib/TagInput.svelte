@@ -97,8 +97,9 @@
     </div>
   {/if}
 
-  <div class="relative">
-    <div class="min-h-[42px] rounded-lg border px-3 py-2 flex flex-wrap gap-2 items-center transition-all duration-200 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 focus-within:border-blue-500
+  <div class="p-1">
+    <div class="relative">
+      <div class="min-h-[42px] rounded-lg border px-3 py-2 flex flex-wrap gap-2 items-center transition-all duration-200 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 focus-within:border-blue-500
       {error 
         ? 'border-red-300 focus-within:ring-red-500 focus-within:border-red-500' 
         : 'border-gray-300'}
@@ -137,10 +138,10 @@
           aria-label="Add new tag"
         />
       {/if}
-    </div>
+      </div>
 
-    {#if showSuggestions && filteredSuggestions.length > 0}
-      <div class="absolute z-10 mt-1 w-full bg-white rounded-lg border border-gray-200 shadow-lg max-h-48 overflow-auto">
+      {#if showSuggestions && filteredSuggestions.length > 0}
+        <div class="absolute z-10 mt-1 w-full bg-white rounded-lg border border-gray-200 shadow-lg max-h-48 overflow-auto">
         {#each filteredSuggestions as suggestion}
           <button
             type="button"
@@ -150,8 +151,9 @@
             #{suggestion}
           </button>
         {/each}
-      </div>
-    {/if}
+        </div>
+      {/if}
+    </div>
   </div>
 
   <div class="flex items-center justify-between mt-1">

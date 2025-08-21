@@ -86,11 +86,12 @@
     </label>
   {/if}
   
-  <div class="relative">
-    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none">
-      {currency}
-    </span>
-    <input
+  <div class="p-1">
+    <div class="relative">
+      <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm pointer-events-none z-10">
+        {currency}
+      </span>
+      <input
       type="text"
       inputmode="decimal"
       bind:value
@@ -107,7 +108,8 @@
       {onchange}
       aria-invalid={error ? 'true' : undefined}
       aria-describedby={error ? `${inputId}-error` : helpText ? `${inputId}-help` : undefined}
-    />
+      />
+    </div>
   </div>
   
   {#if error}

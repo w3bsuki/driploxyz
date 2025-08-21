@@ -144,43 +144,56 @@
 
   <!-- Category Hero with Sellers -->
   <div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="flex items-center justify-between mb-6">
-        <div>
-          <h1 class="text-3xl sm:text-4xl font-bold mb-2">{category.name}</h1>
-          <p class="text-lg opacity-90">{category.description || `Shop the best ${category.name} items`}</p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <!-- Compact header with title and sellers in same row -->
+      <div class="flex items-center justify-between gap-4 mb-3">
+        <div class="flex items-center gap-6">
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-bold">Sellers in {category.name}</h1>
+            <p class="text-sm opacity-90 mt-1">{category.description || `Discover amazing ${category.name.toLowerCase()} from our sellers`}</p>
+          </div>
         </div>
-        {#if category.image_url}
-          <img src={category.image_url} alt={category.name} class="w-24 h-24 rounded-full opacity-80 hidden sm:block" />
-        {/if}
-      </div>
-      
-      <!-- Top Sellers in Banner -->
-      <div class="border-t border-white/20 pt-4">
-        <div class="flex items-center justify-between">
-          <h3 class="text-sm font-medium opacity-90 mb-2">Top Sellers</h3>
-          {#if featuredSellers.length > 4}
-            <a href="/sellers" class="text-xs opacity-75 hover:opacity-100">View all →</a>
-          {/if}
-        </div>
-        <div class="flex space-x-3 overflow-x-auto scrollbar-hide">
+        
+        <!-- Sellers avatars inline -->
+        <div class="flex items-center gap-3">
+          <div class="flex -space-x-2 overflow-hidden">
+            {#if featuredSellers.length > 0}
+              {#each featuredSellers.slice(0, 10) as seller, i}
+                <a 
+                  href="/profile/{seller.id}" 
+                  class="relative inline-block hover:z-10 transition-transform hover:scale-110"
+                  title="{seller.name} - {seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}"
+                >
+                  <img 
+                    src={seller.avatar} 
+                    alt={seller.name} 
+                    class="w-10 h-10 rounded-full border-2 border-white shadow-sm" 
+                  />
+                  {#if seller.itemCount === 1}
+                    <span class="absolute -bottom-1 -right-1 bg-green-500 text-white text-[9px] font-bold px-1 rounded-full">NEW</span>
+                  {/if}
+                </a>
+              {/each}
+              {#if featuredSellers.length > 10}
+                <a 
+                  href="/sellers?category={categorySlug}" 
+                  class="relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm border-2 border-white hover:bg-white/30 transition-colors"
+                  title="View all sellers"
+                >
+                  <span class="text-xs font-semibold">+{featuredSellers.length - 10}</span>
+                </a>
+              {/if}
+            {:else}
+              <!-- Skeleton sellers -->
+              {#each Array(5) as _, i}
+                <div class="relative inline-block">
+                  <div class="w-10 h-10 rounded-full bg-white/20 animate-pulse border-2 border-white/30"></div>
+                </div>
+              {/each}
+            {/if}
+          </div>
           {#if featuredSellers.length > 0}
-            {#each featuredSellers.slice(0, 8) as seller}
-              <a href="/profile/{seller.id}" class="flex flex-col items-center group shrink-0">
-                <img src={seller.avatar} alt={seller.name} class="w-12 h-12 rounded-full border-2 border-white/30 group-hover:border-white transition-colors" />
-                <span class="text-xs mt-1 opacity-90 group-hover:opacity-100">{seller.name}</span>
-                <span class="text-xs opacity-75">{seller.itemCount} items</span>
-              </a>
-            {/each}
-          {:else}
-            <!-- Skeleton sellers -->
-            {#each Array(6) as _, i}
-              <div class="flex flex-col items-center shrink-0">
-                <div class="w-12 h-12 rounded-full bg-white/20 animate-pulse"></div>
-                <div class="h-3 w-12 bg-white/20 rounded mt-1 animate-pulse"></div>
-                <div class="h-2 w-10 bg-white/20 rounded mt-1 animate-pulse"></div>
-              </div>
-            {/each}
+            <a href="/sellers?category={categorySlug}" class="text-xs opacity-75 hover:opacity-100 whitespace-nowrap">View all →</a>
           {/if}
         </div>
       </div>

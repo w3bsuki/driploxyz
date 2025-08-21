@@ -64,10 +64,10 @@
     <div class="space-y-1">
       <!-- Full Name -->
       <div>
-        <label for="fullName" class="block text-sm font-semibold text-gray-700 mb-2">
+        <label for="fullName" class="block text-sm font-semibold text-gray-700 mb-1 pl-1">
           {i18n.auth_firstName()} {i18n.auth_lastName()}
         </label>
-        <div class="p-[3px]">
+        <div class="p-1">
           <input
           id="fullName"
           name="fullName"
@@ -94,10 +94,10 @@
 
       <!-- Email -->
       <div>
-        <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+        <label for="email" class="block text-sm font-semibold text-gray-700 mb-1 pl-1">
           {i18n.auth_email()}
         </label>
-        <div class="p-[3px]">
+        <div class="p-1">
           <input
           id="email"
           name="email"
@@ -125,10 +125,10 @@
 
       <!-- Password Fields -->
       <div>
-        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">
+        <label for="password" class="block text-sm font-semibold text-gray-700 mb-1 pl-1">
           {i18n.auth_password()}
         </label>
-        <div class="p-[3px]">
+        <div class="p-1">
           <input
           id="password"
           name="password"
@@ -155,10 +155,10 @@
       </div>
 
       <div>
-        <label for="confirmPassword" class="block text-sm font-semibold text-gray-700 mb-2">
+        <label for="confirmPassword" class="block text-sm font-semibold text-gray-700 mb-1 pl-1">
           {i18n.auth_confirmPassword()}
         </label>
-        <div class="p-[3px]">
+        <div class="p-1">
           <input
           id="confirmPassword"
           name="confirmPassword"

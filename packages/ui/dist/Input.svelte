@@ -60,7 +60,7 @@
     </label>
   {/if}
   
-  <div class="p-[3px]">
+  <div class="p-1">
     <input
     {type}
     bind:value

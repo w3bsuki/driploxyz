@@ -22,10 +22,10 @@
 	let loading = $state(false);
 	let error = $state('');
 
-	// Shipping and service fees (in cents)
+	// Shipping and buyer protection fees (in cents)
 	const shippingCost = 500; // €5.00
-	const serviceFee = Math.round(product.price * 0.03); // 3% service fee
-	const totalAmount = product.price + shippingCost + serviceFee;
+	const buyerProtectionFee = Math.round(product.price * 0.05) + 70; // 5% + €0.70 fixed fee
+	const totalAmount = product.price + shippingCost + buyerProtectionFee;
 
 	onMount(async () => {
 		await initializePayment();
@@ -206,13 +206,13 @@
 					<CheckoutSummary 
 						{product}
 						{shippingCost}
-						serviceFee={serviceFee}
+						serviceFee={buyerProtectionFee}
 						currency="eur"
 						translations={{
 							orderSummary: i18n.checkout_orderSummary(),
 							subtotal: i18n.checkout_subtotal(),
 							shipping: i18n.checkout_shipping(),
-							serviceFee: i18n.checkout_serviceFee(),
+							serviceFee: 'Buyer Protection',
 							total: i18n.checkout_total()
 						}}
 					/>
