@@ -2,36 +2,136 @@
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import { Avatar } from '@repo/ui';
+  import { createBrowserClient } from '@supabase/ssr';
+  import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+  import type { Database } from '@repo/database';
   
   let dismissed = $state(false);
   let currentActivity = $state(0);
   let isVisible = $state(true);
+  let activities = $state<any[]>([]);
   
-  // Mock live activities - in production, fetch from Supabase realtime
-  const activities = [
-    { type: 'listing', user: 'Maria', item: 'Vintage Levi\'s 501', productId: 'prod_1', time: '2 мин', avatar: null, initials: 'M' },
-    { type: 'sold', user: 'Stefan', item: 'Nike Air Max 90', productId: 'prod_2', time: '5 мин', avatar: null, initials: 'S' },
-    { type: 'listing', user: 'Elena', item: 'Zara блейзър', productId: 'prod_3', time: '8 мин', avatar: null, initials: 'E' },
-    { type: 'sold', user: 'Ivan', item: 'H&M hoodie', productId: 'prod_4', time: '12 мин', avatar: null, initials: 'I' },
-    { type: 'listing', user: 'Petya', item: 'Adidas Originals', productId: 'prod_5', time: '15 мин', avatar: null, initials: 'P' }
-  ];
+  const supabase = createBrowserClient<Database>(
+    PUBLIC_SUPABASE_URL,
+    PUBLIC_SUPABASE_ANON_KEY
+  );
   
-  // Rotate through activities
+  // Function to calculate time ago in Bulgarian
+  function getTimeAgo(date: string) {
+    const now = new Date();
+    const past = new Date(date);
+    const diffMs = now.getTime() - past.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'сега';
+    if (diffMins < 60) return `${diffMins} мин`;
+    if (diffHours < 24) return `${diffHours} час${diffHours === 1 ? '' : 'а'}`;
+    return `${diffDays} ${diffDays === 1 ? 'ден' : 'дни'}`;
+  }
+  
+  // Fetch real products from Supabase
+  async function fetchProducts() {
+    const { data, error } = await supabase
+      .from('products')
+      .select(`
+        id,
+        title,
+        created_at,
+        seller_id,
+        profiles!products_seller_id_fkey (
+          username,
+          avatar_url
+        )
+      `)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false })
+      .limit(10);
+    
+    if (data && !error) {
+      activities = data.map(product => ({
+        type: 'listing',
+        user: product.profiles?.username || 'Потребител',
+        item: product.title,
+        productId: product.id,
+        time: getTimeAgo(product.created_at),
+        avatar: product.profiles?.avatar_url,
+        initials: (product.profiles?.username || 'П')[0].toUpperCase()
+      }));
+    }
+  }
+  
+  // Fetch products and rotate through activities
   onMount(() => {
     if (!browser) return;
     
+    // Fetch real products on mount
+    fetchProducts();
+    
+    // Set up rotation interval
     const interval = setInterval(() => {
-      // Fade out
-      isVisible = false;
-      
-      setTimeout(() => {
-        currentActivity = (currentActivity + 1) % activities.length;
-        // Fade in
-        isVisible = true;
-      }, 300);
+      if (activities.length > 0) {
+        // Fade out
+        isVisible = false;
+        
+        setTimeout(() => {
+          currentActivity = (currentActivity + 1) % activities.length;
+          // Fade in
+          isVisible = true;
+        }, 300);
+      }
     }, 4000);
     
-    return () => clearInterval(interval);
+    // Subscribe to real-time updates for new products
+    const subscription = supabase
+      .channel('product-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'products'
+        },
+        async (payload) => {
+          // Fetch the new product with profile info
+          const { data } = await supabase
+            .from('products')
+            .select(`
+              id,
+              title,
+              created_at,
+              seller_id,
+              profiles!products_seller_id_fkey (
+                username,
+                avatar_url
+              )
+            `)
+            .eq('id', payload.new.id)
+            .single();
+          
+          if (data) {
+            const newActivity = {
+              type: 'listing',
+              user: data.profiles?.username || 'Потребител',
+              item: data.title,
+              productId: data.id,
+              time: 'сега',
+              avatar: data.profiles?.avatar_url,
+              initials: (data.profiles?.username || 'П')[0].toUpperCase()
+            };
+            
+            // Add to beginning of activities
+            activities = [newActivity, ...activities.slice(0, 9)];
+          }
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      clearInterval(interval);
+      subscription.unsubscribe();
+    };
   });
 
   function dismiss() {
@@ -60,7 +160,7 @@
     }
   });
   
-  const activity = $derived(activities[currentActivity]);
+  const activity = $derived(activities.length > 0 ? activities[currentActivity] : null);
 </script>
 
 {#if !dismissed}
@@ -75,14 +175,6 @@
         <!-- Live activity ticker -->
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 sm:gap-3">
-            <!-- Pulse indicator -->
-            <div class="relative flex-shrink-0">
-              <span class="absolute inset-0 animate-ping bg-green-400 rounded-full opacity-75"></span>
-              <span class="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-green-500"></span>
-              </span>
-            </div>
             
             <!-- Activity text with fade animation -->
             <div class="overflow-hidden flex-1">
@@ -102,13 +194,7 @@
                     <span class="font-medium flex items-center gap-1 truncate">
                       <span class="text-green-400 font-semibold">{activity.user}</span>
                       <span class="text-gray-300">•</span>
-                      <span class="text-white">
-                        {#if activity.type === 'listing'}
-                          добави
-                        {:else}
-                          продаде
-                        {/if}
-                      </span>
+                      <span class="text-white">добави</span>
                       <a 
                         href="/product/{activity.productId}"
                         class="text-gray-100 font-normal hover:text-white underline decoration-dotted underline-offset-2 hover:decoration-solid transition-all"
