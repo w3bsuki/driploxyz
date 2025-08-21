@@ -17,6 +17,8 @@
     goto('/');
   }
 
+  let mobileMenuOpen = $state(false);
+
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: '📊' },
     { href: '/admin/payouts', label: 'Payouts', icon: '💳' },
@@ -24,6 +26,10 @@
     { href: '/admin/users', label: 'Users', icon: '👥' },
     { href: '/admin/notifications', label: 'Notifications', icon: '🔔' }
   ];
+
+  function toggleMobileMenu() {
+    mobileMenuOpen = !mobileMenuOpen;
+  }
 </script>
 
 <svelte:head>
