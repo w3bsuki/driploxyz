@@ -76,11 +76,11 @@
 			id: seller.id,
 			name: seller.username || seller.full_name,
 			username: seller.username,
-			premium: seller.role === 'seller',
+			premium: seller.sales_count > 0,
 			avatar: seller.avatar_url,
-			rating: seller.rating,
-			itemCount: seller.sales_count,
-			followers: 0, // We don't track followers yet
+			rating: seller.rating || 0,
+			itemCount: seller.product_count || 0, // Use actual active listings count
+			followers: seller.followers_count || 0,
 			description: seller.bio
 		}))
 	);
@@ -182,15 +182,15 @@
 
 	<!-- Compact Sticky Search Bar -->
 	{#if showCompactSearch}
-		<div class="fixed top-14 sm:top-16 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-xs">
-			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5">
+		<div class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
 				<SearchBar 
 					bind:value={searchQuery}
 					onSearch={handleSearch}
 					placeholder={i18n.nav_search()}
 					categoriesText={i18n.search_categories()}
 					variant="compact"
-					class="max-w-sm mx-auto"
+					class="max-w-md mx-auto"
 				/>
 			</div>
 		</div>

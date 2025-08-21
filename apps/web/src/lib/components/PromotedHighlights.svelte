@@ -49,7 +49,7 @@
               >
               <!-- Premium container with clean design -->
               <div class="group">
-                <div class="relative rounded-2xl shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300 bg-white p-1">
+                <div class="relative rounded-2xl shadow-sm bg-white p-1">
                   <!-- Inner glass frame -->
                   <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
                     <div 
@@ -123,12 +123,16 @@
 </div>
 
 <style>
-  /* Clean hover effect for promoted items */
+  /* Clean, stable design - no hover animations */
+  .promoted-highlight {
+    transition: opacity 0.15s ease;
+  }
+  
   .promoted-highlight:hover {
-    transform: scale(1.02);
+    opacity: 0.95;
   }
   
   .promoted-highlight:active {
-    transform: scale(0.98);
+    opacity: 0.9;
   }
 </style>
