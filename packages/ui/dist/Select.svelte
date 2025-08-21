@@ -49,14 +49,14 @@
     ) : []
   );
 
-  const baseClasses = 'block w-full rounded-lg border px-3 py-2 text-sm bg-white focus:outline-hidden focus:ring-1 appearance-none cursor-pointer';
+  const baseClasses = 'block w-full rounded-lg border px-3 py-2 text-sm bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 appearance-none cursor-pointer';
   const stateClasses = $derived(error 
     ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
     : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500');
   const classes = $derived(`${baseClasses} ${stateClasses} ${className}`);
 </script>
 
-<div class="space-y-1">
+<div class="space-y-1.5">
   {#if label}
     <label for={selectId} class="block text-sm font-medium text-gray-700">
       {label}
