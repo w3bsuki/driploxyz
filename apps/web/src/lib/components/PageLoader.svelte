@@ -1,6 +1,5 @@
 <script lang="ts">
   import { navigating } from '$app/stores';
-  import { LoadingSpinner } from '@repo/ui';
   
   let showLoader = $state(false);
   let timer: NodeJS.Timeout | undefined;
@@ -34,5 +33,7 @@
 </script>
 
 {#if showLoader}
-  <LoadingSpinner fullscreen={true} size="lg" color="#6366f1" />
+  <div class="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-600 border-t-transparent"></div>
+  </div>
 {/if}

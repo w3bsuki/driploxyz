@@ -29,9 +29,33 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase } }
     const limit = 24;
     const offset = (page - 1) * limit;
 
+    // Get all descendant category IDs (including sub-subcategories)
+    const { data: allDescendants } = await supabase
+      .from('categories')
+      .select('id, parent_id')
+      .or(`id.eq.${category.id},parent_id.eq.${category.id}`);
+    
+    // Also get grandchildren categories (e.g., women-tshirts under women-clothing)
+    const childIds = allDescendants?.filter(c => c.parent_id === category.id).map(c => c.id) || [];
+    let grandchildIds: string[] = [];
+    
+    if (childIds.length > 0) {
+      const { data: grandchildren } = await supabase
+        .from('categories')
+        .select('id')
+        .in('parent_id', childIds);
+      grandchildIds = grandchildren?.map(c => c.id) || [];
+    }
+    
+    const categoryIds = [
+      category.id,
+      ...(allDescendants?.map(c => c.id) || []),
+      ...grandchildIds
+    ].filter((v, i, a) => a.indexOf(v) === i); // Remove duplicates
+    
     // Build filters from query parameters
     const filters: any = {
-      category_ids: [category.id]
+      category_ids: categoryIds
     };
 
     if (searchParams.get('min_price')) {

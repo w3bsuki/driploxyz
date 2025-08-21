@@ -13,9 +13,14 @@
   
   let { data }: Props = $props();
   
+  // Debug: log what we're receiving
+  $effect(() => {
+    console.log('Category page data:', data);
+  });
+  
   // Use real category data from server
-  const category = data.category;
-  const categorySlug = category.slug;
+  const category = data.category || { name: 'Women', slug: 'women', description: 'Discover amazing deals on women\'s clothing' };
+  const categorySlug = category?.slug || 'women';
   const subcategories = data.subcategories || [];
   const products = data.products || [];
   

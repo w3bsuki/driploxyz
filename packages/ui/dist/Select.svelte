@@ -49,9 +49,9 @@
     ) : []
   );
 
-  const baseClasses = 'block w-full rounded-lg border-2 border-gray-300 px-3 py-2 pr-10 text-sm bg-white transition-all duration-200 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 appearance-none cursor-pointer';
+  const baseClasses = 'block w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer';
   const stateClasses = $derived(error 
-    ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' 
+    ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
     : '');
   const classes = $derived(`${baseClasses} ${stateClasses} ${className}`);
 </script>

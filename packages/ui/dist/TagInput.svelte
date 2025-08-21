@@ -98,9 +98,9 @@
   {/if}
 
   <div class="relative">
-    <div class="min-h-[42px] rounded-lg border-2 px-3 py-2 flex flex-wrap gap-2 items-center transition-all duration-200 focus-within:ring-4 focus-within:ring-blue-500/20 focus-within:border-blue-500
+    <div class="min-h-[42px] rounded-lg border px-3 py-2 flex flex-wrap gap-2 items-center transition-all duration-200 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500 focus-within:border-blue-500
       {error 
-        ? 'border-red-300 focus-within:ring-red-500/20 focus-within:border-red-500' 
+        ? 'border-red-300 focus-within:ring-red-500 focus-within:border-red-500' 
         : 'border-gray-300'}
       {disabled ? 'bg-gray-50 cursor-not-allowed' : 'bg-white'}">
       
