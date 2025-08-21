@@ -112,7 +112,7 @@
         oninput={handleCustomInput}
         {placeholder}
         {disabled}
-        class="block w-full rounded-lg border px-3 py-2 text-sm placeholder-gray-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0
+        class="block w-full rounded-lg border px-3 py-2 text-sm placeholder-gray-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2
           {error 
             ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
             : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'}"

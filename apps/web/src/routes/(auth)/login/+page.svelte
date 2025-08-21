@@ -98,7 +98,7 @@
           bind:value={formData.email}
           aria-invalid={form?.errors?.email ? 'true' : undefined}
           aria-describedby={form?.errors?.email ? 'email-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {form?.errors?.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border {form?.errors?.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors text-base sm:text-sm"
           placeholder="Enter your email"
         />
         <div class="mt-1 h-2">
@@ -126,7 +126,7 @@
           bind:value={formData.password}
           aria-invalid={form?.errors?.password ? 'true' : undefined}
           aria-describedby={form?.errors?.password ? 'password-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {form?.errors?.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-hidden focus:ring-2 transition-colors text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border {form?.errors?.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors text-base sm:text-sm"
           placeholder="Enter your password"
         />
         <div class="mt-1 h-2">
