@@ -1,9 +1,9 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerClient } from '$lib/supabase/server';
+import { createServerSupabaseClient } from '$lib/supabase/server';
 
 export const PATCH: RequestHandler = async ({ request, params, cookies }) => {
-	const supabase = createServerClient(cookies);
+	const supabase = createServerSupabaseClient({ cookies } as any);
 	
 	const { data: { session }, error: sessionError } = await supabase.auth.getSession();
 	
