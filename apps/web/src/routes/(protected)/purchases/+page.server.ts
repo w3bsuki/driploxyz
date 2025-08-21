@@ -1,6 +1,5 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { createServerClient } from '$lib/supabase/server';
 
 export const load: PageServerLoad = async ({ cookies, locals }) => {
 	const { session, user } = await locals.safeGetSession();
@@ -9,7 +8,7 @@ export const load: PageServerLoad = async ({ cookies, locals }) => {
 		throw error(401, 'Unauthorized');
 	}
 
-	const supabase = createServerClient(cookies);
+	const supabase = locals.supabase;
 
 	try {
 		// Get user's purchases (orders where they are the buyer)
