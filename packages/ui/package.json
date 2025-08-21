@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "svelte-package -o dist",
-    "build:watch": "svelte-package -o dist --watch",
+    "dev": "svelte-package -o dist --watch",
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
     "test": "vitest",
@@ -19,12 +19,9 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "svelte": "./src/lib/index.ts",
-      "development": "./src/lib/index.ts",
-      "default": "./dist/index.js"
+      "svelte": "./dist/index.js"
     }
   },
-  "svelte": "./src/lib/index.ts",
   "files": [
     "dist",
     "!dist/**/*.test.*",

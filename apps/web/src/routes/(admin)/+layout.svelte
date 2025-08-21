@@ -21,10 +21,8 @@
 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: '📊' },
-    { href: '/admin/payouts', label: 'Payouts', icon: '💳' },
-    { href: '/admin/transactions', label: 'Transactions', icon: '📈' },
-    { href: '/admin/users', label: 'Users', icon: '👥' },
-    { href: '/admin/notifications', label: 'Notifications', icon: '🔔' }
+    { href: '/admin/payouts', label: 'Payouts', icon: '💳' }
+    // Transactions, Users, and Notifications pages to be implemented
   ];
 
   function toggleMobileMenu() {

@@ -2,30 +2,22 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { enhancedImages } from '@sveltejs/enhanced-img';
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
-import { resolve } from 'path';
 
 export default defineConfig({
 	plugins: [tailwindcss(), enhancedImages(), sveltekit()],
 	
-	// Resolve workspace packages from source in development
-	resolve: {
-		alias: process.env.NODE_ENV === 'development' ? {
-			'@repo/ui': resolve(__dirname, '../../packages/ui/src/lib')
-		} : {}
-	},
 	
 	// Performance optimizations
 	optimizeDeps: {
 		include: [
+			'@repo/ui',
 			'@repo/i18n', 
 			'@supabase/supabase-js',
 			'@supabase/auth-helpers-sveltekit'
 		],
 		exclude: [
 			// Large dependencies that should be loaded on demand
-			'@stripe/stripe-js',
-			// Exclude @repo/ui in dev to use source files
-			...(process.env.NODE_ENV === 'development' ? ['@repo/ui'] : [])
+			'@stripe/stripe-js'
 		]
 	},
 	
@@ -130,8 +122,8 @@ export default defineConfig({
 			allow: ['..']
 		},
 		watch: {
-			// Ignore dist folders to prevent HMR loops
-			ignored: ['**/packages/ui/dist/**', '**/node_modules/**']
+			// Ignore node_modules to prevent unnecessary watches
+			ignored: ['**/node_modules/**']
 		}
 	}
 });
