@@ -199,16 +199,16 @@
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Featured Sellers -->
-    {#if featuredSellers.length > 0}
-      <div class="mb-8">
-        <h2 class="text-xl font-semibold text-gray-900 mb-4">
-          Sellers in {category.name}
-          {#if featuredSellers.some(s => s.itemCount === 1)}
-            <span class="text-sm font-normal text-gray-500 ml-2">✨ New sellers featured</span>
-          {/if}
-        </h2>
-        <div class="overflow-x-auto scrollbar-hide">
-          <div class="flex space-x-4 pb-2">
+    <div class="mb-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-4">
+        Sellers in {category.name}
+        {#if featuredSellers.some(s => s.itemCount === 1)}
+          <span class="text-sm font-normal text-gray-500 ml-2">✨ New sellers featured</span>
+        {/if}
+      </h2>
+      <div class="overflow-x-auto scrollbar-hide">
+        <div class="flex space-x-4 pb-2">
+          {#if featuredSellers.length > 0}
             {#each featuredSellers as seller}
               <a href="/profile/{seller.id}" class="bg-white rounded-lg p-4 hover:shadow-md transition-shadow shrink-0 min-w-[140px]">
                 <img src={seller.avatar} alt={seller.name} class="w-16 h-16 rounded-full mx-auto mb-2 object-cover" />
@@ -226,10 +226,19 @@
                 {/if}
               </a>
             {/each}
-          </div>
+          {:else}
+            <!-- Show skeleton sellers when no real sellers -->
+            {#each Array(4) as _, i}
+              <div class="bg-white rounded-lg p-4 shrink-0 min-w-[140px] animate-pulse">
+                <div class="w-16 h-16 rounded-full mx-auto mb-2 bg-gray-200"></div>
+                <div class="h-4 bg-gray-200 rounded w-20 mx-auto mb-1"></div>
+                <div class="h-3 bg-gray-200 rounded w-16 mx-auto"></div>
+              </div>
+            {/each}
+          {/if}
         </div>
       </div>
-    {/if}
+    </div>
 
     <!-- Sort and Filter Bar -->
     <div class="flex justify-between items-center mb-6">

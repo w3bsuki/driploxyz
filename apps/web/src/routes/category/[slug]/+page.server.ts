@@ -19,6 +19,19 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase } }
       services.categories.getCategoryBreadcrumb(category.id),
       services.categories.getSubcategories(category.id)
     ]);
+    
+    // Also get all grandchild subcategories for detailed navigation
+    const directSubcategories = subcategoriesResult.status === 'fulfilled' ? subcategoriesResult.value.data || [] : [];
+    let allSubcategories: any[] = [];
+    
+    if (directSubcategories.length > 0) {
+      // Get all subcategories and their children
+      const { data: detailedSubs } = await supabase
+        .from('categories')
+        .select('id, name, slug, parent_id')
+        .or(`parent_id.eq.${category.id},parent_id.in.(${directSubcategories.map(s => s.id).join(',')})`);
+      allSubcategories = detailedSubs || [];
+    }
 
     const breadcrumb = breadcrumbResult.status === 'fulfilled' ? breadcrumbResult.value.data || [] : [];
     const subcategories = subcategoriesResult.status === 'fulfilled' ? subcategoriesResult.value.data || [] : [];
@@ -98,7 +111,7 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase } }
     return {
       category,
       breadcrumb,
-      subcategories,
+      subcategories: allSubcategories.length > 0 ? allSubcategories : subcategories,
       products: products || [],
       pagination: {
         page,
