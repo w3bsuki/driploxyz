@@ -69,10 +69,10 @@
     return amount.toFixed(2);
   }
 
-  const baseClasses = 'block w-full rounded-lg border-2 px-3 py-2 text-sm placeholder-gray-500 transition-all duration-200 focus:outline-none pl-8';
+  const baseClasses = 'block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent pl-8';
   const stateClasses = $derived(error 
-    ? 'border-red-300 focus:border-red-500' 
-    : 'border-gray-300 focus:border-blue-500');
+    ? 'border-red-300 focus:ring-red-500' 
+    : '');
   const classes = $derived(`${baseClasses} ${stateClasses} ${className}`);
 </script>
 

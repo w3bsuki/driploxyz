@@ -37,6 +37,32 @@
     location: p.location || p.seller?.location || ''
   }));
   
+  // Extract featured sellers from products (top sellers in this category)
+  const featuredSellers = $derived(() => {
+    const sellerMap = new Map();
+    
+    // Group products by seller
+    products.forEach(p => {
+      if (p.seller_id && p.seller) {
+        if (!sellerMap.has(p.seller_id)) {
+          sellerMap.set(p.seller_id, {
+            id: p.seller_id,
+            name: p.seller.username || 'Unknown',
+            avatar: p.seller.avatar_url || '/default-avatar.png',
+            rating: p.seller.seller_rating || 0,
+            itemCount: 0
+          });
+        }
+        sellerMap.get(p.seller_id).itemCount++;
+      }
+    });
+    
+    // Convert to array and sort by item count
+    return Array.from(sellerMap.values())
+      .sort((a, b) => b.itemCount - a.itemCount)
+      .slice(0, 6); // Get top 6 sellers
+  })();
+  
   let selectedSubcategory = $state<string | null>(null);
   let sortBy = $state('popular');
   let showFilters = $state(false);
