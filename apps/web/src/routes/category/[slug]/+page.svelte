@@ -23,6 +23,7 @@
   const categorySlug = category?.slug || 'women';
   const subcategories = data.subcategories || [];
   const products = data.products || [];
+  const sellers = data.sellers || [];
   
   // Transform products for ProductCard component
   const displayProducts: Product[] = products.map(p => ({
@@ -42,40 +43,7 @@
     location: p.location || p.seller?.location || ''
   }));
   
-  // Extract featured sellers from products (show all sellers with items in this category)
-  const featuredSellers = $derived.by(() => {
-    const sellerMap = new Map();
-    
-    // Group products by seller
-    products.forEach(p => {
-      if (p.seller_id && p.seller) {
-        if (!sellerMap.has(p.seller_id)) {
-          sellerMap.set(p.seller_id, {
-            id: p.seller_id,
-            name: p.seller.username || 'Unknown',
-            avatar: p.seller.avatar_url || '/default-avatar.png',
-            rating: p.seller.seller_rating || 0,
-            itemCount: 0,
-            createdAt: p.seller.created_at || p.created_at // Use seller creation date or product date
-          });
-        }
-        sellerMap.get(p.seller_id).itemCount++;
-      }
-    });
-    
-    // Convert to array and sort - prioritize sellers with fewer items (newer sellers)
-    // Then by most recent activity
-    return Array.from(sellerMap.values())
-      .sort((a, b) => {
-        // If one is new (1 item) and other isn't, show new seller first
-        if (a.itemCount === 1 && b.itemCount > 1) return -1;
-        if (b.itemCount === 1 && a.itemCount > 1) return 1;
-        
-        // Otherwise sort by most recent activity
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-      })
-      .slice(0, 8); // Show up to 8 sellers
-  });
+  // Use sellers data from server (all sellers with products in this category)
   
   // Determine background color based on category
   const categoryBgColor = $derived.by(() => {
@@ -165,30 +133,30 @@
       
       <!-- Full width sellers display -->
       <div class="flex justify-center items-center gap-3 overflow-x-auto scrollbar-hide pb-2">
-        {#if featuredSellers.length > 0}
+        {#if sellers.length > 0}
           <div class="flex items-center gap-3">
-            {#each featuredSellers as seller, i}
+            {#each sellers as seller, i}
               <a 
                 href="/profile/{seller.id}" 
                 class="flex flex-col items-center group shrink-0 hover:scale-105 transition-transform"
-                title="{seller.name} - {seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}"
+                title="{seller.username} - {seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}"
               >
                 <div class="relative">
                   <img 
-                    src={seller.avatar} 
-                    alt={seller.name} 
+                    src={seller.avatar_url} 
+                    alt={seller.username} 
                     class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-3 border-white/80 group-hover:border-white shadow-lg transition-all" 
                   />
                   {#if seller.itemCount === 1}
                     <span class="absolute -bottom-1 -right-1 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-white">NEW</span>
                   {/if}
                 </div>
-                <span class="text-xs mt-1.5 font-medium opacity-90 group-hover:opacity-100">{seller.name}</span>
+                <span class="text-xs mt-1.5 font-medium opacity-90 group-hover:opacity-100">{seller.username}</span>
                 <span class="text-[10px] opacity-75">{seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}</span>
               </a>
             {/each}
           </div>
-          {#if featuredSellers.length > 15}
+          {#if sellers.length > 15}
             <a 
               href="/sellers?category={categorySlug}" 
               class="ml-2 text-sm opacity-90 hover:opacity-100 font-medium whitespace-nowrap"

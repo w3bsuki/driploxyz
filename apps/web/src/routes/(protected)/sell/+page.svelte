@@ -366,18 +366,20 @@
             </div>
             
             <div>
-              <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+              <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
                 Description (optional)
               </label>
-              <textarea
-                id="description"
-                name="description"
-                bind:value={formData.description}
-                placeholder="Add details about condition, measurements, flaws..."
-                rows="4"
-                maxlength="500"
-                class="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all"
-              />
+              <div class="p-1">
+                <textarea
+                  id="description"
+                  name="description"
+                  bind:value={formData.description}
+                  placeholder="Add details about condition, measurements, flaws..."
+                  rows="4"
+                  maxlength="500"
+                  class="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all"
+                />
+              </div>
               <p class="text-xs text-gray-500 mt-1">{formData.description.length}/500</p>
             </div>
           </div>

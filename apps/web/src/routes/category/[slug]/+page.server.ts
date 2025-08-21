@@ -108,11 +108,58 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase } }
     const hasNextPage = page < totalPages;
     const hasPrevPage = page > 1;
 
+    // Get ALL sellers who have products in this category (not limited by pagination)
+    const { data: categorySellers } = await supabase
+      .from('products')
+      .select(`
+        seller_id,
+        seller:profiles!products_seller_id_fkey (
+          id,
+          username,
+          avatar_url,
+          seller_rating,
+          created_at
+        )
+      `)
+      .in('category_id', categoryIds)
+      .eq('status', 'active')
+      .not('seller_id', 'is', null);
+
+    // Process sellers to get unique list with item counts
+    const sellersMap = new Map();
+    if (categorySellers) {
+      categorySellers.forEach(item => {
+        if (item.seller_id && item.seller) {
+          if (!sellersMap.has(item.seller_id)) {
+            sellersMap.set(item.seller_id, {
+              id: item.seller_id,
+              username: item.seller.username || 'Unknown',
+              avatar_url: item.seller.avatar_url || '/default-avatar.png',
+              seller_rating: item.seller.seller_rating || 0,
+              created_at: item.seller.created_at,
+              itemCount: 0
+            });
+          }
+          sellersMap.get(item.seller_id).itemCount++;
+        }
+      });
+    }
+
+    const sellers = Array.from(sellersMap.values())
+      .sort((a, b) => {
+        // Prioritize new sellers (1 item) first
+        if (a.itemCount === 1 && b.itemCount > 1) return -1;
+        if (b.itemCount === 1 && a.itemCount > 1) return 1;
+        // Then sort by most recent activity
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+
     return {
       category,
       breadcrumb,
       subcategories: allSubcategories.length > 0 ? allSubcategories : subcategories,
       products: products || [],
+      sellers, // Add sellers to the returned data
       pagination: {
         page,
         totalPages,
