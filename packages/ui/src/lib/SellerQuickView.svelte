@@ -38,38 +38,6 @@
     isFollowing = false
   }: Props = $props();
   
-  let modalElement: HTMLDivElement;
-  let startY = 0;
-  let currentY = 0;
-  let isDragging = false;
-  
-  // Handle swipe down to close on mobile
-  function handleTouchStart(e: TouchEvent) {
-    startY = e.touches[0].clientY;
-    isDragging = true;
-  }
-  
-  function handleTouchMove(e: TouchEvent) {
-    if (!isDragging) return;
-    currentY = e.touches[0].clientY;
-    const diff = currentY - startY;
-    
-    if (diff > 0 && modalElement) {
-      modalElement.style.transform = `translateY(${diff}px)`;
-    }
-  }
-  
-  function handleTouchEnd() {
-    if (!isDragging) return;
-    isDragging = false;
-    
-    const diff = currentY - startY;
-    if (diff > 100) {
-      onClose();
-    } else if (modalElement) {
-      modalElement.style.transform = 'translateY(0)';
-    }
-  }
   
   // Close on escape key
   function handleKeydown(e: KeyboardEvent) {
@@ -100,68 +68,63 @@
     onclick={onClose}
   />
   
-  <!-- Modal -->
+  <!-- Modal - Always centered like highlights -->
   <div 
-    bind:this={modalElement}
-    class="fixed bottom-0 left-0 right-0 lg:fixed lg:inset-0 lg:flex lg:items-center lg:justify-center z-50 pointer-events-none"
-    transition:fly={{ y: 300, duration: 300 }}
+    class="fixed inset-0 flex items-center justify-center z-50 p-4"
+    transition:fly={{ y: 20, opacity: 0, duration: 200 }}
   >
     <div 
-      class="bg-white rounded-t-2xl lg:rounded-2xl w-full lg:max-w-md pointer-events-auto lg:m-4 max-h-[85vh] lg:max-h-[600px] overflow-hidden flex flex-col"
-      ontouchstart={handleTouchStart}
-      ontouchmove={handleTouchMove}
-      ontouchend={handleTouchEnd}
+      class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
       onclick={(e) => e.stopPropagation()}
     >
-      <!-- Drag handle for mobile -->
-      <div class="lg:hidden w-12 h-1 bg-gray-300 rounded-full mx-auto mt-3 mb-2"></div>
       
-      <!-- Header -->
-      <div class="px-6 pt-4 lg:pt-6 pb-4 border-b border-gray-100">
-        <div class="flex items-center gap-4">
-          <img 
-            src={seller.avatar_url} 
-            alt={seller.username}
-            class="w-20 h-20 rounded-full border-2 border-gray-200"
-          />
-          <div class="flex-1">
-            <h2 class="text-xl font-bold text-gray-900">{seller.username}</h2>
-            <p class="text-sm text-gray-500">Member since {memberSince}</p>
-            {#if seller.location}
-              <p class="text-sm text-gray-600 flex items-center gap-1 mt-1">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-                {seller.location}
-              </p>
-            {/if}
-          </div>
-        </div>
-        
+      <!-- Close button -->
+      <button
+        onclick={onClose}
+        class="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors z-10"
+      >
+        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      
+      <!-- Header - Centered like highlights -->
+      <div class="px-6 pt-6 pb-4 text-center">
+        <img 
+          src={seller.avatar_url} 
+          alt={seller.username}
+          class="w-24 h-24 rounded-full border-3 border-gray-100 mx-auto mb-3 shadow-sm"
+        />
+        <h2 class="text-2xl font-bold text-gray-900">{seller.username}</h2>
+        <p class="text-sm text-gray-500 mt-1">Member since {memberSince}</p>
+        {#if seller.location}
+          <p class="text-sm text-gray-600 flex items-center justify-center gap-1 mt-2">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            {seller.location}
+          </p>
+        {/if}
         {#if seller.bio}
-          <p class="text-sm text-gray-600 mt-3">{seller.bio}</p>
+          <p class="text-sm text-gray-600 mt-3 max-w-sm mx-auto">{seller.bio}</p>
         {/if}
       </div>
       
-      <!-- Stats -->
-      <div class="px-6 py-4 flex justify-around border-b border-gray-100">
+      <!-- Stats - Clean grid -->
+      <div class="grid grid-cols-3 gap-4 px-6 py-4 bg-gray-50">
         <div class="text-center">
-          <p class="text-2xl font-bold text-gray-900">{seller.itemCount}</p>
-          <p class="text-xs text-gray-500">Active items</p>
+          <p class="text-xl font-semibold text-gray-900">{seller.itemCount}</p>
+          <p class="text-xs text-gray-500">Items</p>
         </div>
-        {#if seller.totalSales !== undefined}
-          <div class="text-center">
-            <p class="text-2xl font-bold text-gray-900">{seller.totalSales}</p>
-            <p class="text-xs text-gray-500">Sales</p>
-          </div>
-        {/if}
-        {#if seller.rating !== undefined}
-          <div class="text-center">
-            <p class="text-2xl font-bold text-gray-900">{seller.rating.toFixed(1)}</p>
-            <p class="text-xs text-gray-500">Rating</p>
-          </div>
-        {/if}
+        <div class="text-center">
+          <p class="text-xl font-semibold text-gray-900">{seller.totalSales || 0}</p>
+          <p class="text-xs text-gray-500">Sales</p>
+        </div>
+        <div class="text-center">
+          <p class="text-xl font-semibold text-gray-900">{seller.rating?.toFixed(1) || '5.0'}</p>
+          <p class="text-xs text-gray-500">Rating</p>
+        </div>
       </div>
       
       <!-- Recent Products (optional) -->
@@ -182,36 +145,30 @@
         </div>
       {/if}
       
-      <!-- Actions -->
-      <div class="px-6 py-4 flex gap-3 border-t border-gray-100">
-        {#if onFollow}
-          <button
-            onclick={() => onFollow?.(seller.id)}
-            class="flex-1 py-2.5 px-4 rounded-lg font-medium transition-colors
-              {isFollowing 
-                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
-                : 'bg-black text-white hover:bg-gray-800'}"
-          >
-            {isFollowing ? 'Following' : 'Follow'}
-          </button>
-        {/if}
+      <!-- Actions - Primary CTA -->
+      <div class="p-6 flex gap-3">
         <button
           onclick={() => {
             onViewProfile(seller.id);
             onClose();
           }}
-          class="flex-1 py-2.5 px-4 bg-gray-100 text-gray-900 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+          class="flex-1 py-3 px-4 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
         >
-          View Profile
+          View Full Profile
         </button>
+        {#if onFollow}
+          <button
+            onclick={() => onFollow?.(seller.id)}
+            class="py-3 px-6 rounded-xl font-medium transition-colors border
+              {isFollowing 
+                ? 'border-gray-300 text-gray-700 hover:bg-gray-50' 
+                : 'border-black text-black hover:bg-gray-50'}"
+          >
+            {isFollowing ? 'Following' : 'Follow'}
+          </button>
+        {/if}
       </div>
     </div>
   </div>
 {/if}
 
-<style>
-  /* Smooth transitions for swipe */
-  div {
-    transition: transform 0.2s ease-out;
-  }
-</style>

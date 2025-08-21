@@ -368,9 +368,10 @@ const authGuard: Handle = async ({ event, resolve }) => {
   // Performance: Add session context for downstream handlers
   if (session && user) {
     // Add performance metadata for monitoring
-    const sessionAge = Date.now() - new Date(session.expires_at || 0).getTime();
-    if (isDebug && sessionAge > 0) {
-      console.log(`⏱️ Session expires in ${Math.floor(sessionAge / 1000 / 60)} minutes`);
+    const sessionExpiresAt = new Date(session.expires_at || 0).getTime();
+    const timeUntilExpiry = sessionExpiresAt - Date.now();
+    if (isDebug && timeUntilExpiry > 0) {
+      console.log(`⏱️ Session expires in ${Math.floor(timeUntilExpiry / 1000 / 60)} minutes`);
     }
   }
 

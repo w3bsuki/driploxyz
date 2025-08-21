@@ -7,55 +7,97 @@ export interface UploadedImage {
 }
 
 /**
- * Convert image to WebP format in the browser
+ * Optimize image for upload - resize and compress
  */
-async function convertToWebP(file: File): Promise<Blob> {
+async function optimizeImage(file: File): Promise<{ blob: Blob; extension: string }> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: false });
     
-    img.onload = () => {
-      // Set canvas size to image size (max 2000px for performance)
-      const maxSize = 2000;
-      let width = img.width;
-      let height = img.height;
-      
-      if (width > maxSize || height > maxSize) {
-        if (width > height) {
-          height = (height * maxSize) / width;
-          width = maxSize;
-        } else {
-          width = (width * maxSize) / height;
-          height = maxSize;
-        }
+    // Clean up object URL when done
+    let objectUrl: string | null = null;
+    
+    const cleanup = () => {
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+        objectUrl = null;
       }
-      
-      canvas.width = width;
-      canvas.height = height;
-      
-      if (!ctx) {
-        reject(new Error('Could not get canvas context'));
-        return;
-      }
-      
-      // Draw and convert to WebP
-      ctx.drawImage(img, 0, 0, width, height);
-      canvas.toBlob(
-        (blob) => {
-          if (blob) {
-            resolve(blob);
-          } else {
-            reject(new Error('Failed to convert image'));
-          }
-        },
-        'image/webp',
-        0.85 // 85% quality for good balance
-      );
     };
     
-    img.onerror = () => reject(new Error('Failed to load image'));
-    img.src = URL.createObjectURL(file);
+    img.onload = async () => {
+      try {
+        // Calculate new dimensions (max 1920px for better performance)
+        const maxSize = 1920;
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > maxSize || height > maxSize) {
+          const ratio = Math.min(maxSize / width, maxSize / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+        
+        canvas.width = width;
+        canvas.height = height;
+        
+        if (!ctx) {
+          throw new Error('Could not get canvas context');
+        }
+        
+        // Use better image smoothing
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
+        
+        // Draw the image
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Try WebP first with timeout
+        const webpPromise = new Promise<Blob | null>((res) => {
+          const timeout = setTimeout(() => res(null), 3000); // 3 second timeout
+          canvas.toBlob(
+            (blob) => {
+              clearTimeout(timeout);
+              res(blob);
+            },
+            'image/webp',
+            0.85
+          );
+        });
+        
+        const webpBlob = await webpPromise;
+        
+        if (webpBlob) {
+          cleanup();
+          resolve({ blob: webpBlob, extension: 'webp' });
+        } else {
+          // Fallback to JPEG if WebP fails
+          canvas.toBlob(
+            (blob) => {
+              cleanup();
+              if (blob) {
+                resolve({ blob, extension: 'jpg' });
+              } else {
+                reject(new Error('Failed to compress image'));
+              }
+            },
+            'image/jpeg',
+            0.85
+          );
+        }
+      } catch (error) {
+        cleanup();
+        reject(error);
+      }
+    };
+    
+    img.onerror = () => {
+      cleanup();
+      reject(new Error('Failed to load image'));
+    };
+    
+    objectUrl = URL.createObjectURL(file);
+    img.src = objectUrl;
   });
 }
 
@@ -69,19 +111,40 @@ export async function uploadImage(
   userId: string
 ): Promise<UploadedImage> {
   try {
-    // Convert to WebP for better performance
-    const webpBlob = await convertToWebP(file);
+    let fileToUpload: Blob = file;
+    let fileExtension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+    let contentType = file.type;
+    
+    // Optimize images (compress and convert to WebP when possible)
+    if (file.type.startsWith('image/') && !file.type.includes('svg')) {
+      // Skip optimization for SVGs and already optimized WebP
+      if (!file.type.includes('webp') || file.size > 500000) { // Optimize if not WebP or larger than 500KB
+        try {
+          const optimized = await optimizeImage(file);
+          fileToUpload = optimized.blob;
+          fileExtension = optimized.extension;
+          contentType = optimized.extension === 'webp' ? 'image/webp' : 'image/jpeg';
+          
+          // Log optimization success
+          const sizeDiff = ((file.size - fileToUpload.size) / file.size * 100).toFixed(1);
+          console.log(`Image optimized: ${file.size} → ${fileToUpload.size} bytes (${sizeDiff}% reduction)`);
+        } catch (error) {
+          console.warn('Image optimization failed, using original:', error);
+          // Fall back to original file
+        }
+      }
+    }
     
     // Generate unique filename
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 9);
-    const fileName = `${userId}/${timestamp}-${randomId}.webp`;
+    const fileName = `${userId}/${timestamp}-${randomId}.${fileExtension}`;
     
     // Upload to Supabase
     const { data, error } = await supabase.storage
       .from(bucket)
-      .upload(fileName, webpBlob, {
-        contentType: 'image/webp',
+      .upload(fileName, fileToUpload, {
+        contentType,
         cacheControl: '3600',
         upsert: false
       });
@@ -183,18 +246,31 @@ export async function uploadAvatar(
   userId: string
 ): Promise<string> {
   try {
-    // Convert to WebP for better performance
-    const webpBlob = await convertToWebP(file);
+    let fileToUpload: Blob = file;
+    let fileExtension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+    let contentType = file.type;
+    
+    // Optimize avatar images (smaller size for avatars)
+    if (file.type.startsWith('image/') && !file.type.includes('svg')) {
+      try {
+        const optimized = await optimizeImage(file);
+        fileToUpload = optimized.blob;
+        fileExtension = optimized.extension;
+        contentType = optimized.extension === 'webp' ? 'image/webp' : 'image/jpeg';
+      } catch (error) {
+        console.warn('Avatar optimization failed, using original:', error);
+      }
+    }
     
     // Generate unique filename for avatar
     const timestamp = Date.now();
-    const fileName = `avatars/${userId}/${timestamp}.webp`;
+    const fileName = `avatars/${userId}/${timestamp}.${fileExtension}`;
     
     // Upload to Supabase
     const { data, error } = await supabase.storage
       .from('avatars')
-      .upload(fileName, webpBlob, {
-        contentType: 'image/webp',
+      .upload(fileName, fileToUpload, {
+        contentType,
         cacheControl: '3600',
         upsert: true // Allow overwriting existing avatars
       });
