@@ -6,7 +6,6 @@ export { default as SearchBar } from './SearchBar.svelte';
 export { default as Avatar } from './Avatar.svelte';
 export { default as Breadcrumb } from './Breadcrumb.svelte';
 export { default as LoadingSpinner } from './LoadingSpinner.svelte';
-export { default as PageLoader } from './PageLoader.svelte';
 export { default as ProductGallery } from './ProductGallery.svelte';
 export { default as SizeSelector } from './SizeSelector.svelte';
 export { default as ConditionReport } from './ConditionReport.svelte';
