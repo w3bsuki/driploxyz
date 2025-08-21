@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Button } from '@repo/ui';
   import { onMount } from 'svelte';
+  import { getSupabaseClient } from '$lib/stores/auth';
   import type { PageData } from './$types';
 
   interface Props {
@@ -13,10 +14,14 @@
   let loading = $state(false);
   let processing = $state<string | null>(null);
   let activeTab = $state<'pending' | 'processing' | 'completed'>('pending');
+  
+  const supabase = getSupabaseClient();
 
   onMount(async () => {
+    if (!supabase) return;
+    
     // Subscribe to real-time transaction updates
-    const subscription = data.supabase
+    const subscription = supabase
       .channel('transactions')
       .on('postgres_changes', 
         { event: '*', schema: 'public', table: 'transactions' }, 

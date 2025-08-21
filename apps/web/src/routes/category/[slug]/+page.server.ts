@@ -109,7 +109,7 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase } }
     const hasPrevPage = page > 1;
 
     // Get ALL sellers who have products in this category (not limited by pagination)
-    const { data: categorySellers } = await supabase
+    const { data: categorySellers, error: sellersError } = await supabase
       .from('products')
       .select(`
         seller_id,
@@ -117,13 +117,17 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase } }
           id,
           username,
           avatar_url,
-          seller_rating,
           created_at
         )
       `)
       .in('category_id', categoryIds)
-      .eq('status', 'active')
+      .eq('is_active', true)
+      .eq('is_sold', false)
       .not('seller_id', 'is', null);
+
+    if (sellersError) {
+      console.error('Error loading sellers:', sellersError);
+    }
 
     // Process sellers to get unique list with item counts
     const sellersMap = new Map();
@@ -135,7 +139,6 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase } }
               id: item.seller_id,
               username: item.seller.username || 'Unknown',
               avatar_url: item.seller.avatar_url || '/default-avatar.png',
-              seller_rating: item.seller.seller_rating || 0,
               created_at: item.seller.created_at,
               itemCount: 0
             });
@@ -153,6 +156,8 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase } }
         // Then sort by most recent activity
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
+
+    console.log(`Found ${sellers.length} sellers in ${category.name} category with ${categoryIds.length} category IDs`);
 
     return {
       category,

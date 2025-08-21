@@ -83,7 +83,6 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
 
   return {
     user,
-    supabase,
     pendingPayouts: enrichedPayouts,
     stats
   };
@@ -92,7 +91,6 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
     // Return safe defaults
     return {
       user: parentData?.user || null,
-      supabase: locals.supabase,
       pendingPayouts: [],
       stats: {
         totalPending: 0,
