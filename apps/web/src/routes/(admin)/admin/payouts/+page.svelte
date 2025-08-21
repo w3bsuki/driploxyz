@@ -154,11 +154,11 @@
 
   function getPayoutStatusColor(status: string) {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'processing': return 'bg-blue-100 text-blue-800';
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'failed': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'pending': return 'bg-yellow-100/70 text-yellow-700 backdrop-blur-sm';
+      case 'processing': return 'bg-blue-100/70 text-blue-700 backdrop-blur-sm';
+      case 'completed': return 'bg-green-100/70 text-green-700 backdrop-blur-sm';
+      case 'failed': return 'bg-red-100/70 text-red-700 backdrop-blur-sm';
+      default: return 'bg-gray-100/70 text-gray-700 backdrop-blur-sm';
     }
   }
 </script>
@@ -180,46 +180,46 @@
 
   <!-- Payout Statistics -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-    <div class="bg-white p-6 rounded-lg shadow-xs border">
+    <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
       <div class="text-sm font-medium text-gray-600">Pending Payouts</div>
-      <div class="text-2xl font-bold text-yellow-600">{transactions.filter(t => t.payout_status === 'pending').length}</div>
+      <div class="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">{transactions.filter(t => t.payout_status === 'pending').length}</div>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow-xs border">
+    <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
       <div class="text-sm font-medium text-gray-600">Processing</div>
-      <div class="text-2xl font-bold text-blue-600">{transactions.filter(t => t.payout_status === 'processing').length}</div>
+      <div class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{transactions.filter(t => t.payout_status === 'processing').length}</div>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow-xs border">
+    <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
       <div class="text-sm font-medium text-gray-600">Total Pending Amount</div>
-      <div class="text-2xl font-bold text-gray-900">
+      <div class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
         €{transactions.filter(t => t.payout_status === 'pending').reduce((sum, t) => sum + Number(t.seller_earnings), 0).toFixed(2)}
       </div>
     </div>
-    <div class="bg-white p-6 rounded-lg shadow-xs border">
+    <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
       <div class="text-sm font-medium text-gray-600">Platform Commission</div>
-      <div class="text-2xl font-bold text-green-600">
+      <div class="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
         €{transactions.filter(t => t.payout_status === 'pending').reduce((sum, t) => sum + Number(t.commission_amount), 0).toFixed(2)}
       </div>
     </div>
   </div>
 
   <!-- Tabs -->
-  <div class="border-b border-gray-200">
-    <nav class="-mb-px flex space-x-8">
+  <div class="backdrop-blur-xl bg-white/40 rounded-2xl p-2 mb-6">
+    <nav class="flex space-x-2">
       <button
         onclick={() => activeTab = 'pending'}
-        class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
+        class="px-6 py-3 rounded-xl font-medium text-sm whitespace-nowrap transition-all
           {activeTab === 'pending' 
-            ? 'border-yellow-500 text-yellow-600' 
-            : 'border-transparent text-gray-500 hover:text-gray-700'}"
+            ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-md' 
+            : 'text-gray-600 hover:bg-gray-100/50'}"
       >
         Pending ({transactions.filter(t => t.payout_status === 'pending').length})
       </button>
       <button
         onclick={() => activeTab = 'processing'}
-        class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
+        class="px-6 py-3 rounded-xl font-medium text-sm whitespace-nowrap transition-all
           {activeTab === 'processing' 
-            ? 'border-blue-500 text-blue-600' 
-            : 'border-transparent text-gray-500 hover:text-gray-700'}"
+            ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md' 
+            : 'text-gray-600 hover:bg-gray-100/50'}"
       >
         Processing ({transactions.filter(t => t.payout_status === 'processing').length})
       </button>
@@ -228,11 +228,11 @@
 
   <!-- Transactions List -->
   {#if loading}
-    <div class="bg-white rounded-lg shadow-xs border p-8 text-center">
+    <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-8 text-center">
       <div class="text-gray-500">Loading transactions...</div>
     </div>
   {:else if filteredTransactions.length === 0}
-    <div class="bg-white rounded-lg shadow-xs border p-8 text-center">
+    <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-8 text-center">
       <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
       </svg>
@@ -242,7 +242,7 @@
   {:else}
     <div class="space-y-4">
       {#each filteredTransactions as transaction}
-        <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
+        <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all">
           <div class="p-6">
             <div class="flex items-start justify-between">
               <!-- Seller & Product Info -->

@@ -110,7 +110,7 @@ export async function uploadImage(
   bucket: string = 'product-images',
   userId: string
 ): Promise<UploadedImage> {
-  console.log(`Starting upload for ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
+  console.log(`🚀 Starting upload for ${file.name} (${(file.size / 1024).toFixed(1)} KB)`);
   
   try {
     let fileToUpload: Blob = file;
@@ -121,7 +121,7 @@ export async function uploadImage(
     if (file.type.startsWith('image/') && !file.type.includes('svg')) {
       // Skip optimization for SVGs and already optimized WebP
       if (!file.type.includes('webp') || file.size > 500000) { // Optimize if not WebP or larger than 500KB
-        console.log('Attempting to optimize image...');
+        console.log('🔄 Attempting to optimize image...');
         
         try {
           // Add a global timeout for optimization
@@ -143,7 +143,7 @@ export async function uploadImage(
           // Fall back to original file
         }
       } else {
-        console.log('Skipping optimization (already WebP or small size)');
+        console.log('⏭️ Skipping optimization (already WebP or small size)');
       }
     }
     
@@ -152,7 +152,8 @@ export async function uploadImage(
     const randomId = Math.random().toString(36).substring(2, 9);
     const fileName = `${userId}/${timestamp}-${randomId}.${fileExtension}`;
     
-    console.log(`Uploading to Supabase: ${fileName}`);
+    console.log(`📂 Uploading to Supabase bucket "${bucket}": ${fileName}`);
+    console.log(`📋 File details: ${(fileToUpload.size / 1024).toFixed(1)} KB, type: ${contentType}`);
     
     // Upload to Supabase
     const { data, error } = await supabase.storage
@@ -164,14 +165,21 @@ export async function uploadImage(
       });
     
     if (error) {
-      console.error('❌ Upload error:', error);
+      console.error('❌ Supabase upload error:', error);
+      console.error('❌ Error details:', {
+        message: error.message,
+        statusCode: (error as any)?.statusCode,
+        details: (error as any)?.details
+      });
       throw new Error(`Failed to upload image: ${error.message}`);
     }
+    
+    console.log('📤 Supabase upload successful, data:', data);
     
     // Get public URL
     const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${data.path}`;
     
-    console.log(`✅ Upload successful: ${url}`);
+    console.log(`✅ Upload complete - URL: ${url}`);
     
     return {
       url,
