@@ -80,6 +80,12 @@ export function setSupabaseClient(client: SupabaseClient<Database> | null) {
   supabaseClient.set(client);
 }
 
+export function getSupabaseClient(): SupabaseClient<Database> | null {
+  let client: SupabaseClient<Database> | null = null;
+  supabaseClient.subscribe(value => client = value)();
+  return client;
+}
+
 export function clearAuth() {
   user.set(null);
   session.set(null);

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { Button, ProductCard, Breadcrumb, type Product, type BreadcrumbItem } from '@repo/ui';
+  import { Button, ProductCard, Breadcrumb, SellerQuickView, type Product, type BreadcrumbItem } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
@@ -60,6 +60,20 @@
   let selectedSubcategory = $state<string | null>(null);
   let sortBy = $state('popular');
   let showFilters = $state(false);
+  
+  // Seller quick view modal state
+  let selectedSeller = $state<any>(null);
+  let showSellerModal = $state(false);
+  
+  function openSellerModal(seller: any) {
+    selectedSeller = seller;
+    showSellerModal = true;
+  }
+  
+  function closeSellerModal() {
+    showSellerModal = false;
+    selectedSeller = null;
+  }
   
   // Filter states
   let selectedSizes = $state<string[]>([]);
@@ -136,9 +150,9 @@
         {#if sellers.length > 0}
           <div class="flex items-center gap-3">
             {#each sellers as seller, i}
-              <a 
-                href="/profile/{seller.id}" 
-                class="flex flex-col items-center group shrink-0 hover:scale-105 transition-transform"
+              <button
+                onclick={() => openSellerModal(seller)}
+                class="flex flex-col items-center group shrink-0 hover:scale-105 transition-transform cursor-pointer"
                 title="{seller.username} - {seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}"
               >
                 <div class="relative">
@@ -153,7 +167,7 @@
                 </div>
                 <span class="text-xs mt-1.5 font-medium opacity-90 group-hover:opacity-100">{seller.username}</span>
                 <span class="text-[10px] opacity-75">{seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}</span>
-              </a>
+              </button>
             {/each}
           </div>
           {#if sellers.length > 15}
@@ -353,6 +367,16 @@
     </div>
   </div>
 </div>
+
+<!-- Seller Quick View Modal -->
+{#if selectedSeller}
+  <SellerQuickView
+    seller={selectedSeller}
+    bind:isOpen={showSellerModal}
+    onClose={closeSellerModal}
+    onViewProfile={(sellerId) => goto(`/profile/${sellerId}`)}
+  />
+{/if}
 
 <style>
   /* Hide scrollbar for horizontal scroll */

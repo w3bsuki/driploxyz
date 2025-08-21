@@ -81,3 +81,5 @@ export { default as Accordion } from './Accordion.svelte';
 export { default as OrderStatus } from './OrderStatus.svelte';
 export { default as OrderTimeline } from './OrderTimeline.svelte';
 export { default as OrderActions } from './OrderActions.svelte';
+// Seller components
+export { default as SellerQuickView } from './SellerQuickView.svelte';

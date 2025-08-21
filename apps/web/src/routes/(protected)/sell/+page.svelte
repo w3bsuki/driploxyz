@@ -4,7 +4,7 @@
   import { SIZE_CATEGORIES } from '$lib/validation/product';
   import type { PageData, ActionData } from './$types';
   import { enhance } from '$app/forms';
-  import { Button, ImageUploaderSupabase, Input, Select, BrandSelector, ConditionSelector, PriceInput, TagInput, toasts } from '@repo/ui';
+  import { Button, ImageUploaderSupabase, Input, Select, BrandSelector, PriceInput, TagInput, toasts } from '@repo/ui';
   import { uploadImages, deleteImage } from '$lib/supabase/storage';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import { onMount } from 'svelte';
@@ -16,7 +16,7 @@
 
   let { data, form }: Props = $props();
   
-  // Form state
+  // Form state - reduced to 3 steps
   let currentStep = $state(1);
   let submitting = $state(false);
   let isUploadingImages = $state(false);
@@ -130,26 +130,23 @@
     return success;
   }
   
-  // Validation
+  // Validation for consolidated steps
   const canProceedStep1 = $derived(
-    // For testing, allow proceeding without images
     (uploadedImages.length > 0 || true) && // TODO: Remove || true after testing
     formData.title.length >= 3 && 
     formData.gender_category_id &&
     formData.type_category_id &&
-    formData.category_id
+    formData.category_id &&
+    formData.condition && // Condition now in step 1
+    formData.brand &&
+    formData.size
   );
   
   const canProceedStep2 = $derived(
-    formData.brand && formData.size && formData.condition
-  );
-  
-  const canProceedStep3 = $derived(
-    formData.price > 0 && formData.shipping_cost >= 0
+    formData.price > 0
   );
   
   const canSubmit = $derived(
-    // For testing, allow submission without images
     formData.title.length >= 3 && 
     formData.gender_category_id &&
     formData.type_category_id &&
@@ -157,9 +154,24 @@
     formData.brand && 
     formData.size && 
     formData.condition &&
-    formData.price > 0 && 
-    formData.shipping_cost >= 0
+    formData.price > 0
   );
+
+  // Simplified condition selector for mobile
+  type ConditionValue = 'new' | 'like-new' | 'good' | 'fair';
+  
+  interface ConditionOption {
+    value: ConditionValue;
+    label: string;
+    shortLabel: string;
+  }
+
+  const conditions: ConditionOption[] = [
+    { value: 'new', label: 'New with tags', shortLabel: 'New' },
+    { value: 'like-new', label: 'Like new', shortLabel: 'Like new' },
+    { value: 'good', label: 'Good', shortLabel: 'Good' },
+    { value: 'fair', label: 'Fair', shortLabel: 'Fair' }
+  ];
 </script>
 
 <svelte:head>
@@ -184,7 +196,7 @@
         
         <div class="text-center">
           <h1 class="text-base font-semibold text-gray-900">List an Item</h1>
-          <p class="text-xs text-gray-500 mt-0.5">Step {currentStep} of 4</p>
+          <p class="text-xs text-gray-500 mt-0.5">Step {currentStep} of 3</p>
         </div>
         
         <button 
@@ -200,12 +212,12 @@
     <div class="h-1 bg-gray-100">
       <div 
         class="h-full bg-blue-500 transition-all duration-500 ease-out"
-        style="width: {(currentStep / 4) * 100}%"
+        style="width: {(currentStep / 3) * 100}%"
       />
     </div>
   </header>
 
-  <!-- Content - flex-1 to fill available space -->
+  <!-- Content -->
   <div class="flex-1 overflow-y-auto pb-24">
     <div class="max-w-lg mx-auto px-4 py-6">
     {#if data.needsBrandSubscription}
@@ -257,18 +269,15 @@
             submitting = false;
             
             if (result.type === 'failure') {
-              // Handle errors
               const errorMessage = result.data?.errors?._form || 'Failed to create listing';
               publishError = errorMessage;
               toasts.error(errorMessage);
             } else if (result.type === 'success' && result.data?.success) {
-              // SUCCESS! Product created
               showSuccess = true;
               toasts.success('Listing published successfully!');
               
               const productId = result.data.productId;
               
-              // Redirect to product page after 1.5 seconds
               setTimeout(() => {
                 if (productId) {
                   goto(`/product/${productId}`);
@@ -282,14 +291,15 @@
           };
         }}
       >
-        <!-- Step 1: Photos & Basic Info -->
+        <!-- Step 1: Photos, Basic Info & Details (consolidated) -->
         {#if currentStep === 1}
-          <div class="space-y-6 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
+          <div class="space-y-5 animate-in fade-in slide-in-from-right duration-300">
             <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">Add Photos</h2>
-              <p class="text-gray-600">Good photos sell items faster</p>
+              <h2 class="text-xl font-bold text-gray-900 mb-1">Item Details</h2>
+              <p class="text-sm text-gray-600">Add photos and describe your item</p>
             </div>
             
+            <!-- Photos -->
             <div>
               <ImageUploaderSupabase
                 maxImages={10}
@@ -299,153 +309,178 @@
                 bind:uploading={isUploadingImages}
               />
               {#if uploadedImages.length === 0}
-                <p class="text-sm text-red-600 mt-2">At least one photo is required</p>
+                <p class="text-xs text-red-600 mt-1">At least one photo is required</p>
               {/if}
             </div>
             
-            <div>
-              <Input
-                type="text"
-                label="What are you selling?"
-                placeholder="e.g., Nike Air Max 90"
-                bind:value={formData.title}
-                maxlength={50}
-                name="title"
-                required
-              />
-              <p class="text-xs text-gray-500 mt-1">{formData.title.length}/50 characters</p>
-            </div>
+            <!-- Title -->
+            <Input
+              type="text"
+              label="What are you selling?"
+              placeholder="e.g., Nike Air Max 90"
+              bind:value={formData.title}
+              maxlength={50}
+              name="title"
+              required
+            />
             
-            <div class="space-y-4">
-              <Select
-                label="Who's it for?"
-                bind:value={formData.gender_category_id}
-                onchange={() => {
-                  formData.type_category_id = '';
-                  formData.category_id = '';
-                }}
-                name="gender_category_id"
-                required
-              >
-                <option value="">Select category</option>
-                {#each genderCategories as category}
-                  <option value={category.id}>{category.name}</option>
-                {/each}
-              </Select>
-              
-              {#if typeCategories.length > 0}
+            <!-- Categories (collapsible on mobile) -->
+            <details class="border border-gray-200 rounded-lg" open>
+              <summary class="px-4 py-3 text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50">
+                Category
+              </summary>
+              <div class="px-4 pb-4 space-y-3">
                 <Select
-                  label="Product type"
-                  bind:value={formData.type_category_id}
+                  label="Who's it for?"
+                  bind:value={formData.gender_category_id}
                   onchange={() => {
+                    formData.type_category_id = '';
                     formData.category_id = '';
                   }}
-                  name="type_category_id"
+                  name="gender_category_id"
                   required
                 >
-                  <option value="">Select type</option>
-                  {#each typeCategories as category}
+                  <option value="">Select</option>
+                  {#each genderCategories as category}
                     <option value={category.id}>{category.name}</option>
                   {/each}
                 </Select>
-              {/if}
-              
-              {#if specificCategories.length > 0}
-                <Select
-                  label="Specific category"
-                  bind:value={formData.category_id}
-                  name="category_id"
-                  required
-                >
-                  <option value="">Select category</option>
-                  {#each specificCategories as category}
-                    <option value={category.id}>{category.name}</option>
-                  {/each}
-                </Select>
-              {/if}
-            </div>
-            
-            <div>
-              <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
-                Description (optional)
-              </label>
-              <div class="p-1">
-                <textarea
-                  id="description"
-                  name="description"
-                  bind:value={formData.description}
-                  placeholder="Add details about condition, measurements, flaws..."
-                  rows="4"
-                  maxlength="500"
-                  class="w-full px-4 py-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all"
-                />
+                
+                {#if typeCategories.length > 0}
+                  <Select
+                    label="Type"
+                    bind:value={formData.type_category_id}
+                    onchange={() => {
+                      formData.category_id = '';
+                    }}
+                    name="type_category_id"
+                    required
+                  >
+                    <option value="">Select</option>
+                    {#each typeCategories as category}
+                      <option value={category.id}>{category.name}</option>
+                    {/each}
+                  </Select>
+                {/if}
+                
+                {#if specificCategories.length > 0}
+                  <Select
+                    label="Specific"
+                    bind:value={formData.category_id}
+                    name="category_id"
+                    required
+                  >
+                    <option value="">Select</option>
+                    {#each specificCategories as category}
+                      <option value={category.id}>{category.name}</option>
+                    {/each}
+                  </Select>
+                {/if}
               </div>
-              <p class="text-xs text-gray-500 mt-1">{formData.description.length}/500</p>
+            </details>
+            
+            <!-- Condition - simplified for mobile -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Condition <span class="text-red-500">*</span>
+              </label>
+              <div class="grid grid-cols-2 gap-2">
+                {#each conditions as condition}
+                  <button
+                    type="button"
+                    onclick={() => formData.condition = condition.value}
+                    class="px-3 py-2 text-sm font-medium rounded-lg border-2 transition-all
+                      {formData.condition === condition.value 
+                        ? 'border-blue-500 bg-blue-500 text-white' 
+                        : 'border-gray-200 bg-white hover:border-gray-300'}"
+                  >
+                    <span class="block sm:hidden">{condition.shortLabel}</span>
+                    <span class="hidden sm:block">{condition.label}</span>
+                  </button>
+                {/each}
+              </div>
             </div>
+            
+            <!-- Brand & Size in one row on mobile -->
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Brand *</label>
+                <div class="p-1">
+                  <input
+                    type="text"
+                    bind:value={formData.brand}
+                    placeholder="e.g., Nike"
+                    required
+                    class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+              </div>
+              
+              <Select
+                label="Size"
+                bind:value={formData.size}
+                name="size"
+                required
+              >
+                <option value="">Select</option>
+                {#each sizeOptions as size}
+                  <option value={size.value}>{size.label}</option>
+                {/each}
+              </Select>
+            </div>
+            
+            <!-- Optional fields (collapsible) -->
+            <details class="border border-gray-200 rounded-lg">
+              <summary class="px-4 py-3 text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50">
+                Additional details (optional)
+              </summary>
+              <div class="px-4 pb-4 space-y-3">
+                <Input
+                  type="text"
+                  label="Color"
+                  placeholder="e.g., Black, Red"
+                  bind:value={formData.color}
+                  maxlength={30}
+                  name="color"
+                />
+                
+                <Input
+                  type="text"
+                  label="Material"
+                  placeholder="e.g., Cotton, Leather"
+                  bind:value={formData.material}
+                  maxlength={50}
+                  name="material"
+                />
+                
+                <div>
+                  <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <div class="p-1">
+                    <textarea
+                      id="description"
+                      name="description"
+                      bind:value={formData.description}
+                      placeholder="Add details about measurements, flaws..."
+                      rows="3"
+                      maxlength="500"
+                      class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                    />
+                  </div>
+                  <p class="text-xs text-gray-500 mt-1">{formData.description.length}/500</p>
+                </div>
+              </div>
+            </details>
           </div>
         {/if}
         
-        <!-- Step 2: Product Details -->
+        <!-- Step 2: Pricing -->
         {#if currentStep === 2}
-          <div class="space-y-6 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
+          <div class="space-y-5 animate-in fade-in slide-in-from-right duration-300">
             <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">Product Details</h2>
-              <p class="text-gray-600">Help buyers find what they're looking for</p>
-            </div>
-            
-            <BrandSelector
-              bind:value={formData.brand}
-              brands={['Nike', 'Adidas', 'Puma', 'New Balance', 'Vans', 'Converse', 'Other']}
-              label="Brand"
-              name="brand"
-              required
-            />
-            
-            <Select
-              label="Size"
-              bind:value={formData.size}
-              name="size"
-              required
-            >
-              <option value="">Select size</option>
-              {#each sizeOptions as size}
-                <option value={size.value}>{size.label}</option>
-              {/each}
-            </Select>
-            
-            <ConditionSelector
-              bind:value={formData.condition}
-              label="Condition"
-              name="condition"
-              required
-            />
-            
-            <Input
-              type="text"
-              label="Color (optional)"
-              placeholder="e.g., Black, Red, Multi"
-              bind:value={formData.color}
-              maxlength={30}
-              name="color"
-            />
-            
-            <Input
-              type="text"
-              label="Material (optional)"
-              placeholder="e.g., Cotton, Leather, Polyester"
-              bind:value={formData.material}
-              maxlength={50}
-              name="material"
-            />
-          </div>
-        {/if}
-        
-        <!-- Step 3: Pricing -->
-        {#if currentStep === 3}
-          <div class="space-y-6 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">Set Your Price</h2>
-              <p class="text-gray-600">Competitive pricing sells faster</p>
+              <h2 class="text-xl font-bold text-gray-900 mb-1">Set Your Price</h2>
+              <p class="text-sm text-gray-600">Competitive pricing sells faster</p>
             </div>
             
             <PriceInput
@@ -454,6 +489,8 @@
               suggestion={priceSuggestion}
               name="price"
               required
+              showCalculation={true}
+              feePercentage={5}
             />
             
             <PriceInput
@@ -471,7 +508,7 @@
             />
             
             {#if data.profile?.premium_boosts_remaining && data.profile.premium_boosts_remaining > 0}
-              <div class="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+              <div class="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200">
                 <label class="flex items-start cursor-pointer">
                   <input
                     type="checkbox"
@@ -494,16 +531,16 @@
           </div>
         {/if}
         
-        <!-- Step 4: Review -->
-        {#if currentStep === 4}
-          <div class="space-y-6 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
+        <!-- Step 3: Review -->
+        {#if currentStep === 3}
+          <div class="space-y-5 animate-in fade-in slide-in-from-right duration-300">
             <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">Review Your Listing</h2>
-              <p class="text-gray-600">Everything look good?</p>
+              <h2 class="text-xl font-bold text-gray-900 mb-1">Review Your Listing</h2>
+              <p class="text-sm text-gray-600">Everything look good?</p>
             </div>
             
             <!-- Preview Card -->
-            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
               {#if uploadedImages[0]}
                 <img 
                   src={uploadedImages[0].url} 
@@ -535,7 +572,7 @@
             </div>
             
             {#if publishError}
-              <div class="p-4 bg-red-50 border border-red-200 rounded-xl">
+              <div class="p-4 bg-red-50 border border-red-200 rounded-lg">
                 <p class="text-sm text-red-600">{publishError}</p>
               </div>
             {/if}
@@ -546,7 +583,7 @@
     </div>
   </div>
   
-  <!-- Sticky Navigation - Outside of content, fixed at bottom -->
+  <!-- Sticky Navigation -->
   {#if !data.needsBrandSubscription && !showSuccess}
     <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 z-40">
       <div class="max-w-lg mx-auto flex gap-3">
@@ -568,7 +605,7 @@
           </Button>
         {/if}
         
-        {#if currentStep < 4}
+        {#if currentStep < 3}
           <Button
             type="button"
             variant="primary"
@@ -578,8 +615,7 @@
             }}
             disabled={
               (currentStep === 1 && !canProceedStep1) ||
-              (currentStep === 2 && !canProceedStep2) ||
-              (currentStep === 3 && !canProceedStep3)
+              (currentStep === 2 && !canProceedStep2)
             }
             class="flex-1 h-12"
           >
@@ -602,149 +638,32 @@
             class="flex-1 h-12"
           >
             {#if submitting}
-              <span class="flex items-center justify-center">
-                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                Publishing...
-              </span>
+              <svg class="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Publishing...
             {:else}
               Publish Listing
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
             {/if}
           </Button>
         {/if}
       </div>
     </div>
   {/if}
-    
-  <!-- Success Screen -->
+  
+  <!-- Success Modal -->
   {#if showSuccess}
-    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-white">
-      <div class="text-center px-6 py-12 max-w-md mx-auto w-full">
-        <!-- Success Icon with animation -->
-        <div class="mb-8">
-          <div class="w-32 h-32 mx-auto bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-2xl animate-bounce-in">
-            <svg class="w-16 h-16 text-white animate-check-mark" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white rounded-2xl p-6 max-w-sm w-full text-center animate-in zoom-in duration-300">
+        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
         </div>
-        
-        <!-- Success Message -->
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">Success! 🎉</h2>
-        <p class="text-lg text-gray-600 mb-3">Your listing is now live!</p>
-        <p class="text-sm text-gray-500 mb-8">Buyers can now discover and purchase your item.</p>
-        
-        <!-- Action Buttons -->
-        <div class="space-y-3">
-          <Button
-            variant="primary"
-            onclick={() => goto('/')}
-            class="w-full h-12"
-          >
-            Back to Home
-          </Button>
-          <Button
-            variant="ghost"
-            onclick={() => {
-              showSuccess = false;
-              currentStep = 1;
-              // Reset form
-              formData = {
-                title: '',
-                description: '',
-                gender_category_id: '',
-                type_category_id: '',
-                category_id: '',
-                brand: '',
-                size: '',
-                condition: 'good' as const,
-                color: '',
-                material: '',
-                price: 0,
-                shipping_cost: 0,
-                tags: [],
-                use_premium_boost: false
-              };
-              uploadedImages = [];
-            }}
-            class="w-full h-12"
-          >
-            List Another Item
-          </Button>
-        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">Listed Successfully!</h3>
+        <p class="text-gray-600">Your item is now live</p>
       </div>
     </div>
   {/if}
 </div>
-
-<style>
-  @keyframes animate-in {
-    from {
-      opacity: 0;
-      transform: translateX(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(0);
-    }
-  }
-  
-  .animate-in {
-    animation: animate-in 0.3s ease-out;
-  }
-  
-  .line-clamp-2 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
-  
-  @keyframes bounce-in {
-    0% {
-      transform: scale(0);
-      opacity: 0;
-    }
-    50% {
-      transform: scale(1.1);
-    }
-    100% {
-      transform: scale(1);
-      opacity: 1;
-    }
-  }
-  
-  .animate-bounce-in {
-    animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  }
-  
-  @keyframes check-mark {
-    0% {
-      stroke-dasharray: 0 100;
-    }
-    100% {
-      stroke-dasharray: 100 100;
-    }
-  }
-  
-  .animate-check-mark {
-    stroke-dasharray: 100;
-    stroke-dashoffset: 100;
-    animation: check-mark 0.8s ease-out 0.3s forwards;
-  }
-  
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  
-  .animate-spin {
-    animation: spin 1s linear infinite;
-  }
-</style>

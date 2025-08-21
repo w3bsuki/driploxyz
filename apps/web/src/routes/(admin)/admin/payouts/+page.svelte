@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from '@repo/ui';
   import { onMount } from 'svelte';
-  import { getSupabaseClient } from '$lib/stores/auth';
+  import { page } from '$app/stores';
   import type { PageData } from './$types';
 
   interface Props {
@@ -15,7 +15,8 @@
   let processing = $state<string | null>(null);
   let activeTab = $state<'pending' | 'processing' | 'completed'>('pending');
   
-  const supabase = getSupabaseClient();
+  // Get supabase from the page store which has it from the root layout
+  const supabase = $derived($page.data.supabase);
 
   onMount(async () => {
     if (!supabase) return;
@@ -35,9 +36,10 @@
   });
 
   async function loadTransactions() {
+    if (!supabase) return;
     loading = true;
     try {
-      const { data: transactionData, error } = await data.supabase
+      const { data: transactionData, error } = await supabase
         .from('transactions')
         .select(`
           id,
@@ -83,6 +85,7 @@
   }
 
   async function updatePayoutStatus(transactionId: string, status: 'processing' | 'completed' | 'failed', reference?: string) {
+    if (!supabase) return;
     processing = transactionId;
     
     try {
@@ -98,7 +101,7 @@
         }
       }
 
-      const { error } = await data.supabase
+      const { error } = await supabase
         .from('transactions')
         .update(updateData)
         .eq('id', transactionId);
@@ -117,7 +120,7 @@
           notificationMessage = `Your payout of €${transaction.seller_earnings} failed. Please contact support.`;
         }
 
-        await data.supabase.from('notifications').insert({
+        await supabase.from('notifications').insert({
           user_id: transaction.seller_id,
           type: 'payout_processed',
           title: `Payout ${status}`,
