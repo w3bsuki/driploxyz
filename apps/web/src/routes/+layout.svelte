@@ -1,7 +1,6 @@
 <script lang="ts">
   import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
   import UnifiedCookieConsent from '$lib/components/UnifiedCookieConsent.svelte';
-  import NavigationLoader from '$lib/components/NavigationLoader.svelte';
   import '../app.css';
   // Deploy to driplo.xyz
   import '$lib/styles/cyrillic-typography.css';
@@ -11,7 +10,7 @@
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
-  import { MessageNotificationToast, FollowNotificationToast, CookieConsent, LanguageSwitcher, ToastContainer } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast, CookieConsent, LanguageSwitcher, ToastContainer, PageLoader } from '@repo/ui';
   import { page } from '$app/stores';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import { initializeLanguage } from '$lib/utils/language';
@@ -107,7 +106,8 @@
 <!-- Toast Container -->
 <ToastContainer />
 
-<NavigationLoader />
+<!-- Page Loader - iOS style centered spinner -->
+<PageLoader />
 
 <!-- Unified Cookie & Language Consent (handles everything) -->
 <UnifiedCookieConsent />

@@ -27,12 +27,13 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
 
   let { data, form }: Props = $props();
   
-  // Form state using runes
+  // Form state using runes - now with 3-tier category selection
   let formData = $state({
     title: form?.values?.title || '',
     description: form?.values?.description || '',
-    category_id: form?.values?.category_id || '',
-    subcategory_id: form?.values?.subcategory_id || '',
+    gender_category_id: form?.values?.gender_category_id || '', // Level 1: Men/Women/Kids/Unisex
+    type_category_id: form?.values?.type_category_id || '',     // Level 2: Clothing/Shoes/Accessories
+    category_id: form?.values?.category_id || '',               // Level 3: T-Shirts/Jeans/etc
     brand: form?.values?.brand || '',
     size: form?.values?.size || '',
     condition: (form?.values?.condition as any) || 'good' as const,
@@ -65,6 +66,8 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
   // Track which fields have been touched for validation
   let touched = $state({
     title: false,
+    gender_category_id: false,
+    type_category_id: false,
     category_id: false,
     brand: false,
     size: false,
@@ -74,13 +77,21 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
     photos: false
   });
   
-  // Computed values for derived state
-  const selectedCategory = $derived(
-    data.categories?.find(cat => cat.id === formData.category_id)
+  // Computed values for 3-tier category system
+  const genderCategories = $derived(
+    data.categories?.filter(cat => !cat.parent_id) || []
   );
-  
-  const subcategories = $derived(
-    selectedCategory?.subcategories || []
+
+  const typeCategories = $derived(
+    formData.gender_category_id 
+      ? data.categories?.filter(cat => cat.parent_id === formData.gender_category_id) || []
+      : []
+  );
+
+  const specificCategories = $derived(
+    formData.type_category_id
+      ? data.categories?.filter(cat => cat.parent_id === formData.type_category_id) || []
+      : []
   );
   
   // Computed errors based on validation
@@ -97,8 +108,16 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
         }
       }
       
+      if (touched.gender_category_id && !formData.gender_category_id) {
+        errs.gender_category_id = 'Please select a gender/age category';
+      }
+      
+      if (touched.type_category_id && !formData.type_category_id) {
+        errs.type_category_id = 'Please select a product type';
+      }
+      
       if (touched.category_id && !formData.category_id) {
-        errs.category_id = 'Please select a category';
+        errs.category_id = 'Please select a specific category';
       }
       
       if (touched.photos && uploadedImages.length === 0) {
@@ -150,6 +169,8 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
     // Mark current step fields as touched
     if (currentStep === 1) {
       touched.title = true;
+      touched.gender_category_id = true;
+      touched.type_category_id = true;
       touched.category_id = true;
       touched.photos = true;
     } else if (currentStep === 2) {
@@ -183,6 +204,8 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
         const step1Valid = uploadedImages.length > 0 && 
                formData.title && 
                formData.title.length >= 3 && 
+               formData.gender_category_id &&
+               formData.type_category_id &&
                formData.category_id;
         console.log('[SELL] Step 1 valid:', step1Valid);
         return step1Valid;
@@ -508,37 +531,65 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
                   />
                 </div>
 
-                <!-- Category -->
+                <!-- Gender/Age Category -->
                 <div>
                   <Select
-                    label="Category"
-                    bind:value={formData.category_id}
-                    error={showError('category_id') ? errors.category_id : ''}
+                    label="Who is this for?"
+                    bind:value={formData.gender_category_id}
+                    error={showError('gender_category_id') ? errors.gender_category_id : ''}
                     required
                     onchange={() => {
-                      touched.category_id = true;
-                      formData.subcategory_id = '';
+                      touched.gender_category_id = true;
+                      formData.type_category_id = '';
+                      formData.category_id = '';
                     }}
-                    name="category_id"
+                    name="gender_category_id"
                   >
-                    <option value="">Select a category</option>
-                    {#each data.categories || [] as category}
+                    <option value="">Select gender/age</option>
+                    {#each genderCategories as category}
                       <option value={category.id}>{category.name}</option>
                     {/each}
                   </Select>
                 </div>
 
-                <!-- Subcategory (if available) -->
-                {#if subcategories.length > 0}
+                <!-- Product Type Category -->
+                {#if typeCategories.length > 0}
                   <div>
                     <Select
-                      label="Subcategory"
-                      bind:value={formData.subcategory_id}
-                      name="subcategory_id"
+                      label="What type of product?"
+                      bind:value={formData.type_category_id}
+                      error={showError('type_category_id') ? errors.type_category_id : ''}
+                      required
+                      onchange={() => {
+                        touched.type_category_id = true;
+                        formData.category_id = '';
+                      }}
+                      name="type_category_id"
                     >
-                      <option value="">Select a subcategory (optional)</option>
-                      {#each subcategories as subcategory}
-                        <option value={subcategory.id}>{subcategory.name}</option>
+                      <option value="">Select product type</option>
+                      {#each typeCategories as category}
+                        <option value={category.id}>{category.name}</option>
+                      {/each}
+                    </Select>
+                  </div>
+                {/if}
+
+                <!-- Specific Category -->
+                {#if specificCategories.length > 0}
+                  <div>
+                    <Select
+                      label="Specific category"
+                      bind:value={formData.category_id}
+                      error={showError('category_id') ? errors.category_id : ''}
+                      required
+                      onchange={() => {
+                        touched.category_id = true;
+                      }}
+                      name="category_id"
+                    >
+                      <option value="">What exactly is it?</option>
+                      {#each specificCategories as category}
+                        <option value={category.id}>{category.name}</option>
                       {/each}
                     </Select>
                   </div>

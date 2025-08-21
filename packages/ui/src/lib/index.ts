@@ -7,6 +7,10 @@ export { default as SearchBar } from './SearchBar.svelte';
 export { default as Avatar } from './Avatar.svelte';
 export { default as Breadcrumb } from './Breadcrumb.svelte';
 
+// Loading components
+export { default as LoadingSpinner } from './LoadingSpinner.svelte';
+export { default as PageLoader } from './PageLoader.svelte';
+
 // New premium product page components
 export { default as ProductGallery } from './ProductGallery.svelte';
 export { default as SizeSelector } from './SizeSelector.svelte';

@@ -44,26 +44,14 @@ export const load: PageServerLoad = async ({ locals }) => {
     }
 
     console.log('[SELL DEBUG] Fetching categories...');
-    // Get only main categories (parent categories) for the form
-    const { data: mainCategories, error: categoriesError } = await services.categories.getMainCategories();
+    // Get ALL categories for the 3-tier selection system
+    const { data: allCategories, error: categoriesError } = await services.categories.getCategories();
 
     if (categoriesError) {
       console.error('[SELL DEBUG] Categories error:', categoriesError);
     } else {
-      console.log('[SELL DEBUG] Main categories count:', mainCategories?.length);
+      console.log('[SELL DEBUG] All categories count:', allCategories?.length);
     }
-
-    // Add subcategories to each parent category
-    const categoriesWithSubcategories = await Promise.all(
-      (mainCategories || []).map(async (category) => {
-        // Fetch subcategories for each main category
-        const { data: subcategories } = await services.categories.getSubcategories(category.id);
-        return {
-          ...category,
-          subcategories: subcategories || []
-        };
-      })
-    );
 
     console.log('[SELL DEBUG] Fetching subscription plans...');
     // Get available subscription plans for upgrade prompt
@@ -81,7 +69,7 @@ export const load: PageServerLoad = async ({ locals }) => {
     return {
       user: session.user,
       profile,
-      categories: categoriesWithSubcategories || [],
+      categories: allCategories || [],
       canListProducts,
       plans: plans || [],
       needsBrandSubscription: profile?.account_type === 'brand' && !canListProducts
@@ -119,8 +107,9 @@ export const actions: Actions = {
     // Extract form values
     const title = formData.get('title') as string;
     const description = formData.get('description') as string || '';
-    const category_id = formData.get('category_id') as string;
-    const subcategory_id = formData.get('subcategory_id') as string || '';
+    const gender_category_id = formData.get('gender_category_id') as string;
+    const type_category_id = formData.get('type_category_id') as string;
+    const category_id = formData.get('category_id') as string; // This is now the specific Level 3 category
     const brand = formData.get('brand') as string;
     const size = formData.get('size') as string;
     const condition = formData.get('condition') as string;
@@ -138,6 +127,8 @@ export const actions: Actions = {
     // Log key form values
     console.log('[SELL ACTION] Key values:', {
       title,
+      gender_category_id,
+      type_category_id,
       category_id,
       brand,
       size,
@@ -149,8 +140,7 @@ export const actions: Actions = {
     const validation = ProductSchema.safeParse({
       title,
       description,
-      category_id,
-      subcategory_id,
+      category_id, // Using the specific Level 3 category
       brand,
       size,
       condition,
@@ -175,7 +165,7 @@ export const actions: Actions = {
       return fail(400, { 
         errors,
         values: {
-          title, description, category_id, subcategory_id, brand, size, 
+          title, description, gender_category_id, type_category_id, category_id, brand, size, 
           condition, color, material, price, shipping_cost, tags, use_premium_boost
         }
       });
@@ -187,7 +177,7 @@ export const actions: Actions = {
         return fail(400, {
           errors: { photos: 'At least one photo is required' },
           values: {
-            title, description, category_id, subcategory_id, brand, size, 
+            title, description, gender_category_id, type_category_id, category_id, brand, size, 
             condition, color, material, price, shipping_cost, tags, use_premium_boost
           }
         });
@@ -202,7 +192,7 @@ export const actions: Actions = {
           title: title.trim(),
           description: description.trim() || '',
           price: price,
-          category_id: subcategory_id || category_id,
+          category_id: category_id, // Now using the specific Level 3 category
           condition: condition,
           brand: brand !== 'Other' ? brand : null,
           size: size || null,
@@ -295,7 +285,7 @@ export const actions: Actions = {
       return fail(500, {
         errors: { _form: error instanceof Error ? error.message : 'Failed to create product' },
         values: {
-          title, description, category_id, subcategory_id, brand, size, 
+          title, description, gender_category_id, type_category_id, category_id, brand, size, 
           condition, color, material, price, shipping_cost, tags, use_premium_boost
         }
       });

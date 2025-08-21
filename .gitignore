@@ -7,6 +7,8 @@ node_modules
 
 # testing
 coverage
+playwright-report
+test-results
 
 # svelte
 .svelte-kit
@@ -30,7 +32,7 @@ yarn-error.log*
 .turbo
 
 dist
-!packages/ui/dist
+packages/ui/dist
 
 # vercel
 .vercel/

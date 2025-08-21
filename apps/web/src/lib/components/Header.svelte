@@ -194,11 +194,11 @@
   <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-14 sm:h-16">
       <!-- Left: Mobile Menu + Logo -->
-      <div class="flex items-center space-x-0.5 sm:space-x-4">
+      <div class="flex items-center gap-2 sm:gap-4">
         <!-- Mobile Menu Button -->
         <button
           onclick={() => mobileMenuOpen = !mobileMenuOpen}
-          class="sm:hidden p-2 text-gray-700 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-50 border border-transparent hover:border-gray-200"
+          class="sm:hidden p-1.5 text-gray-700 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-50"
           aria-label="Toggle menu"
         >
           {#if mobileMenuOpen}
@@ -213,7 +213,7 @@
         </button>
         
         <!-- Logo with Animated Emoji -->
-        <a href="/" class="flex items-center space-x-1">
+        <a href="/" class="flex items-center gap-1">
           <span class="text-lg sm:text-2xl font-bold text-gray-900">Driplo</span>
           <span 
             class="text-lg sm:text-xl transition-all duration-300 hover:scale-110"
@@ -237,7 +237,7 @@
       </nav>
       
       <!-- Right: Auth/Account -->
-      <div class="flex items-center space-x-2">
+      <div class="flex items-center gap-1.5 sm:gap-2">
         <!-- Desktop Language Switcher -->
         <div class="hidden sm:block mr-2">
           <LanguageSwitcher
