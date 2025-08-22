@@ -112,10 +112,10 @@
       </p>
     {/if}
     
-    <!-- Title (middle) -->
+    <!-- Title (second) -->
     <h3 class="text-sm font-medium text-gray-900 line-clamp-2 leading-tight">{product.title}</h3>
     
-    <!-- Subcategory/Brand/Size row (below title) -->
+    <!-- Subcategory/Brand/Size row (third - below title) -->
     {#if product.subcategory_name || product.brand || product.size}
       <p class="text-xs text-gray-500 line-clamp-1">
         {#if product.subcategory_name}

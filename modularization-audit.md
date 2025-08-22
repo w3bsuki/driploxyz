@@ -504,32 +504,219 @@ All components successfully use:
 
 #### **Phase 2 Advanced Patterns**:
 
-1. **Performance-Optimized State**
-   ```typescript
-   // Advanced $derived patterns
-   const expensiveComputation = $derived.by(() => {
-     if (!shouldCompute) return previous;
-     return heavyCalculation(data);
-   });
-   ```
+#### 🚀 **Pattern 1: Performance-Optimized State Management**
 
-2. **Snippet Composition System**
-   ```typescript
-   interface Props {
-     header?: Snippet<[title: string]>;
-     content?: Snippet<[data: any[]]>;
-     footer?: Snippet;
-   }
-   ```
+**Current Implementation**: ✅ Basic runes usage
+```typescript
+// ✅ Currently used everywhere
+let count = $state(0);
+let doubled = $derived(count * 2);
+```
 
-3. **Advanced Effect Patterns**
-   ```typescript
-   // Cleanup and dependency optimization
-   $effect(() => {
-     const cleanup = setupResource(dependency);
-     return () => cleanup();
-   });
-   ```
+**Phase 2 Target**: Advanced optimization patterns
+```typescript
+// 🎯 Target: Conditional derivations with $derived.by()
+const expensiveComputation = $derived.by(() => {
+  if (!shouldCompute || !dataChanged) return previous;
+  return heavyCalculation(largeDataSet);
+});
+
+// 🎯 Target: Batched state updates for performance
+const updateBatch = $state.snapshot(() => {
+  // Batch multiple state updates
+  count.value = newCount;
+  items.value = newItems;
+  loading.value = false;
+});
+
+// 🎯 Target: Debounced derived state
+const debouncedSearch = $derived.by(() => {
+  return debounce(() => searchProducts(query), 300);
+});
+```
+
+#### 🧩 **Pattern 2: Advanced Snippet Composition System**
+
+**Current Implementation**: ✅ Basic snippet usage
+```typescript
+// ✅ Currently implemented in newer components
+interface Props {
+  children?: Snippet;
+}
+```
+
+**Phase 2 Target**: Complex composition patterns
+```typescript
+// 🎯 Target: Multi-slot snippet system
+interface CardProps {
+  header?: Snippet<[title: string, subtitle?: string]>;
+  content?: Snippet<[data: any[], loading: boolean]>;
+  footer?: Snippet<[actions: Action[]]>;
+  sidebar?: Snippet;
+}
+
+// 🎯 Target: Conditional snippet rendering
+interface ConditionalProps {
+  condition: boolean;
+  ifTrue?: Snippet<[data: any]>;
+  ifFalse?: Snippet<[error: string]>;
+}
+
+// 🎯 Target: Loop-based snippet composition
+interface ListProps {
+  items: any[];
+  renderItem: Snippet<[item: any, index: number]>;
+  renderEmpty?: Snippet;
+  renderLoading?: Snippet;
+}
+```
+
+#### ⚡ **Pattern 3: Advanced Effect and Cleanup Patterns**
+
+**Current Implementation**: ✅ Basic effects
+```typescript
+// ✅ Currently used for side effects
+$effect(() => {
+  console.log('Value changed:', value);
+});
+```
+
+**Phase 2 Target**: Production-ready effect patterns
+```typescript
+// 🎯 Target: Resource management with cleanup
+$effect(() => {
+  const controller = new AbortController();
+  const cleanup = setupWebSocket(url, {
+    signal: controller.signal,
+    onMessage: handleMessage,
+    onError: handleError
+  });
+  
+  return () => {
+    controller.abort();
+    cleanup();
+  };
+});
+
+// 🎯 Target: Conditional effects with dependencies
+$effect(() => {
+  if (!isAuthenticated || !shouldSubscribe) return;
+  
+  const subscription = subscribeToUpdates(userId);
+  return () => subscription.unsubscribe();
+});
+
+// 🎯 Target: Effect queuing for performance
+$effect.root(() => {
+  // High-priority effects
+  updateCriticalState();
+  
+  $effect.defer(() => {
+    // Low-priority effects run after render
+    updateAnalytics();
+    preloadNextPage();
+  });
+});
+```
+
+#### 🔄 **Pattern 4: Reactive Component Communication**
+
+**Phase 2 Target**: Advanced component patterns
+```typescript
+// 🎯 Target: Event-driven component communication
+interface ComponentEventMap {
+  select: CustomEvent<Product>;
+  favorite: CustomEvent<{ product: Product; isFavorited: boolean }>;
+  error: CustomEvent<Error>;
+}
+
+interface EventEmitterProps {
+  events: ComponentEventMap;
+  onSelect?: (event: ComponentEventMap['select']) => void;
+}
+
+// 🎯 Target: Cross-component state synchronization
+const globalState = createGlobalState({
+  cart: $state<Product[]>([]),
+  user: $state<User | null>(null),
+  notifications: $state<Notification[]>([])
+});
+
+// 🎯 Target: Component composition with state injection
+interface ProviderProps {
+  state: ReturnType<typeof createGlobalState>;
+  children: Snippet<[injectedState: typeof state]>;
+}
+```
+
+#### 📦 **Pattern 5: Type-Safe Component Factory**
+
+**Phase 2 Target**: Dynamic component creation
+```typescript
+// 🎯 Target: Variant-based component factory
+function createVariantComponent<T extends ComponentVariants>(
+  baseComponent: typeof SvelteComponent,
+  variants: T
+) {
+  return (props: ComponentProps & { variant: keyof T }) => {
+    const variantProps = variants[props.variant];
+    return baseComponent({ ...props, ...variantProps });
+  };
+}
+
+// 🎯 Target: Higher-order component patterns
+function withLoading<T>(Component: T) {
+  return (props: ComponentProps<T> & { loading?: boolean }) => {
+    const { loading, ...restProps } = props;
+    
+    if (loading) {
+      return LoadingSpinner();
+    }
+    
+    return Component(restProps);
+  };
+}
+
+// 🎯 Target: Compound component system
+const Card = {
+  Root: CardRoot,
+  Header: CardHeader,
+  Content: CardContent,
+  Footer: CardFooter,
+  Actions: CardActions
+};
+```
+
+#### 🎨 **Pattern 6: Design System Integration**
+
+**Phase 2 Target**: Theme-aware components
+```typescript
+// 🎯 Target: CSS-in-JS with design tokens
+const styles = $derived(() => {
+  const tokens = getDesignTokens(theme);
+  return {
+    backgroundColor: tokens.colors.primary[variant],
+    padding: tokens.spacing[size],
+    borderRadius: tokens.borderRadius[rounded],
+    fontSize: tokens.typography.fontSizes[size]
+  };
+});
+
+// 🎯 Target: Responsive prop system
+interface ResponsiveProps {
+  size?: ResponsiveValue<'sm' | 'md' | 'lg'>;
+  padding?: ResponsiveValue<number>;
+  columns?: ResponsiveValue<number>;
+}
+
+// 🎯 Target: Animation system integration
+const animatedValue = $state.motion({
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+  transition: { duration: 0.2, ease: 'easeOut' }
+});
+```
 
 ### 🎯 Success Criteria - Phase 2
 
