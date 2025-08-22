@@ -49,6 +49,7 @@ export { default as OptimizedImage } from './OptimizedImage.svelte';
 export { default as ImageOptimized } from './ImageOptimized.svelte';
 // Search components
 export { default as SearchDebounced } from './SearchDebounced.svelte';
+export { default as SearchBarSimple } from './SearchBarSimple.svelte';
 // Virtual scrolling components
 export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';
 // Skeleton loading components
@@ -83,3 +84,16 @@ export { default as OrderTimeline } from './OrderTimeline.svelte';
 export { default as OrderActions } from './OrderActions.svelte';
 // Seller components
 export { default as SellerQuickView } from './SellerQuickView.svelte';
+// Header components - NEW modular header components
+export { default as HeaderLogo } from './HeaderLogo.svelte';
+export { default as HeaderUserMenu } from './HeaderUserMenu.svelte';
+export { default as CategoryGrid } from './CategoryGrid.svelte';
+export { default as MobileNavigation } from './MobileNavigation.svelte';
+export { default as ProductHighlight } from './ProductHighlight.svelte';
+export { default as TrendingSection } from './TrendingSection.svelte';
+// Product display components
+export { default as ConditionBadge } from './ConditionBadge.svelte';
+export { default as FavoriteButton } from './FavoriteButton.svelte';
+export { default as ProductImage } from './ProductImage.svelte';
+export { default as ProductMeta } from './ProductMeta.svelte';
+export { default as ProductPrice } from './ProductPrice.svelte';

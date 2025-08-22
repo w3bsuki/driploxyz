@@ -37,6 +37,8 @@
     size: p.size,
     condition: p.condition,
     category: category.name,
+    main_category_name: category.parent_name || category.name,
+    subcategory_name: category.parent_name ? category.name : null,
     sellerId: p.seller_id,
     sellerName: p.seller?.username || 'Unknown',
     sellerRating: p.seller?.rating || 0,
@@ -163,13 +165,19 @@
     </div>
   </div>
 
-  <!-- Colored Category Section -->
-  <div class="{categoryBgColor} text-white">
+  <!-- Clean Category Section -->
+  <div class="bg-white border-b">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
       
-      <!-- Top Avatars Centered -->
-      <div class="flex justify-center items-center gap-3 overflow-x-auto scrollbar-hide pb-4">
-        {#if sellers.length > 0}
+      <!-- Category Header -->
+      <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">{category.name}</h1>
+        <p class="text-gray-600">{category.description}</p>
+      </div>
+
+      <!-- Top Sellers -->
+      {#if sellers.length > 0}
+        <div class="flex justify-center items-center gap-3 overflow-x-auto scrollbar-hide pb-6">
           {#each sellers.slice(0, 15) as seller}
             <button
               onclick={() => openSellerModal(seller)}
@@ -180,35 +188,27 @@
                 <img 
                   src={seller.avatar_url} 
                   alt={seller.username} 
-                  class="w-12 h-12 rounded-full border-2 border-white/30 group-hover:border-white/60 shadow-sm transition-all" 
+                  class="w-12 h-12 rounded-full border-2 border-gray-200 group-hover:border-gray-300 shadow-sm transition-all" 
                 />
                 {#if seller.itemCount === 1}
                   <span class="absolute -bottom-1 -right-1 bg-green-500 text-white text-[9px] font-bold px-1 py-0.5 rounded-full border border-white">{i18n.condition_new().toUpperCase()}</span>
                 {/if}
               </div>
-              <span class="text-xs mt-1 font-medium opacity-90 group-hover:opacity-100">{seller.username}</span>
-              <span class="text-[10px] opacity-75">{seller.itemCount} {i18n.category_itemsCount()}</span>
+              <span class="text-xs mt-1 font-medium text-gray-700 group-hover:text-gray-900">{seller.username}</span>
+              <span class="text-[10px] text-gray-500">{seller.itemCount} {i18n.category_itemsCount()}</span>
             </button>
           {/each}
-        {:else}
-          {#each Array(8) as _}
-            <div class="flex flex-col items-center shrink-0">
-              <div class="w-12 h-12 rounded-full bg-white/20 animate-pulse"></div>
-              <div class="h-3 w-12 bg-white/20 rounded mt-1 animate-pulse"></div>
-              <div class="h-2 w-8 bg-white/20 rounded mt-1 animate-pulse"></div>
-            </div>
-          {/each}
-        {/if}
-      </div>
+        </div>
+      {/if}
       
-      <!-- Search Bar -->
+      <!-- Search Bar with Power Variant -->
       <div class="pb-4">
         <div class="max-w-2xl mx-auto">
           <SearchBar 
             bind:value={searchQuery}
             onSearch={handleSearch}
             placeholder={i18n.category_searchPlaceholder()}
-            variant="default"
+            variant="power"
             class="w-full"
           />
         </div>
@@ -222,8 +222,8 @@
               onclick={() => selectedSubcategory = null}
               class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors
                 {selectedSubcategory === null 
-                  ? 'bg-white text-gray-900' 
-                  : 'bg-white/20 text-white hover:bg-white/30'}"
+                  ? 'bg-gray-900 text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
             >
               {i18n.category_all()}
             </button>
@@ -232,8 +232,8 @@
                 onclick={() => selectedSubcategory = subcat.id}
                 class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors
                   {selectedSubcategory === subcat.id
-                    ? 'bg-white text-gray-900' 
-                    : 'bg-white/20 text-white hover:bg-white/30'}"
+                    ? 'bg-gray-900 text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
               >
                 {subcat.name}
               </button>
@@ -260,30 +260,23 @@
           <option value="price-low">{i18n.filter_priceLowToHigh()}</option>
           <option value="price-high">{i18n.filter_priceHighToLow()}</option>
         </select>
-        <!-- Desktop Filter Toggle -->
+        <!-- Filter Toggle -->
         <Button 
-          variant="outline" 
+          variant={showFilters ? "primary" : "outline"} 
           size="sm"
           onclick={() => showFilters = !showFilters}
-          class="hidden lg:flex"
+          class="flex items-center"
         >
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
-          {i18n.search_filters()}
-        </Button>
-        
-        <!-- Mobile Filter Toggle -->
-        <Button 
-          variant="outline" 
-          size="sm"
-          onclick={() => showFilters = !showFilters}
-          class="lg:hidden flex"
-        >
-          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          Filters
+          <span class="hidden sm:inline">{i18n.search_filters()}</span>
+          <span class="sm:hidden">Filters</span>
+          {#if selectedSizes.length > 0 || selectedBrands.length > 0 || selectedConditions.length > 0}
+            <span class="ml-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              {selectedSizes.length + selectedBrands.length + selectedConditions.length}
+            </span>
+          {/if}
         </Button>
       </div>
     </div>

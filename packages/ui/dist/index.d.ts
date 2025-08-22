@@ -40,6 +40,7 @@ export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte
 export { default as OptimizedImage } from './OptimizedImage.svelte';
 export { default as ImageOptimized } from './ImageOptimized.svelte';
 export { default as SearchDebounced } from './SearchDebounced.svelte';
+export { default as SearchBarSimple } from './SearchBarSimple.svelte';
 export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';
 export { ProductCardSkeleton, ProductDetailSkeleton, SellerCardSkeleton, CategoryCardSkeleton, ListItemSkeleton, TextSkeleton, ImageSkeleton } from './skeleton/index';
 export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
@@ -64,4 +65,15 @@ export { default as OrderStatus } from './OrderStatus.svelte';
 export { default as OrderTimeline } from './OrderTimeline.svelte';
 export { default as OrderActions } from './OrderActions.svelte';
 export { default as SellerQuickView } from './SellerQuickView.svelte';
+export { default as HeaderLogo } from './HeaderLogo.svelte';
+export { default as HeaderUserMenu } from './HeaderUserMenu.svelte';
+export { default as CategoryGrid } from './CategoryGrid.svelte';
+export { default as MobileNavigation } from './MobileNavigation.svelte';
+export { default as ProductHighlight } from './ProductHighlight.svelte';
+export { default as TrendingSection } from './TrendingSection.svelte';
+export { default as ConditionBadge } from './ConditionBadge.svelte';
+export { default as FavoriteButton } from './FavoriteButton.svelte';
+export { default as ProductImage } from './ProductImage.svelte';
+export { default as ProductMeta } from './ProductMeta.svelte';
+export { default as ProductPrice } from './ProductPrice.svelte';
 //# sourceMappingURL=index.d.ts.map

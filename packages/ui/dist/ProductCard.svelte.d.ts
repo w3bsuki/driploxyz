@@ -12,11 +12,14 @@ interface Props {
         currency?: string;
         addToFavorites?: string;
         removeFromFavorites?: string;
-        new?: string;
+        brandNewWithTags?: string;
+        newWithoutTags?: string;
         likeNew?: string;
         good?: string;
+        worn?: string;
         fair?: string;
         formatPrice?: (price: number) => string;
+        categoryTranslation?: (category: string) => string;
     };
 }
 declare const ProductCard: import("svelte").Component<Props, {}, "">;

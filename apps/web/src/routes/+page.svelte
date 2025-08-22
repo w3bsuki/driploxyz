@@ -69,7 +69,9 @@
 				brand: product.brand,
 				size: product.size,
 				condition: product.condition as ProductDisplay['condition'],
-				category: product.category_name || 'Uncategorized',
+				category_name: product.category_name || 'Uncategorized',
+				main_category_name: product.category_name || 'Uncategorized',
+				subcategory_name: product.subcategory_name,
 				sellerId: product.seller_id,
 				sellerName: product.seller_name || 'Unknown Seller',
 				sellerRating: product.seller_rating || 0,
@@ -192,7 +194,6 @@
 						onFilter={handleFilter}
 						placeholder={i18n.search_placeholder()}
 						categoriesText={i18n.search_categories()}
-						suggestions={[i18n.home_searchSuggestions_vintageJackets(), i18n.home_searchSuggestions_designerBags(), i18n.home_searchSuggestions_summerDresses(), i18n.home_searchSuggestions_sneakers()]}
 						showCategoryDropdown={false}
 					/>
 				</div>
@@ -250,7 +251,7 @@
 								<div>
 									<h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{i18n.trending_title()}</h3>
 									<div class="space-y-1">
-										{#each [i18n.home_trending_vintageJackets(), i18n.home_trending_y2kJeans(), i18n.home_trending_designerBagsUnder100()] as trend}
+										{#each data.trendingSearches.slice(0, 3) as trend}
 											<button
 												onclick={() => handleSearch(trend)}
 												class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-white/60 rounded-lg transition-colors flex items-center space-x-2"

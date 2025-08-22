@@ -14,6 +14,7 @@
   } from '$lib/stores/notifications';
   import { browser } from '$app/environment';
   import { RealtimeNotificationService } from '$lib/services/realtime-notifications';
+  import { switchLanguage, languages } from '$lib/utils/language-switcher';
   
   interface Props {
     showSearch?: boolean;
@@ -33,12 +34,8 @@
   const currentProfile = $derived(propsProfile || $authState.profile);
   const isLoggedIn = $derived(!!currentUser);
   const userCanSell = $derived(canSellHelper(currentProfile));
-  const userDisplayName = $derived(currentProfile ? (currentProfile.username || currentProfile.full_name || 'User') : 'Anonymous');
-  const initials = $derived(currentProfile ? 
-    (currentProfile.full_name ? 
-      currentProfile.full_name.split(' ').map(n => n.charAt(0).toUpperCase()).slice(0, 2).join('') : 
-      currentProfile.username?.charAt(0).toUpperCase() || '?') : 
-    '?');
+  const userDisplayName = $derived(currentProfile?.username || currentProfile?.full_name || 'User');
+  const initials = $derived(currentProfile?.full_name?.split(' ').map(n => n[0].toUpperCase()).slice(0, 2).join('') || currentProfile?.username?.[0].toUpperCase() || '?');
   
   // Language - REACTIVE tracking with initial value from server
   let currentLang = $state(initialLanguage || i18n.languageTag());
@@ -58,90 +55,6 @@
       currentLang = newLang;
     }
   });
-  
-  const languages = [
-    { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'bg', name: 'Български', flag: '🇧🇬' },
-    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-    { code: 'ua', name: 'Українська', flag: '🇺🇦' }
-  ];
-  
-  async function switchLanguage(lang: string) {
-    console.log('Switching language to:', lang);
-    
-    try {
-      // Use ProductionLocaleManager for proper GDPR-compliant locale switching
-      const { ProductionCookieManager } = await import('$lib/cookies/production-cookie-system');
-      const cookieManager = ProductionCookieManager.getInstance();
-      
-      // Check if functional cookies are enabled
-      if (!cookieManager.hasConsent('functional')) {
-        console.log('Functional cookies not enabled - showing cookie banner for language switching');
-        
-        // Store the desired language for after consent
-        sessionStorage.setItem('pendingLanguageSwitch', lang);
-        
-        // Trigger cookie banner to reappear
-        const event = new CustomEvent('requestCookieConsent', {
-          detail: { 
-            reason: 'language_switch', 
-            targetLanguage: lang,
-            message: `To switch to ${languages.find(l => l.code === lang)?.name || lang}, please enable functional cookies.`
-          }
-        });
-        window.dispatchEvent(event);
-        
-        return; // Don't proceed with language switch until consent given
-      }
-      
-      // CRITICAL FIX: Prevent auth state from overriding language
-      console.log('Setting language and refreshing:', lang);
-      
-      // 1. Use the ProductionCookieManager to set the cookie properly
-      cookieManager.setCookie('locale', lang, {
-        maxAge: 365 * 24 * 60 * 60,
-        sameSite: 'lax',
-        secure: location.protocol === 'https:'
-      });
-      
-      // 2. Also save to sessionStorage as backup (survives auth refreshes)
-      sessionStorage.setItem('selectedLocale', lang);
-      
-      // 3. Wait a tiny bit for cookie to be set before refreshing
-      await new Promise(resolve => setTimeout(resolve, 10));
-      
-      // 4. Force hard navigation to bypass any auth state listeners
-      // Use replace to prevent back button issues
-      window.location.replace(window.location.pathname + window.location.search);
-      
-    } catch (error) {
-      console.error('Language switch failed:', error);
-      
-      // Check if error is due to missing functional cookies
-      if (error.message?.includes('Functional cookies required')) {
-        // Store the desired language
-        sessionStorage.setItem('pendingLanguageSwitch', lang);
-        
-        // Show a user-friendly message and trigger cookie banner
-        const event = new CustomEvent('requestCookieConsent', {
-          detail: { 
-            reason: 'language_switch', 
-            targetLanguage: lang,
-            message: `To save your language preference, please enable functional cookies.`
-          }
-        });
-        window.dispatchEvent(event);
-        return;
-      }
-      
-      // Fallback: Set cookie and use URL parameter
-      document.cookie = `locale=${lang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax; Secure=${location.protocol === 'https:'}`;
-      
-      const url = new URL(window.location.href);
-      url.searchParams.set('locale', lang);
-      window.location.href = url.toString();
-    }
-  }
   
   // Animated emoji for logo
   const clothingEmojis = ['👗', '👔', '👶', '🐕'];
@@ -204,15 +117,15 @@
 </style>
 
 <!-- Unified Header for all pages -->
-<header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-xs">
+<header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
   <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-14 sm:h-16">
+    <div class="flex items-center justify-between h-16">
       <!-- Left: Mobile Menu + Logo -->
-      <div class="flex items-center gap-2 sm:gap-4">
+      <div class="flex items-center">
         <!-- Mobile Menu Button -->
         <button
           onclick={() => mobileMenuOpen = !mobileMenuOpen}
-          class="sm:hidden p-2 text-gray-700 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-50 min-h-[44px] min-w-[44px]"
+          class="sm:hidden p-1 text-gray-700 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-50 mr-1"
           aria-label="Toggle menu"
         >
           {#if mobileMenuOpen}
@@ -227,12 +140,9 @@
         </button>
         
         <!-- Logo with Animated Emoji -->
-        <a href="/" class="flex items-center gap-1">
-          <span class="text-lg sm:text-2xl font-bold text-gray-900">Driplo</span>
-          <span 
-            class="text-lg sm:text-xl transition-all duration-300 hover:scale-110"
-            style="display: inline-block; animation: fadeIn 0.3s ease-in-out;"
-          >
+        <a href="/" class="flex items-center">
+          <span class="text-xl sm:text-2xl font-bold text-gray-900">Driplo</span>
+          <span class="text-xl sm:text-2xl transition-all duration-300 hover:scale-110 ml-0.5 inline-block">
             {clothingEmojis[currentEmojiIndex]}
           </span>
         </a>
@@ -400,7 +310,7 @@
             <a href="/login" class="px-3 py-1.5 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg hover:bg-white/20">
               {i18n.auth_signIn()}
             </a>
-            <a href="/signup" class="px-3 py-1.5 text-sm font-medium bg-black/80 text-white rounded-lg hover:bg-black backdrop-blur-xs">
+            <a href="/signup" class="px-3 py-1.5 text-sm font-medium bg-black/80 text-white rounded-lg hover:bg-black backdrop-blur-sm">
               {i18n.auth_signUp()}
             </a>
           </div>
@@ -424,7 +334,7 @@
                     fallback={initials}
                   />
                   <div class="flex-1 min-w-0">
-                    <p class="font-semibold text-gray-900 truncate text-sm">{$displayName}</p>
+                    <p class="font-semibold text-gray-900 truncate text-sm">{userDisplayName}</p>
                   </div>
                 </div>
               </div>
@@ -481,7 +391,7 @@
                   <span class="font-medium text-sm">{i18n.profile_favorites()}</span>
                 </a>
                 
-                {#if !$canSell}
+                {#if !userCanSell}
                   <a href="/become-seller" class="flex items-center px-3 py-2.5 text-blue-700 hover:bg-blue-50 rounded-lg transition-colors min-h-[44px] bg-blue-25" onclick={closeMenus}>
                     <svg class="w-4 h-4 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

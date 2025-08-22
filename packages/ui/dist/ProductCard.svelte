@@ -1,6 +1,10 @@
 <script lang="ts">
   import type { Product } from './types.js';
-  import Card from './Card.svelte';
+  import ProductImage from './ProductImage.svelte';
+  import ConditionBadge from './ConditionBadge.svelte';
+  import ProductPrice from './ProductPrice.svelte';
+  import FavoriteButton from './FavoriteButton.svelte';
+  import ProductMeta from './ProductMeta.svelte';
   
   interface Props {
     product: Product;
@@ -15,11 +19,14 @@
       currency?: string;
       addToFavorites?: string;
       removeFromFavorites?: string;
-      new?: string;
+      brandNewWithTags?: string;
+      newWithoutTags?: string;
       likeNew?: string;
       good?: string;
+      worn?: string;
       fair?: string;
       formatPrice?: (price: number) => string;
+      categoryTranslation?: (category: string) => string;
     };
   }
 
@@ -36,48 +43,17 @@
       currency: '$',
       addToFavorites: 'Add to favorites',
       removeFromFavorites: 'Remove from favorites',
-      new: 'New',
+      brandNewWithTags: 'BNWT',
+      newWithoutTags: 'New',
       likeNew: 'Like New',
       good: 'Good',
+      worn: 'Worn',
       fair: 'Fair'
     }
   }: Props = $props();
 
-  function handleFavorite(event: MouseEvent) {
-    event.stopPropagation();
-    onFavorite?.(product);
-  }
-
   function handleClick() {
     onclick?.(product);
-  }
-
-  const conditionLabels = {
-    'new': translations.new || 'New',
-    'like-new': translations.likeNew || 'Like New',
-    'good': translations.good || 'Good',
-    'fair': translations.fair || 'Fair'
-  };
-  
-  const conditionColors = {
-    'new': 'bg-green-500 text-white',
-    'like-new': 'bg-blue-500 text-white',
-    'good': 'bg-yellow-500 text-white',
-    'fair': 'bg-orange-500 text-white'
-  };
-
-  // Get image URL - completely static, no reactivity
-  let imageUrl = '/placeholder-product.svg';
-  
-  if (product.product_images?.[0]?.image_url) {
-    imageUrl = product.product_images[0].image_url;
-  } else if (product.images?.[0]) {
-    const firstImage = product.images[0];
-    if (typeof firstImage === 'string') {
-      imageUrl = firstImage;
-    } else if (firstImage?.image_url) {
-      imageUrl = firstImage.image_url;
-    }
   }
 </script>
 
@@ -93,62 +69,59 @@
   role="button"
   tabindex={0}
 >
-  <!-- Image Container - Direct img tag, no components -->
-  <div class="relative aspect-square bg-gray-50 overflow-hidden rounded-lg">
-    <img
-      src={imageUrl}
+  <!-- Image Container with overlays -->
+  <div class="relative">
+    <ProductImage 
+      product_images={product.product_images}
+      images={product.images}
       alt={product.title}
-      loading={priority ? "eager" : "lazy"}
-      fetchpriority={priority ? "high" : "auto"}
-      class="w-full h-full object-cover"
-      sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+      {priority}
     />
     
     <!-- Condition badge -->
     {#if product.condition}
-      <div class="absolute top-2 left-2 px-2 py-0.5 {conditionColors[product.condition]} text-xs font-medium rounded uppercase">
-        {conditionLabels[product.condition]}
-      </div>
+      <ConditionBadge 
+        condition={product.condition}
+        translations={{
+          brandNewWithTags: translations.brandNewWithTags,
+          newWithoutTags: translations.newWithoutTags,
+          likeNew: translations.likeNew,
+          good: translations.good,
+          worn: translations.worn,
+          fair: translations.fair
+        }}
+      />
     {/if}
     
     <!-- Favorite button -->
-    {#if onFavorite}
-      <button 
-        onclick={handleFavorite}
-        class="absolute top-2 right-2 p-3 bg-white/90 rounded-full hover:bg-white min-h-[44px] min-w-[44px]"
-        aria-label={favorited ? translations.removeFromFavorites : translations.addToFavorites}
-      >
-        <svg 
-          class="w-4 h-4 {favorited ? 'text-red-500 fill-current' : 'text-gray-600'}" 
-          viewBox="0 0 20 20"
-        >
-          <path 
-            fill-rule="evenodd" 
-            d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" 
-            clip-rule="evenodd" 
-          />
-        </svg>
-      </button>
-    {/if}
+    <FavoriteButton 
+      {product}
+      {favorited}
+      {onFavorite}
+      addToFavoritesText={translations.addToFavorites}
+      removeFromFavoritesText={translations.removeFromFavorites}
+    />
   </div>
   
   <!-- Content -->
   <div class="pt-2 space-y-0.5">
-    {#if product.brand}
-      <p class="text-xs text-gray-500">{product.brand}</p>
-    {/if}
+    <ProductMeta 
+      mainCategoryName={product.main_category_name}
+      categoryName={product.category_name}
+      subcategoryName={product.subcategory_name}
+      size={product.size}
+      brand={product.brand}
+      sizeText={translations.size}
+      categoryTranslation={translations.categoryTranslation}
+    />
     
     <h3 class="text-sm text-gray-900 line-clamp-1">{product.title}</h3>
     
-    <p class="text-xs text-gray-500">
-      {#if product.size}{translations.size} {product.size}{/if}
-      {#if product.size && product.condition} · {/if}
-      {#if product.condition}{conditionLabels[product.condition]}{/if}
-    </p>
-    
-    <p class="text-sm text-gray-900">
-      {translations.formatPrice ? translations.formatPrice(product.price) : `${translations.currency}${product.price}`}
-    </p>
+    <ProductPrice 
+      price={product.price}
+      currency={translations.currency}
+      formatPrice={translations.formatPrice}
+    />
   </div>
 </div>
 

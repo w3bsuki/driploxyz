@@ -2,6 +2,7 @@ import type { PageServerLoad } from './$types';
 import { createServices } from '$lib/services';
 import { redirect } from '@sveltejs/kit';
 import { cacheWarming } from '$lib/cache';
+import { getTrendingSearches } from '$lib/services/trending';
 
 export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
   // Check if this is an auth callback that went to the wrong URL
@@ -39,7 +40,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
     // Direct parallel queries - simpler and more maintainable than RPC
     console.log('[HOMEPAGE] Loading homepage data...');
     
-    const [categoriesResult, topSellersResult, promotedResult, featuredResult] = await Promise.allSettled([
+    const [categoriesResult, topSellersResult, promotedResult, featuredResult, trendingSearches] = await Promise.allSettled([
       services.categories.getMainCategories(),
       services.profiles.getTopSellers(8),
       services.products.getPromotedProducts(8),
@@ -48,13 +49,17 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
         .select(`
           *,
           product_images (*),
-          categories (name),
+          categories!inner (
+            name,
+            parent_id
+          ),
           profiles!products_seller_id_fkey (username, rating, avatar_url)
         `)
         .eq('is_active', true)
         .eq('is_sold', false)
         .order('created_at', { ascending: false })
-        .limit(12)
+        .limit(12),
+      getTrendingSearches(supabase)
     ]);
 
     // Process results
@@ -66,6 +71,29 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
     if (featuredResult.status === 'fulfilled') {
       const { data: rawProducts } = featuredResult.value;
       if (rawProducts) {
+        
+        // Get all unique parent IDs to fetch parent categories
+        const parentIds = [...new Set(
+          rawProducts
+            .map(item => item.categories?.parent_id)
+            .filter(Boolean)
+        )];
+
+        // Fetch parent categories
+        let parentCategories = [];
+        if (parentIds.length > 0) {
+          const { data: parents } = await supabase
+            .from('categories')
+            .select('id, name')
+            .in('id', parentIds);
+          parentCategories = parents || [];
+        }
+
+        // Create a lookup map for parent categories
+        const parentLookup = Object.fromEntries(
+          parentCategories.map(parent => [parent.id, parent.name])
+        );
+
         featuredProducts = rawProducts.map(item => ({
           ...item,
           // Keep product_images as is for the ProductCard component
@@ -74,7 +102,9 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
           images: (item.product_images || []).map((img: any) => 
             typeof img === 'string' ? img : (img?.image_url || '')
           ).filter(Boolean),
-          category_name: item.categories?.name,
+          // Simple 2-level category structure: Men/Women/Kids > T-Shirts/Boots/etc  
+          category_name: parentLookup[item.categories?.parent_id] || 'Uncategorized', // Men/Women/Kids (main)
+          subcategory_name: item.categories?.name || null, // T-Shirts/Boots/etc (sub)
           seller_name: item.profiles?.username,
           seller_rating: item.profiles?.rating,
           seller_avatar: item.profiles?.avatar_url
@@ -87,6 +117,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
       featuredProducts,
       categories,
       topSellers,
+      trendingSearches: trendingSearches.status === 'fulfilled' ? trendingSearches.value : ['Vintage Jackets', 'Designer Bags', 'Y2K Jeans'],
       errors: {
         promoted: promotedResult.status === 'rejected' ? 'Failed to load' : null,
         products: featuredResult.status === 'rejected' ? 'Failed to load' : null,
@@ -102,6 +133,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
       featuredProducts: [],
       categories: [],
       topSellers: [],
+      trendingSearches: ['Vintage Jackets', 'Designer Bags', 'Y2K Jeans'],
       errors: {
         promoted: 'Failed to load promoted products',
         products: 'Failed to load products',

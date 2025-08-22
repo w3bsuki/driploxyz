@@ -6,8 +6,11 @@ export interface Product {
   images: string[];
   brand?: string;
   size: string;
-  condition: 'new' | 'like-new' | 'good' | 'fair';
-  category: string;
+  condition: 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair';
+  category?: string;
+  category_name?: string;
+  main_category_name?: string;
+  subcategory_name?: string;
   sellerId: string;
   sellerName: string;
   sellerRating: number;

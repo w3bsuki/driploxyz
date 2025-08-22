@@ -37,7 +37,7 @@
 
   let showSuggestions = $state(false);
   let showCategories = $state(false);
-  let inputElement: HTMLInputElement;
+  let inputElement: HTMLInputElement | undefined = $state();
   
   const categories = [
     { label: 'All Categories', value: 'all' },
@@ -47,6 +47,22 @@
     { label: 'Accessories', value: 'accessories' },
     { label: 'Shoes', value: 'shoes' }
   ];
+
+  // Derived styles based on variant
+  const containerClasses = $derived({
+    hero: 'bg-white rounded-full border border-gray-200 p-1 shadow-sm hover:shadow-md focus-within:border-gray-400 transition-all',
+    compact: 'relative flex items-center bg-white rounded-lg border border-gray-200 focus-within:border-gray-400 transition-colors',
+    power: 'relative flex items-center bg-white rounded-lg border border-gray-200 focus-within:border-gray-400 transition-colors'
+  }[variant]);
+
+  const inputClasses = $derived({
+    hero: 'flex-1 bg-transparent text-base placeholder-gray-500 focus:outline-none min-w-0 pl-10 pr-2 py-3',
+    compact: 'w-full bg-transparent pl-9 pr-10 py-2 text-sm placeholder-gray-500 focus:outline-hidden',
+    power: 'w-full bg-transparent pl-10 pr-24 py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-hidden'
+  }[variant]);
+
+  const iconSize = $derived(variant === 'compact' ? 'w-4 h-4' : 'w-5 h-5');
+  const showButton = $derived(variant === 'hero' || variant === 'power');
 
   function handleSubmit(event: Event) {
     event.preventDefault();
@@ -60,13 +76,6 @@
     showSuggestions = value.length > 0 && suggestions.length > 0;
   }
 
-  function handleSuggestionClick(suggestion: string) {
-    value = suggestion;
-    onSuggestionClick?.(suggestion);
-    showSuggestions = false;
-    inputElement.focus();
-  }
-
   function handleFocus() {
     if (showCategoryDropdown && !value) {
       showCategories = true;
@@ -76,81 +85,86 @@
   }
 
   function handleBlur() {
-    // Delay hiding suggestions to allow for clicks
     setTimeout(() => {
       showSuggestions = false;
       showCategories = false;
     }, 200);
   }
   
-  function handleCategoryClick(category: string) {
-    onCategorySelect?.(category);
-    showCategories = false;
-    if (category === 'all') {
-      onNavigate?.('/search');
-    } else {
-      onNavigate?.(`/category/${category}`);
+  function handleClear() {
+    value = '';
+    inputElement?.focus();
+  }
+
+  function handleSuggestionClick(suggestion: string) {
+    value = suggestion;
+    onSuggestionClick?.(suggestion);
+    showSuggestions = false;
+    inputElement?.focus();
+  }
+
+  function handleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      if (value.trim()) {
+        onSearch?.(value.trim());
+        showSuggestions = false;
+      }
     }
   }
 
-  function handleClear() {
-    value = '';
-    inputElement.focus();
+  function handleCategoryClick(category: string) {
+    onCategorySelect?.(category);
+    showCategories = false;
+    onNavigate?.(category === 'all' ? '/search' : `/category/${category}`);
   }
 </script>
 
+<!-- Unified SearchBar with variant-specific styling -->
 <div class="search-input relative {className}">
-  <form onsubmit={handleSubmit}>
+  <div class="{containerClasses}">
     {#if variant === 'hero'}
-      <!-- Glass morphism container for hero variant -->
-      <div class="bg-white rounded-full border border-gray-200 p-1 shadow-xs backdrop-blur-xl hover:shadow-md focus-within:border-gray-400 transition-all">
-        <!-- Inner glass frame with fixed min-height -->
-        <div class="bg-gray-50/80 relative rounded-full border border-gray-100 overflow-hidden" style="min-height: 48px;">
-          <div 
-            aria-hidden="true"
-            class="absolute inset-0 rounded-full pointer-events-none"
-            style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
-          ></div>
-          <div class="relative flex items-center" style="min-height: 48px;">
-            <!-- Search Icon -->
-            <div class="absolute left-3 flex items-center justify-center pointer-events-none">
-              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            
-            <!-- Input -->
-            <input
-              bind:this={inputElement}
-              bind:value
-              {placeholder}
-              type="search"
-              class="flex-1 bg-transparent text-base sm:text-sm placeholder-gray-500 focus:outline-hidden min-w-0 pl-10 pr-2 py-3"
-              oninput={handleInput}
-              onfocus={handleFocus}
-              onblur={handleBlur}
-            />
-            
-            <!-- Right side buttons container -->
-            <div class="flex items-center pr-2 gap-1">
-              <!-- Clear Button -->
-              {#if value}
-                <button
-                  type="button"
-                  onclick={handleClear}
-                  class="p-1.5 hover:bg-gray-200 rounded-full transition-colors mr-1"
-                  aria-label="Clear search"
-                >
-                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              {/if}
-              
-              <!-- Categories Button -->
+      <div class="bg-gray-50 relative rounded-full overflow-hidden min-h-[48px]">
+        <div class="relative flex items-center min-h-[48px]">
+          <!-- Search Icon -->
+          <div class="absolute left-3 flex items-center justify-center pointer-events-none">
+            <svg class="{iconSize} text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          
+          <!-- Input -->
+          <input
+            bind:this={inputElement}
+            bind:value
+            {placeholder}
+            type="search"
+            class="{inputClasses}"
+            oninput={handleInput}
+            onfocus={handleFocus}
+            onblur={handleBlur}
+            onkeydown={handleKeydown}
+          />
+          
+          <!-- Clear and Action Buttons -->
+          <div class="flex items-center pr-2 gap-1">
+            {#if value}
               <button
                 type="button"
-                onclick={showMegaMenuButton ? onOpenMegaMenu : onFilter}
+                onclick={handleClear}
+                class="p-1.5 hover:bg-gray-200 rounded-full transition-colors mr-1"
+                aria-label="Clear search"
+              >
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            {/if}
+            
+            {#if showButton}
+              <button
+                type="button"
+                onclick={() => showMegaMenuButton ? onOpenMegaMenu?.() : onFilter?.()}
                 class="px-3 py-1.5 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center gap-1 ring-1 ring-gray-200 whitespace-nowrap"
               >
                 {#if showMegaMenuButton}
@@ -164,86 +178,47 @@
                 {/if}
                 <span class="text-xs font-medium text-gray-600 hidden sm:inline">{categoriesText}</span>
               </button>
-            </div>
+            {/if}
           </div>
         </div>
       </div>
-    {:else if variant === 'compact'}
-      <!-- Compact variant (no filter button) -->
-      <div class="relative flex items-center bg-white rounded-lg border border-gray-200 focus-within:border-gray-400 transition-colors">
-        <!-- Search Icon -->
-        <div class="absolute left-3 flex items-center justify-center pointer-events-none">
-          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-        
-        <!-- Input -->
-        <input
-          bind:this={inputElement}
-          bind:value
-          {placeholder}
-          type="search"
-          class="w-full bg-transparent pl-9 pr-10 py-2 text-sm placeholder-gray-500 focus:outline-hidden"
-          oninput={handleInput}
-          onfocus={handleFocus}
-          onblur={handleBlur}
-        />
-        
-        <!-- Clear Button -->
-        {#if value}
-          <button
-            type="button"
-            onclick={handleClear}
-            class="absolute right-2 p-1 hover:bg-gray-200 rounded-full transition-colors"
-            aria-label="Clear search"
-          >
-            <svg class="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        {/if}
-      </div>
     {:else}
-      <!-- Regular variant -->
-      <div class="relative flex items-center bg-white rounded-lg border border-gray-200 focus-within:border-gray-400 transition-colors">
-        <!-- Search Icon -->
-        <div class="absolute left-3 flex items-center justify-center pointer-events-none">
-          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-        
-        <!-- Input -->
-        <input
-          bind:this={inputElement}
-          bind:value
-          {placeholder}
-          type="search"
-          class="w-full bg-transparent pl-10 pr-24 py-3 text-base sm:text-sm placeholder-gray-500 focus:outline-hidden"
-          oninput={handleInput}
-          onfocus={handleFocus}
-          onblur={handleBlur}
-        />
-        
-        <!-- Clear Button -->
-        {#if value}
-          <button
-            type="button"
-            onclick={handleClear}
-            class="absolute right-20 p-1 hover:bg-gray-200 rounded-full transition-colors"
-            aria-label="Clear search"
-          >
-            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        {/if}
-        
-        <!-- Filter Button -->
+      <!-- Compact/Power variants -->
+      <div class="absolute left-3 flex items-center justify-center pointer-events-none">
+        <svg class="{iconSize} text-gray-{variant === 'power' ? '600' : '500'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </div>
+      
+      <input
+        bind:this={inputElement}
+        bind:value
+        {placeholder}
+        type="search"
+        class="{inputClasses}"
+        oninput={handleInput}
+        onfocus={handleFocus}
+        onblur={handleBlur}
+        onkeydown={handleKeydown}
+      />
+      
+      {#if value}
         <button
           type="button"
-          onclick={onFilter}
+          onclick={handleClear}
+          class="absolute {variant === 'power' ? 'right-20' : 'right-2'} p-1 hover:bg-gray-200 rounded-full transition-colors"
+          aria-label="Clear search"
+        >
+          <svg class="{variant === 'compact' ? 'w-3 h-3' : 'w-4 h-4'} text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      {/if}
+      
+      {#if variant === 'power'}
+        <button
+          type="button"
+          onclick={() => onFilter?.()}
           class="absolute right-3 px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors flex items-center"
           aria-label="Filter results"
         >
@@ -251,10 +226,11 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
         </button>
-      </div>
+      {/if}
     {/if}
-  </form>
+  </div>
 
+  <!-- Category Dropdown -->
   {#if showCategories && showCategoryDropdown}
     <div class="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg z-50">
       <div class="p-2">
@@ -273,7 +249,10 @@
         {/each}
       </div>
     </div>
-  {:else if showSuggestions && suggestions.length > 0}
+  {/if}
+  
+  <!-- Suggestions Dropdown -->
+  {#if showSuggestions && suggestions.length > 0}
     <div class="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg z-50 max-h-60 overflow-y-auto">
       {#each suggestions as suggestion}
         <button
