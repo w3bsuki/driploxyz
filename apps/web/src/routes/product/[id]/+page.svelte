@@ -21,7 +21,7 @@
   
   let { data }: Props = $props();
   
-  let isFavorited = $state(false);
+  let isFavorited = $state(data.isFavorited || false);
   let showFullDescription = $state(false);
   
   const productImages = $derived(
@@ -66,7 +66,21 @@
       goto('/login');
       return;
     }
-    isFavorited = !isFavorited;
+    
+    try {
+      const response = await fetch(`/api/favorites/${data.product.id}`, {
+        method: 'POST'
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update favorite');
+      }
+      
+      const result = await response.json();
+      isFavorited = result.favorited;
+    } catch (error) {
+      console.error('Error updating favorite:', error);
+    }
   }
   
   async function handleBuyNow() {

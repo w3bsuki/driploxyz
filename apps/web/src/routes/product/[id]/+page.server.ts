@@ -12,6 +12,23 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, session
     throw error(404, 'Product not found');
   }
 
+  // Check if user has favorited this product
+  let isFavorited = false;
+  if (session?.user) {
+    try {
+      const { data: favorite } = await supabase
+        .from('favorites')
+        .select('id')
+        .eq('user_id', session.user.id)
+        .eq('product_id', params.id)
+        .maybeSingle();
+      
+      isFavorited = !!favorite;
+    } catch (error) {
+      console.error('Error checking favorite status:', error);
+    }
+  }
+
   // Parallel fetch similar and seller products for performance
   const [similarResult, sellerResult] = await Promise.allSettled([
     services.products.getProducts({
@@ -44,6 +61,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, session
     similarProducts,
     sellerProducts,
     isOwner,
+    isFavorited,
     user: session?.user || null
   };
 };

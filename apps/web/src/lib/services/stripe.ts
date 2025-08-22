@@ -256,8 +256,8 @@ export class StripeService {
 					plan_id: planId,
 					stripe_subscription_id: subscription.id,
 					status: 'trialing',
-					current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-					current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+					current_period_start: new Date((subscription as any).current_period_start * 1000).toISOString(),
+					current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
 					discount_percent: discountPercent
 				});
 
@@ -442,7 +442,7 @@ export class StripeService {
 		name?: string;
 	}): Promise<Stripe.Customer> {
 		// First, try to find existing customer
-		const customers = await stripe.customers.list({
+		const customers = await this.stripe.customers.list({
 			email: details.email,
 			limit: 1
 		});

@@ -1,14 +1,22 @@
 <script lang="ts">
   import { ProductCard, Button, Avatar, type Product } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
+  import type { PageData } from './$types';
+  import { goto } from '$app/navigation';
   
-  // Favorited products will come from Supabase
-  const favoritedProducts: Product[] = [];
+  interface Props {
+    data: PageData;
+  }
   
-  // Price alerts will come from Supabase
+  let { data }: Props = $props();
+  
+  // Use real favorited products from server
+  const favoritedProducts = $derived(data.favoritedProducts || []);
+  
+  // Price alerts will come from Supabase (future feature)
   const priceAlerts: any[] = [];
   
-  // Collections will come from Supabase
+  // Collections will come from Supabase (future feature) 
   const collections: any[] = [];
   
   let selectedCollection = $state<string | null>(null);
@@ -37,18 +45,30 @@
         products.sort((a, b) => b.price - a.price);
         break;
       case 'recently-added':
-        products.sort((a, b) => 
-          new Date(b.favoritedAt || b.createdAt).getTime() - 
-          new Date(a.favoritedAt || a.createdAt).getTime()
-        );
+        products.sort((a, b) => {
+          const aDate = new Date(a.favoritedAt || a.createdAt || a.created_at).getTime();
+          const bDate = new Date(b.favoritedAt || b.createdAt || b.created_at).getTime();
+          return bDate - aDate;
+        });
         break;
     }
     
     return products;
   });
   
-  function toggleFavorite(productId: string) {
-    console.log('Toggle favorite:', productId);
+  async function toggleFavorite(productId: string) {
+    try {
+      const response = await fetch(`/api/favorites/${productId}`, {
+        method: 'POST'
+      });
+      
+      if (response.ok) {
+        // Refresh the page to show updated favorites
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
   }
   
   function setPriceAlert(productId: string) {
@@ -199,7 +219,9 @@
             
             <ProductCard 
               {product}
-              onclick={() => !isSelecting && (window.location.href = `/product/${product.id}`)}
+              favorited={true}
+              onFavorite={(p) => toggleFavorite(p.id)}
+              onclick={() => !isSelecting && goto(`/product/${product.id}`)}
               class={isSelecting && selectedItems.has(product.id) ? 'ring-2 ring-black' : ''}
             />
             

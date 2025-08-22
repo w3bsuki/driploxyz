@@ -48,6 +48,12 @@ export { default as AdminBadge } from './AdminBadge.svelte';
 export { default as BrandPaymentModal } from './BrandPaymentModal.svelte';
 export { default as WelcomeTutorialFlow } from './WelcomeTutorialFlow.svelte';
 
+// Order and Review components
+export { default as OrderStatus } from './OrderStatus.svelte';
+export { default as OrderTimeline } from './OrderTimeline.svelte';
+export { default as OrderActions } from './OrderActions.svelte';
+export { default as ReviewModal } from './ReviewModal.svelte';
+
 // Product sold status components
 export { default as SoldOverlay } from './SoldOverlay.svelte';
 export { default as SoldNotificationToast } from './SoldNotificationToast.svelte';
@@ -109,10 +115,6 @@ export type { ToastMessage } from './toast-store';
 export { default as PricingCard } from './PricingCard.svelte';
 export { default as Accordion } from './Accordion.svelte';
 
-// Order management components
-export { default as OrderStatus } from './OrderStatus.svelte';
-export { default as OrderTimeline } from './OrderTimeline.svelte';
-export { default as OrderActions } from './OrderActions.svelte';
 
 // Seller components
 export { default as SellerQuickView } from './SellerQuickView.svelte';

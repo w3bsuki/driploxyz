@@ -143,6 +143,22 @@ export const nav_signup = () => `Регистрация`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const nav_startSelling = () => `Започни да продаваш`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const nav_browseCategories = () => `Разгледай категориите`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const search_placeholder = () => `Търсете артикули, марки...`
 
 
@@ -3818,113 +3834,437 @@ export const condition_fair = () => `Задоволителен`
 export const condition_newWithTags = () => `Нов с етикети`
 
 
-export { subcategory_dresses } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_dresses = () => `Рокли`
 
-export { subcategory_tops } from "./en.js"
 
-export { subcategory_jeans } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_tops = () => `Топове`
 
-export { subcategory_skirts } from "./en.js"
 
-export { subcategory_jackets } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_jeans = () => `Дънки`
 
-export { subcategory_accessories } from "./en.js"
 
-export { subcategory_tshirts } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_skirts = () => `Поли`
 
-export { subcategory_shirts } from "./en.js"
 
-export { subcategory_suits } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_jackets = () => `Якета`
 
-export { subcategory_watches } from "./en.js"
 
-export { subcategory_baby } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_accessories = () => `Аксесоари`
 
-export { subcategory_girls2to8 } from "./en.js"
 
-export { subcategory_boys2to8 } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_tshirts = () => `Тениски`
 
-export { subcategory_girls9to16 } from "./en.js"
 
-export { subcategory_boys9to16 } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_shirts = () => `Ризи`
 
-export { subcategory_school } from "./en.js"
 
-export { subcategory_toys } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_suits = () => `Костюми`
 
-export { subcategory_dogApparel } from "./en.js"
 
-export { subcategory_catAccessories } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_watches = () => `Часовници`
 
-export { subcategory_petToys } from "./en.js"
 
-export { subcategory_leashes } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_baby = () => `Бебе (0-2)`
 
-export { subcategory_beds } from "./en.js"
 
-export { subcategory_foodBowls } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_girls2to8 = () => `Момичета (2-8)`
 
-export { subcategory_carriers } from "./en.js"
 
-export { subcategory_sneakers } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_boys2to8 = () => `Момчета (2-8)`
 
-export { subcategory_boots } from "./en.js"
 
-export { subcategory_heels } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_girls9to16 = () => `Момичета (9-16)`
 
-export { subcategory_flats } from "./en.js"
 
-export { subcategory_sandals } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_boys9to16 = () => `Момчета (9-16)`
 
-export { subcategory_athletic } from "./en.js"
 
-export { subcategory_dressShoes } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_school = () => `Училище`
 
-export { subcategory_handbags } from "./en.js"
 
-export { subcategory_backpacks } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_toys = () => `Играчки`
 
-export { subcategory_totes } from "./en.js"
 
-export { subcategory_clutches } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_dogApparel = () => `Дрехи за кучета`
 
-export { subcategory_crossbody } from "./en.js"
 
-export { subcategory_travel } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_catAccessories = () => `Аксесоари за котки`
 
-export { subcategory_laptopBags } from "./en.js"
 
-export { subcategory_decor } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_petToys = () => `Играчки за животни`
 
-export { subcategory_bedding } from "./en.js"
 
-export { subcategory_kitchen } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_leashes = () => `Каишки`
 
-export { subcategory_lighting } from "./en.js"
 
-export { subcategory_storage } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_beds = () => `Легла`
 
-export { subcategory_garden } from "./en.js"
 
-export { subcategory_art } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_foodBowls = () => `Купи за храна`
 
-export { subcategory_textiles } from "./en.js"
 
-export { subcategory_makeup } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_carriers = () => `Преносими`
 
-export { subcategory_skincare } from "./en.js"
 
-export { subcategory_fragrance } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sneakers = () => `Кецове`
 
-export { subcategory_hairCare } from "./en.js"
 
-export { subcategory_tools } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_boots = () => `Ботуши`
 
-export { subcategory_nails } from "./en.js"
 
-export { subcategory_bathBody } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_heels = () => `Токчета`
 
-export { subcategory_sets } from "./en.js"
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_flats = () => `Равни обувки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sandals = () => `Сандали`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_athletic = () => `Спортни`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_dressShoes = () => `Елегантни обувки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_handbags = () => `Дамски чанти`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_backpacks = () => `Раници`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_totes = () => `Тотални чанти`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_clutches = () => `Клъч чанти`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_crossbody = () => `Презрамни`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_travel = () => `Пътуване`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_laptopBags = () => `Чанти за лаптоп`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_decor = () => `Декор`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_bedding = () => `Спално бельо`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_kitchen = () => `Кухня`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_lighting = () => `Осветление`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_storage = () => `Съхранение`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_garden = () => `Градина`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_art = () => `Изкуство`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_textiles = () => `Текстил`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_makeup = () => `Грим`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_skincare = () => `Грижа за кожа`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_fragrance = () => `Парфюми`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_hairCare = () => `Грижа за коса`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_tools = () => `Инструменти`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_nails = () => `Нокти`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_bathBody = () => `Баня и тяло`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sets = () => `Комплекти`
+
 
 /**
  * 

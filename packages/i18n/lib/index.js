@@ -1,8 +1,8 @@
 // Re-export generated Paraglide functions
 // @ts-ignore - paraglide generated files don't have declaration files
-export * from '../lib/paraglide/messages.js';
+export * from './paraglide/messages.js';
 // @ts-ignore - paraglide generated files don't have declaration files
-export * from '../lib/paraglide/runtime.js';
+export * from './paraglide/runtime.js';
 // Helper constants
 export const languageNames = {
     en: 'English',

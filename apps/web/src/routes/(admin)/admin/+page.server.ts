@@ -9,9 +9,9 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
       { count: totalOrders },
       { data: recentOrders }
     ] = await Promise.all([
-      supabase.from('profiles').select('*', { count: 'exact', head: true }),
-      supabase.from('products').select('*', { count: 'exact', head: true }),
-      supabase.from('orders').select('*', { count: 'exact', head: true }),
+      supabase.from('profiles').select('id', { count: 'exact', head: true }),
+      supabase.from('products').select('id', { count: 'exact', head: true }),
+      supabase.from('orders').select('id', { count: 'exact', head: true }),
       supabase.from('orders')
         .select(`
           id,

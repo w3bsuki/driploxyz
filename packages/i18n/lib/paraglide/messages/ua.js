@@ -143,6 +143,22 @@ export const nav_signup = () => `Реєстрація`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const nav_startSelling = () => `Почати продавати`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const nav_browseCategories = () => `Переглянути категорії`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const search_placeholder = () => `Шукати товари, бренди...`
 
 
@@ -2410,91 +2426,349 @@ export const product_weeksAgo = () => `т тому`
 export const product_monthsAgo = () => `м тому`
 
 
-export { profile_editProfile } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_editProfile = () => `Редагувати профіль`
 
-export { profile_posts } from "./en.js"
 
-export { profile_sold } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_posts = () => `Пости`
 
-export { profile_sales } from "./en.js"
 
-export { profile_following } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_sold = () => `Продано`
 
-export { profile_follow } from "./en.js"
 
-export { profile_message } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_sales = () => `Продажі`
 
-export { profile_joined } from "./en.js"
 
-export { profile_premium } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_following = () => `Підписки`
 
-export { profile_noListingsYet } from "./en.js"
 
-export { profile_reviews } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_follow = () => `Підписатися`
 
-export { profile_noReviewsYet } from "./en.js"
 
-export { profile_about } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_message = () => `Повідомлення`
 
-export { profile_sellerStats } from "./en.js"
 
-export { profile_itemsSold } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_joined = () => `Приєднався`
 
-export { profile_rating } from "./en.js"
 
-export { profile_noRatingsYet } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_premium = () => `Преміум`
 
-export { profile_memberSince } from "./en.js"
 
-export { profile_policies } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_noListingsYet = () => `Поки немає оголошень`
 
-export { profile_returnPolicy } from "./en.js"
 
-export { profile_shipsWithin } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_reviews = () => `Відгуки`
 
-export { profile_securePayments } from "./en.js"
 
-export { profile_responseTime } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_noReviewsYet = () => `Поки немає відгуків`
 
-export { profile_anonymous } from "./en.js"
 
-export { profile_cancel } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_about = () => `Про себе`
 
-export { profile_avatar } from "./en.js"
 
-export { profile_username } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_sellerStats = () => `Статистика продавця`
 
-export { profile_fullName } from "./en.js"
 
-export { profile_bio } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_itemsSold = () => `Продано товарів`
 
-export { profile_tellPeopleAboutYourself } from "./en.js"
 
-export { profile_location } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_rating = () => `Рейтинг`
 
-export { profile_socialLinks } from "./en.js"
 
-export { profile_addLink } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_noRatingsYet = () => `Поки немає оцінок`
 
-export { profile_instagram } from "./en.js"
 
-export { profile_tiktok } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_memberSince = () => `Учасник з`
 
-export { profile_website } from "./en.js"
 
-export { profile_url } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_policies = () => `Політики`
 
-export { profile_saveProfile } from "./en.js"
 
-export { profile_saving } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_returnPolicy = () => `14-денна політика повернення`
 
-export { profile_yourUsername } from "./en.js"
 
-export { profile_yourFullName } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_shipsWithin = () => `Відправляє протягом 1-2 робочих днів`
 
-export { profile_yourLocation } from "./en.js"
 
-export { profile_yourAvatar } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_securePayments = () => `Безпечні платежі через Driplo`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_responseTime = () => `Час відповіді: Зазвичай протягом 1 години`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_anonymous = () => `Анонімний`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_cancel = () => `Скасувати`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_avatar = () => `Аватар`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_username = () => `Ім'я користувача`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_fullName = () => `Повне ім'я`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_bio = () => `Біографія`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_tellPeopleAboutYourself = () => `Розкажіть людям про себе...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_location = () => `Місцезнаходження`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_socialLinks = () => `Соціальні посилання`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_addLink = () => `Додати посилання`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_instagram = () => `Instagram`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_tiktok = () => `TikTok`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_website = () => `Веб-сайт`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_url = () => `URL`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_saveProfile = () => `Зберегти профіль`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_saving = () => `Збереження...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_yourUsername = () => `Ваше ім'я користувача`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_yourFullName = () => `Ваше повне ім'я`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_yourLocation = () => `Ваше місцезнаходження`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_yourAvatar = () => `Ваш аватар`
+
 
 /**
  * 
@@ -3560,113 +3834,437 @@ export const condition_fair = () => `Нормальний`
 export const condition_newWithTags = () => `Новий з етикетками`
 
 
-export { subcategory_dresses } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_dresses = () => `Сукні`
 
-export { subcategory_tops } from "./en.js"
 
-export { subcategory_jeans } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_tops = () => `Топи`
 
-export { subcategory_skirts } from "./en.js"
 
-export { subcategory_jackets } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_jeans = () => `Джинси`
 
-export { subcategory_accessories } from "./en.js"
 
-export { subcategory_tshirts } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_skirts = () => `Спідниці`
 
-export { subcategory_shirts } from "./en.js"
 
-export { subcategory_suits } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_jackets = () => `Куртки`
 
-export { subcategory_watches } from "./en.js"
 
-export { subcategory_baby } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_accessories = () => `Аксесуари`
 
-export { subcategory_girls2to8 } from "./en.js"
 
-export { subcategory_boys2to8 } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_tshirts = () => `Футболки`
 
-export { subcategory_girls9to16 } from "./en.js"
 
-export { subcategory_boys9to16 } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_shirts = () => `Сорочки`
 
-export { subcategory_school } from "./en.js"
 
-export { subcategory_toys } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_suits = () => `Костюми`
 
-export { subcategory_dogApparel } from "./en.js"
 
-export { subcategory_catAccessories } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_watches = () => `Годинники`
 
-export { subcategory_petToys } from "./en.js"
 
-export { subcategory_leashes } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_baby = () => `Малюки (0-2)`
 
-export { subcategory_beds } from "./en.js"
 
-export { subcategory_foodBowls } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_girls2to8 = () => `Дівчатка (2-8)`
 
-export { subcategory_carriers } from "./en.js"
 
-export { subcategory_sneakers } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_boys2to8 = () => `Хлопчики (2-8)`
 
-export { subcategory_boots } from "./en.js"
 
-export { subcategory_heels } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_girls9to16 = () => `Дівчатка (9-16)`
 
-export { subcategory_flats } from "./en.js"
 
-export { subcategory_sandals } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_boys9to16 = () => `Хлопчики (9-16)`
 
-export { subcategory_athletic } from "./en.js"
 
-export { subcategory_dressShoes } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_school = () => `Школа`
 
-export { subcategory_handbags } from "./en.js"
 
-export { subcategory_backpacks } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_toys = () => `Іграшки`
 
-export { subcategory_totes } from "./en.js"
 
-export { subcategory_clutches } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_dogApparel = () => `Одяг для собак`
 
-export { subcategory_crossbody } from "./en.js"
 
-export { subcategory_travel } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_catAccessories = () => `Аксесуари для котів`
 
-export { subcategory_laptopBags } from "./en.js"
 
-export { subcategory_decor } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_petToys = () => `Іграшки для тварин`
 
-export { subcategory_bedding } from "./en.js"
 
-export { subcategory_kitchen } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_leashes = () => `Повідці`
 
-export { subcategory_lighting } from "./en.js"
 
-export { subcategory_storage } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_beds = () => `Ліжка`
 
-export { subcategory_garden } from "./en.js"
 
-export { subcategory_art } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_foodBowls = () => `Миски для їжі`
 
-export { subcategory_textiles } from "./en.js"
 
-export { subcategory_makeup } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_carriers = () => `Переноски`
 
-export { subcategory_skincare } from "./en.js"
 
-export { subcategory_fragrance } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sneakers = () => `Кросівки`
 
-export { subcategory_hairCare } from "./en.js"
 
-export { subcategory_tools } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_boots = () => `Черевики`
 
-export { subcategory_nails } from "./en.js"
 
-export { subcategory_bathBody } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_heels = () => `Підбори`
 
-export { subcategory_sets } from "./en.js"
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_flats = () => `Балетки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sandals = () => `Сандалі`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_athletic = () => `Спортивні`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_dressShoes = () => `Класичне взуття`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_handbags = () => `Дамські сумочки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_backpacks = () => `Рюкзаки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_totes = () => `Господарські сумки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_clutches = () => `Клатчі`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_crossbody = () => `Через плече`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_travel = () => `Подорожі`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_laptopBags = () => `Сумки для ноутбука`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_decor = () => `Декор`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_bedding = () => `Постільна білизна`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_kitchen = () => `Кухня`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_lighting = () => `Освітлення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_storage = () => `Зберігання`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_garden = () => `Сад`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_art = () => `Мистецтво`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_textiles = () => `Текстиль`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_makeup = () => `Макіяж`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_skincare = () => `Догляд за шкірою`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_fragrance = () => `Парфуми`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_hairCare = () => `Догляд за волоссям`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_tools = () => `Інструменти`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_nails = () => `Нігті`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_bathBody = () => `Ванна і тіло`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sets = () => `Набори`
+
 
 /**
  * 
@@ -3748,101 +4346,389 @@ export const seller_premiumSeller = () => `Преміум продавець`
 export const seller_premiumSellerDescription = () => `Преміум продавець з ексклюзивними товарами`
 
 
-export { sell_listItem } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_listItem = () => `Розмістити товар`
 
-export { sell_saveDraft } from "./en.js"
 
-export { sell_photosAndDetails } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_saveDraft = () => `Зберегти чернетку`
 
-export { sell_productInfo } from "./en.js"
 
-export { sell_priceAndPublish } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_photosAndDetails = () => `Фото та деталі`
 
-export { sell_photos } from "./en.js"
 
-export { sell_add } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_productInfo = () => `Інформація про товар`
 
-export { sell_cover } from "./en.js"
 
-export { sell_title } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_priceAndPublish = () => `Ціна та публікація`
 
-export { sell_titlePlaceholder } from "./en.js"
 
-export { sell_description } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_photos = () => `Фотографії`
 
-export { sell_descriptionPlaceholder } from "./en.js"
 
-export { sell_category } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_add = () => `Додати`
 
-export { sell_selectCategory } from "./en.js"
 
-export { sell_subcategory } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_cover = () => `Обкладинка`
 
-export { sell_selectSubcategory } from "./en.js"
 
-export { sell_brand } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_title = () => `Назва`
 
-export { sell_enterBrandName } from "./en.js"
 
-export { sell_size } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_titlePlaceholder = () => `наприклад, Вінтажна джинсова куртка Levi's`
 
-export { sell_selectSize } from "./en.js"
 
-export { sell_condition } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_description = () => `Опис`
 
-export { sell_color } from "./en.js"
 
-export { sell_selectColor } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_descriptionPlaceholder = () => `Опишіть ваш товар...`
 
-export { sell_material } from "./en.js"
 
-export { sell_selectMaterial } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_category = () => `Категорія`
 
-export { sell_price } from "./en.js"
 
-export { sell_shippingPrice } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_selectCategory = () => `Оберіть категорію`
 
-export { sell_tags } from "./en.js"
 
-export { sell_addTag } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_subcategory = () => `Підкатегорія`
 
-export { sell_premiumBoost } from "./en.js"
 
-export { sell_boostYourListing } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_selectSubcategory = () => `Оберіть підкатегорію`
 
-export { sell_boostDescription } from "./en.js"
 
-export { sell_publish } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_brand = () => `Бренд`
 
-export { sell_publishing } from "./en.js"
 
-export { sell_brandSubscriptionRequired } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_enterBrandName = () => `Введіть назву бренду`
 
-export { sell_brandSubscriptionDescription } from "./en.js"
 
-export { sell_brandPlanFeatures } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_size = () => `Розмір`
 
-export { sell_listUnlimitedProducts } from "./en.js"
 
-export { sell_brandVerificationBadge } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_selectSize = () => `Оберіть розмір`
 
-export { sell_businessAccountFeatures } from "./en.js"
 
-export { sell_prioritySupport } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_condition = () => `Стан`
 
-export { sell_subscribeToBrandPlan } from "./en.js"
 
-export { sell_switchToPersonalAccount } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_color = () => `Колір`
 
-export { sell_uploadError } from "./en.js"
 
-export { sell_atLeastOnePhoto } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_selectColor = () => `Оберіть колір`
 
-export { sell_month } from "./en.js"
 
-export { sell_next } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_material = () => `Матеріал`
 
-export { sell_previous } from "./en.js"
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_selectMaterial = () => `Оберіть матеріал`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_price = () => `Ціна`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_shippingPrice = () => `Ціна доставки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_tags = () => `Теги`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_addTag = () => `Додати тег`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_premiumBoost = () => `Преміум просування`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_boostYourListing = () => `Просунути ваше оголошення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_boostDescription = () => `Отримайте в 3 рази більше видимості на 7 днів`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_publish = () => `Опублікувати`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_publishing = () => `Публікуємо...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_brandSubscriptionRequired = () => `Потрібна підписка Brand`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_brandSubscriptionDescription = () => `Для розміщення товарів як бізнес-акаунт, вам потрібна активна підписка Brand.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_brandPlanFeatures = () => `Функції Brand плану:`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_listUnlimitedProducts = () => `Розміщувати необмежені товари`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_brandVerificationBadge = () => `Значок верифікації бренду`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_businessAccountFeatures = () => `Функції бізнес-акаунту`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_prioritySupport = () => `Пріоритетна підтримка`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_subscribeToBrandPlan = () => `Підписатися на Brand план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_switchToPersonalAccount = () => `Переключитися на особистий акаунт`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_uploadError = () => `Не вдалося завантажити товар. Будь ласка, спробуйте ще раз.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_atLeastOnePhoto = () => `Будь ласка, додайте хоча б одне фото`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_month = () => `місяць`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_next = () => `Далі`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_previous = () => `Назад`
+
 
 /**
  * @param {{ username: NonNullable<unknown> }} params
@@ -4884,24 +5770,89 @@ export const category_searchPlaceholder = () => `Шукати в категор�
 export const category_clearAll = () => `Очистити все`
 
 
-export { onboarding_tutorial_welcomeTitle } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_welcomeTitle = () => `Ласкаво просимо до Driplo! 👋`
 
-export { onboarding_tutorial_welcomeContent } from "./en.js"
 
-export { onboarding_tutorial_discoverTitle } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_welcomeContent = () => `Все готово! Дозвольте показати, як максимально використовувати наш маркетплейс.`
 
-export { onboarding_tutorial_discoverContent } from "./en.js"
 
-export { onboarding_tutorial_listItemTitle } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_discoverTitle = () => `Відкрийте неймовірні товари`
 
-export { onboarding_tutorial_listItemContentBrand } from "./en.js"
 
-export { onboarding_tutorial_listItemContentPersonal } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_discoverContent = () => `Використовуйте пошукову стрічку або переглядайте категорії, щоб знайти унікальний одяг.`
 
-export { onboarding_tutorial_stayConnectedTitle } from "./en.js"
 
-export { onboarding_tutorial_stayConnectedContent } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_listItemTitle = () => `Завантажте свій перший товар`
 
-export { onboarding_tutorial_readyTitle } from "./en.js"
 
-export { onboarding_tutorial_readyContent } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_listItemContentBrand = () => `Як бренд-акаунт ви маєте доступ до інструментів масового завантаження та розширеної аналітики.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_listItemContentPersonal = () => `Готові до продажу? Натисніть кнопку '+', щоб завантажити свій перший товар. Додайте якісні фото та чесні описи.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_stayConnectedTitle = () => `Залишайтеся на зв'язку`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_stayConnectedContent = () => `Використовуйте нашу систему повідомлень для спілкування з покупцями/продавцями. Отримуйте сповіщення про нові повідомлення та пропозиції.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_readyTitle = () => `Ви готові!`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_readyContent = () => `Перевірте свою панель управління для ваших оголошень, повідомлень та налаштувань акаунту. Вдалої торгівлі!`

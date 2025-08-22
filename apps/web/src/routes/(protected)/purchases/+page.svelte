@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Avatar, OrderStatus, OrderTimeline, OrderActions } from '@repo/ui';
+  import { Button, Avatar, OrderStatus, OrderTimeline, OrderActions, ReviewModal } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
   
@@ -11,6 +11,8 @@
   
   let activeTab = $state<'all' | 'to_review' | 'issues'>('all');
   let expandedOrders = $state<Set<string>>(new Set());
+  let reviewModalOpen = $state(false);
+  let selectedOrderForReview = $state(null);
   
   function toggleOrderExpansion(orderId: string) {
     const newSet = new Set(expandedOrders);
@@ -52,6 +54,38 @@
       }
       
       // Force reactivity
+      data.orders = [...data.orders];
+    }
+  };
+  
+  const openReviewModal = (order: any) => {
+    selectedOrderForReview = order;
+    reviewModalOpen = true;
+  };
+  
+  const handleReviewSubmit = async (rating: number, title: string, comment: string) => {
+    if (!selectedOrderForReview) return;
+    
+    const response = await fetch('/api/reviews', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        order_id: selectedOrderForReview.id,
+        rating,
+        title,
+        comment
+      })
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to submit review');
+    }
+    
+    // Remove from to_review list
+    const orderIndex = data.orders.findIndex(o => o.id === selectedOrderForReview.id);
+    if (orderIndex !== -1) {
+      data.orders[orderIndex].reviewed = true;
       data.orders = [...data.orders];
     }
   };
@@ -153,9 +187,9 @@
                   </div>
                 </div>
                 <div class="flex flex-col space-y-2">
-                  <Button size="sm" variant="outline">View Product</Button>
-                  {#if order.status === 'delivered'}
-                    <Button size="sm" variant="outline">Leave Review</Button>
+                  <Button size="sm" variant="outline" onclick={() => window.location.href = `/product/${order.product.id}`}>View Product</Button>
+                  {#if order.status === 'delivered' && !order.reviewed}
+                    <Button size="sm" variant="outline" onclick={() => openReviewModal(order)}>Leave Review</Button>
                   {/if}
                 </div>
               </div>
@@ -272,3 +306,18 @@
     {/if}
   </div>
 </div>
+
+<!-- Review Modal -->
+<ReviewModal
+  isOpen={reviewModalOpen}
+  onClose={() => {
+    reviewModalOpen = false;
+    selectedOrderForReview = null;
+  }}
+  onSubmit={handleReviewSubmit}
+  orderDetails={selectedOrderForReview ? {
+    seller: selectedOrderForReview.seller?.username,
+    product: selectedOrderForReview.product?.title
+  } : undefined}
+  userType="buyer"
+/>

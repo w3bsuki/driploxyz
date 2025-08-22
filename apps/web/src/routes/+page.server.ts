@@ -47,13 +47,32 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
       supabase
         .from('products')
         .select(`
-          *,
-          product_images (*),
+          id,
+          title,
+          price,
+          condition,
+          size,
+          brand,
+          location,
+          is_boosted,
+          created_at,
+          seller_id,
+          category_id,
+          favorite_count,
+          product_images (
+            id,
+            image_url,
+            sort_order
+          ),
           categories!inner (
             name,
             parent_id
           ),
-          profiles!products_seller_id_fkey (username, rating, avatar_url)
+          profiles!products_seller_id_fkey (
+            username,
+            rating,
+            avatar_url
+          )
         `)
         .eq('is_active', true)
         .eq('is_sold', false)

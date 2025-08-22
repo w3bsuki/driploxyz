@@ -143,6 +143,22 @@ export const nav_signup = () => `Регистрация`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const nav_startSelling = () => `Начать продавать`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const nav_browseCategories = () => `Просмотр категорий`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const search_placeholder = () => `Искать товары, бренды...`
 
 
@@ -2410,91 +2426,349 @@ export const product_weeksAgo = () => `н назад`
 export const product_monthsAgo = () => `м назад`
 
 
-export { profile_editProfile } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_editProfile = () => `Редактировать профиль`
 
-export { profile_posts } from "./en.js"
 
-export { profile_sold } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_posts = () => `Посты`
 
-export { profile_sales } from "./en.js"
 
-export { profile_following } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_sold = () => `Продано`
 
-export { profile_follow } from "./en.js"
 
-export { profile_message } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_sales = () => `Продажи`
 
-export { profile_joined } from "./en.js"
 
-export { profile_premium } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_following = () => `Подписки`
 
-export { profile_noListingsYet } from "./en.js"
 
-export { profile_reviews } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_follow = () => `Подписаться`
 
-export { profile_noReviewsYet } from "./en.js"
 
-export { profile_about } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_message = () => `Сообщение`
 
-export { profile_sellerStats } from "./en.js"
 
-export { profile_itemsSold } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_joined = () => `Присоединился`
 
-export { profile_rating } from "./en.js"
 
-export { profile_noRatingsYet } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_premium = () => `Премиум`
 
-export { profile_memberSince } from "./en.js"
 
-export { profile_policies } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_noListingsYet = () => `Пока нет объявлений`
 
-export { profile_returnPolicy } from "./en.js"
 
-export { profile_shipsWithin } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_reviews = () => `Отзывы`
 
-export { profile_securePayments } from "./en.js"
 
-export { profile_responseTime } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_noReviewsYet = () => `Пока нет отзывов`
 
-export { profile_anonymous } from "./en.js"
 
-export { profile_cancel } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_about = () => `О себе`
 
-export { profile_avatar } from "./en.js"
 
-export { profile_username } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_sellerStats = () => `Статистика продавца`
 
-export { profile_fullName } from "./en.js"
 
-export { profile_bio } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_itemsSold = () => `Продано товаров`
 
-export { profile_tellPeopleAboutYourself } from "./en.js"
 
-export { profile_location } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_rating = () => `Рейтинг`
 
-export { profile_socialLinks } from "./en.js"
 
-export { profile_addLink } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_noRatingsYet = () => `Пока нет оценок`
 
-export { profile_instagram } from "./en.js"
 
-export { profile_tiktok } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_memberSince = () => `Участник с`
 
-export { profile_website } from "./en.js"
 
-export { profile_url } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_policies = () => `Политики`
 
-export { profile_saveProfile } from "./en.js"
 
-export { profile_saving } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_returnPolicy = () => `14-дневная политика возврата`
 
-export { profile_yourUsername } from "./en.js"
 
-export { profile_yourFullName } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_shipsWithin = () => `Отправляет в течение 1-2 рабочих дней`
 
-export { profile_yourLocation } from "./en.js"
 
-export { profile_yourAvatar } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_securePayments = () => `Безопасные платежи через Driplo`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_responseTime = () => `Время ответа: Обычно в течение 1 часа`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_anonymous = () => `Анонимный`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_cancel = () => `Отмена`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_avatar = () => `Аватар`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_username = () => `Имя пользователя`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_fullName = () => `Полное имя`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_bio = () => `Биография`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_tellPeopleAboutYourself = () => `Расскажите людям о себе...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_location = () => `Местоположение`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_socialLinks = () => `Социальные ссылки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_addLink = () => `Добавить ссылку`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_instagram = () => `Instagram`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_tiktok = () => `TikTok`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_website = () => `Веб-сайт`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_url = () => `URL`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_saveProfile = () => `Сохранить профиль`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_saving = () => `Сохранение...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_yourUsername = () => `Ваше имя пользователя`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_yourFullName = () => `Ваше полное имя`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_yourLocation = () => `Ваше местоположение`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const profile_yourAvatar = () => `Ваш аватар`
+
 
 /**
  * 
@@ -3560,113 +3834,437 @@ export const condition_fair = () => `Нормальное`
 export const condition_newWithTags = () => `Новое с этикетками`
 
 
-export { subcategory_dresses } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_dresses = () => `Платья`
 
-export { subcategory_tops } from "./en.js"
 
-export { subcategory_jeans } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_tops = () => `Топы`
 
-export { subcategory_skirts } from "./en.js"
 
-export { subcategory_jackets } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_jeans = () => `Джинсы`
 
-export { subcategory_accessories } from "./en.js"
 
-export { subcategory_tshirts } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_skirts = () => `Юбки`
 
-export { subcategory_shirts } from "./en.js"
 
-export { subcategory_suits } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_jackets = () => `Куртки`
 
-export { subcategory_watches } from "./en.js"
 
-export { subcategory_baby } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_accessories = () => `Аксессуары`
 
-export { subcategory_girls2to8 } from "./en.js"
 
-export { subcategory_boys2to8 } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_tshirts = () => `Футболки`
 
-export { subcategory_girls9to16 } from "./en.js"
 
-export { subcategory_boys9to16 } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_shirts = () => `Рубашки`
 
-export { subcategory_school } from "./en.js"
 
-export { subcategory_toys } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_suits = () => `Костюмы`
 
-export { subcategory_dogApparel } from "./en.js"
 
-export { subcategory_catAccessories } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_watches = () => `Часы`
 
-export { subcategory_petToys } from "./en.js"
 
-export { subcategory_leashes } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_baby = () => `Малыши (0-2)`
 
-export { subcategory_beds } from "./en.js"
 
-export { subcategory_foodBowls } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_girls2to8 = () => `Девочки (2-8)`
 
-export { subcategory_carriers } from "./en.js"
 
-export { subcategory_sneakers } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_boys2to8 = () => `Мальчики (2-8)`
 
-export { subcategory_boots } from "./en.js"
 
-export { subcategory_heels } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_girls9to16 = () => `Девочки (9-16)`
 
-export { subcategory_flats } from "./en.js"
 
-export { subcategory_sandals } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_boys9to16 = () => `Мальчики (9-16)`
 
-export { subcategory_athletic } from "./en.js"
 
-export { subcategory_dressShoes } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_school = () => `Школа`
 
-export { subcategory_handbags } from "./en.js"
 
-export { subcategory_backpacks } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_toys = () => `Игрушки`
 
-export { subcategory_totes } from "./en.js"
 
-export { subcategory_clutches } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_dogApparel = () => `Одежда для собак`
 
-export { subcategory_crossbody } from "./en.js"
 
-export { subcategory_travel } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_catAccessories = () => `Аксессуары для кошек`
 
-export { subcategory_laptopBags } from "./en.js"
 
-export { subcategory_decor } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_petToys = () => `Игрушки для животных`
 
-export { subcategory_bedding } from "./en.js"
 
-export { subcategory_kitchen } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_leashes = () => `Поводки`
 
-export { subcategory_lighting } from "./en.js"
 
-export { subcategory_storage } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_beds = () => `Кровати`
 
-export { subcategory_garden } from "./en.js"
 
-export { subcategory_art } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_foodBowls = () => `Миски для еды`
 
-export { subcategory_textiles } from "./en.js"
 
-export { subcategory_makeup } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_carriers = () => `Переноски`
 
-export { subcategory_skincare } from "./en.js"
 
-export { subcategory_fragrance } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sneakers = () => `Кроссовки`
 
-export { subcategory_hairCare } from "./en.js"
 
-export { subcategory_tools } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_boots = () => `Ботинки`
 
-export { subcategory_nails } from "./en.js"
 
-export { subcategory_bathBody } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_heels = () => `Каблуки`
 
-export { subcategory_sets } from "./en.js"
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_flats = () => `Балетки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sandals = () => `Сандалии`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_athletic = () => `Спортивные`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_dressShoes = () => `Классическая обувь`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_handbags = () => `Дамские сумочки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_backpacks = () => `Рюкзаки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_totes = () => `Хозяйственные сумки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_clutches = () => `Клатчи`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_crossbody = () => `Через плечо`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_travel = () => `Путешествия`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_laptopBags = () => `Сумки для ноутбука`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_decor = () => `Декор`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_bedding = () => `Постельное белье`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_kitchen = () => `Кухня`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_lighting = () => `Освещение`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_storage = () => `Хранение`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_garden = () => `Сад`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_art = () => `Искусство`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_textiles = () => `Текстиль`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_makeup = () => `Макияж`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_skincare = () => `Уход за кожей`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_fragrance = () => `Парфюмерия`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_hairCare = () => `Уход за волосами`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_tools = () => `Инструменты`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_nails = () => `Ногти`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_bathBody = () => `Ванна и тело`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sets = () => `Наборы`
+
 
 /**
  * 
@@ -3748,101 +4346,389 @@ export const seller_premiumSeller = () => `Премиум продавец`
 export const seller_premiumSellerDescription = () => `Премиум продавец с эксклюзивными товарами`
 
 
-export { sell_listItem } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_listItem = () => `Разместить товар`
 
-export { sell_saveDraft } from "./en.js"
 
-export { sell_photosAndDetails } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_saveDraft = () => `Сохранить черновик`
 
-export { sell_productInfo } from "./en.js"
 
-export { sell_priceAndPublish } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_photosAndDetails = () => `Фото и детали`
 
-export { sell_photos } from "./en.js"
 
-export { sell_add } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_productInfo = () => `Информация о товаре`
 
-export { sell_cover } from "./en.js"
 
-export { sell_title } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_priceAndPublish = () => `Цена и публикация`
 
-export { sell_titlePlaceholder } from "./en.js"
 
-export { sell_description } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_photos = () => `Фотографии`
 
-export { sell_descriptionPlaceholder } from "./en.js"
 
-export { sell_category } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_add = () => `Добавить`
 
-export { sell_selectCategory } from "./en.js"
 
-export { sell_subcategory } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_cover = () => `Обложка`
 
-export { sell_selectSubcategory } from "./en.js"
 
-export { sell_brand } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_title = () => `Название`
 
-export { sell_enterBrandName } from "./en.js"
 
-export { sell_size } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_titlePlaceholder = () => `например, Винтажная джинсовая куртка Levi's`
 
-export { sell_selectSize } from "./en.js"
 
-export { sell_condition } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_description = () => `Описание`
 
-export { sell_color } from "./en.js"
 
-export { sell_selectColor } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_descriptionPlaceholder = () => `Опишите ваш товар...`
 
-export { sell_material } from "./en.js"
 
-export { sell_selectMaterial } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_category = () => `Категория`
 
-export { sell_price } from "./en.js"
 
-export { sell_shippingPrice } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_selectCategory = () => `Выберите категорию`
 
-export { sell_tags } from "./en.js"
 
-export { sell_addTag } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_subcategory = () => `Подкатегория`
 
-export { sell_premiumBoost } from "./en.js"
 
-export { sell_boostYourListing } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_selectSubcategory = () => `Выберите подкатегорию`
 
-export { sell_boostDescription } from "./en.js"
 
-export { sell_publish } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_brand = () => `Бренд`
 
-export { sell_publishing } from "./en.js"
 
-export { sell_brandSubscriptionRequired } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_enterBrandName = () => `Введите название бренда`
 
-export { sell_brandSubscriptionDescription } from "./en.js"
 
-export { sell_brandPlanFeatures } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_size = () => `Размер`
 
-export { sell_listUnlimitedProducts } from "./en.js"
 
-export { sell_brandVerificationBadge } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_selectSize = () => `Выберите размер`
 
-export { sell_businessAccountFeatures } from "./en.js"
 
-export { sell_prioritySupport } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_condition = () => `Состояние`
 
-export { sell_subscribeToBrandPlan } from "./en.js"
 
-export { sell_switchToPersonalAccount } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_color = () => `Цвет`
 
-export { sell_uploadError } from "./en.js"
 
-export { sell_atLeastOnePhoto } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_selectColor = () => `Выберите цвет`
 
-export { sell_month } from "./en.js"
 
-export { sell_next } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_material = () => `Материал`
 
-export { sell_previous } from "./en.js"
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_selectMaterial = () => `Выберите материал`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_price = () => `Цена`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_shippingPrice = () => `Цена доставки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_tags = () => `Теги`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_addTag = () => `Добавить тег`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_premiumBoost = () => `Премиум продвижение`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_boostYourListing = () => `Продвинуть ваше объявление`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_boostDescription = () => `Получите в 3 раза больше видимости на 7 дней`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_publish = () => `Опубликовать`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_publishing = () => `Публикуем...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_brandSubscriptionRequired = () => `Требуется подписка Brand`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_brandSubscriptionDescription = () => `Для размещения товаров как бизнес-аккаунт, вам нужна активная подписка Brand.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_brandPlanFeatures = () => `Функции Brand плана:`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_listUnlimitedProducts = () => `Размещать неограниченные товары`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_brandVerificationBadge = () => `Значок верификации бренда`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_businessAccountFeatures = () => `Функции бизнес-аккаунта`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_prioritySupport = () => `Приоритетная поддержка`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_subscribeToBrandPlan = () => `Подписаться на Brand план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_switchToPersonalAccount = () => `Переключиться на личный аккаунт`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_uploadError = () => `Не удалось загрузить товар. Пожалуйста, попробуйте еще раз.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_atLeastOnePhoto = () => `Пожалуйста, добавьте хотя бы одно фото`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_month = () => `месяц`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_next = () => `Далее`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_previous = () => `Назад`
+
 
 /**
  * @param {{ username: NonNullable<unknown> }} params
@@ -4884,24 +5770,89 @@ export const category_searchPlaceholder = () => `Искать в категор�
 export const category_clearAll = () => `Очистить все`
 
 
-export { onboarding_tutorial_welcomeTitle } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_welcomeTitle = () => `Добро пожаловать в Driplo! 👋`
 
-export { onboarding_tutorial_welcomeContent } from "./en.js"
 
-export { onboarding_tutorial_discoverTitle } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_welcomeContent = () => `Все готово! Позвольте показать, как максимально использовать наш маркетплейс.`
 
-export { onboarding_tutorial_discoverContent } from "./en.js"
 
-export { onboarding_tutorial_listItemTitle } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_discoverTitle = () => `Откройте невероятные товары`
 
-export { onboarding_tutorial_listItemContentBrand } from "./en.js"
 
-export { onboarding_tutorial_listItemContentPersonal } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_discoverContent = () => `Используйте поисковую строку или просматривайте категории, чтобы найти уникальную одежду.`
 
-export { onboarding_tutorial_stayConnectedTitle } from "./en.js"
 
-export { onboarding_tutorial_stayConnectedContent } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_listItemTitle = () => `Загрузите свой первый товар`
 
-export { onboarding_tutorial_readyTitle } from "./en.js"
 
-export { onboarding_tutorial_readyContent } from "./en.js"
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_listItemContentBrand = () => `Как бренд-аккаунт вы имеете доступ к инструментам массовой загрузки и расширенной аналитике.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_listItemContentPersonal = () => `Готовы к продаже? Нажмите кнопку '+', чтобы загрузить свой первый товар. Добавьте качественные фото и честные описания.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_stayConnectedTitle = () => `Оставайтесь на связи`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_stayConnectedContent = () => `Используйте нашу систему сообщений для общения с покупателями/продавцами. Получайте уведомления о новых сообщениях и предложениях.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_readyTitle = () => `Вы готовы!`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const onboarding_tutorial_readyContent = () => `Проверьте свою панель управления для ваших объявлений, сообщений и настроек аккаунта. Удачной торговли!`

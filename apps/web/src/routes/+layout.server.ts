@@ -27,7 +27,7 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
   if (user && supabase) {
     const { data, error: profileError } = await supabase
       .from('profiles')
-      .select('*')
+      .select('id, username, full_name, avatar_url, onboarding_completed, account_type, subscription_status')
       .eq('id', user.id)
       .single();
 

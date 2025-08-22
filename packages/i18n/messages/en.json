@@ -15,6 +15,8 @@
   "nav_logout": "Logout",
   "nav_login": "Login",
   "nav_signup": "Sign up",
+  "nav_startSelling": "Start Selling",
+  "nav_browseCategories": "Browse Categories",
   "search_placeholder": "Search for anything...",
   "search_filter": "Filter",
   "search_sort": "Sort",
@@ -727,5 +729,16 @@
   "category_itemsCount": "items",
   "category_loadMore": "Load More Items",
   "category_searchPlaceholder": "Search in category...",
-  "category_clearAll": "Clear all"
+  "category_clearAll": "Clear all",
+  "onboarding_tutorial_welcomeTitle": "Welcome to Driplo! 👋",
+  "onboarding_tutorial_welcomeContent": "Everything is ready! Let us show you how to make the most of our marketplace.",
+  "onboarding_tutorial_discoverTitle": "Discover amazing items",
+  "onboarding_tutorial_discoverContent": "Use the search bar or browse categories to discover unique clothing.",
+  "onboarding_tutorial_listItemTitle": "Upload your first item",
+  "onboarding_tutorial_listItemContentBrand": "As a brand account you have access to bulk upload tools and advanced analytics.",
+  "onboarding_tutorial_listItemContentPersonal": "Ready to sell? Click the '+' button to upload your first item. Add quality photos and honest descriptions.",
+  "onboarding_tutorial_stayConnectedTitle": "Stay connected",
+  "onboarding_tutorial_stayConnectedContent": "Use our messaging system to chat with buyers/sellers. Get notifications for new messages and offers.",
+  "onboarding_tutorial_readyTitle": "You're ready!",
+  "onboarding_tutorial_readyContent": "Check your dashboard for your listings, messages, and account settings. Happy trading!"
 }

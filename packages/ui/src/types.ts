@@ -21,6 +21,13 @@ export interface Product {
   is_sold?: boolean;
   sold_at?: string;
   status?: string;
+  favorite_count?: number;
+  product_images?: Array<{
+    id: string;
+    image_url: string;
+    alt_text?: string;
+    sort_order?: number;
+  }>;
 }
 
 export interface User {

@@ -130,7 +130,7 @@
     <!-- Category (top) -->
     {#if product.main_category_name || product.category_name}
       <p class="text-xs font-medium text-gray-600 uppercase tracking-wide">
-        {product.main_category_name || product.category_name}
+        {translations.categoryTranslation ? translations.categoryTranslation(product.main_category_name || product.category_name || '') : (product.main_category_name || product.category_name)}
       </p>
     {/if}
     
@@ -141,7 +141,7 @@
     {#if product.subcategory_name || product.brand || product.size}
       <p class="text-xs text-gray-500 line-clamp-1">
         {#if product.subcategory_name}
-          <span class="font-medium text-gray-600">{product.subcategory_name}</span>
+          <span class="font-medium text-gray-600">{translations.categoryTranslation ? translations.categoryTranslation(product.subcategory_name) : product.subcategory_name}</span>
         {/if}
         {#if product.subcategory_name && product.brand} • {/if}
         {#if product.brand}

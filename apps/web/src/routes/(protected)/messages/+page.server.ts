@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, 
   
   const { data: messages, error: messagesError } = await supabase
     .from('messages')
-    .select('*')
+    .select('id, content, sender_id, receiver_id, product_id, is_read, created_at')
     .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
     .order('created_at', { ascending: false });
   
@@ -29,10 +29,10 @@ export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, 
     const userIds = [...new Set(messages.flatMap(m => [m.sender_id, m.receiver_id]))];
     const productIds = [...new Set(messages.filter(m => m.product_id).map(m => m.product_id))];
     
-    // Batch fetch all profiles
+    // Batch fetch all profiles (only needed fields)
     const { data: profiles } = await supabase
       .from('profiles')
-      .select('*')
+      .select('id, username, full_name, avatar_url')
       .in('id', userIds);
     
     // Batch fetch all products with images

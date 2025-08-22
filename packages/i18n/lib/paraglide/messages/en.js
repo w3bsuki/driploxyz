@@ -143,6 +143,22 @@ export const nav_signup = () => `Sign up`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const nav_startSelling = () => `Start Selling`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const nav_browseCategories = () => `Browse Categories`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const search_placeholder = () => `Search for items, brands...`
 
 
@@ -5755,88 +5771,88 @@ export const category_clearAll = () => `Clear all`
 
 
 /**
- * Failed to resolve message onboarding_tutorial_welcomeTitle for languageTag "en". 
+ * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_tutorial_welcomeTitle = () => "onboarding_tutorial_welcomeTitle"
+export const onboarding_tutorial_welcomeTitle = () => `Welcome to Driplo! 👋`
 
 
 /**
- * Failed to resolve message onboarding_tutorial_welcomeContent for languageTag "en". 
+ * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_tutorial_welcomeContent = () => "onboarding_tutorial_welcomeContent"
+export const onboarding_tutorial_welcomeContent = () => `Everything is ready! Let us show you how to make the most of our marketplace.`
 
 
 /**
- * Failed to resolve message onboarding_tutorial_discoverTitle for languageTag "en". 
+ * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_tutorial_discoverTitle = () => "onboarding_tutorial_discoverTitle"
+export const onboarding_tutorial_discoverTitle = () => `Discover amazing items`
 
 
 /**
- * Failed to resolve message onboarding_tutorial_discoverContent for languageTag "en". 
+ * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_tutorial_discoverContent = () => "onboarding_tutorial_discoverContent"
+export const onboarding_tutorial_discoverContent = () => `Use the search bar or browse categories to discover unique clothing.`
 
 
 /**
- * Failed to resolve message onboarding_tutorial_listItemTitle for languageTag "en". 
+ * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_tutorial_listItemTitle = () => "onboarding_tutorial_listItemTitle"
+export const onboarding_tutorial_listItemTitle = () => `Upload your first item`
 
 
 /**
- * Failed to resolve message onboarding_tutorial_listItemContentBrand for languageTag "en". 
+ * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_tutorial_listItemContentBrand = () => "onboarding_tutorial_listItemContentBrand"
+export const onboarding_tutorial_listItemContentBrand = () => `As a brand account you have access to bulk upload tools and advanced analytics.`
 
 
 /**
- * Failed to resolve message onboarding_tutorial_listItemContentPersonal for languageTag "en". 
+ * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_tutorial_listItemContentPersonal = () => "onboarding_tutorial_listItemContentPersonal"
+export const onboarding_tutorial_listItemContentPersonal = () => `Ready to sell? Click the '+' button to upload your first item. Add quality photos and honest descriptions.`
 
 
 /**
- * Failed to resolve message onboarding_tutorial_stayConnectedTitle for languageTag "en". 
+ * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_tutorial_stayConnectedTitle = () => "onboarding_tutorial_stayConnectedTitle"
+export const onboarding_tutorial_stayConnectedTitle = () => `Stay connected`
 
 
 /**
- * Failed to resolve message onboarding_tutorial_stayConnectedContent for languageTag "en". 
+ * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_tutorial_stayConnectedContent = () => "onboarding_tutorial_stayConnectedContent"
+export const onboarding_tutorial_stayConnectedContent = () => `Use our messaging system to chat with buyers/sellers. Get notifications for new messages and offers.`
 
 
 /**
- * Failed to resolve message onboarding_tutorial_readyTitle for languageTag "en". 
+ * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_tutorial_readyTitle = () => "onboarding_tutorial_readyTitle"
+export const onboarding_tutorial_readyTitle = () => `You're ready!`
 
 
 /**
- * Failed to resolve message onboarding_tutorial_readyContent for languageTag "en". 
+ * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const onboarding_tutorial_readyContent = () => "onboarding_tutorial_readyContent"
+export const onboarding_tutorial_readyContent = () => `Check your dashboard for your listings, messages, and account settings. Happy trading!`

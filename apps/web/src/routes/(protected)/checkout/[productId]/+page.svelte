@@ -106,9 +106,9 @@
 
 		const result = await response.json();
 		
-		if (result.success) {
-			// Redirect buyer to their purchases dashboard
-			await goto('/dashboard?tab=purchases&success=true');
+		if (result.success && result.orderId) {
+			// Redirect to success page with order ID
+			await goto(`/payment/success?orderId=${result.orderId}`);
 		} else {
 			error = i18n.checkout_paymentFailed();
 		}

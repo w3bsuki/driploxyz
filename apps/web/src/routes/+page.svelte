@@ -156,6 +156,23 @@
 	function formatPrice(price: number): string {
 		return `$${price.toFixed(2)}`;
 	}
+	
+	function translateCategory(categoryName: string): string {
+		// Map English category names to translation keys
+		const categoryMap: Record<string, string> = {
+			'Women': i18n.category_women(),
+			'Men': i18n.category_men(),
+			'Kids': i18n.category_kids(),
+			'Pets': i18n.category_pets(),
+			'Shoes': i18n.category_shoes(),
+			'Bags': i18n.category_bags(),
+			'Home': i18n.category_home(),
+			'Beauty': i18n.category_beauty(),
+			'T-Shirts': i18n.subcategory_tshirts ? i18n.subcategory_tshirts() : 'T-Shirts',
+			'Tops & T-Shirts': i18n.subcategory_tops ? i18n.subcategory_tops() : 'Tops & T-Shirts'
+		};
+		return categoryMap[categoryName] || categoryName;
+	}
 
 	function handleSellerClick(seller: Seller) {
 		if (seller.premium) {
@@ -384,7 +401,8 @@
 				condition_new: i18n.condition_new(),
 				condition_likeNew: i18n.condition_likeNew(),
 				condition_good: i18n.condition_good(),
-				condition_fair: i18n.condition_fair()
+				condition_fair: i18n.condition_fair(),
+				categoryTranslation: translateCategory
 			}}
 		/>
 	</main>

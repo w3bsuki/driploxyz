@@ -75,7 +75,8 @@
             likeNew: translations.condition_likeNew,
             good: translations.condition_good,
             fair: translations.condition_fair,
-            formatPrice: formatPrice
+            formatPrice: formatPrice,
+            categoryTranslation: translations.categoryTranslation
           }}
         />
       {/each}
