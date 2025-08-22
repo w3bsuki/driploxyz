@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { SearchBar, BottomNav } from '@repo/ui';
+	import { SearchBar, BottomNav, PromotedHighlights, FeaturedProducts } from '@repo/ui';
+	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import Header from '$lib/components/Header.svelte';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
 	import QuickViewDialog from '$lib/components/QuickViewDialog.svelte';
-	import PromotedHighlights from '$lib/components/PromotedHighlights.svelte';
-	import FeaturedProducts from '$lib/components/FeaturedProducts.svelte';
 	import { prefetchRoute } from '$lib/utils/performance';
 	import { goto } from '$app/navigation';
 	import { page, navigating } from '$app/stores';
@@ -36,49 +35,67 @@
 	});
 
 	// Transform promoted products for highlights
-	const promotedProducts = $derived<PromotedProduct[]>(
+	const promotedProducts = $derived<Product[]>(
 		(data.promotedProducts?.length ? data.promotedProducts : data.featuredProducts.slice(0, 8))
 			.map((product: ProductWithImages) => ({
 				id: product.id,
 				title: product.title,
 				price: product.price,
-				images: (product.product_images || product.images)?.map(img => {
-					// Handle both string and object formats for promoted products
-					if (typeof img === 'string') {
-						return { image_url: img };
-					} else if (img && typeof img === 'object' && 'image_url' in img) {
-						return img;
-					}
-					return { image_url: '' };
-				}).filter(img => img.image_url) || [],
+				currency: 'USD',
+				images: (product.product_images || product.images || []).map(img => 
+					typeof img === 'string' ? img : img?.image_url || ''
+				).filter(Boolean),
+				condition: product.condition as Product['condition'] || 'good',
+				seller_id: product.seller_id,
+				category_id: product.category_id || '',
+				size: product.size,
+				brand: product.brand,
+				description: product.description,
+				created_at: product.created_at,
+				updated_at: product.updated_at || product.created_at,
+				sold: false,
+				favorites_count: 0,
+				views_count: 0,
+				// Category fields for proper display
+				category_name: product.category_name,
+				main_category_name: product.main_category_name,
+				subcategory_name: product.subcategory_name,
+				// Seller information
 				seller_name: product.seller_name,
-				seller_id: product.seller_id
+				seller_avatar: product.seller_avatar,
+				seller_rating: product.seller_rating
 			}))
 	);
 
-	// Transform products to match UI component interface
-	const products = $derived<ProductDisplay[]>(
+	// Transform products to match Product interface
+	const products = $derived<Product[]>(
 		data.featuredProducts.map((product: ProductWithImages) => ({
 				id: product.id,
 				title: product.title,
-				description: product.description,
 				price: product.price,
-				// Pass the product_images array directly to ProductCard
-				product_images: product.product_images || [],
-				// Keep images array for compatibility
-				images: product.images || [],
-				brand: product.brand,
+				currency: 'USD',
+				images: (product.product_images || product.images || []).map(img => 
+					typeof img === 'string' ? img : img?.image_url || ''
+				).filter(Boolean),
+				condition: product.condition as Product['condition'] || 'good',
+				seller_id: product.seller_id,
+				category_id: product.category_id || '',
 				size: product.size,
-				condition: product.condition as ProductDisplay['condition'],
-				category_name: product.category_name || 'Uncategorized',
-				main_category_name: product.category_name || 'Uncategorized',
+				brand: product.brand,
+				description: product.description,
+				created_at: product.created_at,
+				updated_at: product.updated_at || product.created_at,
+				sold: false,
+				favorites_count: 0,
+				views_count: 0,
+				// Category fields for proper display
+				category_name: product.category_name,
+				main_category_name: product.main_category_name,
 				subcategory_name: product.subcategory_name,
-				sellerId: product.seller_id,
-				sellerName: product.seller_name || 'Unknown Seller',
-				sellerRating: product.seller_rating || 0,
-				sellerAvatar: product.seller_avatar,
-				createdAt: product.created_at,
-				location: product.location
+				// Seller information
+				seller_name: product.seller_name,
+				seller_avatar: product.seller_avatar,
+				seller_rating: product.seller_rating
 		}))
 	);
 
@@ -103,13 +120,25 @@
 		}
 	}
 
-	function handleProductClick(product: ProductDisplay) {
+	function handleProductClick(product: Product) {
 		goto(`/product/${product.id}`);
 	}
 
-	function handleFavorite(product: ProductDisplay) {
+	function handleFavorite(product: Product) {
 		// Favorites functionality will be implemented with Supabase
 		// For now, just show a toast or notification
+	}
+
+	function handleBrowseAll() {
+		goto('/search');
+	}
+
+	function handleSellClick() {
+		goto('/sell');
+	}
+
+	function formatPrice(price: number): string {
+		return `$${price.toFixed(2)}`;
 	}
 
 	function handleSellerClick(seller: Seller) {
@@ -312,6 +341,10 @@
 			{sellers}
 			onSellerSelect={(seller) => selectedSeller = seller}
 			onSellerClick={handleSellerClick}
+			translations={{
+				seller_premiumSeller: i18n.seller_premiumSeller(),
+				seller_premiumSellerDescription: i18n.seller_premiumSellerDescription()
+			}}
 		/>
 
 		<FeaturedProducts 
@@ -319,6 +352,24 @@
 			errors={data.errors}
 			onProductClick={handleProductClick}
 			onFavorite={handleFavorite}
+			onBrowseAll={handleBrowseAll}
+			onSellClick={handleSellClick}
+			{formatPrice}
+			translations={{
+				empty_noProducts: i18n.empty_noProducts(),
+				empty_startBrowsing: i18n.empty_startBrowsing(),
+				nav_sell: i18n.nav_sell(),
+				home_browseAll: i18n.home_browseAll(),
+				product_size: i18n.product_size(),
+				trending_newSeller: i18n.trending_newSeller(),
+				seller_unknown: i18n.seller_unknown(),
+				common_currency: i18n.common_currency(),
+				product_addToFavorites: i18n.product_addToFavorites(),
+				condition_new: i18n.condition_new(),
+				condition_likeNew: i18n.condition_likeNew(),
+				condition_good: i18n.condition_good(),
+				condition_fair: i18n.condition_fair()
+			}}
 		/>
 	</main>
 </div>

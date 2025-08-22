@@ -129,3 +129,10 @@ export { default as FavoriteButton } from './FavoriteButton.svelte';
 export { default as ProductImage } from './ProductImage.svelte';
 export { default as ProductMeta } from './ProductMeta.svelte';
 export { default as ProductPrice } from './ProductPrice.svelte';
+
+// Feature components - NEWLY MIGRATED
+export { default as FeaturedProducts } from './FeaturedProducts.svelte';
+export { default as PromotedHighlights } from './PromotedHighlights.svelte';
+
+// Type definitions
+export * from './types/index.js';

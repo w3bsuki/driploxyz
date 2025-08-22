@@ -78,4 +78,7 @@ export { default as FavoriteButton } from './FavoriteButton.svelte';
 export { default as ProductImage } from './ProductImage.svelte';
 export { default as ProductMeta } from './ProductMeta.svelte';
 export { default as ProductPrice } from './ProductPrice.svelte';
+export { default as FeaturedProducts } from './FeaturedProducts.svelte';
+export { default as PromotedHighlights } from './PromotedHighlights.svelte';
+export * from './types/index.js';
 //# sourceMappingURL=index.d.ts.map

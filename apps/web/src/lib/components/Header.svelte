@@ -12,6 +12,7 @@
     HeaderSearch,
     MobileNavigation
   } from '@repo/ui';
+  import type { User, Profile } from '@repo/ui/types';
   import * as i18n from '@repo/i18n';
   import { page } from '$app/stores';
   import { authState, displayName, userInitials, canSell } from '$lib/stores/auth';
@@ -32,8 +33,8 @@
     showSearch?: boolean;
     minimal?: boolean;
     initialLanguage?: string;
-    user?: any;
-    profile?: any;
+    user?: User;
+    profile?: Profile;
   }
   
   let { 
@@ -262,6 +263,16 @@
       onCategoryClick={(category) => {
         closeMenus();
         window.location.href = `/category/${category}`;
+      }}
+      translations={{
+        sellItems: i18n.nav_sell(),
+        myProfile: i18n.nav_profile(),
+        startSelling: i18n.nav_startSelling(),
+        settings: i18n.nav_settings(),
+        signOut: i18n.auth_signOut(),
+        signIn: i18n.auth_signIn(),
+        signUp: i18n.auth_signUp(),
+        browseCategories: i18n.nav_browseCategories()
       }}
     />
   {/if}

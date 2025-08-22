@@ -307,41 +307,25 @@ export class ProfileService {
    */
   async getTopSellers(limit = 10): Promise<{ data: any[]; error: string | null }> {
     try {
-      // Get sellers with their active listing counts
+      // Use direct query instead of RPC function that may not exist
       const { data, error } = await this.supabase
-        .rpc('get_sellers_by_listings', { limit_count: limit });
-
+        .from('profiles')
+        .select('id, username, full_name, avatar_url, created_at, rating, sales_count, followers_count')
+        .not('username', 'is', null)
+        .order('sales_count', { ascending: false })
+        .limit(limit);
+          
       if (error) {
         console.error('Error fetching top sellers:', error);
-        
-        // Fallback to simple query if RPC doesn't exist
-        const { data: fallbackData, error: fallbackError } = await this.supabase
-          .from('profiles')
-          .select('id, username, full_name, avatar_url, created_at, rating, sales_count, followers_count')
-          .not('username', 'is', null)
-          .limit(limit);
-          
-        if (fallbackError) {
-          return { data: [], error: fallbackError.message };
-        }
-        
-        const fallbackSellers = (fallbackData || []).map(profile => ({
-          ...profile,
-          name: profile.username,
-          avatar: profile.avatar_url,
-          rating: profile.rating || 0,
-          product_count: 0
-        }));
-        
-        return { data: fallbackSellers, error: null };
+        return { data: [], error: error.message };
       }
-
-      // Use real data from database
+      
       const sellersWithRatings = (data || []).map(profile => ({
         ...profile,
         name: profile.username,
         avatar: profile.avatar_url,
-        rating: profile.rating || 0
+        rating: profile.rating || 0,
+        product_count: profile.sales_count || 0 // Use sales_count as proxy for activity
       }));
 
       return { data: sellersWithRatings, error: null };

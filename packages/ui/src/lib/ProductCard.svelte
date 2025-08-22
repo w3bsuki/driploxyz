@@ -104,19 +104,35 @@
   </div>
   
   <!-- Content -->
-  <div class="pt-2 space-y-0.5">
-    <ProductMeta 
-      mainCategoryName={product.main_category_name}
-      categoryName={product.category_name}
-      subcategoryName={product.subcategory_name}
-      size={product.size}
-      brand={product.brand}
-      sizeText={translations.size}
-      categoryTranslation={translations.categoryTranslation}
-    />
+  <div class="pt-2 space-y-1">
+    <!-- Category (top) -->
+    {#if product.main_category_name || product.category_name}
+      <p class="text-xs font-medium text-gray-600 uppercase tracking-wide">
+        {product.main_category_name || product.category_name}
+      </p>
+    {/if}
     
-    <h3 class="text-sm text-gray-900 line-clamp-1">{product.title}</h3>
+    <!-- Title (middle) -->
+    <h3 class="text-sm font-medium text-gray-900 line-clamp-2 leading-tight">{product.title}</h3>
     
+    <!-- Subcategory/Brand/Size row (below title) -->
+    {#if product.subcategory_name || product.brand || product.size}
+      <p class="text-xs text-gray-500 line-clamp-1">
+        {#if product.subcategory_name}
+          <span class="font-medium text-gray-600">{product.subcategory_name}</span>
+        {/if}
+        {#if product.subcategory_name && product.brand} • {/if}
+        {#if product.brand}
+          <span class="text-gray-600">{product.brand}</span>
+        {/if}
+        {#if (product.subcategory_name || product.brand) && product.size} • {/if}
+        {#if product.size}
+          <span class="text-gray-500">{translations.size} {product.size}</span>
+        {/if}
+      </p>
+    {/if}
+    
+    <!-- Price (bottom) -->
     <ProductPrice 
       price={product.price}
       currency={translations.currency}

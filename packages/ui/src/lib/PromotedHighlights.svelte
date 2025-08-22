@@ -1,15 +1,22 @@
 <script lang="ts">
-  import { Avatar, ProductHighlight } from '@repo/ui';
-  import * as i18n from '@repo/i18n';
+  import Avatar from './Avatar.svelte';
+  import ProductHighlight from './ProductHighlight.svelte';
+  import type { Product, Seller } from './types/index.js';
 
-  interface Props {
-    promotedProducts: any[];
-    sellers: any[];
-    onSellerSelect: (seller: any) => void;
-    onSellerClick: (seller: any) => void;
+  interface Translations {
+    seller_premiumSeller: string;
+    seller_premiumSellerDescription: string;
   }
 
-  let { promotedProducts, sellers, onSellerSelect, onSellerClick }: Props = $props();
+  interface Props {
+    promotedProducts: Product[];
+    sellers: Seller[];
+    onSellerSelect: (seller: Seller) => void;
+    onSellerClick: (seller: Seller) => void;
+    translations: Translations;
+  }
+
+  let { promotedProducts, sellers, onSellerSelect, onSellerClick, translations }: Props = $props();
 </script>
 
 <!-- Promoted Listings / Highlights -->
@@ -37,13 +44,13 @@
               {product} 
               onProductClick={() => onSellerSelect({
                 id: product.seller_id || `seller-${product.id}`,
-                name: product.seller_name || i18n.seller_premiumSeller(),
+                name: product.seller_name || translations.seller_premiumSeller,
                 avatar: null,
                 premium: true,
                 rating: 4.8,
                 itemCount: 15,
                 followers: 250,
-                description: i18n.seller_premiumSellerDescription()
+                description: translations.seller_premiumSellerDescription
               })}
             />
           {/each}
