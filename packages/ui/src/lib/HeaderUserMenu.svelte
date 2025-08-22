@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Avatar from './Avatar.svelte';
+  
   interface Props {
     user: any;
     profile: any;

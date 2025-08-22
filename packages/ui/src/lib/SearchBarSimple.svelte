@@ -38,8 +38,8 @@
       <input
         bind:value
         {placeholder}
-        type="search"
-        class="flex-1 bg-transparent text-base placeholder-gray-500 focus:outline-none min-w-0 pl-10 pr-2 py-3"
+        type="text"
+        class="flex-1 bg-transparent text-base placeholder-gray-500 focus:outline-none border-0 focus:ring-0 min-w-0 pl-10 pr-2 py-3"
         onkeydown={handleSubmit}
       />
       

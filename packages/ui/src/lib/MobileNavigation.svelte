@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { Avatar, CategoryGrid, LanguageSwitcher } from './index.js';
+  import Avatar from './Avatar.svelte';
+  import CategoryGrid from './CategoryGrid.svelte';
+  import LanguageSwitcher from './LanguageSwitcher.svelte';
 
   interface Props {
     isOpen: boolean;

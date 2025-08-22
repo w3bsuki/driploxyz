@@ -116,6 +116,8 @@ export { default as SellerQuickView } from './SellerQuickView.svelte';
 // Header components - NEW modular header components
 export { default as HeaderLogo } from './HeaderLogo.svelte';
 export { default as HeaderUserMenu } from './HeaderUserMenu.svelte';
+export { default as HeaderNav } from './HeaderNav.svelte';
+export { default as HeaderSearch } from './HeaderSearch.svelte';
 export { default as CategoryGrid } from './CategoryGrid.svelte';
 export { default as MobileNavigation } from './MobileNavigation.svelte';
 export { default as ProductHighlight } from './ProductHighlight.svelte';
