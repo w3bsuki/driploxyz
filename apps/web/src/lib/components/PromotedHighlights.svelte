@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Avatar } from '@repo/ui';
+  import { Avatar, ProductHighlight } from '@repo/ui';
   import * as i18n from '@repo/i18n';
 
   interface Props {
@@ -33,65 +33,19 @@
         <!-- Promoted Products -->
         {#if promotedProducts && promotedProducts.length > 0}
           {#each promotedProducts as product}
-            <div class="relative shrink-0 group">
-              <button 
-                onclick={() => onSellerSelect({
-                  id: product.seller_id || `seller-${product.id}`,
-                  name: product.seller_name || i18n.seller_premiumSeller(),
-                  avatar: null,
-                  premium: true,
-                  rating: 4.8,
-                  itemCount: 15,
-                  followers: 250,
-                  description: i18n.seller_premiumSellerDescription()
-                })}
-                class="block promoted-highlight"
-              >
-              <!-- Premium container with clean design -->
-              <div class="group">
-                <div class="relative rounded-2xl shadow-sm bg-white p-1">
-                  <!-- Inner glass frame -->
-                  <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
-                    <div 
-                      aria-hidden="true"
-                      class="absolute inset-x-0 top-0 h-32 rounded-[inherit]"
-                      style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
-                    />
-                    <!-- Product image -->
-                    <div class="w-32 h-32 sm:w-40 sm:h-40 relative">
-                      <img 
-                        src={product.images[0]?.image_url || '/placeholder-product.svg'} 
-                        alt={product.title}
-                        class="w-full h-full object-cover"
-                      />
-                      
-                      <!-- Bottom row: avatar left, price right -->
-                      <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-                        <!-- Seller avatar -->
-                        <div class="w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm">
-                          <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
-                            {product.seller_name?.charAt(0).toUpperCase() || 'S'}
-                          </div>
-                        </div>
-                        
-                        <!-- Price badge -->
-                        <div class="bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg shadow-sm">
-                          {product.price}{i18n.common_currency()}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Title below -->
-                <div class="mt-1.5 px-1 w-32 sm:w-40">
-                  <p class="text-xs text-gray-700 truncate">
-                    {product.title}
-                  </p>
-                </div>
-              </div>
-            </button>
-            </div>
+            <ProductHighlight 
+              {product} 
+              onProductClick={() => onSellerSelect({
+                id: product.seller_id || `seller-${product.id}`,
+                name: product.seller_name || i18n.seller_premiumSeller(),
+                avatar: null,
+                premium: true,
+                rating: 4.8,
+                itemCount: 15,
+                followers: 250,
+                description: i18n.seller_premiumSellerDescription()
+              })}
+            />
           {/each}
         {/if}
 
@@ -121,18 +75,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  /* Clean, stable design - no hover animations */
-  .promoted-highlight {
-    transition: opacity 0.15s ease;
-  }
-  
-  .promoted-highlight:hover {
-    opacity: 0.95;
-  }
-  
-  .promoted-highlight:active {
-    opacity: 0.9;
-  }
-</style>

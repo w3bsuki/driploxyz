@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SearchBar } from '@repo/ui';
+	import { SearchBarSimple } from '@repo/ui';
 	import * as i18n from '@repo/i18n';
 	import Header from '$lib/components/Header.svelte';
 	import BottomNav from '$lib/components/BottomNav.svelte';
@@ -188,13 +188,12 @@
 			<div class="px-4 sm:px-6 lg:px-8 py-3 space-y-2">
 				<!-- Search Bar -->
 				<div class="relative">
-					<SearchBar 
+					<SearchBarSimple 
 						bind:value={searchQuery}
 						onSearch={handleSearch}
 						onFilter={handleFilter}
 						placeholder={i18n.search_placeholder()}
 						categoriesText={i18n.search_categories()}
-						showCategoryDropdown={false}
 					/>
 				</div>
 				

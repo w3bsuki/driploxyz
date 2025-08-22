@@ -33,7 +33,7 @@
             
             <!-- Price badge -->
             <div class="bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg shadow-sm">
-              €{product.price}
+              {product.price}$
             </div>
           </div>
         </div>
