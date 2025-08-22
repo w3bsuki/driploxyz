@@ -3,6 +3,7 @@
   import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
   import { page } from '$app/stores';
+  import { replaceState } from '$app/navigation';
   import { onMount } from 'svelte';
   import * as i18n from '@repo/i18n';
   
@@ -22,7 +23,7 @@
       toasts.success('Your listing has been published successfully! 🎉');
       // Remove the success param from URL
       const newUrl = window.location.pathname;
-      window.history.replaceState({}, '', newUrl);
+      replaceState(newUrl, {});
     }
   });
   

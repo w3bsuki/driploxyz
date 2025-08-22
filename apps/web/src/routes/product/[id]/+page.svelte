@@ -8,8 +8,10 @@
     ProductCardSkeleton
   } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
+  import SEOMetaTags from '$lib/components/SEOMetaTags.svelte';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
   
@@ -104,10 +106,25 @@
   }
 </script>
 
-<svelte:head>
-  <title>{data.product.title} - ${formatPrice(data.product.price)} | Driplo</title>
-  <meta name="description" content={data.product.description} />
-</svelte:head>
+<!-- SEO Meta Tags with structured data -->
+<SEOMetaTags
+  title="{data.product.title} - {formatPrice(data.product.price)}"
+  description={data.product.description || `${data.product.title} - ${conditionLabel} condition, ${data.product.brand || ''} ${data.product.category_name || ''} available on Driplo`}
+  url={$page.url.pathname}
+  image={data.product.images?.[0] || '/og-default.jpg'}
+  type="product"
+  product={data.product}
+  seller={data.seller}
+  keywords={[
+    data.product.brand,
+    data.product.category_name,
+    data.product.size,
+    conditionLabel,
+    'secondhand',
+    'vintage',
+    'preloved'
+  ].filter(Boolean)}
+/>
 
 <div class="min-h-screen bg-white">
   <Header showSearch={true} />

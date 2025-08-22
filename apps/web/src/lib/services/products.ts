@@ -294,8 +294,8 @@ export class ProductService {
       ];
       
       // Remove duplicates based on product ID
-      const uniqueProducts = allPromoted.reduce((acc, product) => {
-        if (!acc.find(p => p.id === product.id)) {
+      const uniqueProducts = allPromoted.reduce((acc: any[], product) => {
+        if (!acc.find((p: any) => p.id === product.id)) {
           acc.push(product);
         }
         return acc;
@@ -325,8 +325,8 @@ export class ProductService {
           console.error('Newest products error:', newestError);
         } else {
           // Add newest products that aren't already in promoted list
-          const promotedIds = new Set(limitedProducts.map(p => p.id));
-          const filteredNewest = (newestProducts || []).filter(p => !promotedIds.has(p.id));
+          const promotedIds = new Set(limitedProducts.map((p: any) => p.id));
+          const filteredNewest = (newestProducts || []).filter((p: any) => !promotedIds.has(p.id));
           limitedProducts = [...limitedProducts, ...filteredNewest];
         }
       }
@@ -336,7 +336,7 @@ export class ProductService {
       }
 
       // Transform the data
-      const products: ProductWithImages[] = limitedProducts.map(item => ({
+      const products: ProductWithImages[] = limitedProducts.map((item: any) => ({
         ...item,
         images: item.product_images || [],
         category_name: item.categories?.name,

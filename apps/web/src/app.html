@@ -7,14 +7,50 @@
 		<meta name="format-detection" content="telephone=no" />
 		<meta name="robots" content="index, follow" />
 		
+		<!-- PWA Manifest -->
+		<link rel="manifest" href="%sveltekit.assets%/manifest.json" />
+		
 		<!-- Performance optimizations -->
 		<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+		<link rel="dns-prefetch" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://supabase.co" crossorigin>
-		<link rel="modulepreload" href="/@repo/ui">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		
+		<!-- Preload critical fonts -->
+		<link rel="preload" as="font" type="font/woff2" href="%sveltekit.assets%/fonts/inter-var.woff2" crossorigin>
 		
 		<!-- Resource hints for better Core Web Vitals -->
-		<meta name="theme-color" content="#ffffff">
-		<meta name="msapplication-TileColor" content="#ffffff">
+		<meta name="theme-color" content="#3b82f6">
+		<meta name="msapplication-TileColor" content="#3b82f6">
+		
+		<!-- Apple Touch Icons -->
+		<link rel="apple-touch-icon" href="%sveltekit.assets%/icons/icon-192x192.png">
+		
+		<!-- Web Vitals monitoring -->
+		<script>
+			// Report Core Web Vitals to analytics
+			if ('PerformanceObserver' in window) {
+				try {
+					// LCP reporting
+					new PerformanceObserver((list) => {
+						const entries = list.getEntries();
+						const lastEntry = entries[entries.length - 1];
+						// Log to analytics
+						console.log('[LCP]', lastEntry.renderTime || lastEntry.loadTime);
+					}).observe({ type: 'largest-contentful-paint', buffered: true });
+					
+					// FID reporting
+					new PerformanceObserver((list) => {
+						const entries = list.getEntries();
+						const firstInput = entries[0];
+						// Log to analytics
+						console.log('[FID]', firstInput.processingStart - firstInput.startTime);
+					}).observe({ type: 'first-input', buffered: true });
+				} catch (e) {
+					// Silently fail if not supported
+				}
+			}
+		</script>
 		
 		%sveltekit.head%
 	</head>

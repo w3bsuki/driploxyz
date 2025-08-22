@@ -8,6 +8,7 @@ export { default as ProductCard } from './ProductCard.svelte';
 export { default as SearchBar } from './SearchBar.svelte';
 export { default as Avatar } from './Avatar.svelte';
 export { default as Breadcrumb } from './Breadcrumb.svelte';
+export { default as ErrorBoundary } from './ErrorBoundary.svelte';
 
 // Loading components
 export { default as LoadingSpinner } from './LoadingSpinner.svelte';
@@ -140,9 +141,14 @@ export { default as PromotedHighlights } from './PromotedHighlights.svelte';
 // Performance utilities
 export * from './utils/performance.js';
 export { PerformanceMonitor } from './utils/performance.js';
+export { webVitals } from './utils/web-vitals.js';
+export type { Metric, MetricCallback } from './utils/web-vitals.js';
 
 // Variant system utilities
 export * from './utils/variants.js';
+
+// Lazy loading image component
+export { default as LazyImage } from './LazyImage.svelte';
 
 // Type definitions
 export * from './types/index.js';

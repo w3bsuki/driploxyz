@@ -1,11 +1,13 @@
 <script lang="ts">
   import { Button } from '@repo/ui';
-  import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   
-  let isOnline = $state(true);
+  let isOnline = $state(browser ? navigator.onLine : true);
   let retryCount = $state(0);
   
-  onMount(() => {
+  $effect(() => {
+    if (!browser) return;
+    
     // Check initial online status
     isOnline = navigator.onLine;
     

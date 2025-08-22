@@ -52,7 +52,7 @@
 
 	// Transform promoted products for highlights
 	const promotedProducts = $derived<Product[]>(
-		(data.promotedProducts?.length ? data.promotedProducts : data.featuredProducts.slice(0, 8))
+		(data.promotedProducts?.length ? data.promotedProducts : data.featuredProducts?.slice(0, 8) || [])
 			.map((product: ProductWithImages) => ({
 				id: product.id,
 				title: product.title,
@@ -85,7 +85,7 @@
 
 	// Transform products to match Product interface
 	const products = $derived<Product[]>(
-		data.featuredProducts.map((product: ProductWithImages) => ({
+		(data.featuredProducts || []).map((product: ProductWithImages) => ({
 				id: product.id,
 				title: product.title,
 				price: product.price,
@@ -117,7 +117,7 @@
 
 	// Transform sellers for display
 	const sellers = $derived<Seller[]>(
-		data.topSellers.map(seller => ({
+		(data.topSellers || []).map(seller => ({
 			id: seller.id,
 			name: seller.username || seller.full_name,
 			username: seller.username,

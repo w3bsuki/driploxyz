@@ -104,7 +104,7 @@ export class StripeService {
 			const { paymentIntentId, buyerId } = params;
 
 			// Retrieve the payment intent from Stripe
-			const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+			const paymentIntent = await this.stripe.paymentIntents.retrieve(paymentIntentId);
 
 			if (paymentIntent.status !== 'succeeded') {
 				return { success: false, error: new Error(`Payment status: ${paymentIntent.status}`) };
@@ -220,13 +220,13 @@ export class StripeService {
 			});
 
 			// Create Stripe product and price
-			const stripeProduct = await stripe.products.create({
+			const stripeProduct = await this.stripe.products.create({
 				name: plan.name,
 				description: plan.description || undefined
 			});
 
 			const price = plan.price_monthly * (1 - discountPercent / 100);
-			const stripePrice = await stripe.prices.create({
+			const stripePrice = await this.stripe.prices.create({
 				unit_amount: Math.round(price * 100),
 				currency: plan.currency.toLowerCase(),
 				recurring: { interval: 'month' },
@@ -234,7 +234,7 @@ export class StripeService {
 			});
 
 			// Create subscription
-			const subscription = await stripe.subscriptions.create({
+			const subscription = await this.stripe.subscriptions.create({
 				customer: customer.id,
 				items: [{ price: stripePrice.id }],
 				payment_behavior: 'default_incomplete',
@@ -262,7 +262,7 @@ export class StripeService {
 				});
 
 			const invoice = subscription.latest_invoice as Stripe.Invoice;
-			const paymentIntent = invoice?.payment_intent as Stripe.PaymentIntent;
+			const paymentIntent = (invoice as any)?.payment_intent as Stripe.PaymentIntent;
 
 			return {
 				subscription,
@@ -284,7 +284,7 @@ export class StripeService {
 	}> {
 		try {
 			// Cancel in Stripe (at period end)
-			await stripe.subscriptions.update(subscriptionId, {
+			await this.stripe.subscriptions.update(subscriptionId, {
 				cancel_at_period_end: true
 			});
 
