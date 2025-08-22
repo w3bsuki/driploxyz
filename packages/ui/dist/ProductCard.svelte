@@ -4,7 +4,6 @@
   import ConditionBadge from './ConditionBadge.svelte';
   import ProductPrice from './ProductPrice.svelte';
   import FavoriteButton from './FavoriteButton.svelte';
-  import ProductMeta from './ProductMeta.svelte';
   
   interface Props {
     product: Product;

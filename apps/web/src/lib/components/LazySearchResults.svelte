@@ -38,7 +38,7 @@
       // Dynamically import components to reduce initial bundle size
       const [GridComponent, VirtualGridComponent] = await Promise.all([
         loadComponent(() => import('./FeaturedProducts.svelte')),
-        loadComponent(() => import('./VirtualProductGrid.svelte'))
+        loadComponent(() => import('@repo/ui').then(m => ({ default: m.VirtualProductGrid })))
       ]);
       
       ProductGrid = GridComponent;
@@ -192,12 +192,12 @@
       <!-- Use virtual scrolling for large result sets -->
       {#if products.length > 50}
         <VirtualProductGrid 
-          {products}
+          items={products}
           {onProductClick}
           {onFavorite}
           {translations}
           itemHeight={320}
-          visibleCount={20}
+          containerHeight={600}
         />
       {:else}
         <!-- Regular grid for smaller result sets -->
