@@ -49,7 +49,6 @@ export { default as OptimizedImage } from './OptimizedImage.svelte';
 export { default as ImageOptimized } from './ImageOptimized.svelte';
 // Search components
 export { default as SearchDebounced } from './SearchDebounced.svelte';
-export { default as SearchBarSimple } from './SearchBarSimple.svelte';
 // Virtual scrolling components
 export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';
 // Skeleton loading components
@@ -63,6 +62,7 @@ export { default as LocaleDetectionBanner } from './LocaleDetectionBanner.svelte
 // Navigation components
 export { default as MegaMenu } from './MegaMenu.svelte';
 export { default as CategorySidebar } from './CategorySidebar.svelte';
+export { default as BottomNav } from './BottomNav.svelte';
 // Form components
 export { default as Select } from './Select.svelte';
 export { default as StepIndicator } from './StepIndicator.svelte';

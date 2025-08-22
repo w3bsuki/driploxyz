@@ -40,7 +40,6 @@ export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte
 export { default as OptimizedImage } from './OptimizedImage.svelte';
 export { default as ImageOptimized } from './ImageOptimized.svelte';
 export { default as SearchDebounced } from './SearchDebounced.svelte';
-export { default as SearchBarSimple } from './SearchBarSimple.svelte';
 export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';
 export { ProductCardSkeleton, ProductDetailSkeleton, SellerCardSkeleton, CategoryCardSkeleton, ListItemSkeleton, TextSkeleton, ImageSkeleton } from './skeleton/index';
 export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
@@ -48,6 +47,7 @@ export { default as CookieConsent } from './CookieConsent.svelte';
 export { default as LocaleDetectionBanner } from './LocaleDetectionBanner.svelte';
 export { default as MegaMenu } from './MegaMenu.svelte';
 export { default as CategorySidebar } from './CategorySidebar.svelte';
+export { default as BottomNav } from './BottomNav.svelte';
 export { default as Select } from './Select.svelte';
 export { default as StepIndicator } from './StepIndicator.svelte';
 export { default as ConditionSelector } from './ConditionSelector.svelte';

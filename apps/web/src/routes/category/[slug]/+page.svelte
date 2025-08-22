@@ -1,9 +1,8 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { Button, ProductCard, Breadcrumb, SellerQuickView, SearchBar, type Product, type BreadcrumbItem } from '@repo/ui';
+  import { Button, ProductCard, Breadcrumb, SellerQuickView, SearchBar, BottomNav, type Product, type BreadcrumbItem } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
-  import BottomNav from '$lib/components/BottomNav.svelte';
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
   import type { PageData } from './$types';

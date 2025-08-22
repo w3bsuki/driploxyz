@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { ProductCard, Button, SearchBar, MegaMenu, CategorySidebar, ProductCardSkeleton, type Product, type CategoryData } from '@repo/ui';
+  import { ProductCard, Button, SearchBar, MegaMenu, CategorySidebar, ProductCardSkeleton, BottomNav, type Product, type CategoryData } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
-  import BottomNav from '$lib/components/BottomNav.svelte';
   import { goto } from '$app/navigation';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
@@ -355,10 +354,9 @@
           bind:value={searchQuery}
           placeholder={i18n.search_placeholder()}
           onSearch={handleSearch}
-          onFilter={handleFilter}
-          onOpenMegaMenu={handleOpenMegaMenu}
-          showMegaMenuButton={true}
-          variant="hero"
+          onFilter={handleOpenMegaMenu}
+          showCategoriesButton={true}
+          categoriesText="Categories"
         />
         {#if activeFiltersCount() > 0}
           <div class="absolute top-2 right-1 h-5 w-5 bg-black text-white text-xs rounded-full flex items-center justify-center pointer-events-none">

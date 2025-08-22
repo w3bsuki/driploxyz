@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { Avatar, Button, TabGroup, TypingIndicator } from '@repo/ui';
+  import { Avatar, Button, TabGroup, TypingIndicator, BottomNav } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
-  import BottomNav from '$lib/components/BottomNav.svelte';
   import { messageNotificationActions } from '$lib/stores/messageNotifications';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';

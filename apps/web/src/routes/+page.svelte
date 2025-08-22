@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { SearchBarSimple } from '@repo/ui';
+	import { SearchBar, BottomNav } from '@repo/ui';
 	import * as i18n from '@repo/i18n';
 	import Header from '$lib/components/Header.svelte';
-	import BottomNav from '$lib/components/BottomNav.svelte';
 	import QuickViewDialog from '$lib/components/QuickViewDialog.svelte';
 	import PromotedHighlights from '$lib/components/PromotedHighlights.svelte';
 	import FeaturedProducts from '$lib/components/FeaturedProducts.svelte';
@@ -188,7 +187,7 @@
 			<div class="px-4 sm:px-6 lg:px-8 py-3 space-y-2">
 				<!-- Search Bar -->
 				<div class="relative">
-					<SearchBarSimple 
+					<SearchBar 
 						bind:value={searchQuery}
 						onSearch={handleSearch}
 						onFilter={handleFilter}

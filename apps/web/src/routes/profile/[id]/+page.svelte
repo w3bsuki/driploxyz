@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { Button, Avatar, ProductCard, BrandBadge, NewSellerBadge, AdminBadge } from '@repo/ui';
+  import { Button, Avatar, ProductCard, BrandBadge, NewSellerBadge, AdminBadge, BottomNav } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
-  import BottomNav from '$lib/components/BottomNav.svelte';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import * as i18n from '@repo/i18n';
