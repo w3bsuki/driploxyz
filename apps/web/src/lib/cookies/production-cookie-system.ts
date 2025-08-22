@@ -156,7 +156,7 @@ export class ProductionCookieManager {
   private getCookie(name: string): string | null {
     if (!browser) return null;
     const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
-    return match ? decodeURIComponent(match[2]) : null;
+    return match && match[2] ? decodeURIComponent(match[2]) : null;
   }
   
   /**
@@ -369,7 +369,7 @@ export class ProductionCookieManager {
         }
       }
       
-      return originalAppendChild.call(this, node);
+      return originalAppendChild.call(this, node) as T;
     };
   }
   
@@ -610,7 +610,7 @@ export class ProductionLocaleManager {
   detectLocale(): string {
     if (!browser) return 'en';
     
-    const browserLang = navigator.language.split('-')[0].toLowerCase();
+    const browserLang = navigator.language.split('-')[0]?.toLowerCase() || 'en';
     
     if (i18n.isAvailableLanguageTag(browserLang)) {
       return browserLang;

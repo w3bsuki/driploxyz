@@ -2,22 +2,22 @@
 	import { page } from '$app/stores';
 	import { Button } from '@repo/ui';
 	
-	// Typed error from our App.Error interface
-	$: error = $page.error as App.Error;
-	$: status = $page.status;
+	// Typed error from our App.Error interface - Svelte 5 runes
+	const error = $derived($page.error as App.Error);
+	const status = $derived($page.status);
 	
-	// Determine error title and message based on status code
-	$: errorTitle = status === 404 
+	// Determine error title and message based on status code - Svelte 5 runes
+	const errorTitle = $derived(status === 404 
 		? 'Page not found' 
 		: status >= 500 
 			? 'Something went wrong' 
-			: 'Error';
+			: 'Error');
 	
-	$: errorMessage = status === 404
+	const errorMessage = $derived(status === 404
 		? "The page you're looking for doesn't exist."
 		: status >= 500
 			? "We're sorry, but something unexpected happened."
-			: error?.message || 'An error occurred';
+			: error?.message || 'An error occurred');
 	
 	function handleRetry() {
 		location.reload();

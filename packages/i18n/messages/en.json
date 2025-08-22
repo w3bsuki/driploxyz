@@ -722,5 +722,10 @@
   "admin_startProcessing": "Start Processing",
   "admin_markCompleted": "Mark Completed",
   "admin_markFailed": "Mark Failed",
-  "admin_ref": "Ref"
+  "admin_ref": "Ref",
+  "category_all": "All",
+  "category_itemsCount": "items",
+  "category_loadMore": "Load More Items",
+  "category_searchPlaceholder": "Search in category...",
+  "category_clearAll": "Clear all"
 }

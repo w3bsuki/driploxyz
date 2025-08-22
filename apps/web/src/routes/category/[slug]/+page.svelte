@@ -3,6 +3,7 @@
   import { goto } from '$app/navigation';
   import { Button, ProductCard, Breadcrumb, SellerQuickView, SearchBar, type Product, type BreadcrumbItem } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
+  import BottomNav from '$lib/components/BottomNav.svelte';
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
   import type { PageData } from './$types';
@@ -85,10 +86,10 @@
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   const brands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Gucci', 'Louis Vuitton'];
   const conditions = [
-    { value: 'new', label: 'New with tags' },
-    { value: 'like-new', label: 'Like new' },
-    { value: 'good', label: 'Good' },
-    { value: 'fair', label: 'Fair' }
+    { value: 'new', label: i18n.condition_newWithTags() },
+    { value: 'like-new', label: i18n.condition_likeNew() },
+    { value: 'good', label: i18n.condition_good() },
+    { value: 'fair', label: i18n.condition_fair() }
   ];
   
   // Filter products based on search query, subcategory and filters
@@ -150,7 +151,7 @@
 
 <div class="min-h-screen bg-gray-50">
   <!-- Unified Header -->
-  <Header />
+  <Header showSearch={true} />
 
   <!-- Breadcrumb -->
   <div class="bg-white">
@@ -173,7 +174,7 @@
             <button
               onclick={() => openSellerModal(seller)}
               class="flex flex-col items-center group shrink-0 hover:scale-105 transition-transform cursor-pointer"
-              title="{seller.username} - {seller.itemCount} {seller.itemCount === 1 ? 'item' : 'items'}"
+              title="{seller.username} - {seller.itemCount} {i18n.category_itemsCount()}"
             >
               <div class="relative">
                 <img 
@@ -182,11 +183,11 @@
                   class="w-12 h-12 rounded-full border-2 border-white/30 group-hover:border-white/60 shadow-sm transition-all" 
                 />
                 {#if seller.itemCount === 1}
-                  <span class="absolute -bottom-1 -right-1 bg-green-500 text-white text-[9px] font-bold px-1 py-0.5 rounded-full border border-white">NEW</span>
+                  <span class="absolute -bottom-1 -right-1 bg-green-500 text-white text-[9px] font-bold px-1 py-0.5 rounded-full border border-white">{i18n.condition_new().toUpperCase()}</span>
                 {/if}
               </div>
               <span class="text-xs mt-1 font-medium opacity-90 group-hover:opacity-100">{seller.username}</span>
-              <span class="text-[10px] opacity-75">{seller.itemCount} items</span>
+              <span class="text-[10px] opacity-75">{seller.itemCount} {i18n.category_itemsCount()}</span>
             </button>
           {/each}
         {:else}
@@ -206,7 +207,7 @@
           <SearchBar 
             bind:value={searchQuery}
             onSearch={handleSearch}
-            placeholder={`Search in ${category.name}...`}
+            placeholder={i18n.category_searchPlaceholder()}
             variant="default"
             class="w-full"
           />
@@ -224,7 +225,7 @@
                   ? 'bg-white text-gray-900' 
                   : 'bg-white/20 text-white hover:bg-white/30'}"
             >
-              All
+              {i18n.category_all()}
             </button>
             {#each subcategories as subcat}
               <button
@@ -247,22 +248,37 @@
     <!-- Sort and Filter Bar -->
     <div class="flex justify-between items-center mb-4">
       <p class="text-sm text-gray-600">
-        {filteredProducts.length} items
+        {filteredProducts.length} {i18n.category_itemsCount()}
       </p>
       <div class="flex items-center space-x-2">
         <select 
           bind:value={sortBy}
           class="px-3 py-1 border border-gray-300 rounded-lg text-sm"
         >
-          <option value="popular">Most Popular</option>
-          <option value="newest">Newest First</option>
-          <option value="price-low">Price: Low to High</option>
-          <option value="price-high">Price: High to Low</option>
+          <option value="popular">{i18n.filter_mostPopular()}</option>
+          <option value="newest">{i18n.filter_newest()}</option>
+          <option value="price-low">{i18n.filter_priceLowToHigh()}</option>
+          <option value="price-high">{i18n.filter_priceHighToLow()}</option>
         </select>
+        <!-- Desktop Filter Toggle -->
         <Button 
           variant="outline" 
           size="sm"
           onclick={() => showFilters = !showFilters}
+          class="hidden lg:flex"
+        >
+          <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          {i18n.search_filters()}
+        </Button>
+        
+        <!-- Mobile Filter Toggle -->
+        <Button 
+          variant="outline" 
+          size="sm"
+          onclick={() => showFilters = !showFilters}
+          class="lg:hidden flex"
         >
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -273,20 +289,20 @@
     </div>
 
     <div class="flex gap-6">
-      <!-- Filters Sidebar -->
+      <!-- Desktop Filters Sidebar -->
       {#if showFilters}
-        <aside class="w-64 shrink-0">
-          <div class="bg-white rounded-lg p-4 sticky top-24">
+        <aside class="hidden lg:block w-64 shrink-0">
+          <div class="bg-white rounded-lg p-4 sticky top-24 shadow-sm border border-gray-200">
             <div class="flex justify-between items-center mb-4">
-              <h3 class="font-semibold">Filters</h3>
+              <h3 class="font-semibold">{i18n.search_filters()}</h3>
               <button onclick={clearFilters} class="text-sm text-gray-500 hover:text-gray-700">
-                Clear all
+                {i18n.category_clearAll()}
               </button>
             </div>
             
             <!-- Sizes -->
             <div class="mb-6">
-              <h4 class="font-medium text-sm mb-3">Size</h4>
+              <h4 class="font-medium text-sm mb-3">{i18n.filter_size()}</h4>
               <div class="grid grid-cols-3 gap-2">
                 {#each sizes as size}
                   <button
@@ -304,7 +320,7 @@
             
             <!-- Condition -->
             <div class="mb-6">
-              <h4 class="font-medium text-sm mb-3">Condition</h4>
+              <h4 class="font-medium text-sm mb-3">{i18n.filter_condition()}</h4>
               <div class="space-y-2">
                 {#each conditions as condition}
                   <label class="flex items-center">
@@ -322,19 +338,19 @@
             
             <!-- Price Range -->
             <div class="mb-6">
-              <h4 class="font-medium text-sm mb-3">Price Range</h4>
+              <h4 class="font-medium text-sm mb-3">{i18n.filter_priceRange()}</h4>
               <div class="flex items-center space-x-2">
                 <input 
                   type="number" 
                   bind:value={priceRange.min}
-                  placeholder="Min"
+                  placeholder="{i18n.search_min()}"
                   class="w-24 px-2 py-1 border border-gray-300 rounded-sm text-sm"
                 />
                 <span class="text-gray-500">-</span>
                 <input 
                   type="number" 
                   bind:value={priceRange.max}
-                  placeholder="Max"
+                  placeholder="{i18n.search_max()}"
                   class="w-24 px-2 py-1 border border-gray-300 rounded-sm text-sm"
                 />
               </div>
@@ -371,11 +387,101 @@
     <!-- Load More -->
     <div class="text-center mt-8">
       <Button variant="outline" size="lg">
-        Load More {category.name} Items
+        {i18n.category_loadMore()}
       </Button>
     </div>
   </div>
 </div>
+
+<!-- Mobile Filter Drawer -->
+{#if showFilters}
+  <div class="lg:hidden fixed inset-0 z-50">
+    <!-- Backdrop -->
+    <button 
+      class="fixed inset-0 bg-black bg-opacity-50"
+      onclick={() => showFilters = false}
+      aria-label="Close filters"
+    ></button>
+    
+    <!-- Drawer -->
+    <div class="fixed bottom-16 left-0 right-0 bg-white rounded-t-2xl h-[calc(90vh-4rem)] flex flex-col shadow-2xl">
+      <!-- Header -->
+      <div class="flex justify-between items-center p-4 border-b border-gray-100">
+        <h2 class="text-lg font-semibold">Filters</h2>
+        <button onclick={() => showFilters = false} class="p-1">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Scrollable Content -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-6">
+        <!-- Sizes -->
+        <div>
+          <h4 class="font-medium text-sm mb-3">Size</h4>
+          <div class="grid grid-cols-3 gap-2">
+            {#each sizes as size}
+              <button
+                onclick={() => toggleSize(size)}
+                class="px-3 py-2 text-sm border rounded-lg transition-all duration-200 font-medium
+                  {selectedSizes.includes(size) 
+                    ? 'bg-black text-white border-black shadow-sm' 
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'}"
+              >
+                {size}
+              </button>
+            {/each}
+          </div>
+        </div>
+        
+        <!-- Condition -->
+        <div>
+          <h4 class="font-medium text-sm mb-3">Condition</h4>
+          <div class="space-y-2">
+            {#each conditions as condition}
+              <button
+                onclick={() => toggleCondition(condition.value)}
+                class="w-full py-3 px-3 text-sm rounded-lg border text-left transition-all duration-200 font-medium
+                  {selectedConditions.includes(condition.value)
+                    ? 'bg-black text-white border-black shadow-sm' 
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'}"
+              >
+                {condition.label}
+              </button>
+            {/each}
+          </div>
+        </div>
+        
+        <!-- Price Range -->
+        <div>
+          <h4 class="font-medium text-sm mb-3">Price Range</h4>
+          <div class="flex items-center space-x-2">
+            <input 
+              type="number" 
+              bind:value={priceRange.min}
+              placeholder="Min"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            />
+            <span class="text-gray-500">-</span>
+            <input 
+              type="number" 
+              bind:value={priceRange.max}
+              placeholder="Max"
+              class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            />
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer Actions -->
+      <div class="flex space-x-3 p-4 border-t border-gray-100">
+        <Button onclick={clearFilters} variant="outline" class="flex-1">Clear All</Button>
+        <Button onclick={() => showFilters = false} class="flex-1">Apply Filters</Button>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <!-- Seller Quick View Modal -->
 {#if selectedSeller}
@@ -386,6 +492,9 @@
     onViewProfile={(sellerId) => goto(`/profile/${sellerId}`)}
   />
 {/if}
+
+<!-- Bottom Navigation -->
+<BottomNav />
 
 <style>
   /* Hide scrollbar for horizontal scroll */

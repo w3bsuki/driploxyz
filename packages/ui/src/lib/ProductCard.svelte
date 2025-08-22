@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Product } from './types.js';
   import Card from './Card.svelte';
-  import OptimizedImage from './OptimizedImage.svelte';
   
   interface Props {
     product: Product;
@@ -10,6 +9,7 @@
     favorited?: boolean;
     highlighted?: boolean;
     class?: string;
+    priority?: boolean;
     translations?: {
       size?: string;
       currency?: string;
@@ -30,6 +30,7 @@
     favorited = false,
     highlighted = false,
     class: className = '',
+    priority = false,
     translations = {
       size: 'Size',
       currency: '$',
@@ -64,6 +65,20 @@
     'good': 'bg-yellow-500 text-white',
     'fair': 'bg-orange-500 text-white'
   };
+
+  // Get image URL - completely static, no reactivity
+  let imageUrl = '/placeholder-product.svg';
+  
+  if (product.product_images?.[0]?.image_url) {
+    imageUrl = product.product_images[0].image_url;
+  } else if (product.images?.[0]) {
+    const firstImage = product.images[0];
+    if (typeof firstImage === 'string') {
+      imageUrl = firstImage;
+    } else if (firstImage?.image_url) {
+      imageUrl = firstImage.image_url;
+    }
+  }
 </script>
 
 <div 
@@ -75,44 +90,32 @@
       handleClick();
     }
   }}
-  onmouseenter={() => {
-    // Prefetch product page data on hover for better performance
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      window.requestIdleCallback(() => {
-        const link = document.createElement('link');
-        link.rel = 'prefetch';
-        link.href = `/product/${product.id}`;
-        document.head.appendChild(link);
-      });
-    }
-  }}
   role="button"
   tabindex={0}
 >
-  <!-- Image Container -->
+  <!-- Image Container - Direct img tag, no components -->
   <div class="relative aspect-square bg-gray-50 overflow-hidden rounded-lg">
-    <OptimizedImage
-      src={typeof product.images?.[0] === 'string' ? product.images[0] : product.images?.[0]?.image_url || '/placeholder-product.svg'}
+    <img
+      src={imageUrl}
       alt={product.title}
-      aspectRatio="square"
-      loading="lazy"
-      class="rounded-lg"
+      loading={priority ? "eager" : "lazy"}
+      fetchpriority={priority ? "high" : "auto"}
+      class="w-full h-full object-cover"
       sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
-      showSkeleton={true}
     />
     
-    <!-- Condition badge - top left, subtle -->
+    <!-- Condition badge -->
     {#if product.condition}
       <div class="absolute top-2 left-2 px-2 py-0.5 {conditionColors[product.condition]} text-xs font-medium rounded uppercase">
         {conditionLabels[product.condition]}
       </div>
     {/if}
     
-    <!-- Favorite button - top right, subtle -->
+    <!-- Favorite button -->
     {#if onFavorite}
       <button 
         onclick={handleFavorite}
-        class="absolute top-2 right-2 p-2 bg-white/90 rounded-full hover:bg-white"
+        class="absolute top-2 right-2 p-3 bg-white/90 rounded-full hover:bg-white min-h-[44px] min-w-[44px]"
         aria-label={favorited ? translations.removeFromFavorites : translations.addToFavorites}
       >
         <svg 
@@ -129,24 +132,20 @@
     {/if}
   </div>
   
-  <!-- Content - minimal spacing -->
+  <!-- Content -->
   <div class="pt-2 space-y-0.5">
-    <!-- Brand - small, muted -->
     {#if product.brand}
       <p class="text-xs text-gray-500">{product.brand}</p>
     {/if}
     
-    <!-- Title - normal weight, not bold -->
     <h3 class="text-sm text-gray-900 line-clamp-1">{product.title}</h3>
     
-    <!-- Size and Condition - single line, muted -->
     <p class="text-xs text-gray-500">
       {#if product.size}{translations.size} {product.size}{/if}
       {#if product.size && product.condition} · {/if}
       {#if product.condition}{conditionLabels[product.condition]}{/if}
     </p>
     
-    <!-- Price - slightly larger, normal weight -->
     <p class="text-sm text-gray-900">
       {translations.formatPrice ? translations.formatPrice(product.price) : `${translations.currency}${product.price}`}
     </p>
@@ -156,11 +155,8 @@
 <style>
   .product-card {
     position: relative;
-    /* Optimized for speed - no transitions */
-    contain: layout style paint;
   }
   
-  /* Simple highlighted product border - no animations */
   .product-card.highlighted {
     padding: 3px;
     background: #FFD700;

@@ -6,6 +6,7 @@ interface Props {
     favorited?: boolean;
     highlighted?: boolean;
     class?: string;
+    priority?: boolean;
     translations?: {
         size?: string;
         currency?: string;

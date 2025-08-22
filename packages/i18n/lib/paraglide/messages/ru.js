@@ -4844,6 +4844,46 @@ export const admin_markFailed = () => `Отметить неудачным`
 export const admin_ref = () => `Ссылка`
 
 
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_all = () => `Все`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_itemsCount = () => `товаров`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_loadMore = () => `Показать больше товаров`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_searchPlaceholder = () => `Искать в категории...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_clearAll = () => `Очистить все`
+
+
 export { onboarding_tutorial_welcomeTitle } from "./en.js"
 
 export { onboarding_tutorial_welcomeContent } from "./en.js"

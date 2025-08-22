@@ -9,6 +9,8 @@ const config = {
 	
 	// Configure compiler to be less strict for accessibility warnings during build
 	compilerOptions: {
+		// CRITICAL: Lock compiler to Svelte 5 runes mode
+		runes: true,
 		// Allow build to continue with warnings
 		warningFilter: (warning) => {
 			// Allow accessibility warnings without failing build

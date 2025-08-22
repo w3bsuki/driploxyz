@@ -4844,6 +4844,46 @@ export const admin_markFailed = () => `Позначити невдалим`
 export const admin_ref = () => `Посилання`
 
 
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_all = () => `Всі`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_itemsCount = () => `товарів`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_loadMore = () => `Показати більше товарів`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_searchPlaceholder = () => `Шукати в категорії...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_clearAll = () => `Очистити все`
+
+
 export { onboarding_tutorial_welcomeTitle } from "./en.js"
 
 export { onboarding_tutorial_welcomeContent } from "./en.js"

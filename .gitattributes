@@ -2,6 +2,13 @@
 *.svelte linguist-language=Svelte
 *.js linguist-language=JavaScript
 *.ts linguist-language=TypeScript
+
+# Exclude generated/vendor artifacts from language stats
 packages/ui/dist/* linguist-generated=true
-node_modules/* linguist-vendored=true
+packages/i18n/lib/* linguist-generated=true
+apps/**/.svelte-kit/** linguist-generated=true
+node_modules/** linguist-vendored=true
 *.lock linguist-generated=true
+*.d.ts linguist-generated=true
+*.d.ts.map linguist-generated=true
+*.map linguist-generated=true

@@ -83,8 +83,8 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
       throw redirect(303, '/onboarding');
     }
 
-    // Safe next redirect for returning users
-    let redirectPath = '/';
+    // Safe next redirect for returning users - default to dashboard
+    let redirectPath = '/dashboard';
     if (next && next !== 'undefined' && next !== 'null') {
       if (next.startsWith('/') && !next.includes('://')) {
         redirectPath = next;

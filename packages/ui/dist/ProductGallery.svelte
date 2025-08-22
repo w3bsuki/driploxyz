@@ -109,12 +109,12 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <div 
-  class="relative h-full bg-white rounded-xl overflow-hidden {className}"
+  class="relative h-full bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden max-w-lg mx-auto {className}"
   bind:this={galleryRef}
 >
   <!-- Main Image Container -->
   <button 
-    class="relative h-full w-full bg-gray-50 overflow-hidden cursor-zoom-{isZoomed ? 'out' : 'in'} border-0 p-0 text-left"
+    class="relative h-full w-full bg-gray-50 overflow-hidden cursor-zoom-{isZoomed ? 'out' : 'in'} border-0 p-0 text-left rounded-2xl"
     onclick={handleImageClick}
     ontouchstart={handleTouchStart}
     ontouchend={handleTouchEnd}

@@ -5,7 +5,6 @@
   // Deploy to driplo.xyz
   import '$lib/styles/cyrillic-typography.css';
   import { invalidate } from '$app/navigation';
-  import { onMount } from 'svelte';
   import { browser, dev } from '$app/environment';
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
@@ -66,7 +65,8 @@
     authLoading.set(false);
   });
 
-  onMount(async () => {
+  // Set up auth state listener for session changes  
+  $effect(() => {
     if (!supabase) return;
     
     // Set up auth state listener for session changes
@@ -105,9 +105,10 @@
 
     // Subscribe to notifications if already logged in
     if (data?.user?.id) {
-      await orderNotificationActions.subscribeToNotifications(supabase, data.user.id);
+      orderNotificationActions.subscribeToNotifications(supabase, data.user.id);
     }
 
+    // Cleanup function for $effect
     return () => {
       authListener.subscription.unsubscribe();
       if (data?.user?.id) {

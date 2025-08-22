@@ -687,5 +687,10 @@
   "admin_startProcessing": "Започни обработка",
   "admin_markCompleted": "Отбележи като завършено",
   "admin_markFailed": "Отбележи като неуспешно",
-  "admin_ref": "Реф"
+  "admin_ref": "Реф",
+  "category_all": "Всички",
+  "category_itemsCount": "артикула",
+  "category_loadMore": "Покажи още артикули",
+  "category_searchPlaceholder": "Търси в категорията...",
+  "category_clearAll": "Изчисти всички"
 }

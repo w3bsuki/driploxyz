@@ -27,7 +27,7 @@ export async function searchProducts(
       *,
       seller:profiles(id, username, avatar_url, account_type, rating),
       category:categories(name, slug),
-      images:product_images(url, is_primary)
+      product_images(image_url, sort_order, display_order)
     `,
       { count: 'exact' }
     )
@@ -57,7 +57,7 @@ export async function searchProducts(
 
   // Condition filter
   if (filters.condition && filters.condition.length > 0) {
-    dbQuery = dbQuery.in('condition', filters.condition);
+    dbQuery = dbQuery.in('condition', filters.condition as ('new' | 'like-new' | 'good' | 'fair')[]);
   }
 
   // Brand filter
@@ -140,8 +140,8 @@ export async function createProduct(
   const { data: product, error: productError } = await supabase
     .from('products')
     .insert({
-      title: data.title,
-      description: data.description,
+      title: data.title || '',
+      description: data.description || '',
       price: data.price,
       shipping_cost: data.shipping_cost,
       category_id: data.category_id,
@@ -163,7 +163,9 @@ export async function createProduct(
   // Insert product images
   const imageInserts = imageUrls.map((img) => ({
     product_id: product.id,
-    ...img
+    image_url: img.url,
+    sort_order: img.is_primary ? 0 : 1,
+    display_order: img.is_primary ? 0 : 1
   }));
 
   const { error: imagesError } = await supabase

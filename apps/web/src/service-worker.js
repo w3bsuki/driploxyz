@@ -56,21 +56,10 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch event - implement caching strategies
+// Fetch event - DISABLED to fix image loading issues
 self.addEventListener('fetch', event => {
-  const { request } = event;
-  const url = new URL(request.url);
-
-  // Skip non-GET requests
-  if (request.method !== 'GET') return;
-
-  // Skip chrome-extension and other protocols
-  if (!url.protocol.startsWith('http')) return;
-
-  // Skip requests with cache-busting parameters in development
-  if (url.searchParams.has('vite')) return;
-
-  event.respondWith(handleFetch(request));
+  // DISABLED - let browser handle all fetches normally
+  return;
 });
 
 async function handleFetch(request) {

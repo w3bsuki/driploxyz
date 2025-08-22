@@ -28,12 +28,13 @@
   <!-- Featured Products Grid - Mobile-First Responsive -->
   {:else if products.length > 0}
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-3 lg:gap-4">
-      {#each products as product}
+      {#each products as product, index}
         <ProductCard 
           {product}
           onclick={() => onProductClick(product)}
           onFavorite={() => onFavorite(product)}
           favorited={false}
+          priority={index < 6}
           translations={{
             size: i18n.product_size(),
             newSeller: i18n.trending_newSeller(),

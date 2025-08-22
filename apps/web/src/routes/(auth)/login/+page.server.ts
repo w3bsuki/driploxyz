@@ -113,7 +113,7 @@ export const actions: Actions = {
       throw redirect(303, '/onboarding');
     }
     
-    // Redirect to home page after successful login
-    throw redirect(303, '/');
+    // Redirect to dashboard after successful login (OFFICIAL SVELTEKIT 2 PATTERN)
+    throw redirect(303, '/dashboard');
   }
 };

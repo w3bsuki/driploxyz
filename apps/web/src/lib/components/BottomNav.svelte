@@ -64,7 +64,7 @@
   }
 </script>
 
-<nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe sm:hidden z-50">
+<nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-white shadow-lg pb-safe sm:hidden z-50 before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gray-200 before:to-transparent">
   <div class="grid grid-cols-5">
     {#each navItems as item}
       <a 

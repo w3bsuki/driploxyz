@@ -110,7 +110,7 @@
 </svelte:head>
 
 <div class="min-h-screen bg-white">
-  <Header />
+  <Header showSearch={true} />
   
   <!-- Breadcrumb -->
   <div class="px-4 lg:px-8 py-3 max-w-7xl mx-auto">
@@ -126,8 +126,8 @@
   </div>
   
   <div class="lg:grid lg:grid-cols-2 lg:gap-8 max-w-7xl mx-auto">
-    <!-- Gallery - Full width, sharp corners -->
-    <div class="lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)]">
+    <!-- Gallery - Highlight style with borders -->
+    <div class="lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] px-4 lg:px-0">
       <ProductGallery 
         images={productImages}
         title={data.product.title}
@@ -181,7 +181,7 @@
             <p class="text-sm text-gray-600 mt-1">
               + {formatPrice(data.product.shipping_price)} shipping
             </p>
-          {:else}
+          {:else if data.product.shipping_price === 0}
             <p class="text-sm text-green-600 mt-1">Free shipping</p>
           {/if}
         </div>
@@ -223,7 +223,9 @@
                   {data.product.seller_rating.toFixed(1)}
                 </span>
               {/if}
-              <span>234 sales</span>
+              {#if data.product.seller_sales_count}
+                <span>{data.product.seller_sales_count} sales</span>
+              {/if}
             </div>
           </div>
         </a>
@@ -267,10 +269,14 @@
         </div>
         <div class="flex justify-between">
           <span class="text-gray-600">Views</span>
-          <span class="flex items-center gap-1">
-            <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-            156 today
-          </span>
+          {#if data.product.view_count}
+            <span class="flex items-center gap-1">
+              <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+              {data.product.view_count} views
+            </span>
+          {:else}
+            <span class="text-gray-500">No views data</span>
+          {/if}
         </div>
       </div>
       
@@ -373,7 +379,7 @@
         <p class="text-xs text-gray-600">
           {#if data.product.shipping_price}
             + {formatPrice(data.product.shipping_price)} shipping
-          {:else}
+          {:else if data.product.shipping_price === 0}
             Free shipping
           {/if}
         </p>

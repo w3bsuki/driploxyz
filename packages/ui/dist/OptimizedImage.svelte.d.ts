@@ -8,6 +8,9 @@ interface Props {
     sizes?: string;
     onclick?: () => void;
     showSkeleton?: boolean;
+    fetchpriority?: 'high' | 'low' | 'auto';
+    width?: number;
+    quality?: number;
 }
 declare const OptimizedImage: import("svelte").Component<Props, {}, "">;
 type OptimizedImage = ReturnType<typeof OptimizedImage>;

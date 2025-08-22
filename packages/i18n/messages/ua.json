@@ -578,5 +578,10 @@
   "admin_startProcessing": "Почати обробку",
   "admin_markCompleted": "Позначити виконаним",
   "admin_markFailed": "Позначити невдалим",
-  "admin_ref": "Посилання"
+  "admin_ref": "Посилання",
+  "category_all": "Всі",
+  "category_itemsCount": "товарів",
+  "category_loadMore": "Показати більше товарів",
+  "category_searchPlaceholder": "Шукати в категорії...",
+  "category_clearAll": "Очистити все"
 }

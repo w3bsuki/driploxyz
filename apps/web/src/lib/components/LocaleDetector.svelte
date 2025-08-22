@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { LocaleDetectionBanner } from '@repo/ui';
@@ -18,7 +17,8 @@
   let detectedCountry = $state<string | null>(null);
   let currentLocale = $state<LanguageTag>(languageTag());
   
-  onMount(async () => {
+  // Detect and handle locale on component mount
+  $effect(async () => {
     // Skip if user is authenticated and has a stored preference in their profile
     const session = $page.data.session;
     if (session?.user) {

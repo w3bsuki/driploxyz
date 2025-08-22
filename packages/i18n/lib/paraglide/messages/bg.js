@@ -5395,6 +5395,46 @@ export const admin_ref = () => `Реф`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const category_all = () => `Всички`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_itemsCount = () => `артикула`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_loadMore = () => `Покажи още артикули`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_searchPlaceholder = () => `Търси в категорията...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_clearAll = () => `Изчисти всички`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const onboarding_tutorial_welcomeTitle = () => `Добре дошли в Driplo! 👋`
 
 

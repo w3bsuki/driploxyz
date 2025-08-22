@@ -19,8 +19,6 @@
 	let searchQuery = $state('');
 	let selectedSeller = $state<Seller | null>(null);
 	let showCategoryDropdown = $state(false);
-	let showCompactSearch = $state(false);
-	let heroSearchElement: HTMLElement = $state();
 	let loadingCategory = $state<string | null>(null);
 
 	// Language state - already initialized in +layout.svelte
@@ -43,7 +41,15 @@
 				id: product.id,
 				title: product.title,
 				price: product.price,
-				images: product.images,
+				images: (product.product_images || product.images)?.map(img => {
+					// Handle both string and object formats for promoted products
+					if (typeof img === 'string') {
+						return { image_url: img };
+					} else if (img && typeof img === 'object' && 'image_url' in img) {
+						return img;
+					}
+					return { image_url: '' };
+				}).filter(img => img.image_url) || [],
 				seller_name: product.seller_name,
 				seller_id: product.seller_id
 			}))
@@ -52,21 +58,24 @@
 	// Transform products to match UI component interface
 	const products = $derived<ProductDisplay[]>(
 		data.featuredProducts.map((product: ProductWithImages) => ({
-			id: product.id,
-			title: product.title,
-			description: product.description,
-			price: product.price,
-			images: product.images?.map(img => img.image_url) || [],
-			brand: product.brand,
-			size: product.size,
-			condition: product.condition as ProductDisplay['condition'],
-			category: product.category_name || 'Uncategorized',
-			sellerId: product.seller_id,
-			sellerName: product.seller_name || 'Unknown Seller',
-			sellerRating: product.seller_rating || 0,
-			sellerAvatar: product.seller_avatar,
-			createdAt: product.created_at,
-			location: product.location
+				id: product.id,
+				title: product.title,
+				description: product.description,
+				price: product.price,
+				// Pass the product_images array directly to ProductCard
+				product_images: product.product_images || [],
+				// Keep images array for compatibility
+				images: product.images || [],
+				brand: product.brand,
+				size: product.size,
+				condition: product.condition as ProductDisplay['condition'],
+				category: product.category_name || 'Uncategorized',
+				sellerId: product.seller_id,
+				sellerName: product.seller_name || 'Unknown Seller',
+				sellerRating: product.seller_rating || 0,
+				sellerAvatar: product.seller_avatar,
+				createdAt: product.created_at,
+				location: product.location
 		}))
 	);
 
@@ -150,30 +159,7 @@
 		return CATEGORY_ICONS[categoryName] || DEFAULT_CATEGORY_ICON;
 	}
 
-	// Scroll detection for compact search
-	$effect(() => {
-		if (!heroSearchElement) return;
-		
-		// Check if IntersectionObserver is supported
-		if (!window.IntersectionObserver) {
-			// Fallback: always show compact search on unsupported browsers
-			showCompactSearch = true;
-			return;
-		}
-
-		const observer = new IntersectionObserver(
-			([entry]) => {
-				showCompactSearch = !entry.isIntersecting;
-			},
-			{ 
-				rootMargin: '-64px 0px 0px 0px' // Trigger when hero is out of view (header is 64px)
-			}
-		);
-
-		observer.observe(heroSearchElement);
-
-		return () => observer.disconnect();
-	});
+	// Scroll detection removed for cleaner UX
 </script>
 
 <style>
@@ -192,25 +178,11 @@
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
 	<Header initialLanguage={data.language} />
 
-	<!-- Compact Sticky Search Bar - Positioned at top of viewport -->
-	<div class="sticky-search-container fixed top-0 left-0 right-0 z-40 transition-transform duration-300 ease-out {showCompactSearch ? 'translate-y-0' : '-translate-y-full'}">
-		<div class="bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm">
-			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-				<SearchBar 
-					bind:value={searchQuery}
-					onSearch={handleSearch}
-					placeholder={i18n.nav_search()}
-					categoriesText={i18n.search_categories()}
-					variant="compact"
-					class="max-w-2xl mx-auto"
-				/>
-			</div>
-		</div>
-	</div>
+	<!-- Compact Sticky Search Bar removed for cleaner UX -->
 
 	<main class="max-w-7xl mx-auto">
 		<!-- Hero Search -->
-		<div bind:this={heroSearchElement} class="bg-gray-50 border-b border-gray-200">
+		<div class="bg-gray-50 border-b border-gray-200">
 			<div class="px-4 sm:px-6 lg:px-8 py-3 space-y-2">
 				<!-- Search Bar -->
 				<div class="relative">

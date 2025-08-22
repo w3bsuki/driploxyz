@@ -20,7 +20,7 @@ export class CSRFProtection {
 		try {
 			const decoded = atob(token);
 			const [timestampStr, tokenSessionId] = decoded.split(':');
-			const timestamp = parseInt(timestampStr, 10);
+			const timestamp = parseInt(timestampStr || '0', 10);
 			
 			// Check if token has expired (default 1 hour)
 			if (Date.now() - timestamp > maxAge) {

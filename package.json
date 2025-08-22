@@ -17,11 +17,17 @@
     "test:a11y": "turbo run test:a11y",
     "test:visual": "turbo run test:visual",
     "analyze": "turbo run analyze",
+    "db:types": "supabase gen types typescript --linked > packages/database/src/generated.ts",
+    "db:types:local": "supabase gen types typescript --local > packages/database/src/generated.ts",
+    "postinstall": "pnpm db:types || echo 'Warning: Could not generate database types. Supabase may not be configured.'",
     "ci": "pnpm install --frozen-lockfile && pnpm build && pnpm test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "playwright": "^1.55.0",
     "prettier": "^3.6.0",
     "prettier-plugin-svelte": "^3.4.0",
+    "supabase": "^2.0.0",
     "turbo": "2.5.4"
   },
   "packageManager": "pnpm@10.0.0",

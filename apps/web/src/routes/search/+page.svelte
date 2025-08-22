@@ -27,6 +27,22 @@
   let isSearching = $state(false);
   
   let { data }: Props = $props();
+
+  // Initialize search state from server data and URL parameters
+  $effect(() => {
+    if (data.searchQuery) {
+      searchQuery = data.searchQuery;
+    }
+    if (data.filters) {
+      if (data.filters.category) selectedMainCategory = data.filters.category;
+      if (data.filters.size) selectedSize = data.filters.size;
+      if (data.filters.brand) selectedBrand = data.filters.brand;
+      if (data.filters.condition) selectedCondition = data.filters.condition;
+      if (data.filters.minPrice) priceMin = data.filters.minPrice;
+      if (data.filters.maxPrice) priceMax = data.filters.maxPrice;
+      if (data.filters.sortBy) sortBy = data.filters.sortBy;
+    }
+  });
   
   // Category data structure with subcategories using i18n
   const categoryData = $derived<CategoryData>(() => ({
@@ -207,14 +223,14 @@
   const brands = $derived(() => currentFilters().brands);
   const conditions = ['new', 'like-new', 'good', 'fair'];
   
-  // Transform real products from Supabase to Product interface
-  const allProducts = $derived(() => {
+  // Transform server products to component format
+  const displayProducts = $derived(() => {
     return (data.products || []).map(product => ({
       id: product.id,
       title: product.title,
       description: product.description,
       price: Number(product.price),
-      images: product.images?.map(img => img.image_url) || ['/placeholder-product.svg'],
+      images: product.images && product.images.length > 0 ? product.images : ['/placeholder-product.svg'],
       brand: product.brand,
       size: product.size,
       condition: product.condition as Product['condition'],
@@ -226,85 +242,6 @@
       createdAt: product.created_at,
       location: product.location || 'Unknown'
     }));
-  });
-  
-  // Filtered products
-  let filteredProducts = $derived(() => {
-    let results = [...allProducts()];
-    
-    // Filter by search query
-    if (searchQuery) {
-      results = results.filter(p => 
-        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.brand?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    
-    // Filter by category - match against database category name
-    if (selectedMainCategory) {
-      // Map our UI categories to database category names
-      const categoryMap: Record<string, string> = {
-        'women': 'Women',
-        'men': 'Men',
-        'kids': 'Kids',
-        'shoes': 'Shoes',
-        'bags': 'Bags',
-        'accessories': 'Accessories',
-        'beauty': 'Beauty',
-        'home': 'Home',
-        'pets': 'Pets'
-      };
-      const dbCategoryName = categoryMap[selectedMainCategory];
-      if (dbCategoryName) {
-        results = results.filter(p => 
-          p.category === dbCategoryName
-        );
-      }
-    }
-    
-    // Filter by subcategory
-    if (selectedSubcategory) {
-      // In real app, you'd have subcategory data on products
-      // For now, just show filtered results
-    }
-    
-    // Filter by size
-    if (selectedSize !== 'all') {
-      results = results.filter(p => p.size === selectedSize);
-    }
-    
-    // Filter by brand
-    if (selectedBrand !== 'all') {
-      results = results.filter(p => p.brand === selectedBrand);
-    }
-    
-    // Filter by condition
-    if (selectedCondition !== 'all') {
-      results = results.filter(p => p.condition === selectedCondition);
-    }
-    
-    // Filter by price
-    if (priceMin) {
-      results = results.filter(p => p.price >= parseFloat(priceMin));
-    }
-    if (priceMax) {
-      results = results.filter(p => p.price <= parseFloat(priceMax));
-    }
-    
-    // Sort
-    switch(sortBy) {
-      case 'price-low':
-        results.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        results.sort((a, b) => b.price - a.price);
-        break;
-      case 'newest':
-        results.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        break;
-    }
-    
-    return results;
   });
   
   let activeFiltersCount = $derived(() => {
@@ -331,8 +268,24 @@
   
   async function handleSearch(query: string) {
     isSearching = true;
-    searchQuery = query;
-    // Removed artificial delay - instant search
+    
+    // Build URL with search parameters for server-side filtering
+    const url = new URL('/search', window.location.origin);
+    if (query.trim()) {
+      url.searchParams.set('q', query.trim());
+    }
+    
+    // Preserve existing filters
+    if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+    if (selectedSize !== 'all') url.searchParams.set('size', selectedSize);
+    if (selectedBrand !== 'all') url.searchParams.set('brand', selectedBrand);
+    if (selectedCondition !== 'all') url.searchParams.set('condition', selectedCondition);
+    if (priceMin) url.searchParams.set('min_price', priceMin);
+    if (priceMax) url.searchParams.set('max_price', priceMax);
+    if (sortBy !== 'relevance') url.searchParams.set('sort', sortBy);
+    
+    // Navigate to trigger server-side load
+    await goto(url.pathname + url.search);
     isSearching = false;
   }
   
@@ -439,7 +392,7 @@
       ></button>
       
       <!-- Drawer -->
-      <div class="fixed bottom-20 left-0 right-0 bg-white rounded-t-2xl h-[calc(85vh-5rem)] flex flex-col">
+      <div class="fixed bottom-16 left-0 right-0 bg-white rounded-t-2xl h-[calc(90vh-4rem)] flex flex-col shadow-2xl border-t border-gray-100">
         <!-- Fixed Header -->
         <div class="flex justify-between items-center p-4 border-b border-gray-100 shrink-0">
           <h2 class="text-lg font-semibold">{i18n.search_quickFilters()}</h2>
@@ -456,13 +409,13 @@
             
             <!-- Size -->
             <div>
-              <div class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_size()}</div>
-              <div class="grid grid-cols-4 gap-1.5">
+              <div class="block text-sm font-medium text-gray-700 mb-3">{i18n.search_size()}</div>
+              <div class="grid grid-cols-4 gap-2">
                 {#each sizes() as size}
                   <button
                     onclick={() => selectedSize = selectedSize === size ? 'all' : size}
-                    class="py-2 px-2 text-xs rounded-lg ring-1 transition-colors
-                      {selectedSize === size ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
+                    class="py-2.5 px-2 text-sm rounded-lg ring-1 transition-all duration-200 font-medium
+                      {selectedSize === size ? 'bg-black text-white ring-black shadow-sm transform scale-105' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                   >
                     {size}
                   </button>
@@ -472,20 +425,20 @@
             
             <!-- Brand -->
             <div>
-              <div class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_brand()}</div>
+              <div class="block text-sm font-medium text-gray-700 mb-3">{i18n.search_brand()}</div>
               <div class="grid grid-cols-2 gap-2">
                 <button
                   onclick={() => selectedBrand = 'all'}
-                  class="py-3 px-3 text-sm rounded-lg ring-1 transition-colors
-                    {selectedBrand === 'all' ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
+                  class="py-3 px-3 text-sm rounded-lg ring-1 transition-all duration-200 font-medium
+                    {selectedBrand === 'all' ? 'bg-black text-white ring-black shadow-sm' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                 >
                   {i18n.search_allBrands()}
                 </button>
                 {#each brands() as brand}
                   <button
                     onclick={() => selectedBrand = selectedBrand === brand ? 'all' : brand}
-                    class="py-3 px-3 text-sm rounded-lg ring-1 transition-colors
-                      {selectedBrand === brand ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
+                    class="py-3 px-3 text-sm rounded-lg ring-1 transition-all duration-200 font-medium
+                      {selectedBrand === brand ? 'bg-black text-white ring-black shadow-sm' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                   >
                     {brand}
                   </button>
@@ -495,20 +448,20 @@
             
             <!-- Condition -->
             <div>
-              <div class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_condition()}</div>
+              <div class="block text-sm font-medium text-gray-700 mb-3">{i18n.search_condition()}</div>
               <div class="space-y-2">
                 <button
                   onclick={() => selectedCondition = 'all'}
-                  class="w-full py-3 px-3 text-sm rounded-lg ring-1 text-left transition-colors
-                    {selectedCondition === 'all' ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
+                  class="w-full py-3 px-3 text-sm rounded-lg ring-1 text-left transition-all duration-200 font-medium
+                    {selectedCondition === 'all' ? 'bg-black text-white ring-black shadow-sm' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                 >
                   {i18n.search_allConditions()}
                 </button>
                 {#each conditions as condition}
                   <button
                     onclick={() => selectedCondition = selectedCondition === condition ? 'all' : condition}
-                    class="w-full py-3 px-3 text-sm rounded-lg ring-1 text-left transition-colors
-                      {selectedCondition === condition ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300'}"
+                    class="w-full py-3 px-3 text-sm rounded-lg ring-1 text-left transition-all duration-200 font-medium
+                      {selectedCondition === condition ? 'bg-black text-white ring-black shadow-sm' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                   >
                     <span class="capitalize">{
                       condition === 'new' ? i18n.condition_new() :
@@ -589,15 +542,15 @@
       <div class="flex-1">
         <div class="flex items-center justify-between mb-4">
       <p class="text-sm text-gray-600">
-        {filteredProducts().length} {i18n.search_itemsFound()}
-        {searchQuery && ` ${i18n.search_for()} "${searchQuery}"`}
+        {data.total || displayProducts().length} {i18n.search_itemsFound()}
+        {data.searchQuery && ` ${i18n.search_for()} "${data.searchQuery}"`}
       </p>
       
       <div class="flex items-center space-x-3">
         <!-- Mobile Filter Button -->
         <button
           onclick={handleMobileFilters}
-          class="sm:hidden flex items-center space-x-2 px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors"
+          class="sm:hidden flex items-center space-x-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50 transition-colors shadow-sm"
           aria-label="Open filters"
         >
           <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -703,9 +656,9 @@
           <ProductCardSkeleton />
         {/each}
       </div>
-    {:else if filteredProducts().length > 0}
+    {:else if displayProducts().length > 0}
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-        {#each filteredProducts() as product}
+        {#each displayProducts() as product}
           <ProductCard 
             {product}
             onclick={() => goto(`/product/${product.id}`)}

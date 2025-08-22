@@ -12,7 +12,6 @@
     notificationActions,
     messageToastActions
   } from '$lib/stores/notifications';
-  import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import { RealtimeNotificationService } from '$lib/services/realtime-notifications';
   
@@ -161,7 +160,7 @@
   }
 
   // Initialize notification service
-  onMount(() => {
+  $effect(() => {
     // Subscribe to auth state for notifications
     const unsubscribe = authState.subscribe(state => {
       if (state.user && state.supabase && !notificationService) {
@@ -173,6 +172,7 @@
       }
     });
 
+    // Cleanup function for $effect
     return () => {
       unsubscribe();
       if (notificationService) {
@@ -198,7 +198,7 @@
         <!-- Mobile Menu Button -->
         <button
           onclick={() => mobileMenuOpen = !mobileMenuOpen}
-          class="sm:hidden p-1.5 text-gray-700 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-50"
+          class="sm:hidden p-2 text-gray-700 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-50 min-h-[44px] min-w-[44px]"
           aria-label="Toggle menu"
         >
           {#if mobileMenuOpen}
@@ -224,17 +224,44 @@
         </a>
       </div>
       
-      <!-- Center: Desktop Navigation -->
-      <nav class="hidden sm:flex items-center space-x-6">
-        <a href="/search" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.menu_browse()}</a>
-        {#if $authState.user}
-          {#if $canSell}
-            <a href="/sell" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.nav_sell()}</a>
+      <!-- Center: Desktop Navigation or Search -->
+      {#if showSearch}
+        <!-- Search Bar for pages that need it -->
+        <div class="hidden sm:flex flex-1 max-w-lg mx-8">
+          <div class="relative flex-1">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+            <input
+              type="search"
+              class="block w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-black focus:border-black"
+              placeholder={i18n.search_placeholder()}
+              onkeydown={(e) => {
+                if (e.key === 'Enter') {
+                  const query = (e.target as HTMLInputElement).value.trim();
+                  if (query) {
+                    window.location.href = `/search?q=${encodeURIComponent(query)}`;
+                  }
+                }
+              }}
+            />
+          </div>
+        </div>
+      {:else}
+        <!-- Navigation Links -->
+        <nav class="hidden sm:flex items-center space-x-6">
+          <a href="/search" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.menu_browse()}</a>
+          {#if $authState.user}
+            {#if $canSell}
+              <a href="/sell" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.nav_sell()}</a>
+            {/if}
+            <a href="/messages" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.nav_messages()}</a>
+            <a href="/dashboard" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.profile_dashboard()}</a>
           {/if}
-          <a href="/messages" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.nav_messages()}</a>
-          <a href="/dashboard" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.profile_dashboard()}</a>
-        {/if}
-      </nav>
+        </nav>
+      {/if}
       
       <!-- Right: Auth/Account -->
       <div class="flex items-center gap-1.5 sm:gap-2">

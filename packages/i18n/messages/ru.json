@@ -578,5 +578,10 @@
   "admin_startProcessing": "Начать обработку",
   "admin_markCompleted": "Отметить выполненным",
   "admin_markFailed": "Отметить неудачным",
-  "admin_ref": "Ссылка"
+  "admin_ref": "Ссылка",
+  "category_all": "Все",
+  "category_itemsCount": "товаров",
+  "category_loadMore": "Показать больше товаров",
+  "category_searchPlaceholder": "Искать в категории...",
+  "category_clearAll": "Очистить все"
 }

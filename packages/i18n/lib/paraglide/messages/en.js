@@ -5715,6 +5715,46 @@ export const admin_ref = () => `Ref`
 
 
 /**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_all = () => `All`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_itemsCount = () => `items`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_loadMore = () => `Load More Items`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_searchPlaceholder = () => `Search in category...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_clearAll = () => `Clear all`
+
+
+/**
  * Failed to resolve message onboarding_tutorial_welcomeTitle for languageTag "en". 
  * @returns {string}
  */

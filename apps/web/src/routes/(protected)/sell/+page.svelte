@@ -7,7 +7,6 @@
   import { Button, ImageUploaderSupabase, Input, Select, BrandSelector, PriceInput, TagInput, toasts } from '@repo/ui';
   import { uploadImages, deleteImage } from '$lib/supabase/storage';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
-  import { onMount } from 'svelte';
 
   interface Props {
     data: PageData;
@@ -159,7 +158,7 @@
   
   // Validation for consolidated steps
   const canProceedStep1 = $derived(
-    (uploadedImages.length > 0 || true) && // TODO: Remove || true after testing
+    uploadedImages.length > 0 &&
     formData.title.length >= 3 && 
     formData.gender_category_id &&
     formData.type_category_id &&
@@ -174,6 +173,7 @@
   );
   
   const canSubmit = $derived(
+    uploadedImages.length > 0 && 
     formData.title.length >= 3 && 
     formData.gender_category_id &&
     formData.type_category_id &&
@@ -336,7 +336,9 @@
                 bind:uploading={isUploadingImages}
               />
               {#if uploadedImages.length === 0}
-                <p class="text-xs text-red-600 mt-1">At least one photo is required</p>
+                <p class="text-xs text-red-600 mt-1">📸 At least one photo is required to continue</p>
+              {:else}
+                <p class="text-xs text-green-600 mt-1">✅ {uploadedImages.length} photo{uploadedImages.length === 1 ? '' : 's'} uploaded</p>
               {/if}
             </div>
             

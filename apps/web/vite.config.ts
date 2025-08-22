@@ -72,14 +72,8 @@ export default defineConfig({
 	build: {
 		rollupOptions: {
 			output: {
-				manualChunks: (id: string) => {
-					if (id.includes('node_modules')) {
-						if (id.includes('@supabase')) return 'vendor-supabase';
-						if (id.includes('@repo/ui')) return 'vendor-ui';
-						if (id.includes('stripe')) return 'vendor-stripe';
-						return 'vendor';
-					}
-				},
+				// Use simple vendor chunking to avoid SvelteKit conflicts
+				manualChunks: undefined,
 				// Optimize chunk names for caching
 				chunkFileNames: (chunkInfo) => {
 					const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop() : 'chunk';
@@ -91,13 +85,13 @@ export default defineConfig({
 					const extType = info[info.length - 1];
 					
 					// Organize assets by type
-					if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
+					if (extType && /png|jpe?g|svg|gif|tiff|bmp|ico/i.test(extType)) {
 						return `_app/immutable/assets/images/[name]-[hash][extname]`;
 					}
-					if (/woff2?|eot|ttf|otf/i.test(extType)) {
+					if (extType && /woff2?|eot|ttf|otf/i.test(extType)) {
 						return `_app/immutable/assets/fonts/[name]-[hash][extname]`;
 					}
-					if (/css/i.test(extType)) {
+					if (extType && /css/i.test(extType)) {
 						return `_app/immutable/assets/styles/[name]-[hash][extname]`;
 					}
 					
@@ -110,11 +104,9 @@ export default defineConfig({
 		minify: 'terser',
 		terserOptions: {
 			compress: {
-				drop_console: process.env.NODE_ENV === 'production',
+				drop_console: process.env.NODE_ENV === 'production' ? ['log', 'warn'] : false, // Keep errors
 				drop_debugger: true,
-				dead_code: true,
-				unused: true,
-				passes: 2
+				dead_code: true
 			},
 			mangle: {
 				safari10: true
