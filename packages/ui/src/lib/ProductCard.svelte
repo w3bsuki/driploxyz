@@ -24,6 +24,7 @@
       good?: string;
       worn?: string;
       fair?: string;
+      new?: string;
       formatPrice?: (price: number) => string;
       categoryTranslation?: (category: string) => string;
     };
@@ -47,7 +48,8 @@
       likeNew: 'Like New',
       good: 'Good',
       worn: 'Worn',
-      fair: 'Fair'
+      fair: 'Fair',
+      new: 'New'
     }
   }: Props = $props();
 
@@ -83,7 +85,7 @@
         condition={product.condition}
         translations={{
           brandNewWithTags: translations.brandNewWithTags,
-          newWithoutTags: translations.newWithoutTags,
+          newWithoutTags: translations.newWithoutTags || translations.new,
           likeNew: translations.likeNew,
           good: translations.good,
           worn: translations.worn,

@@ -18,6 +18,7 @@ interface Props {
         good?: string;
         worn?: string;
         fair?: string;
+        new?: string;
         formatPrice?: (price: number) => string;
         categoryTranslation?: (category: string) => string;
     };
