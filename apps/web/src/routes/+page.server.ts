@@ -102,8 +102,9 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
           images: (item.product_images || []).map((img: any) => 
             typeof img === 'string' ? img : (img?.image_url || '')
           ).filter(Boolean),
-          // Simple 2-level category structure: Men/Women/Kids > T-Shirts/Boots/etc  
-          category_name: parentLookup[item.categories?.parent_id] || 'Uncategorized', // Men/Women/Kids (main)
+          // Category fields matching ProductCard expectations
+          main_category_name: parentLookup[item.categories?.parent_id] || 'Uncategorized', // Men/Women/Kids (main)
+          category_name: parentLookup[item.categories?.parent_id] || 'Uncategorized', // Fallback
           subcategory_name: item.categories?.name || null, // T-Shirts/Boots/etc (sub)
           seller_name: item.profiles?.username,
           seller_rating: item.profiles?.rating,

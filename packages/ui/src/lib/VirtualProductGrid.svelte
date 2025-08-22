@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
-  import { ProductCard, ProductCardSkeleton } from '@repo/ui';
+  import { browser } from '$app/environment';
+  import ProductCard from './ProductCard.svelte';
+  import { ProductCardSkeleton } from './skeleton/index.js';
+  import { VirtualList, throttle, PerformanceMonitor } from './utils/performance.js';
 
   interface Product {
     id: string;
@@ -49,12 +51,15 @@
   let scrollTop = $state(0);
   let containerWidth = $state(0);
   let mounted = $state(false);
+  
+  // Performance monitoring
+  const perf = browser ? PerformanceMonitor.getInstance() : null;
 
   // Calculate responsive items per row
   const responsiveItemsPerRow = $derived(() => {
     if (!mounted) return itemsPerRow;
     
-    const width = containerWidth || window.innerWidth;
+    const width = containerWidth || (browser ? window.innerWidth : 768);
     if (width >= 1280) return 5; // xl
     if (width >= 1024) return 4; // lg
     if (width >= 768) return 3;  // md
@@ -108,10 +113,13 @@
     return startRow * rowHeight;
   });
 
-  function handleScroll(event: Event) {
+  // Throttled scroll handler for better performance
+  const handleScroll = throttle((event: Event) => {
     const target = event.target as HTMLDivElement;
+    perf?.startTiming('virtual-scroll');
     scrollTop = target.scrollTop;
-  }
+    perf?.endTiming('virtual-scroll');
+  }, 16); // ~60fps
 
   function handleResize() {
     if (containerElement) {
@@ -119,15 +127,16 @@
     }
   }
 
-  onMount(() => {
+  // Use $effect for lifecycle management
+  $effect(() => {
+    if (!browser || !containerElement) return;
+    
     mounted = true;
     handleResize();
     
     // Setup resize observer
-    const resizeObserver = new ResizeObserver(handleResize);
-    if (containerElement) {
-      resizeObserver.observe(containerElement);
-    }
+    const resizeObserver = new ResizeObserver(throttle(handleResize, 100));
+    resizeObserver.observe(containerElement);
 
     return () => {
       resizeObserver.disconnect();

@@ -11,6 +11,7 @@ interface Props {
     fetchpriority?: 'high' | 'low' | 'auto';
     width?: number;
     quality?: number;
+    blurDataUrl?: string;
 }
 declare const OptimizedImage: import("svelte").Component<Props, {}, "">;
 type OptimizedImage = ReturnType<typeof OptimizedImage>;

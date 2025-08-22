@@ -1,6 +1,8 @@
+export { default as Badge } from './Badge.svelte';
 export { default as Button } from './Button.svelte';
 export { default as Input } from './Input.svelte';
 export { default as Card } from './Card.svelte';
+export { default as Modal } from './Modal.svelte';
 export { default as ProductCard } from './ProductCard.svelte';
 export { default as SearchBar } from './SearchBar.svelte';
 export { default as Avatar } from './Avatar.svelte';
@@ -41,6 +43,7 @@ export { default as OptimizedImage } from './OptimizedImage.svelte';
 export { default as ImageOptimized } from './ImageOptimized.svelte';
 export { default as SearchDebounced } from './SearchDebounced.svelte';
 export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';
+export { default as LazySearchResults } from './LazySearchResults.svelte';
 export { ProductCardSkeleton, ProductDetailSkeleton, SellerCardSkeleton, CategoryCardSkeleton, ListItemSkeleton, TextSkeleton, ImageSkeleton } from './skeleton/index';
 export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
 export { default as CookieConsent } from './CookieConsent.svelte';
@@ -80,5 +83,9 @@ export { default as ProductMeta } from './ProductMeta.svelte';
 export { default as ProductPrice } from './ProductPrice.svelte';
 export { default as FeaturedProducts } from './FeaturedProducts.svelte';
 export { default as PromotedHighlights } from './PromotedHighlights.svelte';
+export * from './utils/performance.js';
+export { PerformanceMonitor } from './utils/performance.js';
+export * from './utils/variants.js';
 export * from './types/index.js';
+export * from './tokens.js';
 //# sourceMappingURL=index.d.ts.map

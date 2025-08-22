@@ -34,11 +34,11 @@
   
   // Language initialization - Header component handles switching
   $effect(() => {
-    if (browser) {
-      console.log('🌍 Client: Effect - checking language with server data:', data?.language);
+    if (browser && data) {
+      console.log('🌍 Client: Effect - checking language with server data:', data.language);
       
       // Only initialize if not already set correctly
-      if (data?.language && i18n.languageTag() !== data.language) {
+      if (data.language && i18n.languageTag() !== data.language) {
         console.log('🌍 Client: Language mismatch, setting to:', data.language);
         initializeLanguage(data.language);
         if (i18n.isAvailableLanguageTag(data.language)) {
@@ -50,18 +50,19 @@
     }
   });
 
-  // Use $derived for reactive destructuring in Svelte 5
-  const supabase = $derived(data?.supabase);
+  // Use $derived for reactive destructuring in Svelte 5 with safety checks
+  const supabase = $derived(data && data.supabase ? data.supabase : null);
   const isAuthPage = $derived($page.route.id?.includes('(auth)'));
 
   // SSR-friendly auth initialization - sync server data to stores
   $effect(() => {
+    if (!data) return;
     
     // Always sync server data to stores
-    user.set(data?.user || null);
-    session.set(data?.session || null);  
-    profile.set(data?.profile || null);
-    if (data?.supabase) setSupabaseClient(data.supabase);
+    user.set(data.user || null);
+    session.set(data.session || null);  
+    profile.set(data.profile || null);
+    if (data.supabase) setSupabaseClient(data.supabase);
     authLoading.set(false);
   });
 

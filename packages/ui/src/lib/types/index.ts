@@ -119,8 +119,8 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type AvatarVariant = 'circle' | 'square';
 
-export type BadgeSize = 'xs' | 'sm' | 'md' | 'lg';
 export type BadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
+export type BadgeSize = 'sm' | 'md' | 'lg';
 
 export type InputSize = 'sm' | 'md' | 'lg';
 export type InputVariant = 'default' | 'error' | 'success';

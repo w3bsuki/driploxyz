@@ -1,10 +1,11 @@
+import type { AvatarSize, AvatarVariant } from './types.js';
 interface Props {
     src?: string;
     alt?: string;
     name?: string;
-    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+    size?: AvatarSize;
     premium?: boolean;
-    variant?: 'circle' | 'square';
+    variant?: AvatarVariant;
     fallback?: string;
     onclick?: () => void;
     class?: string;

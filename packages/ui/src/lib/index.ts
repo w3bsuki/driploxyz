@@ -1,7 +1,9 @@
 // Core UI components
+export { default as Badge } from './Badge.svelte';
 export { default as Button } from './Button.svelte';
 export { default as Input } from './Input.svelte';
 export { default as Card } from './Card.svelte';
+export { default as Modal } from './Modal.svelte';
 export { default as ProductCard } from './ProductCard.svelte';
 export { default as SearchBar } from './SearchBar.svelte';
 export { default as Avatar } from './Avatar.svelte';
@@ -58,8 +60,9 @@ export { default as ImageOptimized } from './ImageOptimized.svelte';
 // Search components
 export { default as SearchDebounced } from './SearchDebounced.svelte';
 
-// Virtual scrolling components
+// Virtual scrolling and search components
 export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';
+export { default as LazySearchResults } from './LazySearchResults.svelte';
 
 // Skeleton loading components
 export { 
@@ -134,5 +137,15 @@ export { default as ProductPrice } from './ProductPrice.svelte';
 export { default as FeaturedProducts } from './FeaturedProducts.svelte';
 export { default as PromotedHighlights } from './PromotedHighlights.svelte';
 
+// Performance utilities
+export * from './utils/performance.js';
+export { PerformanceMonitor } from './utils/performance.js';
+
+// Variant system utilities
+export * from './utils/variants.js';
+
 // Type definitions
 export * from './types/index.js';
+
+// Design tokens
+export * from './tokens.js';

@@ -1,9 +1,11 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import type { Product } from './types.js';
   import ProductImage from './ProductImage.svelte';
   import ConditionBadge from './ConditionBadge.svelte';
   import ProductPrice from './ProductPrice.svelte';
   import FavoriteButton from './FavoriteButton.svelte';
+  import { PerformanceMonitor } from './utils/performance.js';
   
   interface Props {
     product: Product;
@@ -52,9 +54,28 @@
       new: 'New'
     }
   }: Props = $props();
+  
+  // Performance monitoring
+  const perf = browser ? PerformanceMonitor.getInstance() : null;
+  let renderStartTime = $state(0);
+  
+  // Track component render time
+  $effect(() => {
+    if (perf && browser) {
+      renderStartTime = performance.now();
+      return () => {
+        const renderTime = performance.now() - renderStartTime;
+        if (renderTime > 50) {
+          console.warn(`ProductCard render took ${renderTime.toFixed(2)}ms for product: ${product.title}`);
+        }
+      };
+    }
+  });
 
   function handleClick() {
+    perf?.startTiming(`product-click-${product.id}`);
     onclick?.(product);
+    perf?.endTiming(`product-click-${product.id}`);
   }
 </script>
 

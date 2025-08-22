@@ -4,10 +4,11 @@
 	import * as i18n from '@repo/i18n';
 	import Header from '$lib/components/Header.svelte';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
-	import QuickViewDialog from '$lib/components/QuickViewDialog.svelte';
 	import { prefetchRoute } from '$lib/utils/performance';
+	import { setupRoutePreloading, lazyComponents } from '$lib/utils/route-splitting';
 	import { goto } from '$app/navigation';
 	import { page, navigating } from '$app/stores';
+	import { browser } from '$app/environment';
 	import { serviceUtils } from '$lib/services';
 	import type { PageData } from './$types';
 	import type { ProductWithImages } from '$lib/services';
@@ -20,17 +21,32 @@
 	let selectedSeller = $state<Seller | null>(null);
 	let showCategoryDropdown = $state(false);
 	let loadingCategory = $state<string | null>(null);
+	let QuickViewDialog = $state<any>(null);
 
 	// Language state - already initialized in +layout.svelte
 	let currentLang = $state(i18n.languageTag());
 	let updateKey = $state(0);
 
-	// Track language changes
+	// Track language changes and setup route preloading
 	$effect(() => {
 		const newLang = i18n.languageTag();
 		if (newLang !== currentLang) {
 			currentLang = newLang;
 			updateKey++;
+		}
+		
+		// Setup route preloading on mount
+		if (browser) {
+			setupRoutePreloading();
+		}
+	});
+	
+	// Lazy load QuickViewDialog when needed
+	$effect(() => {
+		if (selectedSeller && !QuickViewDialog && browser) {
+			lazyComponents.QuickViewDialog().then(component => {
+				QuickViewDialog = component;
+			});
 		}
 	});
 
@@ -381,10 +397,13 @@
 	unreadMessageCount={$unreadMessageCount}
 />
 
-<!-- Quick View Dialog for Premium Sellers -->
-<QuickViewDialog 
-	seller={selectedSeller} 
-	onclose={() => selectedSeller = null} 
-/>
+<!-- Quick View Dialog for Premium Sellers (Lazy Loaded) -->
+{#if QuickViewDialog && selectedSeller}
+	<svelte:component 
+		this={QuickViewDialog}
+		seller={selectedSeller} 
+		onclose={() => selectedSeller = null} 
+	/>
+{/if}
 {/key}
 
