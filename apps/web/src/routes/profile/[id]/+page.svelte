@@ -4,6 +4,7 @@
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import { page, navigating } from '$app/stores';
   import * as i18n from '@repo/i18n';
   
   interface Props {
@@ -468,4 +469,9 @@
     </div>
   {/if}
 
-<BottomNav unreadMessageCount={$unreadMessageCount} />
+<BottomNav 
+  currentPath={$page.url.pathname}
+  isNavigating={!!$navigating}
+  navigatingTo={$navigating?.to?.url.pathname}
+  unreadMessageCount={$unreadMessageCount}
+/>

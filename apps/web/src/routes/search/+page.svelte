@@ -3,6 +3,7 @@
   import Header from '$lib/components/Header.svelte';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { goto } from '$app/navigation';
+  import { page, navigating } from '$app/stores';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
@@ -691,7 +692,12 @@
   </div>
 
 {#if !showMegaMenu}
-  <BottomNav unreadMessageCount={$unreadMessageCount} />
+  <BottomNav 
+    currentPath={$page.url.pathname}
+    isNavigating={!!$navigating}
+    navigatingTo={$navigating?.to?.url.pathname}
+    unreadMessageCount={$unreadMessageCount}
+  />
 {/if}
 
 <style>

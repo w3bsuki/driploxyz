@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page, navigating } from '$app/stores';
   import { goto } from '$app/navigation';
   import { Button, ProductCard, Breadcrumb, SellerQuickView, SearchBar, BottomNav, type Product, type BreadcrumbItem } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
@@ -487,7 +487,12 @@
 {/if}
 
 <!-- Bottom Navigation -->
-<BottomNav unreadMessageCount={$unreadMessageCount} />
+<BottomNav 
+  currentPath={$page.url.pathname}
+  isNavigating={!!$navigating}
+  navigatingTo={$navigating?.to?.url.pathname}
+  unreadMessageCount={$unreadMessageCount}
+/>
 
 <style>
   /* Hide scrollbar for horizontal scroll */

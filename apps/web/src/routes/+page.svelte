@@ -8,6 +8,7 @@
 	import FeaturedProducts from '$lib/components/FeaturedProducts.svelte';
 	import { prefetchRoute } from '$lib/utils/performance';
 	import { goto } from '$app/navigation';
+	import { page, navigating } from '$app/stores';
 	import { serviceUtils } from '$lib/services';
 	import type { PageData } from './$types';
 	import type { ProductWithImages } from '$lib/services';
@@ -322,7 +323,12 @@
 	</main>
 </div>
 
-<BottomNav unreadMessageCount={$unreadMessageCount} />
+<BottomNav 
+	currentPath={$page.url.pathname}
+	isNavigating={!!$navigating}
+	navigatingTo={$navigating?.to?.url.pathname}
+	unreadMessageCount={$unreadMessageCount}
+/>
 
 <!-- Quick View Dialog for Premium Sellers -->
 <QuickViewDialog 

@@ -188,7 +188,7 @@
   });
   
   // Import needed modules
-  import { page } from '$app/stores';
+  import { page, navigating } from '$app/stores';
   import { goto, invalidate } from '$app/navigation';
   import { browser } from '$app/environment';
   
@@ -660,7 +660,12 @@
   <!-- Bottom Navigation - Hide in chat -->
   {#if !selectedConversation()}
     <div class="shrink-0">
-      <BottomNav unreadMessageCount={$unreadMessageCount} />
+      <BottomNav 
+        currentPath={$page.url.pathname}
+        isNavigating={!!$navigating}
+        navigatingTo={$navigating?.to?.url.pathname}
+        unreadMessageCount={$unreadMessageCount}
+      />
     </div>
   {/if}
 </div>
