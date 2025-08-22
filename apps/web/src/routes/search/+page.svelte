@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ProductCard, Button, SearchBar, MegaMenu, CategorySidebar, ProductCardSkeleton, BottomNav, type Product, type CategoryData } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
+  import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { goto } from '$app/navigation';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
@@ -690,7 +691,7 @@
   </div>
 
 {#if !showMegaMenu}
-  <BottomNav />
+  <BottomNav unreadMessageCount={$unreadMessageCount} />
 {/if}
 
 <style>

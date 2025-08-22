@@ -1,7 +1,12 @@
 <script lang="ts">
   import { page, navigating } from '$app/stores';
-  import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import * as i18n from '@repo/i18n';
+  
+  interface Props {
+    unreadMessageCount?: number;
+  }
+  
+  let { unreadMessageCount = 0 }: Props = $props();
   
   interface NavItem {
     href: string;
@@ -85,7 +90,7 @@
             <svg class="w-5 h-5 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
             </svg>
-            {#if item.showBadge && $unreadMessageCount > 0}
+            {#if item.showBadge && unreadMessageCount > 0}
               <span class="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full animate-pulse"></span>
             {/if}
           </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Button, Avatar, ProductCard, BrandBadge, NewSellerBadge, AdminBadge, BottomNav } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
+  import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import * as i18n from '@repo/i18n';
@@ -467,4 +468,4 @@
     </div>
   {/if}
 
-<BottomNav />
+<BottomNav unreadMessageCount={$unreadMessageCount} />

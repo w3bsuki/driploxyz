@@ -2,6 +2,7 @@
 	import { SearchBar, BottomNav } from '@repo/ui';
 	import * as i18n from '@repo/i18n';
 	import Header from '$lib/components/Header.svelte';
+	import { unreadMessageCount } from '$lib/stores/messageNotifications';
 	import QuickViewDialog from '$lib/components/QuickViewDialog.svelte';
 	import PromotedHighlights from '$lib/components/PromotedHighlights.svelte';
 	import FeaturedProducts from '$lib/components/FeaturedProducts.svelte';
@@ -321,7 +322,7 @@
 	</main>
 </div>
 
-<BottomNav />
+<BottomNav unreadMessageCount={$unreadMessageCount} />
 
 <!-- Quick View Dialog for Premium Sellers -->
 <QuickViewDialog 

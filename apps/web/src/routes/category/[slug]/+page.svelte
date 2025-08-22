@@ -4,6 +4,7 @@
   import { Button, ProductCard, Breadcrumb, SellerQuickView, SearchBar, BottomNav, type Product, type BreadcrumbItem } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import * as i18n from '@repo/i18n';
+  import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { formatPrice } from '$lib/utils/price';
   import type { PageData } from './$types';
   
@@ -486,7 +487,7 @@
 {/if}
 
 <!-- Bottom Navigation -->
-<BottomNav />
+<BottomNav unreadMessageCount={$unreadMessageCount} />
 
 <style>
   /* Hide scrollbar for horizontal scroll */

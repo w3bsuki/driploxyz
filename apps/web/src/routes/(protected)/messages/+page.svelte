@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Avatar, Button, TabGroup, TypingIndicator, BottomNav } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
-  import { messageNotificationActions } from '$lib/stores/messageNotifications';
+  import { messageNotificationActions, unreadMessageCount } from '$lib/stores/messageNotifications';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   import { onMount, onDestroy } from 'svelte';
@@ -660,7 +660,7 @@
   <!-- Bottom Navigation - Hide in chat -->
   {#if !selectedConversation()}
     <div class="shrink-0">
-      <BottomNav />
+      <BottomNav unreadMessageCount={$unreadMessageCount} />
     </div>
   {/if}
 </div>
