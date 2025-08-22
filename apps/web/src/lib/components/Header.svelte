@@ -3,7 +3,7 @@
   import * as i18n from '@repo/i18n';
   import { page } from '$app/stores';
   import { authState, displayName, userInitials, canSell } from '$lib/stores/auth';
-  import { signOut } from '$lib/auth';
+  import { signOut, canSell as canSellHelper } from '$lib/auth';
   import { 
     notifications, 
     notificationPanelOpen, 
