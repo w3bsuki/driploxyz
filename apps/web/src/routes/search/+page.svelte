@@ -344,7 +344,7 @@
 
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
   <!-- Main App Header -->
-  <Header />
+  <Header user={data.user} profile={data.profile} />
   
   <!-- Clean Search Section -->
   <div class="bg-gray-50 sticky top-14 sm:top-16 z-30">

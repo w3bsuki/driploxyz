@@ -151,7 +151,7 @@
 
 <div class="min-h-screen bg-gray-50">
   <!-- Unified Header -->
-  <Header showSearch={true} />
+  <Header showSearch={true} user={data.user} profile={data.profile} />
 
   <!-- Breadcrumb -->
   <div class="bg-white">

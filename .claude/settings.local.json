@@ -30,7 +30,8 @@
       "mcp__playwright__browser_take_screenshot",
       "mcp__playwright__browser_type",
       "mcp__playwright__browser_console_messages",
-      "mcp__svelte-docs__svelte5_derived"
+      "mcp__svelte-docs__svelte5_derived",
+      "mcp__playwright__browser_resize"
     ]
   },
   "enableAllProjectMcpServers": true,

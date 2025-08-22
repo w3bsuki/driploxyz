@@ -176,7 +176,7 @@
 
 {#key currentLang}
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
-	<Header initialLanguage={data.language} />
+	<Header initialLanguage={data.language} user={data.user} profile={data.profile} />
 
 	<!-- Compact Sticky Search Bar removed for cleaner UX -->
 

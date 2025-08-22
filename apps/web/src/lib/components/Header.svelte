@@ -19,12 +19,26 @@
     showSearch?: boolean;
     minimal?: boolean;
     initialLanguage?: string;
+    user?: any;
+    profile?: any;
   }
   
-  let { showSearch = false, minimal = false, initialLanguage }: Props = $props();
+  let { showSearch = false, minimal = false, initialLanguage, user: propsUser, profile: propsProfile }: Props = $props();
   let mobileMenuOpen = $state(false);
   let userMenuOpen = $state(false);
   let notificationService: RealtimeNotificationService | null = null;
+  
+  // Use props data if available, otherwise fall back to stores
+  const currentUser = $derived(propsUser || $authState.user);
+  const currentProfile = $derived(propsProfile || $authState.profile);
+  const isLoggedIn = $derived(!!currentUser);
+  const userCanSell = $derived(canSellHelper(currentProfile));
+  const userDisplayName = $derived(currentProfile ? (currentProfile.username || currentProfile.full_name || 'User') : 'Anonymous');
+  const initials = $derived(currentProfile ? 
+    (currentProfile.full_name ? 
+      currentProfile.full_name.split(' ').map(n => n.charAt(0).toUpperCase()).slice(0, 2).join('') : 
+      currentProfile.username?.charAt(0).toUpperCase() || '?') : 
+    '?');
   
   // Language - REACTIVE tracking with initial value from server
   let currentLang = $state(initialLanguage || i18n.languageTag());
@@ -253,8 +267,8 @@
         <!-- Navigation Links -->
         <nav class="hidden sm:flex items-center space-x-6">
           <a href="/search" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.menu_browse()}</a>
-          {#if $authState.user}
-            {#if $canSell}
+          {#if isLoggedIn}
+            {#if userCanSell}
               <a href="/sell" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.nav_sell()}</a>
             {/if}
             <a href="/messages" class="text-gray-600 hover:text-gray-900 font-medium">{i18n.nav_messages()}</a>
@@ -275,7 +289,7 @@
           />
         </div>
         
-        {#if $authState.user}
+        {#if isLoggedIn}
           <!-- Notifications -->
           <div class="relative">
             <NotificationBell 
@@ -303,10 +317,10 @@
           <!-- User Menu -->
           <div class="relative">
             <Avatar 
-              name={$displayName} 
-              src={$authState.profile?.avatar_url} 
+              name={userDisplayName} 
+              src={currentProfile?.avatar_url} 
               size="sm"
-              fallback={$userInitials}
+              fallback={initials}
               onclick={() => userMenuOpen = !userMenuOpen}
               class="hover:bg-gray-50 hover:scale-105 transition-all duration-200 border-2 border-transparent hover:border-gray-200"
             />
@@ -317,14 +331,14 @@
                 <div class="px-4 py-3 border-b border-gray-100">
                   <div class="flex items-center space-x-3">
                     <Avatar 
-                      name={$displayName} 
-                      src={$authState.profile?.avatar_url} 
+                      name={userDisplayName} 
+                      src={currentProfile?.avatar_url} 
                       size="sm"
-                      fallback={$userInitials}
+                      fallback={initials}
                     />
                     <div class="flex-1 min-w-0">
-                      <p class="font-semibold text-gray-900 truncate text-sm">{$displayName}</p>
-                      <p class="text-xs text-gray-500 truncate">{$authState.user?.email}</p>
+                      <p class="font-semibold text-gray-900 truncate text-sm">{userDisplayName}</p>
+                      <p class="text-xs text-gray-500 truncate">{currentUser?.email}</p>
                     </div>
                   </div>
                 </div>
@@ -349,7 +363,7 @@
                     </svg>
                     {i18n.profile_favorites()}
                   </a>
-                  {#if !$canSell}
+                  {#if !userCanSell}
                     <a href="/become-seller" class="flex items-center px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors" onclick={closeMenus}>
                       <svg class="w-4 h-4 mr-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -399,15 +413,15 @@
       <div class="sm:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-xl z-50">
         <div class="px-3 py-3">
           <nav class="space-y-3">
-            {#if $authState.user}
+            {#if isLoggedIn}
               <!-- User Profile Section - Compact -->
               <div class="bg-gray-50 rounded-xl p-3 border border-gray-200">
                 <div class="flex items-center space-x-3">
                   <Avatar 
-                    name={$displayName} 
-                    src={$authState.profile?.avatar_url} 
+                    name={userDisplayName} 
+                    src={currentProfile?.avatar_url} 
                     size="sm"
-                    fallback={$userInitials}
+                    fallback={initials}
                   />
                   <div class="flex-1 min-w-0">
                     <p class="font-semibold text-gray-900 truncate text-sm">{$displayName}</p>
@@ -437,7 +451,7 @@
               
               <!-- Essential Actions Only -->
               <div class="space-y-2">
-                {#if $canSell}
+                {#if userCanSell}
                   <a href="/sell" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-[44px]" onclick={closeMenus}>
                     <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
