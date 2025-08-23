@@ -4,27 +4,18 @@
  */
 // Variant builder function
 export function createVariants(config) {
-    return function (variants, className) {
-        var _a;
-        if (variants === void 0) { variants = {}; }
-        if (className === void 0) { className = ''; }
-        var classes = [config.base];
+    return function (variants = {}, className = '') {
+        const classes = [config.base];
         // Apply variant classes
-        Object.entries(config.variants).forEach(function (_a) {
-            var _b, _c;
-            var key = _a[0], variantOptions = _a[1];
-            var variant = (_b = variants[key]) !== null && _b !== void 0 ? _b : (_c = config.defaultVariants) === null || _c === void 0 ? void 0 : _c[key];
+        Object.entries(config.variants).forEach(([key, variantOptions]) => {
+            const variant = variants[key] ?? config.defaultVariants?.[key];
             if (variant && variantOptions[variant]) {
                 classes.push(variantOptions[variant]);
             }
         });
         // Apply compound variants
-        (_a = config.compoundVariants) === null || _a === void 0 ? void 0 : _a.forEach(function (_a) {
-            var conditions = _a.conditions, compoundClass = _a.className;
-            var matches = Object.entries(conditions).every(function (_a) {
-                var key = _a[0], value = _a[1];
-                return variants[key] === value;
-            });
+        config.compoundVariants?.forEach(({ conditions, className: compoundClass }) => {
+            const matches = Object.entries(conditions).every(([key, value]) => variants[key] === value);
             if (matches) {
                 classes.push(compoundClass);
             }
@@ -37,7 +28,7 @@ export function createVariants(config) {
     };
 }
 // Pre-configured variant systems for common components
-export var buttonVariants = createVariants({
+export const buttonVariants = createVariants({
     base: 'inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-all duration-200',
     variants: {
         variant: {
@@ -64,7 +55,7 @@ export var buttonVariants = createVariants({
         size: 'md'
     }
 });
-export var badgeVariants = createVariants({
+export const badgeVariants = createVariants({
     base: 'inline-flex items-center justify-center font-medium rounded-full border',
     variants: {
         variant: {
@@ -86,7 +77,7 @@ export var badgeVariants = createVariants({
         size: 'md'
     }
 });
-export var avatarVariants = createVariants({
+export const avatarVariants = createVariants({
     base: 'relative block overflow-hidden',
     variants: {
         size: {
@@ -113,33 +104,28 @@ export var avatarVariants = createVariants({
     }
 });
 // Advanced: Responsive variant system
-export function createResponsiveVariants(baseVariants, breakpoints) {
-    if (breakpoints === void 0) { breakpoints = {
-        sm: '640px',
-        md: '768px',
-        lg: '1024px',
-        xl: '1280px'
-    }; }
-    return function (responsiveVariants, className) {
-        if (responsiveVariants === void 0) { responsiveVariants = {}; }
-        if (className === void 0) { className = ''; }
-        var classes = [];
+export function createResponsiveVariants(baseVariants, breakpoints = {
+    sm: '640px',
+    md: '768px',
+    lg: '1024px',
+    xl: '1280px'
+}) {
+    return function (responsiveVariants = {}, className = '') {
+        const classes = [];
         // Apply base variants
-        Object.entries(responsiveVariants).forEach(function (_a) {
-            var _b, _c;
-            var key = _a[0], value = _a[1];
+        Object.entries(responsiveVariants).forEach(([key, value]) => {
             if (!key.includes(':')) {
                 // Base variant
-                var variantClass = (_b = baseVariants[key]) === null || _b === void 0 ? void 0 : _b[value];
+                const variantClass = baseVariants[key]?.[value];
                 if (variantClass)
                     classes.push(variantClass);
             }
             else {
                 // Responsive variant: "md:variant"
-                var _d = key.split(':'), breakpoint = _d[0], variantKey = _d[1];
-                var variantClass = (_c = baseVariants[variantKey]) === null || _c === void 0 ? void 0 : _c[value];
+                const [breakpoint, variantKey] = key.split(':');
+                const variantClass = baseVariants[variantKey]?.[value];
                 if (variantClass)
-                    classes.push("".concat(breakpoint, ":").concat(variantClass));
+                    classes.push(`${breakpoint}:${variantClass}`);
             }
         });
         if (className)
@@ -148,10 +134,6 @@ export function createResponsiveVariants(baseVariants, breakpoints) {
     };
 }
 // Utility for conditional variant application
-export function cx() {
-    var classes = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        classes[_i] = arguments[_i];
-    }
+export function cx(...classes) {
     return classes.filter(Boolean).join(' ');
 }

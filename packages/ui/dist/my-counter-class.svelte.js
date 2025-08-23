@@ -1,14 +1,11 @@
-var Counter = /** @class */ (function () {
-    function Counter() {
-        var _this = this;
+export class Counter {
+    constructor() {
         this.count = $state(0);
-        this.increment = function () {
-            _this.count++;
+        this.increment = () => {
+            this.count++;
         };
-        this.decrement = function () {
-            _this.count--;
+        this.decrement = () => {
+            this.count--;
         };
     }
-    return Counter;
-}());
-export { Counter };
+}

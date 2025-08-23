@@ -3,7 +3,7 @@
  * Following CSS custom property patterns for theming support
  */
 // Color System
-export var colors = {
+export const colors = {
     // Primary Brand Colors
     primary: {
         50: '#eff6ff',
@@ -39,7 +39,7 @@ export var colors = {
     }
 };
 // Typography Scale
-export var typography = {
+export const typography = {
     fontSizes: {
         xs: '0.75rem', // 12px
         sm: '0.875rem', // 14px
@@ -63,7 +63,7 @@ export var typography = {
     }
 };
 // Spacing System (Based on 4px grid)
-export var spacing = {
+export const spacing = {
     0: '0',
     1: '0.25rem', // 4px
     2: '0.5rem', // 8px
@@ -78,7 +78,7 @@ export var spacing = {
     20: '5rem', // 80px
 };
 // Border Radius
-export var borderRadius = {
+export const borderRadius = {
     none: '0',
     sm: '0.125rem', // 2px
     base: '0.25rem', // 4px
@@ -89,7 +89,7 @@ export var borderRadius = {
     full: '9999px',
 };
 // Shadows
-export var shadows = {
+export const shadows = {
     sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
     base: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
     md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
@@ -97,7 +97,7 @@ export var shadows = {
     xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
 };
 // Breakpoints
-export var breakpoints = {
+export const breakpoints = {
     xs: '475px',
     sm: '640px',
     md: '768px',
@@ -106,7 +106,7 @@ export var breakpoints = {
     '2xl': '1536px',
 };
 // Animation Durations
-export var animations = {
+export const animations = {
     duration: {
         fast: '150ms',
         normal: '300ms',
@@ -121,9 +121,8 @@ export var animations = {
     }
 };
 // CSS Custom Properties Generator
-export function generateCSSVariables(theme) {
-    if (theme === void 0) { theme = 'light'; }
-    var vars = {
+export function generateCSSVariables(theme = 'light') {
+    const vars = {
         // Colors
         '--color-primary': colors.primary[500],
         '--color-primary-hover': colors.primary[600],
@@ -160,9 +159,6 @@ export function generateCSSVariables(theme) {
         '--shadow-lg': shadows.lg,
     };
     return Object.entries(vars)
-        .map(function (_a) {
-        var key = _a[0], value = _a[1];
-        return "".concat(key, ": ").concat(value, ";");
-    })
+        .map(([key, value]) => `${key}: ${value};`)
         .join('\n  ');
 }

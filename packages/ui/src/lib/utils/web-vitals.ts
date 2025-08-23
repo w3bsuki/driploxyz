@@ -192,7 +192,7 @@ class WebVitalsTracker {
 		this.callbacks.forEach(callback => callback(metric));
 		
 		// Log to console in development
-		if (import.meta.env.DEV) {
+		if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
 			console.log(`[Web Vitals] ${metric.name}: ${metric.value.toFixed(2)}ms (${metric.rating})`);
 		}
 	}

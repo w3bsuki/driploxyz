@@ -153,7 +153,7 @@
 					</svg>
 					<h2 class="error-title">Something went wrong</h2>
 					<p class="error-message">{error.message || 'An unexpected error occurred'}</p>
-					{#if import.meta.env.DEV && errorInfo}
+					{#if browser && window.location.hostname === 'localhost' && errorInfo}
 						<details class="error-details">
 							<summary>Error details</summary>
 							<pre class="error-stack">{JSON.stringify(errorInfo, null, 2)}</pre>

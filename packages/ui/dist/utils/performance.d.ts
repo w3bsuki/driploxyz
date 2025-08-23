@@ -3,7 +3,7 @@
  */
 export declare function createLazyLoader(callback: () => void, options?: IntersectionObserverInit): (node: Element) => {
     destroy(): void;
-};
+} | undefined;
 /**
  * Virtual scrolling utility for large lists
  */
