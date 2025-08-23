@@ -145,15 +145,13 @@ export async function createProduct(
       price: data.price,
       shipping_cost: data.shipping_cost,
       category_id: data.category_id,
-      subcategory_id: data.subcategory_id,
       brand: data.brand,
       size: data.size,
       condition: data.condition,
-      color: data.color,
-      material: data.material,
+      color: data.color || null,
+      material: data.material || null,
       tags: data.tags,
-      seller_id: userId,
-      status: 'active'
+      seller_id: userId
     })
     .select()
     .single();
@@ -161,11 +159,10 @@ export async function createProduct(
   if (productError) throw productError;
 
   // Insert product images
-  const imageInserts = imageUrls.map((img) => ({
+  const imageInserts = imageUrls.map((img, index) => ({
     product_id: product.id,
     image_url: img.url,
-    sort_order: img.is_primary ? 0 : 1,
-    display_order: img.is_primary ? 0 : 1
+    sort_order: img.is_primary ? 0 : index + 1
   }));
 
   const { error: imagesError } = await supabase

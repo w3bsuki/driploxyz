@@ -18,18 +18,53 @@ export class PayoutService {
 	 */
 	async requestPayout(sellerId: string, amount: number, payoutMethod: PayoutMethod): Promise<{ payout: Payout | null; error: Error | null }> {
 		try {
-			// Use centralized Stripe service for payout handling
-			const stripeService = createStripeService(this.supabase);
-			
-			const result = await stripeService.requestPayout({
-				sellerId,
-				amount,
-				payoutMethod
-			});
+			// Validate payout method and amount
+			const methodValidation = validatePayoutMethod(payoutMethod);
+			if (!methodValidation.valid) {
+				throw new Error(methodValidation.error);
+			}
+
+			const amountValidation = validatePayoutAmount(amount);
+			if (!amountValidation.valid) {
+				throw new Error(amountValidation.error);
+			}
+
+			// Check seller's available balance
+			const { data: profile } = await this.supabase
+				.from('profiles')
+				.select('pending_payout')
+				.eq('id', sellerId)
+				.single();
+
+			if (!profile || (profile.pending_payout || 0) < amount) {
+				throw new Error('Insufficient balance for payout');
+			}
+
+			// Create payout record
+			const { data: payout, error } = await this.supabase
+				.from('payouts')
+				.insert({
+					seller_id: sellerId,
+					amount,
+					payout_method: payoutMethod,
+					status: 'pending'
+				} as PayoutInsert)
+				.select()
+				.single();
+
+			if (error) throw error;
+
+			// Update seller's pending balance
+			await this.supabase
+				.from('profiles')
+				.update({
+					pending_payout: (profile.pending_payout || 0) - amount
+				})
+				.eq('id', sellerId);
 
 			return {
-				payout: result.payout || null,
-				error: result.error || null
+				payout,
+				error: null
 			};
 		} catch (error) {
 			console.error('Error requesting payout:', error);

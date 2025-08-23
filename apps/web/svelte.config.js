@@ -16,9 +16,7 @@ const config = {
 		// Disable CSRF check temporarily to fix production issues
 		csrf: {
 			checkOrigin: false
-		},
-		// Disable CSP entirely to fix production blocking issues
-		csp: false
+		}
 	},
 };
 

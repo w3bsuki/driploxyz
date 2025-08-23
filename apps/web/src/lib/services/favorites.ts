@@ -223,7 +223,7 @@ export class FavoriteService {
 
       if (error) throw error;
 
-      return { removedCount: data?.length || 0, error: null };
+      return { removedCount: Array.isArray(data) ? data.length : 0, error: null };
     } catch (error) {
       console.error('Error cleaning up sold favorites:', error);
       return { removedCount: 0, error: error as Error };
