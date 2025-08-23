@@ -103,17 +103,6 @@ export const actions: Actions = {
     // Normalize email to lowercase for consistency
     const normalizedEmail = validatedEmail.toLowerCase().trim();
     
-    // Check if user already exists using database function
-    const { data: emailExists } = await supabase
-      .rpc('check_email_exists', { email_to_check: normalizedEmail });
-    
-    if (emailExists) {
-      return fail(400, { 
-        errors: { email: 'An account with this email already exists. Please sign in instead.' }, 
-        values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
-      });
-    }
-    
     // Create user with proper error handling
     const { data, error } = await supabase.auth.signUp({
       email: normalizedEmail,
@@ -148,6 +137,12 @@ export const actions: Actions = {
       if (error.message.includes('Password should be at least')) {
         return fail(400, { 
           errors: { password: 'Password must be at least 6 characters' }, 
+          values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
+        });
+      }
+      if (error.message.includes('rate limit') || error.message.includes('Rate limit')) {
+        return fail(429, { 
+          errors: { _form: 'Too many signup attempts. Please try again in a few minutes.' }, 
           values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
         });
       }
