@@ -82,7 +82,7 @@ export class StripeService {
 
 			return {
 				paymentIntent,
-				clientSecret: paymentIntent.client_secret || undefined
+				...(paymentIntent.client_secret ? { clientSecret: paymentIntent.client_secret } : {})
 			};
 
 		} catch (error) {
@@ -266,7 +266,7 @@ export class StripeService {
 
 			return {
 				subscription,
-				clientSecret: paymentIntent?.client_secret || undefined
+				...(paymentIntent?.client_secret ? { clientSecret: paymentIntent.client_secret } : {})
 			};
 
 		} catch (error) {
@@ -442,17 +442,17 @@ export class StripeService {
 		name?: string;
 	}): Promise<Stripe.Customer> {
 		// First, try to find existing customer
-		const customers = await this.stripe.customers.list({
+		const customers = details.email ? await this.stripe.customers.list({
 			email: details.email,
 			limit: 1
-		});
+		}) : { data: [] };
 
 		if (customers.data.length > 0) {
 			return customers.data[0];
 		}
 
 		// Create new customer
-		return await stripe.customers.create({
+		return await this.stripe.customers.create({
 			email: details.email,
 			name: details.name,
 			metadata: {

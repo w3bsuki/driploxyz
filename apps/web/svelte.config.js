@@ -17,34 +17,8 @@ const config = {
 		csrf: {
 			checkOrigin: false
 		},
-		// Add CSP configuration to allow necessary services
-		csp: {
-			mode: 'auto',
-			directives: {
-				'default-src': ['self'],
-				'script-src': [
-					'self',
-					'unsafe-inline',
-					'unsafe-eval', // Temporary for debugging
-					'https://js.stripe.com',
-					'https://checkout.stripe.com'
-				],
-				'connect-src': [
-					'self',
-					'https://*.supabase.co',
-					'wss://*.supabase.co',
-					'https://api.stripe.com'
-				],
-				'frame-src': [
-					'self',
-					'https://js.stripe.com',
-					'https://checkout.stripe.com'
-				],
-				'img-src': ['self', 'data:', 'https:', 'blob:'],
-				'style-src': ['self', 'unsafe-inline'],
-				'font-src': ['self', 'data:', 'https:']
-			}
-		}
+		// Disable CSP entirely to fix production blocking issues
+		csp: false
 	},
 };
 

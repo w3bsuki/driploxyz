@@ -17,14 +17,14 @@ export const authLimiter = new RateLimiter({
 
 // API rate limiter - more lenient for general API calls
 export const apiLimiter = new RateLimiter({
-	IP: [100, '1m'], // 100 requests per minute per IP
+	IP: [100, 'm'], // 100 requests per minute per IP
 	IPUA: [100, '5m'], // 100 requests per 5 minutes per IP+User-Agent
 });
 
 // Upload rate limiter - for file uploads
 export const uploadLimiter = new RateLimiter({
-	IP: [10, '1h'], // 10 uploads per hour per IP
-	IPUA: [20, '1h'], // 20 uploads per hour per IP+User-Agent
+	IP: [10, 'h'], // 10 uploads per hour per IP
+	IPUA: [20, 'h'], // 20 uploads per hour per IP+User-Agent
 	cookie: {
 		name: 'upload_rl',
 		secret: RATE_LIMIT_SECRET || 'fallback-dev-secret-change-in-prod',
@@ -35,8 +35,8 @@ export const uploadLimiter = new RateLimiter({
 
 // Message rate limiter - prevent spam
 export const messageLimiter = new RateLimiter({
-	IP: [30, '1h'], // 30 messages per hour per IP
-	IPUA: [50, '1h'], // 50 messages per hour per IP+User-Agent
+	IP: [30, 'h'], // 30 messages per hour per IP
+	IPUA: [50, 'h'], // 50 messages per hour per IP+User-Agent
 	cookie: {
 		name: 'msg_rl',
 		secret: RATE_LIMIT_SECRET || 'fallback-dev-secret-change-in-prod',

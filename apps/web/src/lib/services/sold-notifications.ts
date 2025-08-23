@@ -128,19 +128,24 @@ export class SoldNotificationService {
       return [];
     }
 
-    return orders.map(order => ({
-      id: `sold-${order.id}`,
-      product_id: order.product_id,
-      product_title: order.products.title,
-      product_price: order.total_amount,
-      product_image: order.products.images?.[0]?.image_url || '/placeholder-product.svg',
-      buyer_id: order.buyer_id,
-      buyer_name: order.profiles?.username || order.profiles?.full_name || 'Unknown',
-      buyer_avatar: order.profiles?.avatar_url || '',
-      sold_at: order.created_at,
-      earnings: order.total_amount * 0.95,
-      order_id: order.id
-    }));
+    return orders.map(order => {
+      const product = Array.isArray(order.products) ? order.products[0] : order.products;
+      const profile = Array.isArray(order.profiles) ? order.profiles[0] : order.profiles;
+      
+      return {
+        id: `sold-${order.id}`,
+        product_id: order.product_id,
+        product_title: product?.title || 'Unknown Product',
+        product_price: order.total_amount,
+        product_image: product?.images?.[0]?.image_url || '/placeholder-product.svg',
+        buyer_id: order.buyer_id,
+        buyer_name: profile?.username || profile?.full_name || 'Unknown',
+        buyer_avatar: profile?.avatar_url || '',
+        sold_at: order.created_at,
+        earnings: order.total_amount * 0.95,
+        order_id: order.id
+      };
+    });
   }
 
   /**
@@ -230,7 +235,9 @@ export class SoldNotificationService {
 
     // Top categories
     const categorySales = orders.reduce((acc, order) => {
-      const category = order.products?.categories?.name || 'Uncategorized';
+      const products = Array.isArray(order.products) ? order.products[0] : order.products;
+      const categories = Array.isArray(products?.categories) ? products.categories[0] : products?.categories;
+      const category = categories?.name || 'Uncategorized';
       if (!acc[category]) {
         acc[category] = { count: 0, revenue: 0 };
       }
