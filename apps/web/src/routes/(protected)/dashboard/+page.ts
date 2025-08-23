@@ -54,6 +54,7 @@ export const load: PageLoad = async ({ parent }) => {
   return {
     products: products || [],
     orders: orders || [],
-    profile
+    profile,
+    user
   };
 };
