@@ -126,7 +126,8 @@
 
   function handleBrandPaymentCancel() {
     showBrandPayment = false;
-    accountType = 'personal';
+    // Keep the selected account type - they can pay later
+    // accountType stays as selected (brand/premium)
   }
 
   function nextStep() {
@@ -142,9 +143,11 @@
   }
 
   function handleAccountTypeSelect(type: 'personal' | 'premium' | 'brand') {
-    // Just set the account type - don't force payment during onboarding
     accountType = type;
-    // Payment can be handled later from dashboard if needed
+    // Show payment modal for brand/premium, but allow skipping
+    if ((type === 'brand' || type === 'premium') && !brandPaid) {
+      showBrandPayment = true;
+    }
   }
   
   function handleDiscountCodeChange(code: string) {
