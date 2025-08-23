@@ -134,21 +134,9 @@
           type="text"
           required
           bind:value={formData.fullName}
-          aria-invalid={form?.errors?.fullName ? 'true' : undefined}
-          aria-describedby={form?.errors?.fullName ? 'fullName-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {form?.errors?.fullName ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
           placeholder="John Doe"
           />
-        </div>
-        <div class="mt-1 h-2">
-          {#if form?.errors?.fullName}
-            <div id="fullName-error" class="text-sm text-red-600 flex items-center gap-1">
-              <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-              </svg>
-              <span>{form.errors.fullName}</span>
-            </div>
-          {/if}
         </div>
       </div>
 
@@ -165,21 +153,9 @@
           autocomplete="email"
           required
           bind:value={formData.email}
-          aria-invalid={form?.errors?.email ? 'true' : undefined}
-          aria-describedby={form?.errors?.email ? 'email-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {form?.errors?.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
           placeholder="john@example.com"
           />
-        </div>
-        <div class="mt-1 h-2">
-          {#if form?.errors?.email}
-            <div id="email-error" class="text-sm text-red-600 flex items-center gap-1">
-              <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-              </svg>
-              <span>{form.errors.email}</span>
-            </div>
-          {/if}
         </div>
       </div>
 
@@ -196,21 +172,9 @@
           autocomplete="new-password"
           required
           bind:value={formData.password}
-          aria-invalid={form?.errors?.password ? 'true' : undefined}
-          aria-describedby={form?.errors?.password ? 'password-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {form?.errors?.password ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
           placeholder="Minimum 8 characters"
           />
-        </div>
-        <div class="mt-1 h-2">
-          {#if form?.errors?.password}
-            <div id="password-error" class="text-sm text-red-600 flex items-center gap-1">
-              <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-              </svg>
-              <span>{form.errors.password}</span>
-            </div>
-          {/if}
         </div>
       </div>
 
@@ -226,21 +190,9 @@
           autocomplete="new-password"
           required
           bind:value={formData.confirmPassword}
-          aria-invalid={form?.errors?.confirmPassword ? 'true' : undefined}
-          aria-describedby={form?.errors?.confirmPassword ? 'confirmPassword-error' : undefined}
-          class="appearance-none block w-full px-3 py-2 border {form?.errors?.confirmPassword ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300'} rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
           placeholder="Re-enter your password"
           />
-        </div>
-        <div class="mt-1 h-2">
-          {#if form?.errors?.confirmPassword}
-            <div id="confirmPassword-error" class="text-sm text-red-600 flex items-center gap-1">
-              <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-              </svg>
-              <span>{form.errors.confirmPassword}</span>
-            </div>
-          {/if}
         </div>
       </div>
 
@@ -251,20 +203,8 @@
           name="terms"
           type="checkbox"
           bind:checked={formData.terms}
-          aria-invalid={form?.errors?.terms ? 'true' : undefined}
-          aria-describedby={form?.errors?.terms ? 'terms-error' : undefined}
           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded-sm"
         />
-        <div class="mt-1 h-2">
-          {#if form?.errors?.terms}
-            <div id="terms-error" class="text-sm text-red-600 flex items-center gap-1">
-              <svg class="w-4 h-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-              </svg>
-              <span>{form.errors.terms}</span>
-            </div>
-          {/if}
-        </div>
         <label for="terms" class="ml-2 block text-sm text-gray-900">
           {i18n.auth_termsAgreement()}
           <a href="/terms" class="text-blue-600 hover:text-blue-500">{i18n.auth_termsOfService()}</a>
