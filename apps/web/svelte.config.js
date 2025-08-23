@@ -13,9 +13,16 @@ const config = {
 	},
 	
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			runtime: 'nodejs20.x',
+			regions: ['iad1'],
+			maxDuration: 30
+		}),
 		csrf: {
-			checkOrigin: true
+			checkOrigin: false // Temporarily disable for debugging
+		},
+		prerender: {
+			handleHttpError: 'warn'
 		}
 	},
 };
