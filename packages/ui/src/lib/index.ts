@@ -93,6 +93,7 @@ export { default as LocaleDetectionBanner } from './LocaleDetectionBanner.svelte
 
 // Navigation components
 export { default as MegaMenu } from './MegaMenu.svelte';
+export { default as CategoryMegaMenu } from './CategoryMegaMenu.svelte';
 export { default as CategorySidebar } from './CategorySidebar.svelte';
 export { default as BottomNav } from './BottomNav.svelte';
 
@@ -122,6 +123,9 @@ export { default as SellerQuickView } from './SellerQuickView.svelte';
 // Product quick view components
 export { default as ProductQuickView } from './ProductQuickView.svelte';
 export { default as HighlightQuickView } from './HighlightQuickView.svelte';
+
+// Auth components
+export { default as AuthPopup } from './AuthPopup.svelte';
 
 // Header components - NEW modular header components
 export { default as HeaderLogo } from './HeaderLogo.svelte';

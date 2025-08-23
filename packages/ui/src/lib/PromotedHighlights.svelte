@@ -13,15 +13,22 @@
     ui_scroll?: string;
   }
 
+  interface FavoriteState {
+    isLoading: boolean;
+    error: string | null;
+    favorites: Record<string, boolean>;
+    favoriteCounts: Record<string, number>;
+  }
+
   interface Props {
     promotedProducts: Product[];
     sellers: Seller[];
     onSellerSelect: (seller: Seller) => void;
     onSellerClick: (seller: Seller) => void;
     onProductClick?: (product: Product) => void;
-    onProductBuy?: (product: Product) => void;
-    onToggleFavorite?: (product: Product) => void;
-    favoriteProductIds?: Set<string>;
+    onProductBuy?: (productId: string, selectedSize?: string) => void;
+    onToggleFavorite?: (productId: string) => void;
+    favoritesState?: FavoriteState;
     translations: Translations;
     formatPrice?: (price: number) => string;
   }
@@ -34,7 +41,7 @@
     onProductClick,
     onProductBuy,
     onToggleFavorite,
-    favoriteProductIds = new Set(),
+    favoritesState,
     translations, 
     formatPrice 
   }: Props = $props();
@@ -52,11 +59,20 @@
     selectedProduct = null;
   }
 
-  function handleBuy() {
-    if (selectedProduct) {
-      onProductBuy?.(selectedProduct);
-      handleCloseModal();
-    }
+  function handleBuy(productId: string, selectedSize?: string) {
+    onProductBuy?.(productId, selectedSize);
+    handleCloseModal();
+  }
+
+  function handleFavoriteToggle(productId: string) {
+    onToggleFavorite?.(productId);
+  }
+
+  // Get favorite status and loading state for a product
+  function getFavoriteData(productId: string) {
+    const isFavorited = favoritesState?.favorites[productId] || false;
+    const isLoading = favoritesState?.isLoading || false;
+    return { isFavorited, isLoading };
   }
 </script>
 
@@ -86,9 +102,10 @@
               currency={translations.common_currency}
               {formatPrice}
               onProductClick={handleProductClick}
-              onBuy={onProductBuy}
-              onToggleFavorite={onToggleFavorite}
-              isFavorite={favoriteProductIds.has(product.id)}
+              onBuy={(productId, selectedSize) => onProductBuy?.(productId, selectedSize)}
+              onToggleFavorite={(productId) => onToggleFavorite?.(productId)}
+              isFavorite={getFavoriteData(product.id).isFavorited}
+              isLoadingFavorite={getFavoriteData(product.id).isLoading}
             />
           {/each}
         {/if}
@@ -126,6 +143,8 @@
     product={selectedProduct}
     onClose={handleCloseModal}
     onAddToCart={handleBuy}
-    onToggleFavorite={() => selectedProduct && onToggleFavorite?.(selectedProduct)}
+    onToggleFavorite={handleFavoriteToggle}
+    isFavorited={getFavoriteData(selectedProduct.id).isFavorited}
+    isLoadingFavorite={getFavoriteData(selectedProduct.id).isLoading}
   />
 {/if}

@@ -5944,3 +5944,187 @@ export const remove_from_favorites = () => `Remove from favorites`
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const common_scroll = () => "common_scroll"
+
+
+/**
+ * Failed to resolve message category_women_title for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_women_title = () => "category_women_title"
+
+
+/**
+ * Failed to resolve message category_men_title for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_men_title = () => "category_men_title"
+
+
+/**
+ * Failed to resolve message category_kids_title for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_kids_title = () => "category_kids_title"
+
+
+/**
+ * Failed to resolve message category_categories for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_categories = () => "category_categories"
+
+
+/**
+ * Failed to resolve message category_filters for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_filters = () => "category_filters"
+
+
+/**
+ * Failed to resolve message subcategory_shirtsBBousesr for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_shirtsBBousesr = () => "subcategory_shirtsBBousesr"
+
+
+/**
+ * Failed to resolve message subcategory_sweatersHoodies for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sweatersHoodies = () => "subcategory_sweatersHoodies"
+
+
+/**
+ * Failed to resolve message subcategory_jacketsCoats for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_jacketsCoats = () => "subcategory_jacketsCoats"
+
+
+/**
+ * Failed to resolve message subcategory_pantsTraousers for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_pantsTraousers = () => "subcategory_pantsTraousers"
+
+
+/**
+ * Failed to resolve message subcategory_lingerieUnderwear for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_lingerieUnderwear = () => "subcategory_lingerieUnderwear"
+
+
+/**
+ * Failed to resolve message subcategory_bagssPurses for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_bagssPurses = () => "subcategory_bagssPurses"
+
+
+/**
+ * Failed to resolve message subcategory_jewelry for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_jewelry = () => "subcategory_jewelry"
+
+
+/**
+ * Failed to resolve message subcategory_tShirts for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_tShirts = () => "subcategory_tShirts"
+
+
+/**
+ * Failed to resolve message subcategory_formalShoes for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_formalShoes = () => "subcategory_formalShoes"
+
+
+/**
+ * Failed to resolve message subcategory_sandalsSlides for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sandalsSlides = () => "subcategory_sandalsSlides"
+
+
+/**
+ * Failed to resolve message subcategory_underwear for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_underwear = () => "subcategory_underwear"
+
+
+/**
+ * Failed to resolve message subcategory_bags for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_bags = () => "subcategory_bags"
+
+
+/**
+ * Failed to resolve message subcategory_activewear for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_activewear = () => "subcategory_activewear"
+
+
+/**
+ * Failed to resolve message subcategory_swimwear for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_swimwear = () => "subcategory_swimwear"
+
+
+/**
+ * Failed to resolve message subcategory_suiBbazers for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_suiBbazers = () => "subcategory_suiBbazers"
+
+
+/**
+ * Failed to resolve message subcategory_shorts for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_shorts = () => "subcategory_shorts"
+
+
+/**
+ * Failed to resolve message subcategory_topsShirts for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_topsShirts = () => "subcategory_topsShirts"
+
+
+/**
+ * Failed to resolve message subcategory_pantsJeans for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_pantsJeans = () => "subcategory_pantsJeans"

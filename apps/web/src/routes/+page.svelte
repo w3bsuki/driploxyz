@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SearchBar, BottomNav, PromotedHighlights, FeaturedProducts } from '@repo/ui';
+	import { SearchBar, BottomNav, PromotedHighlights, FeaturedProducts, AuthPopup } from '@repo/ui';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import Header from '$lib/components/Header.svelte';
@@ -10,6 +10,9 @@
 	import { page, navigating } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { serviceUtils } from '$lib/services';
+	import { purchaseActions, purchaseStore } from '$lib/stores/purchase-store';
+	import { favoritesActions, favoritesStore } from '$lib/stores/favorites-store';
+	import { authPopupActions, authPopupStore } from '$lib/stores/auth-popup-store';
 	import type { PageData } from './$types';
 	import type { ProductWithImages } from '$lib/services';
 	import type { Seller, ProductDisplay, PromotedProduct } from '$lib/types';
@@ -142,9 +145,26 @@
 		goto(`/product/${product.id}`);
 	}
 
-	function handleFavorite(product: Product) {
-		// Favorites functionality will be implemented with Supabase
-		// For now, just show a toast or notification
+	async function handleFavorite(productId: string) {
+		if (!data.user) {
+			authPopupActions.showForFavorite();
+			return;
+		}
+
+		try {
+			await favoritesActions.toggleFavorite(productId);
+		} catch (error) {
+			console.error('Failed to toggle favorite:', error);
+		}
+	}
+
+	async function handlePurchase(productId: string, selectedSize?: string) {
+		if (!data.user) {
+			authPopupActions.showForPurchase();
+			return;
+		}
+
+		await purchaseActions.initiatePurchase(productId, selectedSize);
 	}
 
 	function handleBrowseAll() {
@@ -225,6 +245,20 @@
 	function getCategoryIcon(categoryName: string): string {
 		return CATEGORY_ICONS[categoryName] || DEFAULT_CATEGORY_ICON;
 	}
+
+	// Load favorites for products when user is authenticated
+	$effect(() => {
+		if (data.user && browser) {
+			const productIds = [
+				...(data.promotedProducts || []).map(p => p.id),
+				...(data.featuredProducts || []).map(p => p.id)
+			];
+
+			if (productIds.length > 0) {
+				favoritesActions.loadMultipleFavoriteStatuses(productIds);
+			}
+		}
+	});
 
 	// Scroll detection removed for cleaner UX
 </script>
@@ -372,12 +406,17 @@
 		</div>
 
 		<PromotedHighlights 
-			{promotedProducts}
+			promotedProducts={promotedProducts.map(product => ({
+				...product,
+				sizes: product.size ? [product.size] : ['S', 'M', 'L'] // Convert single size to sizes array or add default sizes
+			}))}
 			{sellers}
 			onSellerSelect={(seller) => selectedSeller = seller}
 			onSellerClick={handleSellerClick}
-			onProductBuy={handleProductClick}
+			onProductClick={handleProductClick}
+			onProductBuy={handlePurchase}
 			onToggleFavorite={handleFavorite}
+			favoritesState={$favoritesStore}
 			{formatPrice}
 			translations={{
 				seller_premiumSeller: i18n.seller_premiumSeller(),
@@ -432,5 +471,14 @@
 		onclose={() => selectedSeller = null} 
 	/>
 {/if}
+
+<!-- Auth Popup -->
+<AuthPopup 
+	isOpen={$authPopupStore.isOpen}
+	action={$authPopupStore.action}
+	onClose={authPopupActions.close}
+	onSignIn={authPopupActions.signIn}
+	onSignUp={authPopupActions.signUp}
+/>
 {/key}
 

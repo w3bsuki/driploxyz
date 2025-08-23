@@ -41,28 +41,25 @@
 				throw new Error('Failed to load Stripe');
 			}
 
-			// Create payment intent
-			const response = await fetch('/api/payments/create-intent', {
+			// Create payment intent using our new API
+			const response = await fetch('/api/checkout', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					amount: totalAmount,
-					currency: 'eur',
 					productId: product.id,
-					sellerId: product.sellerId,
-					metadata: {
-						productTitle: product.title
-					}
+					selectedSize: null // Can be added later for size selection
 				})
 			});
 
-			const { client_secret, error: apiError } = await response.json();
+			const data = await response.json();
 			
-			if (apiError) {
-				throw new Error(apiError);
+			if (!response.ok || !data.success) {
+				throw new Error(data.message || 'Failed to create payment intent');
 			}
+
+			const { clientSecret: client_secret } = data;
 
 			clientSecret = client_secret;
 
@@ -93,8 +90,8 @@
 	}
 
 	async function handlePaymentSuccess(paymentIntent: PaymentIntent) {
-		// Confirm payment on server
-		const response = await fetch('/api/payments/confirm', {
+		// Confirm payment on server using our new API
+		const response = await fetch('/api/checkout/confirm', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -106,11 +103,11 @@
 
 		const result = await response.json();
 		
-		if (result.success && result.orderId) {
+		if (result.success && result.order) {
 			// Redirect to success page with order ID
-			await goto(`/payment/success?orderId=${result.orderId}`);
+			await goto(`/payment/success?orderId=${result.order.id}`);
 		} else {
-			error = i18n.checkout_paymentFailed();
+			error = result.message || i18n.checkout_paymentFailed();
 		}
 	}
 

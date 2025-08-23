@@ -9,6 +9,7 @@ import { ProfileService } from './profiles';
 import { SubscriptionService } from './subscriptions';
 import { TransactionService } from './transactions';
 import { PayoutService } from './payouts';
+import { FavoriteService } from './favorites';
 import { createStripeService, StripeService } from './stripe';
 
 // Service class exports
@@ -18,6 +19,7 @@ export { ProfileService } from './profiles';
 export { SubscriptionService } from './subscriptions';
 export { TransactionService } from './transactions';
 export { PayoutService } from './payouts';
+export { FavoriteService } from './favorites';
 export { createStripeService, StripeService } from './stripe';
 
 // Type exports
@@ -38,6 +40,10 @@ export type {
   SellerStats
 } from './profiles';
 
+export type {
+  FavoriteWithProduct
+} from './favorites';
+
 /**
  * Service factory to create all services with a Supabase client
  * @param supabase - Supabase client instance
@@ -51,6 +57,7 @@ export function createServices(supabase: SupabaseClient<Database>, stripeInstanc
     subscriptions: new SubscriptionService(supabase),
     transactions: new TransactionService(supabase),
     payouts: new PayoutService(supabase),
+    favorites: new FavoriteService(supabase),
     stripe: stripeInstance ? createStripeService(supabase, stripeInstance) : null
   };
 }
@@ -65,6 +72,7 @@ export class ServiceManager {
   public subscriptions: SubscriptionService;
   public transactions: TransactionService;
   public payouts: PayoutService;
+  public favorites: FavoriteService;
   public stripe: StripeService | null;
 
   constructor(private supabase: SupabaseClient<Database>, private stripeInstance?: Stripe | null) {
@@ -74,6 +82,7 @@ export class ServiceManager {
     this.subscriptions = new SubscriptionService(supabase);
     this.transactions = new TransactionService(supabase);
     this.payouts = new PayoutService(supabase);
+    this.favorites = new FavoriteService(supabase);
     this.stripe = stripeInstance ? createStripeService(supabase, stripeInstance) : null;
   }
 
@@ -89,6 +98,7 @@ export class ServiceManager {
     this.subscriptions = new SubscriptionService(supabase);
     this.transactions = new TransactionService(supabase);
     this.payouts = new PayoutService(supabase);
+    this.favorites = new FavoriteService(supabase);
     this.stripe = stripeInstance ? createStripeService(supabase, stripeInstance) : null;
   }
 }

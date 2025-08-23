@@ -519,7 +519,7 @@ export const category_bags = () => `Чанти`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const category_home = () => `Дом`
+export const category_home = () => `Начало`
 
 
 /**
@@ -5890,3 +5890,187 @@ export { remove_from_favorites } from "./en.js"
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const common_scroll = () => `Скролвай`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_women_title = () => `Жени`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_men_title = () => `Мъже`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_kids_title = () => `Деца`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_categories = () => `Категории`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_filters = () => `Филтри`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_shirtsBBousesr = () => `Ризи и блузи`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sweatersHoodies = () => `Пуловери и суичъри`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_jacketsCoats = () => `Якета и палта`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_pantsTraousers = () => `Панталони`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_lingerieUnderwear = () => `Бельо`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_bagssPurses = () => `Чанти`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_jewelry = () => `Бижута`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_tShirts = () => `Тениски`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_formalShoes = () => `Елегантни обувки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sandalsSlides = () => `Сандали`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_underwear = () => `Бельо`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_bags = () => `Чанти`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_activewear = () => `Спортно облекло`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_swimwear = () => `Бански костюми`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_suiBbazers = () => `Костюми`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_shorts = () => `Къси панталони`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_topsShirts = () => `Топове и тениски`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_pantsJeans = () => `Панталони и дънки`

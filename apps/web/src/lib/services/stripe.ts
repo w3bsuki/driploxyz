@@ -411,7 +411,7 @@ export class StripeService {
 	/**
 	 * Calculate payment amounts with fees
 	 */
-	private calculatePaymentAmounts(productPrice: number): PaymentCalculation {
+	public calculatePaymentAmounts(productPrice: number): PaymentCalculation {
 		// Buyer Protection Fee: 5% + €0.70 fixed (similar to Vinted)
 		const serviceFeeRate = 0.05; // 5% buyer protection
 		const fixedFee = 70; // €0.70 in cents

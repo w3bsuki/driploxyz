@@ -18,6 +18,53 @@
   $effect(() => {
     console.log('Category page data:', data);
   });
+
+  // Translation mapping for category names
+  function translateCategoryName(name: string): string {
+    const translations: Record<string, string> = {
+      'Women': i18n.category_women_title(),
+      'Men': i18n.category_men_title(),
+      'Kids': i18n.category_kids_title(),
+      'Unisex': 'Унисекс'
+    };
+    return translations[name] || name;
+  }
+
+  // Translation mapping for subcategory names  
+  function translateSubcategoryName(name: string): string {
+    const translations: Record<string, string> = {
+      'Dresses': i18n.subcategory_dresses(),
+      'Tops & T-Shirts': i18n.subcategory_topsShirts(),
+      'Shirts & Blouses': i18n.subcategory_shirts(),
+      'Sweaters & Hoodies': i18n.subcategory_sweatersHoodies(),
+      'Jackets & Coats': i18n.subcategory_jacketsCoats(),
+      'Jeans': i18n.subcategory_jeans(),
+      'Pants & Trousers': i18n.subcategory_pantsTraousers(),
+      'Shorts': i18n.subcategory_shorts(),
+      'Skirts': i18n.subcategory_skirts(),
+      'Activewear': i18n.subcategory_activewear(),
+      'Swimwear': i18n.subcategory_swimwear(),
+      'Lingerie & Underwear': i18n.subcategory_lingerieUnderwear(),
+      'Sneakers': i18n.subcategory_sneakers(),
+      'Boots': i18n.subcategory_boots(),
+      'Heels': i18n.subcategory_heels(),
+      'Flats': i18n.subcategory_flats(),
+      'Sandals': i18n.subcategory_sandals(),
+      'Bags & Purses': i18n.subcategory_bagssPurses(),
+      'Jewelry': i18n.subcategory_jewelry(),
+      'Accessories': i18n.subcategory_accessories(),
+      'T-Shirts': i18n.subcategory_tShirts(),
+      'Shirts': i18n.subcategory_shirts(),
+      'Suits & Blazers': i18n.subcategory_suiBbazers(),
+      'Formal Shoes': i18n.subcategory_formalShoes(),
+      'Sandals & Slides': i18n.subcategory_sandalsSlides(),
+      'Underwear': i18n.subcategory_underwear(),
+      'Bags': i18n.subcategory_bags(),
+      'Watches': i18n.subcategory_watches(),
+      'Pants & Jeans': i18n.subcategory_pantsJeans()
+    };
+    return translations[name] || name;
+  }
   
   // Use real category data from server
   const category = data.category || { name: 'Women', slug: 'women', description: 'Discover amazing deals on women\'s clothing' };
@@ -64,6 +111,7 @@
   let sortBy = $state('popular');
   let showFilters = $state(false);
   let searchQuery = $state('');
+  let showMegaMenu = $state(false);
   
   // Seller quick view modal state
   let selectedSeller = $state<any>(null);
@@ -144,11 +192,20 @@
       goto(`/search?q=${encodeURIComponent(query)}&category=${categorySlug}`);
     }
   }
+
+  function handleMegaMenuToggle() {
+    showMegaMenu = !showMegaMenu;
+  }
+
+  function handleSubcategoryFromMega(subcategory: string) {
+    goto(`/category/${subcategory}`);
+    showMegaMenu = false;
+  }
 </script>
 
 <svelte:head>
-  <title>{category.name} - Driplo</title>
-  <meta name="description" content={category.description} />
+  <title>{translateCategoryName(category.name)} - Driplo</title>
+  <meta name="description" content={category.description || ''} />
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
@@ -159,8 +216,8 @@
   <div class="bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
       <Breadcrumb items={[
-        { label: 'Home', href: '/' },
-        { label: category.name }
+        { label: i18n.category_home(), href: '/' },
+        { label: translateCategoryName(category.name) }
       ]} />
     </div>
   </div>
@@ -171,8 +228,8 @@
       
       <!-- Category Header -->
       <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900 mb-2">{category.name}</h1>
-        <p class="text-gray-600">{category.description}</p>
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">{translateCategoryName(category.name)}</h1>
+        <p class="text-gray-600">{category.description || ''}</p>
       </div>
 
       <!-- Top Sellers -->
@@ -204,13 +261,46 @@
       <!-- Search Bar with Power Variant -->
       <div class="pb-4">
         <div class="max-w-2xl mx-auto">
-          <SearchBar 
-            bind:value={searchQuery}
-            onSearch={handleSearch}
-            placeholder={i18n.category_searchPlaceholder()}
-            variant="power"
-            class="w-full"
-          />
+          <div class="relative">
+            <SearchBar 
+              bind:value={searchQuery}
+              onSearch={handleSearch}
+              onFilter={handleMegaMenuToggle}
+              placeholder={i18n.category_searchPlaceholder()}
+              showCategoriesButton={true}
+              categoriesText={i18n.category_categories()}
+              class="w-full"
+            />
+            
+            <!-- Category Mega Menu -->
+            {#if showMegaMenu}
+              <!-- Backdrop -->
+              <button 
+                class="fixed inset-0 bg-black bg-opacity-50 z-40 cursor-default"
+                onclick={() => showMegaMenu = false}
+                aria-label="Close menu"
+                tabindex="-1"
+              ></button>
+
+              <!-- Menu -->
+              <div class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-2">
+                <div class="p-4">
+                  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                    {#each subcategories as subcategory}
+                      <button
+                        onclick={() => handleSubcategoryFromMega(subcategory.slug)}
+                        class="text-left p-3 rounded-lg hover:bg-gray-50 border border-gray-100 hover:border-gray-200 transition-colors"
+                      >
+                        <span class="text-sm font-medium text-gray-900">
+                          {translateSubcategoryName(subcategory.name)}
+                        </span>
+                      </button>
+                    {/each}
+                  </div>
+                </div>
+              </div>
+            {/if}
+          </div>
         </div>
       </div>
 
@@ -235,7 +325,7 @@
                     ? 'bg-gray-900 text-white' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
               >
-                {subcat.name}
+                {translateSubcategoryName(subcat.name)}
               </button>
             {/each}
           </div>
@@ -270,8 +360,8 @@
           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
-          <span class="hidden sm:inline">{i18n.search_filters()}</span>
-          <span class="sm:hidden">Filters</span>
+          <span class="hidden sm:inline">{i18n.category_filters()}</span>
+          <span class="sm:hidden">{i18n.category_filters()}</span>
           {#if selectedSizes.length > 0 || selectedBrands.length > 0 || selectedConditions.length > 0}
             <span class="ml-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
               {selectedSizes.length + selectedBrands.length + selectedConditions.length}

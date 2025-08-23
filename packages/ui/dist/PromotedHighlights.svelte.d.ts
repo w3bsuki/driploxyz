@@ -7,15 +7,21 @@ interface Translations {
     common_currency: string;
     ui_scroll?: string;
 }
+interface FavoriteState {
+    isLoading: boolean;
+    error: string | null;
+    favorites: Record<string, boolean>;
+    favoriteCounts: Record<string, number>;
+}
 interface Props {
     promotedProducts: Product[];
     sellers: Seller[];
     onSellerSelect: (seller: Seller) => void;
     onSellerClick: (seller: Seller) => void;
     onProductClick?: (product: Product) => void;
-    onProductBuy?: (product: Product) => void;
-    onToggleFavorite?: (product: Product) => void;
-    favoriteProductIds?: Set<string>;
+    onProductBuy?: (productId: string, selectedSize?: string) => void;
+    onToggleFavorite?: (productId: string) => void;
+    favoritesState?: FavoriteState;
     translations: Translations;
     formatPrice?: (price: number) => string;
 }

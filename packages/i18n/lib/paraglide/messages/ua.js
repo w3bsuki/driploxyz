@@ -5885,3 +5885,49 @@ export { add_to_favorites } from "./en.js"
 export { remove_from_favorites } from "./en.js"
 
 export { common_scroll } from "./en.js"
+
+export { category_women_title } from "./en.js"
+
+export { category_men_title } from "./en.js"
+
+export { category_kids_title } from "./en.js"
+
+export { category_categories } from "./en.js"
+
+export { category_filters } from "./en.js"
+
+export { subcategory_shirtsBBousesr } from "./en.js"
+
+export { subcategory_sweatersHoodies } from "./en.js"
+
+export { subcategory_jacketsCoats } from "./en.js"
+
+export { subcategory_pantsTraousers } from "./en.js"
+
+export { subcategory_lingerieUnderwear } from "./en.js"
+
+export { subcategory_bagssPurses } from "./en.js"
+
+export { subcategory_jewelry } from "./en.js"
+
+export { subcategory_tShirts } from "./en.js"
+
+export { subcategory_formalShoes } from "./en.js"
+
+export { subcategory_sandalsSlides } from "./en.js"
+
+export { subcategory_underwear } from "./en.js"
+
+export { subcategory_bags } from "./en.js"
+
+export { subcategory_activewear } from "./en.js"
+
+export { subcategory_swimwear } from "./en.js"
+
+export { subcategory_suiBbazers } from "./en.js"
+
+export { subcategory_shorts } from "./en.js"
+
+export { subcategory_topsShirts } from "./en.js"
+
+export { subcategory_pantsJeans } from "./en.js"

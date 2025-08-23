@@ -2,8 +2,10 @@ import type { Product } from './types.js';
 interface Props {
     product: Product;
     onClose: () => void;
-    onAddToCart?: () => void;
-    onToggleFavorite?: () => void;
+    onAddToCart?: (productId: string, selectedSize?: string) => void;
+    onToggleFavorite?: (productId: string) => void;
+    isFavorited?: boolean;
+    isLoadingFavorite?: boolean;
 }
 declare const HighlightQuickView: import("svelte").Component<Props, {}, "">;
 type HighlightQuickView = ReturnType<typeof HighlightQuickView>;

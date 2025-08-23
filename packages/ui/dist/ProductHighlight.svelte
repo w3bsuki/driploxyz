@@ -4,9 +4,10 @@
   interface Props {
     product: Product;
     onProductClick?: (product: Product) => void;
-    onBuy?: (product: Product) => void;
-    onToggleFavorite?: (product: Product) => void;
+    onBuy?: (productId: string, selectedSize?: string) => void;
+    onToggleFavorite?: (productId: string) => void;
     isFavorite?: boolean;
+    isLoadingFavorite?: boolean;
     currency?: string;
     formatPrice?: (price: number) => string;
   }
@@ -17,6 +18,7 @@
     onBuy,
     onToggleFavorite,
     isFavorite = false,
+    isLoadingFavorite = false,
     currency = '$', 
     formatPrice 
   }: Props = $props();
