@@ -7,10 +7,8 @@
     AvatarSelector,
     SocialLinksEditor,
     PayoutMethodSelector,
-    WelcomeModal,
     OnboardingSuccessModal,
-    BrandPaymentModal,
-    WelcomeTutorialFlow
+    BrandPaymentModal
   } from '@repo/ui';
   import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
@@ -30,10 +28,7 @@
   let { data }: Props = $props();
 
   let step = $state(1);
-  let showWelcome = $state(false);
-  let welcomeStep = $state(0);
   let showSuccessModal = $state(false);
-  let showTutorialFlow = $state(false);
   let showBrandPayment = $state(false);
   let brandPaid = $state(false);
   let accountType = $state<'personal' | 'premium' | 'brand'>('personal');
@@ -73,15 +68,8 @@
       toasts.success('Email verified successfully! Welcome to Driplo!');
     }
     
-    // Only show welcome modal after language is initialized
-    const checkLanguageAndShowModal = () => {
-      if (languageInitialized) {
-        showWelcome = true;
-      } else {
-        setTimeout(checkLanguageAndShowModal, 50);
-      }
-    };
-    checkLanguageAndShowModal();
+    // Don't show welcome modal - it's confusing to have multiple modals
+    // Users already see the onboarding steps which is enough
     
     // Check if user paid for brand account
     const urlParams = new URLSearchParams(window.location.search);
@@ -91,31 +79,10 @@
     }
   });
 
-  function handleWelcomeNext() {
-    if (welcomeStep < 3) {
-      welcomeStep++;
-    }
-  }
-
-  function handleWelcomePrevious() {
-    if (welcomeStep > 0) {
-      welcomeStep--;
-    }
-  }
-
-  function handleWelcomeComplete() {
-    showWelcome = false;
-  }
-
   function handleSuccessComplete() {
     showSuccessModal = false;
-    showTutorialFlow = true;
-  }
-
-  async function handleTutorialComplete() {
-    showTutorialFlow = false;
-    // Invalidate auth to refresh profile data
-    await goto('/dashboard', { invalidateAll: true });
+    // Go directly to dashboard, no more modals
+    goto('/dashboard', { invalidateAll: true });
   }
 
   function handleBrandPaymentSuccess() {
@@ -230,14 +197,13 @@
       });
 
       if (response.ok) {
-        // Show success modal
+        // Show success modal briefly
         showSuccessModal = true;
-        toasts.success('Profile setup complete! Welcome to Driplo!');
+        toasts.success('Profile setup complete!');
         
-        // The server action will redirect to dashboard
-        setTimeout(() => {
-          goto('/dashboard', { invalidateAll: true });
-        }, 2000);
+        // Don't use setTimeout - redirect immediately after modal shows
+        // The server already sends a redirect, just follow it
+        await goto('/dashboard', { invalidateAll: true });
       } else {
         const result = await response.json();
         throw new Error(result.error || 'Failed to complete onboarding');
@@ -252,7 +218,12 @@
 
   const canProceed = $derived(() => {
     switch (step) {
-      case 1: return accountType;
+      case 1: 
+        // For brand/premium, must have paid
+        if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
+          return false;
+        }
+        return accountType;
       case 2: return username && username.trim().length >= 3;
       case 3: return avatarUrl;
       case 4: return payoutDetails && payoutDetails.trim().length > 0;
@@ -266,36 +237,7 @@
   <title>{m.onboarding_completeProfile()} - Driplo</title>
 </svelte:head>
 
-<!-- Welcome Modal -->
-<WelcomeModal
-  {showWelcome}
-  currentStep={welcomeStep}
-  onNext={handleWelcomeNext}
-  onPrevious={handleWelcomePrevious}
-  onComplete={handleWelcomeComplete}
-  onSkip={handleWelcomeComplete}
-  translations={{
-    welcome: m.onboarding_welcome(),
-    welcomeBrand: m.onboarding_welcomeBrand(),
-    welcomePersonal: m.onboarding_welcomePersonal(),
-    discover: m.onboarding_discover(),
-    discoverDesc: m.onboarding_discoverDesc(),
-    sell: m.onboarding_sell(),
-    sellDesc: m.onboarding_sellDesc(),
-    ready: m.onboarding_ready(),
-    readyDesc: m.onboarding_readyDesc(),
-    back: m.onboarding_back(),
-    next: m.onboarding_next(),
-    getStarted: m.onboarding_getStarted(),
-    skip: m.onboarding_skip(),
-    designer: m.onboarding_designer(),
-    vintage: m.onboarding_vintage(),
-    trending: m.onboarding_trending(),
-    totalSales: m.onboarding_totalSales(),
-    happySellers: m.onboarding_happySellers(),
-    trustedMarketplace: m.onboarding_trustedMarketplace()
-  }}
-/>
+<!-- Welcome modal removed - jumping straight to onboarding steps -->
 
 <!-- Step 1: Account Type -->
 {#if step === 1}
@@ -571,25 +513,4 @@
   onClose={() => showBrandPayment = false}
 />
 
-<!-- Welcome Tutorial Flow -->
-<WelcomeTutorialFlow
-  show={showTutorialFlow}
-  accountType={accountType}
-  onComplete={handleTutorialComplete}
-  translations={{
-    welcomeTitle: m.onboarding_tutorial_welcomeTitle(),
-    welcomeContent: m.onboarding_tutorial_welcomeContent(),
-    discoverTitle: m.onboarding_tutorial_discoverTitle(),
-    discoverContent: m.onboarding_tutorial_discoverContent(),
-    listItemTitle: m.onboarding_tutorial_listItemTitle(),
-    listItemContentBrand: m.onboarding_tutorial_listItemContentBrand(),
-    listItemContentPersonal: m.onboarding_tutorial_listItemContentPersonal(),
-    stayConnectedTitle: m.onboarding_tutorial_stayConnectedTitle(),
-    stayConnectedContent: m.onboarding_tutorial_stayConnectedContent(),
-    readyTitle: m.onboarding_tutorial_readyTitle(),
-    readyContent: m.onboarding_tutorial_readyContent(),
-    skip: m.onboarding_skip(),
-    next: m.onboarding_next(),
-    getStarted: m.onboarding_getStarted()
-  }}
-/>
+<!-- Tutorial flow removed - too many modals are confusing -->
