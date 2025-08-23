@@ -57,7 +57,7 @@
 				id: product.id,
 				title: product.title,
 				price: product.price,
-				currency: 'USD',
+				currency: i18n.common_currency(),
 				images: (product.product_images || product.images || []).map(img => 
 					typeof img === 'string' ? img : img?.image_url || ''
 				).filter(Boolean),
@@ -76,6 +76,7 @@
 				category_name: product.category_name,
 				main_category_name: product.main_category_name,
 				subcategory_name: product.subcategory_name,
+				product_images: product.product_images,
 				// Seller information
 				seller_name: product.seller_name,
 				seller_avatar: product.seller_avatar,
@@ -89,7 +90,7 @@
 				id: product.id,
 				title: product.title,
 				price: product.price,
-				currency: 'USD',
+				currency: i18n.common_currency(),
 				images: (product.product_images || product.images || []).map(img => 
 					typeof img === 'string' ? img : img?.image_url || ''
 				).filter(Boolean),
@@ -108,6 +109,7 @@
 				category_name: product.category_name,
 				main_category_name: product.main_category_name,
 				subcategory_name: product.subcategory_name,
+				product_images: product.product_images,
 				// Seller information
 				seller_name: product.seller_name,
 				seller_avatar: product.seller_avatar,
@@ -154,7 +156,7 @@
 	}
 
 	function formatPrice(price: number): string {
-		return `$${price.toFixed(2)}`;
+		return `${i18n.common_currency()}${price.toFixed(2)}`;
 	}
 	
 	function translateCategory(categoryName: string): string {
@@ -374,9 +376,14 @@
 			{sellers}
 			onSellerSelect={(seller) => selectedSeller = seller}
 			onSellerClick={handleSellerClick}
+			{formatPrice}
 			translations={{
 				seller_premiumSeller: i18n.seller_premiumSeller(),
-				seller_premiumSellerDescription: i18n.seller_premiumSellerDescription()
+				seller_premiumSellerDescription: i18n.seller_premiumSellerDescription(),
+				trending_promoted: i18n.trending_promoted(),
+				trending_featured: i18n.trending_featured(),
+				common_currency: i18n.common_currency(),
+				ui_scroll: i18n.ui_scroll()
 			}}
 		/>
 

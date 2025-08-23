@@ -50,6 +50,7 @@ export class ProductService {
         .from('products')
         .select(`
           *,
+          favorite_count,
           product_images (*),
           categories (name),
           profiles!products_seller_id_fkey (username, rating, avatar_url)
@@ -100,6 +101,7 @@ export class ProductService {
         .from('products')
         .select(`
           *,
+          favorite_count,
           product_images!product_images_product_id_fkey (
             id, image_url, alt_text, sort_order
           ),
@@ -272,6 +274,7 @@ export class ProductService {
         .from('products')
         .select(`
           *,
+          favorite_count,
           product_images (*),
           categories (name),
           profiles!products_seller_id_fkey (username, rating, avatar_url)
@@ -312,6 +315,7 @@ export class ProductService {
           .from('products')
           .select(`
             *,
+            favorite_count,
             product_images (*),
             categories (name),
             profiles!products_seller_id_fkey (username, rating, avatar_url)

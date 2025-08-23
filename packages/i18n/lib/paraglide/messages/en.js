@@ -5775,6 +5775,14 @@ export const category_clearAll = () => `Clear all`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const ui_scroll = () => `Scroll`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const onboarding_tutorial_welcomeTitle = () => `Welcome to Driplo! 👋`
 
 
@@ -5856,3 +5864,83 @@ export const onboarding_tutorial_readyTitle = () => `You're ready!`
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const onboarding_tutorial_readyContent = () => `Check your dashboard for your listings, messages, and account settings. Happy trading!`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const close = () => `Close`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const quick_buy = () => `Quick Buy`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const view_details = () => `View Details`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const trending_item = () => `Trending Item`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const buyer_protection = () => `Buyer Protection`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const fast_shipping = () => `Fast Shipping`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const size = () => `Size`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const add_to_favorites = () => `Add to favorites`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const remove_from_favorites = () => `Remove from favorites`
+
+
+/**
+ * Failed to resolve message common_scroll for languageTag "en". 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const common_scroll = () => "common_scroll"

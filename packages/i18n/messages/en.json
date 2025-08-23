@@ -730,6 +730,7 @@
   "category_loadMore": "Load More Items",
   "category_searchPlaceholder": "Search in category...",
   "category_clearAll": "Clear all",
+  "ui_scroll": "Scroll",
   "onboarding_tutorial_welcomeTitle": "Welcome to Driplo! 👋",
   "onboarding_tutorial_welcomeContent": "Everything is ready! Let us show you how to make the most of our marketplace.",
   "onboarding_tutorial_discoverTitle": "Discover amazing items",
@@ -740,5 +741,14 @@
   "onboarding_tutorial_stayConnectedTitle": "Stay connected",
   "onboarding_tutorial_stayConnectedContent": "Use our messaging system to chat with buyers/sellers. Get notifications for new messages and offers.",
   "onboarding_tutorial_readyTitle": "You're ready!",
-  "onboarding_tutorial_readyContent": "Check your dashboard for your listings, messages, and account settings. Happy trading!"
+  "onboarding_tutorial_readyContent": "Check your dashboard for your listings, messages, and account settings. Happy trading!",
+  "close": "Close",
+  "quick_buy": "Quick Buy",
+  "view_details": "View Details",
+  "trending_item": "Trending Item",
+  "buyer_protection": "Buyer Protection",
+  "fast_shipping": "Fast Shipping",
+  "size": "Size",
+  "add_to_favorites": "Add to favorites",
+  "remove_from_favorites": "Remove from favorites"
 }

@@ -146,7 +146,7 @@
   <!-- Breadcrumb -->
   <div class="px-4 lg:px-8 py-3 max-w-7xl mx-auto">
     <div class="flex items-center gap-2 text-sm text-gray-600">
-      <a href="/" class="hover:text-black transition-colors">Home</a>
+      <a href="/" class="hover:text-black transition-colors">{i18n.nav_home()}</a>
       <span>›</span>
       <a href="/category/{data.product.category_id}" class="hover:text-black transition-colors">
         {getCategoryTranslation(data.product.category_name)}
@@ -312,21 +312,21 @@
           onclick={handleMakeOffer}
           class="flex-1"
         >
-          Make Offer
+          {i18n.product_makeOffer()}
         </Button>
         <Button 
           variant="primary" 
           onclick={handleBuyNow}
           class="flex-1"
         >
-          Buy Now
+          {i18n.product_buyNow()}
         </Button>
       </div>
       
       <!-- Similar products -->
       {#if data.similarProducts && data.similarProducts.length > 0}
         <div class="mt-12">
-          <h2 class="font-semibold mb-4">You might also like</h2>
+          <h2 class="font-semibold mb-4">{i18n.product_youMightLike()}</h2>
           <div class="grid grid-cols-2 gap-3">
             {#each data.similarProducts.slice(0, 4) as product}
               <ProductCard 
@@ -361,9 +361,9 @@
       {#if data.sellerProducts && data.sellerProducts.length > 0}
         <div class="mt-8">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="font-semibold">More from {data.product.seller_name}</h2>
+            <h2 class="font-semibold">{i18n.product_moreFromSeller()} {data.product.seller_name}</h2>
             <a href="/profile/{data.product.seller_username || data.product.seller_id}" class="text-sm text-black font-medium">
-              View all →
+              {i18n.product_viewAll()} →
             </a>
           </div>
           <div class="grid grid-cols-2 gap-3">
@@ -405,9 +405,9 @@
         <p class="text-2xl font-bold">{formatPrice(data.product.price)}</p>
         <p class="text-xs text-gray-600">
           {#if data.product.shipping_price}
-            + {formatPrice(data.product.shipping_price)} shipping
+            + {formatPrice(data.product.shipping_price)} {i18n.product_shipping()}
           {:else if data.product.shipping_price === 0}
-            Free shipping
+            {i18n.product_freeShipping()}
           {/if}
         </p>
       </div>
@@ -418,21 +418,21 @@
         onclick={handleMessage}
         class="flex-1"
       >
-        Message
+        {i18n.seller_message()}
       </Button>
       <Button 
         variant="outline" 
         onclick={handleMakeOffer}
         class="flex-1"
       >
-        Offer
+        {i18n.product_makeOffer()}
       </Button>
       <Button 
         variant="primary" 
         onclick={handleBuyNow}
         class="flex-1"
       >
-        Buy Now
+        {i18n.product_buyNow()}
       </Button>
     </div>
   </div>

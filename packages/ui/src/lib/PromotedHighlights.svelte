@@ -6,6 +6,10 @@
   interface Translations {
     seller_premiumSeller: string;
     seller_premiumSellerDescription: string;
+    trending_promoted: string;
+    trending_featured: string;
+    common_currency: string;
+    ui_scroll?: string;
   }
 
   interface Props {
@@ -13,10 +17,26 @@
     sellers: Seller[];
     onSellerSelect: (seller: Seller) => void;
     onSellerClick: (seller: Seller) => void;
+    onProductClick?: (product: Product) => void;
+    onProductBuy?: (product: Product) => void;
+    onToggleFavorite?: (product: Product) => void;
+    favoriteProductIds?: Set<string>;
     translations: Translations;
+    formatPrice?: (price: number) => string;
   }
 
-  let { promotedProducts, sellers, onSellerSelect, onSellerClick, translations }: Props = $props();
+  let { 
+    promotedProducts, 
+    sellers, 
+    onSellerSelect, 
+    onSellerClick,
+    onProductClick,
+    onProductBuy,
+    onToggleFavorite,
+    favoriteProductIds = new Set(),
+    translations, 
+    formatPrice 
+  }: Props = $props();
 </script>
 
 <!-- Promoted Listings / Highlights -->
@@ -25,11 +45,11 @@
     <!-- Promoted header -->
     <div class="flex items-center justify-between mb-3">
       <div class="flex items-center gap-2">
-        <span class="text-xs font-semibold text-gray-900 uppercase tracking-wide">Promoted</span>
-        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full font-medium">Featured</span>
+        <span class="text-xs font-semibold text-gray-900 uppercase tracking-wide">{translations.trending_promoted}</span>
+        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full font-medium">{translations.trending_featured}</span>
       </div>
       <div class="flex items-center gap-1 text-gray-400">
-        <span class="text-xs">Scroll</span>
+        <span class="text-xs">{translations.ui_scroll || 'Scroll'}</span>
         <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
@@ -42,16 +62,12 @@
           {#each promotedProducts as product}
             <ProductHighlight 
               {product} 
-              onProductClick={() => onSellerSelect({
-                id: product.seller_id || `seller-${product.id}`,
-                name: product.seller_name || translations.seller_premiumSeller,
-                avatar: null,
-                premium: true,
-                rating: 4.8,
-                itemCount: 15,
-                followers: 250,
-                description: translations.seller_premiumSellerDescription
-              })}
+              currency={translations.common_currency}
+              {formatPrice}
+              onProductClick={onProductClick}
+              onBuy={onProductBuy}
+              onToggleFavorite={onToggleFavorite}
+              isFavorite={favoriteProductIds.has(product.id)}
             />
           {/each}
         {/if}

@@ -5775,6 +5775,14 @@ export const category_clearAll = () => `Очистити все`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const ui_scroll = () => `Прокрутка`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const onboarding_tutorial_welcomeTitle = () => `Ласкаво просимо до Driplo! 👋`
 
 
@@ -5856,3 +5864,24 @@ export const onboarding_tutorial_readyTitle = () => `Ви готові!`
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const onboarding_tutorial_readyContent = () => `Перевірте свою панель управління для ваших оголошень, повідомлень та налаштувань акаунту. Вдалої торгівлі!`
+
+
+export { close } from "./en.js"
+
+export { quick_buy } from "./en.js"
+
+export { view_details } from "./en.js"
+
+export { trending_item } from "./en.js"
+
+export { buyer_protection } from "./en.js"
+
+export { fast_shipping } from "./en.js"
+
+export { size } from "./en.js"
+
+export { add_to_favorites } from "./en.js"
+
+export { remove_from_favorites } from "./en.js"
+
+export { common_scroll } from "./en.js"

@@ -17299,6 +17299,30 @@ export const category_clearAll = (params = {}, options = {}) => {
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const ui_scroll = (params = {}, options = {}) => {
+	return {
+		bg: bg.ui_scroll,
+		en: en.ui_scroll,
+		ru: ru.ui_scroll,
+		ua: ua.ui_scroll
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const onboarding_tutorial_welcomeTitle = (params = {}, options = {}) => {
 	return {
 		bg: bg.onboarding_tutorial_welcomeTitle,
@@ -17545,6 +17569,246 @@ export const onboarding_tutorial_readyContent = (params = {}, options = {}) => {
 		en: en.onboarding_tutorial_readyContent,
 		ru: ru.onboarding_tutorial_readyContent,
 		ua: ua.onboarding_tutorial_readyContent
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const close = (params = {}, options = {}) => {
+	return {
+		bg: bg.close,
+		en: en.close,
+		ru: ru.close,
+		ua: ua.close
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const quick_buy = (params = {}, options = {}) => {
+	return {
+		bg: bg.quick_buy,
+		en: en.quick_buy,
+		ru: ru.quick_buy,
+		ua: ua.quick_buy
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const view_details = (params = {}, options = {}) => {
+	return {
+		bg: bg.view_details,
+		en: en.view_details,
+		ru: ru.view_details,
+		ua: ua.view_details
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const trending_item = (params = {}, options = {}) => {
+	return {
+		bg: bg.trending_item,
+		en: en.trending_item,
+		ru: ru.trending_item,
+		ua: ua.trending_item
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const buyer_protection = (params = {}, options = {}) => {
+	return {
+		bg: bg.buyer_protection,
+		en: en.buyer_protection,
+		ru: ru.buyer_protection,
+		ua: ua.buyer_protection
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const fast_shipping = (params = {}, options = {}) => {
+	return {
+		bg: bg.fast_shipping,
+		en: en.fast_shipping,
+		ru: ru.fast_shipping,
+		ua: ua.fast_shipping
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const size = (params = {}, options = {}) => {
+	return {
+		bg: bg.size,
+		en: en.size,
+		ru: ru.size,
+		ua: ua.size
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const add_to_favorites = (params = {}, options = {}) => {
+	return {
+		bg: bg.add_to_favorites,
+		en: en.add_to_favorites,
+		ru: ru.add_to_favorites,
+		ua: ua.add_to_favorites
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const remove_from_favorites = (params = {}, options = {}) => {
+	return {
+		bg: bg.remove_from_favorites,
+		en: en.remove_from_favorites,
+		ru: ru.remove_from_favorites,
+		ua: ua.remove_from_favorites
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const common_scroll = (params = {}, options = {}) => {
+	return {
+		bg: bg.common_scroll,
+		en: en.common_scroll,
+		ru: ru.common_scroll,
+		ua: ua.common_scroll
 	}[options.languageTag ?? languageTag()]()
 }
 

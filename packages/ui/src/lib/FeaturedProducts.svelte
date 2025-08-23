@@ -18,6 +18,7 @@
     condition_likeNew: string;
     condition_good: string;
     condition_fair: string;
+    categoryTranslation?: (category: string) => string;
   }
 
   interface Props {

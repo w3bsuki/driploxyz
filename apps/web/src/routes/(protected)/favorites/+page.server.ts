@@ -18,6 +18,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, session } }) =>
         created_at,
         products!favorites_product_id_fkey (
           *,
+          favorite_count,
           product_images!product_images_product_id_fkey (
             id,
             image_url,

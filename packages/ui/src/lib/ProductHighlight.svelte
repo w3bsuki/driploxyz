@@ -1,14 +1,46 @@
 <script lang="ts">
+  import ProductQuickView from './ProductQuickView.svelte';
+  import type { Product } from './types.js';
+  
   interface Props {
-    product: any;
-    onProductClick: (product: any) => void;
+    product: Product;
+    onProductClick?: (product: Product) => void;
+    onBuy?: (product: Product) => void;
+    onToggleFavorite?: (product: Product) => void;
+    isFavorite?: boolean;
+    currency?: string;
+    formatPrice?: (price: number) => string;
   }
 
-  let { product, onProductClick }: Props = $props();
+  let { 
+    product, 
+    onProductClick,
+    onBuy,
+    onToggleFavorite,
+    isFavorite = false,
+    currency = '$', 
+    formatPrice 
+  }: Props = $props();
+  
+  let showQuickView = $state(false);
+  
+  function handleClick() {
+    showQuickView = true;
+  }
+  
+  function handleView() {
+    showQuickView = false;
+    onProductClick?.(product);
+  }
+  
+  function handleBuy() {
+    showQuickView = false;
+    onBuy?.(product);
+  }
 </script>
 
 <button 
-  onclick={() => onProductClick(product)}
+  onclick={handleClick}
   class="relative shrink-0 group block"
 >
   <div class="group">
@@ -33,7 +65,7 @@
             
             <!-- Price badge -->
             <div class="bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg shadow-sm">
-              {product.price}$
+              {formatPrice ? formatPrice(product.price) : `${currency}${product.price}`}
             </div>
           </div>
         </div>
@@ -48,6 +80,16 @@
     </div>
   </div>
 </button>
+
+<ProductQuickView 
+  {product}
+  isOpen={showQuickView}
+  onClose={() => showQuickView = false}
+  onView={handleView}
+  onBuy={handleBuy}
+  onToggleFavorite={() => onToggleFavorite?.(product)}
+  {isFavorite}
+/>
 
 <style>
   button {

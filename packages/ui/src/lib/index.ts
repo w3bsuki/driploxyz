@@ -119,6 +119,9 @@ export { default as Accordion } from './Accordion.svelte';
 // Seller components
 export { default as SellerQuickView } from './SellerQuickView.svelte';
 
+// Product quick view component
+export { default as ProductQuickView } from './ProductQuickView.svelte';
+
 // Header components - NEW modular header components
 export { default as HeaderLogo } from './HeaderLogo.svelte';
 export { default as HeaderUserMenu } from './HeaderUserMenu.svelte';

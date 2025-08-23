@@ -216,6 +216,7 @@
   "banner_shopNow": "Пазарувай сега",
   "banner_limitedTime": "Ограничена оферта",
   "banner_endsSoon": "Изтича скоро",
+  "common_scroll": "Скролвай",
   "error_generic": "Нещо се обърка",
   "error_network": "Мрежова грешка. Опитайте отново.",
   "error_notFound": "Страницата не е намерена",
@@ -729,5 +730,6 @@
   "subcategory_toys": "Играчки",
   "subcategory_travel": "Пътуване",
   "subcategory_tshirts": "Тениски",
-  "subcategory_watches": "Часовници"
+  "subcategory_watches": "Часовници",
+  "ui_scroll": "Скролвай"
 }
