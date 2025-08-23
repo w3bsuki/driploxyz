@@ -20,6 +20,7 @@
   import { page } from '$app/stores';
   import { toasts } from '@repo/ui';
   import { uploadAvatar } from '$lib/supabase/storage';
+  import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
   import type { PageData } from './$types';
 
   interface Props {
@@ -549,7 +550,7 @@
   show={showBrandPayment}
   accountType={accountType === 'brand' ? 'brand' : 'premium'}
   discountCode={discountCode}
-  stripePublishableKey={import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY}
+  stripePublishableKey={PUBLIC_STRIPE_PUBLISHABLE_KEY}
   onSuccess={handleBrandPaymentSuccess}
   onCancel={handleBrandPaymentCancel}
   onClose={() => showBrandPayment = false}

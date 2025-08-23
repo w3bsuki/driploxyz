@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServerSupabaseClient } from '$lib/supabase/server';
 import { SubscriptionService } from '$lib/services/subscriptions.js';
+import { stripe } from '$lib/stripe/server.js';
 import { env } from '$env/dynamic/private';
 
 const DEBUG = env.DEBUG === 'true';
@@ -23,6 +24,10 @@ export const POST: RequestHandler = async (event) => {
     
     if (!planId) {
       return json({ error: 'Plan ID is required' }, { status: 400 });
+    }
+
+    if (!stripe) {
+      return json({ error: 'Stripe not configured' }, { status: 500 });
     }
 
     const supabase = createServerSupabaseClient(event);
@@ -73,6 +78,7 @@ export const POST: RequestHandler = async (event) => {
     const result = await subscriptionService.createStripeSubscription(
       user.id,
       planId,
+      stripe,
       validatedDiscountPercent
     );
 
