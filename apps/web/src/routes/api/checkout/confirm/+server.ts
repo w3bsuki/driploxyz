@@ -3,10 +3,12 @@ import type { RequestHandler } from './$types';
 import { createServices } from '$lib/services';
 import Stripe from 'stripe';
 
-// Initialize Stripe with secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20'
-});
+// Initialize Stripe with secret key - only on server runtime
+const stripe = process.env.STRIPE_SECRET_KEY 
+  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: '2024-06-20'
+    })
+  : null;
 
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
   try {
@@ -20,6 +22,11 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
     if (!paymentIntentId) {
       return error(400, { message: 'Payment intent ID is required' });
+    }
+
+    // Check if Stripe is configured
+    if (!stripe) {
+      return error(500, { message: 'Payment service not configured' });
     }
 
     // Create services with Stripe instance

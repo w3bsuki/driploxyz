@@ -35,7 +35,8 @@
       "mcp__playwright__browser_click",
       "mcp__playwright__browser_snapshot",
       "mcp__svelte-docs__svelte5_events",
-      "mcp__svelte-docs__svelte5_mistakes"
+      "mcp__svelte-docs__svelte5_mistakes",
+      "mcp__playwright__browser_wait_for"
     ]
   },
   "enableAllProjectMcpServers": true,
