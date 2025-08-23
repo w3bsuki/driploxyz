@@ -205,68 +205,37 @@
     submitting = true;
     
     try {
-      // Determine account status based on selection
-      let accountStatus = null;
-      if (accountType === 'brand') {
-        accountStatus = brandPaid ? 'brand' : 'brand_pending';
-      } else if (accountType === 'premium') {
-        accountStatus = brandPaid ? 'premium' : 'premium_pending';
+      // Create FormData to submit to server action
+      const formData = new FormData();
+      formData.append('accountType', accountType);
+      formData.append('username', username.trim());
+      formData.append('fullName', fullName.trim());
+      formData.append('avatarUrl', avatarUrl);
+      formData.append('payoutMethod', payoutMethod);
+      formData.append('payoutDetails', payoutDetails);
+      formData.append('payoutName', payoutName);
+      formData.append('socialLinks', JSON.stringify(socialLinks.filter(link => link.url.trim())));
+      formData.append('brandPaid', brandPaid.toString());
+
+      // Submit to server action
+      const response = await fetch('?/complete', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        // Show success modal
+        showSuccessModal = true;
+        toasts.success('Profile setup complete! Welcome to Driplo!');
+        
+        // The server action will redirect to dashboard
+        setTimeout(() => {
+          goto('/dashboard', { invalidateAll: true });
+        }, 2000);
+      } else {
+        const result = await response.json();
+        throw new Error(result.error || 'Failed to complete onboarding');
       }
-      
-      // Update profile - the badge will be assigned automatically via database trigger
-      const { error: profileError } = await data.supabase
-        .from('profiles')
-        .update({
-          account_type: accountType, // 'personal' or 'brand'
-          username: username.trim(),
-          full_name: fullName.trim() || null,
-          avatar_url: avatarUrl || null,
-          payout_method: payoutDetails ? { 
-            type: payoutMethod, 
-            details: payoutDetails.trim(), 
-            name: payoutName.trim() || null 
-          } : null,
-          social_links: socialLinks.filter(link => link.url.trim()),
-          onboarding_completed: true,
-          verified: (accountType === 'brand' || accountType === 'premium') && brandPaid, // Verified if paid
-          brand_status: accountStatus,
-          account_type: accountType
-        })
-        .eq('id', data.user.id);
-
-      if (profileError) throw profileError;
-
-      // Refresh the profile in the store
-      const { data: updatedProfile } = await data.supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
-      
-      if (updatedProfile) {
-        // Update the auth store with the new profile
-        const { setProfile } = await import('$lib/stores/auth');
-        setProfile(updatedProfile);
-      }
-
-      // If brand account, create brand entry
-      if (accountType === 'brand') {
-        const { error: brandError } = await data.supabase
-          .from('brands')
-          .insert({
-            profile_id: data.user.id,
-            brand_name: fullName.trim() || username.trim(),
-            brand_description: `${username.trim()} - Professional fashion brand`,
-            verified_brand: brandPaid, // Verified if they paid during onboarding
-            subscription_active: brandPaid // Active if they paid during onboarding
-          });
-
-        if (brandError) throw brandError;
-      }
-
-      // Show success modal
-      showSuccessModal = true;
-      toasts.success('Profile setup complete! Welcome to Driplo!');
     } catch (error) {
       console.error('Onboarding error:', error);
       toasts.error('Something went wrong. Please try again.');
