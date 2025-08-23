@@ -376,6 +376,8 @@
 			{sellers}
 			onSellerSelect={(seller) => selectedSeller = seller}
 			onSellerClick={handleSellerClick}
+			onProductBuy={handleProductClick}
+			onToggleFavorite={handleFavorite}
 			{formatPrice}
 			translations={{
 				seller_premiumSeller: i18n.seller_premiumSeller(),
