@@ -27,30 +27,46 @@
 >
 	<!-- ACTUALLY COMPACT MODAL -->
 	<div class="bg-white rounded-xl w-full max-w-[280px] p-3 shadow-xl">
-		<!-- Close button -->
-		<div class="flex justify-end mb-2">
+		<!-- Product image with close button -->
+		<div class="aspect-square bg-gray-100 rounded-lg mb-3 relative">
+			<div class="w-full h-full rounded-lg overflow-hidden">
+				<img 
+					src={product.images?.[0] || '/placeholder-product.svg'} 
+					alt={product.title}
+					class="w-full h-full object-cover"
+				/>
+			</div>
+			<!-- Close button overlaying image -->
 			<button
 				onclick={onClose}
-				class="p-1 hover:bg-gray-100 rounded-full"
+				class="absolute top-2 right-2 p-1 bg-white/90 hover:bg-white rounded-full shadow-sm z-10"
 			>
 				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
 				</svg>
 			</button>
-		</div>
-
-		<!-- Product image -->
-		<div class="aspect-square bg-gray-100 rounded-lg mb-3 overflow-hidden">
-			<img 
-				src={product.images?.[0] || '/placeholder-product.svg'} 
-				alt={product.title}
-				class="w-full h-full object-cover"
-			/>
+			<!-- Seller avatar in bottom left -->
+			{#if product.seller_name}
+				<div class="absolute bottom-2 left-2 w-8 h-8 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm z-10">
+					{#if product.seller_avatar}
+						<img src={product.seller_avatar} alt={product.seller_name} class="w-full h-full object-cover" />
+					{:else}
+						<div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-semibold">
+							{product.seller_name.charAt(0).toUpperCase()}
+						</div>
+					{/if}
+				</div>
+			{/if}
 		</div>
 
 		<!-- Product info -->
 		<h3 class="font-semibold text-sm mb-1">{product.title}</h3>
-		<p class="text-lg font-bold mb-3">£{product.price.toFixed(2)}</p>
+		<div class="flex items-center justify-between mb-3">
+			<p class="text-lg font-bold">£{product.price.toFixed(2)}</p>
+			{#if product.seller_name}
+				<p class="text-xs text-gray-500">by {product.seller_name}</p>
+			{/if}
+		</div>
 
 		<!-- Sizes if available -->
 		{#if product.sizes && product.sizes.length > 0}
