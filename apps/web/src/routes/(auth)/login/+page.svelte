@@ -26,6 +26,15 @@
       toasts.error(decodeURIComponent(error));
     }
   });
+
+  // Handle form errors with toast
+  $effect(() => {
+    if (form?.errors?._form) {
+      toasts.error(form.errors._form, {
+        duration: 6000
+      });
+    }
+  });
 </script>
 
 <svelte:head>

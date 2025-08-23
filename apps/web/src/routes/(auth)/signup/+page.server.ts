@@ -132,7 +132,10 @@ export const actions: Actions = {
 
     if (error) {
       // Handle specific Supabase auth errors
-      if (error.message.includes('User already registered')) {
+      if (error.message.includes('User already registered') || 
+          error.message.includes('already registered') || 
+          error.message.includes('already exists') ||
+          error.code === 'user_already_exists') {
         return fail(400, { 
           errors: { email: 'An account with this email already exists. Please sign in instead.' }, 
           values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
@@ -152,7 +155,12 @@ export const actions: Actions = {
       }
       
       // Log the full error for debugging
-      console.error('[SIGNUP] Error during signup:', error);
+      console.error('[SIGNUP] Error during signup:', {
+        message: error.message,
+        code: error.code,
+        status: error.status,
+        details: error
+      });
       return fail(400, { 
         errors: { _form: error.message || 'Failed to create account' }, 
         values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 

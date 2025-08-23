@@ -19,7 +19,7 @@
     terms: false
   });
 
-  // Handle success messages with better UX
+  // Handle success and error messages
   $effect(() => {
     if (form?.success && form?.message) {
       toasts.success(form.message, {
@@ -34,6 +34,35 @@
         confirmPassword: '',
         terms: false
       };
+    } else if (form?.errors) {
+      // Show error toast for form-level errors
+      if (form.errors._form) {
+        toasts.error(form.errors._form, {
+          duration: 6000
+        });
+      }
+      // Show toast for email errors (like "user already exists")
+      if (form.errors.email) {
+        toasts.error(form.errors.email, {
+          duration: 6000
+        });
+      }
+      // Show toast for other field errors
+      if (form.errors.password) {
+        toasts.error(`Password: ${form.errors.password}`, {
+          duration: 6000
+        });
+      }
+      if (form.errors.fullName) {
+        toasts.error(`Name: ${form.errors.fullName}`, {
+          duration: 6000
+        });
+      }
+      if (form.errors.terms) {
+        toasts.error(form.errors.terms, {
+          duration: 6000
+        });
+      }
     }
   });
 </script>
