@@ -35,6 +35,15 @@ site_url = "http://localhost:5173"
 additional_redirect_urls = ["https://localhost:5173"]
 jwt_expiry = 3600
 
+# Custom email templates
+[auth.email.template.confirmation]
+subject = "Welcome to driplo - Please confirm your email"
+content_path = "./apps/web/email-templates/confirm.html"
+
+[auth.email.template.recovery]
+subject = "Reset your driplo password"
+content_path = "./apps/web/email-templates/recovery.html"
+
 [edge_functions]
 enabled = true
 port = 54326
