@@ -548,7 +548,7 @@
 <!-- Brand Payment Modal -->
 <BrandPaymentModal
   show={showBrandPayment}
-  accountType={accountType === 'brand' ? 'brand' : 'premium'}
+  accountType={accountType}
   discountCode={discountCode}
   stripePublishableKey={PUBLIC_STRIPE_PUBLISHABLE_KEY}
   onSuccess={handleBrandPaymentSuccess}
