@@ -1,7 +1,8 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-export const POST: RequestHandler = async ({ locals: { supabase, safeGetSession }, cookies }) => {
+// Handle both GET and POST requests for logout
+const handleLogout: RequestHandler = async ({ locals: { supabase, safeGetSession }, cookies }) => {
   const { session } = await safeGetSession();
   if (session) {
     await supabase.auth.signOut();
@@ -12,9 +13,12 @@ export const POST: RequestHandler = async ({ locals: { supabase, safeGetSession 
   const allCookies = cookies.getAll();
   for (const cookie of allCookies) {
     if (cookie.name.startsWith('sb-')) {
-      cookies.delete(cookie.name, { path: '/' });
+      cookies.delete(cookie.name, { path: '/', sameSite: 'lax', secure: true });
     }
   }
   
   throw redirect(303, '/');
 };
+
+export const POST = handleLogout;
+export const GET = handleLogout;
