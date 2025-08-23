@@ -121,13 +121,15 @@
   function handleBrandPaymentSuccess() {
     showBrandPayment = false;
     brandPaid = true;
-    accountType = 'brand';
+    // Payment successful - proceed to next step
+    nextStep();
   }
 
   function handleBrandPaymentCancel() {
     showBrandPayment = false;
-    // Keep the selected account type - they can pay later
-    // accountType stays as selected (brand/premium)
+    // Reset to personal if they cancel payment
+    accountType = 'personal';
+    brandPaid = false;
   }
 
   function nextStep() {
@@ -144,9 +146,12 @@
 
   function handleAccountTypeSelect(type: 'personal' | 'premium' | 'brand') {
     accountType = type;
-    // Show payment modal for brand/premium, but allow skipping
+    // Show payment modal for brand/premium - REQUIRED
     if ((type === 'brand' || type === 'premium') && !brandPaid) {
       showBrandPayment = true;
+    } else if (type === 'personal') {
+      // Allow proceeding immediately for personal accounts
+      brandPaid = false;
     }
   }
   
@@ -340,11 +345,21 @@
 
       <div class="flex space-x-4">
         <Button
-          onclick={nextStep}
-          disabled={!canProceed()}
+          onclick={() => {
+            // For premium/brand, require payment
+            if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
+              toasts.warning('Payment required for ' + accountType + ' account. Complete payment to continue.');
+              showBrandPayment = true;
+            } else {
+              nextStep();
+            }
+          }}
+          disabled={!accountType}
           class="flex-1 bg-black text-white hover:bg-gray-800"
         >
-          {m.onboarding_continue()}
+          {accountType === 'brand' || accountType === 'premium' ? 
+            (brandPaid ? m.onboarding_continue() : 'Proceed to Payment') : 
+            m.onboarding_continue()}
         </Button>
       </div>
     {/snippet}
@@ -549,7 +564,7 @@
 <BrandPaymentModal
   show={showBrandPayment}
   accountType={accountType}
-  discountCode={discountCode}
+  initialDiscountCode={discountCode}
   stripePublishableKey={PUBLIC_STRIPE_PUBLISHABLE_KEY}
   onSuccess={handleBrandPaymentSuccess}
   onCancel={handleBrandPaymentCancel}

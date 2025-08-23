@@ -2,7 +2,7 @@ interface Props {
     show: boolean;
     stripePublishableKey?: string;
     accountType?: 'premium' | 'brand';
-    discountCode?: string;
+    initialDiscountCode?: string;
     onSuccess?: () => void;
     onCancel?: () => void;
     onClose?: () => void;

@@ -260,6 +260,14 @@ export class StripeService {
 					current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
 					discount_percent: discountPercent
 				});
+			
+			// Update user's profile account type
+			await this.supabase
+				.from('profiles')
+				.update({ 
+					account_type: plan.plan_type === 'brand' ? 'brand' : (plan.plan_type === 'premium' ? 'premium' : 'personal')
+				})
+				.eq('id', userId);
 
 			const invoice = subscription.latest_invoice as Stripe.Invoice;
 			const paymentIntent = (invoice as any)?.payment_intent as Stripe.PaymentIntent;

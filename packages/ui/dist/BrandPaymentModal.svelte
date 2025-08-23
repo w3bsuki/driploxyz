@@ -5,7 +5,7 @@
     show: boolean;
     stripePublishableKey?: string;
     accountType?: 'premium' | 'brand';
-    discountCode?: string;
+    initialDiscountCode?: string;
     onSuccess?: () => void;
     onCancel?: () => void;
     onClose?: () => void;
@@ -15,7 +15,7 @@
     show, 
     stripePublishableKey, 
     accountType = 'brand',
-    discountCode = '',
+    initialDiscountCode = '',
     onSuccess, 
     onCancel, 
     onClose 
@@ -27,6 +27,7 @@
   let elements: any = $state(null);
   let cardElement: any = $state(null);
   let cardContainer: HTMLDivElement | undefined = $state();
+  let discountCode = $state(initialDiscountCode);
   let discountAmount = $state(0);
   let finalPrice = $state(0);
   let validatingDiscount = $state(false);
@@ -173,6 +174,23 @@
       if (paymentError) {
         error = paymentError.message || 'Payment failed';
       } else {
+        // Payment successful - update profile account type
+        try {
+          const updateResponse = await fetch('/api/profile/update-account-type', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              accountType: accountType
+            })
+          });
+          
+          if (!updateResponse.ok) {
+            console.error('Failed to update account type');
+          }
+        } catch (err) {
+          console.error('Error updating account type:', err);
+        }
+        
         onSuccess?.();
       }
       
@@ -218,13 +236,13 @@
       <!-- Discount Code Input -->
       <div class="mb-4">
         <label for="discount-code" class="block text-sm font-medium text-gray-700 mb-1">
-          Discount Code (optional)
+          Discount Code
         </label>
         <div class="relative">
           <input
             id="discount-code"
             type="text"
-            placeholder="Enter discount code"
+            placeholder="Enter discount code (e.g. INDECISIVE)"
             bind:value={discountCode}
             disabled={loading}
             class="w-full p-2.5 border border-gray-300 rounded-sm text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:cursor-not-allowed"
@@ -240,6 +258,9 @@
         {:else if discountAmount > 0}
           <p class="mt-1 text-xs text-green-600">
             ✓ {discountAmount.toFixed(2)} BGN discount applied
+            {#if discountCode === 'INDECISIVE'}
+              (99% off)
+            {/if}
           </p>
         {/if}
       </div>
