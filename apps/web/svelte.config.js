@@ -12,14 +12,8 @@ const config = {
 	kit: {
 		adapter: adapter({
 			runtime: 'nodejs20.x',
-			maxDuration: 30,
-			isr: {
-				expiration: 60
-			}
-		}),
-		csrf: {
-			checkOrigin: false
-		}
+			maxDuration: 30
+		})
 	},
 };
 
