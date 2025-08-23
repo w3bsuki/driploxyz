@@ -213,10 +213,11 @@ export const actions: Actions = {
       console.log('[SIGNUP] ========== SIGNUP ACTION END ==========');
     }
     
-    // Return success response
+    // Return success response with email
     return {
       success: true,
-      message: `Account created successfully! We've sent a verification email to ${normalizedEmail}. Please check your inbox to complete your registration.`
+      message: `Account created successfully! We've sent a verification email to ${normalizedEmail}. Please check your inbox to complete your registration.`,
+      email: normalizedEmail
     };
   }
 };

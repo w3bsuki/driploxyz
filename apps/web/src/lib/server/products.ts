@@ -34,12 +34,12 @@ export async function searchProducts(
     .eq('status', 'active')
     .eq('is_sold', false);
 
-  // Full text search
+  // Search in title, description, and brand
   if (query) {
-    dbQuery = dbQuery.textSearch('fts', query.trim(), {
-      config: 'english',
-      type: 'websearch'
-    });
+    const searchTerm = `%${query.trim()}%`;
+    dbQuery = dbQuery.or(
+      `title.ilike.${searchTerm},description.ilike.${searchTerm},brand.ilike.${searchTerm}`
+    );
   }
 
   // Category filter

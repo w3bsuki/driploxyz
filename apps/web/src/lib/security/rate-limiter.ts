@@ -107,11 +107,11 @@ export const RATE_LIMIT_CONFIGS = {
     blockDurationMs: 15 * 60 * 1000
   },
   
-  // Signup: 5 attempts per hour (prevent spam accounts)
+  // Signup: 20 attempts per hour (less aggressive)
   signup: {
-    maxAttempts: 5,
+    maxAttempts: 20,
     windowMs: 60 * 60 * 1000,
-    blockDurationMs: 60 * 60 * 1000
+    blockDurationMs: 15 * 60 * 1000 // Only block for 15 min
   },
   
   // Password reset: 3 attempts per hour per email

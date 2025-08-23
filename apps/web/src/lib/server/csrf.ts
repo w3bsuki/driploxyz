@@ -77,8 +77,8 @@ export class CSRFProtection {
 			event.cookies.get('csrf_token');
 		
 		if (!token) {
-			// In production, reject missing tokens
-			return dev;
+			// Always reject missing tokens for security
+			return false;
 		}
 		
 		return this.validateToken(token, sessionId);
