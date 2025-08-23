@@ -18,13 +18,7 @@ const config = {
 			}
 		}),
 		csrf: {
-			checkOrigin: true,
-			origins: [
-				'https://driplo.xyz',
-				'https://www.driplo.xyz',
-				'http://localhost:5173',
-				'http://localhost:5174'
-			]
+			checkOrigin: false
 		}
 	},
 };
