@@ -34,13 +34,7 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
          */
         setAll: (cookiesToSet) => {
           cookiesToSet.forEach(({ name, value, options }) => {
-            event.cookies.set(name, value, { 
-              ...options, 
-              path: '/',
-              secure: true,
-              sameSite: 'lax',
-              httpOnly: true
-            });
+            event.cookies.set(name, value, { ...options, path: '/' });
           });
         },
       },
