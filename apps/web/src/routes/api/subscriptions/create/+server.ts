@@ -20,7 +20,7 @@ function getPlanTypeFromId(planId: string): string {
 
 export const POST: RequestHandler = async (event) => {
   try {
-    const { planId, discountPercent = 0, discountCode = '' } = await event.request.json();
+    const { planId, discountCode = '' } = await event.request.json();
     
     if (!planId) {
       return json({ error: 'Plan ID is required' }, { status: 400 });
@@ -32,40 +32,6 @@ export const POST: RequestHandler = async (event) => {
 
     const supabase = createServerSupabaseClient(event);
     
-    // Validate discount code if provided
-    let validatedDiscountPercent = discountPercent;
-    if (discountCode) {
-      const { data: codeData, error: codeError } = await supabase
-        .from('discount_codes')
-        .select('*')
-        .eq('code', discountCode)
-        .eq('is_active', true)
-        .single();
-      
-      if (!codeError && codeData) {
-        // Check if code is valid for this plan
-        if (!codeData.plan_type || codeData.plan_type === getPlanTypeFromId(planId)) {
-          // Check if code hasn't exceeded max uses
-          if (!codeData.max_uses || codeData.uses_count < codeData.max_uses) {
-            // Check if code is within valid date range
-            const now = new Date();
-            const validFrom = new Date(codeData.valid_from);
-            const validUntil = codeData.valid_until ? new Date(codeData.valid_until) : null;
-            
-            if (now >= validFrom && (!validUntil || now <= validUntil)) {
-              validatedDiscountPercent = codeData.discount_percent;
-              
-              // Increment uses count
-              await supabase
-                .from('discount_codes')
-                .update({ uses_count: codeData.uses_count + 1 })
-                .eq('id', codeData.id);
-            }
-          }
-        }
-      }
-    }
-
     // Get the current user
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
@@ -74,12 +40,52 @@ export const POST: RequestHandler = async (event) => {
       return json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // Get plan details
+    const { data: plan, error: planError } = await supabase
+      .from('subscription_plans')
+      .select('*')
+      .eq('id', planId)
+      .single();
+
+    if (planError || !plan) {
+      return json({ error: 'Plan not found' }, { status: 404 });
+    }
+
+    let discountAmount = 0;
+    let finalAmount = plan.price_monthly;
+    let validatedDiscountCode = '';
+
+    // Validate discount code if provided
+    if (discountCode) {
+      const { data: validationResult, error: validationError } = await supabase
+        .rpc('validate_discount_code', {
+          p_code: discountCode,
+          p_plan_type: plan.plan_type,
+          p_user_id: user.id,
+          p_amount: plan.price_monthly
+        });
+
+      if (validationError) {
+        if (DEBUG) console.error('[Subscription] Discount validation error:', validationError);
+        return json({ error: 'Error validating discount code' }, { status: 400 });
+      }
+
+      if (!validationResult.valid) {
+        return json({ error: validationResult.error }, { status: 400 });
+      }
+
+      discountAmount = validationResult.discount_amount;
+      finalAmount = validationResult.final_amount;
+      validatedDiscountCode = validationResult.code;
+    }
+
     const subscriptionService = new SubscriptionService(supabase);
     const result = await subscriptionService.createStripeSubscription(
       user.id,
       planId,
       stripe,
-      validatedDiscountPercent
+      discountAmount,
+      validatedDiscountCode
     );
 
     if (result.error) {
@@ -89,7 +95,11 @@ export const POST: RequestHandler = async (event) => {
 
     return json({
       subscriptionId: result.subscriptionId,
-      clientSecret: result.clientSecret
+      clientSecret: result.clientSecret,
+      originalAmount: plan.price_monthly,
+      discountAmount: discountAmount,
+      finalAmount: finalAmount,
+      discountCode: validatedDiscountCode
     });
 
   } catch (error) {

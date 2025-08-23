@@ -6,11 +6,11 @@ export interface UploadedImage {
   path: string;
 }
 
-async function optimizeImageToWebP(file: File, quality: number = 0.8): Promise<File> {
+async function optimizeImageToWebP(file: File, quality: number = 0.6): Promise<File> {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
       reject(new Error('Image optimization timeout after 10 seconds'));
-    }, 10000);
+    }, 10000); // Reduced timeout
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -18,11 +18,13 @@ async function optimizeImageToWebP(file: File, quality: number = 0.8): Promise<F
     
     img.onload = () => {
       try {
-        const maxWidth = 1200;
-        const maxHeight = 1200;
+        // More aggressive size reduction to save egress
+        const maxWidth = 800;  // Reduced from 1200
+        const maxHeight = 800; // Reduced from 1200
         
         let { width, height } = img;
         
+        // Always resize if larger than max dimensions
         if (width > maxWidth || height > maxHeight) {
           const ratio = Math.min(maxWidth / width, maxHeight / height);
           width *= ratio;
@@ -38,6 +40,9 @@ async function optimizeImageToWebP(file: File, quality: number = 0.8): Promise<F
           return;
         }
         
+        // Improve image quality during resize
+        ctx.imageSmoothingEnabled = true;
+        ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, width, height);
         
         canvas.toBlob((blob) => {
@@ -46,6 +51,8 @@ async function optimizeImageToWebP(file: File, quality: number = 0.8): Promise<F
             reject(new Error('Failed to convert image to WebP'));
             return;
           }
+          
+          console.log(`📦 Optimized: ${file.name} ${(file.size / 1024).toFixed(1)}KB → ${(blob.size / 1024).toFixed(1)}KB`);
           
           const webpFile = new File([blob], `${file.name.split('.')[0]}.webp`, {
             type: 'image/webp',
@@ -73,47 +80,77 @@ export async function uploadImage(
   supabase: SupabaseClient,
   file: File,
   bucket: string = 'product-images',
-  userId: string
+  userId: string,
+  retries: number = 2
 ): Promise<UploadedImage> {
   console.log('Starting image upload process...', file.name);
   
-  try {
-    // Always optimize to WebP
-    console.log('Optimizing image to WebP...');
-    const optimizedFile = await optimizeImageToWebP(file);
-    console.log('Image optimized successfully, size:', optimizedFile.size);
-    
-    // Generate unique filename with .webp extension
-    const timestamp = Date.now();
-    const randomId = Math.random().toString(36).substring(2, 9);
-    const fileName = `${userId}/${timestamp}-${randomId}.webp`;
-    
-    console.log('Uploading to Supabase...', fileName);
-    
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(fileName, optimizedFile, {
-        contentType: 'image/webp',
-        cacheControl: '3600',
-        upsert: false
-      });
-    
-    if (error) {
-      console.error('Supabase upload error:', error);
-      throw new Error(`Upload failed: ${error.message}`);
+  let lastError: Error | null = null;
+  
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      if (attempt > 0) {
+        console.log(`🔄 Retry attempt ${attempt}/${retries} for ${file.name}`);
+        // Add exponential backoff delay
+        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+      }
+      
+      // Always optimize to WebP
+      console.log('Optimizing image to WebP...');
+      const optimizedFile = await optimizeImageToWebP(file);
+      console.log(`Image optimized: ${file.name} → ${(optimizedFile.size / 1024).toFixed(1)}KB`);
+      
+      // Generate unique filename with .webp extension
+      const timestamp = Date.now();
+      const randomId = Math.random().toString(36).substring(2, 9);
+      const fileName = `${userId}/${timestamp}-${randomId}.webp`;
+      
+      console.log('Uploading to Supabase...', fileName);
+      
+      // Add timeout to Supabase upload
+      const uploadPromise = supabase.storage
+        .from(bucket)
+        .upload(fileName, optimizedFile, {
+          contentType: 'image/webp',
+          cacheControl: '3600',
+          upsert: false
+        });
+      
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Supabase upload timeout after 15 seconds')), 15000)
+      );
+      
+      const { data, error } = await Promise.race([uploadPromise, timeoutPromise]);
+      
+      if (error) {
+        throw new Error(`Supabase error: ${error.message}`);
+      }
+      
+      const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${data.path}`;
+      console.log('✅ Upload successful:', url);
+      
+      return {
+        url,
+        path: data.path
+      };
+      
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      console.error(`❌ Upload attempt ${attempt + 1} failed:`, lastError.message);
+      
+      // Don't retry certain errors
+      if (lastError.message.includes('Image optimization') || 
+          lastError.message.includes('canvas context') ||
+          lastError.message.includes('Failed to load image')) {
+        throw lastError;
+      }
     }
-    
-    const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${data.path}`;
-    console.log('Upload successful:', url);
-    
-    return {
-      url,
-      path: data.path
-    };
-  } catch (error) {
-    console.error('Image upload failed:', error);
-    throw error;
   }
+  
+  // All retries exhausted
+  const finalError = lastError || new Error('Upload failed after all retries');
+  console.error('🚫 All upload attempts failed:', finalError.message);
+  throw finalError;
 }
 
 export async function uploadImages(

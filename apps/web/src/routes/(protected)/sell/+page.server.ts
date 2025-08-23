@@ -109,7 +109,9 @@ export const actions: Actions = {
     const description = formData.get('description') as string || '';
     const gender_category_id = formData.get('gender_category_id') as string;
     const type_category_id = formData.get('type_category_id') as string;
-    const category_id = formData.get('category_id') as string; // This is now the specific Level 3 category
+    const specific_category_id = formData.get('category_id') as string; // Level 3 specific category
+    // Use specific category if available, otherwise use type category
+    const category_id = specific_category_id || type_category_id;
     const brand = formData.get('brand') as string;
     const size = formData.get('size') as string;
     const condition = formData.get('condition') as string;
@@ -129,7 +131,7 @@ export const actions: Actions = {
       title,
       gender_category_id,
       type_category_id,
-      category_id,
+      specific_category_id,
       brand,
       size,
       price,
@@ -165,7 +167,7 @@ export const actions: Actions = {
       return fail(400, { 
         errors,
         values: {
-          title, description, gender_category_id, type_category_id, category_id, brand, size, 
+          title, description, gender_category_id, type_category_id, category_id: specific_category_id, brand, size, 
           condition, color, material, price, shipping_cost, tags, use_premium_boost
         }
       });
@@ -291,7 +293,7 @@ export const actions: Actions = {
       return fail(500, {
         errors: { _form: error instanceof Error ? error.message : 'Failed to create product' },
         values: {
-          title, description, gender_category_id, type_category_id, category_id, brand, size, 
+          title, description, gender_category_id, type_category_id, category_id: specific_category_id, brand, size, 
           condition, color, material, price, shipping_cost, tags, use_premium_boost
         }
       });

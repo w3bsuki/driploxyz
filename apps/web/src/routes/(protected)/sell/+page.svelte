@@ -127,7 +127,9 @@
       }
       
       console.log('🚀 Starting uploadImages call...');
-      const uploaded = await uploadImages(
+      
+      // Add timeout wrapper to prevent hanging
+      const uploadPromise = uploadImages(
         supabase, 
         files, 
         'product-images', 
@@ -137,11 +139,31 @@
         }
       );
       
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Upload timeout after 30 seconds')), 30000)
+      );
+      
+      const uploaded = await Promise.race([uploadPromise, timeoutPromise]);
+      
       console.log('✅ Upload completed:', uploaded);
       return uploaded;
     } catch (error) {
       console.error('❌ Upload error:', error);
-      toasts.error(`Failed to upload images: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      
+      let errorMessage = 'Failed to upload images';
+      if (error instanceof Error) {
+        if (error.message.includes('timeout')) {
+          errorMessage = 'Upload timed out. This may be due to Supabase storage limits. Please try again or contact support.';
+        } else if (error.message.includes('egress') || error.message.includes('bandwidth')) {
+          errorMessage = 'Storage bandwidth limit reached. Please upgrade your plan or try again later.';
+        } else if (error.message.includes('network') || error.message.includes('connection')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else {
+          errorMessage = `Upload failed: ${error.message}`;
+        }
+      }
+      
+      toasts.error(errorMessage);
       return [];
     } finally {
       isUploadingImages = false;
@@ -157,12 +179,13 @@
   }
   
   // Validation for consolidated steps
+  // Temporarily allow listings without images due to egress limits
   const canProceedStep1 = $derived(
-    uploadedImages.length > 0 &&
     formData.title.length >= 3 && 
     formData.gender_category_id &&
     formData.type_category_id &&
-    formData.category_id &&
+    // Only require category_id if specific categories exist
+    (specificCategories.length === 0 || formData.category_id) &&
     formData.condition && // Condition now in step 1
     formData.brand &&
     formData.size
@@ -172,12 +195,13 @@
     formData.price > 0
   );
   
+  // Temporarily allow listings without images due to egress limits
   const canSubmit = $derived(
-    uploadedImages.length > 0 && 
     formData.title.length >= 3 && 
     formData.gender_category_id &&
     formData.type_category_id &&
-    formData.category_id &&
+    // Only require category_id if specific categories exist
+    (specificCategories.length === 0 || formData.category_id) &&
     formData.brand && 
     formData.size && 
     formData.condition &&
@@ -336,7 +360,7 @@
                 bind:uploading={isUploadingImages}
               />
               {#if uploadedImages.length === 0}
-                <p class="text-xs text-red-600 mt-1">📸 At least one photo is required to continue</p>
+                <p class="text-xs text-orange-600 mt-1">📸 Images temporarily optional due to storage limits</p>
               {:else}
                 <p class="text-xs text-green-600 mt-1">✅ {uploadedImages.length} photo{uploadedImages.length === 1 ? '' : 's'} uploaded</p>
               {/if}

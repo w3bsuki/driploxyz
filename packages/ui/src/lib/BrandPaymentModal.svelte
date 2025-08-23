@@ -29,34 +29,81 @@
   let cardContainer: HTMLDivElement | undefined = $state();
   let discountAmount = $state(0);
   let finalPrice = $state(0);
+  let validatingDiscount = $state(false);
+  let discountError = $state('');
 
-  // Plan IDs from database
-  const PREMIUM_PLAN_ID = 'c0587696-cbcd-4e6b-b6bc-ba84fb47ddce';
-  const BRAND_PLAN_ID = '989b722e-4050-4c63-ac8b-ab105f14027c';
-  
-  // Get the correct plan ID based on account type
-  const planId = accountType === 'premium' ? PREMIUM_PLAN_ID : BRAND_PLAN_ID;
+  // We'll get the actual plan ID from the subscription plans table
   const basePrice = accountType === 'premium' ? 25 : 50;
+  let actualPlanId = $state('');
 
-  // Calculate discount when code changes
+  // Initialize plan ID
   $effect(() => {
-    if (discountCode === 'Indecisive' && accountType === 'brand') {
-      discountAmount = 90;
-      finalPrice = basePrice * 0.1; // 90% off
-    } else if (discountCode === 'LAUNCH50') {
-      discountAmount = 50;
-      finalPrice = basePrice * 0.5; // 50% off
-    } else if (discountCode === 'PREMIUM25' && accountType === 'premium') {
-      discountAmount = 25;
-      finalPrice = basePrice * 0.75; // 25% off
-    } else if (discountCode === 'BRAND20' && accountType === 'brand') {
-      discountAmount = 20;
-      finalPrice = basePrice * 0.8; // 20% off
+    if (show && !actualPlanId) {
+      fetchPlanId();
+    }
+  });
+
+  async function fetchPlanId() {
+    try {
+      const response = await fetch('/api/subscription-plans');
+      const plans = await response.json();
+      const plan = plans.find((p: any) => p.plan_type === accountType);
+      if (plan) {
+        actualPlanId = plan.id;
+        finalPrice = plan.price_monthly;
+      }
+    } catch (err) {
+      console.error('Failed to fetch plan:', err);
+      finalPrice = basePrice; // fallback
+    }
+  }
+
+  // Validate discount code when it changes
+  $effect(() => {
+    if (discountCode && discountCode.trim() && actualPlanId) {
+      validateDiscountCode(discountCode.trim());
     } else {
       discountAmount = 0;
       finalPrice = basePrice;
+      discountError = '';
     }
   });
+
+  async function validateDiscountCode(code: string) {
+    if (!code || !actualPlanId) return;
+    
+    validatingDiscount = true;
+    discountError = '';
+    
+    try {
+      const response = await fetch('/api/subscriptions/validate-discount', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          code: code,
+          planId: actualPlanId
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.valid) {
+        discountAmount = result.discount_amount || 0;
+        finalPrice = result.final_amount || basePrice;
+      } else {
+        discountAmount = 0;
+        finalPrice = basePrice;
+        discountError = result.error || 'Invalid discount code';
+      }
+    } catch (err) {
+      console.error('Discount validation failed:', err);
+      discountAmount = 0;
+      finalPrice = basePrice;
+      discountError = 'Failed to validate discount code';
+    } finally {
+      validatingDiscount = false;
+    }
+  }
 
   // Initialize Stripe when modal shows
   $effect(() => {
@@ -115,8 +162,7 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          planId: planId,
-          discountPercent: discountAmount,
+          planId: actualPlanId,
           discountCode: discountCode
         })
       });
@@ -170,19 +216,48 @@
         <div class="space-y-1">
           {#if discountAmount > 0}
             <p class="text-sm text-gray-600">
-              <span class="line-through">{basePrice} BGN</span>
+              <span class="line-through">{basePrice.toFixed(2)} BGN</span>
               <span class="text-green-600 font-semibold ml-2">{finalPrice.toFixed(2)} BGN/month</span>
             </p>
             <p class="text-xs text-green-600 font-medium">
-              {discountAmount}% discount applied
-              {#if discountCode === 'Indecisive'}
-                (Family discount)
+              {discountAmount.toFixed(2)} BGN discount applied
+              {#if discountCode === 'INDECISIVE'}
+                (Test discount)
               {/if}
             </p>
           {:else}
-            <p class="text-sm text-gray-600">{basePrice} BGN/month subscription</p>
+            <p class="text-sm text-gray-600">{basePrice.toFixed(2)} BGN/month subscription</p>
           {/if}
         </div>
+      </div>
+
+      <!-- Discount Code Input -->
+      <div class="mb-4">
+        <label for="discount-code" class="block text-sm font-medium text-gray-700 mb-1">
+          Discount Code (optional)
+        </label>
+        <div class="relative">
+          <input
+            id="discount-code"
+            type="text"
+            placeholder="Enter discount code"
+            bind:value={discountCode}
+            disabled={loading}
+            class="w-full p-2.5 border border-gray-300 rounded-sm text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:cursor-not-allowed"
+          />
+          {#if validatingDiscount}
+            <div class="absolute right-2 top-1/2 -translate-y-1/2">
+              <div class="w-4 h-4 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
+            </div>
+          {/if}
+        </div>
+        {#if discountError}
+          <p class="mt-1 text-xs text-red-600">{discountError}</p>
+        {:else if discountAmount > 0}
+          <p class="mt-1 text-xs text-green-600">
+            ✓ {discountAmount.toFixed(2)} BGN discount applied
+          </p>
+        {/if}
       </div>
 
       <!-- Card Input -->
