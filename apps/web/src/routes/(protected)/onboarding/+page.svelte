@@ -142,12 +142,9 @@
   }
 
   function handleAccountTypeSelect(type: 'personal' | 'premium' | 'brand') {
-    if ((type === 'brand' || type === 'premium') && !brandPaid) {
-      // Show payment modal for paid accounts
-      showBrandPayment = true;
-    } else {
-      accountType = type;
-    }
+    // Just set the account type - don't force payment during onboarding
+    accountType = type;
+    // Payment can be handled later from dashboard if needed
   }
   
   function handleDiscountCodeChange(code: string) {
