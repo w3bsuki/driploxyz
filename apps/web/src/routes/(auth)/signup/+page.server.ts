@@ -140,9 +140,9 @@ export const actions: Actions = {
           values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
         });
       }
-      if (error.message.includes('rate limit') || error.message.includes('Rate limit')) {
+      if (error.message.includes('rate limit') || error.message.includes('Rate limit') || error.code === 'over_email_send_rate_limit') {
         return fail(429, { 
-          errors: { _form: 'Too many signup attempts. Please try again in a few minutes.' }, 
+          errors: { _form: 'Email rate limit exceeded. Please try again in an hour, or contact support if this persists.' }, 
           values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
         });
       }
