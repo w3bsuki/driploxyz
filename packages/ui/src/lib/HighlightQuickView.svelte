@@ -19,7 +19,8 @@
 		}
 	};
 	
-	const toggleSellerInfo = () => {
+	const toggleSellerInfo = (e: MouseEvent) => {
+		e.stopPropagation();
 		showSellerInfo = !showSellerInfo;
 	};
 </script>
@@ -52,9 +53,9 @@
 			{#if product.seller_name}
 				<button 
 					onclick={toggleSellerInfo}
-					class="absolute bottom-2 left-2 flex items-center gap-1.5 bg-white/95 backdrop-blur-sm rounded-full pr-2 shadow-sm hover:bg-white transition-all {showSellerInfo ? 'px-2 py-1' : ''}"
+					class="absolute bottom-2 left-2 flex items-center gap-1.5 bg-white/95 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-all duration-200 {showSellerInfo ? 'px-2.5 py-1.5' : 'pr-2'}"
 				>
-					<div class="w-7 h-7 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
+					<div class="w-7 h-7 rounded-full border-2 border-white bg-gray-200 overflow-hidden flex-shrink-0">
 						{#if product.seller_avatar}
 							<img src={product.seller_avatar} alt={product.seller_name} class="w-full h-full object-cover" />
 						{:else}
@@ -63,21 +64,23 @@
 							</div>
 						{/if}
 					</div>
-					{#if showSellerInfo}
-						<div class="text-left">
-							<p class="text-xs font-medium text-gray-900">{product.seller_name}</p>
-							{#if product.seller_rating}
-								<div class="flex items-center gap-0.5">
-									<svg class="w-3 h-3 text-yellow-500 fill-current" viewBox="0 0 20 20">
-										<path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-									</svg>
-									<span class="text-xs text-gray-600">{product.seller_rating}</span>
-								</div>
-							{/if}
-						</div>
-					{:else}
-						<span class="text-xs text-gray-700 font-medium">{product.seller_name}</span>
-					{/if}
+					<div class="overflow-hidden transition-all duration-200 {showSellerInfo ? 'max-w-40' : 'max-w-20'}">
+						{#if showSellerInfo}
+							<div class="text-left">
+								<p class="text-xs font-medium text-gray-900">{product.seller_name}</p>
+								{#if product.seller_rating}
+									<div class="flex items-center gap-0.5">
+										<svg class="w-3 h-3 text-yellow-500 fill-current" viewBox="0 0 20 20">
+											<path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+										</svg>
+										<span class="text-xs text-gray-600">{product.seller_rating}</span>
+									</div>
+								{/if}
+							</div>
+						{:else}
+							<span class="text-xs text-gray-700 font-medium whitespace-nowrap">{product.seller_name}</span>
+						{/if}
+					</div>
 				</button>
 			{/if}
 		</div>
@@ -108,9 +111,9 @@
 			<button 
 				onclick={onAddToCart}
 				disabled={product.sizes && product.sizes.length > 0 && !selectedSize}
-				class="flex-1 bg-black text-white text-sm py-2 px-3 rounded-lg font-medium disabled:opacity-50"
+				class="flex-1 bg-black text-white text-sm py-2.5 px-4 rounded-lg font-medium disabled:opacity-50 hover:bg-gray-900 transition-colors"
 			>
-				Add to Bag
+				Buy Now
 			</button>
 			<button 
 				onclick={onToggleFavorite}
