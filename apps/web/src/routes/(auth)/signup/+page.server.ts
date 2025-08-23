@@ -100,15 +100,19 @@ export const actions: Actions = {
       console.log('[SIGNUP] Email redirect URL constructed:', emailRedirectTo);
     }
     
-    // CRITICAL: Check if user already exists BEFORE signup
-    // Supabase's signUp has a security issue where it auto-signs in existing users
-    if (DEBUG) console.log('[SIGNUP] Checking if user already exists...');
-    
     // Normalize email to lowercase for consistency
     const normalizedEmail = validatedEmail.toLowerCase().trim();
     
-    // First, attempt to sign up - this will tell us if the user exists
-    if (DEBUG) console.log('[SIGNUP] Attempting signUp with normalized email:', normalizedEmail);
+    // Check if user already exists using database function
+    const { data: emailExists } = await supabase
+      .rpc('check_email_exists', { email_to_check: normalizedEmail });
+    
+    if (emailExists) {
+      return fail(400, { 
+        errors: { email: 'An account with this email already exists. Please sign in instead.' }, 
+        values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
+      });
+    }
     
     // Create user with proper error handling
     const { data, error } = await supabase.auth.signUp({
