@@ -1,6 +1,7 @@
 <script lang="ts">
   import Avatar from './Avatar.svelte';
   import ProductHighlight from './ProductHighlight.svelte';
+  import HighlightQuickView from './HighlightQuickView.svelte';
   import type { Product, Seller } from './types/index.js';
 
   interface Translations {
@@ -37,6 +38,26 @@
     translations, 
     formatPrice 
   }: Props = $props();
+
+  let selectedProduct = $state<Product | null>(null);
+  let showQuickView = $state(false);
+
+  function handleProductClick(product: Product) {
+    selectedProduct = product;
+    showQuickView = true;
+  }
+
+  function handleCloseModal() {
+    showQuickView = false;
+    selectedProduct = null;
+  }
+
+  function handleBuy() {
+    if (selectedProduct) {
+      onProductBuy?.(selectedProduct);
+      handleCloseModal();
+    }
+  }
 </script>
 
 <!-- Promoted Listings / Highlights -->
@@ -64,7 +85,7 @@
               {product} 
               currency={translations.common_currency}
               {formatPrice}
-              onProductClick={onProductClick}
+              onProductClick={handleProductClick}
               onBuy={onProductBuy}
               onToggleFavorite={onToggleFavorite}
               isFavorite={favoriteProductIds.has(product.id)}
@@ -98,3 +119,13 @@
     </div>
   </div>
 </div>
+
+<!-- Modal rendered at the end -->
+{#if showQuickView && selectedProduct}
+  <HighlightQuickView 
+    product={selectedProduct}
+    onClose={handleCloseModal}
+    onAddToCart={handleBuy}
+    onToggleFavorite={() => selectedProduct && onToggleFavorite?.(selectedProduct)}
+  />
+{/if}

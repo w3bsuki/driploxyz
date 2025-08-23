@@ -46,7 +46,10 @@
 	});
 </script>
 
-{#if isOpen}
+{#if isOpen && product}
+	{@const imageUrl = Array.isArray(product?.images) 
+		? (typeof product?.images?.[0] === 'string' ? product?.images?.[0] : product?.images?.[0]?.image_url)
+		: '/placeholder-product.svg'}
 	<div
 		class="fixed inset-0 z-50 overflow-y-auto"
 		aria-labelledby="modal-title"
@@ -72,31 +75,28 @@
 				</button>
 
 				<div class="grid md:grid-cols-2">
-					{@const imageUrl = Array.isArray(product.images) 
-						? (typeof product.images[0] === 'string' ? product.images[0] : product.images[0]?.image_url)
-						: '/placeholder-product.svg'}
 					<div class="relative aspect-square overflow-hidden bg-gray-50">
-						{#if product.badge}
+						{#if product?.badge}
 							<span class="absolute left-3 top-3 z-10 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 px-3 py-1.5 text-xs font-semibold text-white shadow-lg">
-								{product.badge}
+								{product?.badge}
 							</span>
 						{/if}
 						
-						{#if product.discount}
+						{#if product?.discount}
 							<span class="absolute right-3 top-3 z-10 rounded-full bg-red-500 px-3 py-1.5 text-sm font-bold text-white shadow-lg">
-								-{product.discount}%
+								-{product?.discount}%
 							</span>
 						{/if}
 
 						<img
 							src={imageUrl}
-							alt={product.title}
+							alt={product?.title || 'Product'}
 							class="h-full w-full object-cover"
 						/>
 
-						{#if Array.isArray(product.images) && product.images.length > 1}
+						{#if Array.isArray(product?.images) && product?.images?.length > 1}
 							<div class="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-2">
-								{#each product.images.slice(0, 4) as image, index}
+								{#each product?.images?.slice(0, 4) || [] as image, index}
 									<div class="h-2 w-2 rounded-full bg-white/60 {index === 0 ? 'bg-white' : ''}"></div>
 								{/each}
 							</div>
@@ -106,40 +106,40 @@
 					<div class="flex flex-col p-6 md:p-8">
 						<div class="flex-1">
 							<div class="mb-2 flex items-center gap-2 text-sm text-gray-500">
-								<span class="font-medium">{product.brand}</span>
-								{#if product.condition}
+								<span class="font-medium">{product?.brand || ''}</span>
+								{#if product?.condition}
 									<span class="text-gray-400">•</span>
-									<span>{product.condition}</span>
+									<span>{product?.condition}</span>
 								{/if}
 							</div>
 
 							<h3 id="modal-title" class="mb-4 text-2xl font-bold text-gray-900">
-								{product.title}
+								{product?.title || ''}
 							</h3>
 
 							<div class="mb-6 flex items-baseline gap-3">
 								<span class="text-3xl font-bold text-gray-900">
-									{formatCurrency(product.price)}
+									{formatCurrency(product?.price || 0)}
 								</span>
-								{#if product.originalPrice && product.originalPrice > product.price}
+								{#if product?.originalPrice && product?.originalPrice > (product?.price || 0)}
 									<span class="text-lg text-gray-400 line-through">
-										{formatCurrency(product.originalPrice)}
+										{formatCurrency(product?.originalPrice || 0)}
 									</span>
 								{/if}
 							</div>
 
-							{#if product.description}
+							{#if product?.description}
 								<p class="mb-6 text-gray-600 line-clamp-3">
-									{product.description}
+									{product?.description}
 								</p>
 							{/if}
 
 							<div class="mb-6 space-y-3">
-								{#if product.size}
+								{#if product?.size}
 									<div class="flex items-center gap-2">
 										<span class="text-sm font-medium text-gray-500">Size:</span>
 										<span class="rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
-											{product.size}
+											{product?.size}
 										</span>
 									</div>
 								{/if}
@@ -166,26 +166,26 @@
 								</div>
 							</div>
 
-							{#if product.user || product.seller_name}
+							{#if product?.sellerName}
 								<div class="flex items-center gap-3 border-t pt-6">
 									<div class="flex items-center gap-2">
-										{#if product.user?.avatar}
+										{#if product.sellerAvatar}
 											<img
-												src={product.user?.avatar}
-												alt={product.user?.name || product.seller_name || 'Seller'}
+												src={product.sellerAvatar}
+												alt={product.sellerName || 'Seller'}
 												class="h-10 w-10 rounded-full object-cover ring-2 ring-white"
 											/>
 										{:else}
 											<div class="h-10 w-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white font-semibold ring-2 ring-white">
-												{(product.user?.name || product.seller_name || 'S').charAt(0).toUpperCase()}
+												{(product.sellerName || 'S').charAt(0).toUpperCase()}
 											</div>
 										{/if}
 										<div>
-											<p class="text-sm font-medium text-gray-900">{product.user?.name || product.seller_name || 'Seller'}</p>
-											{#if product.user?.rating || product.seller_rating}
+											<p class="text-sm font-medium text-gray-900">{product.sellerName || 'Seller'}</p>
+											{#if product.sellerRating}
 												<div class="flex items-center gap-1">
 													<span class="text-xs text-yellow-500">★</span>
-													<span class="text-xs text-gray-500">{product.user?.rating || product.seller_rating}</span>
+													<span class="text-xs text-gray-500">{product.sellerRating}</span>
 												</div>
 											{/if}
 										</div>
@@ -197,7 +197,7 @@
 						<div class="mt-6 flex gap-3">
 							<button
 								onclick={onBuy}
-								class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-3 font-semibold text-white shadow-lg transition-all hover:shadow-xl hover:scale-[1.02]"
+								class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 font-semibold text-white shadow-lg transition-all hover:bg-gray-800"
 							>
 								<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />

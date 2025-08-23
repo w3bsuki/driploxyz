@@ -1,10 +1,10 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerClient } from '$lib/supabase/server';
+import { createServerSupabaseClient } from '$lib/supabase/server';
 
-export const POST: RequestHandler = async ({ locals, request }) => {
+export const POST: RequestHandler = async ({ locals, request, cookies }) => {
   try {
-    const supabase = createServerClient(request);
+    const supabase = createServerSupabaseClient({ cookies });
     const body = await request.json();
     const { productIds } = body;
 

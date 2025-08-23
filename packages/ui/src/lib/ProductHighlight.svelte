@@ -1,5 +1,4 @@
 <script lang="ts">
-  import ProductQuickView from './ProductQuickView.svelte';
   import type { Product } from './types.js';
   
   interface Props {
@@ -22,20 +21,8 @@
     formatPrice 
   }: Props = $props();
   
-  let showQuickView = $state(false);
-  
   function handleClick() {
-    showQuickView = true;
-  }
-  
-  function handleView() {
-    showQuickView = false;
     onProductClick?.(product);
-  }
-  
-  function handleBuy() {
-    showQuickView = false;
-    onBuy?.(product);
   }
 </script>
 
@@ -80,16 +67,6 @@
     </div>
   </div>
 </button>
-
-<ProductQuickView 
-  {product}
-  isOpen={showQuickView}
-  onClose={() => showQuickView = false}
-  onView={handleView}
-  onBuy={handleBuy}
-  onToggleFavorite={() => onToggleFavorite?.(product)}
-  {isFavorite}
-/>
 
 <style>
   button {
