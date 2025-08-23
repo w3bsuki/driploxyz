@@ -82,9 +82,16 @@
   // Clean up - removed unused premium classes
 </script>
 
-<button
-  {onclick}
-  disabled={!onclick}
+<div
+  role={onclick ? "button" : undefined}
+  tabindex={onclick ? 0 : undefined}
+  onclick={onclick}
+  onkeydown={(e) => {
+    if (onclick && (e.key === 'Enter' || e.key === ' ')) {
+      e.preventDefault();
+      onclick();
+    }
+  }}
   class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} {onclick ? 'cursor-pointer' : 'cursor-default'} {className} overflow-hidden"
 >
   {#if src && !imageError}
@@ -100,4 +107,4 @@
       <span class="font-semibold text-gray-600 {textSizes[size]}">{initial()}</span>
     </div>
   {/if}
-</button>
+</div>

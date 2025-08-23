@@ -209,25 +209,39 @@
 
           <!-- User Menu -->
           <div class="relative">
-            <Avatar 
-              name={userDisplayName} 
-              src={currentProfile?.avatar_url} 
-              size="sm"
-              fallback={initials}
+            <button
               onclick={() => userMenuOpen = !userMenuOpen}
-              class="hover:bg-gray-50 hover:scale-105 transition-all duration-200 border-2 border-transparent hover:border-gray-200"
-            />
+              class="block rounded-full hover:ring-2 hover:ring-gray-200 transition-all"
+              aria-label="User menu"
+            >
+              <Avatar 
+                name={userDisplayName} 
+                src={currentProfile?.avatar_url} 
+                size="sm"
+                fallback={initials}
+                class="hover:scale-105 transition-all duration-200"
+              />
+            </button>
             
             {#if userMenuOpen}
-              <HeaderUserMenu 
-                user={currentUser}
-                profile={currentProfile}
-                {userDisplayName}
-                {initials}
-                canSell={userCanSell}
-                onSignOut={handleSignOut}
-                onClose={closeMenus}
-              />
+              <!-- Click outside to close -->
+              <button 
+                class="fixed inset-0 z-40" 
+                onclick={closeMenus}
+                aria-label="Close menu"
+              ></button>
+              
+              <div class="relative z-50">
+                <HeaderUserMenu 
+                  user={currentUser}
+                  profile={currentProfile}
+                  {userDisplayName}
+                  {initials}
+                  canSell={userCanSell}
+                  onSignOut={handleSignOut}
+                  onClose={closeMenus}
+                />
+              </div>
             {/if}
           </div>
         {:else}
