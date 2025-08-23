@@ -11,11 +11,20 @@ const config = {
 	
 	kit: {
 		adapter: adapter({
-			runtime: 'nodejs20.x'
+			runtime: 'nodejs20.x',
+			maxDuration: 30,
+			isr: {
+				expiration: 60
+			}
 		}),
-		// Disable CSRF check temporarily to fix production issues
 		csrf: {
-			checkOrigin: false
+			checkOrigin: true,
+			origins: [
+				'https://driplo.xyz',
+				'https://www.driplo.xyz',
+				'http://localhost:5173',
+				'http://localhost:5174'
+			]
 		}
 	},
 };
