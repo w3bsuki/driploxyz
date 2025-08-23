@@ -11,11 +11,16 @@
 	let { product, onClose, onAddToCart, onToggleFavorite }: Props = $props();
 
 	let selectedSize = $state<string>('');
+	let showSellerInfo = $state(false);
 
 	const handleBackdropClick = (e: MouseEvent) => {
 		if (e.target === e.currentTarget) {
 			onClose();
 		}
+	};
+	
+	const toggleSellerInfo = () => {
+		showSellerInfo = !showSellerInfo;
 	};
 </script>
 
@@ -28,45 +33,58 @@
 	<!-- ACTUALLY COMPACT MODAL -->
 	<div class="bg-white rounded-xl w-full max-w-[280px] p-3 shadow-xl">
 		<!-- Product image with close button -->
-		<div class="aspect-square bg-gray-100 rounded-lg mb-3 relative">
-			<div class="w-full h-full rounded-lg overflow-hidden">
-				<img 
-					src={product.images?.[0] || '/placeholder-product.svg'} 
-					alt={product.title}
-					class="w-full h-full object-cover"
-				/>
-			</div>
+		<div class="aspect-square rounded-lg mb-3 relative overflow-hidden bg-gray-100">
+			<img 
+				src={product.images?.[0] || '/placeholder-product.svg'} 
+				alt={product.title}
+				class="w-full h-full object-cover"
+			/>
 			<!-- Close button overlaying image -->
 			<button
 				onclick={onClose}
-				class="absolute top-2 right-2 p-1 bg-white/90 hover:bg-white rounded-full shadow-sm z-10"
+				class="absolute top-2 right-2 p-1 bg-white/90 hover:bg-white rounded-full shadow-sm"
 			>
 				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
 				</svg>
 			</button>
-			<!-- Seller avatar in bottom left -->
+			<!-- Seller info in bottom left -->
 			{#if product.seller_name}
-				<div class="absolute bottom-2 left-2 w-8 h-8 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm z-10">
-					{#if product.seller_avatar}
-						<img src={product.seller_avatar} alt={product.seller_name} class="w-full h-full object-cover" />
-					{:else}
-						<div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-semibold">
-							{product.seller_name.charAt(0).toUpperCase()}
+				<button 
+					onclick={toggleSellerInfo}
+					class="absolute bottom-2 left-2 flex items-center gap-1.5 bg-white/95 backdrop-blur-sm rounded-full pr-2 shadow-sm hover:bg-white transition-all {showSellerInfo ? 'px-2 py-1' : ''}"
+				>
+					<div class="w-7 h-7 rounded-full border-2 border-white bg-gray-200 overflow-hidden">
+						{#if product.seller_avatar}
+							<img src={product.seller_avatar} alt={product.seller_name} class="w-full h-full object-cover" />
+						{:else}
+							<div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-semibold">
+								{product.seller_name.charAt(0).toUpperCase()}
+							</div>
+						{/if}
+					</div>
+					{#if showSellerInfo}
+						<div class="text-left">
+							<p class="text-xs font-medium text-gray-900">{product.seller_name}</p>
+							{#if product.seller_rating}
+								<div class="flex items-center gap-0.5">
+									<svg class="w-3 h-3 text-yellow-500 fill-current" viewBox="0 0 20 20">
+										<path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+									</svg>
+									<span class="text-xs text-gray-600">{product.seller_rating}</span>
+								</div>
+							{/if}
 						</div>
+					{:else}
+						<span class="text-xs text-gray-700 font-medium">{product.seller_name}</span>
 					{/if}
-				</div>
+				</button>
 			{/if}
 		</div>
 
 		<!-- Product info -->
 		<h3 class="font-semibold text-sm mb-1">{product.title}</h3>
-		<div class="flex items-center justify-between mb-3">
-			<p class="text-lg font-bold">£{product.price.toFixed(2)}</p>
-			{#if product.seller_name}
-				<p class="text-xs text-gray-500">by {product.seller_name}</p>
-			{/if}
-		</div>
+		<p class="text-lg font-bold mb-3">£{product.price.toFixed(2)}</p>
 
 		<!-- Sizes if available -->
 		{#if product.sizes && product.sizes.length > 0}
