@@ -19,6 +19,8 @@
     terms: false
   });
 
+  let lastSuccessEmail = $state('');
+
   // Handle success and error messages
   $effect(() => {
     if (form?.success && form?.message) {
@@ -26,6 +28,8 @@
         duration: 8000, // Show for 8 seconds
         important: true
       });
+      // Store email before clearing form
+      lastSuccessEmail = form.values?.email || formData.email || '';
       // Clear form on success
       formData = {
         fullName: '',
@@ -86,7 +90,7 @@
         <div class="ml-3">
           <h3 class="text-sm font-medium text-green-800">Account created successfully! 🎉</h3>
           <div class="mt-2 text-sm text-green-700">
-            <p>We've sent a verification email to <strong>{form.values?.email || formData.email}</strong>.</p>
+            <p>We've sent a verification email to <strong>{form.values?.email || lastSuccessEmail || formData.email}</strong>.</p>
             <p class="mt-1">📧 Please check your inbox (and spam folder) to complete your registration.</p>
           </div>
         </div>
