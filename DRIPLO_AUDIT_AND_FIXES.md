@@ -433,7 +433,60 @@ export default {
 4. Test Supabase realtime - WebSocket should connect
 5. Test navigation - clicks should work
 
-## 🔥 CRITICAL FIX #2: EMAIL VERIFICATION HANGING
+## 🔥 CRITICAL FIX #2: AUTH STATE NOT SYNCING (Header/Avatar/Logout Issues)
+
+### THE PROBLEM:
+- User signs in but header shows "Sign In/Sign Up" buttons
+- Avatar not showing in header
+- Can't sign out properly
+- Mobile menu shows wrong auth state
+
+### ROOT CAUSE:
+Auth state is not properly propagating from server to client components. The Header component receives null user/profile even when logged in.
+
+### THE FIX:
+
+#### 1. Fix Logout Route (Already Done):
+Created `/logout/+page.server.ts` to handle GET requests properly.
+
+#### 2. Force Auth State Refresh:
+Add to `+layout.server.ts`:
+```typescript
+// Force fresh auth check on every page load
+export const load = async ({ locals }) => {
+  const { session, user } = await locals.safeGetSession();
+  
+  // Always return fresh auth state
+  return {
+    session,
+    user,
+    profile: user ? await getProfile(user.id) : null,
+    // Force cache invalidation
+    timestamp: Date.now()
+  };
+};
+```
+
+#### 3. Fix Header Component Auth Props:
+In pages using Header, ensure passing auth data:
+```svelte
+<Header 
+  user={$page.data.user} 
+  profile={$page.data.profile}
+  initialLanguage={$page.data.language} 
+/>
+```
+
+#### 4. Add Auth State Debugging:
+Check browser console for `[Layout Load] Auth state:` logs to verify auth is working.
+
+### TESTING:
+1. Sign in and check if avatar appears
+2. Check mobile menu shows correct options
+3. Test logout works completely
+4. Refresh page and verify still logged in
+
+## 🔥 CRITICAL FIX #3: EMAIL VERIFICATION HANGING
 
 **The Issue**: Users can sign up and receive verification emails, but clicking the link hangs and never completes verification.
 

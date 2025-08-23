@@ -17,9 +17,17 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
   depends('app:categories');
   depends('app:profiles');
   
-  // Use the session from hooks instead of creating new client
+  // CRITICAL: Always get fresh session data on each request
+  // This ensures auth state is current after login/logout
   const { session, user } = await locals.safeGetSession();
   const supabase = locals.supabase;
+  
+  // Log auth state for debugging
+  console.log('[Layout Load] Auth state:', {
+    hasUser: !!user,
+    userId: user?.id,
+    pathname: url.pathname
+  });
   
 
   let profile = null;
