@@ -171,7 +171,7 @@
 									<div class="flex items-center gap-2">
 										{#if product.user?.avatar}
 											<img
-												src={product.user.avatar}
+												src={product.user?.avatar}
 												alt={product.user?.name || product.seller_name || 'Seller'}
 												class="h-10 w-10 rounded-full object-cover ring-2 ring-white"
 											/>

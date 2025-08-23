@@ -64,7 +64,6 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
-    "lucide-svelte": "^0.541.0",
     "tslib": "^2.7.0"
   }
 }
