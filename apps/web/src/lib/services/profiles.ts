@@ -53,18 +53,23 @@ export class ProfileService {
    */
   async getProfileByUsername(username: string): Promise<{ data: Profile | null; error: string | null }> {
     try {
+      // First try exact match (case-insensitive)
       const { data, error } = await this.supabase
         .from('profiles')
         .select('*')
         .ilike('username', username)
-        .single();
+        .limit(1);
 
       if (error) {
         console.error('Error fetching profile by username:', error);
         return { data: null, error: error.message };
       }
 
-      return { data, error: null };
+      if (!data || data.length === 0) {
+        return { data: null, error: 'User not found' };
+      }
+
+      return { data: data[0], error: null };
     } catch (error) {
       console.error('Error in getProfileByUsername:', error);
       return { data: null, error: 'Failed to fetch profile' };
