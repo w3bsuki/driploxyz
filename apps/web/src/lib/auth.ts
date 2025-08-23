@@ -104,19 +104,23 @@ export async function updateUserProfile(
  */
 export async function signOut(supabase: SupabaseClient<Database>) {
   try {
-    // Try to sign out via Supabase first
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Sign out error:', error);
-    }
+    // Make POST request to logout endpoint
+    const response = await fetch('/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
     
-    // Navigate to logout page which will handle server-side cleanup
-    // Use GET request to logout page (not POST to /logout server endpoint)
-    window.location.href = '/logout';
+    if (response.redirected) {
+      window.location.href = response.url;
+    } else {
+      window.location.href = '/';
+    }
   } catch (error) {
     console.error('Sign out error:', error);
-    // Force redirect even on error to ensure cleanup
-    window.location.href = '/logout';
+    // Force redirect even on error
+    window.location.href = '/';
   }
 }
 
