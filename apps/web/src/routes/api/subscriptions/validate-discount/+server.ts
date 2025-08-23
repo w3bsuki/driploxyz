@@ -34,9 +34,9 @@ export const POST: RequestHandler = async (event) => {
     const { data: result, error: validationError } = await supabase
       .rpc('validate_discount_code', {
         p_code: code.toUpperCase(),
-        p_plan_type: plan.plan_type,
+        p_plan_type: plan.plan_type || 'brand',
         p_user_id: user.id,
-        p_amount: plan.price_monthly
+        p_amount: plan.price_monthly || 50
       });
 
     if (validationError) {

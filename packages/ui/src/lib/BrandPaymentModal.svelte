@@ -34,29 +34,13 @@
 
   // We'll get the actual plan ID from the subscription plans table
   const basePrice = accountType === 'premium' ? 25 : 50;
-  let actualPlanId = $state('');
-
-  // Initialize plan ID
+  // Use hardcoded plan ID for brand subscription
+  let actualPlanId = $state('0a3470f1-8d21-45e7-aecc-d193521adfc7'); // Brand Pro plan ID
+  
+  // Set initial price
   $effect(() => {
-    if (show && !actualPlanId) {
-      fetchPlanId();
-    }
+    finalPrice = basePrice;
   });
-
-  async function fetchPlanId() {
-    try {
-      const response = await fetch('/api/subscription-plans');
-      const plans = await response.json();
-      const plan = plans.find((p: any) => p.plan_type === accountType);
-      if (plan) {
-        actualPlanId = plan.id;
-        finalPrice = plan.price_monthly;
-      }
-    } catch (err) {
-      console.error('Failed to fetch plan:', err);
-      finalPrice = basePrice; // fallback
-    }
-  }
 
   // Validate discount code when it changes
   $effect(() => {
