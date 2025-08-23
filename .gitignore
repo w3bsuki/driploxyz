@@ -31,8 +31,10 @@ yarn-error.log*
 # turbo
 .turbo
 
-dist
-# packages/ui/dist
+# dist - commented out to allow packages/ui/dist for Vercel
+# dist
+# Allow UI package dist for Vercel deployment
+!packages/ui/dist
 
 # vercel
 .vercel/
