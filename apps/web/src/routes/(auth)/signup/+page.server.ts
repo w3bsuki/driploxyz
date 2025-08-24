@@ -90,6 +90,8 @@ export const actions: Actions = {
       
 
     if (error) {
+      console.error('Signup error:', error);
+      
       // Handle specific Supabase auth errors
       if (error.message.includes('User already registered') || 
           error.message.includes('already registered') || 
@@ -97,6 +99,26 @@ export const actions: Actions = {
           error.code === 'user_already_exists') {
         return fail(400, { 
           errors: { email: 'An account with this email already exists. Please sign in instead.' }, 
+          values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
+        });
+      }
+      if (error.message.includes('Database error') || error.message.includes('database error')) {
+        // Check if user actually exists
+        const { data: existingUser } = await supabase
+          .from('profiles')
+          .select('id')
+          .ilike('email', normalizedEmail)
+          .single();
+          
+        if (existingUser) {
+          return fail(400, { 
+            errors: { email: 'An account with this email already exists. Please sign in instead.' }, 
+            values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
+          });
+        }
+        
+        return fail(500, { 
+          errors: { _form: 'A temporary issue occurred. Please try again in a moment.' }, 
           values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
         });
       }
