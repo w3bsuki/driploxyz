@@ -17,7 +17,7 @@ export class SubscriptionService {
 	async getAvailablePlans() {
 		return await this.supabase
 			.from('subscription_plans')
-			.select('*')
+			.select('id, plan_type, name, description, price_monthly, price_yearly, features, is_active')
 			.eq('is_active', true)
 			.order('price_monthly', { ascending: true });
 	}
@@ -29,8 +29,8 @@ export class SubscriptionService {
 		return await this.supabase
 			.from('user_subscriptions')
 			.select(`
-				*,
-				subscription_plans(*)
+				id, user_id, plan_id, status, created_at, current_period_start, current_period_end,
+				subscription_plans(id, plan_type, name, price_monthly, features)
 			`)
 			.eq('user_id', userId)
 			.eq('status', 'active');

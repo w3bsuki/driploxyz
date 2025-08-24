@@ -17,6 +17,7 @@
 	import { purchaseActions, purchaseStore } from '$lib/stores/purchase-store';
 	import { favoritesActions, favoritesStore } from '$lib/stores/favorites-store';
 	import { authPopupActions, authPopupStore } from '$lib/stores/auth-popup-store';
+	import { prefetchRoute } from '$lib/utils/prefetch';
 	import type { PageData } from './$types';
 	import type { ProductWithImages } from '$lib/services';
 	import type { Seller, ProductDisplay, PromotedProduct } from '$lib/types';
@@ -351,6 +352,7 @@
 							class="category-nav-pill shrink-0 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center"
 							style="min-width: 80px; height: 44px;"
 							{...prefetchRoute(`/category/${category.slug}`)}
+							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
 								<svg class="animate-spin h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

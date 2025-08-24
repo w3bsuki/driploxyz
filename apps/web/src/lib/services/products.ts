@@ -50,9 +50,10 @@ export class ProductService {
       const { data, error } = await this.supabase
         .from('products')
         .select(`
-          *,
+          id, title, description, price, condition, size, brand, location,
+          is_active, seller_id, category_id, created_at, updated_at,
           favorite_count,
-          product_images (*),
+          product_images (id, image_url, sort_order),
           categories (name),
           profiles!products_seller_id_fkey (username, rating, avatar_url)
         `)
@@ -279,9 +280,10 @@ export class ProductService {
       const { data: manuallyPromoted, error: manualError } = await this.supabase
         .from('products')
         .select(`
-          *,
+          id, title, description, price, condition, size, brand, location,
+          is_active, seller_id, category_id, created_at, updated_at,
           favorite_count,
-          product_images (*),
+          product_images (id, image_url, sort_order),
           categories (name),
           profiles!products_seller_id_fkey (username, rating, avatar_url)
         `)
@@ -320,9 +322,10 @@ export class ProductService {
         const { data: newestProducts, error: newestError } = await this.supabase
           .from('products')
           .select(`
-            *,
+            id, title, description, price, condition, size, brand, location,
+            is_active, seller_id, category_id, created_at, updated_at,
             favorite_count,
-            product_images (*),
+            product_images (id, image_url, sort_order),
             categories (name),
             profiles!products_seller_id_fkey (username, rating, avatar_url)
           `)

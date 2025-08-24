@@ -32,7 +32,7 @@ export class ProfileService {
     try {
       const { data, error } = await this.supabase
         .from('profiles')
-        .select('*')
+        .select('id, username, full_name, avatar_url, bio, role, location, created_at, updated_at, rating')
         .eq('id', userId)
         .single();
 
@@ -56,7 +56,7 @@ export class ProfileService {
       // First try exact match (case-insensitive)
       const { data, error } = await this.supabase
         .from('profiles')
-        .select('*')
+        .select('id, username, full_name, avatar_url, bio, role, location, created_at, updated_at, rating, sales_count')
         .ilike('username', username)
         .limit(1);
 
@@ -105,7 +105,7 @@ export class ProfileService {
       // Get recent reviews
       const { data: reviews } = await this.supabase
         .from('reviews')
-        .select('*')
+        .select('id, reviewer_id, rating, comment, created_at, reviewer:profiles!reviewer_id(username, avatar_url)')
         .eq('reviewee_id', userId)
         .eq('is_public', true)
         .order('created_at', { ascending: false })
@@ -291,7 +291,7 @@ export class ProfileService {
     try {
       const { data, error } = await this.supabase
         .from('profiles')
-        .select('*')
+        .select('id, username, full_name, avatar_url, bio, role, location, created_at, rating, sales_count')
         .or(`username.ilike.%${query}%,full_name.ilike.%${query}%`)
         .limit(limit);
 

@@ -1,0 +1,19 @@
+<svg width="128" height="128" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" fill="#3b82f6" rx="48"/>
+  <g transform="translate(48, 32)">
+    <!-- Stylized 'D' for Driplo -->
+    <path d="M48 16C70.091 16 88 33.909 88 56V104C88 126.091 70.091 144 48 144H16V16H48ZM48 32H32V128H48C61.255 128 72 117.255 72 104V56C72 42.745 61.255 32 48 32Z" fill="white"/>
+    
+    <!-- Clothing hanger element -->
+    <g transform="translate(8, 48)">
+      <circle cx="16" cy="8" r="4" fill="white" opacity="0.8"/>
+      <path d="M12 12L20 12" stroke="white" stroke-width="2" opacity="0.8"/>
+      <path d="M8 16L24 16C26.209 16 28 17.791 28 20V24C28 26.209 26.209 28 24 28H8C5.791 28 4 26.209 4 24V20C4 17.791 5.791 16 8 16Z" fill="white" opacity="0.6"/>
+    </g>
+    
+    <!-- Fashion/style dots -->
+    <circle cx="20" cy="96" r="3" fill="white" opacity="0.7"/>
+    <circle cx="32" cy="96" r="3" fill="white" opacity="0.7"/>
+    <circle cx="44" cy="96" r="3" fill="white" opacity="0.7"/>
+  </g>
+</svg>

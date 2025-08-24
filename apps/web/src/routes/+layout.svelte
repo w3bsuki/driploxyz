@@ -7,6 +7,7 @@
   import { invalidate } from '$app/navigation';
   import { browser, dev } from '$app/environment';
   import { setupRoutePreloading } from '$lib/utils/route-splitting';
+  import { initializePrefetch } from '$lib/utils/prefetch';
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
@@ -55,26 +56,37 @@
   const supabase = $derived(data && data.supabase ? data.supabase : null);
   const isAuthPage = $derived($page.route.id?.includes('(auth)'));
   
-  // Initialize route preloading on mount
+  // Initialize performance optimizations on mount
   $effect(() => {
     if (browser) {
-      // Setup route preloading for better performance
+      // Setup route preloading and prefetching
       setupRoutePreloading();
+      initializePrefetch();
       
-      // Preload critical fonts and assets
-      const criticalAssets = [
-        '/fonts/inter-var.woff2',
-        '/placeholder-product.svg'
+      // Critical resource hints for faster loading
+      const preconnectUrls = [
+        'https://fonts.googleapis.com',
+        'https://fonts.gstatic.com'
       ];
       
-      criticalAssets.forEach(asset => {
+      preconnectUrls.forEach(url => {
         const link = document.createElement('link');
-        link.rel = 'preload';
-        link.as = asset.endsWith('.woff2') ? 'font' : 'image';
-        link.href = asset;
-        if (asset.endsWith('.woff2')) {
-          link.crossOrigin = 'anonymous';
-        }
+        link.rel = 'preconnect';
+        link.href = url;
+        link.crossOrigin = 'anonymous';
+        document.head.appendChild(link);
+      });
+      
+      // DNS prefetch for external services (if used)
+      const dnsPrefetchUrls = [
+        '//api.stripe.com',
+        '//js.stripe.com'
+      ];
+      
+      dnsPrefetchUrls.forEach(url => {
+        const link = document.createElement('link');
+        link.rel = 'dns-prefetch';
+        link.href = url;
         document.head.appendChild(link);
       });
     }

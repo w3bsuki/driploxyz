@@ -78,7 +78,7 @@ export class PayoutService {
 	async getSellerPayouts(sellerId: string) {
 		return await this.supabase
 			.from('payouts')
-			.select('*')
+			.select('id, amount, status, payout_method, requested_at, processed_at, completed_at, notes, created_at')
 			.eq('seller_id', sellerId)
 			.order('created_at', { ascending: false });
 	}

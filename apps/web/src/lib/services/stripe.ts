@@ -71,7 +71,7 @@ export class StripeService {
 			// Get product details
 			const { data: product, error: productError } = await this.supabase
 				.from('products')
-				.select('*, seller:profiles!seller_id(*)')
+				.select('id, title, price, shipping_cost, status, seller_id, seller:profiles!seller_id(id, username, stripe_customer_id)')
 				.eq('id', productId)
 				.single();
 
@@ -224,7 +224,7 @@ export class StripeService {
 			// Get plan details
 			const { data: plan } = await this.supabase
 				.from('subscription_plans')
-				.select('*')
+				.select('id, name, plan_type, price_monthly, currency')
 				.eq('id', planId)
 				.single();
 
@@ -332,7 +332,7 @@ export class StripeService {
 			// Get new plan details
 			const { data: newPlan } = await this.supabase
 				.from('subscription_plans')
-				.select('*')
+				.select('id, name, plan_type, price_monthly, currency')
 				.eq('id', newPlanId)
 				.single();
 

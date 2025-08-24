@@ -13,7 +13,7 @@ export class NotificationService {
 	async getUnreadNotifications(limit: number = 50) {
 		return await this.supabase
 			.from('admin_notifications')
-			.select('*')
+			.select('id, title, message, type, priority, is_read, created_at, related_id, related_table')
 			.eq('is_read', false)
 			.order('created_at', { ascending: false })
 			.limit(limit);
@@ -64,18 +64,29 @@ export class NotificationService {
 	}
 
 	/**
-	 * Get notification counts by type
+	 * Get notification counts by type - optimized to use SQL aggregation
 	 */
 	async getNotificationCounts() {
-		const { data, error } = await this.supabase
+		// Use SQL aggregation instead of client-side processing
+		const { data: totalData } = await this.supabase
 			.from('admin_notifications')
-			.select('type, is_read');
+			.select('id', { count: 'exact', head: true });
+
+		const { data: unreadData } = await this.supabase
+			.from('admin_notifications')
+			.select('id', { count: 'exact', head: true })
+			.eq('is_read', false);
+
+		// For type counts, we still need to fetch but only the type column
+		const { data: typeData, error } = await this.supabase
+			.from('admin_notifications')
+			.select('type');
 
 		if (error) return { total: 0, unread: 0, byType: {} };
 
-		const total = data.length;
-		const unread = data.filter(n => !n.is_read).length;
-		const byType = data.reduce((acc, notification) => {
+		const total = totalData?.length || 0;
+		const unread = unreadData?.length || 0;
+		const byType = typeData?.reduce((acc, notification) => {
 			acc[notification.type] = (acc[notification.type] || 0) + 1;
 			return acc;
 		}, {} as Record<string, number>);
