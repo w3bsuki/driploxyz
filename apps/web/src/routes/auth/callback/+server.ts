@@ -41,7 +41,13 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     
     if (exchangeError) {
       console.error('[AUTH CALLBACK] Session exchange failed:', exchangeError);
-      throw redirect(303, '/login?error=session_exchange_failed');
+      
+      // Handle specific exchange errors
+      if (exchangeError.message?.includes('expired') || exchangeError.message?.includes('invalid')) {
+        throw redirect(303, '/login?error=' + encodeURIComponent('Verification link has expired or already been used. Please sign in normally.'));
+      }
+      
+      throw redirect(303, '/login?error=' + encodeURIComponent('Authentication failed. Please try signing in again.'));
     }
 
     if (!data.session || !data.user) {

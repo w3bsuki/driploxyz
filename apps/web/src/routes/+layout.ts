@@ -12,7 +12,10 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
         env.PUBLIC_SUPABASE_URL,
         env.PUBLIC_SUPABASE_ANON_KEY,
         {
-          global: { fetch }
+          global: { fetch },
+          auth: {
+            flowType: 'implicit' // Disable PKCE for email verification compatibility
+          }
         }
       )
     : createServerClient<Database>(
@@ -24,6 +27,9 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
             getAll() {
               return data.cookies;
             }
+          },
+          auth: {
+            flowType: 'implicit' // Disable PKCE for email verification compatibility
           }
         }
       );
