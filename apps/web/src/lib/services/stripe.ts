@@ -248,7 +248,7 @@ export class StripeService {
 				product: stripeProduct.id
 			});
 
-			// Create subscription
+			// Create subscription with immediate payment collection
 			const subscription = await this.stripe.subscriptions.create({
 				customer: customer.id,
 				items: [{ price: stripePrice.id }],
@@ -262,6 +262,46 @@ export class StripeService {
 					discount_percent: discountPercent.toString()
 				}
 			});
+
+			// Get the payment intent - it should be expanded
+			let clientSecret: string | undefined;
+			
+			if (typeof subscription.latest_invoice === 'object' && subscription.latest_invoice !== null) {
+				const invoice = subscription.latest_invoice as Stripe.Invoice;
+				
+				// Check if payment_intent is expanded
+				if (typeof invoice.payment_intent === 'object' && invoice.payment_intent !== null) {
+					const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent;
+					clientSecret = paymentIntent.client_secret || undefined;
+				} else if (typeof invoice.payment_intent === 'string') {
+					// If not expanded, retrieve it separately
+					const paymentIntent = await this.stripe.paymentIntents.retrieve(invoice.payment_intent);
+					clientSecret = paymentIntent.client_secret || undefined;
+				}
+			}
+			
+			// If still no client secret, try getting the subscription again with expansion
+			if (!clientSecret) {
+				const expandedSub = await this.stripe.subscriptions.retrieve(subscription.id, {
+					expand: ['latest_invoice.payment_intent']
+				});
+				
+				if (typeof expandedSub.latest_invoice === 'object' && expandedSub.latest_invoice !== null) {
+					const invoice = expandedSub.latest_invoice as Stripe.Invoice;
+					if (typeof invoice.payment_intent === 'object' && invoice.payment_intent !== null) {
+						const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent;
+						clientSecret = paymentIntent.client_secret || undefined;
+					}
+				}
+			}
+			
+			if (!clientSecret) {
+				console.error('Failed to get client secret from subscription:', {
+					subscriptionId: subscription.id,
+					latestInvoice: subscription.latest_invoice
+				});
+				throw new Error('Unable to process payment. Please try again.');
+			}
 
 			// Create subscription record in database
 			await this.supabase
@@ -284,22 +324,9 @@ export class StripeService {
 				})
 				.eq('id', userId);
 
-			// Get the client secret from the subscription's latest invoice payment intent
-			const invoice = subscription.latest_invoice as Stripe.Invoice;
-			const paymentIntent = invoice?.payment_intent as Stripe.PaymentIntent;
-			
-			if (!paymentIntent?.client_secret) {
-				console.error('No payment intent client secret found in subscription:', {
-					subscriptionId: subscription.id,
-					invoiceId: invoice?.id,
-					paymentIntentId: paymentIntent?.id
-				});
-				throw new Error('Failed to get payment details from subscription');
-			}
-
 			return {
 				subscription,
-				clientSecret: paymentIntent.client_secret
+				clientSecret
 			};
 
 		} catch (error) {

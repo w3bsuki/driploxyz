@@ -60,16 +60,21 @@
 
   let showEmailVerifiedWelcome = $state(false);
 
+  // Check URL params immediately
+  $effect(() => {
+    if (browser && $page.url) {
+      const params = $page.url.searchParams;
+      // Check if user just verified their email - show special welcome
+      if (params.get('email_verified') === 'true' || params.get('welcome') === 'true') {
+        showEmailVerifiedWelcome = true;
+      }
+    }
+  });
+
   // Show welcome modal on mount
   onMount(() => {
-    // Check if user just verified their email - show special welcome
-    if ($page.url.searchParams.get('email_verified') === 'true') {
-      showEmailVerifiedWelcome = true;
-      // Don't show toast if we're showing the welcome modal
-    } else if ($page.url.searchParams.get('welcome') === 'true') {
-      // Regular welcome from signup
-      toasts.success('Welcome to Driplo! Let\'s set up your profile.');
-    } else if ($page.url.searchParams.get('verified') === 'true') {
+    // Additional welcome messages for other flows
+    if (!showEmailVerifiedWelcome && $page.url.searchParams.get('verified') === 'true') {
       // Legacy verified parameter
       toasts.success('Email verified successfully! Welcome to Driplo!');
     }
