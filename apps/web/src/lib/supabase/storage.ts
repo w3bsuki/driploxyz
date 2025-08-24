@@ -6,66 +6,7 @@ export interface UploadedImage {
   path: string;
 }
 
-async function optimizeImageToWebP(file: File, quality: number = 0.8): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: false });
-    
-    if (!ctx) {
-      reject(new Error('Could not get canvas context'));
-      return;
-    }
-
-    img.onload = () => {
-      try {
-        // Calculate dimensions - max 1200px for product images
-        const maxDimension = 1200;
-        let { width, height } = img;
-        
-        if (width > maxDimension || height > maxDimension) {
-          const scale = maxDimension / Math.max(width, height);
-          width = Math.round(width * scale);
-          height = Math.round(height * scale);
-        }
-        
-        canvas.width = width;
-        canvas.height = height;
-        
-        // Use better quality settings
-        ctx.imageSmoothingEnabled = true;
-        ctx.imageSmoothingQuality = 'high';
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        // Convert to WebP
-        canvas.toBlob(
-          (blob) => {
-            if (!blob) {
-              reject(new Error('Failed to convert to WebP'));
-              return;
-            }
-            resolve(blob);
-          },
-          'image/webp',
-          quality
-        );
-      } catch (error) {
-        reject(error);
-      } finally {
-        // Clean up
-        URL.revokeObjectURL(img.src);
-      }
-    };
-    
-    img.onerror = () => {
-      URL.revokeObjectURL(img.src);
-      reject(new Error('Failed to load image'));
-    };
-    
-    img.src = URL.createObjectURL(file);
-  });
-}
-
+// Simple, reliable image upload without client-side optimization
 export async function uploadImage(
   supabase: SupabaseClient,
   file: File,
@@ -73,24 +14,32 @@ export async function uploadImage(
   userId: string
 ): Promise<UploadedImage> {
   try {
-    // ALWAYS convert to WebP to save bandwidth
-    const webpBlob = await optimizeImageToWebP(file);
+    // Check file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error('Image size must be less than 5MB');
+    }
     
-    // Generate unique filename with .webp extension
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      throw new Error('File must be an image');
+    }
+    
+    // Generate unique filename - keep original extension for now
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 9);
-    const fileName = `${userId}/${timestamp}-${randomId}.webp`;
+    const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+    const fileName = `${userId}/${timestamp}-${randomId}.${fileExt}`;
     
     // Upload to Supabase
     const { data, error } = await supabase.storage
       .from(bucket)
-      .upload(fileName, webpBlob, {
-        contentType: 'image/webp',
+      .upload(fileName, file, {
         cacheControl: '3600',
         upsert: false
       });
     
     if (error) {
+      console.error('Supabase upload error:', error);
       throw new Error(`Upload failed: ${error.message}`);
     }
     
@@ -105,7 +54,7 @@ export async function uploadImage(
       path: data.path
     };
   } catch (error) {
-    // If WebP conversion fails, don't fall back - fix the issue
+    console.error('Upload error:', error);
     throw error instanceof Error ? error : new Error('Upload failed');
   }
 }
@@ -118,13 +67,19 @@ export async function uploadImages(
   onProgress?: (current: number, total: number) => void
 ): Promise<UploadedImage[]> {
   const uploadedImages: UploadedImage[] = [];
+  
   for (let i = 0; i < files.length; i++) {
     try {
       const uploaded = await uploadImage(supabase, files[i], bucket, userId);
       uploadedImages.push(uploaded);
       onProgress?.(i + 1, files.length);
     } catch (error) {
+      console.error(`Failed to upload image ${i + 1}:`, error);
       // Continue with other images instead of stopping completely
+      if (uploadedImages.length === 0 && i === files.length - 1) {
+        // If no images uploaded and this was the last one, throw
+        throw error;
+      }
     }
   }
   
@@ -145,6 +100,7 @@ export async function deleteImage(
     .remove([path]);
   
   if (error) {
+    console.error('Delete error:', error);
     return false;
   }
   
@@ -161,6 +117,7 @@ export async function deleteImages(
     .remove(paths);
   
   if (error) {
+    console.error('Delete error:', error);
     return false;
   }
   
@@ -173,17 +130,19 @@ export async function uploadAvatar(
   userId: string
 ): Promise<string> {
   try {
-    // Optimize avatar to WebP for consistency and bandwidth savings
-    const webpBlob = await optimizeImageToWebP(file, 0.9); // Higher quality for avatars
+    // Check file size (max 2MB for avatars)
+    if (file.size > 2 * 1024 * 1024) {
+      throw new Error('Avatar size must be less than 2MB');
+    }
     
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 9);
-    const fileName = `avatars/${userId}/${timestamp}-${randomId}.webp`;
+    const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+    const fileName = `avatars/${userId}/${timestamp}-${randomId}.${fileExt}`;
     
     const { data, error } = await supabase.storage
       .from('avatars')
-      .upload(fileName, webpBlob, {
-        contentType: 'image/webp',
+      .upload(fileName, file, {
         cacheControl: '3600',
         upsert: true
       });
