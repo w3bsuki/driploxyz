@@ -104,12 +104,13 @@ export async function updateUserProfile(
  */
 export async function signOut(supabase: SupabaseClient<Database>) {
   try {
-    // Make POST request to logout endpoint
+    // Make POST request to logout endpoint with credentials
     const response = await fetch('/logout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      }
+      },
+      credentials: 'include' // Include cookies for authentication
     });
     
     if (response.redirected) {

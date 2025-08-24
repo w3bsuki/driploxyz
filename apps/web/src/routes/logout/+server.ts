@@ -13,7 +13,11 @@ const handleLogout: RequestHandler = async ({ locals: { supabase, safeGetSession
   const allCookies = cookies.getAll();
   for (const cookie of allCookies) {
     if (cookie.name.startsWith('sb-')) {
+      // Delete cookie with multiple path variations to ensure it's removed
+      cookies.delete(cookie.name, { path: '/' });
+      cookies.delete(cookie.name, { path: '/', sameSite: 'lax' });
       cookies.delete(cookie.name, { path: '/', sameSite: 'lax', secure: true });
+      cookies.delete(cookie.name, { path: '/', sameSite: 'none', secure: true });
     }
   }
   
