@@ -1,11 +1,8 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { SignupSchema } from '$lib/validation/auth';
-import { dev, building } from '$app/environment';
 import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
 import type { Actions, PageServerLoad } from './$types';
 import { detectLanguage } from '@repo/i18n';
-
-const DEBUG = dev;
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
   const { session } = await safeGetSession();
@@ -19,23 +16,8 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
 
 export const actions: Actions = {
   signup: async ({ request, locals: { supabase }, cookies, url, getClientAddress }) => {
-    if (DEBUG) {
-      console.log('[SIGNUP] ========== SIGNUP ACTION START ==========');
-      console.log('[SIGNUP] Timestamp:', new Date().toISOString());
-      console.log('[SIGNUP] Request method:', request.method);
-      console.log('[SIGNUP] Request URL:', request.url);
-      console.log('[SIGNUP] Site URL origin:', url.origin);
-    }
-    
     // Get PUBLIC_SITE_URL from environment (dynamic)
     const PUBLIC_SITE_URL = process.env.PUBLIC_SITE_URL;
-    if (DEBUG) {
-      console.log('[SIGNUP] PUBLIC_SITE_URL:', PUBLIC_SITE_URL || 'undefined');
-      console.log('[SIGNUP] Email redirect will use:', PUBLIC_SITE_URL || url.origin);
-      console.log('[SIGNUP] Environment:', { dev, building: typeof building !== 'undefined' ? building : 'undefined' });
-      console.log('[SIGNUP] Has supabase client:', !!supabase);
-      console.log('[SIGNUP] Headers:', Object.fromEntries(request.headers.entries()));
-    }
     
     const formData = await request.formData();
     const email = formData.get('email') as string;
@@ -53,10 +35,7 @@ export const actions: Actions = {
       terms 
     });
     
-    console.log('[SIGNUP] Form validation result:', { valid: validation.success });
-    
     if (!validation.success) {
-      console.log('[SIGNUP] Form invalid - returning fail with errors');
       const errors: Record<string, string> = {};
       validation.error.errors.forEach((error) => {
         if (error.path.length > 0) {
@@ -88,20 +67,11 @@ export const actions: Actions = {
     const acceptLanguage = request.headers.get('accept-language') || '';
     const userLocale = localeCookie || detectLanguage(acceptLanguage);
 
-    if (DEBUG) {
-      console.log('[SIGNUP] Attempting signup');
-      console.log('[SIGNUP] Terms accepted:', validation.data.terms);
-      console.log('[SIGNUP] User locale:', userLocale);
-      console.log('[SIGNUP] Supabase client exists:', !!supabase);
-    }
     
     // Determine redirect URL with fallback
     const redirectOrigin = PUBLIC_SITE_URL || url.origin;
     const emailRedirectTo = `${redirectOrigin}/auth/callback?next=/onboarding`;
     
-    if (DEBUG) {
-      console.log('[SIGNUP] Email redirect URL constructed:', emailRedirectTo);
-    }
     
     // Normalize email to lowercase for consistency
     const normalizedEmail = validatedEmail.toLowerCase().trim();
@@ -118,13 +88,6 @@ export const actions: Actions = {
       }
     });
       
-    if (DEBUG) {
-      console.log('[SIGNUP] Auth response received');
-      console.log('[SIGNUP] Has data:', !!data);
-      console.log('[SIGNUP] Has user:', !!data?.user);
-      console.log('[SIGNUP] User ID:', data?.user?.id);
-      console.log('[SIGNUP] Error:', error ? { message: error.message, status: error.status, code: error.code } : null);
-    }
 
     if (error) {
       // Handle specific Supabase auth errors
@@ -156,13 +119,6 @@ export const actions: Actions = {
         });
       }
       
-      // Log the full error for debugging
-      console.error('[SIGNUP] Error during signup:', {
-        message: error.message,
-        code: error.code,
-        status: error.status,
-        details: error
-      });
       return fail(400, { 
         errors: { _form: error.message || 'Failed to create account' }, 
         values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
@@ -173,10 +129,8 @@ export const actions: Actions = {
     // Supabase returns success even for existing users (security issue)
     if (data?.user && !data?.session) {
       // User was created successfully (new user)
-      if (DEBUG) console.log('[SIGNUP] New user created successfully');
     } else if (data?.user && data?.session) {
       // This means the user already existed and was signed in
-      if (DEBUG) console.log('[SIGNUP] User already existed! Supabase signed them in');
       // Sign them out immediately
       await supabase.auth.signOut();
       return fail(400, { 
@@ -207,14 +161,10 @@ export const actions: Actions = {
       });
 
     if (profileError && profileError.code !== '23505') { // Ignore duplicate key errors
-      console.warn('[SIGNUP] Profile creation warning:', profileError.message);
+      // Profile creation failed, but continue with signup success
     }
 
     // Success - return success response with message
-    if (DEBUG) {
-      console.log('[SIGNUP] Signup successful!');
-      console.log('[SIGNUP] ========== SIGNUP ACTION END ==========');
-    }
     
     // Return success response with email
     return {

@@ -131,7 +131,6 @@
   
   function handleDiscountCodeChange(code: string) {
     discountCode = code;
-    console.log('Discount code updated to:', code);
   }
 
   function handleAvatarSelect(url: string) {
@@ -154,7 +153,6 @@
       
       toasts.success('Avatar uploaded successfully!');
     } catch (error) {
-      console.error('Avatar upload failed:', error);
       toasts.error('Failed to upload avatar. Please try again.');
       
       // Reset to default avatar if upload fails

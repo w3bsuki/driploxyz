@@ -11,7 +11,6 @@ export const load: PageLoad = async ({ parent }) => {
 
   // Critical null guard for supabase client
   if (!supabase) {
-    console.error('[ONBOARDING] Supabase client is null');
     // Don't throw error, let page handle it gracefully
     return {
       user,
@@ -20,17 +19,9 @@ export const load: PageLoad = async ({ parent }) => {
     };
   }
 
-  // Log for debugging
-  console.log('[ONBOARDING_DEBUG]', { 
-    userId: user?.id, 
-    profile, 
-    onboardingCompleted: profile?.onboarding_completed 
-  });
-
   // Use profile from parent to avoid duplicate fetch
   // Parent already fetched profile, no need to fetch again
   if (profile?.onboarding_completed === true) {
-    console.log('[ONBOARDING] Already completed, redirecting to home');
     throw redirect(303, '/');
   }
 

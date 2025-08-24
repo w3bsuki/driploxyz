@@ -1,13 +1,10 @@
 import { goto } from '$app/navigation';
-import { browser, dev } from '$app/environment';
-
-const DEBUG = dev;
+import { browser } from '$app/environment';
 
 export async function clientLogin(email: string, password: string) {
   if (!browser) return { success: false, error: 'Client-side only' };
   
   try {
-    if (DEBUG) console.log('[CLIENT AUTH] Attempting login');
     
     // Use fetch directly to bypass form actions
     const response = await fetch('/api/auth/login', {
@@ -24,11 +21,8 @@ export async function clientLogin(email: string, password: string) {
     try {
       data = JSON.parse(text);
     } catch {
-      if (DEBUG) console.error('[CLIENT AUTH] Non-JSON response:', text);
       return { success: false, error: 'Server error - please try again' };
     }
-    
-    if (DEBUG) console.log('[CLIENT AUTH] Response:', data);
     
     if (response.ok && data.success) {
       // Let the auth state change handler update the UI naturally
@@ -37,7 +31,6 @@ export async function clientLogin(email: string, password: string) {
       return { success: false, error: data.error || 'Invalid email or password' };
     }
   } catch (error: any) {
-    console.error('[CLIENT AUTH] Error:', error);
     return { success: false, error: error.message || 'Network error' };
   }
 }
@@ -46,7 +39,6 @@ export async function clientSignup(email: string, password: string, fullName: st
   if (!browser) return { success: false, error: 'Client-side only' };
   
   try {
-    if (DEBUG) console.log('[CLIENT AUTH] Attempting signup');
     
     const response = await fetch('/api/auth/signup', {
       method: 'POST',
@@ -57,7 +49,6 @@ export async function clientSignup(email: string, password: string, fullName: st
     });
     
     const data = await response.json();
-    if (DEBUG) console.log('[CLIENT AUTH] Response:', data);
     
     if (data.success) {
       // Redirect to verification page
@@ -67,7 +58,6 @@ export async function clientSignup(email: string, password: string, fullName: st
       return { success: false, error: data.error || 'Signup failed' };
     }
   } catch (error: any) {
-    console.error('[CLIENT AUTH] Error:', error);
     return { success: false, error: error.message || 'Network error' };
   }
 }
