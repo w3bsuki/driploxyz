@@ -94,8 +94,7 @@
 
   function handleBrandPaymentCancel() {
     showBrandPayment = false;
-    // Reset to personal if they cancel payment
-    accountType = 'personal';
+    // Keep the selected account type but mark as unpaid
     brandPaid = false;
   }
 
