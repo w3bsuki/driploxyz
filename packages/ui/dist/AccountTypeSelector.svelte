@@ -111,7 +111,7 @@
         onclick={() => handleSelect(accountType.value)}
         class="w-full text-left max-w-xs relative"
       >
-        <div class="bg-white/90 backdrop-blur-xl rounded-2xl p-1.5 shadow-lg transition-all {selected === accountType.value ? 'ring-2 ring-blue-500 shadow-xl' : 'hover:shadow-xl'}">
+        <div class="bg-white rounded-xl border p-1.5 shadow-xs backdrop-blur-xl transition-all {selected === accountType.value ? 'border-gray-400 shadow-md' : 'border-gray-200 hover:border-gray-300'}">
         <!-- Popular badge -->
         {#if accountType.popular}
           <div class="absolute -top-2 left-4 z-10">
@@ -121,8 +121,8 @@
           </div>
         {/if}
 
-        <!-- Header with glass effect -->
-        <div class="bg-gradient-to-br from-white/60 to-white/30 backdrop-blur relative mb-4 rounded-xl p-4 border border-white/50">
+        <!-- Header with glass effect - exact copy from upgrade -->
+        <div class="bg-gray-50/80 relative mb-4 rounded-xl border p-4">
           <div 
             aria-hidden="true"
             class="absolute inset-x-0 top-0 h-48 rounded-[inherit]"
@@ -134,7 +134,7 @@
               <span class="text-lg">{accountType.icon}</span>
               <span>{accountType.title}</span>
             </div>
-            <span class="rounded-full px-3 py-1 text-xs font-medium transition-all {selected === accountType.value ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}">
+            <span class="border-gray-200 text-gray-600 rounded-full border px-2 py-0.5 text-xs transition-all {selected === accountType.value ? 'bg-gray-900 text-white border-gray-900' : 'hover:border-gray-300'}">
               {selected === accountType.value ? (translations.selected || 'Selected') : (translations.select || 'Select')}
             </span>
           </div>
