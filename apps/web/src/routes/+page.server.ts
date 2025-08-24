@@ -84,8 +84,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
         `)
         .eq('is_active', true)
         .eq('is_sold', false)
-        // Show products from all countries for now - TODO: Implement proper country filtering
-        // .eq('country_code', country || 'BG') // Filter by country
+        .eq('country_code', country || 'BG')
         .order('created_at', { ascending: false })
         .limit(12)
     ]);
