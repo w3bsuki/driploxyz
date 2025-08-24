@@ -14,9 +14,8 @@
   } from '@repo/ui';
   import type { User, Profile } from '@repo/ui/types';
   import * as i18n from '@repo/i18n';
-  import { page } from '$app/stores';
-  import { authState, displayName, userInitials, canSell } from '$lib/stores/auth';
-  import { signOut, canSell as canSellHelper } from '$lib/auth';
+  import { authState } from '$lib/stores/auth';
+  import { signOut, canSell } from '$lib/auth';
   import { 
     notifications, 
     notificationPanelOpen, 
@@ -25,7 +24,6 @@
     notificationActions,
     messageToastActions
   } from '$lib/stores/notifications';
-  import { browser } from '$app/environment';
   import { RealtimeNotificationService } from '$lib/services/realtime-notifications';
   import { switchLanguage, languages } from '$lib/utils/language-switcher';
   
@@ -49,18 +47,23 @@
   let userMenuOpen = $state(false);
   let notificationService: RealtimeNotificationService | null = null;
   
-  // Use props data if available, otherwise fall back to stores
+  // Use props data if available (SSR), otherwise fall back to stores (client)
   const currentUser = $derived(propsUser || $authState.user);
   const currentProfile = $derived(propsProfile || $authState.profile);
   const isLoggedIn = $derived(!!currentUser);
-  const userCanSell = $derived(canSellHelper(currentProfile));
-  const userDisplayName = $derived(currentProfile?.username || currentProfile?.full_name || 'User');
-  const initials = $derived(currentProfile?.full_name?.split(' ').map(n => n[0].toUpperCase()).slice(0, 2).join('') || currentProfile?.username?.[0].toUpperCase() || '?');
+  const userCanSell = $derived(canSell(currentProfile));
+  const userDisplayName = $derived(
+    currentProfile?.username || currentProfile?.full_name || 'User'
+  );
+  const initials = $derived(
+    currentProfile?.full_name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() || 
+    currentProfile?.username?.[0]?.toUpperCase() || 
+    '?'
+  );
   
-  // Language - REACTIVE tracking with initial value from server
+  // Language handling
   let currentLang = $state(initialLanguage || i18n.languageTag());
   
-  // Initialize language if provided from server
   $effect(() => {
     if (initialLanguage && initialLanguage !== i18n.languageTag()) {
       i18n.setLanguageTag(initialLanguage);
@@ -68,24 +71,9 @@
     }
   });
   
-  // Update currentLang when language changes
   $effect(() => {
     const newLang = i18n.languageTag();
-    if (newLang !== currentLang) {
-      currentLang = newLang;
-    }
-  });
-  
-  // Animated emoji for logo
-  let currentEmojiIndex = $state(0);
-  
-  // Cycle through emojis every 2 seconds
-  $effect(() => {
-    const interval = setInterval(() => {
-      currentEmojiIndex = (currentEmojiIndex + 1) % 4;
-    }, 2000);
-    
-    return () => clearInterval(interval);
+    if (newLang !== currentLang) currentLang = newLang;
   });
 
   async function handleSignOut() {
@@ -104,7 +92,7 @@
     userMenuOpen = false;
   }
 
-  // Initialize notification service
+  // Initialize notification service when user logs in
   $effect(() => {
     const unsubscribe = authState.subscribe(state => {
       if (state.user && state.supabase && !notificationService) {
@@ -123,9 +111,51 @@
       }
     };
   });
+  
+  // Translation objects
+  const navTranslations = $derived({
+    browse: i18n.menu_browse(),
+    sell: i18n.nav_sell(),
+    messages: i18n.nav_messages(),
+    dashboard: i18n.profile_dashboard()
+  });
+  
+  const userMenuTranslations = $derived({
+    myProfile: i18n.nav_profile(),
+    orders: i18n.nav_orders(),
+    favorites: i18n.nav_favorites(),
+    startSelling: i18n.nav_startSelling(),
+    settings: i18n.nav_settings(),
+    signOut: i18n.auth_signOut()
+  });
+  
+  const notificationTranslations = $derived({
+    title: i18n.notifications_title(),
+    unread: i18n.notifications_unread(),
+    markAllRead: i18n.notifications_markAllRead(),
+    noNotifications: i18n.notifications_noNotifications(),
+    notifyWhenSomethingHappens: i18n.notifications_notifyWhenSomethingHappens(),
+    viewAll: i18n.notifications_viewAll()
+  });
+  
+  const mobileNavTranslations = $derived({
+    sellItems: i18n.nav_sell(),
+    myProfile: i18n.nav_profile(),
+    startSelling: i18n.nav_startSelling(),
+    settings: i18n.nav_settings(),
+    signOut: i18n.auth_signOut(),
+    signIn: i18n.auth_signIn(),
+    signUp: i18n.auth_signUp(),
+    browseCategories: i18n.nav_browseCategories(),
+    orders: i18n.nav_orders(),
+    favorites: i18n.nav_favorites(),
+    categoryWomen: i18n.category_women(),
+    categoryMen: i18n.category_men(),
+    categoryKids: i18n.category_kids(),
+    categoryPets: i18n.category_pets()
+  });
 </script>
 
-<!-- Unified Header for all pages -->
 <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
   <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
@@ -137,36 +167,27 @@
           class="sm:hidden p-1 text-gray-700 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-50 mr-1"
           aria-label="Toggle menu"
         >
-          {#if mobileMenuOpen}
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {#if mobileMenuOpen}
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          {:else}
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {:else}
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          {/if}
+            {/if}
+          </svg>
         </button>
         
         <!-- Logo -->
-        <HeaderLogo animated={true} emojiIndex={currentEmojiIndex} />
+        <HeaderLogo />
       </div>
       
       <!-- Center: Desktop Navigation or Search -->
       {#if showSearch}
-        <HeaderSearch 
-          placeholder={i18n.search_placeholder()}
-        />
+        <HeaderSearch placeholder={i18n.search_placeholder()} />
       {:else}
         <HeaderNav 
           {isLoggedIn}
           canSell={userCanSell}
-          translations={{
-            browse: i18n.menu_browse(),
-            sell: i18n.nav_sell(),
-            messages: i18n.nav_messages(),
-            dashboard: i18n.profile_dashboard()
-          }}
+          translations={navTranslations}
         />
       {/if}
       
@@ -196,14 +217,7 @@
               onMarkAsRead={notificationActions.markAsRead}
               onMarkAllAsRead={notificationActions.markAllAsRead}
               onClose={notificationActions.closePanel}
-              translations={{
-                title: i18n.notifications_title(),
-                unread: i18n.notifications_unread(),
-                markAllRead: i18n.notifications_markAllRead(),
-                noNotifications: i18n.notifications_noNotifications(),
-                notifyWhenSomethingHappens: i18n.notifications_notifyWhenSomethingHappens(),
-                viewAll: i18n.notifications_viewAll()
-              }}
+              translations={notificationTranslations}
             />
           </div>
 
@@ -219,7 +233,6 @@
                 src={currentProfile?.avatar_url} 
                 size="sm"
                 fallback={initials}
-                class="hover:scale-105 transition-all duration-200"
               />
             </button>
             
@@ -240,14 +253,7 @@
                   canSell={userCanSell}
                   onSignOut={handleSignOut}
                   onClose={closeMenus}
-                  translations={{
-                    myProfile: i18n.nav_profile(),
-                    orders: i18n.nav_orders(),
-                    favorites: i18n.nav_favorites(),
-                    startSelling: i18n.nav_startSelling(),
-                    settings: i18n.nav_settings(),
-                    signOut: i18n.auth_signOut()
-                  }}
+                  translations={userMenuTranslations}
                 />
               </div>
             {/if}
@@ -274,7 +280,7 @@
       {isLoggedIn}
       user={currentUser}
       profile={currentProfile}
-      userDisplayName={userDisplayName}
+      {userDisplayName}
       {initials}
       canSell={userCanSell}
       currentLanguage={currentLang}
@@ -286,22 +292,7 @@
         closeMenus();
         window.location.href = `/category/${category}`;
       }}
-      translations={{
-        sellItems: i18n.nav_sell(),
-        myProfile: i18n.nav_profile(),
-        startSelling: i18n.nav_startSelling(),
-        settings: i18n.nav_settings(),
-        signOut: i18n.auth_signOut(),
-        signIn: i18n.auth_signIn(),
-        signUp: i18n.auth_signUp(),
-        browseCategories: i18n.nav_browseCategories(),
-        orders: i18n.nav_orders(),
-        favorites: i18n.nav_favorites(),
-        categoryWomen: i18n.category_women(),
-        categoryMen: i18n.category_men(),
-        categoryKids: i18n.category_kids(),
-        categoryPets: i18n.category_pets()
-      }}
+      translations={mobileNavTranslations}
     />
   {/if}
 </header>

@@ -7,36 +7,48 @@ export interface UploadedImage {
 }
 
 /**
- * Convert image to WebP using Canvas API
- * This MUST work or we reject the upload
+ * Resize and compress image - try WebP first, fallback to JPEG
  */
-async function convertToWebP(file: File): Promise<Blob> {
+async function optimizeImage(file: File): Promise<{ blob: Blob; extension: string }> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
     if (!ctx) {
-      reject(new Error('Browser does not support canvas'));
+      // If canvas not supported, just use original file
+      resolve({ blob: file, extension: file.name.split('.').pop() || 'jpg' });
       return;
     }
 
     const objectUrl = URL.createObjectURL(file);
+    let resolved = false;
+
+    // Timeout after 5 seconds
+    const timeout = setTimeout(() => {
+      if (!resolved) {
+        resolved = true;
+        URL.revokeObjectURL(objectUrl);
+        console.warn('Image optimization timed out, using original');
+        resolve({ blob: file, extension: file.name.split('.').pop() || 'jpg' });
+      }
+    }, 5000);
 
     img.onload = () => {
+      if (resolved) return;
+      
       try {
-        // Max dimensions for products
-        const MAX_SIZE = 1200;
+        // Max dimensions - smaller to prevent memory issues
+        const MAX_SIZE = 1000;
         let { width, height } = img;
         
-        // Scale down if needed
+        // Only resize if larger than max
         if (width > MAX_SIZE || height > MAX_SIZE) {
           const scale = MAX_SIZE / Math.max(width, height);
           width = Math.floor(width * scale);
           height = Math.floor(height * scale);
         }
         
-        // Set canvas size
         canvas.width = width;
         canvas.height = height;
         
@@ -45,28 +57,77 @@ async function convertToWebP(file: File): Promise<Blob> {
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, width, height);
         
-        // Convert to WebP
+        // Try WebP first with a short timeout
+        let webpAttempted = false;
+        const webpTimeout = setTimeout(() => {
+          if (!webpAttempted && !resolved) {
+            console.log('WebP taking too long, trying JPEG');
+            // Try JPEG fallback
+            canvas.toBlob(
+              (blob) => {
+                if (!resolved && blob) {
+                  resolved = true;
+                  clearTimeout(timeout);
+                  URL.revokeObjectURL(objectUrl);
+                  resolve({ blob, extension: 'jpg' });
+                }
+              },
+              'image/jpeg',
+              0.85
+            );
+          }
+        }, 2000);
+
+        // Try WebP
+        webpAttempted = true;
         canvas.toBlob(
           (blob) => {
-            URL.revokeObjectURL(objectUrl);
-            if (!blob) {
-              reject(new Error('Failed to create WebP blob'));
-              return;
+            clearTimeout(webpTimeout);
+            if (!resolved && blob) {
+              resolved = true;
+              clearTimeout(timeout);
+              URL.revokeObjectURL(objectUrl);
+              console.log('WebP conversion successful');
+              resolve({ blob, extension: 'webp' });
+            } else if (!resolved) {
+              // WebP failed, try JPEG
+              canvas.toBlob(
+                (jpegBlob) => {
+                  if (!resolved && jpegBlob) {
+                    resolved = true;
+                    clearTimeout(timeout);
+                    URL.revokeObjectURL(objectUrl);
+                    console.log('Using JPEG fallback');
+                    resolve({ blob: jpegBlob, extension: 'jpg' });
+                  }
+                },
+                'image/jpeg',
+                0.85
+              );
             }
-            resolve(blob);
           },
           'image/webp',
-          0.85 // 85% quality for good balance
+          0.85
         );
       } catch (err) {
-        URL.revokeObjectURL(objectUrl);
-        reject(err);
+        if (!resolved) {
+          resolved = true;
+          clearTimeout(timeout);
+          URL.revokeObjectURL(objectUrl);
+          console.error('Canvas error, using original:', err);
+          resolve({ blob: file, extension: file.name.split('.').pop() || 'jpg' });
+        }
       }
     };
 
     img.onerror = () => {
-      URL.revokeObjectURL(objectUrl);
-      reject(new Error('Failed to load image'));
+      if (!resolved) {
+        resolved = true;
+        clearTimeout(timeout);
+        URL.revokeObjectURL(objectUrl);
+        console.error('Image load failed, using original');
+        resolve({ blob: file, extension: file.name.split('.').pop() || 'jpg' });
+      }
     };
 
     // Start loading
@@ -90,28 +151,35 @@ export async function uploadImage(
       throw new Error('Image must be less than 10MB');
     }
 
-    console.log('Converting to WebP...');
+    console.log('Starting image optimization...');
     
-    // Convert to WebP - REQUIRED
-    const webpBlob = await convertToWebP(file);
+    // Optimize image with timeout and fallback
+    const { blob, extension } = await optimizeImage(file);
     
-    console.log('WebP conversion done, size:', webpBlob.size);
+    console.log(`Optimization done: ${extension}, size: ${blob.size}`);
     
     // Generate filename
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 9);
-    const fileName = `${userId}/${timestamp}-${randomId}.webp`;
+    const fileName = `${userId}/${timestamp}-${randomId}.${extension}`;
     
     console.log('Uploading to Supabase...');
     
-    // Upload WebP to Supabase
-    const { data, error } = await supabase.storage
+    // Upload to Supabase with timeout
+    const uploadPromise = supabase.storage
       .from(bucket)
-      .upload(fileName, webpBlob, {
-        contentType: 'image/webp',
+      .upload(fileName, blob, {
+        contentType: extension === 'webp' ? 'image/webp' : 'image/jpeg',
         cacheControl: '3600',
         upsert: false
       });
+
+    // 30 second timeout for upload
+    const timeoutPromise = new Promise<never>((_, reject) => 
+      setTimeout(() => reject(new Error('Upload timeout after 30 seconds')), 30000)
+    );
+
+    const { data, error } = await Promise.race([uploadPromise, timeoutPromise as any]);
     
     if (error) {
       console.error('Supabase error:', error);
@@ -212,17 +280,17 @@ export async function uploadAvatar(
       throw new Error('Avatar must be less than 5MB');
     }
     
-    // Convert avatar to WebP
-    const webpBlob = await convertToWebP(file);
+    // Optimize avatar
+    const { blob, extension } = await optimizeImage(file);
     
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 9);
-    const fileName = `avatars/${userId}/${timestamp}-${randomId}.webp`;
+    const fileName = `avatars/${userId}/${timestamp}-${randomId}.${extension}`;
     
     const { data, error } = await supabase.storage
       .from('avatars')
-      .upload(fileName, webpBlob, {
-        contentType: 'image/webp',
+      .upload(fileName, blob, {
+        contentType: extension === 'webp' ? 'image/webp' : 'image/jpeg',
         cacheControl: '3600',
         upsert: true
       });
