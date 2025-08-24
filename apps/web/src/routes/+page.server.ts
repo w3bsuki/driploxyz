@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
+export const load: PageServerLoad = async ({ url, locals: { supabase, country } }) => {
   // Check if this is an auth callback that went to the wrong URL
   const code = url.searchParams.get('code');
   if (code) {
@@ -57,6 +57,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
           location,
           created_at,
           seller_id,
+          country_code,
           product_images!inner (
             image_url
           ),
@@ -72,6 +73,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
         `)
         .eq('is_active', true)
         .eq('is_sold', false)
+        .eq('country_code', country || 'BG') // Filter by country
         .order('created_at', { ascending: false })
         .limit(12)
     ]);
@@ -132,6 +134,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
       featuredProducts,
       categories,
       topSellers,
+      country: country || 'BG', // Pass country to frontend
       errors: {
         products: featuredResult.status === 'rejected' ? 'Failed to load' : null,
         categories: categoriesResult.status === 'rejected' ? 'Failed to load' : null,

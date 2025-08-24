@@ -2,11 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import { 
-	ADMIN_ALLOWED_EMAILS, 
-	ADMIN_IP_WHITELIST,
-	ADMIN_SECRET_KEY 
-} from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import type { Database } from '@repo/database';
 
 /**
@@ -19,9 +15,9 @@ import type { Database } from '@repo/database';
  * 5. Session timeout enforcement
  */
 
-// Parse allowed emails and IPs from environment
-const ALLOWED_ADMIN_EMAILS = ADMIN_ALLOWED_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || [];
-const ALLOWED_IPS = ADMIN_IP_WHITELIST?.split(',').map(ip => ip.trim()) || [];
+// Parse allowed emails and IPs from environment (with defaults for dev)
+const ALLOWED_ADMIN_EMAILS = env.ADMIN_ALLOWED_EMAILS?.split(',').map(e => e.trim().toLowerCase()) || ['test@example.com'];
+const ALLOWED_IPS = env.ADMIN_IP_WHITELIST?.split(',').map(ip => ip.trim()) || [];
 
 // IP Whitelist Check
 const ipCheckHandler: Handle = async ({ event, resolve }) => {

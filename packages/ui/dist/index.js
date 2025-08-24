@@ -43,6 +43,9 @@ export { default as AdminBadge } from './AdminBadge.svelte';
 export { default as PremiumBadge } from './PremiumBadge.svelte';
 export { default as BrandPaymentModal } from './BrandPaymentModal.svelte';
 export { default as WelcomeTutorialFlow } from './WelcomeTutorialFlow.svelte';
+// Country/Region components
+export { default as CountrySwitcher } from './CountrySwitcher.svelte';
+export { default as CountryDetectionBanner } from './CountryDetectionBanner.svelte';
 // Order and Review components
 export { default as OrderStatus } from './OrderStatus.svelte';
 export { default as OrderTimeline } from './OrderTimeline.svelte';

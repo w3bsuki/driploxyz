@@ -82,25 +82,11 @@
   });
 
   async function handleSuccessComplete() {
+    console.log('[ONBOARDING] Success modal complete clicked');
     showSuccessModal = false;
     
-    // CRITICAL: Invalidate all cached data to ensure profile refresh
-    // This prevents the user from getting stuck in onboarding loop
-    try {
-      // Use SvelteKit's invalidateAll to refresh all server load functions
-      await invalidateAll();
-      
-      // Small delay to ensure server-side data is refreshed
-      setTimeout(() => {
-        // Navigate to dashboard - this should now see the updated profile
-        goto('/dashboard', { replaceState: true, invalidateAll: true });
-      }, 100);
-    } catch (error) {
-      console.error('Error during post-onboarding navigation:', error);
-      
-      // Fallback: Force full page reload to guarantee fresh data
-      window.location.href = '/dashboard';
-    }
+    // Navigate to welcome page which will verify profile and redirect
+    window.location.href = '/welcome';
   }
 
   function handleBrandPaymentSuccess() {
@@ -456,29 +442,43 @@
         use:enhance={() => {
           if (!prepareFormSubmit()) return;
           submitting = true;
+          completionInProgress = true;
           
           return async ({ result, update }) => {
             submitting = false;
             
             if (result.type === 'success') {
-              console.log('Onboarding completed successfully, result:', result.data);
+              console.log('[ONBOARDING CLIENT] Completion successful:', result.data);
               
-              // CRITICAL: Update the page data immediately to reflect the changes
-              await update();
-              
-              // Invalidate all server load functions to refresh profile data
-              await invalidateAll();
-              
-              // Show success modal
-              showSuccessModal = true;
-              toasts.success('Profile setup complete!');
+              // Check if we got a verified profile back
+              if (result.data?.profile?.onboarding_completed === true) {
+                console.log('[ONBOARDING CLIENT] Profile verified as complete');
+                
+                // Show success modal briefly
+                showSuccessModal = true;
+                toasts.success('Profile setup complete! Redirecting...');
+                
+                // Auto-redirect after 2 seconds if modal isn't closed
+                setTimeout(() => {
+                  if (showSuccessModal) {
+                    console.log('[ONBOARDING CLIENT] Auto-redirecting to welcome page');
+                    window.location.href = '/welcome';
+                  }
+                }, 2000);
+              } else {
+                console.error('[ONBOARDING CLIENT] Profile not properly completed:', result.data?.profile);
+                toasts.error('Profile update may have failed. Please try again.');
+                completionInProgress = false;
+              }
               
             } else if (result.type === 'failure') {
-              console.error('Onboarding failed:', result.data);
+              console.error('[ONBOARDING CLIENT] Completion failed:', result.data);
               toasts.error(result.data?.error || 'Failed to complete onboarding');
+              completionInProgress = false;
             } else {
-              console.error('Unexpected result type:', result.type);
+              console.error('[ONBOARDING CLIENT] Unexpected result type:', result.type);
               toasts.error('An unexpected error occurred. Please try again.');
+              completionInProgress = false;
             }
           };
         }}

@@ -1,5 +1,7 @@
 import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
+import type { CountryCode } from '$lib/country/detection';
+import type { LanguageTag } from '@repo/i18n';
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
@@ -14,10 +16,14 @@ declare global {
 			safeGetSession: () => Promise<{ session: Session | null; user: User | null }>;
 			session: Session | null;
 			user: User | null;
+			country: CountryCode;
+			locale: LanguageTag;
 		}
 		interface PageData {
 			session: Session | null;
 			user: User | null;
+			country?: CountryCode;
+			locale?: LanguageTag;
 		}
 		// interface Platform {}
 	}

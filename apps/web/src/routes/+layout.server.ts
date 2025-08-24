@@ -75,11 +75,15 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
     console.warn('🌍 Layout Server: Invalid language detected, falling back to English:', language);
   }
   
+  // Get country from locals (set by server hooks)
+  const country = locals.country || 'BG';
+  
   return {
     session,
     user,
     profile,
     language, // Always return the determined language
+    country, // Pass country for country-based filtering
     cookies: cookies.getAll(), // Pass cookies for SSR hydration
   };
 };

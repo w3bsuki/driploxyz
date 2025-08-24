@@ -1,0 +1,34 @@
+import { redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+
+/**
+ * Welcome page after successful onboarding
+ * This page verifies the profile is complete and redirects to the dashboard
+ */
+export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession }, parent }) => {
+  const { session, user } = await safeGetSession();
+  
+  if (!session || !user) {
+    throw redirect(303, '/login');
+  }
+
+  const parentData = await parent();
+  
+  console.log('[WELCOME] Checking profile for user:', user.email);
+  console.log('[WELCOME] Profile data:', {
+    hasProfile: !!parentData.profile,
+    onboardingCompleted: parentData.profile?.onboarding_completed,
+    accountType: parentData.profile?.account_type,
+    username: parentData.profile?.username
+  });
+
+  // If onboarding not completed, send back to onboarding
+  if (!parentData.profile || !parentData.profile.onboarding_completed) {
+    console.log('[WELCOME] Profile not complete, redirecting to onboarding');
+    throw redirect(303, '/onboarding');
+  }
+
+  // Profile is complete, proceed to dashboard
+  console.log('[WELCOME] Profile complete, redirecting to dashboard');
+  throw redirect(303, '/dashboard');
+};

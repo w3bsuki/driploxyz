@@ -110,17 +110,43 @@ export const actions: Actions = {
       console.log('[ONBOARDING COMPLETE] Updating profile with:', profileUpdate);
 
       // Update profile - this is the CRITICAL step that completes onboarding
-      const { error: profileError } = await supabase
+      const { data: updatedProfile, error: profileError } = await supabase
         .from('profiles')
         .update(profileUpdate)
-        .eq('id', user.id);
+        .eq('id', user.id)
+        .select()
+        .single();
 
       if (profileError) {
         console.error('[ONBOARDING COMPLETE] Profile update failed:', profileError);
         return fail(500, { error: 'Failed to update profile: ' + profileError.message });
       }
 
-      console.log('[ONBOARDING COMPLETE] Profile updated successfully');
+      console.log('[ONBOARDING COMPLETE] Profile updated successfully:', updatedProfile);
+
+      // VERIFY the update actually succeeded by reading it back
+      const { data: verifiedProfile, error: verifyError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (verifyError || !verifiedProfile) {
+        console.error('[ONBOARDING COMPLETE] Failed to verify profile update:', verifyError);
+        return fail(500, { error: 'Failed to verify profile completion. Please try again.' });
+      }
+
+      if (verifiedProfile.onboarding_completed !== true) {
+        console.error('[ONBOARDING COMPLETE] Profile onboarding_completed is still false after update!');
+        return fail(500, { error: 'Profile update failed to save. Please contact support.' });
+      }
+
+      console.log('[ONBOARDING COMPLETE] Verified profile data:', {
+        id: verifiedProfile.id,
+        username: verifiedProfile.username,
+        account_type: verifiedProfile.account_type,
+        onboarding_completed: verifiedProfile.onboarding_completed
+      });
 
       // If brand account, create brand entry (with error handling)
       if (accountType === 'brand') {
@@ -156,13 +182,11 @@ export const actions: Actions = {
       
       console.log('[ONBOARDING COMPLETE] Onboarding completed successfully for user:', user.email);
       
-      // Return success with profile data to avoid race conditions
+      // Return success with verified profile data
       return { 
         success: true, 
-        profile: {
-          ...profileUpdate,
-          id: user.id
-        }
+        profile: verifiedProfile,
+        redirectTo: '/dashboard'
       };
       
     } catch (error) {

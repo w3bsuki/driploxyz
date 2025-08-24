@@ -19,6 +19,7 @@ export const COOKIES = {
   
   // Functional
   LOCALE: 'locale',
+  COUNTRY: 'country',
   THEME: 'theme',
   CURRENCY: 'currency',
   

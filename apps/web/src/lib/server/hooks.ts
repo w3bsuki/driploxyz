@@ -5,6 +5,7 @@ import type { Handle, HandleServerError } from '@sveltejs/kit';
 import { setupEnvironment } from './env.js';
 import { setupAuth } from './supabase-hooks.js';
 import { setupI18n, transformPageChunk } from './i18n.js';
+import { setupCountry } from './country.js';
 import { setupAuthGuard } from './auth-guard.js';
 import { setupSentry, isSentryAvailable } from './sentry.js';
 import { createErrorHandler } from './error-handler.js';
@@ -28,6 +29,7 @@ const supabaseHandler: Handle = async ({ event, resolve }) => {
  */
 const languageHandler: Handle = async ({ event, resolve }) => {
   await setupI18n(event);
+  await setupCountry(event);
 
   return resolve(event, {
     transformPageChunk: transformPageChunk(event)
