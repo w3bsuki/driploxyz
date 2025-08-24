@@ -93,7 +93,7 @@ Shows available balance, earnings, and payout button
 	<!-- Payout Actions -->
 	<div class="payout-actions mt-6">
 		{#if canRequestPayout}
-			<Button variant="primary" on:click={onRequestPayout} {loading}>
+			<Button variant="primary" onclick={onRequestPayout} {loading}>
 				Request Payout
 			</Button>
 			<p class="text-sm text-gray-600 mt-2">

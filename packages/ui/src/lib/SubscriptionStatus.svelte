@@ -158,11 +158,11 @@ Lightweight component for displaying brand subscription info
 	<!-- Action buttons -->
 	<div class="actions">
 		{#if subscriptionHealth.status === 'expired' || subscriptionHealth.status === 'expiring'}
-			<Button variant="primary" on:click={onRenew}>
+			<Button variant="primary" onclick={onRenew}>
 				Renew Subscription
 			</Button>
 		{:else if !hasActiveSubscription}
-			<Button variant="primary" on:click={onUpgrade}>
+			<Button variant="primary" onclick={onUpgrade}>
 				Upgrade to Brand Pro
 			</Button>
 		{/if}

@@ -28,7 +28,8 @@ Requires additional verification for sensitive admin operations
 		override_subscription: 'override subscription status'
 	};
 
-	const handleConfirm = async () => {
+	const handleConfirm = async (e) => {
+		e.preventDefault();
 		if (!securityCode.trim()) {
 			error = 'Security code is required';
 			return;
@@ -67,7 +68,7 @@ Requires additional verification for sensitive admin operations
 			</div>
 		</div>
 
-		<form on:submit|preventDefault={handleConfirm} class="verification-form">
+		<form onsubmit={handleConfirm} class="verification-form">
 			<div class="form-group">
 				<label for="security-code">Enter Admin Security Code</label>
 				<Input
@@ -96,7 +97,7 @@ Requires additional verification for sensitive admin operations
 			</div>
 
 			<div class="modal-actions">
-				<Button variant="secondary" on:click={handleClose} disabled={loading}>
+				<Button variant="secondary" onclick={handleClose} disabled={loading}>
 					Cancel
 				</Button>
 				<Button variant="danger" type="submit" {loading}>

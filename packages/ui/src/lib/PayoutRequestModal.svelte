@@ -64,7 +64,8 @@ Creates payout requests via Supabase RPC calls
 		}).format(value);
 	};
 
-	const handleSubmit = async () => {
+	const handleSubmit = async (e) => {
+		e.preventDefault();
 		if (!canSubmit) return;
 
 		const payoutMethod: PayoutMethod = {
@@ -100,7 +101,7 @@ Creates payout requests via Supabase RPC calls
 </script>
 
 <Modal {isOpen} onClose={handleClose} title="Request Payout">
-	<form on:submit|preventDefault={handleSubmit} class="payout-form">
+	<form onsubmit={handleSubmit} class="payout-form">
 		<!-- Available Balance Info -->
 		<div class="balance-info">
 			<p class="text-sm text-gray-600">Available Balance</p>
@@ -214,7 +215,7 @@ Creates payout requests via Supabase RPC calls
 
 		<!-- Submit Actions -->
 		<div class="modal-actions">
-			<Button variant="secondary" on:click={handleClose} disabled={loading}>
+			<Button variant="secondary" onclick={handleClose} disabled={loading}>
 				Cancel
 			</Button>
 			<Button variant="primary" type="submit" disabled={!canSubmit} {loading}>

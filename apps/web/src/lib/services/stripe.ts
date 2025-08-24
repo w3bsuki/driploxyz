@@ -1,91 +1,150 @@
+import Stripe from 'stripe';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@repo/database';
-import type { Stripe } from 'stripe';
-import type {
-	PaymentIntentCreateParams,
-	PaymentIntentConfirmParams,
-	SubscriptionCreateParams,
-	PayoutParams,
-	TransactionRecord,
-	StripeWebhookEvent,
-	PaymentCalculation
-} from '$lib/stripe/types.js';
+import type { Database, Transaction, Product, Order } from '@repo/database';
 
 type Tables = Database['public']['Tables'];
-type Profile = Tables['profiles']['Row'];
-type Transaction = Tables['transactions']['Row'];
-type Order = Tables['orders']['Row'];
-type UserSubscription = Tables['user_subscriptions']['Row'];
-type Payout = Tables['payouts']['Row'];
 
+export interface PaymentCreateParams {
+	productId: string;
+	sellerId: string;
+	buyerId: string;
+	shippingAddress: {
+		name: string;
+		street: string;
+		city: string;
+		postalCode: string;
+		country: string;
+	};
+	billingAddress?: {
+		name: string;
+		street: string;
+		city: string;
+		postalCode: string;
+		country: string;
+	};
+}
+
+export interface SubscriptionCreateParams {
+	userId: string;
+	planId: string;
+	discountPercent?: number;
+}
+
+export interface PaymentIntentResult {
+	paymentIntent?: Stripe.PaymentIntent;
+	clientSecret?: string;
+	error?: Error;
+}
+
+interface TransactionResult {
+	transaction?: Transaction;
+	order?: Order;
+	error?: Error;
+}
+
+/**
+ * Factory function to create Stripe service
+ */
+export function createStripeService(
+	supabase: SupabaseClient<Database>,
+	stripeInstance: Stripe
+) {
+	return new StripeService(supabase, stripeInstance);
+}
+
+/**
+ * Stripe payment service
+ */
 export class StripeService {
-	constructor(private supabase: SupabaseClient<Database>, private stripe: Stripe) {
-		if (!stripe) {
-			throw new Error('Stripe instance is required');
-		}
-	}
-
-	// =====================================
-	// PAYMENT INTENTS (One-time payments)
-	// =====================================
+	constructor(
+		private supabase: SupabaseClient<Database>,
+		private stripe: Stripe
+	) {}
 
 	/**
-	 * Create a payment intent for product purchase
+	 * Create payment intent for product purchase
 	 */
-	async createPaymentIntent(params: PaymentIntentCreateParams): Promise<{
-		paymentIntent?: Stripe.PaymentIntent;
-		clientSecret?: string;
-		error?: Error;
-	}> {
+	async createPaymentIntent(params: PaymentCreateParams): Promise<PaymentIntentResult> {
 		try {
-			const { amount, currency, productId, sellerId, buyerId, metadata = {} } = params;
+			const { productId, buyerId, sellerId, shippingAddress, billingAddress } = params;
 
-			// Validate minimum amount (50 cents)
-			if (amount < 50) {
-				throw new Error('Amount must be at least 50 cents');
-			}
-
-			// Get product details for validation
-			const { data: product } = await this.supabase
+			// Get product details
+			const { data: product, error: productError } = await this.supabase
 				.from('products')
-				.select('*')
+				.select('*, seller:profiles!seller_id(*)')
 				.eq('id', productId)
 				.single();
 
-			if (!product) {
-				throw new Error('Product not found');
+			if (productError || !product) {
+				return { error: new Error('Product not found') };
 			}
 
-			if (product.is_sold === true || product.status === 'sold') {
-				throw new Error('Product is no longer available');
+			if (product.status !== 'active') {
+				return { error: new Error('Product is not available') };
 			}
 
-			// Calculate fees and totals (product.price is in dollars, convert to cents)
-			const productPriceCents = Math.round(product.price * 100);
-			const calculation = this.calculatePaymentAmounts(productPriceCents);
+			// Calculate total amount
+			const productPrice = product.price;
+			const shippingCost = product.shipping_cost || 0;
+			const totalAmount = productPrice + shippingCost;
+			
+			// Stripe requires amount in cents
+			const amountInCents = Math.round(totalAmount * 100);
 
+			// Get or create Stripe customer for buyer
+			const customer = await this.getOrCreateCustomerForUser(buyerId);
+			if (!customer) {
+				return { error: new Error('Failed to create customer') };
+			}
+
+			// Create payment intent
 			const paymentIntent = await this.stripe.paymentIntents.create({
-				amount,
-				currency: currency.toLowerCase(),
-				automatic_payment_methods: { enabled: true },
+				amount: amountInCents,
+				currency: 'bgn',
+				customer: customer.id,
+				description: `Purchase: ${product.title}`,
 				metadata: {
-					productId,
-					sellerId,
-					buyerId,
-					productPrice: productPriceCents.toString(),
-					serviceFee: calculation.serviceFee.toString(),
-					...metadata
+					product_id: productId,
+					buyer_id: buyerId,
+					seller_id: sellerId,
+					product_price: productPrice.toString(),
+					shipping_cost: shippingCost.toString()
 				},
-				description: `Purchase of ${product.title}`
-				// Note: Stripe Connect features (application_fee_amount, transfer_data) 
-				// removed until seller onboarding with Stripe Connect is implemented
+				shipping: {
+					name: shippingAddress.name,
+					address: {
+						line1: shippingAddress.street,
+						city: shippingAddress.city,
+						postal_code: shippingAddress.postalCode,
+						country: shippingAddress.country
+					}
+				}
 			});
+
+			// Create pending transaction record
+			const { error: transactionError } = await this.supabase
+				.from('transactions')
+				.insert({
+					stripe_payment_intent_id: paymentIntent.id,
+					buyer_id: buyerId,
+					seller_id: sellerId,
+					product_id: productId,
+					amount: productPrice,
+					shipping_cost: shippingCost,
+					total_amount: totalAmount,
+					currency: 'BGN',
+					status: 'pending',
+					payment_method: 'card'
+				});
+
+			if (transactionError) {
+				console.error('Failed to create transaction record:', transactionError);
+			}
 
 			return {
 				paymentIntent,
-				...(paymentIntent.client_secret ? { clientSecret: paymentIntent.client_secret } : {})
+				clientSecret: paymentIntent.client_secret || undefined
 			};
-
 		} catch (error) {
 			console.error('Error creating payment intent:', error);
 			return { error: error as Error };
@@ -93,105 +152,58 @@ export class StripeService {
 	}
 
 	/**
-	 * Confirm payment intent and process order
+	 * Get or create Stripe customer for user
 	 */
-	async confirmPaymentIntent(params: PaymentIntentConfirmParams): Promise<{
-		order?: Order;
-		transaction?: Transaction;
-		success: boolean;
-		error?: Error;
-	}> {
+	private async getOrCreateCustomerForUser(userId: string): Promise<Stripe.Customer | null> {
 		try {
-			const { paymentIntentId, buyerId } = params;
-
-			// Retrieve the payment intent from Stripe
-			const paymentIntent = await this.stripe.paymentIntents.retrieve(paymentIntentId);
-
-			if (paymentIntent.status !== 'succeeded') {
-				return { success: false, error: new Error(`Payment status: ${paymentIntent.status}`) };
-			}
-
-			const { productId, sellerId, productPrice } = paymentIntent.metadata;
-			if (!productId || !sellerId || !productPrice) {
-				throw new Error('Invalid payment metadata');
-			}
-
-			// Verify product is still available
-			const { data: product } = await this.supabase
-				.from('products')
-				.select('*')
-				.eq('id', productId)
+			// Get user profile
+			const { data: profile } = await this.supabase
+				.from('profiles')
+				.select('stripe_customer_id, username')
+				.eq('id', userId)
 				.single();
 
-			if (!product || product.is_sold === true || product.status === 'sold') {
-				throw new Error('Product is no longer available');
+			// Get user email from auth
+			const { data: authData } = await this.supabase.auth.getUser();
+			const email = authData?.user?.email;
+
+			// If customer exists, return it
+			if (profile?.stripe_customer_id) {
+				try {
+					const customer = await this.stripe.customers.retrieve(profile.stripe_customer_id);
+					if (customer && !customer.deleted) {
+						return customer as Stripe.Customer;
+					}
+				} catch (error) {
+					console.error('Failed to retrieve existing customer:', error);
+				}
 			}
 
-			// Calculate amounts (productPrice from metadata is in cents)
-			const calculation = this.calculatePaymentAmounts(parseFloat(productPrice));
-
-			// Create order
-			const { data: order, error: orderError } = await this.supabase
-				.from('orders')
-				.insert({
-					buyer_id: buyerId,
-					seller_id: sellerId,
-					product_id: productId,
-					status: 'paid',
-					total_amount: paymentIntent.amount / 100, // Convert from cents to dollars
-					shipping_cost: calculation.shippingCost / 100, // Convert from cents to dollars
-					tax_amount: 0,
-					service_fee: calculation.serviceFee / 100, // Convert from cents to dollars
-					notes: `Payment Intent: ${paymentIntentId}`,
-					currency: 'EUR'
-				})
-				.select()
-				.single();
-
-			if (orderError) throw orderError;
-
-			// Create transaction record
-			const transaction = await this.createTransaction({
-				orderId: order.id,
-				sellerId,
-				buyerId,
-				productId,
-				productPrice: parseFloat(productPrice) / 100, // Convert cents to dollars
-				shippingCost: calculation.shippingCost / 100, // Convert cents to dollars
-				stripePaymentIntentId: paymentIntentId
+			// Create new customer
+			const customer = await this.stripe.customers.create({
+				email: email,
+				name: profile?.username || undefined,
+				metadata: {
+					supabase_user_id: userId
+				}
 			});
 
-			// Update product status
+			// Save customer ID to profile
 			await this.supabase
-				.from('products')
-				.update({ 
-					is_sold: true, 
-					status: 'sold',
-					sold_at: new Date().toISOString() 
-				})
-				.eq('id', productId);
+				.from('profiles')
+				.update({ stripe_customer_id: customer.id })
+				.eq('id', userId);
 
-			// Send notifications
-			await this.sendPaymentNotifications(order, product);
-
-			return {
-				order,
-				transaction: transaction.transaction || undefined,
-				success: true
-			};
-
+			return customer;
 		} catch (error) {
-			console.error('Error confirming payment intent:', error);
-			return { success: false, error: error as Error };
+			console.error('Error creating customer:', error);
+			return null;
 		}
 	}
 
-	// =====================================
-	// SUBSCRIPTIONS
-	// =====================================
-
 	/**
-	 * Create a subscription for user
+	 * Create ONE-TIME payment for account upgrade (NOT a subscription!)
+	 * These are one-off payments for premium/brand accounts
 	 */
 	async createSubscription(params: SubscriptionCreateParams): Promise<{
 		subscription?: Stripe.Subscription;
@@ -201,136 +213,78 @@ export class StripeService {
 		try {
 			const { userId, planId, discountPercent = 0 } = params;
 
-			// Get user profile
-			const { data: profile } = await this.supabase
-				.from('profiles')
-				.select('username')
-				.eq('id', userId)
-				.single();
-
-			// Get email from auth.users since profiles doesn't have email
+			// Get email from auth.users
 			const { data: authUser } = await this.supabase
 				.from('auth.users')
 				.select('email')
 				.eq('id', userId)
 				.single();
 
-			if (!profile && !authUser) throw new Error('User not found');
-			
-			const userEmail = authUser?.email || '';
+			if (!authUser?.email) throw new Error('User not found');
 
-			// Get subscription plan
+			// Get plan details
 			const { data: plan } = await this.supabase
 				.from('subscription_plans')
 				.select('*')
 				.eq('id', planId)
 				.single();
 
-			if (!plan) throw new Error('Subscription plan not found');
+			if (!plan) throw new Error('Plan not found');
+
+			// Calculate final price with discount
+			const finalPrice = plan.price_monthly * (1 - discountPercent / 100);
+			const amountInCents = Math.round(finalPrice * 100);
 
 			// Create or retrieve Stripe customer
 			const customer = await this.getOrCreateCustomer(userId, {
-				email: userEmail,
-				name: profile?.username || 'User'
+				email: authUser.email
 			});
 
-			// Create Stripe product and price
-			const stripeProduct = await this.stripe.products.create({
-				name: plan.name,
-				description: plan.description || undefined
-			});
-
-			const price = plan.price_monthly * (1 - discountPercent / 100);
-			const stripePrice = await this.stripe.prices.create({
-				unit_amount: Math.round(price * 100),
+			// Create simple ONE-TIME payment intent (NOT a subscription!)
+			const paymentIntent = await this.stripe.paymentIntents.create({
+				amount: amountInCents,
 				currency: plan.currency.toLowerCase(),
-				recurring: { interval: 'month' },
-				product: stripeProduct.id
-			});
-
-			// Create subscription with immediate payment collection
-			const subscription = await this.stripe.subscriptions.create({
 				customer: customer.id,
-				items: [{ price: stripePrice.id }],
-				payment_behavior: 'default_incomplete',
-				payment_settings: { save_default_payment_method: 'on_subscription' },
-				expand: ['latest_invoice.payment_intent'],
+				description: `${plan.name} Account Upgrade (One-Time)`,
 				metadata: {
-					supabase_user_id: userId,
-					plan_id: planId,
-					plan_type: plan.plan_type,
-					discount_percent: discountPercent.toString()
-				}
-			});
-
-			// Get the payment intent - it should be expanded
-			let clientSecret: string | undefined;
-			
-			if (typeof subscription.latest_invoice === 'object' && subscription.latest_invoice !== null) {
-				const invoice = subscription.latest_invoice as Stripe.Invoice;
-				
-				// Check if payment_intent is expanded
-				if (typeof invoice.payment_intent === 'object' && invoice.payment_intent !== null) {
-					const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent;
-					clientSecret = paymentIntent.client_secret || undefined;
-				} else if (typeof invoice.payment_intent === 'string') {
-					// If not expanded, retrieve it separately
-					const paymentIntent = await this.stripe.paymentIntents.retrieve(invoice.payment_intent);
-					clientSecret = paymentIntent.client_secret || undefined;
-				}
-			}
-			
-			// If still no client secret, try getting the subscription again with expansion
-			if (!clientSecret) {
-				const expandedSub = await this.stripe.subscriptions.retrieve(subscription.id, {
-					expand: ['latest_invoice.payment_intent']
-				});
-				
-				if (typeof expandedSub.latest_invoice === 'object' && expandedSub.latest_invoice !== null) {
-					const invoice = expandedSub.latest_invoice as Stripe.Invoice;
-					if (typeof invoice.payment_intent === 'object' && invoice.payment_intent !== null) {
-						const paymentIntent = invoice.payment_intent as Stripe.PaymentIntent;
-						clientSecret = paymentIntent.client_secret || undefined;
-					}
-				}
-			}
-			
-			if (!clientSecret) {
-				console.error('Failed to get client secret from subscription:', {
-					subscriptionId: subscription.id,
-					latestInvoice: subscription.latest_invoice
-				});
-				throw new Error('Unable to process payment. Please try again.');
-			}
-
-			// Create subscription record in database
-			await this.supabase
-				.from('user_subscriptions')
-				.insert({
 					user_id: userId,
 					plan_id: planId,
-					stripe_subscription_id: subscription.id,
-					status: 'trialing',
-					current_period_start: new Date((subscription as any).current_period_start * 1000).toISOString(),
-					current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
-					discount_percent: discountPercent
-				});
-			
-			// Update user's profile account type
-			await this.supabase
-				.from('profiles')
-				.update({ 
-					account_type: plan.plan_type === 'brand' ? 'brand' : (plan.plan_type === 'premium' ? 'premium' : 'personal')
-				})
-				.eq('id', userId);
+					plan_type: plan.plan_type,
+					discount_percent: discountPercent.toString(),
+					payment_type: 'one_time_upgrade'
+				}
+			});
 
+			// Store payment record (webhook will update profile when payment succeeds)
+			await this.supabase
+				.from('user_payments')
+				.insert({
+					user_id: userId,
+					stripe_payment_intent_id: paymentIntent.id,
+					amount: finalPrice,
+					currency: plan.currency,
+					status: 'pending',
+					plan_type: plan.plan_type,
+					metadata: {
+						plan_id: planId,
+						discount_percent: discountPercent
+					}
+				});
+
+			console.log('[Stripe] Created one-time payment for account upgrade:', {
+				paymentIntentId: paymentIntent.id,
+				amount: amountInCents,
+				planType: plan.plan_type,
+				userId
+			});
+
+			// Return immediately with client secret - no bullshit!
 			return {
-				subscription,
-				clientSecret
+				clientSecret: paymentIntent.client_secret || undefined
 			};
 
 		} catch (error) {
-			console.error('Error creating subscription:', error);
+			console.error('Error creating account upgrade payment:', error);
 			return { error: error as Error };
 		}
 	}
@@ -356,142 +310,257 @@ export class StripeService {
 				.eq('stripe_subscription_id', subscriptionId);
 
 			return { success: true };
-
 		} catch (error) {
 			console.error('Error canceling subscription:', error);
 			return { success: false, error: error as Error };
 		}
 	}
 
-	// =====================================
-	// PAYOUTS
-	// =====================================
-
 	/**
-	 * Request payout for seller
+	 * Update subscription plan
 	 */
-	async requestPayout(params: PayoutParams): Promise<{
-		payout?: Payout;
+	async updateSubscription(params: {
+		userId: string;
+		subscriptionId: string;
+		newPlanId: string;
+	}): Promise<{
+		subscription?: Stripe.Subscription;
 		error?: Error;
 	}> {
 		try {
-			const { sellerId, amount, payoutMethod } = params;
+			const { subscriptionId, newPlanId } = params;
 
-			// Validate payout method
-			const validation = this.validatePayoutMethod(payoutMethod);
-			if (!validation.valid) {
-				throw new Error(validation.error);
-			}
-
-			// Check seller's available balance
-			const { data: profile } = await this.supabase
-				.from('profiles')
-				.select('pending_payout')
-				.eq('id', sellerId)
+			// Get new plan details
+			const { data: newPlan } = await this.supabase
+				.from('subscription_plans')
+				.select('*')
+				.eq('id', newPlanId)
 				.single();
 
-			if (!profile || (profile.pending_payout || 0) < amount) {
-				throw new Error('Insufficient balance for payout');
-			}
+			if (!newPlan) throw new Error('New plan not found');
 
-			// Minimum payout validation
-			if (amount < 20) { // 20 BGN/EUR minimum
-				throw new Error('Minimum payout amount is €20');
-			}
+			// Get current subscription
+			const subscription = await this.stripe.subscriptions.retrieve(subscriptionId);
+			if (!subscription) throw new Error('Subscription not found');
 
-			// Create payout record
-			const { data: payout, error } = await this.supabase
-				.from('payouts')
-				.insert({
-					seller_id: sellerId,
-					amount,
-					payout_method: payoutMethod,
-					status: 'pending'
-				})
-				.select()
-				.single();
+			// Create new price for the plan
+			const newPrice = await this.stripe.prices.create({
+				unit_amount: Math.round(newPlan.price_monthly * 100),
+				currency: newPlan.currency.toLowerCase(),
+				recurring: { interval: 'month' },
+				product_data: {
+					name: newPlan.name
+				}
+			});
 
-			if (error) throw error;
+			// Update subscription with new price
+			const updatedSubscription = await this.stripe.subscriptions.update(subscriptionId, {
+				items: [{
+					id: subscription.items.data[0].id,
+					price: newPrice.id
+				}],
+				proration_behavior: 'create_prorations'
+			});
 
-			// Update seller's pending balance
+			// Update database
 			await this.supabase
-				.from('profiles')
-				.update({
-					pending_payout: (profile.pending_payout || 0) - amount
+				.from('user_subscriptions')
+				.update({ 
+					plan_id: newPlanId,
+					updated_at: new Date().toISOString()
 				})
-				.eq('id', sellerId);
+				.eq('stripe_subscription_id', subscriptionId);
 
-			return { payout };
-
+			return { subscription: updatedSubscription };
 		} catch (error) {
-			console.error('Error requesting payout:', error);
+			console.error('Error updating subscription:', error);
 			return { error: error as Error };
 		}
 	}
 
-	// =====================================
-	// WEBHOOKS
-	// =====================================
-
 	/**
-	 * Process Stripe webhook events
+	 * Process webhook event
 	 */
-	async processWebhook(event: StripeWebhookEvent): Promise<{ success: boolean; error?: Error }> {
-		try {
-			switch (event.type) {
-				case 'payment_intent.succeeded':
-					await this.handlePaymentIntentSucceeded(event.data.object as Stripe.PaymentIntent);
-					break;
-
-				case 'invoice.payment_succeeded':
-					await this.handleInvoicePaymentSucceeded(event.data.object as Stripe.Invoice);
-					break;
-
-				case 'customer.subscription.updated':
-				case 'customer.subscription.deleted':
-					await this.handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
-					break;
-
-				default:
-					console.log(`Unhandled event type: ${event.type}`);
-			}
-
-			return { success: true };
-
-		} catch (error) {
-			console.error('Error processing webhook:', error);
-			return { success: false, error: error as Error };
+	async processWebhook(event: Stripe.Event): Promise<void> {
+		switch (event.type) {
+			case 'payment_intent.succeeded':
+				await this.handlePaymentSuccess(event.data.object as Stripe.PaymentIntent);
+				break;
+				
+			case 'payment_intent.payment_failed':
+				await this.handlePaymentFailure(event.data.object as Stripe.PaymentIntent);
+				break;
+				
+			case 'customer.subscription.created':
+			case 'customer.subscription.updated':
+				await this.handleSubscriptionUpdate(event.data.object as Stripe.Subscription);
+				break;
+				
+			case 'customer.subscription.deleted':
+				await this.handleSubscriptionCancellation(event.data.object as Stripe.Subscription);
+				break;
+				
+			case 'invoice.payment_succeeded':
+				await this.handleInvoicePayment(event.data.object as Stripe.Invoice);
+				break;
 		}
 	}
 
-	// =====================================
-	// UTILITIES
-	// =====================================
+	/**
+	 * Handle successful payment
+	 */
+	private async handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent): Promise<void> {
+		const { metadata } = paymentIntent;
+		
+		// Check if this is an account upgrade payment
+		if (metadata.payment_type === 'one_time_upgrade') {
+			// Update user profile with new account type
+			await this.supabase
+				.from('profiles')
+				.update({
+					account_type: metadata.plan_type as any,
+					subscription_tier: metadata.plan_type as any,
+					verified: true,
+					updated_at: new Date().toISOString()
+				})
+				.eq('id', metadata.user_id);
+
+			// Update payment record
+			await this.supabase
+				.from('user_payments')
+				.update({
+					status: 'completed',
+					completed_at: new Date().toISOString()
+				})
+				.eq('stripe_payment_intent_id', paymentIntent.id);
+
+			console.log('[Webhook] Account upgrade completed:', {
+				userId: metadata.user_id,
+				planType: metadata.plan_type
+			});
+		} else if (metadata.product_id) {
+			// Handle product purchase
+			await this.handleProductPurchaseSuccess(paymentIntent);
+		}
+	}
 
 	/**
-	 * Calculate payment amounts with fees
+	 * Handle product purchase success
 	 */
-	public calculatePaymentAmounts(productPrice: number): PaymentCalculation {
-		// Buyer Protection Fee: 5% + €0.70 fixed (similar to Vinted)
-		const serviceFeeRate = 0.05; // 5% buyer protection
-		const fixedFee = 70; // €0.70 in cents
-		const shippingCost = 500; // €5.00 in cents
-		const taxRate = 0; // Can be configured based on location
+	private async handleProductPurchaseSuccess(paymentIntent: Stripe.PaymentIntent): Promise<void> {
+		const { metadata } = paymentIntent;
+		
+		// Update transaction status
+		await this.supabase
+			.from('transactions')
+			.update({
+				status: 'completed',
+				completed_at: new Date().toISOString()
+			})
+			.eq('stripe_payment_intent_id', paymentIntent.id);
 
-		const serviceFee = Math.round(productPrice * serviceFeeRate) + fixedFee;
-		const taxAmount = Math.round(productPrice * taxRate);
-		const totalAmount = productPrice + serviceFee + shippingCost + taxAmount;
-		const sellerAmount = productPrice; // Seller gets full product price (we don't deduct fees from sellers)
+		// Mark product as sold
+		await this.supabase
+			.from('products')
+			.update({
+				status: 'sold',
+				sold_at: new Date().toISOString(),
+				buyer_id: metadata.buyer_id
+			})
+			.eq('id', metadata.product_id);
 
-		return {
-			productPrice,
-			serviceFee,
-			shippingCost,
-			taxAmount,
-			totalAmount,
-			sellerAmount,
-			serviceFeeRate
-		};
+		// Create order record
+		await this.supabase
+			.from('orders')
+			.insert({
+				buyer_id: metadata.buyer_id,
+				seller_id: metadata.seller_id,
+				product_id: metadata.product_id,
+				transaction_id: paymentIntent.id,
+				status: 'pending_shipment',
+				total_amount: Number(metadata.product_price) + Number(metadata.shipping_cost)
+			});
+	}
+
+	/**
+	 * Handle payment failure
+	 */
+	private async handlePaymentFailure(paymentIntent: Stripe.PaymentIntent): Promise<void> {
+		const { metadata } = paymentIntent;
+		
+		if (metadata.payment_type === 'one_time_upgrade') {
+			// Update payment record
+			await this.supabase
+				.from('user_payments')
+				.update({
+					status: 'failed',
+					failed_at: new Date().toISOString()
+				})
+				.eq('stripe_payment_intent_id', paymentIntent.id);
+		} else if (metadata.product_id) {
+			// Update transaction status
+			await this.supabase
+				.from('transactions')
+				.update({
+					status: 'failed',
+					failed_at: new Date().toISOString()
+				})
+				.eq('stripe_payment_intent_id', paymentIntent.id);
+		}
+	}
+
+	/**
+	 * Handle subscription update
+	 */
+	private async handleSubscriptionUpdate(subscription: Stripe.Subscription): Promise<void> {
+		const { metadata } = subscription;
+		
+		await this.supabase
+			.from('user_subscriptions')
+			.update({
+				status: subscription.status as any,
+				current_period_start: new Date((subscription as any).current_period_start * 1000).toISOString(),
+				current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
+				updated_at: new Date().toISOString()
+			})
+			.eq('stripe_subscription_id', subscription.id);
+	}
+
+	/**
+	 * Handle subscription cancellation
+	 */
+	private async handleSubscriptionCancellation(subscription: Stripe.Subscription): Promise<void> {
+		await this.supabase
+			.from('user_subscriptions')
+			.update({
+				status: 'canceled',
+				canceled_at: new Date().toISOString()
+			})
+			.eq('stripe_subscription_id', subscription.id);
+
+		// Update user profile
+		await this.supabase
+			.from('profiles')
+			.update({
+				account_type: 'personal',
+				subscription_tier: 'free'
+			})
+			.eq('id', subscription.metadata.supabase_user_id);
+	}
+
+	/**
+	 * Handle invoice payment
+	 */
+	private async handleInvoicePayment(invoice: Stripe.Invoice): Promise<void> {
+		if (!invoice.subscription) return;
+		
+		const subscription = typeof invoice.subscription === 'string' 
+			? await this.stripe.subscriptions.retrieve(invoice.subscription)
+			: invoice.subscription;
+
+		if (subscription) {
+			await this.handleSubscriptionUpdate(subscription as Stripe.Subscription);
+		}
 	}
 
 	/**
@@ -533,203 +602,42 @@ export class StripeService {
 		shippingCost: number;
 		stripePaymentIntentId: string;
 	}): Promise<{ transaction: Transaction | null; error: Error | null }> {
-		try {
-			// Convert productPrice from dollars to cents for calculation
-			const productPriceCents = Math.round(params.productPrice * 100);
-			const calculation = this.calculatePaymentAmounts(productPriceCents);
-
-			const { data: transaction, error } = await this.supabase
-				.from('transactions')
-				.insert({
-					order_id: params.orderId,
-					seller_id: params.sellerId,
-					buyer_id: params.buyerId,
-					stripe_payment_intent_id: params.stripePaymentIntentId,
-					amount_total: calculation.totalAmount / 100, // Convert cents to euros
-					commission_amount: calculation.serviceFee / 100, // Convert cents to euros  
-					seller_earnings: calculation.sellerAmount / 100, // Convert cents to euros
-					currency: 'EUR',
-					status: 'completed',
-					product_price: params.productPrice,
-					shipping_cost: params.shippingCost,
-					payment_status: 'completed',
-					processed_at: new Date().toISOString(),
-					metadata: {
-						productId: params.productId,
-						serviceFeeRate: calculation.serviceFeeRate
-					}
-				})
-				.select()
-				.single();
-
-			if (error) throw error;
-
-			// Update seller earnings
-			await this.updateSellerEarnings(params.sellerId, calculation.sellerAmount / 100);
-
-			return { transaction, error: null };
-
-		} catch (error) {
-			console.error('Error creating transaction:', error);
-			return { transaction: null, error: error as Error };
-		}
-	}
-
-	/**
-	 * Update seller earnings
-	 */
-	private async updateSellerEarnings(sellerId: string, amount: number): Promise<void> {
-		const { data: profile } = await this.supabase
-			.from('profiles')
-			.select('total_earnings, pending_payout')
-			.eq('id', sellerId)
+		const { data, error } = await this.supabase
+			.from('transactions')
+			.insert({
+				order_id: params.orderId,
+				seller_id: params.sellerId,
+				buyer_id: params.buyerId,
+				product_id: params.productId,
+				amount: params.productPrice,
+				shipping_cost: params.shippingCost,
+				total_amount: params.productPrice + params.shippingCost,
+				currency: 'BGN',
+				status: 'pending',
+				payment_method: 'card',
+				stripe_payment_intent_id: params.stripePaymentIntentId
+			})
+			.select()
 			.single();
 
-		if (profile) {
-			await this.supabase
-				.from('profiles')
-				.update({
-					total_earnings: (profile.total_earnings || 0) + amount,
-					pending_payout: (profile.pending_payout || 0) + amount
-				})
-				.eq('id', sellerId);
-		}
+		return { transaction: data, error };
 	}
 
 	/**
-	 * Validate payout method
+	 * Update transaction status
 	 */
-	private validatePayoutMethod(method: any): { valid: boolean; error?: string } {
-		if (!method?.type || !method?.details) {
-			return { valid: false, error: 'Payout method type and details are required' };
-		}
-
-		switch (method.type) {
-			case 'revolut':
-				if (!method.details.startsWith('@')) {
-					return { valid: false, error: 'Revolut tag must start with @' };
-				}
-				if (method.details.length < 3) {
-					return { valid: false, error: 'Revolut tag too short' };
-				}
-				break;
-
-			case 'paypal':
-				const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-				if (!emailRegex.test(method.details)) {
-					return { valid: false, error: 'Invalid PayPal email format' };
-				}
-				break;
-
-			case 'card':
-				if (method.details.length < 10) {
-					return { valid: false, error: 'Card details too short' };
-				}
-				break;
-
-			default:
-				return { valid: false, error: 'Unsupported payout method type' };
-		}
-
-		return { valid: true };
-	}
-
-	/**
-	 * Send payment notifications
-	 */
-	private async sendPaymentNotifications(order: Order, product: any): Promise<void> {
-		// Create notification for seller
-		await this.supabase
-			.from('notifications')
-			.insert({
-				user_id: order.seller_id,
-				type: 'sale',
-				title: 'Product Sold!',
-				message: `Your item "${product.title}" has been sold for €${(order.total_amount / 100).toFixed(2)}`,
-				related_id: order.id,
-				related_table: 'orders'
-			});
-
-		// Create notification for buyer
-		await this.supabase
-			.from('notifications')
-			.insert({
-				user_id: order.buyer_id,
-				type: 'purchase',
-				title: 'Purchase Confirmed!',
-				message: `You successfully purchased "${product.title}"`,
-				related_id: order.id,
-				related_table: 'orders'
-			});
-	}
-
-	// =====================================
-	// WEBHOOK HANDLERS
-	// =====================================
-
-	private async handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent): Promise<void> {
-		// This is handled by the confirm endpoint, but we can add additional processing here
-		console.log(`Payment intent succeeded: ${paymentIntent.id}`);
-	}
-
-	private async handleInvoicePaymentSucceeded(invoice: Stripe.Invoice): Promise<void> {
-		// Handle subscription payment success
-		if (invoice.subscription) {
-			console.log(`Subscription payment succeeded: ${invoice.subscription}`);
-		}
-	}
-
-	private async handleSubscriptionUpdated(subscription: Stripe.Subscription): Promise<void> {
-		const { supabase_user_id, plan_id } = subscription.metadata;
-
-		if (!supabase_user_id || !plan_id) {
-			console.warn('Missing metadata in subscription webhook');
-			return;
-		}
-
-		// Update subscription record
-		await this.supabase
-			.from('user_subscriptions')
-			.update({
-				status: subscription.status as any,
-				current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-				current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-				updated_at: new Date().toISOString()
+	async updateTransactionStatus(
+		transactionId: string,
+		status: 'pending' | 'completed' | 'failed' | 'refunded'
+	): Promise<{ success: boolean; error: Error | null }> {
+		const { error } = await this.supabase
+			.from('transactions')
+			.update({ 
+				status,
+				...(status === 'completed' ? { completed_at: new Date().toISOString() } : {})
 			})
-			.eq('user_id', supabase_user_id)
-			.eq('stripe_subscription_id', subscription.id);
+			.eq('id', transactionId);
 
-		// Update user profile based on subscription status
-		if (subscription.status === 'active') {
-			const { data: plan } = await this.supabase
-				.from('subscription_plans')
-				.select('plan_type')
-				.eq('id', plan_id)
-				.single();
-
-			if (plan) {
-				await this.supabase
-					.from('profiles')
-					.update({
-						subscription_tier: plan.plan_type,
-						subscription_expires_at: new Date(subscription.current_period_end * 1000).toISOString()
-					})
-					.eq('id', supabase_user_id);
-			}
-		} else if (['canceled', 'past_due', 'unpaid'].includes(subscription.status)) {
-			// Downgrade user
-			await this.supabase
-				.from('profiles')
-				.update({
-					subscription_tier: 'free',
-					subscription_expires_at: null
-				})
-				.eq('id', supabase_user_id);
-		}
+		return { success: !error, error };
 	}
 }
-
-// Export factory function - stripe instance must be passed from server-side code
-export const createStripeService = (supabase: SupabaseClient<Database>, stripeInstance: Stripe) => {
-	return new StripeService(supabase, stripeInstance);
-};

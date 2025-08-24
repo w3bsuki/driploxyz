@@ -150,7 +150,7 @@ Lightweight display component with pagination
 		<!-- Load more button -->
 		{#if hasMore}
 			<div class="load-more">
-				<Button variant="secondary" on:click={onLoadMore} {loading}>
+				<Button variant="secondary" onclick={onLoadMore} {loading}>
 					{loading ? 'Loading...' : 'Load More Sales'}
 				</Button>
 			</div>
