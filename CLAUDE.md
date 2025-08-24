@@ -4,7 +4,7 @@
 - **Framework**: SvelteKit 2 + Svelte 5
 - **Database**: Supabase (PostgreSQL + Auth + Storage)
 - **Monorepo**: Turborepo with pnpm
-- **Styling**: TailwindCSS v3
+- **Styling**: TailwindCSS v4
 - **Deployment**: Vercel
 
 ## Core Directives
@@ -159,7 +159,7 @@
    pnpm build                  # All packages
    pnpm check-types           # Type validation
    ```
-14.2. **Database**:
+14.2. **Database**: SUPABASE MCP (USE IT)
    ```bash
    mcp__supabase__list_tables
    mcp__supabase__execute_sql

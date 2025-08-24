@@ -40,28 +40,17 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
       user_email: data.user.email
     });
     
-    // Check or create profile
+    // Check if profile exists (DON'T CREATE - only check)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('onboarding_completed')
       .eq('id', data.user.id)
       .single();
 
+    // Profile doesn't exist = new user, send to onboarding
     if (profileError && profileError.code === 'PGRST116') {
-      // Profile doesn't exist, create it
-      const { error: insertError } = await supabase
-        .from('profiles')
-        .insert({
-          id: data.user.id,
-          username: `user_${data.user.id.substring(0, 8)}`,
-          full_name: data.user.user_metadata?.full_name || '',
-          onboarding_completed: false
-        });
-      
-      if (!insertError) {
-        // New user - redirect to onboarding
-        throw redirect(303, '/onboarding?welcome=true');
-      }
+      console.log('[AUTH CALLBACK] New user - no profile exists, redirecting to onboarding');
+      throw redirect(303, '/onboarding?welcome=true');
     }
 
     // If email was just verified and profile needs onboarding
