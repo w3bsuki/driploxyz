@@ -1,15 +1,10 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { SearchBar, CategoryDropdown, BottomNav, AuthPopup } from '@repo/ui';
-	// Heavy components loaded lazily
-	let PromotedHighlights = $state<any>(null);
-	let FeaturedProducts = $state<any>(null);
+	import { SearchBar, CategoryDropdown, BottomNav, AuthPopup, PromotedHighlights, FeaturedProducts } from '@repo/ui';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import Header from '$lib/components/Header.svelte';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
-	import { prefetchRoute } from '$lib/utils/performance';
-	import { setupRoutePreloading, lazyComponents } from '$lib/utils/route-splitting';
 	import { goto } from '$app/navigation';
 	import { page, navigating } from '$app/stores';
 	import { browser } from '$app/environment';
@@ -17,7 +12,6 @@
 	import { purchaseActions, purchaseStore } from '$lib/stores/purchase-store';
 	import { favoritesActions, favoritesStore } from '$lib/stores/favorites-store';
 	import { authPopupActions, authPopupStore } from '$lib/stores/auth-popup-store';
-	import { prefetchRoute } from '$lib/utils/prefetch';
 	import type { PageData } from './$types';
 	import type { ProductWithImages } from '$lib/services';
 	import type { Seller, ProductDisplay, PromotedProduct } from '$lib/types';
@@ -43,44 +37,13 @@
 			updateKey++;
 		}
 		
-		// Setup route preloading on mount
-		if (browser) {
-			setupRoutePreloading();
-		}
 	});
 	
 	// Lazy load heavy components
 	$effect(() => {
 		if (browser) {
-			// Load QuickViewDialog when needed
-			if (selectedSeller && !QuickViewDialog) {
-				lazyComponents.QuickViewDialog().then(component => {
-					QuickViewDialog = component;
-				});
-			}
 			
 			// Load heavy homepage components after critical content
-			if (!PromotedHighlights) {
-				requestIdleCallback(async () => {
-					try {
-						const module = await import('@repo/ui/PromotedHighlights');
-						PromotedHighlights = module.default;
-					} catch (error) {
-						console.warn('Failed to load PromotedHighlights:', error);
-					}
-				});
-			}
-			
-			if (!FeaturedProducts) {
-				requestIdleCallback(async () => {
-					try {
-						const module = await import('@repo/ui/FeaturedProducts');
-						FeaturedProducts = module.default;
-					} catch (error) {
-						console.warn('Failed to load FeaturedProducts:', error);
-					}
-				});
-			}
 		}
 	});
 
@@ -351,7 +314,6 @@
 							disabled={loadingCategory === category.slug}
 							class="category-nav-pill shrink-0 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center"
 							style="min-width: 80px; height: 44px;"
-							{...prefetchRoute(`/category/${category.slug}`)}
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}

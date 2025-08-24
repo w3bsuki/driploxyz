@@ -6,8 +6,6 @@
   import '$lib/styles/cyrillic-typography.css';
   import { invalidate } from '$app/navigation';
   import { browser, dev } from '$app/environment';
-  import { setupRoutePreloading } from '$lib/utils/route-splitting';
-  import { initializePrefetch } from '$lib/utils/prefetch';
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
@@ -59,9 +57,6 @@
   // Initialize performance optimizations on mount
   $effect(() => {
     if (browser) {
-      // Setup route preloading and prefetching
-      setupRoutePreloading();
-      initializePrefetch();
       
       // Critical resource hints for faster loading
       const preconnectUrls = [
