@@ -83,7 +83,12 @@
 
 	// Transform products to match Product interface
 	const products = $derived<Product[]>(
-		(data.featuredProducts || []).map((product: ProductWithImages) => ({
+		(() => {
+			console.log('🔍 [DEBUG] data.featuredProducts:', data.featuredProducts);
+			console.log('🔍 [DEBUG] data.featuredProducts length:', data.featuredProducts?.length || 0);
+			return (data.featuredProducts || []).map((product: ProductWithImages) => {
+				console.log('🔍 [DEBUG] Transforming product:', product.id, product.title);
+				return {
 				id: product.id,
 				title: product.title,
 				price: product.price,
@@ -111,7 +116,9 @@
 				seller_name: product.seller_name,
 				seller_avatar: product.seller_avatar,
 				seller_rating: product.seller_rating
-		}))
+				};
+			});
+		})()
 	);
 
 	// Transform sellers for display
