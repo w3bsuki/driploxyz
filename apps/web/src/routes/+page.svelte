@@ -405,7 +405,8 @@
 		{/if}
 
 		<!-- FeaturedProducts -->
-		<FeaturedProducts
+		{#if products.length > 0}
+			<FeaturedProducts
 				{products}
 				errors={data.errors}
 				onProductClick={handleProductClick}
