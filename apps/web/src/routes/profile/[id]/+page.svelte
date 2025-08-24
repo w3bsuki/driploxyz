@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Avatar, ProductCard, BrandBadge, NewSellerBadge, AdminBadge, BottomNav } from '@repo/ui';
+  import { Button, Avatar, ProductCard, BrandBadge, NewSellerBadge, AdminBadge, PremiumBadge, BottomNav } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import type { PageData } from './$types';
@@ -187,13 +187,18 @@
           <AdminBadge size="sm" />
         {/if}
         
+        <!-- Premium Badge -->
+        {#if data.profile.account_type === 'premium'}
+          <PremiumBadge size="sm" />
+        {/if}
+        
         <!-- Brand Badge -->
         {#if data.profile.brand_status === 'active' || data.profile.account_type === 'brand'}
           <BrandBadge size="sm" verified={data.profile.verified} />
         {/if}
         
         <!-- New Seller Badge (shows for first 30 days after completing onboarding) -->
-        {#if data.profile.onboarding_completed && data.profile.sales_count < 5 && data.profile.role !== 'admin'}
+        {#if data.profile.onboarding_completed && data.profile.sales_count < 5 && data.profile.role !== 'admin' && data.profile.account_type === 'personal'}
           <NewSellerBadge size="sm" />
         {/if}
         
