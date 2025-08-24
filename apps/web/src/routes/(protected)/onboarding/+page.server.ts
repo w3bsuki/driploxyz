@@ -83,7 +83,6 @@ export const actions: Actions = {
         .eq('id', user.id);
 
       if (profileError) {
-        console.error('Profile update error:', profileError);
         return fail(500, { error: 'Failed to update profile' });
       }
 
@@ -100,17 +99,16 @@ export const actions: Actions = {
           });
 
         if (brandError && brandError.code !== '23505') { // Ignore duplicate key error
-          console.error('Brand creation error:', brandError);
+          // Silently ignore in production
         }
       }
 
-      // Redirect to dashboard after successful onboarding
-      throw redirect(303, '/dashboard');
+      // Return success instead of redirect to avoid hanging with client-side handling
+      return { success: true };
     } catch (error) {
       if (error instanceof Response) {
         throw error; // Re-throw redirects
       }
-      console.error('Onboarding error:', error);
       return fail(500, { error: 'Something went wrong. Please try again.' });
     }
   }
