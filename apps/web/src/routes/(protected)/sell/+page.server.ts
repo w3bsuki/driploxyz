@@ -289,8 +289,7 @@ export const actions: Actions = {
         throw error;
       }
       
-      // Only log real errors, not redirects
-      console.error('[SELL ACTION] Error creating product:', error);
+      console.error('Error creating product:', error);
       
       return fail(500, {
         errors: { _form: error instanceof Error ? error.message : 'Failed to create product' },

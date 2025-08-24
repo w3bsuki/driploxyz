@@ -9,8 +9,8 @@ export interface UploadedImage {
 async function optimizeImageToWebP(file: File, quality: number = 0.6): Promise<File> {
   return new Promise((resolve, reject) => {
     const timeoutId = setTimeout(() => {
-      reject(new Error('Image optimization timeout after 10 seconds'));
-    }, 10000); // Reduced timeout
+      reject(new Error('Image optimization timeout after 3 seconds'));
+    }, 3000); // Very short timeout to prevent hanging
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -82,34 +82,40 @@ export async function uploadImage(
   userId: string,
   retries: number = 2
 ): Promise<UploadedImage> {
-  // Starting image upload process
-  
   let lastError: Error | null = null;
   
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       if (attempt > 0) {
-        // Retry attempt with exponential backoff
         // Add exponential backoff delay
         await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
       }
       
-      // Always optimize to WebP
-      // Always optimize to WebP
-      const optimizedFile = await optimizeImageToWebP(file);
+      // Skip WebP optimization if it's causing issues
+      let fileToUpload = file;
+      let fileExtension = file.name.split('.').pop() || 'jpg';
       
-      // Generate unique filename with .webp extension
+      // Only optimize if the file is large
+      if (file.size > 2 * 1024 * 1024) { // 2MB
+        try {
+          fileToUpload = await optimizeImageToWebP(file);
+          fileExtension = 'webp';
+        } catch (err) {
+          // If optimization fails, use original
+          console.warn('Image optimization failed, using original:', err);
+        }
+      }
+      
+      // Generate unique filename
       const timestamp = Date.now();
       const randomId = Math.random().toString(36).substring(2, 9);
-      const fileName = `${userId}/${timestamp}-${randomId}.webp`;
-      
-      // Upload to Supabase
+      const fileName = `${userId}/${timestamp}-${randomId}.${fileExtension}`;
       
       // Add timeout to Supabase upload
       const uploadPromise = supabase.storage
         .from(bucket)
-        .upload(fileName, optimizedFile, {
-          contentType: 'image/webp',
+        .upload(fileName, fileToUpload, {
+          contentType: fileExtension === 'webp' ? 'image/webp' : file.type,
           cacheControl: '3600',
           upsert: false
         });
@@ -125,7 +131,6 @@ export async function uploadImage(
       }
       
       const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${data.path}`;
-      // Upload successful
       
       return {
         url,
@@ -134,8 +139,6 @@ export async function uploadImage(
       
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
-      // Upload attempt failed, will retry if possible
-      
       // Don't retry certain errors
       if (lastError.message.includes('Image optimization') || 
           lastError.message.includes('canvas context') ||
@@ -147,7 +150,6 @@ export async function uploadImage(
   
   // All retries exhausted
   const finalError = lastError || new Error('Upload failed after all retries');
-  // All upload attempts failed
   throw finalError;
 }
 
@@ -159,16 +161,12 @@ export async function uploadImages(
   onProgress?: (current: number, total: number) => void
 ): Promise<UploadedImage[]> {
   const uploadedImages: UploadedImage[] = [];
-  
-  // Starting batch upload
-  
   for (let i = 0; i < files.length; i++) {
     try {
       const uploaded = await uploadImage(supabase, files[i], bucket, userId);
       uploadedImages.push(uploaded);
       onProgress?.(i + 1, files.length);
     } catch (error) {
-      // Failed to upload this image, continue with others
       // Continue with other images instead of stopping completely
     }
   }
@@ -177,7 +175,6 @@ export async function uploadImages(
     throw new Error('Failed to upload any images');
   }
   
-  // Batch upload completed
   return uploadedImages;
 }
 
@@ -191,7 +188,6 @@ export async function deleteImage(
     .remove([path]);
   
   if (error) {
-    // Delete failed
     return false;
   }
   
@@ -208,7 +204,6 @@ export async function deleteImages(
     .remove(paths);
   
   if (error) {
-    // Delete failed
     return false;
   }
   
