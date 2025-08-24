@@ -66,8 +66,10 @@
         discountAmount = basePrice * 0.99; // 99% off
         discountError = '';
       } else {
+        // Don't set an error here - let the server validate other codes
+        // The server will handle validation when payment is submitted
         discountAmount = 0;
-        discountError = 'Invalid discount code';
+        discountError = '';
       }
     } else {
       discountAmount = 0;
@@ -174,7 +176,13 @@
       const result = await response.json();
       
       if (result.error) {
-        throw new Error(result.error);
+        // More specific error handling for discount validation
+        if (result.error.includes('discount')) {
+          error = 'Error validating discount code. Please try again or remove the discount code.';
+        } else {
+          error = result.error;
+        }
+        throw new Error(error);
       }
 
       const { clientSecret } = result;

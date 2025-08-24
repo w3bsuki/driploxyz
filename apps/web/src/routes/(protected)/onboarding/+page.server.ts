@@ -89,6 +89,14 @@ export const actions: Actions = {
         parsedSocialLinks = [];
       }
 
+      // Determine subscription tier based on account type and payment status
+      let subscriptionTier = 'free';
+      if (accountType === 'brand' && brandPaid) {
+        subscriptionTier = 'brand';
+      } else if (accountType === 'premium' && brandPaid) {
+        subscriptionTier = 'premium';
+      }
+
       // Build profile update object
       const profileUpdate = {
         account_type: accountType,
@@ -104,6 +112,7 @@ export const actions: Actions = {
         onboarding_completed: true,
         verified: (accountType === 'brand' || accountType === 'premium') && brandPaid,
         brand_status: accountStatus,
+        subscription_tier: subscriptionTier,
         updated_at: new Date().toISOString()
       };
 

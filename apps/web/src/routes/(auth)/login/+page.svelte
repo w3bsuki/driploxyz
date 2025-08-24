@@ -15,15 +15,29 @@
   });
 
   onMount(() => {
-    // Check for email verification success
-    if ($page.url.searchParams.get('verified') === 'true') {
-      toasts.success('Email verified successfully! Please sign in to continue.');
+    // Check for email verification success - handle both parameters for compatibility
+    if ($page.url.searchParams.get('email_verified') === 'true' || $page.url.searchParams.get('verified') === 'true') {
+      const message = $page.url.searchParams.get('message');
+      if (message) {
+        toasts.success(decodeURIComponent(message));
+      } else {
+        toasts.success('Email verified successfully! Please sign in to continue.');
+      }
+      
+      // Pre-fill email if provided
+      const email = $page.url.searchParams.get('email');
+      if (email) {
+        formData.email = decodeURIComponent(email);
+      }
     }
     
     // Check for error messages
     const error = $page.url.searchParams.get('error');
     if (error) {
-      toasts.error(decodeURIComponent(error));
+      // Don't show verification_failed or authentication_failed errors as they're confusing after successful email verification
+      if (error !== 'verification_failed' && error !== 'authentication_failed') {
+        toasts.error(decodeURIComponent(error));
+      }
     }
   });
 

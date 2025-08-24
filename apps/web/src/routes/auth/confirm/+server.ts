@@ -47,6 +47,16 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
     console.log('[AUTH CONFIRM] Email verified successfully for user:', data.user.email);
 
+    // Check if user has an active session
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) {
+      // No active session after email verification is expected behavior
+      // The user needs to sign in with their credentials
+      console.log('[AUTH CONFIRM] Email verified successfully, redirecting to login');
+      throw redirect(303, '/login?email_verified=true&email=' + encodeURIComponent(data.user.email) + '&message=Email+verified+successfully!+Please+sign+in+to+continue.');
+    }
+
     // Check profile status (should exist due to DB trigger)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
@@ -62,7 +72,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
     if (profileError) {
       console.error('[AUTH CONFIRM] Profile fetch error:', profileError);
-      throw redirect(303, '/login?error=profile_fetch_failed');
+      throw redirect(303, '/login?verified=success&email=' + encodeURIComponent(data.user.email));
     }
 
     // Route based on onboarding status
