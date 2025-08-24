@@ -6,68 +6,59 @@ export interface UploadedImage {
   path: string;
 }
 
-async function optimizeImageToWebP(file: File, quality: number = 0.6): Promise<File> {
+async function optimizeImageToWebP(file: File, quality: number = 0.8): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    const timeoutId = setTimeout(() => {
-      reject(new Error('Image optimization timeout after 3 seconds'));
-    }, 3000); // Very short timeout to prevent hanging
-
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
     const img = new Image();
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: false });
     
+    if (!ctx) {
+      reject(new Error('Could not get canvas context'));
+      return;
+    }
+
     img.onload = () => {
       try {
-        // More aggressive size reduction to save egress
-        const maxWidth = 800;  // Reduced from 1200
-        const maxHeight = 800; // Reduced from 1200
-        
+        // Calculate dimensions - max 1200px for product images
+        const maxDimension = 1200;
         let { width, height } = img;
         
-        // Always resize if larger than max dimensions
-        if (width > maxWidth || height > maxHeight) {
-          const ratio = Math.min(maxWidth / width, maxHeight / height);
-          width *= ratio;
-          height *= ratio;
+        if (width > maxDimension || height > maxDimension) {
+          const scale = maxDimension / Math.max(width, height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
         }
         
         canvas.width = width;
         canvas.height = height;
         
-        if (!ctx) {
-          clearTimeout(timeoutId);
-          reject(new Error('Could not get canvas context'));
-          return;
-        }
-        
-        // Improve image quality during resize
+        // Use better quality settings
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
         ctx.drawImage(img, 0, 0, width, height);
         
-        canvas.toBlob((blob) => {
-          clearTimeout(timeoutId);
-          if (!blob) {
-            reject(new Error('Failed to convert image to WebP'));
-            return;
-          }
-          
-              
-          const webpFile = new File([blob], `${file.name.split('.')[0]}.webp`, {
-            type: 'image/webp',
-            lastModified: Date.now()
-          });
-          
-          resolve(webpFile);
-        }, 'image/webp', quality);
+        // Convert to WebP
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              reject(new Error('Failed to convert to WebP'));
+              return;
+            }
+            resolve(blob);
+          },
+          'image/webp',
+          quality
+        );
       } catch (error) {
-        clearTimeout(timeoutId);
         reject(error);
+      } finally {
+        // Clean up
+        URL.revokeObjectURL(img.src);
       }
     };
     
     img.onerror = () => {
-      clearTimeout(timeoutId);
+      URL.revokeObjectURL(img.src);
       reject(new Error('Failed to load image'));
     };
     
@@ -79,78 +70,44 @@ export async function uploadImage(
   supabase: SupabaseClient,
   file: File,
   bucket: string = 'product-images',
-  userId: string,
-  retries: number = 2
+  userId: string
 ): Promise<UploadedImage> {
-  let lastError: Error | null = null;
-  
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    try {
-      if (attempt > 0) {
-        // Add exponential backoff delay
-        await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000));
-      }
-      
-      // Skip WebP optimization if it's causing issues
-      let fileToUpload = file;
-      let fileExtension = file.name.split('.').pop() || 'jpg';
-      
-      // Only optimize if the file is large
-      if (file.size > 2 * 1024 * 1024) { // 2MB
-        try {
-          fileToUpload = await optimizeImageToWebP(file);
-          fileExtension = 'webp';
-        } catch (err) {
-          // If optimization fails, use original
-          console.warn('Image optimization failed, using original:', err);
-        }
-      }
-      
-      // Generate unique filename
-      const timestamp = Date.now();
-      const randomId = Math.random().toString(36).substring(2, 9);
-      const fileName = `${userId}/${timestamp}-${randomId}.${fileExtension}`;
-      
-      // Add timeout to Supabase upload
-      const uploadPromise = supabase.storage
-        .from(bucket)
-        .upload(fileName, fileToUpload, {
-          contentType: fileExtension === 'webp' ? 'image/webp' : file.type,
-          cacheControl: '3600',
-          upsert: false
-        });
-      
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Supabase upload timeout after 15 seconds')), 15000)
-      );
-      
-      const { data, error } = await Promise.race([uploadPromise, timeoutPromise]);
-      
-      if (error) {
-        throw new Error(`Supabase error: ${error.message}`);
-      }
-      
-      const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${data.path}`;
-      
-      return {
-        url,
-        path: data.path
-      };
-      
-    } catch (error) {
-      lastError = error instanceof Error ? error : new Error(String(error));
-      // Don't retry certain errors
-      if (lastError.message.includes('Image optimization') || 
-          lastError.message.includes('canvas context') ||
-          lastError.message.includes('Failed to load image')) {
-        throw lastError;
-      }
+  try {
+    // ALWAYS convert to WebP to save bandwidth
+    const webpBlob = await optimizeImageToWebP(file);
+    
+    // Generate unique filename with .webp extension
+    const timestamp = Date.now();
+    const randomId = Math.random().toString(36).substring(2, 9);
+    const fileName = `${userId}/${timestamp}-${randomId}.webp`;
+    
+    // Upload to Supabase
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, webpBlob, {
+        contentType: 'image/webp',
+        cacheControl: '3600',
+        upsert: false
+      });
+    
+    if (error) {
+      throw new Error(`Upload failed: ${error.message}`);
     }
+    
+    if (!data?.path) {
+      throw new Error('Upload succeeded but no path returned');
+    }
+    
+    const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${data.path}`;
+    
+    return {
+      url,
+      path: data.path
+    };
+  } catch (error) {
+    // If WebP conversion fails, don't fall back - fix the issue
+    throw error instanceof Error ? error : new Error('Upload failed');
   }
-  
-  // All retries exhausted
-  const finalError = lastError || new Error('Upload failed after all retries');
-  throw finalError;
 }
 
 export async function uploadImages(
@@ -215,26 +172,34 @@ export async function uploadAvatar(
   file: File,
   userId: string
 ): Promise<string> {
-  // Optimize avatar to WebP for consistency and egress savings
-  const optimizedFile = await optimizeImageToWebP(file, 0.8); // Higher quality for avatars
-  
-  const timestamp = Date.now();
-  const randomId = Math.random().toString(36).substring(2, 9);
-  const fileName = `avatars/${userId}/${timestamp}-${randomId}.webp`;
-  
-  const { data, error } = await supabase.storage
-    .from('avatars')
-    .upload(fileName, optimizedFile, {
-      contentType: 'image/webp',
-      cacheControl: '3600',
-      upsert: true
-    });
-  
-  if (error) {
-    throw new Error(`Failed to upload avatar: ${error.message}`);
+  try {
+    // Optimize avatar to WebP for consistency and bandwidth savings
+    const webpBlob = await optimizeImageToWebP(file, 0.9); // Higher quality for avatars
+    
+    const timestamp = Date.now();
+    const randomId = Math.random().toString(36).substring(2, 9);
+    const fileName = `avatars/${userId}/${timestamp}-${randomId}.webp`;
+    
+    const { data, error } = await supabase.storage
+      .from('avatars')
+      .upload(fileName, webpBlob, {
+        contentType: 'image/webp',
+        cacheControl: '3600',
+        upsert: true
+      });
+    
+    if (error) {
+      throw new Error(`Failed to upload avatar: ${error.message}`);
+    }
+    
+    if (!data?.path) {
+      throw new Error('Avatar upload succeeded but no path returned');
+    }
+    
+    const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${data.path}`;
+    
+    return url;
+  } catch (error) {
+    throw error instanceof Error ? error : new Error('Avatar upload failed');
   }
-  
-  const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${data.path}`;
-  
-  return url;
 }
