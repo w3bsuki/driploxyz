@@ -16,7 +16,7 @@
 
 <div class="min-h-screen bg-white flex items-center justify-center p-4 {className}">
   <div class="w-full max-w-lg mx-auto">
-    <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-lg">
+    <div class="bg-white/80 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/20">
       <!-- Header -->
       <div class="text-center mb-6">
         <h1 class="text-xl font-semibold text-gray-900 mb-2">
