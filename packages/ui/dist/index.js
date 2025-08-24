@@ -6,6 +6,7 @@ export { default as Card } from './Card.svelte';
 export { default as Modal } from './Modal.svelte';
 export { default as ProductCard } from './ProductCard.svelte';
 export { default as SearchBar } from './SearchBar.svelte';
+export { default as CategoryDropdown } from './CategoryDropdown.svelte';
 export { default as Avatar } from './Avatar.svelte';
 export { default as Breadcrumb } from './Breadcrumb.svelte';
 export { default as ErrorBoundary } from './ErrorBoundary.svelte';
