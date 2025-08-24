@@ -10,7 +10,7 @@
     OnboardingSuccessModal,
     BrandPaymentModal
   } from '@repo/ui';
-  import { goto } from '$app/navigation';
+  import { goto, invalidateAll } from '$app/navigation';
   import { enhance } from '$app/forms';
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
@@ -43,6 +43,7 @@
   let socialLinks = $state<Array<{ type: string; url: string }>>([]);
   let submitting = $state(false);
   let languageInitialized = $state(false);
+  let completionInProgress = $state(false);
 
   const totalSteps = 5;
 
@@ -80,10 +81,26 @@
     }
   });
 
-  function handleSuccessComplete() {
+  async function handleSuccessComplete() {
     showSuccessModal = false;
-    // Go directly to dashboard, no more modals
-    goto('/dashboard', { invalidateAll: true });
+    
+    // CRITICAL: Invalidate all cached data to ensure profile refresh
+    // This prevents the user from getting stuck in onboarding loop
+    try {
+      // Use SvelteKit's invalidateAll to refresh all server load functions
+      await invalidateAll();
+      
+      // Small delay to ensure server-side data is refreshed
+      setTimeout(() => {
+        // Navigate to dashboard - this should now see the updated profile
+        goto('/dashboard', { replaceState: true, invalidateAll: true });
+      }, 100);
+    } catch (error) {
+      console.error('Error during post-onboarding navigation:', error);
+      
+      // Fallback: Force full page reload to guarantee fresh data
+      window.location.href = '/dashboard';
+    }
   }
 
   function handleBrandPaymentSuccess() {
@@ -440,14 +457,28 @@
           if (!prepareFormSubmit()) return;
           submitting = true;
           
-          return async ({ result }) => {
+          return async ({ result, update }) => {
             submitting = false;
+            
             if (result.type === 'success') {
-              // Show success modal first
+              console.log('Onboarding completed successfully, result:', result.data);
+              
+              // CRITICAL: Update the page data immediately to reflect the changes
+              await update();
+              
+              // Invalidate all server load functions to refresh profile data
+              await invalidateAll();
+              
+              // Show success modal
               showSuccessModal = true;
               toasts.success('Profile setup complete!');
+              
             } else if (result.type === 'failure') {
+              console.error('Onboarding failed:', result.data);
               toasts.error(result.data?.error || 'Failed to complete onboarding');
+            } else {
+              console.error('Unexpected result type:', result.type);
+              toasts.error('An unexpected error occurred. Please try again.');
             }
           };
         }}

@@ -37,7 +37,8 @@
       "mcp__svelte-docs__svelte5_events",
       "mcp__svelte-docs__svelte5_mistakes",
       "mcp__playwright__browser_wait_for",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(pnpm create:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

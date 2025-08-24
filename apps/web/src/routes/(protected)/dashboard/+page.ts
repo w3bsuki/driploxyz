@@ -1,12 +1,35 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ parent }) => {
+/**
+ * Dashboard Page Load Function
+ * 
+ * This is the primary landing page after onboarding completion.
+ * Must check onboarding status and redirect incomplete users.
+ */
+export const load: PageLoad = async ({ parent, url }) => {
   const { supabase, user, profile } = await parent();
 
+  console.log('[DASHBOARD] Loading dashboard for user:', user?.email);
+  console.log('[DASHBOARD] Profile status:', {
+    hasProfile: !!profile,
+    onboardingCompleted: profile?.onboarding_completed,
+    accountType: profile?.account_type
+  });
+
   if (!user) {
+    console.log('[DASHBOARD] No user, redirecting to login');
     throw redirect(303, '/login');
   }
+
+  // CRITICAL: Check if onboarding is completed
+  // This prevents users from accessing dashboard before completing onboarding
+  if (!profile || profile.onboarding_completed !== true) {
+    console.log('[DASHBOARD] User has not completed onboarding, redirecting');
+    throw redirect(303, '/onboarding');
+  }
+
+  console.log('[DASHBOARD] User has completed onboarding, loading dashboard data');
 
   // Fetch user's products with images and categories
   const { data: products, error: productsError } = await supabase

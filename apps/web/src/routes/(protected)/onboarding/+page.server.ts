@@ -1,19 +1,37 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals: { safeGetSession }, parent }) => {
+/**
+ * Onboarding Page Load Function
+ * 
+ * Ensures users who have already completed onboarding are redirected to dashboard.
+ * Provides necessary data for users still in onboarding process.
+ */
+export const load: PageServerLoad = async ({ locals: { safeGetSession }, parent, url }) => {
   const { session, user } = await safeGetSession();
   
+  console.log('[ONBOARDING LOAD] Loading onboarding for user:', user?.email);
+  
   if (!session || !user) {
+    console.log('[ONBOARDING LOAD] No session/user, redirecting to login');
     throw redirect(303, '/login');
   }
 
   const parentData = await parent();
   
+  console.log('[ONBOARDING LOAD] Profile status:', {
+    hasProfile: !!parentData.profile,
+    onboardingCompleted: parentData.profile?.onboarding_completed,
+    accountType: parentData.profile?.account_type
+  });
+  
   // Check if onboarding is already completed
-  if (parentData.profile?.onboarding_completed) {
+  if (parentData.profile?.onboarding_completed === true) {
+    console.log('[ONBOARDING LOAD] User already completed onboarding, redirecting to dashboard');
     throw redirect(303, '/dashboard');
   }
+
+  console.log('[ONBOARDING LOAD] User needs onboarding, proceeding with page load');
 
   return {
     user,
@@ -22,7 +40,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, parent 
 };
 
 export const actions: Actions = {
-  complete: async ({ request, locals: { supabase, safeGetSession } }) => {
+  complete: async ({ request, locals: { supabase, safeGetSession }, cookies }) => {
     const { session, user } = await safeGetSession();
     
     if (!session || !user) {
@@ -41,8 +59,11 @@ export const actions: Actions = {
     const socialLinks = formData.get('socialLinks') as string;
     const brandPaid = formData.get('brandPaid') === 'true';
     
+    console.log('[ONBOARDING COMPLETE] Starting completion for user:', user.email, { accountType, brandPaid });
+    
     // SERVER-SIDE VALIDATION: Absolutely no brand/premium without payment
     if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
+      console.error('[ONBOARDING COMPLETE] Payment required but not completed:', { accountType, brandPaid });
       return fail(403, { error: 'Payment is required for ' + accountType + ' accounts. Please complete payment before continuing.' });
     }
 
@@ -59,62 +80,98 @@ export const actions: Actions = {
         accountStatus = brandPaid ? 'premium' : 'premium_pending';
       }
       
-      // Parse social links
+      // Parse social links safely
       let parsedSocialLinks = [];
       try {
         parsedSocialLinks = socialLinks ? JSON.parse(socialLinks) : [];
       } catch (e) {
+        console.warn('[ONBOARDING COMPLETE] Failed to parse social links:', e);
         parsedSocialLinks = [];
       }
 
-      // Update profile with service role client to bypass RLS
+      // Build profile update object
+      const profileUpdate = {
+        account_type: accountType,
+        username: username.trim(),
+        full_name: fullName?.trim() || null,
+        avatar_url: avatarUrl || null,
+        payout_method: payoutDetails ? { 
+          type: payoutMethod, 
+          details: payoutDetails.trim(), 
+          name: payoutName?.trim() || null 
+        } : null,
+        social_links: parsedSocialLinks.filter((link: any) => link.url?.trim()),
+        onboarding_completed: true,
+        verified: (accountType === 'brand' || accountType === 'premium') && brandPaid,
+        brand_status: accountStatus,
+        updated_at: new Date().toISOString()
+      };
+
+      console.log('[ONBOARDING COMPLETE] Updating profile with:', profileUpdate);
+
+      // Update profile - this is the CRITICAL step that completes onboarding
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({
-          account_type: accountType,
-          username: username.trim(),
-          full_name: fullName?.trim() || null,
-          avatar_url: avatarUrl || null,
-          payout_method: payoutDetails ? { 
-            type: payoutMethod, 
-            details: payoutDetails.trim(), 
-            name: payoutName?.trim() || null 
-          } : null,
-          social_links: parsedSocialLinks.filter((link: any) => link.url?.trim()),
-          onboarding_completed: true,
-          verified: (accountType === 'brand' || accountType === 'premium') && brandPaid,
-          brand_status: accountStatus
-        })
+        .update(profileUpdate)
         .eq('id', user.id);
 
       if (profileError) {
-        return fail(500, { error: 'Failed to update profile' });
+        console.error('[ONBOARDING COMPLETE] Profile update failed:', profileError);
+        return fail(500, { error: 'Failed to update profile: ' + profileError.message });
       }
 
-      // If brand account, create brand entry
+      console.log('[ONBOARDING COMPLETE] Profile updated successfully');
+
+      // If brand account, create brand entry (with error handling)
       if (accountType === 'brand') {
+        const brandData = {
+          profile_id: user.id,
+          brand_name: fullName?.trim() || username.trim(),
+          brand_description: `${username.trim()} - Professional fashion brand`,
+          verified_brand: brandPaid,
+          subscription_active: brandPaid
+        };
+
+        console.log('[ONBOARDING COMPLETE] Creating brand entry:', brandData);
+
         const { error: brandError } = await supabase
           .from('brands')
-          .insert({
-            profile_id: user.id,
-            brand_name: fullName?.trim() || username.trim(),
-            brand_description: `${username.trim()} - Professional fashion brand`,
-            verified_brand: brandPaid,
-            subscription_active: brandPaid
-          });
+          .insert(brandData);
 
-        if (brandError && brandError.code !== '23505') { // Ignore duplicate key error
-          // Silently ignore in production
+        if (brandError) {
+          if (brandError.code === '23505') {
+            console.log('[ONBOARDING COMPLETE] Brand entry already exists (duplicate key), continuing...');
+          } else {
+            console.error('[ONBOARDING COMPLETE] Brand creation failed:', brandError);
+            // Don't fail the entire onboarding for brand table issues
+          }
+        } else {
+          console.log('[ONBOARDING COMPLETE] Brand entry created successfully');
         }
       }
 
-      // Return success instead of redirect so frontend can show modal first
-      return { success: true };
+      // CRITICAL: Invalidate auth session to force profile refresh on next page load
+      // This ensures the protected route guard sees the updated onboarding_completed = true
+      await supabase.auth.refreshSession();
+      
+      console.log('[ONBOARDING COMPLETE] Onboarding completed successfully for user:', user.email);
+      
+      // Return success with profile data to avoid race conditions
+      return { 
+        success: true, 
+        profile: {
+          ...profileUpdate,
+          id: user.id
+        }
+      };
+      
     } catch (error) {
       if (error instanceof Response) {
         throw error; // Re-throw redirects
       }
-      return fail(500, { error: 'Something went wrong. Please try again.' });
+      
+      console.error('[ONBOARDING COMPLETE] Unexpected error:', error);
+      return fail(500, { error: 'Something went wrong during onboarding. Please try again.' });
     }
   }
 };

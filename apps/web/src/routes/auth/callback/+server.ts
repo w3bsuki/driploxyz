@@ -1,88 +1,109 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
+/**
+ * Bulletproof Auth Callback Handler
+ * 
+ * Handles OAuth callbacks and email verification redirects.
+ * Key principles:
+ * - Profiles are ALWAYS created by database trigger on signup
+ * - Only UPDATE profiles during onboarding, never CREATE
+ * - Simple, bulletproof logic with minimal edge cases
+ * - Clear logging for debugging
+ */
 export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
   const code = url.searchParams.get('code');
-  const next = url.searchParams.get('next') ?? '/onboarding';
+  const next = url.searchParams.get('next') ?? '/dashboard';
   const providerError = url.searchParams.get('error');
   const errorDescription = url.searchParams.get('error_description');
   
-  console.log('[AUTH CALLBACK] Processing callback with code:', code ? 'present' : 'missing');
-  console.log('[AUTH CALLBACK] Next redirect:', next);
+  console.log('[AUTH CALLBACK] Processing callback:', {
+    hasCode: !!code,
+    nextRedirect: next,
+    providerError
+  });
 
-  // Provider-side error
+  // Handle provider-side errors immediately
   if (providerError) {
-    console.error('Auth provider error:', providerError, errorDescription);
+    console.error('[AUTH CALLBACK] Provider error:', { providerError, errorDescription });
     throw redirect(303, `/login?error=${encodeURIComponent(errorDescription || providerError)}`);
   }
 
+  // Require auth code
   if (!code) {
+    console.error('[AUTH CALLBACK] No auth code provided');
     throw redirect(303, '/login?error=no_auth_code');
   }
 
-  const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-  if (exchangeError) {
-    console.error('Session exchange error:', exchangeError);
-    throw redirect(303, '/login?error=session_exchange_failed');
-  }
+  try {
+    // Exchange code for session
+    const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+    
+    if (exchangeError) {
+      console.error('[AUTH CALLBACK] Session exchange failed:', exchangeError);
+      throw redirect(303, '/login?error=session_exchange_failed');
+    }
 
-  if (data.session && data.user) {
-    // Force refresh session to ensure we have the correct user
-    await supabase.auth.refreshSession();
-    
-    // Check if this is email verification (user just verified their email)
-    const isEmailVerification = data.user.email_confirmed_at && 
-      new Date(data.user.email_confirmed_at).getTime() > Date.now() - 300000; // Within last 5 minutes
-    
-    console.log('[AUTH CALLBACK] Email verification check:', {
-      isEmailVerification,
-      email_confirmed_at: data.user.email_confirmed_at,
-      user_email: data.user.email
-    });
-    
-    // Check if profile exists (DON'T CREATE - only check)
+    if (!data.session || !data.user) {
+      console.error('[AUTH CALLBACK] No session or user after exchange');
+      throw redirect(303, '/login?error=auth_failed');
+    }
+
+    console.log('[AUTH CALLBACK] Session exchanged successfully for user:', data.user.email);
+
+    // Check profile status (profiles should always exist due to DB trigger)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('onboarding_completed')
       .eq('id', data.user.id)
       .single();
 
-    // Profile doesn't exist = new user, send to onboarding
-    if (profileError && profileError.code === 'PGRST116') {
-      console.log('[AUTH CALLBACK] New user - no profile exists, redirecting to onboarding');
+    // If no profile exists (extremely rare due to DB trigger), redirect to onboarding
+    if (profileError?.code === 'PGRST116') {
+      console.log('[AUTH CALLBACK] No profile found (DB trigger failed?), redirecting to onboarding');
       throw redirect(303, '/onboarding?welcome=true');
     }
 
-    // If email was just verified and profile needs onboarding
-    if (isEmailVerification) {
-      console.log('[AUTH CALLBACK] Email verified, checking onboarding status');
-      
-      // If profile doesn't exist or onboarding not completed, go to onboarding
-      if (!profile || profile.onboarding_completed !== true) {
-        console.log('[AUTH CALLBACK] Redirecting to onboarding after email verification');
-        throw redirect(303, '/onboarding?verified=true');
-      }
-      
-      // Otherwise, they're a returning user who just verified - go to dashboard
-      throw redirect(303, '/dashboard?verified=true');
+    if (profileError) {
+      console.error('[AUTH CALLBACK] Profile fetch error:', profileError);
+      throw redirect(303, '/login?error=profile_fetch_failed');
     }
 
-    // ALWAYS CHECK ONBOARDING STATUS - NO EXCEPTIONS
-    if (!profile || profile.onboarding_completed !== true) {
-      console.log('[AUTH CALLBACK] User needs onboarding, redirecting...');
+    // Check if this is email verification (user just verified their email)
+    const isEmailVerification = data.user.email_confirmed_at && 
+      new Date(data.user.email_confirmed_at).getTime() > Date.now() - 60000; // Within last minute
+    
+    // Route based on onboarding status
+    if (profile.onboarding_completed !== true) {
+      console.log('[AUTH CALLBACK] User needs onboarding');
+      // Show success page first for email verification
+      if (isEmailVerification) {
+        throw redirect(303, '/auth/verified');
+      }
       throw redirect(303, '/onboarding');
     }
 
-    // Only redirect elsewhere if onboarding is complete
+    // User is fully onboarded - redirect to intended destination
+    console.log('[AUTH CALLBACK] User fully onboarded, redirecting to:', next);
+    
+    // Validate and sanitize redirect URL
     let redirectPath = '/dashboard';
     if (next && next !== 'undefined' && next !== 'null') {
+      // Only allow relative URLs starting with / and not external URLs
       if (next.startsWith('/') && !next.includes('://')) {
         redirectPath = next;
       }
     }
+    
     throw redirect(303, redirectPath);
+    
+  } catch (error) {
+    // If it's already a redirect, re-throw it
+    if (error instanceof Response && error.status >= 300 && error.status < 400) {
+      throw error;
+    }
+    
+    console.error('[AUTH CALLBACK] Unexpected error:', error);
+    throw redirect(303, '/login?error=callback_failed');
   }
-
-  // Fallback
-  throw redirect(303, '/login?error=auth_failed');
 };
