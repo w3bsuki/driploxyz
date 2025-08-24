@@ -24,14 +24,26 @@ export default defineConfig({
 	// Performance optimizations
 	optimizeDeps: {
 		include: [
-			'@repo/ui',
+			// Core UI components needed immediately
+			'@repo/ui/Button',
+			'@repo/ui/Card', 
+			'@repo/ui/LoadingSpinner',
+			'@repo/ui/SearchBar',
+			'@repo/ui/BottomNav',
+			// Essential utilities
 			'@repo/i18n', 
 			'@supabase/supabase-js',
-			'@supabase/auth-helpers-sveltekit'
+			'@supabase/ssr'
 		],
 		exclude: [
-			// Large dependencies that should be loaded on demand
-			'@stripe/stripe-js'
+			// Heavy dependencies that should be loaded on demand
+			'@stripe/stripe-js',
+			// Heavy UI components
+			'@repo/ui/ProductGallery',
+			'@repo/ui/VirtualProductGrid',
+			'@repo/ui/PaymentForm',
+			'@repo/ui/CheckoutSummary',
+			'@repo/ui/OrderTimeline'
 		]
 	},
 	
@@ -72,8 +84,55 @@ export default defineConfig({
 	build: {
 		rollupOptions: {
 			output: {
-				// Use simple vendor chunking to avoid SvelteKit conflicts
-				manualChunks: undefined,
+				// Manual chunking for optimal performance
+				manualChunks: (id) => {
+					// Vendor chunk for all node_modules
+					if (id.includes('node_modules')) {
+						// Separate Supabase into its own chunk (large library)
+						if (id.includes('@supabase')) return 'supabase';
+						// Stripe in separate chunk (loaded on demand)
+						if (id.includes('@stripe')) return 'stripe';
+						// Sentry in separate chunk
+						if (id.includes('@sentry')) return 'sentry';
+						// Core UI dependencies
+						if (id.includes('svelte') || id.includes('@sveltejs')) return 'svelte';
+						// Remaining vendor code
+						return 'vendor';
+					}
+					
+					// UI package components - split by usage pattern
+					if (id.includes('@repo/ui')) {
+						// Heavy components that are lazy-loaded
+						if (id.includes('ProductGallery') || id.includes('ProductQuickView') || 
+						    id.includes('VirtualProductGrid') || id.includes('PaymentForm') ||
+						    id.includes('CheckoutSummary') || id.includes('OrderTimeline')) {
+							return 'ui-heavy';
+						}
+						// Core UI components used everywhere
+						if (id.includes('Button') || id.includes('Input') || id.includes('Card') ||
+						    id.includes('Badge') || id.includes('Modal') || id.includes('LoadingSpinner')) {
+							return 'ui-core';
+						}
+						// Layout and navigation components
+						if (id.includes('Header') || id.includes('BottomNav') || id.includes('SearchBar') ||
+						    id.includes('MegaMenu') || id.includes('CategoryDropdown')) {
+							return 'ui-layout';
+						}
+						return 'ui';
+					}
+					
+					// App-specific chunks
+					if (id.includes('src/routes')) {
+						// Admin pages
+						if (id.includes('(admin)')) return 'admin';
+						// Auth pages
+						if (id.includes('(auth)')) return 'auth';
+						// Protected pages
+						if (id.includes('(protected)')) return 'protected';
+					}
+					
+					return null;
+				},
 				// Optimize chunk names for caching
 				chunkFileNames: (chunkInfo) => {
 					const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop() : 'chunk';
@@ -118,7 +177,7 @@ export default defineConfig({
 		// Report compressed size only in CI
 		reportCompressedSize: !!process.env.CI,
 		// Chunk size warnings - stricter for better performance
-		chunkSizeWarningLimit: 200, // Reduced from 500KB to 200KB
+		chunkSizeWarningLimit: 150, // Target 150KB chunks for optimal loading
 		// Target modern browsers for smaller bundles
 		target: ['es2020', 'edge88', 'firefox78', 'chrome87', 'safari14']
 	},

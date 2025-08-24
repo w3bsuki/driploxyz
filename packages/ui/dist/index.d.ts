@@ -55,7 +55,6 @@ export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';
 export { default as LazySearchResults } from './LazySearchResults.svelte';
 export { ProductCardSkeleton, ProductDetailSkeleton, SellerCardSkeleton, CategoryCardSkeleton, ListItemSkeleton, TextSkeleton, ImageSkeleton } from './skeleton/index';
 export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
-export { default as CookieConsent } from './CookieConsent.svelte';
 export { default as LocaleDetectionBanner } from './LocaleDetectionBanner.svelte';
 export { default as MegaMenu } from './MegaMenu.svelte';
 export { default as CategoryMegaMenu } from './CategoryMegaMenu.svelte';

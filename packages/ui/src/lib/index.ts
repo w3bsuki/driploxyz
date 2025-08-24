@@ -92,7 +92,6 @@ export {
 export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
 
 // Cookie consent
-export { default as CookieConsent } from './CookieConsent.svelte';
 
 // Locale detection
 export { default as LocaleDetectionBanner } from './LocaleDetectionBanner.svelte';

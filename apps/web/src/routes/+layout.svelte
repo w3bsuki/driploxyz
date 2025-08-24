@@ -6,11 +6,12 @@
   import '$lib/styles/cyrillic-typography.css';
   import { invalidate } from '$app/navigation';
   import { browser, dev } from '$app/environment';
+  import { setupRoutePreloading } from '$lib/utils/route-splitting';
   import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications';
-  import { MessageNotificationToast, FollowNotificationToast, CookieConsent, LanguageSwitcher, ToastContainer } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer } from '@repo/ui';
   import PageLoader from '$lib/components/PageLoader.svelte';
   import OrderNotificationToast from '$lib/components/OrderNotificationToast.svelte';
   import { page } from '$app/stores';
@@ -53,6 +54,31 @@
   // Use $derived for reactive destructuring in Svelte 5 with safety checks
   const supabase = $derived(data && data.supabase ? data.supabase : null);
   const isAuthPage = $derived($page.route.id?.includes('(auth)'));
+  
+  // Initialize route preloading on mount
+  $effect(() => {
+    if (browser) {
+      // Setup route preloading for better performance
+      setupRoutePreloading();
+      
+      // Preload critical fonts and assets
+      const criticalAssets = [
+        '/fonts/inter-var.woff2',
+        '/placeholder-product.svg'
+      ];
+      
+      criticalAssets.forEach(asset => {
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = asset.endsWith('.woff2') ? 'font' : 'image';
+        link.href = asset;
+        if (asset.endsWith('.woff2')) {
+          link.crossOrigin = 'anonymous';
+        }
+        document.head.appendChild(link);
+      });
+    }
+  });
 
   // SSR-friendly auth initialization - sync server data to stores
   $effect(() => {

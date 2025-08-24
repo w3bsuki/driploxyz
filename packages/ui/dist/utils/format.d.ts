@@ -1,5 +1,13 @@
+/**
+ * Format currency values
+ */
 export declare function formatCurrency(amount: number, currency?: string): string;
+/**
+ * Format numbers with thousand separators
+ */
 export declare function formatNumber(num: number): string;
-export declare function formatDate(date: Date | string): string;
-export declare function formatRelativeTime(date: Date | string): string;
+/**
+ * Format file sizes
+ */
+export declare function formatBytes(bytes: number): string;
 //# sourceMappingURL=format.d.ts.map

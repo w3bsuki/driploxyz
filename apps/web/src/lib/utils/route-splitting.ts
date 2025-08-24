@@ -1,5 +1,6 @@
 import { browser } from '$app/environment';
 import { loadComponent } from '@repo/ui/utils/performance';
+import { setupRouteBasedPreloading, preloadRouteComponents } from './dynamic-components';
 
 /**
  * Lazy load heavy components for route-based code splitting
@@ -8,19 +9,35 @@ export const lazyComponents = {
   QuickViewDialog: () => browser 
     ? loadComponent(() => import('$lib/components/QuickViewDialog.svelte'))
     : Promise.resolve(null),
+
+  // Heavy UI components
+  ProductGallery: () => browser
+    ? loadComponent(() => import('@repo/ui/ProductGallery'))
+    : Promise.resolve(null),
     
-  // Future components for lazy loading
-  // ProductDetailView: () => browser
-  //   ? loadComponent(() => import('$lib/components/ProductDetailView.svelte'))
-  //   : Promise.resolve(null),
+  VirtualProductGrid: () => browser
+    ? loadComponent(() => import('@repo/ui/VirtualProductGrid'))
+    : Promise.resolve(null),
     
-  // CheckoutFlow: () => browser
-  //   ? loadComponent(() => import('$lib/components/CheckoutFlow.svelte'))
-  //   : Promise.resolve(null),
+  PaymentForm: () => browser
+    ? loadComponent(() => import('@repo/ui/PaymentForm'))
+    : Promise.resolve(null),
     
-  // MessagingInterface: () => browser
-  //   ? loadComponent(() => import('$lib/components/MessagingInterface.svelte'))
-  //   : Promise.resolve(null)
+  CheckoutSummary: () => browser
+    ? loadComponent(() => import('@repo/ui/CheckoutSummary'))
+    : Promise.resolve(null),
+    
+  OrderTimeline: () => browser
+    ? loadComponent(() => import('@repo/ui/OrderTimeline'))
+    : Promise.resolve(null),
+    
+  ImageUploader: () => browser
+    ? loadComponent(() => import('@repo/ui/ImageUploader'))
+    : Promise.resolve(null),
+    
+  WelcomeModal: () => browser
+    ? loadComponent(() => import('@repo/ui/WelcomeModal'))
+    : Promise.resolve(null)
 };
 
 /**
@@ -41,9 +58,13 @@ export function prefetchRouteChunks(route: string) {
   
   // Map routes to their heavy components
   const routeComponents: Record<string, Array<keyof typeof lazyComponents>> = {
-    '/product': ['QuickViewDialog'],
-    // '/checkout': ['CheckoutFlow'],
-    // '/messages': ['MessagingInterface']
+    '/product': ['QuickViewDialog', 'ProductGallery'],
+    '/search': ['VirtualProductGrid'],
+    '/checkout': ['PaymentForm', 'CheckoutSummary'],
+    '/orders': ['OrderTimeline'],
+    '/sell': ['ImageUploader'],
+    '/dashboard': ['OrderTimeline'],
+    '/onboarding': ['WelcomeModal']
   };
   
   // Find matching route pattern
@@ -65,12 +86,16 @@ export function prefetchRouteChunks(route: string) {
 export function setupRoutePreloading() {
   if (!browser) return;
   
-  // Preload on link hover
+  // Use the enhanced route-based preloading system
+  setupRouteBasedPreloading();
+  
+  // Legacy support - still prefetch route chunks
   document.addEventListener('mouseover', (e) => {
     const link = (e.target as HTMLElement).closest('a');
     if (link?.href && link.origin === window.location.origin) {
       const pathname = new URL(link.href).pathname;
       prefetchRouteChunks(pathname);
+      preloadRouteComponents(pathname);
     }
   });
   
@@ -80,6 +105,7 @@ export function setupRoutePreloading() {
     if (link?.href && link.origin === window.location.origin) {
       const pathname = new URL(link.href).pathname;
       prefetchRouteChunks(pathname);
+      preloadRouteComponents(pathname);
     }
   });
 }

@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { SearchBar, CategoryDropdown, BottomNav, PromotedHighlights, FeaturedProducts, AuthPopup } from '@repo/ui';
+	// Core components loaded immediately
+	import { SearchBar, CategoryDropdown, BottomNav, AuthPopup } from '@repo/ui';
+	// Heavy components loaded lazily
+	let PromotedHighlights = $state<any>(null);
+	let FeaturedProducts = $state<any>(null);
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import Header from '$lib/components/Header.svelte';
@@ -44,12 +48,38 @@
 		}
 	});
 	
-	// Lazy load QuickViewDialog when needed
+	// Lazy load heavy components
 	$effect(() => {
-		if (selectedSeller && !QuickViewDialog && browser) {
-			lazyComponents.QuickViewDialog().then(component => {
-				QuickViewDialog = component;
-			});
+		if (browser) {
+			// Load QuickViewDialog when needed
+			if (selectedSeller && !QuickViewDialog) {
+				lazyComponents.QuickViewDialog().then(component => {
+					QuickViewDialog = component;
+				});
+			}
+			
+			// Load heavy homepage components after critical content
+			if (!PromotedHighlights) {
+				requestIdleCallback(async () => {
+					try {
+						const module = await import('@repo/ui/PromotedHighlights');
+						PromotedHighlights = module.default;
+					} catch (error) {
+						console.warn('Failed to load PromotedHighlights:', error);
+					}
+				});
+			}
+			
+			if (!FeaturedProducts) {
+				requestIdleCallback(async () => {
+					try {
+						const module = await import('@repo/ui/FeaturedProducts');
+						FeaturedProducts = module.default;
+					} catch (error) {
+						console.warn('Failed to load FeaturedProducts:', error);
+					}
+				});
+			}
 		}
 	});
 
@@ -372,54 +402,90 @@
 			</div>
 		</div>
 
-		<PromotedHighlights 
-			promotedProducts={promotedProducts.map(product => ({
-				...product,
-				sizes: product.size ? [product.size] : ['S', 'M', 'L'] // Convert single size to sizes array or add default sizes
-			}))}
-			{sellers}
-			onSellerSelect={(seller) => selectedSeller = seller}
-			onSellerClick={handleSellerClick}
-			onProductClick={handleProductClick}
-			onProductBuy={handlePurchase}
-			onToggleFavorite={handleFavorite}
-			favoritesState={$favoritesStore}
-			{formatPrice}
-			translations={{
-				seller_premiumSeller: i18n.seller_premiumSeller(),
-				seller_premiumSellerDescription: i18n.seller_premiumSellerDescription(),
-				trending_promoted: i18n.trending_promoted(),
-				trending_featured: i18n.trending_featured(),
-				common_currency: i18n.common_currency(),
-				ui_scroll: i18n.ui_scroll()
-			}}
-		/>
+		<!-- Lazy load PromotedHighlights with skeleton -->
+		{#if PromotedHighlights}
+			<svelte:component
+				this={PromotedHighlights}
+				promotedProducts={promotedProducts.map(product => ({
+					...product,
+					sizes: product.size ? [product.size] : ['S', 'M', 'L']
+				}))}
+				{sellers}
+				onSellerSelect={(seller) => selectedSeller = seller}
+				onSellerClick={handleSellerClick}
+				onProductClick={handleProductClick}
+				onProductBuy={handlePurchase}
+				onToggleFavorite={handleFavorite}
+				favoritesState={$favoritesStore}
+				{formatPrice}
+				translations={{
+					seller_premiumSeller: i18n.seller_premiumSeller(),
+					seller_premiumSellerDescription: i18n.seller_premiumSellerDescription(),
+					trending_promoted: i18n.trending_promoted(),
+					trending_featured: i18n.trending_featured(),
+					common_currency: i18n.common_currency(),
+					ui_scroll: i18n.ui_scroll()
+				}}
+			/>
+		{:else}
+			<!-- Loading skeleton for promoted highlights -->
+			<div class="w-full bg-white border-b border-gray-200">
+				<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+					<div class="flex gap-4 overflow-x-auto scrollbar-hide">
+						{#each Array(4) as _}
+							<div class="flex-shrink-0 w-64 bg-gray-100 rounded-lg h-40 animate-pulse"></div>
+						{/each}
+					</div>
+				</div>
+			</div>
+		{/if}
 
-		<FeaturedProducts 
-			{products}
-			errors={data.errors}
-			onProductClick={handleProductClick}
-			onFavorite={handleFavorite}
-			onBrowseAll={handleBrowseAll}
-			onSellClick={handleSellClick}
-			{formatPrice}
-			translations={{
-				empty_noProducts: i18n.empty_noProducts(),
-				empty_startBrowsing: i18n.empty_startBrowsing(),
-				nav_sell: i18n.nav_sell(),
-				home_browseAll: i18n.home_browseAll(),
-				product_size: i18n.product_size(),
-				trending_newSeller: i18n.trending_newSeller(),
-				seller_unknown: i18n.seller_unknown(),
-				common_currency: i18n.common_currency(),
-				product_addToFavorites: i18n.product_addToFavorites(),
-				condition_new: i18n.condition_new(),
-				condition_likeNew: i18n.condition_likeNew(),
-				condition_good: i18n.condition_good(),
-				condition_fair: i18n.condition_fair(),
-				categoryTranslation: translateCategory
-			}}
-		/>
+		<!-- Lazy load FeaturedProducts with skeleton -->
+		{#if FeaturedProducts}
+			<svelte:component
+				this={FeaturedProducts}
+				{products}
+				errors={data.errors}
+				onProductClick={handleProductClick}
+				onFavorite={handleFavorite}
+				onBrowseAll={handleBrowseAll}
+				onSellClick={handleSellClick}
+				{formatPrice}
+				translations={{
+					empty_noProducts: i18n.empty_noProducts(),
+					empty_startBrowsing: i18n.empty_startBrowsing(),
+					nav_sell: i18n.nav_sell(),
+					home_browseAll: i18n.home_browseAll(),
+					product_size: i18n.product_size(),
+					trending_newSeller: i18n.trending_newSeller(),
+					seller_unknown: i18n.seller_unknown(),
+					common_currency: i18n.common_currency(),
+					product_addToFavorites: i18n.product_addToFavorites(),
+					condition_new: i18n.condition_new(),
+					condition_likeNew: i18n.condition_likeNew(),
+					condition_good: i18n.condition_good(),
+					condition_fair: i18n.condition_fair(),
+					categoryTranslation: translateCategory
+				}}
+			/>
+		{:else}
+			<!-- Loading skeleton for featured products -->
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+				<div class="mb-6">
+					<div class="w-48 h-8 bg-gray-200 rounded animate-pulse mb-2"></div>
+					<div class="w-32 h-4 bg-gray-100 rounded animate-pulse"></div>
+				</div>
+				<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+					{#each Array(8) as _}
+						<div class="bg-white rounded-lg border border-gray-200 p-4">
+							<div class="aspect-square bg-gray-100 rounded-lg mb-3 animate-pulse"></div>
+							<div class="w-full h-4 bg-gray-100 rounded animate-pulse mb-2"></div>
+							<div class="w-20 h-6 bg-gray-200 rounded animate-pulse"></div>
+						</div>
+					{/each}
+				</div>
+			</div>
+		{/if}
 	</main>
 </div>
 

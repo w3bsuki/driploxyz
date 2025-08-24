@@ -58,38 +58,36 @@
     }
   });
 
-  // Check URL params IMMEDIATELY on component initialization - FORCE IT
+  // Initialize welcome modal state based on URL immediately
   let showEmailVerifiedWelcome = $state(false);
   
-  // Check on mount AND in effect
+  // Check URL params immediately when browser is available
   if (browser) {
     const params = new URLSearchParams(window.location.search);
     if (params.get('email_verified') === 'true' || params.get('welcome') === 'true') {
+      console.log('[ONBOARDING] URL params detected, showing welcome modal');
       showEmailVerifiedWelcome = true;
     }
   }
 
-  // Also check reactively for any URL changes
-  $effect(() => {
-    if (browser && $page.url) {
-      const params = $page.url.searchParams;
-      // Check if user just verified their email - show special welcome
-      if (params.get('email_verified') === 'true' || params.get('welcome') === 'true') {
-        showEmailVerifiedWelcome = true;
-      }
-    }
-  });
-
   // Show welcome modal on mount
   onMount(() => {
+    console.log('[ONBOARDING] onMount called');
+    
+    // FORCE CHECK: Make absolutely sure the welcome modal shows
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('email_verified') === 'true' || urlParams.get('welcome') === 'true') {
+      console.log('[ONBOARDING] onMount detected email_verified, forcing modal');
+      showEmailVerifiedWelcome = true;
+    }
+    
     // Additional welcome messages for other flows
-    if (!showEmailVerifiedWelcome && $page.url.searchParams.get('verified') === 'true') {
+    if (!showEmailVerifiedWelcome && urlParams.get('verified') === 'true') {
       // Legacy verified parameter
       toasts.success('Email verified successfully! Welcome to Driplo!');
     }
     
     // Check if user paid for brand account
-    const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('brand_paid') === 'true') {
       brandPaid = true;
       accountType = 'brand';

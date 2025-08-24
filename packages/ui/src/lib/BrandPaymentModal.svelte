@@ -63,7 +63,7 @@
   $effect(() => {
     if (discountCode && discountCode.trim()) {
       if (discountCode.trim().toUpperCase() === 'INDECISIVE') {
-        discountAmount = basePrice * 0.99; // 99% off
+        discountAmount = basePrice * 0.98; // 98% off (leaves 50 cents minimum)
         discountError = '';
       } else {
         // Don't set an error here - let the server validate other codes
@@ -277,7 +277,7 @@
           <p class="mt-1 text-xs text-red-600">{discountError}</p>
         {:else if discountAmount > 0}
           <p class="mt-1 text-xs text-green-600">
-            ✓ {discountAmount.toFixed(2)} BGN discount applied (99% off)
+            ✓ {discountAmount.toFixed(2)} BGN discount applied (98% off)
           </p>
         {/if}
       </div>
