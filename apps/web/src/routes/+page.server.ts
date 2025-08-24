@@ -32,9 +32,9 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
       // Get main categories only
       supabase
         .from('categories')
-        .select('id, name, icon, slug')
+        .select('id, name, slug, sort_order')
         .is('parent_id', null)
-        .order('display_order')
+        .order('sort_order')
         .limit(6),
       
       // Get top sellers with minimal data

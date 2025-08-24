@@ -233,12 +233,12 @@
 		}
 	}
 
-	// Get only top-level categories for navigation pills (excluding Pets)
+	// Get only top-level categories for navigation pills (first 3 main categories)
 	const mainCategories = $derived(
 		(data.categories || [])
-			.filter(cat => !cat.parent_id && cat.slug !== 'pets') // Only top-level categories, exclude pets
+			.filter(cat => !cat.parent_id) // Only top-level categories
 			.sort((a, b) => a.sort_order - b.sort_order) // Sort by order
-			.slice(0, 3) // Take first 3 (Women, Men, Kids)
+			.slice(0, 3) // Take first 3 (Men, Women, Kids)
 	);
 
 	// Get category icon from constants
