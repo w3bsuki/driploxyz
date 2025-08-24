@@ -53,7 +53,7 @@ export class FavoriteService {
 
       if (error) throw error;
 
-      return { data, error: null };
+      return { data: data as FavoriteWithProduct[], error: null };
     } catch (error) {
       console.error('Error fetching user favorites:', error);
       return { data: null, error: error as Error };
@@ -106,7 +106,7 @@ export class FavoriteService {
       // Update product favorite count
       await this.updateProductFavoriteCount(productId);
 
-      return { data, error: null };
+      return { data: data as FavoriteWithProduct[], error: null };
     } catch (error) {
       console.error('Error adding to favorites:', error);
       return { data: null, error: error as Error };
@@ -261,7 +261,7 @@ export class FavoriteService {
 
       if (error) throw error;
 
-      return { data, error: null };
+      return { data: data as FavoriteWithProduct[], error: null };
     } catch (error) {
       console.error('Error fetching sold favorites:', error);
       return { data: null, error: error as Error };

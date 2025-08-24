@@ -115,12 +115,12 @@ export class NotificationService {
 		relatedTable?: string
 	) {
 		return await this.supabase
-			.from('admin_notifications')
+			.from('notifications')
 			.insert({
+				user_id: 'system',
 				title,
 				message,
 				type,
-				priority,
 				related_id: relatedId,
 				related_table: relatedTable
 			});
@@ -138,14 +138,12 @@ export class NotificationService {
 	) {
 		// Log the notification attempt
 		const { data: log } = await this.supabase
-			.from('notification_logs')
+			.from('notifications')
 			.insert({
+				user_id: recipient,
 				type,
-				recipient,
-				subject,
-				message,
-				metadata,
-				status: 'pending'
+				title: subject,
+				message
 			})
 			.select()
 			.single();

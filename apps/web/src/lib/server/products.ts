@@ -174,7 +174,7 @@ export async function createProduct(
   // Apply premium boost if requested
   if (data.use_premium_boost) {
     const { error: boostError } = await supabase.rpc('decrement_premium_boosts', {
-      user_id: userId
+      user_id_param: userId
     });
 
     if (!boostError) {
@@ -235,7 +235,7 @@ export async function getPriceSuggestions(
   const min = Math.min(...prices);
   const max = Math.max(...prices);
 
-  const suggested = Math.round((avg + median) / 2);
+  const suggested = Math.round((avg + (median || avg)) / 2);
   const confidence = data.length >= 10 ? 'high' : data.length >= 5 ? 'medium' : 'low';
 
   return {
