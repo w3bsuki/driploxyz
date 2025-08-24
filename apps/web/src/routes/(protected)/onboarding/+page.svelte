@@ -58,12 +58,16 @@
     }
   });
 
-  // Check URL params IMMEDIATELY on component initialization
-  const urlParams = browser ? new URLSearchParams(window.location.search) : null;
-  let showEmailVerifiedWelcome = $state(
-    urlParams?.get('email_verified') === 'true' || 
-    urlParams?.get('welcome') === 'true'
-  );
+  // Check URL params IMMEDIATELY on component initialization - FORCE IT
+  let showEmailVerifiedWelcome = $state(false);
+  
+  // Check on mount AND in effect
+  if (browser) {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('email_verified') === 'true' || params.get('welcome') === 'true') {
+      showEmailVerifiedWelcome = true;
+    }
+  }
 
   // Also check reactively for any URL changes
   $effect(() => {

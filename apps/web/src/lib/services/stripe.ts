@@ -213,14 +213,13 @@ export class StripeService {
 		try {
 			const { userId, planId, discountPercent = 0 } = params;
 
-			// Get email from auth.users
-			const { data: authUser } = await this.supabase
-				.from('auth.users')
-				.select('email')
-				.eq('id', userId)
-				.single();
-
-			if (!authUser?.email) throw new Error('User not found');
+			// Get current user's email directly from auth
+			const { data: { user: currentUser } } = await this.supabase.auth.getUser();
+			
+			if (!currentUser?.email) {
+				console.error('[Stripe] No authenticated user found');
+				throw new Error('Please sign in to continue');
+			}
 
 			// Get plan details
 			const { data: plan } = await this.supabase
@@ -237,7 +236,7 @@ export class StripeService {
 
 			// Create or retrieve Stripe customer
 			const customer = await this.getOrCreateCustomer(userId, {
-				email: authUser.email
+				email: currentUser.email
 			});
 
 			// Create simple ONE-TIME payment intent (NOT a subscription!)
