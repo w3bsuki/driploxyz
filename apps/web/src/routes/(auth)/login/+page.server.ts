@@ -111,7 +111,7 @@ export const actions: Actions = {
       throw redirect(303, '/onboarding');
     }
     
-    // Redirect to homepage after successful login (fixed hanging issue)
-    throw redirect(303, '/');
+    // Redirect to dashboard after successful login
+    throw redirect(303, '/dashboard');
   }
 };
