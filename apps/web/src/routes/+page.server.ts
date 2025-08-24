@@ -14,7 +14,6 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
   
   // Handle missing Supabase configuration
   if (!supabase) {
-    console.log('❌ Supabase not configured in +page.server.ts');
     return {
       featuredProducts: [],
       categories: [],
@@ -26,8 +25,6 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
       }
     };
   }
-
-  console.log('✅ Supabase configured, loading homepage data...');
 
   try {
     // Optimized parallel queries - select only needed columns to minimize egress
@@ -143,13 +140,6 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
         }));
       }
     }
-
-    console.log(`✅ Homepage data loaded:`, {
-      featuredCount: featuredProducts.length,
-      categoriesCount: categories.length,
-      sellersCount: topSellers.length,
-      country: country || 'BG'
-    });
 
     return {
       featuredProducts,
