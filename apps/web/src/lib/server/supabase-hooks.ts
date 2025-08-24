@@ -1,5 +1,5 @@
 import { createServerClient } from '@supabase/ssr';
-import { env } from '$env/dynamic/public';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { building } from '$app/environment';
 import { error } from '@sveltejs/kit';
 import type { Database } from '@repo/database';
@@ -16,14 +16,14 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   }
   
   // Check for required environment variables
-  if (!env.PUBLIC_SUPABASE_URL || !env.PUBLIC_SUPABASE_ANON_KEY) {
+  if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
     throw error(500, 'Server configuration error. Please contact support.');
   }
 
   // Create Supabase client following official documentation pattern
   event.locals.supabase = createServerClient<Database>(
-    env.PUBLIC_SUPABASE_URL,
-    env.PUBLIC_SUPABASE_ANON_KEY,
+    PUBLIC_SUPABASE_URL,
+    PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll: () => event.cookies.getAll(),

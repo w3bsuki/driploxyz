@@ -79,62 +79,60 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
     // Process results
     const categories = categoriesResult.status === 'fulfilled' ? (categoriesResult.value.data || []) : [];
     const topSellers = topSellersResult.status === 'fulfilled' ? (topSellersResult.value.data || []) : [];
-    const promotedProducts = promotedResult.status === 'fulfilled' ? (promotedResult.value.data || []) : [];
     
     let featuredProducts = [];
     if (featuredResult.status === 'fulfilled') {
       const { data: rawProducts } = featuredResult.value;
       if (rawProducts) {
-        
-        // Get all unique parent IDs to fetch parent categories
+        // Get unique parent category IDs
         const parentIds = [...new Set(
           rawProducts
             .map(item => item.categories?.parent_id)
             .filter(Boolean)
         )];
 
-        // Fetch parent categories
-        let parentCategories = [];
+        // Fetch parent categories if needed
+        let parentCategories: Record<string, string> = {};
         if (parentIds.length > 0) {
           const { data: parents } = await supabase
             .from('categories')
             .select('id, name')
             .in('id', parentIds);
-          parentCategories = parents || [];
+          
+          if (parents) {
+            parentCategories = Object.fromEntries(
+              parents.map(p => [p.id, p.name])
+            );
+          }
         }
 
-        // Create a lookup map for parent categories
-        const parentLookup = Object.fromEntries(
-          parentCategories.map(parent => [parent.id, parent.name])
-        );
-
+        // Transform products for frontend
         featuredProducts = rawProducts.map(item => ({
-          ...item,
-          // Keep product_images as is for the ProductCard component
-          product_images: item.product_images || [],
-          // Also provide images array for compatibility
-          images: (item.product_images || []).map((img: any) => 
-            typeof img === 'string' ? img : (img?.image_url || '')
-          ).filter(Boolean),
-          // Category fields matching ProductCard expectations
-          main_category_name: parentLookup[item.categories?.parent_id] || 'Uncategorized', // Men/Women/Kids (main)
-          category_name: parentLookup[item.categories?.parent_id] || 'Uncategorized', // Fallback
-          subcategory_name: item.categories?.name || null, // T-Shirts/Boots/etc (sub)
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          condition: item.condition,
+          size: item.size,
+          location: item.location,
+          created_at: item.created_at,
+          seller_id: item.seller_id,
+          // Simplify image structure
+          images: item.product_images?.map((img: any) => img.image_url) || [],
+          // Category info
+          category_name: parentCategories[item.categories?.parent_id] || item.categories?.name || 'Other',
+          subcategory_name: item.categories?.parent_id ? item.categories.name : null,
+          // Seller info
           seller_name: item.profiles?.username,
-          seller_rating: item.profiles?.rating,
           seller_avatar: item.profiles?.avatar_url
         }));
       }
     }
 
     return {
-      promotedProducts,
       featuredProducts,
       categories,
       topSellers,
-      trendingSearches: trendingSearches.status === 'fulfilled' ? trendingSearches.value : ['Vintage Jackets', 'Designer Bags', 'Y2K Jeans'],
       errors: {
-        promoted: promotedResult.status === 'rejected' ? 'Failed to load' : null,
         products: featuredResult.status === 'rejected' ? 'Failed to load' : null,
         categories: categoriesResult.status === 'rejected' ? 'Failed to load' : null,
         sellers: topSellersResult.status === 'rejected' ? 'Failed to load' : null
@@ -144,13 +142,10 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
   } catch (error) {
     console.error('Error loading homepage data:', error);
     return {
-      promotedProducts: [],
       featuredProducts: [],
       categories: [],
       topSellers: [],
-      trendingSearches: ['Vintage Jackets', 'Designer Bags', 'Y2K Jeans'],
       errors: {
-        promoted: 'Failed to load promoted products',
         products: 'Failed to load products',
         categories: 'Failed to load categories',
         sellers: 'Failed to load sellers'

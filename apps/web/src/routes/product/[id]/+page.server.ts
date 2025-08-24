@@ -1,65 +1,121 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { createServices } from '$lib/services';
 
-export const load: PageServerLoad = async ({ params, locals: { supabase, session } }) => {
-  const services = createServices(supabase, null); // No stripe needed for product viewing
+export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
+  const { session } = await safeGetSession();
 
-  // Get the main product first (required for other queries)
-  const { data: product, error: productError } = await services.products.getProduct(params.id);
+  // Get main product with optimized query
+  const { data: product, error: productError } = await supabase
+    .from('products')
+    .select(`
+      id,
+      title,
+      description,
+      price,
+      condition,
+      size,
+      brand,
+      color,
+      material,
+      location,
+      is_active,
+      is_sold,
+      created_at,
+      seller_id,
+      category_id,
+      product_images (
+        id,
+        image_url,
+        sort_order
+      ),
+      categories (
+        id,
+        name,
+        parent_id
+      ),
+      profiles!products_seller_id_fkey (
+        id,
+        username,
+        avatar_url,
+        rating,
+        bio,
+        created_at
+      )
+    `)
+    .eq('id', params.id)
+    .eq('is_active', true)
+    .single();
 
   if (productError || !product) {
     throw error(404, 'Product not found');
   }
 
-  // Check if user has favorited this product
-  let isFavorited = false;
-  if (session?.user) {
-    try {
-      const { data: favorite } = await supabase
-        .from('favorites')
-        .select('id')
-        .eq('user_id', session.user.id)
-        .eq('product_id', params.id)
-        .maybeSingle();
-      
-      isFavorited = !!favorite;
-    } catch (error) {
-      console.error('Error checking favorite status:', error);
-    }
-  }
-
-  // Parallel fetch similar and seller products for performance
-  const [similarResult, sellerResult] = await Promise.allSettled([
-    services.products.getProducts({
-      filters: {
-        category_ids: product.category_id ? [product.category_id] : undefined
-      },
-      limit: 6
-    }),
-    services.products.getSellerProducts(
-      product.seller_id,
-      { limit: 4 }
-    )
+  // Check favorite status and fetch related data in parallel
+  const [favoriteResult, similarResult, sellerResult] = await Promise.allSettled([
+    // Check if user has favorited (only if authenticated)
+    session?.user ? supabase
+      .from('favorites')
+      .select('id')
+      .eq('user_id', session.user.id)
+      .eq('product_id', params.id)
+      .maybeSingle() : Promise.resolve({ data: null }),
+    
+    // Get similar products (same category)
+    supabase
+      .from('products')
+      .select(`
+        id,
+        title,
+        price,
+        condition,
+        product_images (
+          image_url
+        )
+      `)
+      .eq('category_id', product.category_id)
+      .eq('is_active', true)
+      .eq('is_sold', false)
+      .neq('id', params.id)
+      .limit(6),
+    
+    // Get other seller products
+    supabase
+      .from('products')
+      .select(`
+        id,
+        title,
+        price,
+        condition,
+        product_images (
+          image_url
+        )
+      `)
+      .eq('seller_id', product.seller_id)
+      .eq('is_active', true)
+      .eq('is_sold', false)
+      .neq('id', params.id)
+      .limit(4)
   ]);
 
-  // Process similar products
-  const similarProducts = similarResult.status === 'fulfilled' 
-    ? (similarResult.value.data || []).filter(p => p.id !== params.id)
-    : [];
-
-  // Process seller products
-  const sellerProducts = sellerResult.status === 'fulfilled'
-    ? (sellerResult.value.data || []).filter(p => p.id !== params.id)
-    : [];
-
-  // Check if current user owns this product
+  const isFavorited = favoriteResult.status === 'fulfilled' && !!favoriteResult.value.data;
+  const similarProducts = similarResult.status === 'fulfilled' ? similarResult.value.data || [] : [];
+  const sellerProducts = sellerResult.status === 'fulfilled' ? sellerResult.value.data || [] : [];
   const isOwner = session?.user?.id === product.seller_id;
 
   return {
-    product,
-    similarProducts,
-    sellerProducts,
+    product: {
+      ...product,
+      images: product.product_images?.map(img => img.image_url) || [],
+      seller: product.profiles
+    },
+    similarProducts: similarProducts.map(p => ({
+      ...p,
+      images: p.product_images?.map(img => img.image_url) || []
+    })),
+    sellerProducts: sellerProducts.map(p => ({
+      ...p,
+      images: p.product_images?.map(img => img.image_url) || []
+    })),
     isOwner,
     isFavorited,
     user: session?.user || null

@@ -14,13 +14,12 @@ export const load: PageServerLoad = async ({ url, locals }) => {
   // Show all products by default if no search criteria
 
   try {
-    // Build products query with proper Supabase full-text search
+    // Build optimized products query - select only essential fields for search results
     let productsQuery = locals.supabase
       .from('products')
       .select(`
         id,
         title,
-        description,
         price,
         brand,
         size,
@@ -29,23 +28,16 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         created_at,
         seller_id,
         category_id,
-        is_sold,
-        is_active,
-        category:category_id (
-          id,
+        categories!inner (
           name,
           slug
         ),
-        seller:seller_id (
-          id,
+        profiles!products_seller_id_fkey (
           username,
-          full_name,
-          rating,
           avatar_url
         ),
-        images:product_images (
-          image_url,
-          sort_order
+        product_images!inner (
+          image_url
         )
       `)
       .eq('is_sold', false)
@@ -62,8 +54,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
     // Apply category filter
     if (category) {
-      // Handle both slug and name-based category filtering
-      productsQuery = productsQuery.or(`category.slug.eq.${category},category.name.ilike.%${category}%`);
+      // Filter by category slug or name
+      productsQuery = productsQuery.or(`categories.slug.eq.${category},categories.name.ilike.%${category}%`);
     }
 
     // Apply price filters
@@ -143,30 +135,34 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       };
     }
 
-    // Fetch categories for navigation (cache this in production)
-    const { data: categories, error: categoriesError } = await locals.supabase
-      .from('categories')
-      .select('id, name, slug, sort_order')
-      .eq('is_active', true)
-      .order('sort_order', { ascending: true });
+    // Parallel fetch of categories for navigation
+    const [categoriesResult] = await Promise.allSettled([
+      locals.supabase
+        .from('categories')
+        .select('id, name, slug')
+        .is('parent_id', null)
+        .order('name')
+    ]);
 
-    if (categoriesError) {
-      console.error('Categories error:', categoriesError);
-    }
+    const categories = categoriesResult.status === 'fulfilled' ? categoriesResult.value.data || [] : [];
 
-    // Transform products data for component compatibility
+    // Transform products data for frontend - minimal processing
     const transformedProducts = (products || []).map(product => ({
       id: product.id,
       title: product.title,
-      description: product.description,
       price: Number(product.price),
-      images: product.images?.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)).map(img => img.image_url) || [],
+      images: [product.product_images?.[0]?.image_url].filter(Boolean), // Only first image for search results
       brand: product.brand,
       size: product.size,
       condition: product.condition,
-      category: product.category,
-      seller_id: product.seller_id,
-      seller: product.seller,
+      category: {
+        name: product.categories?.name,
+        slug: product.categories?.slug
+      },
+      seller: {
+        username: product.profiles?.username,
+        avatar_url: product.profiles?.avatar_url
+      },
       created_at: product.created_at,
       location: product.location
     }));
