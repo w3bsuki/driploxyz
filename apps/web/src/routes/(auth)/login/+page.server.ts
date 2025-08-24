@@ -75,8 +75,6 @@ export const actions: Actions = {
     });
 
     if (error) {
-      console.error('Login error:', error.message);
-      
       let errorMessage = 'Unable to sign in';
       if (error.message.includes('Invalid login credentials')) {
         errorMessage = 'Invalid email or password';
@@ -113,7 +111,7 @@ export const actions: Actions = {
       throw redirect(303, '/onboarding');
     }
     
-    // Redirect to dashboard after successful login (OFFICIAL SVELTEKIT 2 PATTERN)
-    throw redirect(303, '/dashboard');
+    // Redirect to home after successful login
+    throw redirect(303, '/');
   }
 };
