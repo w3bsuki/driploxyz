@@ -69,7 +69,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
           created_at,
           seller_id,
           country_code,
-          product_images!inner (
+          product_images (
             image_url
           ),
           categories (
