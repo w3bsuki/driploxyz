@@ -56,7 +56,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
         .order('created_at', { ascending: false })
         .limit(8),
       
-      // Get featured products with only necessary fields
+      // Get featured products with only necessary fields - simplified for debugging
       supabase
         .from('products')
         .select(`
@@ -65,22 +65,9 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
           price,
           condition,
           size,
-          location,
           created_at,
           seller_id,
-          country_code,
-          product_images!inner (
-            image_url
-          ),
-          categories!inner (
-            id,
-            name,
-            parent_id
-          ),
-          profiles!products_seller_id_fkey (
-            username,
-            avatar_url
-          )
+          country_code
         `)
         .eq('is_active', true)
         .eq('is_sold', false)
