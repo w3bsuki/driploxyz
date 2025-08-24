@@ -25,7 +25,7 @@
   // CRITICAL: Initialize language IMMEDIATELY on mount, before any child components
   // This runs synchronously during component initialization
   if (browser && data?.language) {
-    console.log('🌍 Client: Initializing language IMMEDIATELY with:', data.language);
+    if (dev) console.log('🌍 Client: Initializing language IMMEDIATELY with:', data.language);
     initializeLanguage(data.language);
     if (i18n.isAvailableLanguageTag(data.language)) {
       sessionStorage.setItem('selectedLocale', data.language);
@@ -35,18 +35,18 @@
   // Language initialization - Header component handles switching
   $effect(() => {
     if (browser && data) {
-      console.log('🌍 Client: Effect - checking language with server data:', data.language);
+      if (dev) console.log('🌍 Client: Effect - checking language with server data:', data.language);
       
       // Only initialize if not already set correctly
       if (data.language && i18n.languageTag() !== data.language) {
-        console.log('🌍 Client: Language mismatch, setting to:', data.language);
+        if (dev) console.log('🌍 Client: Language mismatch, setting to:', data.language);
         initializeLanguage(data.language);
         if (i18n.isAvailableLanguageTag(data.language)) {
           sessionStorage.setItem('selectedLocale', data.language);
         }
       }
       
-      console.log('🌍 Client: Final language set to:', i18n.languageTag());
+      if (dev) console.log('🌍 Client: Final language set to:', i18n.languageTag());
     }
   });
 

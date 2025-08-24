@@ -26,16 +26,29 @@
 		<!-- Apple Touch Icons -->
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/icons/icon-192x192.png">
 		
-		<!-- Web Vitals monitoring -->
+		<!-- Error handling and monitoring -->
 		<script>
-			// Report Core Web Vitals to analytics
-			if ('PerformanceObserver' in window) {
+			// Global error handler for uncaught JavaScript errors
+			window.addEventListener('error', function(event) {
+				console.error('Global error:', event.error);
+				// In production, send to error tracking service
+				if (window.location.hostname !== 'localhost') {
+					// Could integrate with Sentry, LogRocket, etc.
+				}
+			});
+
+			// Global handler for unhandled promise rejections
+			window.addEventListener('unhandledrejection', function(event) {
+				console.error('Unhandled promise rejection:', event.reason);
+			});
+
+			// Report Core Web Vitals to analytics (dev only)
+			if ('PerformanceObserver' in window && window.location.hostname === 'localhost') {
 				try {
 					// LCP reporting
 					new PerformanceObserver((list) => {
 						const entries = list.getEntries();
 						const lastEntry = entries[entries.length - 1];
-						// Log to analytics
 						console.log('[LCP]', lastEntry.renderTime || lastEntry.loadTime);
 					}).observe({ type: 'largest-contentful-paint', buffered: true });
 					
@@ -43,7 +56,6 @@
 					new PerformanceObserver((list) => {
 						const entries = list.getEntries();
 						const firstInput = entries[0];
-						// Log to analytics
 						console.log('[FID]', firstInput.processingStart - firstInput.startTime);
 					}).observe({ type: 'first-input', buffered: true });
 				} catch (e) {
