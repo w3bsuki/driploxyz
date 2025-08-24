@@ -47,13 +47,18 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
 
     profile = data;
 
-    // Check if user needs onboarding
-    const shouldRedirect =
-      profile &&
-      profile.onboarding_completed !== true &&
-      !REDIRECT_PATHS_TO_SKIP.some(path => url.pathname.startsWith(path));
-
-    if (shouldRedirect) {
+    // FORCE ONBOARDING CHECK - NO EXCEPTIONS
+    // If user exists but has no profile or onboarding not completed -> ONBOARDING
+    const needsOnboarding = user && (!profile || profile.onboarding_completed !== true);
+    const isProtectedPath = !REDIRECT_PATHS_TO_SKIP.some(path => url.pathname.startsWith(path));
+    
+    if (needsOnboarding && isProtectedPath) {
+      console.log('[ONBOARDING CHECK] User needs onboarding:', {
+        userId: user.id,
+        hasProfile: !!profile,
+        onboardingCompleted: profile?.onboarding_completed,
+        currentPath: url.pathname
+      });
       throw redirect(303, '/onboarding');
     }
   }

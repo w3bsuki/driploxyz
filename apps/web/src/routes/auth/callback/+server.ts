@@ -78,12 +78,13 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
       throw redirect(303, '/dashboard?verified=true');
     }
 
-    // Check if onboarding is needed
+    // ALWAYS CHECK ONBOARDING STATUS - NO EXCEPTIONS
     if (!profile || profile.onboarding_completed !== true) {
+      console.log('[AUTH CALLBACK] User needs onboarding, redirecting...');
       throw redirect(303, '/onboarding');
     }
 
-    // Safe next redirect for returning users - default to dashboard
+    // Only redirect elsewhere if onboarding is complete
     let redirectPath = '/dashboard';
     if (next && next !== 'undefined' && next !== 'null') {
       if (next.startsWith('/') && !next.includes('://')) {
