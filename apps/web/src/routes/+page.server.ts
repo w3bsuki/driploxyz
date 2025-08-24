@@ -1,17 +1,11 @@
 import type { PageServerLoad } from './$types';
-import { createServices } from '$lib/services';
 import { redirect } from '@sveltejs/kit';
-import { cacheWarming } from '$lib/cache';
-import { getTrendingSearches } from '$lib/services/trending';
 
 export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
   // Check if this is an auth callback that went to the wrong URL
   const code = url.searchParams.get('code');
   if (code) {
-    console.log('[HOME] Detected auth code in URL, redirecting to auth callback');
-    // Preserve all query params and redirect to the proper callback URL
     const params = new URLSearchParams(url.searchParams);
-    // Add next parameter if not present
     if (!params.has('next')) {
       params.set('next', '/onboarding');
     }
@@ -21,12 +15,10 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
   // Handle missing Supabase configuration
   if (!supabase) {
     return {
-      promotedProducts: [],
       featuredProducts: [],
       categories: [],
       topSellers: [],
       errors: {
-        promoted: 'Database not configured',
         products: 'Database not configured', 
         categories: 'Database not configured',
         sellers: 'Database not configured'
@@ -34,16 +26,26 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
     };
   }
 
-  const services = createServices(supabase, null); // No stripe needed for homepage
-
   try {
-    // Direct parallel queries - simpler and more maintainable than RPC
-    console.log('[HOMEPAGE] Loading homepage data...');
-    
-    const [categoriesResult, topSellersResult, promotedResult, featuredResult, trendingSearches] = await Promise.allSettled([
-      services.categories.getMainCategories(),
-      services.profiles.getTopSellers(8),
-      services.products.getPromotedProducts(8),
+    // Optimized parallel queries - select only needed columns to minimize egress
+    const [categoriesResult, topSellersResult, featuredResult] = await Promise.allSettled([
+      // Get main categories only
+      supabase
+        .from('categories')
+        .select('id, name, icon, slug')
+        .is('parent_id', null)
+        .order('display_order')
+        .limit(6),
+      
+      // Get top sellers with minimal data
+      supabase
+        .from('profiles')
+        .select('id, username, avatar_url, rating, sales_count')
+        .gt('sales_count', 0)
+        .order('sales_count', { ascending: false })
+        .limit(8),
+      
+      // Get featured products with only necessary fields
       supabase
         .from('products')
         .select(`
@@ -52,33 +54,26 @@ export const load: PageServerLoad = async ({ url, locals: { supabase } }) => {
           price,
           condition,
           size,
-          brand,
           location,
-          is_boosted,
           created_at,
           seller_id,
-          category_id,
-          favorite_count,
-          product_images (
-            id,
-            image_url,
-            sort_order
+          product_images!inner (
+            image_url
           ),
           categories!inner (
+            id,
             name,
             parent_id
           ),
           profiles!products_seller_id_fkey (
             username,
-            rating,
             avatar_url
           )
         `)
         .eq('is_active', true)
         .eq('is_sold', false)
         .order('created_at', { ascending: false })
-        .limit(12),
-      getTrendingSearches(supabase)
+        .limit(12)
     ]);
 
     // Process results
