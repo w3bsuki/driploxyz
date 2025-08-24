@@ -108,8 +108,8 @@ export const actions: Actions = {
         }
       }
 
-      // Redirect to dashboard after successful onboarding
-      throw redirect(303, '/dashboard');
+      // Return success instead of redirect so frontend can show modal first
+      return { success: true };
     } catch (error) {
       if (error instanceof Response) {
         throw error; // Re-throw redirects

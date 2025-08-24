@@ -442,12 +442,10 @@
           
           return async ({ result }) => {
             submitting = false;
-            if (result.type === 'redirect') {
+            if (result.type === 'success') {
+              // Show success modal first
               showSuccessModal = true;
               toasts.success('Profile setup complete!');
-              setTimeout(() => {
-                goto(result.location, { invalidateAll: true });
-              }, 500);
             } else if (result.type === 'failure') {
               toasts.error(result.data?.error || 'Failed to complete onboarding');
             }
