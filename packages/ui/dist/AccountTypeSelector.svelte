@@ -165,7 +165,7 @@
   {/each}
   </div>
   
-  {#if showDiscountCode && selected === 'brand'}
+  {#if showDiscountCode && (selected === 'brand' || selected === 'premium')}
     <div class="max-w-md mx-auto p-4 bg-gray-50 rounded-lg border border-gray-200">
       <label class="block text-sm font-medium text-gray-700 mb-2">
         {translations.haveDiscountCode || 'Have a discount code?'}
@@ -186,8 +186,8 @@
           Apply
         </button>
       </div>
-      {#if localDiscountCode === 'Indecisive'}
-        <p class="text-green-600 text-sm mt-2">✅ 90% discount will be applied!</p>
+      {#if localDiscountCode.toUpperCase() === 'INDECISIVE'}
+        <p class="text-green-600 text-sm mt-2">✅ 99% discount will be applied at checkout!</p>
       {/if}
     </div>
   {/if}

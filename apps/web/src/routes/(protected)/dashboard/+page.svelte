@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Avatar, ProductCard, ProductCardSkeleton, ListItemSkeleton, type Product, toasts } from '@repo/ui';
+  import { Button, Avatar, ProductCard, ProductCardSkeleton, ListItemSkeleton, WelcomeModal, type Product, toasts } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
   import { page } from '$app/stores';
@@ -15,10 +15,19 @@
   
   let isLoading = $state(false);
   let tabLoading = $state(false);
+  let showWelcomeModal = $state(false);
   
-  // Check for success message from listing creation
+  // Check for success message from listing creation and first time users
   onMount(() => {
     const urlParams = new URLSearchParams(window.location.search);
+    
+    // Check if user just completed onboarding (first time)
+    const isFirstTime = localStorage.getItem('driplo_welcome_shown') !== 'true';
+    if (isFirstTime && data.profile?.onboarding_completed) {
+      showWelcomeModal = true;
+      localStorage.setItem('driplo_welcome_shown', 'true');
+    }
+    
     if (urlParams.get('success') === 'listing') {
       toasts.success('Your listing has been published successfully! 🎉');
       // Remove the success param from URL
@@ -623,3 +632,13 @@
     {/if}
   </div>
 </div>
+
+<!-- Welcome Modal for first-time users -->
+{#if showWelcomeModal}
+  <WelcomeModal
+    username={data.profile?.username || 'there'}
+    onComplete={() => {
+      showWelcomeModal = false;
+    }}
+  />
+{/if}

@@ -11,6 +11,7 @@
     BrandPaymentModal
   } from '@repo/ui';
   import { goto } from '$app/navigation';
+  import { enhance } from '$app/forms';
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import * as m from '@repo/i18n';
@@ -130,6 +131,7 @@
   
   function handleDiscountCodeChange(code: string) {
     discountCode = code;
+    console.log('Discount code updated to:', code);
   }
 
   function handleAvatarSelect(url: string) {
@@ -178,8 +180,8 @@
     payoutName = name || '';
   }
 
-  async function completeOnboarding() {
-    if (!data.user || !username.trim()) return;
+  function prepareFormSubmit() {
+    if (!data.user || !username.trim()) return false;
     
     // FINAL CHECK: Absolutely no completing without payment for brand/premium
     if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
@@ -187,48 +189,10 @@
         duration: 5000
       });
       showBrandPayment = true;
-      return;
+      return false;
     }
     
-    submitting = true;
-    
-    try {
-      // Create FormData to submit to server action
-      const formData = new FormData();
-      formData.append('accountType', accountType);
-      formData.append('username', username.trim());
-      formData.append('fullName', fullName.trim());
-      formData.append('avatarUrl', avatarUrl);
-      formData.append('payoutMethod', payoutMethod);
-      formData.append('payoutDetails', payoutDetails);
-      formData.append('payoutName', payoutName);
-      formData.append('socialLinks', JSON.stringify(socialLinks.filter(link => link.url.trim())));
-      formData.append('brandPaid', brandPaid.toString());
-
-      // Submit to server action
-      const response = await fetch('?/complete', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (response.ok) {
-        // Show success modal briefly
-        showSuccessModal = true;
-        toasts.success('Profile setup complete!');
-        
-        // Don't use setTimeout - redirect immediately after modal shows
-        // The server already sends a redirect, just follow it
-        await goto('/dashboard', { invalidateAll: true });
-      } else {
-        const result = await response.json();
-        throw new Error(result.error || 'Failed to complete onboarding');
-      }
-    } catch (error) {
-      console.error('Onboarding error:', error);
-      toasts.error('Something went wrong. Please try again.');
-    } finally {
-      submitting = false;
-    }
+    return true;
   }
 
   const canProceed = $derived(() => {
@@ -471,29 +435,62 @@
         {/each}
       </div>
 
-      <SocialLinksEditor
-        links={socialLinks}
-        onUpdate={handleSocialLinksUpdate}
-        class="mb-8"
-      />
+      <form
+        method="POST"
+        action="?/complete"
+        use:enhance={() => {
+          if (!prepareFormSubmit()) return;
+          submitting = true;
+          
+          return async ({ result }) => {
+            submitting = false;
+            if (result.type === 'redirect') {
+              showSuccessModal = true;
+              toasts.success('Profile setup complete!');
+              setTimeout(() => {
+                goto(result.location, { invalidateAll: true });
+              }, 500);
+            } else if (result.type === 'failure') {
+              toasts.error(result.data?.error || 'Failed to complete onboarding');
+            }
+          };
+        }}
+      >
+        <input type="hidden" name="accountType" value={accountType} />
+        <input type="hidden" name="username" value={username.trim()} />
+        <input type="hidden" name="fullName" value={fullName.trim()} />
+        <input type="hidden" name="avatarUrl" value={avatarUrl} />
+        <input type="hidden" name="payoutMethod" value={payoutMethod} />
+        <input type="hidden" name="payoutDetails" value={payoutDetails} />
+        <input type="hidden" name="payoutName" value={payoutName} />
+        <input type="hidden" name="socialLinks" value={JSON.stringify(socialLinks.filter(link => link.url.trim()))} />
+        <input type="hidden" name="brandPaid" value={brandPaid.toString()} />
 
-      <div class="flex space-x-4">
-        <Button
-          onclick={prevStep}
-          variant="outline"
-          class="flex-1"
-        >
-          {m.onboarding_back()}
-        </Button>
-        <Button
-          onclick={completeOnboarding}
-          disabled={submitting}
-          loading={submitting}
-          class="flex-1 bg-green-600 text-white hover:bg-green-700"
-        >
-          {submitting ? m.onboarding_settingUp() : m.onboarding_completeSetup()}
-        </Button>
-      </div>
+        <SocialLinksEditor
+          links={socialLinks}
+          onUpdate={handleSocialLinksUpdate}
+          class="mb-8"
+        />
+
+        <div class="flex space-x-4">
+          <Button
+            type="button"
+            onclick={prevStep}
+            variant="outline"
+            class="flex-1"
+          >
+            {m.onboarding_back()}
+          </Button>
+          <Button
+            type="submit"
+            disabled={submitting}
+            loading={submitting}
+            class="flex-1 bg-green-600 text-white hover:bg-green-700"
+          >
+            {submitting ? m.onboarding_settingUp() : m.onboarding_completeSetup()}
+          </Button>
+        </div>
+      </form>
     {/snippet}
   </OnboardingStep>
 {/if}

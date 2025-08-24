@@ -27,7 +27,7 @@
   let elements: any = $state(null);
   let cardElement: any = $state(null);
   let cardContainer: HTMLDivElement | undefined = $state();
-  let discountCode = $state(initialDiscountCode);
+  let discountCode = $state('');
   let discountAmount = $state(0);
   let finalPrice = $state(0);
   let validatingDiscount = $state(false);
@@ -39,22 +39,32 @@
   // Use correct plan ID based on account type
   let actualPlanId = $state(
     accountType === 'premium' 
-      ? 'c0587696-cbcd-4e6b-b6bc-ba84fb47ddce' // Premium plan ID
-      : '989b722e-4050-4c63-ac8b-ab105f14027c'  // Brand plan ID
+      ? 'premium' // Premium plan ID
+      : 'brand'  // Brand plan ID
   );
   
-  // Set initial price
+  // Initialize final price - must be reactive
   $effect(() => {
-    finalPrice = basePrice;
+    if (discountAmount > 0) {
+      finalPrice = basePrice - discountAmount;
+    } else {
+      finalPrice = basePrice;
+    }
   });
 
+  // Set initial discount code from prop - always sync with prop when modal opens
+  $effect(() => {
+    if (show && initialDiscountCode) {
+      discountCode = initialDiscountCode;
+    }
+  });
+  
   // Validate discount code when it changes
   $effect(() => {
     if (discountCode && discountCode.trim() && actualPlanId) {
       validateDiscountCode(discountCode.trim());
     } else {
       discountAmount = 0;
-      finalPrice = basePrice;
       discountError = '';
     }
   });
@@ -79,16 +89,14 @@
       
       if (result.valid) {
         discountAmount = result.discount_amount || 0;
-        finalPrice = result.final_amount || basePrice;
+        // Don't set finalPrice here - let the $effect handle it reactively
       } else {
         discountAmount = 0;
-        finalPrice = basePrice;
         discountError = result.error || 'Invalid discount code';
       }
     } catch (err) {
       console.error('Discount validation failed:', err);
       discountAmount = 0;
-      finalPrice = basePrice;
       discountError = 'Failed to validate discount code';
     } finally {
       validatingDiscount = false;

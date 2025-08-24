@@ -108,8 +108,8 @@ export const actions: Actions = {
         }
       }
 
-      // Return success instead of redirect to avoid hanging with client-side handling
-      return { success: true };
+      // Redirect to dashboard after successful onboarding
+      throw redirect(303, '/dashboard');
     } catch (error) {
       if (error instanceof Response) {
         throw error; // Re-throw redirects
