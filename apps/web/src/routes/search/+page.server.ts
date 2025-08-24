@@ -2,6 +2,7 @@ import type { PageServerLoad } from './$types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export const load: PageServerLoad = async ({ url, locals }) => {
+  const country = locals.country || 'BG';
   const query = url.searchParams.get('q') || '';
   const category = url.searchParams.get('category') || '';
   const minPrice = url.searchParams.get('min_price');
@@ -28,6 +29,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         created_at,
         seller_id,
         category_id,
+        country_code,
         categories!inner (
           name,
           slug
@@ -41,7 +43,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         )
       `)
       .eq('is_sold', false)
-      .eq('is_active', true);
+      .eq('is_active', true)
+      .eq('country_code', country);
 
     // OFFICIAL SUPABASE FULL-TEXT SEARCH PATTERN
     if (query) {

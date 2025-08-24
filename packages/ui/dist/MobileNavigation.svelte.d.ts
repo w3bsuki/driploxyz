@@ -21,6 +21,8 @@ interface Props {
         signIn?: string;
         signUp?: string;
         browseCategories?: string;
+        orders?: string;
+        favorites?: string;
     };
 }
 declare const MobileNavigation: import("svelte").Component<Props, {}, "">;

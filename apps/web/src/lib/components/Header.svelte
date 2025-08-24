@@ -240,6 +240,14 @@
                   canSell={userCanSell}
                   onSignOut={handleSignOut}
                   onClose={closeMenus}
+                  translations={{
+                    myProfile: i18n.nav_profile(),
+                    orders: i18n.nav_orders(),
+                    favorites: i18n.nav_favorites(),
+                    startSelling: i18n.nav_startSelling(),
+                    settings: i18n.nav_settings(),
+                    signOut: i18n.auth_signOut()
+                  }}
                 />
               </div>
             {/if}
@@ -286,7 +294,9 @@
         signOut: i18n.auth_signOut(),
         signIn: i18n.auth_signIn(),
         signUp: i18n.auth_signUp(),
-        browseCategories: i18n.nav_browseCategories()
+        browseCategories: i18n.nav_browseCategories(),
+        orders: i18n.nav_orders(),
+        favorites: i18n.nav_favorites()
       }}
     />
   {/if}

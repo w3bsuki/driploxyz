@@ -3,13 +3,18 @@ import type { PageServerLoad } from './$types';
 export const load: PageServerLoad = async ({ locals }) => {
 	// Fetch all subscription records
 	const { data: subscriptions, error } = await locals.supabase
-		.from('subscriptions')
+		.from('user_subscriptions')
 		.select(`
 			*,
-			user:profiles!subscriptions_user_id_fkey(
+			user:profiles!user_subscriptions_user_id_fkey(
 				username,
 				avatar_url,
 				full_name
+			),
+			plan:subscription_plans!user_subscriptions_plan_id_fkey(
+				name,
+				price_gbp,
+				features
 			)
 		`)
 		.order('created_at', { ascending: false });
@@ -20,26 +25,31 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	// Get stats
 	const { count: totalSubscriptions } = await locals.supabase
-		.from('subscriptions')
+		.from('user_subscriptions')
 		.select('*', { count: 'exact', head: true });
 
 	const { count: activeSubscriptions } = await locals.supabase
-		.from('subscriptions')
+		.from('user_subscriptions')
 		.select('*', { count: 'exact', head: true })
 		.eq('status', 'active');
 
 	const { count: canceledSubscriptions } = await locals.supabase
-		.from('subscriptions')
+		.from('user_subscriptions')
 		.select('*', { count: 'exact', head: true })
-		.eq('status', 'canceled');
+		.eq('status', 'cancelled');
 
 	// Calculate MRR (Monthly Recurring Revenue)
 	const { data: activeSubsData } = await locals.supabase
-		.from('subscriptions')
-		.select('price_per_month')
+		.from('user_subscriptions')
+		.select(`
+			*,
+			plan:subscription_plans!user_subscriptions_plan_id_fkey(
+				price_gbp
+			)
+		`)
 		.eq('status', 'active');
 
-	const mrr = activeSubsData?.reduce((sum, sub) => sum + (sub.price_per_month || 0), 0) || 0;
+	const mrr = activeSubsData?.reduce((sum, sub) => sum + (sub.plan?.price_gbp || 0), 0) || 0;
 
 	return {
 		subscriptions: subscriptions || [],

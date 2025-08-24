@@ -102,6 +102,23 @@ export const COUNTRY_CONFIGS: Record<CountryCode, CountryConfig> = {
   }
 };
 
+// Get country from subdomain
+export function getCountryFromDomain(hostname: string): CountryCode | null {
+  // Check for subdomains first
+  if (hostname.startsWith('uk.') || hostname.includes('uk.')) return 'GB';
+  if (hostname.startsWith('bg.') || hostname.includes('bg.')) return 'BG';
+  if (hostname.startsWith('us.') || hostname.includes('us.')) return 'US';
+  if (hostname.startsWith('de.') || hostname.includes('de.')) return 'DE';
+  
+  // Check for country TLDs
+  if (hostname.endsWith('.uk')) return 'GB';
+  if (hostname.endsWith('.bg')) return 'BG';
+  if (hostname.endsWith('.us')) return 'US';
+  if (hostname.endsWith('.de')) return 'DE';
+  
+  return null;
+}
+
 // Server-side country detection from IP
 export async function detectCountryFromIP(event: RequestEvent): Promise<CountryCode | null> {
   try {
@@ -203,21 +220,28 @@ export async function getUserCountry(event: RequestEvent): Promise<CountryCode> 
     setCountryCookie(event, country);
     return country;
   }
+  
+  // 2. Check subdomain/domain (second highest priority)
+  const domainCountry = getCountryFromDomain(event.url.hostname);
+  if (domainCountry) {
+    setCountryCookie(event, domainCountry);
+    return domainCountry;
+  }
 
-  // 2. Check cookie
+  // 3. Check cookie
   const cookieCountry = getCountryFromCookie(event);
   if (cookieCountry) {
     return cookieCountry;
   }
 
-  // 3. Detect from IP
+  // 4. Detect from IP
   const ipCountry = await detectCountryFromIP(event);
   if (ipCountry) {
     setCountryCookie(event, ipCountry);
     return ipCountry;
   }
 
-  // 4. Default to Bulgaria
+  // 5. Default to Bulgaria
   return 'BG';
 }
 

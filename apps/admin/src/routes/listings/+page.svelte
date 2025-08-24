@@ -15,7 +15,7 @@
 		// Filter by search query
 		if (searchQuery) {
 			listings = listings.filter(listing => 
-				listing.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				listing.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				listing.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				listing.seller?.username?.toLowerCase().includes(searchQuery.toLowerCase())
 			);
@@ -24,7 +24,9 @@
 		// Filter by status
 		if (filterStatus !== 'all') {
 			if (filterStatus === 'reported') {
-				listings = listings.filter(listing => listing.is_reported === true);
+				listings = listings.filter(listing => listing.is_flagged === true);
+			} else if (filterStatus === 'active') {
+				listings = listings.filter(listing => listing.status === 'available');
 			} else {
 				listings = listings.filter(listing => listing.status === filterStatus);
 			}
@@ -35,10 +37,11 @@
 
 	function getStatusColor(status: string) {
 		switch(status) {
-			case 'active': return 'bg-green-100 text-green-800';
+			case 'available': return 'bg-green-100 text-green-800';
 			case 'sold': return 'bg-gray-100 text-gray-800';
 			case 'reserved': return 'bg-yellow-100 text-yellow-800';
-			case 'inactive': return 'bg-red-100 text-red-800';
+			case 'draft': return 'bg-blue-100 text-blue-800';
+			case 'deleted': return 'bg-red-100 text-red-800';
 			default: return 'bg-gray-100 text-gray-800';
 		}
 	}
@@ -85,11 +88,11 @@
 					class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 				>
 					<option value="all">All Listings</option>
-					<option value="active">Active</option>
+					<option value="active">Available</option>
 					<option value="sold">Sold</option>
 					<option value="reserved">Reserved</option>
-					<option value="inactive">Inactive</option>
-					<option value="reported">Reported</option>
+					<option value="draft">Draft</option>
+					<option value="reported">Flagged</option>
 				</select>
 			</div>
 		</div>
@@ -125,7 +128,7 @@
 					</thead>
 					<tbody class="bg-white divide-y divide-gray-200">
 						{#each filteredListings as listing}
-							<tr class="{listing.is_reported ? 'bg-red-50' : ''}">
+							<tr class="{listing.is_flagged ? 'bg-red-50' : ''}">
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div class="flex items-center">
 										<div class="flex-shrink-0 h-10 w-10">
@@ -137,7 +140,7 @@
 										</div>
 										<div class="ml-4">
 											<div class="text-sm font-medium text-gray-900">
-												{listing.title}
+												{listing.name}
 											</div>
 											<div class="text-sm text-gray-500">
 												{listing.brand || 'No brand'} • {listing.category}
@@ -167,9 +170,9 @@
 									<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {getStatusColor(listing.status)}">
 										{listing.status}
 									</span>
-									{#if listing.is_reported}
+									{#if listing.is_flagged}
 										<span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-											Reported
+											Flagged
 										</span>
 									{/if}
 								</td>
@@ -184,11 +187,11 @@
 									<button class="text-blue-600 hover:text-blue-900 mr-3">
 										View
 									</button>
-									{#if listing.is_reported}
+									{#if listing.is_flagged}
 										<button class="text-red-600 hover:text-red-900">
 											Review
 										</button>
-									{:else if listing.status === 'active'}
+									{:else if listing.status === 'available'}
 										<button class="text-yellow-600 hover:text-yellow-900">
 											Deactivate
 										</button>

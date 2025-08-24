@@ -109,11 +109,13 @@ export const actions: Actions = {
 
       console.log('[ONBOARDING COMPLETE] Updating profile with:', profileUpdate);
 
-      // Update profile - this is the CRITICAL step that completes onboarding
+      // UPSERT profile - this handles both update and insert cases
       const { data: updatedProfile, error: profileError } = await supabase
         .from('profiles')
-        .update(profileUpdate)
-        .eq('id', user.id)
+        .upsert({
+          id: user.id,
+          ...profileUpdate
+        })
         .select()
         .single();
 

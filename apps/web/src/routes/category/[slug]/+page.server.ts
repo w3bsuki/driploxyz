@@ -2,8 +2,9 @@ import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { createServices } from '$lib/services';
 
-export const load: PageServerLoad = async ({ params, url, locals: { supabase } }) => {
+export const load: PageServerLoad = async ({ params, url, locals: { supabase, country } }) => {
   const { slug } = params;
+  const currentCountry = country || 'BG';
   const services = createServices(supabase, null); // No stripe needed for category viewing
 
   try {
@@ -68,7 +69,8 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase } }
     
     // Build filters from query parameters
     const filters: any = {
-      category_ids: categoryIds
+      category_ids: categoryIds,
+      country_code: currentCountry // Filter by country
     };
 
     if (searchParams.get('min_price')) {
@@ -123,6 +125,7 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase } }
       .in('category_id', categoryIds)
       .eq('is_active', true)
       .eq('is_sold', false)
+      .eq('country_code', currentCountry) // Filter sellers by country
       .not('seller_id', 'is', null);
 
     if (sellersError) {

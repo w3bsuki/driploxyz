@@ -8,7 +8,8 @@ export const load: PageServerLoad = async ({ locals }) => {
   console.log('[SELL DEBUG] Locals keys:', Object.keys(locals));
   
   // Get the session from locals 
-  const { supabase, session } = locals;
+  const { supabase, session, country } = locals;
+  const currentCountry = country || 'BG';
   
   console.log('[SELL DEBUG] Session exists:', !!session);
   console.log('[SELL DEBUG] Session user ID:', session?.user?.id);
@@ -90,8 +91,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ request, locals: { supabase, session } }) => {
+  default: async ({ request, locals: { supabase, session, country } }) => {
     console.log('[SELL ACTION] Starting form submission');
+    const currentCountry = country || 'BG';
     
     if (!session) {
       console.log('[SELL ACTION] No session found');
@@ -201,6 +203,7 @@ export const actions: Actions = {
           size: size || null,
           location: null,
           seller_id: session.user.id,
+          country_code: currentCountry, // Set the country for the product
           shipping_cost: shipping_cost,
           tags: tags?.length > 0 ? tags : null,
           color: color?.trim() || null,

@@ -24,6 +24,7 @@ export interface ProductFilters {
   location?: string;
   seller_id?: string;
   search?: string;
+  country_code?: string;
 }
 
 export interface ProductSort {
@@ -114,6 +115,11 @@ export class ProductService {
       // Apply filters
       if (options.filters) {
         const { filters } = options;
+        
+        // CRITICAL: Filter by country FIRST for performance
+        if (filters.country_code) {
+          query = query.eq('country_code', filters.country_code);
+        }
         
         if (filters.category_ids?.length) {
           query = query.in('category_id', filters.category_ids);

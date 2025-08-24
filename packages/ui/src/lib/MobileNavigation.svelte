@@ -26,6 +26,8 @@
       signIn?: string;
       signUp?: string;
       browseCategories?: string;
+      orders?: string;
+      favorites?: string;
     };
   }
 
@@ -51,7 +53,9 @@
       signOut: 'Sign Out',
       signIn: 'Sign In',
       signUp: 'Sign Up',
-      browseCategories: 'Browse Categories'
+      browseCategories: 'Browse Categories',
+      orders: 'Orders',
+      favorites: 'Favorites'
     }
   }: Props = $props();
 </script>
@@ -101,14 +105,14 @@
               <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              <span class="font-medium text-sm">Orders</span>
+              <span class="font-medium text-sm">{translations.orders}</span>
             </a>
             
             <a href="/favorites" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-[44px]" onclick={onClose}>
               <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
-              <span class="font-medium text-sm">Favorites</span>
+              <span class="font-medium text-sm">{translations.favorites}</span>
             </a>
             
             {#if !canSell}
