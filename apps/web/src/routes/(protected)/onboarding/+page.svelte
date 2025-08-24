@@ -58,20 +58,21 @@
     }
   });
 
+  let showEmailVerifiedWelcome = $state(false);
+
   // Show welcome modal on mount
   onMount(() => {
-    // Check for welcome parameter from auth flow
-    if ($page.url.searchParams.get('welcome') === 'true') {
+    // Check if user just verified their email - show special welcome
+    if ($page.url.searchParams.get('email_verified') === 'true') {
+      showEmailVerifiedWelcome = true;
+      // Don't show toast if we're showing the welcome modal
+    } else if ($page.url.searchParams.get('welcome') === 'true') {
+      // Regular welcome from signup
       toasts.success('Welcome to Driplo! Let\'s set up your profile.');
-    }
-    
-    // Check if user just verified their email
-    if ($page.url.searchParams.get('verified') === 'true') {
+    } else if ($page.url.searchParams.get('verified') === 'true') {
+      // Legacy verified parameter
       toasts.success('Email verified successfully! Welcome to Driplo!');
     }
-    
-    // Don't show welcome modal - it's confusing to have multiple modals
-    // Users already see the onboarding steps which is enough
     
     // Check if user paid for brand account
     const urlParams = new URLSearchParams(window.location.search);
@@ -216,7 +217,39 @@
   <title>{m.onboarding_completeProfile()} - Driplo</title>
 </svelte:head>
 
-<!-- Welcome modal removed - jumping straight to onboarding steps -->
+<!-- Email Verification Success Modal -->
+{#if showEmailVerifiedWelcome}
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 transform transition-all">
+      <div class="text-center mb-6">
+        <!-- Success Icon -->
+        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">
+          Email Verified Successfully!
+        </h2>
+        <p class="text-gray-600 text-lg mb-6">
+          Welcome to Driplo! Please complete your profile setup to start buying and selling.
+        </p>
+      </div>
+      
+      <button
+        onclick={() => showEmailVerifiedWelcome = false}
+        class="w-full px-6 py-3 bg-black text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors duration-200"
+      >
+        Start Onboarding
+      </button>
+      
+      <p class="text-center text-sm text-gray-500 mt-4">
+        This will only take a few minutes
+      </p>
+    </div>
+  </div>
+{/if}
 
 <!-- Step 1: Account Type -->
 {#if step === 1}

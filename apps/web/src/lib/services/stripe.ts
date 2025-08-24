@@ -284,12 +284,22 @@ export class StripeService {
 				})
 				.eq('id', userId);
 
+			// Get the client secret from the subscription's latest invoice payment intent
 			const invoice = subscription.latest_invoice as Stripe.Invoice;
-			const paymentIntent = (invoice as any)?.payment_intent as Stripe.PaymentIntent;
+			const paymentIntent = invoice?.payment_intent as Stripe.PaymentIntent;
+			
+			if (!paymentIntent?.client_secret) {
+				console.error('No payment intent client secret found in subscription:', {
+					subscriptionId: subscription.id,
+					invoiceId: invoice?.id,
+					paymentIntentId: paymentIntent?.id
+				});
+				throw new Error('Failed to get payment details from subscription');
+			}
 
 			return {
 				subscription,
-				...(paymentIntent?.client_secret ? { clientSecret: paymentIntent.client_secret } : {})
+				clientSecret: paymentIntent.client_secret
 			};
 
 		} catch (error) {

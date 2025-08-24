@@ -40,16 +40,15 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
     if (verificationError || !data.user) {
       // Check if this is because the token was already used
-      // Try to get user by the token to see if they're already verified
       console.error('[AUTH CONFIRM] Verification failed:', verificationError);
       
       // Common case: token already used, user already verified
-      // Redirect to login with success message anyway
+      // Redirect to onboarding with message that email is already verified
       if (verificationError?.message?.includes('expired') || 
           verificationError?.message?.includes('used') ||
           verificationError?.message?.includes('invalid')) {
-        console.log('[AUTH CONFIRM] Token already used or expired, redirecting to login with info');
-        throw redirect(303, '/login?email_verified=true&message=Email+already+verified!+Please+sign+in+to+continue.');
+        console.log('[AUTH CONFIRM] Token already used or expired, redirecting to onboarding');
+        throw redirect(303, '/onboarding?email_verified=true&message=Your+email+is+already+verified');
       }
       
       throw redirect(303, '/login?error=verification_failed');
@@ -57,15 +56,10 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
     console.log('[AUTH CONFIRM] Email verified successfully for user:', data.user.email);
 
-    // Check if user has an active session
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
-      // No active session after email verification is expected behavior
-      // The user needs to sign in with their credentials
-      console.log('[AUTH CONFIRM] Email verified successfully, redirecting to login');
-      throw redirect(303, '/login?email_verified=true&email=' + encodeURIComponent(data.user.email) + '&message=Email+verified+successfully!+Please+sign+in+to+continue.');
-    }
+    // After successful verification, always redirect to onboarding
+    // The onboarding page will handle showing the success message
+    console.log('[AUTH CONFIRM] Email verified, redirecting to onboarding');
+    throw redirect(303, '/onboarding?email_verified=true&welcome=true');
 
     // Check profile status (should exist due to DB trigger)
     const { data: profile, error: profileError } = await supabase
