@@ -104,11 +104,11 @@ export const COUNTRY_CONFIGS: Record<CountryCode, CountryConfig> = {
 
 // Get country from subdomain
 export function getCountryFromDomain(hostname: string): CountryCode | null {
-  // Check for subdomains first
-  if (hostname.startsWith('uk.') || hostname.includes('uk.')) return 'GB';
-  if (hostname.startsWith('bg.') || hostname.includes('bg.')) return 'BG';
-  if (hostname.startsWith('us.') || hostname.includes('us.')) return 'US';
-  if (hostname.startsWith('de.') || hostname.includes('de.')) return 'DE';
+  // Check for subdomains first - be precise with matching
+  if (hostname.startsWith('uk.')) return 'GB';
+  if (hostname.startsWith('bg.')) return 'BG';
+  if (hostname.startsWith('us.')) return 'US';
+  if (hostname.startsWith('de.')) return 'DE';
   
   // Check for country TLDs
   if (hostname.endsWith('.uk')) return 'GB';
