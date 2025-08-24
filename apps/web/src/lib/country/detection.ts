@@ -129,8 +129,8 @@ export async function detectCountryFromIP(event: RequestEvent): Promise<CountryC
                 event.getClientAddress();
 
     if (!ip || ip === '127.0.0.1' || ip === '::1') {
-      // Local development - always return BG
-      return 'BG';
+      // Local development
+      return dev ? 'BG' : null;
     }
 
     // Use ipapi.co for geolocation (free tier)
@@ -187,7 +187,7 @@ export async function detectCountryFromIP(event: RequestEvent): Promise<CountryC
     return countryMappings[country] || 'BG'; // Default to Bulgaria
   } catch (error) {
     console.error('Failed to detect country from IP:', error);
-    return 'BG'; // Always return BG on error
+    return null;
   }
 }
 
