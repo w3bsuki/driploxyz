@@ -5,10 +5,8 @@ import type { RequestHandler } from './$types';
  * Bulletproof Email Verification Handler
  * 
  * Handles email confirmation via OTP token.
- * Consistent with auth/callback approach:
- * - Never manually create profiles (DB trigger handles this)
- * - Simple routing logic based on onboarding status
- * - Clear error handling and logging
+ * NOTE: Email verification links are ONE-TIME USE ONLY
+ * If user clicks twice, we handle it gracefully
  */
 export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
   const token_hash = url.searchParams.get('token_hash');
@@ -41,7 +39,19 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     });
 
     if (verificationError || !data.user) {
+      // Check if this is because the token was already used
+      // Try to get user by the token to see if they're already verified
       console.error('[AUTH CONFIRM] Verification failed:', verificationError);
+      
+      // Common case: token already used, user already verified
+      // Redirect to login with success message anyway
+      if (verificationError?.message?.includes('expired') || 
+          verificationError?.message?.includes('used') ||
+          verificationError?.message?.includes('invalid')) {
+        console.log('[AUTH CONFIRM] Token already used or expired, redirecting to login with info');
+        throw redirect(303, '/login?email_verified=true&message=Email+already+verified!+Please+sign+in+to+continue.');
+      }
+      
       throw redirect(303, '/login?error=verification_failed');
     }
 

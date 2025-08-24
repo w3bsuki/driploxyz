@@ -204,11 +204,20 @@ export class StripeService {
 			// Get user profile
 			const { data: profile } = await this.supabase
 				.from('profiles')
-				.select('username, email')
+				.select('username')
 				.eq('id', userId)
 				.single();
 
-			if (!profile) throw new Error('User profile not found');
+			// Get email from auth.users since profiles doesn't have email
+			const { data: authUser } = await this.supabase
+				.from('auth.users')
+				.select('email')
+				.eq('id', userId)
+				.single();
+
+			if (!profile && !authUser) throw new Error('User not found');
+			
+			const userEmail = authUser?.email || '';
 
 			// Get subscription plan
 			const { data: plan } = await this.supabase
@@ -221,8 +230,8 @@ export class StripeService {
 
 			// Create or retrieve Stripe customer
 			const customer = await this.getOrCreateCustomer(userId, {
-				email: profile.email,
-				name: profile.username
+				email: userEmail,
+				name: profile?.username || 'User'
 			});
 
 			// Create Stripe product and price
