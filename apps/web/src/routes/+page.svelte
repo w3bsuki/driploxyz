@@ -335,68 +335,65 @@
 					</div>
 				{/if}
 				
-				<!-- Discovery Dropdown (Trending + Top Sellers) -->
+				<!-- Compact Discovery Dropdown -->
 				{#if showCategoryDropdown}
-					<div class="bg-white rounded-2xl border border-gray-200 p-1 shadow-xs backdrop-blur-xl">
-						<div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
-							<div 
-								aria-hidden="true"
-								class="absolute inset-0 rounded-xl pointer-events-none"
-								style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
-							></div>
-							<div class="relative p-4 space-y-4">
-								<!-- Trending Section -->
-								<div>
-									<h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{i18n.trending_title()}</h3>
-									<div class="space-y-1">
-										{#each data.trendingSearches.slice(0, 3) as trend}
-											<button
-												onclick={() => handleSearch(trend)}
-												class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-white/60 rounded-lg transition-colors flex items-center space-x-2"
-											>
-												<svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-												</svg>
-												<span>{trend}</span>
-											</button>
-										{/each}
-									</div>
+					<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+						<style>
+							.scrollbar-hide {
+								-ms-overflow-style: none;
+								scrollbar-width: none;
+							}
+							.scrollbar-hide::-webkit-scrollbar {
+								display: none;
+							}
+						</style>
+						
+						<!-- Latest & Popular -->
+						<div class="space-y-3">
+							<!-- New Items -->
+							<div>
+								<h3 class="text-xs font-medium text-gray-600 mb-2 flex items-center">
+									<span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></span>
+									New Items
+								</h3>
+								<div class="flex gap-2 overflow-x-auto scrollbar-hide">
+									{#each products.slice(0, 3) as product}
+										<a href="/product/{product.id}" class="flex-shrink-0 w-16 hover:opacity-80 transition-opacity">
+											<div class="w-full h-12 rounded bg-gray-100 flex items-center justify-center overflow-hidden mb-1">
+												{#if product.images && product.images.length > 0}
+													<img src={product.images[0]} alt={product.title} class="w-full h-full object-cover" />
+												{:else}
+													<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+													</svg>
+												{/if}
+											</div>
+											<p class="text-xs text-gray-900 truncate">{product.title}</p>
+											<p class="text-xs font-semibold text-green-600">{formatPrice(product.price, product.currency)}</p>
+										</a>
+									{/each}
 								</div>
+							</div>
 
-								<!-- Top Sellers Section -->
-								<div>
-									<h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">{i18n.trending_topSellers()}</h3>
-									<div class="space-y-1">
-										{#each sellers.slice(0, 3) as seller}
-											<button
-												onclick={() => handleSellerClick(seller)}
-												class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-white/60 rounded-lg transition-colors flex items-center space-x-3"
-											>
-												<div class="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
-													{#if seller.avatar}
-														<img src={seller.avatar} alt={seller.name} class="w-full h-full rounded-full object-cover" />
-													{:else}
-														<span class="text-xs font-medium text-gray-600">{seller.name.charAt(0).toUpperCase()}</span>
-													{/if}
-												</div>
-												<div class="flex items-center space-x-2 min-w-0 flex-1">
-													<span class="truncate">{seller.name}</span>
-													{#if seller.rating !== null}
-														<div class="flex items-center space-x-1 text-xs text-gray-500">
-															<svg class="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
-																<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-															</svg>
-															<span>{seller.rating.toFixed(1)}</span>
-														</div>
-													{:else}
-														<span class="text-badge bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full text-xs font-medium">
-															{i18n.trending_newSeller()}
-														</span>
-													{/if}
-												</div>
-											</button>
-										{/each}
-									</div>
+							<!-- Top Sellers -->
+							<div>
+								<h3 class="text-xs font-medium text-gray-600 mb-2 flex items-center">
+									<span class="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>
+									Top Sellers
+								</h3>
+								<div class="flex gap-2 overflow-x-auto scrollbar-hide">
+									{#each sellers.slice(0, 4) as seller}
+										<a href="/profile/{seller.id}" class="flex-shrink-0 w-12 text-center hover:opacity-80 transition-opacity">
+											<div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-1">
+												{#if seller.avatar}
+													<img src={seller.avatar} alt={seller.name || seller.username} class="w-full h-full rounded-full object-cover" />
+												{:else}
+													<span class="text-xs font-semibold text-gray-600">{(seller.name || seller.username)?.charAt(0)?.toUpperCase() || '?'}</span>
+												{/if}
+											</div>
+											<p class="text-xs text-gray-900 truncate">{seller.name || seller.username}</p>
+										</a>
+									{/each}
 								</div>
 							</div>
 						</div>
