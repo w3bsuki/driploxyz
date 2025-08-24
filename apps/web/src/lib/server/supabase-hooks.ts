@@ -26,7 +26,7 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
     PUBLIC_SUPABASE_ANON_KEY,
     {
       auth: {
-        flowType: 'implicit' // Disable PKCE for email verification compatibility
+        flowType: 'pkce' // Use PKCE for better security
       },
       cookies: {
         getAll: () => event.cookies.getAll(),

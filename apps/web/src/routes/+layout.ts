@@ -14,7 +14,8 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
         {
           global: { fetch },
           auth: {
-            flowType: 'implicit' // Disable PKCE for email verification compatibility
+            flowType: 'pkce', // Use PKCE for better security
+            detectSessionInUrl: true // Properly detect session in callback URL
           }
         }
       )
@@ -29,7 +30,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
             }
           },
           auth: {
-            flowType: 'implicit' // Disable PKCE for email verification compatibility
+            flowType: 'pkce' // Use PKCE for better security
           }
         }
       );
