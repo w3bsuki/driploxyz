@@ -296,7 +296,11 @@
         signUp: i18n.auth_signUp(),
         browseCategories: i18n.nav_browseCategories(),
         orders: i18n.nav_orders(),
-        favorites: i18n.nav_favorites()
+        favorites: i18n.nav_favorites(),
+        categoryWomen: i18n.category_women(),
+        categoryMen: i18n.category_men(),
+        categoryKids: i18n.category_kids(),
+        categoryPets: i18n.category_pets()
       }}
     />
   {/if}

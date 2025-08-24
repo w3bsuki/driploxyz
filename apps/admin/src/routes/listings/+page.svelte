@@ -9,13 +9,13 @@
 	let searchQuery = $state('');
 	let filterStatus = $state('all');
 
-	let filteredListings = $derived(() => {
+	let filteredListings = $derived.by(() => {
 		let listings = data.listings;
 		
 		// Filter by search query
 		if (searchQuery) {
 			listings = listings.filter(listing => 
-				listing.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				listing.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				listing.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				listing.seller?.username?.toLowerCase().includes(searchQuery.toLowerCase())
 			);
@@ -23,27 +23,32 @@
 		
 		// Filter by status
 		if (filterStatus !== 'all') {
-			if (filterStatus === 'reported') {
-				listings = listings.filter(listing => listing.is_flagged === true);
+			if (filterStatus === 'featured') {
+				listings = listings.filter(listing => listing.is_featured === true);
 			} else if (filterStatus === 'active') {
-				listings = listings.filter(listing => listing.status === 'available');
-			} else {
-				listings = listings.filter(listing => listing.status === filterStatus);
+				listings = listings.filter(listing => listing.is_active === true && listing.is_sold === false);
+			} else if (filterStatus === 'sold') {
+				listings = listings.filter(listing => listing.is_sold === true);
+			} else if (filterStatus === 'inactive') {
+				listings = listings.filter(listing => listing.is_active === false);
 			}
 		}
 		
 		return listings;
 	});
 
-	function getStatusColor(status: string) {
-		switch(status) {
-			case 'available': return 'bg-green-100 text-green-800';
-			case 'sold': return 'bg-gray-100 text-gray-800';
-			case 'reserved': return 'bg-yellow-100 text-yellow-800';
-			case 'draft': return 'bg-blue-100 text-blue-800';
-			case 'deleted': return 'bg-red-100 text-red-800';
-			default: return 'bg-gray-100 text-gray-800';
-		}
+	function getStatusLabel(listing: any) {
+		if (listing.is_sold) return 'Sold';
+		if (!listing.is_active) return 'Inactive';
+		if (listing.is_featured) return 'Featured';
+		return 'Active';
+	}
+	
+	function getStatusColor(listing: any) {
+		if (listing.is_sold) return 'bg-gray-100 text-gray-800';
+		if (!listing.is_active) return 'bg-red-100 text-red-800';
+		if (listing.is_featured) return 'bg-purple-100 text-purple-800';
+		return 'bg-green-100 text-green-800';
 	}
 </script>
 
@@ -88,11 +93,10 @@
 					class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
 				>
 					<option value="all">All Listings</option>
-					<option value="active">Available</option>
+					<option value="active">Active</option>
 					<option value="sold">Sold</option>
-					<option value="reserved">Reserved</option>
-					<option value="draft">Draft</option>
-					<option value="reported">Flagged</option>
+					<option value="inactive">Inactive</option>
+					<option value="featured">Featured</option>
 				</select>
 			</div>
 		</div>
@@ -128,7 +132,7 @@
 					</thead>
 					<tbody class="bg-white divide-y divide-gray-200">
 						{#each filteredListings as listing}
-							<tr class="{listing.is_flagged ? 'bg-red-50' : ''}">
+							<tr class="{listing.is_featured ? 'bg-red-50' : ''}">
 								<td class="px-6 py-4 whitespace-nowrap">
 									<div class="flex items-center">
 										<div class="flex-shrink-0 h-10 w-10">
@@ -140,7 +144,7 @@
 										</div>
 										<div class="ml-4">
 											<div class="text-sm font-medium text-gray-900">
-												{listing.name}
+												{listing.title}
 											</div>
 											<div class="text-sm text-gray-500">
 												{listing.brand || 'No brand'} • {listing.category}
@@ -167,12 +171,12 @@
 									{/if}
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
-									<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {getStatusColor(listing.status)}">
-										{listing.status}
+									<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {getStatusColor(listing)}">
+										{getStatusLabel(listing)}
 									</span>
-									{#if listing.is_flagged}
-										<span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-											Flagged
+									{#if listing.is_featured}
+										<span class="ml-2 px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+											Featured
 										</span>
 									{/if}
 								</td>
@@ -187,7 +191,7 @@
 									<button class="text-blue-600 hover:text-blue-900 mr-3">
 										View
 									</button>
-									{#if listing.is_flagged}
+									{#if listing.is_featured}
 										<button class="text-red-600 hover:text-red-900">
 											Review
 										</button>

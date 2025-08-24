@@ -9,7 +9,7 @@
 	let searchQuery = $state('');
 	let filterRole = $state('all');
 
-	let filteredUsers = $derived(() => {
+	let filteredUsers = $derived.by(() => {
 		let users = data.users;
 		
 		// Filter by search query
@@ -27,7 +27,7 @@
 			} else if (filterRole === 'admin') {
 				users = users.filter(user => user.role === 'admin');
 			} else if (filterRole === 'verified') {
-				users = users.filter(user => user.verified === true);
+				users = users.filter(user => user.is_verified === true);
 			}
 		}
 		
@@ -151,7 +151,7 @@
 									{/if}
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
-									{#if user.verified}
+									{#if user.is_verified}
 										<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
 											Verified
 										</span>

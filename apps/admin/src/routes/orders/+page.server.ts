@@ -17,10 +17,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 				full_name
 			),
 			product:products!orders_product_id_fkey(
-				name,
+				title,
 				brand,
-				category,
-				images
+				category:categories!products_category_id_fkey(name)
 			)
 		`)
 		.order('created_at', { ascending: false })

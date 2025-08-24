@@ -9,7 +9,7 @@
 	let searchQuery = $state('');
 	let filterStatus = $state('all');
 
-	let filteredSubscriptions = $derived(() => {
+	let filteredSubscriptions = $derived.by(() => {
 		let subs = data.subscriptions;
 		
 		// Filter by search query

@@ -27,17 +27,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { count: activeListings } = await locals.supabase
 		.from('products')
 		.select('*', { count: 'exact', head: true })
-		.eq('status', 'available');
+		.eq('is_active', true)
+		.eq('is_sold', false);
 
 	const { count: soldListings } = await locals.supabase
 		.from('products')
 		.select('*', { count: 'exact', head: true })
-		.eq('status', 'sold');
+		.eq('is_sold', true);
 
 	const { count: reportedListings } = await locals.supabase
 		.from('products')
 		.select('*', { count: 'exact', head: true })
-		.eq('is_flagged', true);
+		.eq('is_featured', true);
 
 	return {
 		listings: listings || [],

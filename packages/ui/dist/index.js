@@ -88,6 +88,7 @@ export { default as PriceInput } from './PriceInput.svelte';
 export { default as TagInput } from './TagInput.svelte';
 // Toast components
 export { default as ToastContainer } from './ToastContainer.svelte';
+export { default as TutorialToast } from './TutorialToast.svelte';
 export { toasts } from './toast-store';
 // Pricing and subscription components
 export { default as PricingCard } from './PricingCard.svelte';

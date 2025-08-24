@@ -9,7 +9,7 @@
 	let searchQuery = $state('');
 	let filterStatus = $state('all');
 
-	let filteredOrders = $derived(() => {
+	let filteredOrders = $derived.by(() => {
 		let orders = data.orders;
 		
 		// Filter by search query
@@ -17,7 +17,7 @@
 			orders = orders.filter(order => 
 				order.buyer?.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				order.seller?.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				order.product?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				order.product?.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				order.id?.toLowerCase().includes(searchQuery.toLowerCase())
 			);
 		}
@@ -151,7 +151,7 @@
 										</div>
 										<div class="ml-4">
 											<div class="text-sm font-medium text-gray-900">
-												{order.product?.name || 'Unknown Item'}
+												{order.product?.title || 'Unknown Item'}
 											</div>
 											<div class="text-sm text-gray-500">
 												{order.product?.brand || ''} {order.product?.category || ''}

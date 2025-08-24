@@ -10,6 +10,11 @@
     onSubcategorySelect?: (subcategory: string | null, category: string) => void;
     onClose?: () => void;
     class?: string;
+    translations?: {
+      onSale?: string;
+      newItems?: string;
+      trending?: string;
+    };
   }
 
   let {
@@ -20,7 +25,12 @@
     onCategorySelect,
     onSubcategorySelect,
     onClose,
-    class: className = ''
+    class: className = '',
+    translations = {
+      onSale: 'On Sale',
+      newItems: 'New Items',
+      trending: 'Trending'
+    }
   }: Props = $props();
 
   const mainCategories = [
@@ -162,7 +172,7 @@
             }}
             class="flex-1 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600"
           >
-            🔥 On Sale
+            🔥 {translations.onSale}
           </button>
           <button 
             onclick={() => { 
@@ -172,7 +182,7 @@
             }}
             class="flex-1 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600"
           >
-            ✨ New Items
+            ✨ {translations.newItems}
           </button>
           <button 
             onclick={() => { 
@@ -182,7 +192,7 @@
             }}
             class="flex-1 py-2 bg-purple-500 text-white rounded-lg text-sm font-medium hover:bg-purple-600"
           >
-            📈 Trending
+            📈 {translations.trending}
           </button>
         </div>
       </div>

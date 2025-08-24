@@ -2023,6 +2023,30 @@ export const filter_reset = () => `Reset filters`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const filter_onSale = () => `On Sale`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const filter_newItems = () => `New Items`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const filter_trending = () => `Trending`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const filter_showMore = () => `Show more`
 
 

@@ -2,16 +2,31 @@
   interface Props {
     onCategoryClick: (category: string) => void;
     compact?: boolean;
+    translations?: {
+      women?: string;
+      men?: string;
+      kids?: string;
+      pets?: string;
+    };
   }
 
-  let { onCategoryClick, compact = false }: Props = $props();
+  let { 
+    onCategoryClick, 
+    compact = false,
+    translations = {
+      women: 'Women',
+      men: 'Men',
+      kids: 'Kids',
+      pets: 'Pets'
+    }
+  }: Props = $props();
 
-  const categories = [
-    { key: 'women', label: 'Women', emoji: '👗', color: 'pink' },
-    { key: 'men', label: 'Men', emoji: '👔', color: 'blue' },
-    { key: 'kids', label: 'Kids', emoji: '👶', color: 'yellow' },
-    { key: 'pets', label: 'Pets', emoji: '🐕', color: 'green' }
-  ];
+  const categories = $derived([
+    { key: 'women', label: translations.women, emoji: '👗', color: 'pink' },
+    { key: 'men', label: translations.men, emoji: '👔', color: 'blue' },
+    { key: 'kids', label: translations.kids, emoji: '👶', color: 'yellow' },
+    { key: 'pets', label: translations.pets, emoji: '🐕', color: 'green' }
+  ]);
 
   const colorClasses = {
     pink: 'bg-pink-50 hover:bg-pink-100 border-pink-200/50',

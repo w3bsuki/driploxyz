@@ -28,6 +28,10 @@
       browseCategories?: string;
       orders?: string;
       favorites?: string;
+      categoryWomen?: string;
+      categoryMen?: string;
+      categoryKids?: string;
+      categoryPets?: string;
     };
   }
 
@@ -55,7 +59,11 @@
       signUp: 'Sign Up',
       browseCategories: 'Browse Categories',
       orders: 'Orders',
-      favorites: 'Favorites'
+      favorites: 'Favorites',
+      categoryWomen: 'Women',
+      categoryMen: 'Men',
+      categoryKids: 'Kids',
+      categoryPets: 'Pets'
     }
   }: Props = $props();
 </script>
@@ -81,7 +89,15 @@
           </div>
           
           <!-- Categories -->
-          <CategoryGrid {onCategoryClick} />
+          <CategoryGrid 
+            {onCategoryClick} 
+            translations={{
+              women: translations.categoryWomen,
+              men: translations.categoryMen,
+              kids: translations.categoryKids,
+              pets: translations.categoryPets
+            }}
+          />
           
           <!-- Essential Actions -->
           <div class="space-y-2">
@@ -156,7 +172,15 @@
           <!-- Logged Out Menu -->
           <div class="space-y-3">
             <!-- Categories Grid -->
-            <CategoryGrid {onCategoryClick} />
+            <CategoryGrid 
+              {onCategoryClick}
+              translations={{
+                women: translations.categoryWomen,
+                men: translations.categoryMen,
+                kids: translations.categoryKids,
+                pets: translations.categoryPets
+              }}
+            />
             
             <!-- Language Switcher -->
             <div class="px-3 py-2">

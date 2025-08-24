@@ -9,9 +9,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 	// Get active listings count
 	const { count: activeListings } = await locals.supabase
-		.from('listings')
+		.from('products')
 		.select('*', { count: 'exact', head: true })
-		.eq('status', 'active');
+		.eq('is_active', true)
+		.eq('is_sold', false);
 
 	// Get pending payouts count
 	const { count: pendingPayouts } = await locals.supabase

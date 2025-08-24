@@ -104,7 +104,7 @@
 										<div class="h-10 w-10 rounded-lg bg-gray-300"></div>
 									{/if}
 									<div class="ml-3">
-										<p class="text-sm font-medium text-gray-900">{listing.name}</p>
+										<p class="text-sm font-medium text-gray-900">{listing.title}</p>
 										<p class="text-xs text-gray-500">by {listing.seller?.username || 'Unknown'}</p>
 									</div>
 								</div>

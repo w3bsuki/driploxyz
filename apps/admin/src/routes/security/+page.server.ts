@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 				avatar_url
 			)
 		`)
-		.eq('is_flagged', true)
+		.eq('is_featured', true)
 		.order('updated_at', { ascending: false })
 		.limit(10);
 
@@ -46,7 +46,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { count: reportedCount } = await locals.supabase
 		.from('products')
 		.select('*', { count: 'exact', head: true })
-		.eq('is_flagged', true);
+		.eq('is_featured', true);
 
 	// Get suspicious activities (placeholder - no audit_logs table yet)
 	const suspiciousActivities = 0;

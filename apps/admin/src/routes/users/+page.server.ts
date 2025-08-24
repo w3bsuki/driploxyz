@@ -19,7 +19,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	const { count: verifiedUsers } = await locals.supabase
 		.from('profiles')
 		.select('*', { count: 'exact', head: true })
-		.eq('verified', true);
+		.eq('is_verified', true);
 
 	const { count: brandUsers } = await locals.supabase
 		.from('profiles')

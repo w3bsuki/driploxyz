@@ -23,6 +23,10 @@ interface Props {
         browseCategories?: string;
         orders?: string;
         favorites?: string;
+        categoryWomen?: string;
+        categoryMen?: string;
+        categoryKids?: string;
+        categoryPets?: string;
     };
 }
 declare const MobileNavigation: import("svelte").Component<Props, {}, "">;

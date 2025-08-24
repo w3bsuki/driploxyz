@@ -375,6 +375,11 @@
           onCategorySelect={handleCategorySelectFromMega}
           onSubcategorySelect={handleSubcategorySelectFromMega}
           onClose={() => showMegaMenu = false}
+          translations={{
+            onSale: i18n.filter_onSale(),
+            newItems: i18n.filter_newItems(),
+            trending: i18n.filter_trending()
+          }}
         />
       </div>
     </div>

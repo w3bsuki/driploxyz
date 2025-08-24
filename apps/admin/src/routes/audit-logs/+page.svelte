@@ -10,7 +10,7 @@
 	let searchQuery = $state('');
 	let filterEventType = $state('all');
 
-	let filteredLogs = $derived(() => {
+	let filteredLogs = $derived.by(() => {
 		let logs = data.logs;
 		
 		// Filter by search query

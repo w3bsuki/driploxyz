@@ -239,7 +239,6 @@
         showDiscountCode={true}
         onDiscountCodeChange={handleDiscountCodeChange}
         discountCode={discountCode}
-        class="mb-8"
         translations={{
           personalTitle: m.onboarding_personalAccount(),
           personalDescription: m.onboarding_personalAccountDesc(),
@@ -264,7 +263,9 @@
           select: m.onboarding_select()
         }}
       />
-
+    {/snippet}
+    
+    {#snippet navigation()}
       <div class="flex space-x-4">
         <Button
           onclick={() => {
@@ -301,7 +302,7 @@
         {/each}
       </div>
 
-      <div class="space-y-6 mb-8">
+      <div class="space-y-6">
         <Input
           bind:value={username}
           placeholder={m.onboarding_chooseUniqueUsername()}
@@ -321,7 +322,9 @@
           <p class="text-sm text-red-600 mt-1">{m.onboarding_usernameMinLength()}</p>
         {/if}
       </div>
-
+    {/snippet}
+    
+    {#snippet navigation()}
       <div class="flex space-x-4">
         <Button
           onclick={prevStep}

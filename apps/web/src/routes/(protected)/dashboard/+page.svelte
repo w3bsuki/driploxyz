@@ -6,6 +6,8 @@
   import { replaceState } from '$app/navigation';
   import { onMount } from 'svelte';
   import * as i18n from '@repo/i18n';
+  import { tutorial } from '$lib/tutorial/manager';
+  import { TutorialToast } from '@repo/ui';
   
   interface Props {
     data: PageData;
@@ -16,6 +18,7 @@
   let isLoading = $state(false);
   let tabLoading = $state(false);
   let showWelcomeModal = $state(false);
+  let currentTutorialStep = $state<any>(null);
   
   // Check for success message from listing creation and first time users
   onMount(() => {
@@ -26,6 +29,16 @@
     if (isFirstTime && data.profile?.onboarding_completed) {
       showWelcomeModal = true;
       localStorage.setItem('driplo_welcome_shown', 'true');
+      
+      // Start tutorial after welcome modal
+      setTimeout(() => {
+        if (tutorial.shouldShowTutorial()) {
+          currentTutorialStep = tutorial.getCurrentStep('/dashboard');
+        }
+      }, 2000);
+    } else if (tutorial.shouldShowTutorial()) {
+      // Show tutorial for returning users who haven't completed it
+      currentTutorialStep = tutorial.getCurrentStep('/dashboard');
     }
     
     if (urlParams.get('success') === 'listing') {
@@ -35,6 +48,25 @@
       replaceState(newUrl, {});
     }
   });
+  
+  function handleTutorialDismiss() {
+    if (currentTutorialStep) {
+      tutorial.markStepShown(currentTutorialStep.id);
+      tutorial.dismiss();
+    }
+    currentTutorialStep = null;
+  }
+  
+  function handleTutorialNext() {
+    if (currentTutorialStep) {
+      tutorial.markStepShown(currentTutorialStep.id);
+      tutorial.nextStep();
+      // Get next step for this route
+      setTimeout(() => {
+        currentTutorialStep = tutorial.getCurrentStep('/dashboard');
+      }, 500);
+    }
+  }
   
   // Calculate stats from real data
   const stats = $derived(() => {
@@ -640,5 +672,19 @@
     onComplete={() => {
       showWelcomeModal = false;
     }}
+  />
+{/if}
+
+<!-- Tutorial Toast -->
+{#if currentTutorialStep}
+  <TutorialToast
+    step={currentTutorialStep.step}
+    totalSteps={tutorial.getTotalSteps()}
+    title={currentTutorialStep.title}
+    description={currentTutorialStep.description}
+    targetElement={currentTutorialStep.targetElement}
+    position={currentTutorialStep.position || 'bottom'}
+    onDismiss={handleTutorialDismiss}
+    onNext={handleTutorialNext}
   />
 {/if}

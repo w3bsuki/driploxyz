@@ -69,6 +69,7 @@ export { default as ImageUploaderSupabase } from './ImageUploaderSupabase.svelte
 export { default as PriceInput } from './PriceInput.svelte';
 export { default as TagInput } from './TagInput.svelte';
 export { default as ToastContainer } from './ToastContainer.svelte';
+export { default as TutorialToast } from './TutorialToast.svelte';
 export { toasts } from './toast-store';
 export type { ToastMessage } from './toast-store';
 export { default as PricingCard } from './PricingCard.svelte';

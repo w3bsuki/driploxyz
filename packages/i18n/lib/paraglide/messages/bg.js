@@ -2023,6 +2023,30 @@ export const filter_reset = () => `Нулирай филтри`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const filter_onSale = () => `В разпродажба`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const filter_newItems = () => `Нови артикули`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const filter_trending = () => `Популярни`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const filter_showMore = () => `Покажи още`
 
 

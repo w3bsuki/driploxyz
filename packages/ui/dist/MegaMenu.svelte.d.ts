@@ -8,6 +8,11 @@ interface Props {
     onSubcategorySelect?: (subcategory: string | null, category: string) => void;
     onClose?: () => void;
     class?: string;
+    translations?: {
+        onSale?: string;
+        newItems?: string;
+        trending?: string;
+    };
 }
 declare const MegaMenu: import("svelte").Component<Props, {}, "">;
 type MegaMenu = ReturnType<typeof MegaMenu>;

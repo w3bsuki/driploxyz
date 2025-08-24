@@ -205,13 +205,13 @@ Payout Management Page - Core admin functionality
 							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
 								{#if payout.status === 'pending'}
 									<button
-										on:click={() => openApproveModal(payout)}
+										onclick={() => openApproveModal(payout)}
 										class="text-green-600 hover:text-green-900 mr-3"
 									>
 										Approve
 									</button>
 									<button
-										on:click={() => {
+										onclick={() => {
 											selectedPayout = payout;
 											showRejectModal = true;
 										}}
@@ -221,7 +221,7 @@ Payout Management Page - Core admin functionality
 									</button>
 								{:else if payout.status === 'approved'}
 									<button
-										on:click={() => openCompleteModal(payout)}
+										onclick={() => openCompleteModal(payout)}
 										class="text-blue-600 hover:text-blue-900"
 									>
 										Mark Complete
@@ -263,7 +263,7 @@ Payout Management Page - Core admin functionality
 				<div class="flex justify-end gap-3">
 					<button
 						type="button"
-						on:click={() => {
+						onclick={() => {
 							showApproveModal = false;
 							selectedPayout = null;
 						}}
@@ -310,7 +310,7 @@ Payout Management Page - Core admin functionality
 				<div class="flex justify-end gap-3">
 					<button
 						type="button"
-						on:click={() => {
+						onclick={() => {
 							showCompleteModal = false;
 							selectedPayout = null;
 							transactionReference = '';
