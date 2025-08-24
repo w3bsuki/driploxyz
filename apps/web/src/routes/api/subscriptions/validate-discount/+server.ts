@@ -5,9 +5,13 @@ import { createServerSupabaseClient } from '$lib/supabase/server';
 export const POST: RequestHandler = async (event) => {
   try {
     const { code, planId } = await event.request.json();
+    console.log('[Validate Discount] Request:', { code, planId });
     
     if (!code || !planId) {
-      return json({ valid: false, error: 'Code and plan ID are required' }, { status: 400 });
+      return json({ 
+        valid: false, 
+        error: 'Discount code and plan ID are required' 
+      }, { status: 400 });
     }
 
     const supabase = createServerSupabaseClient(event);
@@ -16,52 +20,71 @@ export const POST: RequestHandler = async (event) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
-      return json({ valid: false, error: 'Authentication required' }, { status: 401 });
+      return json({ 
+        valid: false, 
+        error: 'Unauthorized' 
+      }, { status: 401 });
     }
 
-    // Get the actual plan from database to determine pricing
+    // Get plan details to determine plan type
     const { data: plan, error: planError } = await supabase
       .from('subscription_plans')
       .select('plan_type, price_monthly')
       .eq('id', planId)
       .single();
-      
-    if (planError || !plan) {
-      return json({ valid: false, error: 'Plan not found' }, { status: 400 });
-    }
-    
-    const basePrice = Number(plan.price_monthly);
-    const planType = plan.plan_type;
 
-    // Validate discount code using the database function
-    const { data: result, error: validationError } = await supabase
+    if (planError || !plan) {
+      return json({ 
+        valid: false, 
+        error: 'Plan not found' 
+      }, { status: 404 });
+    }
+
+    // Validate discount code using the stored procedure
+    const { data: validationResult, error: validationError } = await supabase
       .rpc('validate_discount_code', {
-        p_code: code.toUpperCase().trim(),
-        p_plan_type: planType,
+        p_code: code.toUpperCase(),
+        p_plan_type: plan.plan_type,
         p_user_id: user.id,
-        p_amount: basePrice
-      });
+        p_amount: plan.price_monthly
+      })
+      .single();
 
     if (validationError) {
-      console.error('Discount validation error:', validationError);
-      return json({ valid: false, error: 'Invalid discount code' }, { status: 400 });
+      console.error('[Discount Validation] Database error:', validationError);
+      return json({ 
+        valid: false, 
+        error: 'Failed to validate discount code' 
+      }, { status: 500 });
     }
 
-    // The RPC function returns the result directly
+    console.log('[Discount Validation] Result:', validationResult);
+
+    // Handle both nested and flat response structures
+    const result = validationResult?.validate_discount_code || validationResult;
+    
+    // Return the validation result
     if (result && result.valid) {
       return json({
         valid: true,
-        discount_amount: result.discount_amount || 0,
-        final_amount: result.final_amount || basePrice,
-        discount_percent: result.discount_percent || 0,
-        code: code.toUpperCase().trim(),
-        description: result.description || ''
+        code: result.code,
+        discount_amount: result.discount_amount,
+        final_amount: result.final_amount,
+        discount_percent: result.discount_percent,
+        description: result.description
+      });
+    } else {
+      return json({
+        valid: false,
+        error: result?.error || 'Invalid discount code'
       });
     }
 
-    return json({ valid: false, error: 'Invalid discount code' }, { status: 400 });
   } catch (error) {
-    console.error('Internal error:', error);
-    return json({ valid: false, error: 'Internal server error' }, { status: 500 });
+    console.error('[Discount Validation] Internal error:', error);
+    return json({ 
+      valid: false, 
+      error: 'Internal server error' 
+    }, { status: 500 });
   }
 };
