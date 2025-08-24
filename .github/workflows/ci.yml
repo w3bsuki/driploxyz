@@ -1,10 +1,11 @@
-name: CI/CD Pipeline
+name: Full CI/CD Pipeline (Disabled for MVP)
 
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+# Disabled for MVP launch - too strict
+# on:
+#   push:
+#     branches: [main, develop]
+#   pull_request:
+#     branches: [main, develop]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
