@@ -33,10 +33,15 @@
   let validatingDiscount = $state(false);
   let discountError = $state('');
 
-  // We'll get the actual plan ID from the subscription plans table
+  // Set correct price and plan ID based on account type
   const basePrice = accountType === 'premium' ? 25 : 50;
-  // Use hardcoded plan ID for brand subscription
-  let actualPlanId = $state('0a3470f1-8d21-45e7-aecc-d193521adfc7'); // Brand Pro plan ID
+  
+  // Use correct plan ID based on account type
+  let actualPlanId = $state(
+    accountType === 'premium' 
+      ? 'c0587696-cbcd-4e6b-b6bc-ba84fb47ddce' // Premium plan ID
+      : '989b722e-4050-4c63-ac8b-ab105f14027c'  // Brand plan ID
+  );
   
   // Set initial price
   $effect(() => {
@@ -228,7 +233,7 @@
               {/if}
             </p>
           {:else}
-            <p class="text-sm text-gray-600">{basePrice.toFixed(2)} BGN/month subscription</p>
+            <p class="text-sm text-gray-600">{basePrice} BGN/month subscription</p>
           {/if}
         </div>
       </div>

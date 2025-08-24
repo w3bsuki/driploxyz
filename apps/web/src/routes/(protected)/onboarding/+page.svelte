@@ -100,6 +100,14 @@
   }
 
   function nextStep() {
+    // Check if premium/brand payment is required
+    if (step === 1 && (accountType === 'premium' || accountType === 'brand') && !brandPaid) {
+      toasts.error('Please complete your payment before continuing', {
+        duration: 5000
+      });
+      return;
+    }
+    
     if (step < totalSteps) {
       step++;
     }
