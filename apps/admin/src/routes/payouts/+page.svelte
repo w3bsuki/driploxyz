@@ -330,3 +330,49 @@ Payout Management Page - Core admin functionality
 		</div>
 	</div>
 {/if}
+
+<!-- Reject Modal -->
+{#if showRejectModal && selectedPayout}
+	<div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
+		<div class="bg-white rounded-lg p-6 max-w-md w-full">
+			<h3 class="text-lg font-medium text-gray-900 mb-4">Reject Payout</h3>
+			<p class="text-sm text-gray-600 mb-4">
+				Reject payout of {formatCurrency(selectedPayout.amount, selectedPayout.currency)} to {selectedPayout.username}?
+			</p>
+			<form method="POST" action="?/reject" use:enhance>
+				<input type="hidden" name="payout_id" value={selectedPayout.payout_id} />
+				<div class="mb-4">
+					<label for="reason" class="block text-sm font-medium text-gray-700 mb-2">
+						Rejection Reason (required)
+					</label>
+					<textarea
+						id="reason"
+						name="reason"
+						rows="3"
+						class="w-full px-3 py-2 border border-gray-300 rounded-md"
+						placeholder="Please provide a reason for rejection..."
+						required
+					></textarea>
+				</div>
+				<div class="flex justify-end gap-3">
+					<button
+						type="button"
+						onclick={() => {
+							showRejectModal = false;
+							selectedPayout = null;
+						}}
+						class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+					>
+						Cancel
+					</button>
+					<button
+						type="submit"
+						class="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md"
+					>
+						Reject Payout
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{/if}

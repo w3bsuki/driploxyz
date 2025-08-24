@@ -37,12 +37,23 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
         .order('sort_order')
         .limit(6),
       
-      // Get top sellers with minimal data
+      // Get sellers who have active listings
       supabase
         .from('profiles')
-        .select('id, username, avatar_url, rating, sales_count')
-        .gt('sales_count', 0)
+        .select(`
+          id, 
+          username, 
+          avatar_url, 
+          rating, 
+          sales_count,
+          products!products_seller_id_fkey!inner (
+            id
+          )
+        `)
+        .eq('products.is_active', true)
+        .eq('products.is_sold', false)
         .order('sales_count', { ascending: false })
+        .order('created_at', { ascending: false })
         .limit(8),
       
       // Get featured products with only necessary fields

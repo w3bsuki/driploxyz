@@ -335,66 +335,144 @@
 					</div>
 				{/if}
 				
-				<!-- Compact Discovery Dropdown -->
+				<!-- Premium Discovery Dropdown -->
 				{#if showCategoryDropdown}
-					<div class="bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+					<div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
 						<style>
-							.scrollbar-hide {
-								-ms-overflow-style: none;
-								scrollbar-width: none;
+							.discovery-card {
+								transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 							}
-							.scrollbar-hide::-webkit-scrollbar {
-								display: none;
+							.discovery-card:hover {
+								transform: translateY(-1px);
+								box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+							}
+							.section-header {
+								background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+								border-bottom: 1px solid #e2e8f0;
 							}
 						</style>
 						
-						<!-- Latest & Popular -->
-						<div class="space-y-3">
-							<!-- New Items -->
-							<div>
-								<h3 class="text-xs font-medium text-gray-600 mb-2 flex items-center">
-									<span class="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></span>
-									New Items
+						<!-- New Items Section -->
+						<div class="section-header px-4 py-3">
+							<div class="flex items-center justify-between">
+								<h3 class="text-sm font-semibold text-gray-800 flex items-center">
+									<div class="w-2 h-2 bg-emerald-500 rounded-full mr-2 animate-pulse"></div>
+									✨ New Items
 								</h3>
-								<div class="flex gap-2 overflow-x-auto scrollbar-hide">
-									{#each products.slice(0, 3) as product}
-										<a href="/product/{product.id}" class="flex-shrink-0 w-16 hover:opacity-80 transition-opacity">
-											<div class="w-full h-12 rounded bg-gray-100 flex items-center justify-center overflow-hidden mb-1">
-												{#if product.images && product.images.length > 0}
-													<img src={product.images[0]} alt={product.title} class="w-full h-full object-cover" />
-												{:else}
-													<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-													</svg>
-												{/if}
-											</div>
-											<p class="text-xs text-gray-900 truncate">{product.title}</p>
-											<p class="text-xs font-semibold text-green-600">{formatPrice(product.price, product.currency)}</p>
-										</a>
-									{/each}
+								<div class="flex items-center gap-2">
+									<span class="text-xs text-gray-500 bg-emerald-50 px-2 py-1 rounded-full font-medium">
+										{products.slice(0, 3).length}
+									</span>
+									<button class="text-gray-400 hover:text-gray-600 transition-colors">
+										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+										</svg>
+									</button>
 								</div>
 							</div>
+						</div>
+						<div class="p-4">
+							<div class="grid grid-cols-3 gap-3">
+								{#each products.slice(0, 3) as product, index}
+									<a href="/product/{product.id}" class="discovery-card group">
+										<div class="relative bg-gray-50 rounded-lg overflow-hidden mb-2 aspect-square border border-gray-100">
+											{#if product.images && product.images.length > 0}
+												<img src={product.images[0]} alt={product.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200" />
+											{:else}
+												<div class="w-full h-full flex items-center justify-center">
+													<svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+													</svg>
+												</div>
+											{/if}
+											<div class="absolute top-2 right-2 bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded-full font-semibold shadow-sm">
+												NEW
+											</div>
+											<div class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-gray-700 text-xs px-1.5 py-0.5 rounded-full font-medium">
+												#{index + 1}
+											</div>
+										</div>
+										<div class="space-y-1">
+											<h4 class="text-sm font-medium text-gray-900 truncate group-hover:text-emerald-600 transition-colors">
+												{product.title}
+											</h4>
+											<div class="flex items-center justify-between">
+												<p class="text-sm font-bold text-emerald-600">{formatPrice(product.price, product.currency)}</p>
+												<span class="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+													{product.condition || 'Good'}
+												</span>
+											</div>
+										</div>
+									</a>
+								{/each}
+							</div>
+						</div>
 
-							<!-- Top Sellers -->
-							<div>
-								<h3 class="text-xs font-medium text-gray-600 mb-2 flex items-center">
-									<span class="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>
-									Top Sellers
+						<!-- Top Sellers Section -->
+						<div class="section-header px-4 py-3">
+							<div class="flex items-center justify-between">
+								<h3 class="text-sm font-semibold text-gray-800 flex items-center">
+									<div class="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+									⭐ Top Sellers
 								</h3>
-								<div class="flex gap-2 overflow-x-auto scrollbar-hide">
-									{#each sellers.slice(0, 4) as seller}
-										<a href="/profile/{seller.id}" class="flex-shrink-0 w-12 text-center hover:opacity-80 transition-opacity">
-											<div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-1">
+								<div class="flex items-center gap-2">
+									<span class="text-xs text-gray-500 bg-blue-50 px-2 py-1 rounded-full font-medium">
+										{sellers.slice(0, 3).length}
+									</span>
+									<button class="text-gray-400 hover:text-gray-600 transition-colors">
+										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+										</svg>
+									</button>
+								</div>
+							</div>
+						</div>
+						<div class="p-4 pb-5">
+							<div class="grid grid-cols-3 gap-4">
+								{#each sellers.slice(0, 3) as seller, index}
+									<a href="/profile/{seller.id}" class="discovery-card text-center group">
+										<div class="relative mb-3">
+											<div class="w-12 h-12 rounded-full bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-white shadow-sm flex items-center justify-center mx-auto">
 												{#if seller.avatar}
 													<img src={seller.avatar} alt={seller.name || seller.username} class="w-full h-full rounded-full object-cover" />
 												{:else}
-													<span class="text-xs font-semibold text-gray-600">{(seller.name || seller.username)?.charAt(0)?.toUpperCase() || '?'}</span>
+													<span class="text-sm font-bold text-gray-700">{(seller.name || seller.username)?.charAt(0)?.toUpperCase() || '?'}</span>
 												{/if}
 											</div>
-											<p class="text-xs text-gray-900 truncate">{seller.name || seller.username}</p>
-										</a>
-									{/each}
-								</div>
+											<div class="absolute -top-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold border-2 border-white shadow-sm">
+												{index + 1}
+											</div>
+											{#if seller.rating && seller.rating > 0}
+												<div class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 bg-yellow-400 rounded-full p-1">
+													<svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+														<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+													</svg>
+												</div>
+											{/if}
+										</div>
+										<div class="space-y-1">
+											<h4 class="text-sm font-semibold text-gray-900 truncate group-hover:text-blue-600 transition-colors">
+												{seller.name || seller.username}
+											</h4>
+											{#if seller.rating && seller.rating > 0}
+												<div class="flex items-center justify-center gap-1">
+													<span class="text-xs font-bold text-yellow-600">{seller.rating.toFixed(1)}</span>
+													<div class="flex">
+														{#each Array(5) as _, i}
+															<svg class="w-2.5 h-2.5 {i < Math.floor(seller.rating) ? 'text-yellow-400' : 'text-gray-300'}" fill="currentColor" viewBox="0 0 20 20">
+																<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+															</svg>
+														{/each}
+													</div>
+												</div>
+											{:else}
+												<span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+													✨ New Seller
+												</span>
+											{/if}
+										</div>
+									</a>
+								{/each}
 							</div>
 						</div>
 					</div>

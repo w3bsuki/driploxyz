@@ -39,8 +39,8 @@
   // Use correct plan ID based on account type
   let actualPlanId = $state(
     accountType === 'premium' 
-      ? 'premium' // Premium plan ID
-      : 'brand'  // Brand plan ID
+      ? 'c0587696-cbcd-4e6b-b6bc-ba84fb47ddce' // Premium plan ID
+      : '989b722e-4050-4c63-ac8b-ab105f14027c'  // Brand plan ID
   );
   
   // Initialize final price - must be reactive

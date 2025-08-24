@@ -1,4 +1,5 @@
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad, Actions } from './$types';
+import { fail } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	// Fetch all orders with buyer and seller info
@@ -74,3 +75,112 @@ export const load: PageServerLoad = async ({ locals }) => {
 		}
 	};
 };
+
+export const actions = {
+	resolveDispute: async ({ request, locals }) => {
+		const formData = await request.formData();
+		const orderId = formData.get('orderId') as string;
+		const resolution = formData.get('resolution') as string; // 'refund_buyer' or 'favor_seller'
+		const adminNotes = formData.get('adminNotes') as string;
+
+		try {
+			// Update order status
+			const { error: orderError } = await locals.supabase
+				.from('orders')
+				.update({
+					status: 'resolved',
+					dispute_resolution: resolution,
+					admin_resolution_notes: adminNotes,
+					resolved_at: new Date().toISOString()
+				})
+				.eq('id', orderId);
+
+			if (orderError) {
+				return fail(400, { message: 'Failed to resolve dispute' });
+			}
+
+			// If refunding buyer, handle refund logic here
+			if (resolution === 'refund_buyer') {
+				// TODO: Integrate with Stripe to process refund
+				console.log(`Processing refund for order ${orderId}`);
+			}
+
+			return { success: true, message: 'Dispute resolved successfully' };
+		} catch (error) {
+			return fail(500, { message: 'Failed to process dispute resolution' });
+		}
+	},
+
+	updateOrderStatus: async ({ request, locals }) => {
+		const formData = await request.formData();
+		const orderId = formData.get('orderId') as string;
+		const status = formData.get('status') as string;
+		const notes = formData.get('notes') as string;
+
+		const { error } = await locals.supabase
+			.from('orders')
+			.update({
+				status: status,
+				admin_notes: notes,
+				updated_at: new Date().toISOString()
+			})
+			.eq('id', orderId);
+
+		if (error) {
+			return fail(400, { message: 'Failed to update order status' });
+		}
+
+		return { success: true, message: 'Order status updated' };
+	},
+
+	cancelOrder: async ({ request, locals }) => {
+		const formData = await request.formData();
+		const orderId = formData.get('orderId') as string;
+		const reason = formData.get('reason') as string;
+
+		const { error } = await locals.supabase
+			.from('orders')
+			.update({
+				status: 'canceled',
+				cancellation_reason: reason,
+				canceled_at: new Date().toISOString()
+			})
+			.eq('id', orderId);
+
+		if (error) {
+			return fail(400, { message: 'Failed to cancel order' });
+		}
+
+		// TODO: Process refund if payment was made
+		return { success: true, message: 'Order canceled successfully' };
+	},
+
+	refundOrder: async ({ request, locals }) => {
+		const formData = await request.formData();
+		const orderId = formData.get('orderId') as string;
+		const refundAmount = parseFloat(formData.get('refundAmount') as string);
+		const reason = formData.get('reason') as string;
+
+		try {
+			// Update order with refund info
+			const { error } = await locals.supabase
+				.from('orders')
+				.update({
+					refund_amount: refundAmount,
+					refund_reason: reason,
+					refund_processed_at: new Date().toISOString(),
+					status: 'refunded'
+				})
+				.eq('id', orderId);
+
+			if (error) {
+				return fail(400, { message: 'Failed to process refund' });
+			}
+
+			// TODO: Integrate with Stripe to process actual refund
+			return { success: true, message: 'Refund processed successfully' };
+		} catch (error) {
+			return fail(500, { message: 'Failed to process refund' });
+		}
+	}
+} satisfies Actions;

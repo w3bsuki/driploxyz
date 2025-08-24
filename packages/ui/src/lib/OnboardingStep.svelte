@@ -44,7 +44,7 @@
 
   <!-- Fixed bottom navigation -->
   {#if navigation}
-    <div class="flex-shrink-0 bg-white border-t border-gray-200 p-4">
+    <div class="flex-shrink-0 bg-white border-t border-gray-200 p-4 relative z-10">
       <div class="w-full max-w-lg mx-auto">
         {@render navigation()}
       </div>

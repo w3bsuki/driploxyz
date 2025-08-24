@@ -111,7 +111,7 @@
         onclick={() => handleSelect(accountType.value)}
         class="w-full text-left max-w-xs relative"
       >
-        <div class="bg-white rounded-xl border p-1.5 shadow-xs backdrop-blur-xl transition-all {selected === accountType.value ? 'border-gray-400 shadow-md' : 'border-gray-200 hover:border-gray-300'}">
+        <div class="bg-white/90 backdrop-blur-md rounded-xl border p-1.5 shadow-sm transition-all {selected === accountType.value ? 'border-gray-300 shadow-md ring-1 ring-gray-300/50' : 'border-gray-200/60 hover:border-gray-300/80 hover:shadow-md'}">
         <!-- Popular badge -->
         {#if accountType.popular}
           <div class="absolute -top-2 left-4 z-10">

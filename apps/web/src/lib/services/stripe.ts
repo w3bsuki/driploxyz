@@ -56,12 +56,13 @@ export class StripeService {
 				throw new Error('Product not found');
 			}
 
-			if (product.status === 'sold') {
+			if (product.is_sold === true || product.status === 'sold') {
 				throw new Error('Product is no longer available');
 			}
 
-			// Calculate fees and totals
-			const calculation = this.calculatePaymentAmounts(product.price);
+			// Calculate fees and totals (product.price is in dollars, convert to cents)
+			const productPriceCents = Math.round(product.price * 100);
+			const calculation = this.calculatePaymentAmounts(productPriceCents);
 
 			const paymentIntent = await this.stripe.paymentIntents.create({
 				amount,
@@ -71,7 +72,7 @@ export class StripeService {
 					productId,
 					sellerId,
 					buyerId,
-					productPrice: product.price.toString(),
+					productPrice: productPriceCents.toString(),
 					serviceFee: calculation.serviceFee.toString(),
 					...metadata
 				},
@@ -122,11 +123,11 @@ export class StripeService {
 				.eq('id', productId)
 				.single();
 
-			if (!product || product.status === 'sold') {
+			if (!product || product.is_sold === true || product.status === 'sold') {
 				throw new Error('Product is no longer available');
 			}
 
-			// Calculate amounts
+			// Calculate amounts (productPrice from metadata is in cents)
 			const calculation = this.calculatePaymentAmounts(parseFloat(productPrice));
 
 			// Create order
@@ -137,11 +138,12 @@ export class StripeService {
 					seller_id: sellerId,
 					product_id: productId,
 					status: 'paid',
-					total_amount: paymentIntent.amount,
-					shipping_cost: calculation.shippingCost,
+					total_amount: paymentIntent.amount / 100, // Convert from cents to dollars
+					shipping_cost: calculation.shippingCost / 100, // Convert from cents to dollars
 					tax_amount: 0,
-					service_fee: calculation.serviceFee,
-					notes: `Payment Intent: ${paymentIntentId}`
+					service_fee: calculation.serviceFee / 100, // Convert from cents to dollars
+					notes: `Payment Intent: ${paymentIntentId}`,
+					currency: 'EUR'
 				})
 				.select()
 				.single();
@@ -154,15 +156,19 @@ export class StripeService {
 				sellerId,
 				buyerId,
 				productId,
-				productPrice: parseFloat(productPrice),
-				shippingCost: calculation.shippingCost / 100, // Convert to dollars
+				productPrice: parseFloat(productPrice) / 100, // Convert cents to dollars
+				shippingCost: calculation.shippingCost / 100, // Convert cents to dollars
 				stripePaymentIntentId: paymentIntentId
 			});
 
 			// Update product status
 			await this.supabase
 				.from('products')
-				.update({ status: 'sold', sold_at: new Date().toISOString() })
+				.update({ 
+					is_sold: true, 
+					status: 'sold',
+					sold_at: new Date().toISOString() 
+				})
 				.eq('id', productId);
 
 			// Send notifications
@@ -482,7 +488,9 @@ export class StripeService {
 		stripePaymentIntentId: string;
 	}): Promise<{ transaction: Transaction | null; error: Error | null }> {
 		try {
-			const calculation = this.calculatePaymentAmounts(params.productPrice);
+			// Convert productPrice from dollars to cents for calculation
+			const productPriceCents = Math.round(params.productPrice * 100);
+			const calculation = this.calculatePaymentAmounts(productPriceCents);
 
 			const { data: transaction, error } = await this.supabase
 				.from('transactions')
@@ -490,16 +498,20 @@ export class StripeService {
 					order_id: params.orderId,
 					seller_id: params.sellerId,
 					buyer_id: params.buyerId,
-					product_id: params.productId,
+					stripe_payment_intent_id: params.stripePaymentIntentId,
+					amount_total: calculation.totalAmount / 100, // Convert cents to euros
+					commission_amount: calculation.serviceFee / 100, // Convert cents to euros  
+					seller_earnings: calculation.sellerAmount / 100, // Convert cents to euros
+					currency: 'EUR',
+					status: 'completed',
 					product_price: params.productPrice,
 					shipping_cost: params.shippingCost,
-					total_amount: calculation.totalAmount / 100, // Convert to dollars
-					commission_rate: calculation.serviceFeeRate,
-					commission_amount: calculation.serviceFee / 100,
-					seller_amount: calculation.sellerAmount / 100,
-					stripe_payment_intent_id: params.stripePaymentIntentId,
 					payment_status: 'completed',
-					processed_at: new Date().toISOString()
+					processed_at: new Date().toISOString(),
+					metadata: {
+						productId: params.productId,
+						serviceFeeRate: calculation.serviceFeeRate
+					}
 				})
 				.select()
 				.single();

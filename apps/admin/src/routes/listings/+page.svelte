@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
+	import { enhance } from '$app/forms';
 
 	interface Props {
 		data: PageData;
@@ -8,6 +9,11 @@
 	let { data }: Props = $props();
 	let searchQuery = $state('');
 	let filterStatus = $state('all');
+	let selectedListing = $state(null);
+	let showRejectModal = $state(false);
+	let showDeleteModal = $state(false);
+	let rejectReason = $state('');
+	let deleteReason = $state('');
 
 	let filteredListings = $derived.by(() => {
 		let listings = data.listings;
@@ -49,6 +55,24 @@
 		if (!listing.is_active) return 'bg-red-100 text-red-800';
 		if (listing.is_featured) return 'bg-purple-100 text-purple-800';
 		return 'bg-green-100 text-green-800';
+	}
+
+	function openRejectModal(listing: any) {
+		selectedListing = listing;
+		showRejectModal = true;
+	}
+
+	function openDeleteModal(listing: any) {
+		selectedListing = listing;
+		showDeleteModal = true;
+	}
+
+	function closeModals() {
+		selectedListing = null;
+		showRejectModal = false;
+		showDeleteModal = false;
+		rejectReason = '';
+		deleteReason = '';
 	}
 </script>
 
@@ -188,18 +212,57 @@
 									{new Date(listing.created_at).toLocaleDateString()}
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-									<button class="text-blue-600 hover:text-blue-900 mr-3">
-										View
-									</button>
-									{#if listing.is_featured}
-										<button class="text-red-600 hover:text-red-900">
-											Review
-										</button>
-									{:else if listing.status === 'available'}
-										<button class="text-yellow-600 hover:text-yellow-900">
-											Deactivate
-										</button>
-									{/if}
+									<div class="flex flex-col gap-1">
+										<a href="/listings/{listing.id}" class="text-blue-600 hover:text-blue-900">
+											View Details
+										</a>
+										{#if listing.is_sold}
+											<span class="text-gray-400">Sold</span>
+										{:else}
+											{#if listing.is_active}
+												<form method="POST" action="?/deactivateListing" use:enhance>
+													<input type="hidden" name="listingId" value={listing.id} />
+													<button type="submit" class="text-orange-600 hover:text-orange-900">
+														Deactivate
+													</button>
+												</form>
+											{:else}
+												<form method="POST" action="?/activateListing" use:enhance>
+													<input type="hidden" name="listingId" value={listing.id} />
+													<button type="submit" class="text-green-600 hover:text-green-900">
+														Activate
+													</button>
+												</form>
+											{/if}
+											{#if listing.is_featured}
+												<form method="POST" action="?/unfeatureListing" use:enhance>
+													<input type="hidden" name="listingId" value={listing.id} />
+													<button type="submit" class="text-purple-600 hover:text-purple-900">
+														Unfeature
+													</button>
+												</form>
+											{:else}
+												<form method="POST" action="?/featureListing" use:enhance>
+													<input type="hidden" name="listingId" value={listing.id} />
+													<button type="submit" class="text-purple-600 hover:text-purple-900">
+														Feature
+													</button>
+												</form>
+											{/if}
+											<button 
+												onclick={() => openRejectModal(listing)}
+												class="text-red-600 hover:text-red-900"
+											>
+												Reject
+											</button>
+											<button 
+												onclick={() => openDeleteModal(listing)}
+												class="text-red-800 hover:text-red-900"
+											>
+												Delete
+											</button>
+										{/if}
+									</div>
 								</td>
 							</tr>
 						{/each}
@@ -209,3 +272,96 @@
 		</div>
 	</div>
 </div>
+
+<!-- Reject Listing Modal -->
+{#if showRejectModal && selectedListing}
+	<div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+		<div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+			<div class="mt-3">
+				<h3 class="text-lg font-medium text-gray-900 mb-4">
+					Reject Listing: {selectedListing.title}
+				</h3>
+				<form method="POST" action="?/rejectListing" use:enhance>
+					<input type="hidden" name="listingId" value={selectedListing.id} />
+					<div class="mb-4">
+						<label for="rejectReason" class="block text-sm font-medium text-gray-700">
+							Rejection Reason
+						</label>
+						<textarea
+							id="rejectReason"
+							name="reason"
+							bind:value={rejectReason}
+							rows="4"
+							class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+							placeholder="Enter reason for rejecting this listing..."
+							required
+						></textarea>
+					</div>
+					<div class="flex gap-3">
+						<button
+							type="submit"
+							class="flex-1 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
+						>
+							Reject Listing
+						</button>
+						<button
+							type="button"
+							onclick={() => closeModals()}
+							class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
+						>
+							Cancel
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Delete Listing Modal -->
+{#if showDeleteModal && selectedListing}
+	<div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+		<div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+			<div class="mt-3">
+				<h3 class="text-lg font-medium text-red-900 mb-4">
+					⚠️ Delete Listing: {selectedListing.title}
+				</h3>
+				<p class="text-sm text-red-600 mb-4">
+					This action cannot be undone. The listing will be permanently removed.
+				</p>
+				<form method="POST" action="?/deleteListing" use:enhance>
+					<input type="hidden" name="listingId" value={selectedListing.id} />
+					<div class="mb-4">
+						<label for="deleteReason" class="block text-sm font-medium text-gray-700">
+							Deletion Reason
+						</label>
+						<textarea
+							id="deleteReason"
+							name="reason"
+							bind:value={deleteReason}
+							rows="4"
+							class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+							placeholder="Enter reason for deleting this listing..."
+							required
+						></textarea>
+					</div>
+					<div class="flex gap-3">
+						<button
+							type="submit"
+							class="flex-1 bg-red-700 text-white px-4 py-2 rounded-md hover:bg-red-800"
+						>
+							Delete Permanently
+						</button>
+						<button
+							type="button"
+							onclick={() => closeModals()}
+							class="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400"
+						>
+							Cancel
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+{/if}

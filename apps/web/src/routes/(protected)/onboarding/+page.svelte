@@ -45,7 +45,7 @@
   let languageInitialized = $state(false);
   let completionInProgress = $state(false);
 
-  const totalSteps = 5;
+  const totalSteps = 4;
 
   // Initialize language from server data - FIXED
   $effect(() => {
@@ -204,10 +204,9 @@
     
     switch (step) {
       case 1: return accountType;
-      case 2: return username && username.trim().length >= 3;
-      case 3: return avatarUrl;
-      case 4: return payoutDetails && payoutDetails.trim().length > 0;
-      case 5: return true; // Social links are optional
+      case 2: return username && username.trim().length >= 3 && avatarUrl; // Combined validation
+      case 3: return payoutDetails && payoutDetails.trim().length > 0;
+      case 4: return true; // Social links are optional
       default: return false;
     }
   });
@@ -288,7 +287,7 @@
     {/snippet}
   </OnboardingStep>
 
-<!-- Step 2: Profile Setup -->
+<!-- Step 2: Profile Setup & Avatar -->
 {:else if step === 2}
   <OnboardingStep
     title={m.onboarding_createProfile()}
@@ -302,7 +301,8 @@
         {/each}
       </div>
 
-      <div class="space-y-6">
+      <!-- Profile Information -->
+      <div class="space-y-6 mb-8">
         <Input
           bind:value={username}
           placeholder={m.onboarding_chooseUniqueUsername()}
@@ -321,6 +321,20 @@
         {#if username.trim().length > 0 && username.trim().length < 3}
           <p class="text-sm text-red-600 mt-1">{m.onboarding_usernameMinLength()}</p>
         {/if}
+      </div>
+
+      <!-- Avatar Selection -->
+      <div class="border-t pt-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">{m.onboarding_chooseAvatar()}</h3>
+        <AvatarSelector
+          selected={avatarUrl}
+          onSelect={handleAvatarSelect}
+          translations={{
+            chooseAvatar: m.onboarding_chooseAvatar(),
+            uploadCustom: m.onboarding_uploadCustom(),
+            generateNew: m.onboarding_generateNew()
+          }}
+        />
       </div>
     {/snippet}
     
@@ -344,49 +358,8 @@
     {/snippet}
   </OnboardingStep>
 
-<!-- Step 3: Avatar Selection -->
+<!-- Step 3: Payout Method -->
 {:else if step === 3}
-  <OnboardingStep
-    title={m.onboarding_chooseAvatar()}
-    subtitle={m.onboarding_pickProfilePicture()}
-  >
-    {#snippet children()}
-      <!-- Progress Indicator -->
-      <div class="flex justify-center space-x-3 mb-8">
-        {#each Array(totalSteps) as _, i}
-          <div class="h-2 rounded-full transition-all duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
-        {/each}
-      </div>
-
-      <AvatarSelector
-        bind:selected={avatarUrl}
-        uploadEnabled={true}
-        onSelect={handleAvatarSelect}
-        onUpload={handleAvatarUpload}
-        class="mb-8"
-      />
-
-      <div class="flex space-x-4">
-        <Button
-          onclick={prevStep}
-          variant="outline"
-          class="flex-1"
-        >
-          {m.onboarding_back()}
-        </Button>
-        <Button
-          onclick={nextStep}
-          disabled={!canProceed()}
-          class="flex-1 bg-black text-white hover:bg-gray-800"
-        >
-          {m.onboarding_continue()}
-        </Button>
-      </div>
-    {/snippet}
-  </OnboardingStep>
-
-<!-- Step 4: Payout Method -->
-{:else if step === 4}
   <OnboardingStep
     title={m.onboarding_setupPayouts()}
     subtitle={m.onboarding_choosePaymentMethod()}
@@ -403,9 +376,11 @@
         bind:selectedMethod={payoutMethod}
         bind:payoutDetails={payoutDetails}
         bind:payoutName={payoutName}
-        class="mb-8"
+        class="force-refresh"
       />
-
+    {/snippet}
+    
+    {#snippet navigation()}
       <div class="flex space-x-4">
         <Button
           onclick={prevStep}
@@ -425,8 +400,8 @@
     {/snippet}
   </OnboardingStep>
 
-<!-- Step 5: Social Links -->
-{:else if step === 5}
+<!-- Step 4: Social Links -->
+{:else if step === 4}
   <OnboardingStep
     title={m.onboarding_connectSocials()}
     subtitle={m.onboarding_helpBuyersDiscover()}
@@ -440,6 +415,7 @@
       </div>
 
       <form
+        id="onboarding-form"
         method="POST"
         action="?/complete"
         use:enhance={() => {
@@ -499,28 +475,35 @@
         <SocialLinksEditor
           links={socialLinks}
           onUpdate={handleSocialLinksUpdate}
-          class="mb-8"
         />
-
-        <div class="flex space-x-4">
-          <Button
-            type="button"
-            onclick={prevStep}
-            variant="outline"
-            class="flex-1"
-          >
-            {m.onboarding_back()}
-          </Button>
-          <Button
-            type="submit"
-            disabled={submitting}
-            loading={submitting}
-            class="flex-1 bg-green-600 text-white hover:bg-green-700"
-          >
-            {submitting ? m.onboarding_settingUp() : m.onboarding_completeSetup()}
-          </Button>
-        </div>
       </form>
+    {/snippet}
+    
+    {#snippet navigation()}
+      <div class="flex space-x-4">
+        <Button
+          type="button"
+          onclick={prevStep}
+          variant="outline"
+          class="flex-1"
+        >
+          {m.onboarding_back()}
+        </Button>
+        <Button
+          type="button"
+          onclick={() => {
+            const form = document.getElementById('onboarding-form') as HTMLFormElement;
+            if (form) {
+              form.requestSubmit();
+            }
+          }}
+          disabled={submitting}
+          loading={submitting}
+          class="flex-1 bg-green-600 text-white hover:bg-green-700"
+        >
+          {submitting ? m.onboarding_settingUp() : m.onboarding_completeSetup()}
+        </Button>
+      </div>
     {/snippet}
   </OnboardingStep>
 {/if}

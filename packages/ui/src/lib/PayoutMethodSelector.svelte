@@ -69,78 +69,72 @@
   const currentMethod = $derived(payoutMethods.find(m => m.type === selectedMethod) || payoutMethods[0]);
 </script>
 
-<div class="space-y-6 {className}">
-  <div class="text-center mb-6">
-    <h3 class="text-2xl font-bold text-gray-900 mb-2">Choose Payout Method</h3>
-    <p class="text-gray-600">Select how you'd like to receive payments when you sell items</p>
-  </div>
-
-  <!-- Method Selection - Copy exact upgrade card styling -->
-  <div class="grid grid-cols-1 gap-4">
+<div class="space-y-4 {className}">
+  <!-- Method Selection - Compact Grid -->
+  <div class="grid grid-cols-3 gap-3">
     {#each payoutMethods as method}
       <button
         onclick={() => handleMethodSelect(method.type)}
-        class="w-full text-left"
+        class="relative group"
       >
-        <div class="bg-white rounded-xl border p-1.5 shadow-xs backdrop-blur-xl transition-all {selectedMethod === method.type ? 'border-gray-400 shadow-md' : 'border-gray-200 hover:border-gray-300'}">
-          <!-- Header with glass effect -->
-          <div class="bg-gray-50/80 relative mb-4 rounded-xl border p-4">
-            <div 
-              aria-hidden="true"
-              class="absolute inset-x-0 top-0 h-48 rounded-[inherit]"
-              style="background: linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.03) 40%, rgba(0,0,0,0) 100%)"
-            ></div>
+        <div class="bg-white/80 backdrop-blur-md rounded-lg border p-4 transition-all duration-200 shadow-sm {selectedMethod === method.type ? 'border-gray-300 shadow-md ring-1 ring-gray-300' : 'border-gray-200/60 hover:border-gray-300/80 hover:shadow-md'}">
+          <!-- Icon and Name -->
+          <div class="text-center">
+            <div class="text-2xl mb-2">{method.icon}</div>
+            <div class="font-medium text-sm text-gray-900 mb-1">{method.name}</div>
+            <div class="text-xs text-gray-500 leading-tight">{method.description}</div>
             
-            <div class="mb-6 flex items-center justify-between">
-              <div class="text-gray-600 flex items-center gap-2 text-sm font-medium">
-                <span class="text-lg">{method.icon}</span>
-                <span>{method.name}</span>
-                {#if method.recommended}
-                  <span class="bg-linear-to-r from-green-600 to-green-700 text-white text-xs px-2 py-0.5 rounded-lg font-bold">
-                    Recommended
-                  </span>
-                {/if}
+            {#if method.recommended}
+              <div class="mt-2">
+                <span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-medium">
+                  Recommended
+                </span>
               </div>
-              <span class="border-gray-200 text-gray-600 rounded-full border px-2 py-0.5 text-xs transition-all {selectedMethod === method.type ? 'bg-gray-900 text-white border-gray-900' : 'hover:border-gray-300'}">
-                {selectedMethod === method.type ? 'Selected' : 'Select'}
-              </span>
-            </div>
-            
-            <p class="text-gray-600 text-sm mb-3">{method.description}</p>
+            {/if}
           </div>
+
+          <!-- Selected Indicator -->
+          {#if selectedMethod === method.type}
+            <div class="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center shadow-sm">
+              <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+          {/if}
         </div>
       </button>
     {/each}
   </div>
 
-  <!-- Details Input -->
+  <!-- Inline Details Input for Selected Method -->
   {#if selectedMethod}
-    <div class="space-y-4 pt-4">
-      <div class="bg-white rounded-xl border border-gray-200 p-4">
-        <label for="payout-details" class="block text-sm font-medium text-gray-700 mb-2">
-          {currentMethod.name} Details
-        </label>
-        <Input
-          id="payout-details"
-          bind:value={payoutDetails}
-          placeholder={currentMethod.placeholder}
-          required
-          class="bg-white"
-        />
-        <p class="text-xs text-gray-500 mt-2">💡 {currentMethod.hint}</p>
-      </div>
+    <div class="bg-white/60 backdrop-blur-sm rounded-lg p-4 border border-gray-200/60 shadow-sm">
+      <div class="space-y-4">
+        <div>
+          <label for="payout-details" class="block text-sm font-medium text-gray-700 mb-2">
+            {currentMethod.name} Details
+          </label>
+          <Input
+            id="payout-details"
+            bind:value={payoutDetails}
+            placeholder={currentMethod.placeholder}
+            required
+            class="bg-white"
+          />
+          <p class="text-xs text-gray-500 mt-1">💡 {currentMethod.hint}</p>
+        </div>
 
-      <div class="bg-white rounded-xl border border-gray-200 p-4">
-        <label for="payout-name" class="block text-sm font-medium text-gray-700 mb-2">
-          Display Name (Optional)
-        </label>
-        <Input
-          id="payout-name"
-          bind:value={payoutName}
-          placeholder="Optional display name"
-          class="bg-white"
-        />
-        <p class="text-xs text-gray-500 mt-1">This name will be shown in your payout history</p>
+        <div>
+          <label for="payout-name" class="block text-sm font-medium text-gray-700 mb-2">
+            Display Name <span class="text-gray-400 font-normal">(Optional)</span>
+          </label>
+          <Input
+            id="payout-name"
+            bind:value={payoutName}
+            placeholder="How this method appears in your settings"
+            class="bg-white"
+          />
+        </div>
       </div>
     </div>
   {/if}

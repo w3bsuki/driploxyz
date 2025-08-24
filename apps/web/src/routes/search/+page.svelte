@@ -582,7 +582,7 @@
     <!-- Active Filters Pills -->
     {#if activeFiltersCount() > 0}
       <div class="flex items-center space-x-2 mb-4 overflow-x-auto">
-        {#if selectedMainCategory}
+        {#if selectedMainCategory && categoryData()[selectedMainCategory]}
           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
             {categoryData()[selectedMainCategory].name}
             <button onclick={() => selectedMainCategory = null} class="ml-2" aria-label="Remove category filter">
