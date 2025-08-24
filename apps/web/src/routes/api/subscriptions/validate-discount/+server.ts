@@ -19,17 +19,19 @@ export const POST: RequestHandler = async (event) => {
       return json({ valid: false, error: 'Authentication required' }, { status: 401 });
     }
 
-    // Determine base price based on plan
-    let basePrice = 50; // default brand price
-    let planType = 'brand';
-    
-    if (planId === 'brand_monthly' || planId === 'brand') {
-      basePrice = 50;
-      planType = 'brand';
-    } else if (planId === 'premium_monthly' || planId === 'premium') {
-      basePrice = 25;
-      planType = 'premium';
+    // Get the actual plan from database to determine pricing
+    const { data: plan, error: planError } = await supabase
+      .from('subscription_plans')
+      .select('plan_type, price_monthly')
+      .eq('id', planId)
+      .single();
+      
+    if (planError || !plan) {
+      return json({ valid: false, error: 'Plan not found' }, { status: 400 });
     }
+    
+    const basePrice = Number(plan.price_monthly);
+    const planType = plan.plan_type;
 
     // Validate discount code using the database function
     const { data: result, error: validationError } = await supabase

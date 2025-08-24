@@ -60,12 +60,28 @@ export class SubscriptionService {
 		userId: string,
 		planId: string,
 		stripeInstance: any,
-		discountPercent: number = 0
+		discountAmount: number = 0,
+		discountCode: string = ''
 	): Promise<{ subscriptionId?: string; clientSecret?: string; error?: Error }> {
 		try {
 			if (!stripeInstance) {
 				return { error: new Error('Stripe instance required') };
 			}
+			
+			// Get plan to calculate discount percent from amount
+			const { data: plan } = await this.supabase
+				.from('subscription_plans')
+				.select('price_monthly')
+				.eq('id', planId)
+				.single();
+				
+			if (!plan) {
+				return { error: new Error('Plan not found') };
+			}
+			
+			const discountPercent = plan.price_monthly > 0 && discountAmount > 0
+				? Math.round((discountAmount / plan.price_monthly) * 100)
+				: 0;
 			
 			const stripeService = createStripeService(this.supabase, stripeInstance);
 			
