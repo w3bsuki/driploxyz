@@ -100,11 +100,12 @@
   }
 
   function nextStep() {
-    // Check if premium/brand payment is required
-    if (step === 1 && (accountType === 'premium' || accountType === 'brand') && !brandPaid) {
-      toasts.error('Please complete your payment before continuing', {
+    // STRICT CHECK: Block brand/premium users without payment at ANY step
+    if ((accountType === 'premium' || accountType === 'brand') && !brandPaid) {
+      toasts.error('Payment is required for ' + accountType + ' accounts. Please complete payment to continue.', {
         duration: 5000
       });
+      showBrandPayment = true;
       return;
     }
     
@@ -121,11 +122,9 @@
 
   function handleAccountTypeSelect(type: 'personal' | 'premium' | 'brand') {
     accountType = type;
-    // Show payment modal for brand/premium - REQUIRED
-    if ((type === 'brand' || type === 'premium') && !brandPaid) {
-      showBrandPayment = true;
-    } else if (type === 'personal') {
-      // Allow proceeding immediately for personal accounts
+    // Don't show payment modal immediately - wait for user to click continue
+    if (type === 'personal') {
+      // Reset payment status for personal accounts
       brandPaid = false;
     }
   }
@@ -183,6 +182,15 @@
   async function completeOnboarding() {
     if (!data.user || !username.trim()) return;
     
+    // FINAL CHECK: Absolutely no completing without payment for brand/premium
+    if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
+      toasts.error('Payment is required to complete ' + accountType + ' account setup!', {
+        duration: 5000
+      });
+      showBrandPayment = true;
+      return;
+    }
+    
     submitting = true;
     
     try {
@@ -225,13 +233,13 @@
   }
 
   const canProceed = $derived(() => {
+    // GLOBAL CHECK: Brand/Premium must have paid to proceed at ANY step
+    if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
+      return false;
+    }
+    
     switch (step) {
-      case 1: 
-        // For brand/premium, must have paid
-        if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
-          return false;
-        }
-        return accountType;
+      case 1: return accountType;
       case 2: return username && username.trim().length >= 3;
       case 3: return avatarUrl;
       case 4: return payoutDetails && payoutDetails.trim().length > 0;
@@ -296,9 +304,9 @@
       <div class="flex space-x-4">
         <Button
           onclick={() => {
-            // For premium/brand, require payment
+            // For premium/brand, always require payment first
             if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
-              toasts.warning('Payment required for ' + accountType + ' account. Complete payment to continue.');
+              // Show payment modal
               showBrandPayment = true;
             } else {
               nextStep();

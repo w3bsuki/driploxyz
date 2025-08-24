@@ -40,6 +40,11 @@ export const actions: Actions = {
     const payoutName = formData.get('payoutName') as string;
     const socialLinks = formData.get('socialLinks') as string;
     const brandPaid = formData.get('brandPaid') === 'true';
+    
+    // SERVER-SIDE VALIDATION: Absolutely no brand/premium without payment
+    if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
+      return fail(403, { error: 'Payment is required for ' + accountType + ' accounts. Please complete payment before continuing.' });
+    }
 
     if (!username || username.trim().length < 3) {
       return fail(400, { error: 'Username must be at least 3 characters' });
