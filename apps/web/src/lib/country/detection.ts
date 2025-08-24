@@ -304,6 +304,10 @@ export function convertPrice(price: number, fromCountry: CountryCode, toCountry:
   const fromCurrency = fromConfig.currency;
   const toCurrency = toConfig.currency;
   
+  if (!rates?.[fromCurrency] || !rates?.[toCurrency]) {
+    return price; // Return original price if rates not found
+  }
+  
   const priceInBGN = price / rates[fromCurrency];
   return priceInBGN * rates[toCurrency];
 }
