@@ -131,6 +131,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
           seller_id: item.seller_id,
           // Simplify image structure
           images: item.product_images?.map((img: any) => img.image_url) || [],
+          product_images: item.product_images?.map((img: any) => img.image_url) || [],
           // Category info
           category_name: parentCategories[item.categories?.parent_id] || item.categories?.name || 'Other',
           subcategory_name: item.categories?.parent_id ? item.categories.name : null,
