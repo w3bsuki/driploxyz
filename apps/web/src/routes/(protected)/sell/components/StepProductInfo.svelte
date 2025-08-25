@@ -32,67 +32,46 @@
     return touched[field] && !!errors[field];
   }
 
-  // Condition options with better emojis and descriptions
+  // Condition options - professional without emojis
   const conditions = [
     {
       value: 'brand_new_with_tags' as const,
       label: 'New with tags',
-      emoji: '🏷️',
-      description: 'Never worn, tags attached',
-      color: 'emerald'
+      description: 'Never worn',
+      color: 'green'
     },
     {
       value: 'new_without_tags' as const,
       label: 'New no tags',
-      emoji: '✨',
-      description: 'Never worn, tags removed',
+      description: 'Never worn',
       color: 'teal'
     },
     {
       value: 'like_new' as const,
       label: 'Like new',
-      emoji: '💎',
-      description: 'Worn 1-2 times',
+      description: 'Worn 1-2x',
       color: 'blue'
     },
     {
       value: 'good' as const,
       label: 'Good',
-      emoji: '👍',
-      description: 'Minor wear signs',
+      description: 'Minor wear',
       color: 'indigo'
     },
     {
       value: 'worn' as const,
       label: 'Worn',
-      emoji: '🔄',
-      description: 'Regular wear visible',
+      description: 'Visible wear',
       color: 'purple'
     },
     {
       value: 'fair' as const,
       label: 'Fair',
-      emoji: '⚠️',
-      description: 'Heavy wear, usable',
-      color: 'amber'
+      description: 'Heavy wear',
+      color: 'yellow'
     }
   ];
 
-  // Brand emojis for popular brands
-  const brandEmojis: Record<string, string> = {
-    'Nike': '✔️',
-    'Adidas': '🔺',
-    'Zara': '🏢',
-    'H&M': '👔',
-    "Levi's": '👖',
-    'Gap': '🌐',
-    'Uniqlo': '🎌',
-    'Forever 21': '💫',
-    'Urban Outfitters': '🏙️',
-    'Mango': '🥭',
-    'COS': '🎨',
-    'Other': '➕'
-  };
 
   // Size groups
   const sizeGroups = $derived(() => {
@@ -177,45 +156,36 @@
 
   // Common materials
   const commonMaterials = [
-    { name: 'Cotton', emoji: '🌿' },
-    { name: 'Polyester', emoji: '🧵' },
-    { name: 'Leather', emoji: '🐄' },
-    { name: 'Denim', emoji: '👖' },
-    { name: 'Wool', emoji: '🐑' },
-    { name: 'Silk', emoji: '🦋' }
+    'Cotton',
+    'Polyester',
+    'Leather',
+    'Denim',
+    'Wool',
+    'Silk'
   ];
 </script>
 
-<div class="space-y-4">
-  <!-- Step 1: Condition - Visual cards with emojis -->
-  <div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">
-      What condition is it in? <span class="text-red-500">*</span>
+<div class="space-y-3">
+  <!-- Condition Section -->
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
+    <label class="text-sm font-medium text-gray-700 mb-2 block">
+      Condition <span class="text-red-500">*</span>
     </label>
     
-    <!-- Mobile: 2x3 grid, Desktop: 3x2 grid -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+    <div class="grid grid-cols-3 gap-1.5">
       {#each conditions as condition}
         <button
           type="button"
           onclick={() => selectCondition(condition.value)}
-          class="relative flex flex-col items-center p-3 text-center rounded-lg border-2 transition-all {
+          class="relative px-2 py-2 text-center rounded-md border transition-all text-xs {
             formData.condition === condition.value 
-              ? `border-${condition.color}-500 bg-${condition.color}-50 text-${condition.color}-700 ring-2 ring-${condition.color}-500 ring-opacity-50` 
-              : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 hover:border-gray-300'
+              ? 'border-black bg-black text-white' 
+              : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
           }"
           aria-pressed={formData.condition === condition.value}
-          aria-label="{condition.label}: {condition.description}"
         >
-          <span class="text-2xl mb-1">{condition.emoji}</span>
-          <span class="text-xs font-semibold">{condition.label}</span>
-          <span class="text-[10px] text-gray-500 mt-0.5">{condition.description}</span>
-          
-          {#if formData.condition === condition.value}
-            <svg class="absolute top-1 right-1 w-4 h-4 text-{condition.color}-600" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-            </svg>
-          {/if}
+          <div class="font-medium">{condition.label}</div>
+          <div class="text-[10px] opacity-70">{condition.description}</div>
         </button>
       {/each}
     </div>
@@ -225,28 +195,25 @@
     {/if}
   </div>
 
-  <!-- Step 2: Brand - Compact grid with emojis -->
-  <div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">
-      What's the brand? <span class="text-red-500">*</span>
+  <!-- Brand Section -->
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
+    <label class="text-sm font-medium text-gray-700 mb-2 block">
+      Brand <span class="text-red-500">*</span>
     </label>
     
-    <!-- Popular brands in compact grid -->
-    <div class="grid grid-cols-3 gap-2">
+    <div class="grid grid-cols-3 gap-1.5">
       {#each POPULAR_BRANDS as brand}
-        {@const emoji = brandEmojis[brand] || '🏷️'}
         <button
           type="button"
           onclick={() => selectBrand(brand)}
-          class="flex items-center justify-center gap-1 px-2 py-2.5 text-xs font-medium rounded-lg border-2 transition-all {
+          class="px-2 py-2 text-xs font-medium rounded-md border transition-all {
             formData.brand === brand || (brand === 'Other' && showCustomBrand)
-              ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
-              : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+              ? 'border-black bg-black text-white' 
+              : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
           }"
           aria-pressed={formData.brand === brand || (brand === 'Other' && showCustomBrand)}
         >
-          <span class="text-sm">{emoji}</span>
-          <span class="truncate">{brand}</span>
+          {brand}
         </button>
       {/each}
     </div>
@@ -270,26 +237,25 @@
     {/if}
   </div>
 
-  <!-- Step 3: Size - Grouped selection -->
-  <div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">
-      What size? <span class="text-red-500">*</span>
+  <!-- Size Section -->
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
+    <label class="text-sm font-medium text-gray-700 mb-2 block">
+      Size <span class="text-red-500">*</span>
     </label>
     
-    <!-- Size groups -->
     <div class="space-y-2">
       {#each sizeGroups() as [group, sizes]}
         <div>
           <span class="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">{group}</span>
-          <div class="grid grid-cols-4 sm:grid-cols-6 gap-1.5 mt-1">
+          <div class="grid grid-cols-4 gap-1 mt-1">
             {#each sizes as size}
               <button
                 type="button"
                 onclick={() => selectSize(size.value)}
-                class="px-2 py-2 text-xs font-medium rounded-md border-2 transition-all {
+                class="px-1 py-1.5 text-xs font-medium rounded-md border transition-all {
                   formData.size === size.value 
-                    ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
-                    : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                    ? 'border-black bg-black text-white' 
+                    : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
                 }"
                 aria-pressed={formData.size === size.value}
               >
@@ -360,15 +326,14 @@
       {#each commonMaterials as material}
         <button
           type="button"
-          onclick={() => { formData.material = material.name; onFieldChange('material', material.name); }}
+          onclick={() => { formData.material = material; onFieldChange('material', material); }}
           class="flex items-center gap-1 px-2 py-2 text-xs font-medium rounded-lg border transition-all {
-            formData.material === material.name 
+            formData.material === material 
               ? 'border-blue-500 bg-blue-50 text-blue-700' 
               : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
           }"
         >
-          <span class="text-sm">{material.emoji}</span>
-          <span>{material.name}</span>
+          {material}
         </button>
       {/each}
     </div>
@@ -388,7 +353,6 @@
   {#if formData.condition && formData.brand && formData.size}
     <div class="text-xs text-gray-600 bg-gray-50 rounded-lg px-3 py-2">
       <span class="font-medium">Summary:</span>
-      {conditions.find(c => c.value === formData.condition)?.emoji}
       {conditions.find(c => c.value === formData.condition)?.label}
       • {formData.brand}
       • Size {formData.size}
