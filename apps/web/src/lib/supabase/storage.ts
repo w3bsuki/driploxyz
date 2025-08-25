@@ -7,141 +7,143 @@ export interface UploadedImage {
 }
 
 /**
- * Check if browser supports WebP
- */
-function supportsWebP(): boolean {
-  const canvas = document.createElement('canvas');
-  canvas.width = 1;
-  canvas.height = 1;
-  const dataUrl = canvas.toDataURL('image/webp');
-  return dataUrl.indexOf('data:image/webp') === 0;
-}
-
-/**
  * Convert image to WebP format - MANDATORY for bandwidth
- * Works on all browsers including iOS Safari
+ * Fixed for iOS Safari compatibility
  */
 async function convertToWebP(file: File): Promise<Blob> {
   return new Promise((resolve, reject) => {
     const startTime = Date.now();
-    const img = new Image();
-    
-    // Set crossOrigin to handle any CORS issues
-    img.crossOrigin = 'anonymous';
+    console.log(`[WebP] Starting conversion for ${file.name} (${(file.size / 1024).toFixed(0)}KB)`);
     
     const reader = new FileReader();
     
-    reader.onerror = () => reject(new Error('Failed to read file'));
-    
-    reader.onload = (e) => {
-      img.onerror = () => reject(new Error('Failed to load image'));
-      
-      img.onload = async () => {
-        try {
-          // Max 1200px for products - optimized for web
-          const MAX_SIZE = 1200;
-          let width = img.width;
-          let height = img.height;
-          
-          if (width > height && width > MAX_SIZE) {
-            height = Math.round((height * MAX_SIZE) / width);
-            width = MAX_SIZE;
-          } else if (height > MAX_SIZE) {
-            width = Math.round((width * MAX_SIZE) / height);
-            height = MAX_SIZE;
-          }
-          
-          // Create offscreen canvas for better performance
-          const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
-          
-          const ctx = canvas.getContext('2d', { 
-            willReadFrequently: false,
-            alpha: false, // No transparency needed for product images
-            desynchronized: true // Better performance
-          });
-          
-          if (!ctx) {
-            reject(new Error('Canvas not supported'));
-            return;
-          }
-          
-          // White background for better compression
-          ctx.fillStyle = '#FFFFFF';
-          ctx.fillRect(0, 0, width, height);
-          
-          // Draw image with smoothing for better quality
-          ctx.imageSmoothingEnabled = true;
-          ctx.imageSmoothingQuality = 'high';
-          ctx.drawImage(img, 0, 0, width, height);
-          
-          // Determine quality based on original file size
-          const originalSizeKB = file.size / 1024;
-          let quality = 0.85;
-          if (originalSizeKB > 2000) quality = 0.75;
-          if (originalSizeKB > 4000) quality = 0.70;
-          
-          console.log(`[WebP] Converting ${file.name} (${originalSizeKB.toFixed(0)}KB) with quality ${quality}`);
-          
-          // Check WebP support
-          const hasWebPSupport = supportsWebP();
-          
-          if (hasWebPSupport) {
-            // Modern browsers with WebP support
-            canvas.toBlob(
-              (blob) => {
-                if (blob) {
-                  const newSizeKB = blob.size / 1024;
-                  const reduction = ((1 - blob.size / file.size) * 100).toFixed(1);
-                  console.log(`[WebP] ✅ Converted to WebP: ${newSizeKB.toFixed(0)}KB (${reduction}% reduction) in ${Date.now() - startTime}ms`);
-                  resolve(blob);
-                } else {
-                  // Shouldn't happen but fallback to JPEG
-                  canvas.toBlob(
-                    (jpegBlob) => {
-                      if (jpegBlob) {
-                        console.warn('[WebP] ⚠️ WebP failed, using JPEG with .webp extension');
-                        resolve(jpegBlob);
-                      } else {
-                        reject(new Error('Failed to create image blob'));
-                      }
-                    },
-                    'image/jpeg',
-                    quality * 0.9
-                  );
-                }
-              },
-              'image/webp',
-              quality
-            );
-          } else {
-            // Fallback for older browsers/iOS < 14
-            // Use JPEG with aggressive compression
-            console.warn('[WebP] ⚠️ Browser lacks WebP support, using compressed JPEG');
-            canvas.toBlob(
-              (blob) => {
-                if (blob) {
-                  const newSizeKB = blob.size / 1024;
-                  console.log(`[WebP] 📸 Fallback JPEG: ${newSizeKB.toFixed(0)}KB in ${Date.now() - startTime}ms`);
-                  resolve(blob);
-                } else {
-                  reject(new Error('Failed to compress image'));
-                }
-              },
-              'image/jpeg',
-              quality * 0.85 // Slightly lower quality for JPEG to match WebP file sizes
-            );
-          }
-        } catch (error) {
-          console.error('[WebP] Conversion error:', error);
-          reject(error);
-        }
-      };
-      
-      img.src = e.target?.result as string;
+    reader.onerror = (error) => {
+      console.error('[WebP] FileReader error:', error);
+      reject(new Error('Failed to read file'));
     };
     
+    reader.onload = async (e) => {
+      try {
+        const img = new Image();
+        
+        // Create promise for image load
+        await new Promise((imgResolve, imgReject) => {
+          img.onerror = () => {
+            console.error('[WebP] Image load failed');
+            imgReject(new Error('Failed to load image'));
+          };
+          
+          img.onload = () => {
+            console.log(`[WebP] Image loaded: ${img.width}x${img.height}`);
+            imgResolve(undefined);
+          };
+          
+          // Set source after handlers
+          const result = e.target?.result;
+          if (typeof result === 'string') {
+            img.src = result;
+          } else {
+            imgReject(new Error('Invalid file data'));
+          }
+        });
+        
+        // Calculate dimensions
+        const MAX_SIZE = 1200;
+        let width = img.width;
+        let height = img.height;
+        
+        if (width > height && width > MAX_SIZE) {
+          height = Math.round((height * MAX_SIZE) / width);
+          width = MAX_SIZE;
+        } else if (height > MAX_SIZE) {
+          width = Math.round((width * MAX_SIZE) / height);
+          height = MAX_SIZE;
+        }
+        
+        console.log(`[WebP] Target dimensions: ${width}x${height}`);
+        
+        // Create canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        
+        // Get context with iOS-safe options
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          throw new Error('Canvas context not available');
+        }
+        
+        // Draw white background
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, width, height);
+        
+        // Draw image
+        ctx.drawImage(img, 0, 0, width, height);
+        
+        // Determine quality
+        const originalSizeKB = file.size / 1024;
+        let quality = 0.85;
+        if (originalSizeKB > 2000) quality = 0.75;
+        if (originalSizeKB > 4000) quality = 0.70;
+        
+        console.log(`[WebP] Applying quality: ${quality}`);
+        
+        // Try WebP first, with multiple fallbacks
+        const formats = [
+          { type: 'image/webp', quality: quality, name: 'WebP' },
+          { type: 'image/jpeg', quality: quality * 0.9, name: 'JPEG' }
+        ];
+        
+        let convertedBlob: Blob | null = null;
+        
+        for (const format of formats) {
+          console.log(`[WebP] Trying ${format.name} conversion...`);
+          
+          // Use Promise wrapper for toBlob
+          convertedBlob = await new Promise<Blob | null>((blobResolve) => {
+            try {
+              canvas.toBlob(
+                (blob) => {
+                  if (blob) {
+                    console.log(`[WebP] ${format.name} blob created: ${(blob.size / 1024).toFixed(0)}KB`);
+                  } else {
+                    console.warn(`[WebP] ${format.name} blob creation failed`);
+                  }
+                  blobResolve(blob);
+                },
+                format.type,
+                format.quality
+              );
+            } catch (error) {
+              console.error(`[WebP] ${format.name} conversion error:`, error);
+              blobResolve(null);
+            }
+          });
+          
+          if (convertedBlob) {
+            const reduction = ((1 - convertedBlob.size / file.size) * 100).toFixed(1);
+            console.log(`[WebP] ✅ Converted to ${format.name}: ${(convertedBlob.size / 1024).toFixed(0)}KB (${reduction}% reduction) in ${Date.now() - startTime}ms`);
+            break;
+          }
+        }
+        
+        if (!convertedBlob) {
+          // Last resort: return original file
+          console.error('[WebP] All conversions failed, using original file');
+          resolve(file);
+        } else {
+          resolve(convertedBlob);
+        }
+        
+      } catch (error) {
+        console.error('[WebP] Conversion error:', error);
+        // Return original file as fallback
+        console.warn('[WebP] Using original file as fallback');
+        resolve(file);
+      }
+    };
+    
+    // Start reading file
     reader.readAsDataURL(file);
   });
 }

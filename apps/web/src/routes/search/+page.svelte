@@ -233,10 +233,15 @@
       description: product.description,
       price: Number(product.price),
       images: product.images && product.images.length > 0 ? product.images : ['/placeholder-product.svg'],
+      product_images: product.product_images,
       brand: product.brand,
       size: product.size,
       condition: product.condition as Product['condition'],
       category: product.category?.name || 'Uncategorized',
+      // Use the proper category hierarchy from server
+      main_category_name: product.main_category_name, // This should be Men/Women/Kids
+      category_name: product.main_category_name || product.category_name, // Use main category
+      subcategory_name: product.subcategory_name, // This should be Tops/T-Shirts/etc
       sellerId: product.seller_id,
       sellerName: product.seller?.username || 'Unknown',
       sellerRating: product.seller?.rating ? Number(product.seller.rating) : null,
@@ -809,7 +814,27 @@
               likeNew: i18n.condition_likeNew(),
               good: i18n.condition_good(),
               fair: i18n.condition_fair(),
-              formatPrice: (price: number) => formatPrice(price)
+              formatPrice: (price: number) => formatPrice(price),
+              categoryTranslation: (categoryName: string) => {
+                // Map English category names to translation keys
+                const categoryMap: Record<string, string> = {
+                  'Women': i18n.category_women(),
+                  'Men': i18n.category_men(),
+                  'Kids': i18n.category_kids(),
+                  'Pets': i18n.category_pets(),
+                  'Shoes': i18n.category_shoes(),
+                  'Bags': i18n.category_bags(),
+                  'Home': i18n.category_home(),
+                  'Beauty': i18n.category_beauty(),
+                  'T-Shirts': i18n.subcategory_tshirts ? i18n.subcategory_tshirts() : 'T-Shirts',
+                  'Tops & T-Shirts': i18n.subcategory_tops ? i18n.subcategory_tops() : 'Tops & T-Shirts',
+                  'Dresses': i18n.subcategory_dresses ? i18n.subcategory_dresses() : 'Dresses',
+                  'Jeans': i18n.subcategory_jeans ? i18n.subcategory_jeans() : 'Jeans',
+                  'Jackets': i18n.subcategory_jackets ? i18n.subcategory_jackets() : 'Jackets',
+                  'Accessories': i18n.subcategory_accessories ? i18n.subcategory_accessories() : 'Accessories'
+                };
+                return categoryMap[categoryName] || categoryName;
+              }
             }}
           />
         {/each}

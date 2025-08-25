@@ -31,8 +31,10 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         category_id,
         country_code,
         categories!inner (
+          id,
           name,
-          slug
+          slug,
+          parent_id
         ),
         profiles!products_seller_id_fkey (
           username,
@@ -150,25 +152,46 @@ export const load: PageServerLoad = async ({ url, locals }) => {
     const categories = categoriesResult.status === 'fulfilled' ? categoriesResult.value.data || [] : [];
 
     // Transform products data for frontend - minimal processing
-    const transformedProducts = (products || []).map(product => ({
-      id: product.id,
-      title: product.title,
-      price: Number(product.price),
-      images: [product.product_images?.[0]?.image_url].filter(Boolean), // Only first image for search results
-      brand: product.brand,
-      size: product.size,
-      condition: product.condition,
-      category: {
-        name: product.categories?.name,
-        slug: product.categories?.slug
-      },
-      seller: {
-        username: product.profiles?.username,
-        avatar_url: product.profiles?.avatar_url
-      },
-      created_at: product.created_at,
-      location: product.location
-    }));
+    const transformedProducts = (products || []).map(product => {
+      // Determine main category and subcategory
+      const hasParent = product.categories?.parent_id !== null;
+      const mainCategory = hasParent ? product.categories?.parent : product.categories;
+      const subcategory = hasParent ? product.categories : null;
+      
+      // Debug log to check what we're getting
+      if (product.title?.includes('Shirt') || product.title?.includes('Top')) {
+        console.log('Product:', product.title);
+        console.log('Category:', product.categories?.name);
+        console.log('Parent:', product.categories?.parent);
+        console.log('Main Category:', mainCategory?.name);
+        console.log('Subcategory:', subcategory?.name);
+      }
+      
+      return {
+        id: product.id,
+        title: product.title,
+        price: Number(product.price),
+        images: [product.product_images?.[0]?.image_url].filter(Boolean), // Only first image for search results
+        product_images: product.product_images,
+        brand: product.brand,
+        size: product.size,
+        condition: product.condition,
+        category: {
+          name: product.categories?.name,
+          slug: product.categories?.slug
+        },
+        // Add proper category hierarchy
+        main_category_name: mainCategory?.name,
+        category_name: mainCategory?.name,
+        subcategory_name: subcategory?.name,
+        seller: {
+          username: product.profiles?.username,
+          avatar_url: product.profiles?.avatar_url
+        },
+        created_at: product.created_at,
+        location: product.location
+      };
+    });
 
     return {
       products: transformedProducts,
