@@ -88,18 +88,15 @@
     formData.category_id ? data.categories?.find(c => c.id === formData.category_id) : null
   );
 
-  const sizeOptions = $derived(() => {
-    if (!selectedCategoryData) return SIZE_CATEGORIES.clothing;
-    
-    const categoryName = selectedCategoryData.name.toLowerCase();
-    if (categoryName.includes('shoe') || categoryName.includes('sneaker') || categoryName.includes('boot')) {
-      return SIZE_CATEGORIES.shoes;
-    }
-    if (categoryName.includes('kid') || categoryName.includes('baby')) {
-      return SIZE_CATEGORIES.kids;
-    }
-    return SIZE_CATEGORIES.clothing;
-  });
+  const sizeOptions = $derived(
+    !selectedCategoryData ? SIZE_CATEGORIES.clothing :
+    selectedCategoryData.name.toLowerCase().includes('shoe') || 
+    selectedCategoryData.name.toLowerCase().includes('sneaker') || 
+    selectedCategoryData.name.toLowerCase().includes('boot') ? SIZE_CATEGORIES.shoes :
+    selectedCategoryData.name.toLowerCase().includes('kid') || 
+    selectedCategoryData.name.toLowerCase().includes('baby') ? SIZE_CATEGORIES.kids :
+    SIZE_CATEGORIES.clothing
+  );
 
   // Price suggestions
   let priceSuggestion = $state<{
