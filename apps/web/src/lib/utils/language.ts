@@ -20,7 +20,7 @@ export function getStoredLanguage(): string | null {
     for (const cookie of cookies) {
       const [name, value] = cookie.trim().split('=');
       if (name === LANGUAGE_COOKIE_NAME) {
-        return decodeURIComponent(value);
+        return decodeURIComponent(value || '');
       }
     }
   } catch (e) {
@@ -64,7 +64,8 @@ export function initializeLanguage(serverLanguage?: string) {
     // Last resort: browser language detection
     let browserLang = 'en';
     if (typeof navigator !== 'undefined' && navigator.language) {
-      browserLang = navigator.language.split('-')[0].toLowerCase();
+      const parts = navigator.language.split('-');
+      browserLang = parts[0]?.toLowerCase() || 'en';
     }
     
     const finalLang = i18n.isAvailableLanguageTag(browserLang) ? browserLang : 'en';

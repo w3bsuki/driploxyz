@@ -1,6 +1,15 @@
-import type { Database } from '@repo/database';
-type UserSubscription = Database['public']['Tables']['user_subscriptions']['Row'];
-type Profile = Database['public']['Tables']['profiles']['Row'];
+import type { Profile } from './types/index.js';
+interface UserSubscription {
+    id: string;
+    user_id: string;
+    plan_id?: string;
+    status: string;
+    amount_paid?: number;
+    currency?: string;
+    discount_code?: string;
+    discount_percent?: number;
+    cancel_at_period_end?: boolean;
+}
 interface Props {
     profile: Profile;
     subscription?: UserSubscription;

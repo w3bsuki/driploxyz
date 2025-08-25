@@ -50,12 +50,10 @@ export class ProductService {
       const { data, error } = await this.supabase
         .from('products')
         .select(`
-          id, title, description, price, condition, size, brand, location,
-          is_active, seller_id, category_id, created_at, updated_at,
-          favorite_count,
-          product_images (id, image_url, sort_order),
-          categories (name),
-          profiles!products_seller_id_fkey (username, rating, avatar_url)
+          *,
+          product_images!product_id (id, image_url, sort_order),
+          categories!category_id (name),
+          profiles!seller_id (username, rating, avatar_url)
         `)
         .eq('id', id)
         .eq('is_active', true)
@@ -70,14 +68,14 @@ export class ProductService {
         return { data: null, error: 'Product not found' };
       }
 
-      // Transform the data
+      // Transform the data - handle potential SelectQueryError
       const product: ProductWithImages = {
         ...data,
-        images: data.product_images || [],
-        category_name: data.categories?.name,
-        seller_name: data.profiles?.username,
-        seller_username: data.profiles?.username,
-        seller_rating: data.profiles?.rating
+        images: Array.isArray(data.product_images) ? data.product_images : [],
+        category_name: (data.categories && typeof data.categories === 'object' && 'name' in data.categories) ? data.categories.name : undefined,
+        seller_name: (data.profiles && typeof data.profiles === 'object' && 'username' in data.profiles) ? data.profiles.username : undefined,
+        seller_username: (data.profiles && typeof data.profiles === 'object' && 'username' in data.profiles) ? data.profiles.username : undefined,
+        seller_rating: (data.profiles && typeof data.profiles === 'object' && 'rating' in data.profiles) ? data.profiles.rating : undefined
       };
 
       // Increment view count
@@ -104,11 +102,11 @@ export class ProductService {
         .select(`
           *,
           favorite_count,
-          product_images!product_images_product_id_fkey (
+          product_images!product_id (
             id, image_url, alt_text, sort_order
           ),
-          categories!products_category_id_fkey (name),
-          profiles!products_seller_id_fkey (username, rating, avatar_url)
+          categories!category_id (name),
+          profiles!seller_id (username, rating, avatar_url)
         `, { count: 'exact' })
         .eq('is_active', true)
         .eq('is_sold', false);
@@ -186,14 +184,13 @@ export class ProductService {
         return { data: [], error: error.message };
       }
 
-      // Transform the data
+      // Transform the data - handle potential SelectQueryError
       const products: ProductWithImages[] = (data || []).map(item => ({
         ...item,
-        images: item.product_images || [],
-        category_name: item.categories?.name,
-        seller_name: item.profiles?.username,
-        seller_rating: item.profiles?.rating,
-        seller_avatar: item.profiles?.avatar_url
+        images: Array.isArray(item.product_images) ? item.product_images : [],
+        category_name: (item.categories && typeof item.categories === 'object' && 'name' in item.categories) ? item.categories.name : undefined,
+        seller_name: (item.profiles && typeof item.profiles === 'object' && 'username' in item.profiles) ? item.profiles.username : undefined,
+        seller_rating: (item.profiles && typeof item.profiles === 'object' && 'rating' in item.profiles) ? item.profiles.rating : undefined
       }));
 
       return { data: products, error: null, total: count || 0 };
@@ -280,14 +277,11 @@ export class ProductService {
       const { data: manuallyPromoted, error: manualError } = await this.supabase
         .from('products')
         .select(`
-          id, title, description, price, condition, size, brand, location,
-          is_active, seller_id, category_id, created_at, updated_at,
-          favorite_count,
-          product_images (id, image_url, sort_order),
-          categories (name),
-          profiles!products_seller_id_fkey (username, rating, avatar_url)
+          *,
+          product_images!product_id (id, image_url, sort_order),
+          categories!category_id (name),
+          profiles!seller_id (username, rating, avatar_url)
         `)
-        .eq('is_featured', true)
         .eq('is_active', true)
         .eq('is_sold', false)
         .order('created_at', { ascending: false })
@@ -322,12 +316,10 @@ export class ProductService {
         const { data: newestProducts, error: newestError } = await this.supabase
           .from('products')
           .select(`
-            id, title, description, price, condition, size, brand, location,
-            is_active, seller_id, category_id, created_at, updated_at,
-            favorite_count,
+            *,
             product_images (id, image_url, sort_order),
             categories (name),
-            profiles!products_seller_id_fkey (username, rating, avatar_url)
+            profiles!seller_id (username, rating, avatar_url)
           `)
           .eq('is_active', true)
           .eq('is_sold', false)
@@ -354,8 +346,7 @@ export class ProductService {
         images: item.product_images || [],
         category_name: item.categories?.name,
         seller_name: item.profiles?.username,
-        seller_rating: item.profiles?.rating,
-        seller_avatar: item.profiles?.avatar_url
+        seller_rating: item.profiles?.rating
       }));
 
       return { data: products, error: null };
@@ -443,7 +434,7 @@ export class ProductService {
    */
   private async incrementViewCount(id: string): Promise<void> {
     try {
-      await this.supabase.rpc('increment_product_view', { product_id_param: id });
+      await this.supabase.rpc('increment_product_view', { product_id: id });
     } catch (error) {
       console.error('Error incrementing view count:', error);
     }

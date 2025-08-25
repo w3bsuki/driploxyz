@@ -37,13 +37,9 @@ export class TransactionService {
 				order_id: params.orderId,
 				seller_id: params.sellerId,
 				buyer_id: params.buyerId,
-				product_id: params.productId,
-				product_price: params.productPrice,
-				shipping_cost: params.shippingCost || 0,
-				total_amount: totalAmount,
-				commission_rate: commissionRate,
+				amount_total: totalAmount,
 				commission_amount: commissionAmount,
-				seller_amount: sellerAmount,
+				seller_earnings: sellerAmount,
 				stripe_payment_intent_id: params.stripePaymentIntentId,
 				payment_status: 'completed',
 				processed_at: new Date().toISOString()
@@ -60,13 +56,12 @@ export class TransactionService {
 			// Update seller's earnings
 			await this.updateSellerEarnings(params.sellerId, sellerAmount);
 
-			// Update order with transaction details
+			// Update order with commission details (using correct columns)
 			await this.supabase
 				.from('orders')
 				.update({
-					commission_amount: commissionAmount,
-					seller_amount: sellerAmount,
-					transaction_id: transaction.id
+					platform_fee: commissionAmount,
+					seller_net_amount: sellerAmount
 				})
 				.eq('id', params.orderId);
 
@@ -83,7 +78,7 @@ export class TransactionService {
 	private async updateSellerEarnings(sellerId: string, amount: number) {
 		const { data: profile } = await this.supabase
 			.from('profiles')
-			.select('total_earnings, pending_payout')
+			.select('current_balance, total_sales_value')
 			.eq('id', sellerId)
 			.single();
 
@@ -91,8 +86,8 @@ export class TransactionService {
 			await this.supabase
 				.from('profiles')
 				.update({
-					total_earnings: (profile.total_earnings || 0) + amount,
-					pending_payout: (profile.pending_payout || 0) + amount
+					current_balance: (profile.current_balance || 0) + amount,
+					total_sales_value: (profile.total_sales_value || 0) + amount
 				})
 				.eq('id', sellerId);
 		}

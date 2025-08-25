@@ -15,6 +15,8 @@
     highlighted?: boolean;
     class?: string;
     priority?: boolean;
+    index?: number;
+    totalCount?: number;
     translations?: {
       size?: string;
       currency?: string;
@@ -40,6 +42,8 @@
     highlighted = false,
     class: className = '',
     priority = false,
+    index = 0,
+    totalCount = 1,
     translations = {
       size: 'Size',
       currency: '$',
@@ -89,14 +93,15 @@
     }
   }}
   role="button"
-  tabindex={0}
+  tabindex={index === 0 ? 0 : -1}
+  aria-label="{product.title} - Price: {translations.formatPrice ? translations.formatPrice(product.price) : `${translations.currency}${product.price}`}"
 >
   <!-- Image Container with overlays -->
   <div class="relative">
     <ProductImage 
       product_images={product.product_images}
       images={product.images}
-      alt={product.title}
+      alt="{product.title} product image"
       {priority}
     />
     
@@ -119,27 +124,26 @@
     <FavoriteButton 
       {product}
       {favorited}
-      {onFavorite}
+      onFavorite={() => onFavorite?.(product.id)}
       addToFavoritesText={translations.addToFavorites}
       removeFromFavoritesText={translations.removeFromFavorites}
     />
   </div>
   
   <!-- Content -->
-  <div class="pt-2 space-y-1">
-    <!-- Category (top) -->
+  <div class="pt-1">
     {#if product.main_category_name || product.category_name}
-      <p class="text-xs font-medium text-gray-600 uppercase tracking-wide">
+      <p class="text-xs font-medium text-gray-600 uppercase tracking-wide leading-none">
         {translations.categoryTranslation ? translations.categoryTranslation(product.main_category_name || product.category_name || '') : (product.main_category_name || product.category_name)}
       </p>
     {/if}
     
-    <!-- Title (second) -->
-    <h3 class="text-sm font-medium text-gray-900 line-clamp-2 leading-tight">{product.title}</h3>
+    <h3 class="text-sm font-medium text-gray-900 line-clamp-2 leading-none">
+      {product.title}
+    </h3>
     
-    <!-- Subcategory/Brand/Size row (third - below title) -->
     {#if product.subcategory_name || product.brand || product.size}
-      <p class="text-xs text-gray-500 line-clamp-1">
+      <p class="text-xs text-gray-500 line-clamp-1 leading-none">
         {#if product.subcategory_name}
           <span class="font-medium text-gray-600">{translations.categoryTranslation ? translations.categoryTranslation(product.subcategory_name) : product.subcategory_name}</span>
         {/if}
@@ -154,12 +158,13 @@
       </p>
     {/if}
     
-    <!-- Price (bottom) -->
-    <ProductPrice 
-      price={product.price}
-      currency={translations.currency}
-      formatPrice={translations.formatPrice}
-    />
+    <div class="-mt-0.5">
+      <ProductPrice 
+        price={product.price}
+        currency={translations.currency}
+        formatPrice={translations.formatPrice}
+      />
+    </div>
   </div>
 </div>
 

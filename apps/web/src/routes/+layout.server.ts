@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 import type { LayoutServerLoad } from './$types';
 
 const REDIRECT_PATHS_TO_SKIP = [
@@ -22,12 +23,14 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
   const { session, user } = await locals.safeGetSession();
   const supabase = locals.supabase;
   
-  // Log auth state for debugging
-  console.log('[Layout Load] Auth state:', {
-    hasUser: !!user,
-    userId: user?.id,
-    pathname: url.pathname
-  });
+  // Log auth state for debugging (development only)
+  if (dev) {
+    console.log('[Layout Load] Auth state:', {
+      hasUser: !!user,
+      userId: user?.id,
+      pathname: url.pathname
+    });
+  }
   
 
   let profile = null;
@@ -41,8 +44,10 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
 
     // Ignore profile not found errors (PGRST116)
     if (profileError && profileError.code !== 'PGRST116') {
-      // Log and continue without failing the whole request
-      console.warn('Profile fetch failed:', profileError.message);
+      // Log and continue without failing the whole request (development only)
+      if (dev) {
+        console.warn('Profile fetch failed:', profileError.message);
+      }
     }
 
     profile = data;
@@ -53,12 +58,14 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
     const isProtectedPath = !REDIRECT_PATHS_TO_SKIP.some(path => url.pathname.startsWith(path));
     
     if (needsOnboarding && isProtectedPath) {
-      console.log('[ONBOARDING CHECK] User needs onboarding:', {
-        userId: user.id,
-        hasProfile: !!profile,
-        onboardingCompleted: profile?.onboarding_completed,
-        currentPath: url.pathname
-      });
+      if (dev) {
+        console.log('[ONBOARDING CHECK] User needs onboarding:', {
+          userId: user.id,
+          hasProfile: !!profile,
+          onboardingCompleted: profile?.onboarding_completed,
+          currentPath: url.pathname
+        });
+      }
       throw redirect(303, '/onboarding');
     }
   }
@@ -68,11 +75,15 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
   const cookieLocale = cookies.get('locale');
   const language = cookieLocale || locals.locale || 'en';
   
-  console.log('🌍 Layout Server: Cookie locale =', cookieLocale, ', locals.locale =', locals.locale, ', final =', language);
+  if (dev) {
+    console.log('🌍 Layout Server: Cookie locale =', cookieLocale, ', locals.locale =', locals.locale, ', final =', language);
+  }
   
   // Ensure we're always returning a valid language
   if (!['en', 'bg', 'ru', 'ua'].includes(language)) {
-    console.warn('🌍 Layout Server: Invalid language detected, falling back to English:', language);
+    if (dev) {
+      console.warn('🌍 Layout Server: Invalid language detected, falling back to English:', language);
+    }
   }
   
   // Get country from locals (set by server hooks)

@@ -1,5 +1,5 @@
 <script lang="ts">
-  type ConditionValue = 'new' | 'like-new' | 'good' | 'fair';
+  type ConditionValue = 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair';
   
   interface ConditionOption {
     value: ConditionValue;
@@ -32,28 +32,40 @@
 
   const conditions: ConditionOption[] = [
     {
-      value: 'new',
+      value: 'brand_new_with_tags',
       label: 'New with tags',
       description: 'Never worn, original tags',
       icon: '🏷️'
     },
     {
-      value: 'like-new',
+      value: 'new_without_tags',
+      label: 'New no tags',
+      description: 'Never worn, no tags',
+      icon: '✨'
+    },
+    {
+      value: 'like_new',
       label: 'Like new',
       description: 'Worn once or twice',
-      icon: '✨'
+      icon: '👍'
     },
     {
       value: 'good',
       label: 'Good',
       description: 'Minor signs of wear',
-      icon: '👍'
+      icon: '👌'
+    },
+    {
+      value: 'worn',
+      label: 'Worn',
+      description: 'Regular wear visible',
+      icon: '🔄'
     },
     {
       value: 'fair',
       label: 'Fair',
-      description: 'Visible wear, still good',
-      icon: '👌'
+      description: 'Heavy wear, still usable',
+      icon: '⚠️'
     }
   ];
 

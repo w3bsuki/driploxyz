@@ -34,8 +34,8 @@
   }
 
   let { 
-    promotedProducts, 
-    sellers, 
+    promotedProducts = [], 
+    sellers = [], 
     onSellerSelect, 
     onSellerClick,
     onProductClick,
@@ -43,20 +43,28 @@
     onToggleFavorite,
     favoritesState,
     translations, 
-    formatPrice 
+    formatPrice = (price: number) => `${price.toFixed(2)}`
   }: Props = $props();
 
   let selectedProduct = $state<Product | null>(null);
   let showQuickView = $state(false);
+  let currentFocusIndex = $state(-1);
+
+  // Derived states
+  const hasProducts = $derived(promotedProducts.length > 0);
+  const hasSellers = $derived(sellers.length > 0);
+  const showSellers = $derived(!hasProducts && hasSellers);
+  const totalItems = $derived(hasProducts ? promotedProducts.length : sellers.length);
 
   function handleProductClick(product: Product) {
     selectedProduct = product;
     showQuickView = true;
+    // Don't call onProductClick here - it navigates to the product page
   }
 
   function handleCloseModal() {
     showQuickView = false;
-    selectedProduct = null;
+    setTimeout(() => selectedProduct = null, 300);
   }
 
   function handleBuy(productId: string, selectedSize?: string) {
@@ -64,77 +72,145 @@
     handleCloseModal();
   }
 
+  function getFavoriteData(productId: string) {
+    return {
+      isFavorited: favoritesState?.favorites[productId] ?? false,
+      isLoading: favoritesState?.isLoading ?? false
+    };
+  }
+
   function handleFavoriteToggle(productId: string) {
     onToggleFavorite?.(productId);
   }
 
-  // Get favorite status and loading state for a product
-  function getFavoriteData(productId: string) {
-    const isFavorited = favoritesState?.favorites[productId] || false;
-    const isLoading = favoritesState?.isLoading || false;
-    return { isFavorited, isLoading };
+  function handleKeyNavigation(e: KeyboardEvent) {
+    if (!hasProducts && !hasSellers) return;
+    
+    switch(e.key) {
+      case 'ArrowRight':
+        e.preventDefault();
+        currentFocusIndex = Math.min(currentFocusIndex + 1, totalItems - 1);
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        currentFocusIndex = Math.max(currentFocusIndex - 1, 0);
+        break;
+      case 'Home':
+        e.preventDefault();
+        currentFocusIndex = 0;
+        break;
+      case 'End':
+        e.preventDefault();
+        currentFocusIndex = totalItems - 1;
+        break;
+    }
+
+    const container = document.querySelector('[data-highlights-container]');
+    const items = container?.querySelectorAll('[data-highlight-item]');
+    items?.[currentFocusIndex]?.focus();
   }
 </script>
 
 <!-- Promoted Listings / Highlights -->
-<div class="bg-white border-b border-gray-200">
+<section 
+  class="bg-white border-b border-gray-200"
+  aria-label={translations.trending_promoted}
+  role="region"
+>
   <div class="px-4 sm:px-6 lg:px-8 py-4">
     <!-- Promoted header -->
-    <div class="flex items-center justify-between mb-3">
-      <div class="flex items-center gap-2">
-        <span class="text-xs font-semibold text-gray-900 uppercase tracking-wide">{translations.trending_promoted}</span>
-      </div>
-      <div class="flex items-center gap-1 text-gray-400">
+    <header class="flex items-center justify-between mb-3">
+      <h2 class="flex items-center gap-2">
+        <span class="text-xs font-semibold text-gray-900 uppercase tracking-wide">
+          {translations.trending_promoted}
+        </span>
+        {#if hasProducts}
+          <span class="sr-only">
+            {promotedProducts.length} promoted products available
+          </span>
+        {:else if hasSellers}
+          <span class="sr-only">
+            {sellers.length} premium sellers available
+          </span>
+        {/if}
+      </h2>
+      <div class="flex items-center gap-1 text-gray-400" aria-hidden="true">
         <span class="text-xs">{translations.ui_scroll || 'Scroll'}</span>
         <svg class="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
       </div>
-    </div>
-    <div class="overflow-x-auto scrollbar-hide">
-      <div class="flex space-x-3 -mx-4 px-4 sm:mx-0 sm:px-0">
+    </header>
+    <nav 
+      role="navigation"
+      aria-label="Promoted products carousel"
+      class="overflow-x-auto scrollbar-hide"
+      onkeydown={handleKeyNavigation}
+    >
+      <div 
+        class="flex flex-nowrap space-x-3 -mx-4 px-4 sm:mx-0 sm:px-0"
+        data-highlights-container
+        role="list"
+      >
         <!-- Promoted Products -->
-        {#if promotedProducts && promotedProducts.length > 0}
-          {#each promotedProducts as product}
-            <ProductHighlight 
-              {product} 
-              currency={translations.common_currency}
-              {formatPrice}
-              onProductClick={handleProductClick}
-              onBuy={(productId, selectedSize) => onProductBuy?.(productId, selectedSize)}
-              onToggleFavorite={(productId) => onToggleFavorite?.(productId)}
-              isFavorite={getFavoriteData(product.id).isFavorited}
-              isLoadingFavorite={getFavoriteData(product.id).isLoading}
-            />
+        {#if hasProducts}
+          {#each promotedProducts as product, index}
+            <div role="listitem" data-highlight-item>
+              <ProductHighlight 
+                {product} 
+                currency={translations.common_currency}
+                {formatPrice}
+                onProductClick={handleProductClick}
+                onBuy={(productId, selectedSize) => onProductBuy?.(productId, selectedSize)}
+                onToggleFavorite={handleFavoriteToggle}
+                isFavorite={getFavoriteData(product.id).isFavorited}
+                isLoadingFavorite={getFavoriteData(product.id).isLoading}
+                {index}
+                totalCount={promotedProducts.length}
+              />
+            </div>
           {/each}
         {/if}
 
         <!-- Top Sellers (fallback) -->
-        {#if (!promotedProducts || promotedProducts.length === 0) && sellers.length > 0}
-          {#each sellers as seller}
-            <div class="relative shrink-0">
-              <Avatar 
-                size="lg" 
-                name={seller.name} 
-                src={seller.avatar}
-                premium={seller.premium}
-                variant="square"
+        {#if showSellers}
+          {#each sellers as seller, index}
+            <div 
+              role="listitem" 
+              data-highlight-item
+              class="relative shrink-0"
+            >
+              <button
                 onclick={() => onSellerClick(seller)}
-              />
-              {#if seller.premium}
-                <div class="absolute -top-1 -right-1 w-5 h-5 bg-violet-500 rounded-full border border-white shadow-lg flex items-center justify-center">
-                  <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                </div>
-              {/if}
+                class="relative block focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 rounded-lg"
+                aria-label="View {seller.name}'s profile{seller.premium ? ' - Premium seller' : ''}"
+                tabindex={currentFocusIndex === index ? 0 : -1}
+              >
+                <Avatar 
+                  size="lg" 
+                  name={seller.name} 
+                  src={seller.avatar}
+                  premium={seller.premium}
+                  variant="square"
+                />
+                {#if seller.premium}
+                  <div 
+                    class="absolute -top-1 -right-1 w-5 h-5 bg-violet-500 rounded-full border border-white shadow-lg flex items-center justify-center"
+                    aria-hidden="true"
+                  >
+                    <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                  </div>
+                {/if}
+              </button>
             </div>
           {/each}
         {/if}
       </div>
-    </div>
+    </nav>
   </div>
-</div>
+</section>
 
 <!-- Modal rendered at the end -->
 {#if showQuickView && selectedProduct}

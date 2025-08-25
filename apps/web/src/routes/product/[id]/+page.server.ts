@@ -23,17 +23,17 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
       created_at,
       seller_id,
       category_id,
-      product_images (
+      product_images!product_id (
         id,
         image_url,
         sort_order
       ),
-      categories (
+      categories!category_id (
         id,
         name,
         parent_id
       ),
-      profiles!products_seller_id_fkey (
+      profiles!seller_id (
         id,
         username,
         avatar_url,
@@ -68,11 +68,11 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
         title,
         price,
         condition,
-        product_images (
+        product_images!product_id (
           image_url
         )
       `)
-      .eq('category_id', product.category_id)
+      .eq('category_id', product.category_id!)
       .eq('is_active', true)
       .eq('is_sold', false)
       .neq('id', params.id)
@@ -86,11 +86,11 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
         title,
         price,
         condition,
-        product_images (
+        product_images!product_id (
           image_url
         )
       `)
-      .eq('seller_id', product.seller_id)
+      .eq('seller_id', product.seller_id!)
       .eq('is_active', true)
       .eq('is_sold', false)
       .neq('id', params.id)

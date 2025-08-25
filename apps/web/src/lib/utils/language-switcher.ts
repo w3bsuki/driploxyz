@@ -31,7 +31,7 @@ export async function switchLanguage(lang: string) {
   } catch (error) {
     console.error('Language switch failed:', error);
     
-    if (error.message?.includes('Functional cookies required')) {
+    if ((error as any).message?.includes('Functional cookies required')) {
       sessionStorage.setItem('pendingLanguageSwitch', lang);
       
       window.dispatchEvent(new CustomEvent('requestCookieConsent', {

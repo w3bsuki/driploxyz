@@ -1,6 +1,13 @@
-import type { Database } from '@repo/database';
-type Order = Database['public']['Tables']['orders']['Row'];
-type Product = Database['public']['Tables']['products']['Row'];
+import type { Product } from './types/index.js';
+interface Order {
+    id: string;
+    product_id: string;
+    buyer_id: string;
+    total_amount: number;
+    currency: string;
+    status: string;
+    created_at: string;
+}
 interface SaleRecord {
     order: Order;
     product: Product;

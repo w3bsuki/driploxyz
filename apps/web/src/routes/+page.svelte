@@ -26,6 +26,7 @@
 	let showCategoryDropdown = $state(false);
 	let loadingCategory = $state<string | null>(null);
 	let QuickViewDialog = $state<any>(null);
+	let selectedPillIndex = $state(-1);
 
 	// Language state - already initialized in +layout.svelte
 	let currentLang = $state(i18n.languageTag());
@@ -208,6 +209,34 @@
 		// Toggle category dropdown instead of navigating
 		showCategoryDropdown = !showCategoryDropdown;
 	}
+	
+	function handlePillKeyNav(e: KeyboardEvent, index: number) {
+		const pills = document.querySelectorAll('[role="navigation"] button');
+		const totalPills = mainCategories.length + 1;
+		
+		switch(e.key) {
+			case 'ArrowRight':
+				e.preventDefault();
+				selectedPillIndex = Math.min(index + 1, totalPills - 1);
+				(pills[selectedPillIndex] as HTMLElement)?.focus();
+				break;
+			case 'ArrowLeft':
+				e.preventDefault();
+				selectedPillIndex = Math.max(index - 1, 0);
+				(pills[selectedPillIndex] as HTMLElement)?.focus();
+				break;
+			case 'Home':
+				e.preventDefault();
+				selectedPillIndex = 0;
+				(pills[0] as HTMLElement)?.focus();
+				break;
+			case 'End':
+				e.preventDefault();
+				selectedPillIndex = totalPills - 1;
+				(pills[totalPills - 1] as HTMLElement)?.focus();
+				break;
+		}
+	}
 
 	async function navigateToCategory(categorySlug: string) {
 		loadingCategory = categorySlug;
@@ -335,11 +364,19 @@
 				</div>
 				
 				<!-- Category Pills -->
-				<div class="flex items-center justify-center gap-2 overflow-x-auto scrollbar-hide">
+				<nav 
+					role="navigation"
+					aria-label="Browse categories"
+					class="flex items-center justify-center gap-2 overflow-x-auto scrollbar-hide"
+				>
 					<button 
 						onclick={() => navigateToAllSearch()}
+						onkeydown={(e) => handlePillKeyNav(e, 0)}
 						disabled={loadingCategory === 'all'}
-						class="category-nav-pill shrink-0 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-900 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[70px] h-10 transition-all"
+						aria-label="View all categories"
+						aria-busy={loadingCategory === 'all'}
+						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
+						class="category-nav-pill shrink-0 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-900 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[70px] h-10 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
 					>
 						{#if loadingCategory === 'all'}
 							<LoadingSpinner size="sm" color="white" />
@@ -347,25 +384,29 @@
 							{i18n.search_all()}
 						{/if}
 					</button>
-					{#each mainCategories as category}
+					{#each mainCategories as category, i}
+						{@const categoryName = category.slug === 'women' ? i18n.category_women() : 
+						                       category.slug === 'men' ? i18n.category_men() : 
+						                       category.slug === 'kids' ? i18n.category_kids() : 
+						                       category.name}
 						<button 
 							onclick={() => navigateToCategory(category.slug)}
+							onkeydown={(e) => handlePillKeyNav(e, i + 1)}
 							disabled={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[70px] h-10 transition-all"
+							aria-label="Browse {categoryName} category"
+							aria-busy={loadingCategory === category.slug}
+							aria-current={$page.url.pathname.includes(category.slug) ? 'page' : undefined}
+							class="category-nav-pill shrink-0 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[70px] h-10 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
 								<LoadingSpinner size="sm" color="gray" />
 							{:else}
-								{@const categoryName = category.slug === 'women' ? i18n.category_women() : 
-								                       category.slug === 'men' ? i18n.category_men() : 
-								                       category.slug === 'kids' ? i18n.category_kids() : 
-								                       category.name}
 								{categoryName}
 							{/if}
 						</button>
 					{/each}
-				</div>
+				</nav>
 			</div>
 		</div>
 
@@ -417,6 +458,7 @@
 				onBrowseAll={handleBrowseAll}
 				onSellClick={handleSellClick}
 				{formatPrice}
+				favoritesState={$favoritesStore}
 				translations={{
 					empty_noProducts: i18n.empty_noProducts(),
 					empty_startBrowsing: i18n.empty_startBrowsing(),

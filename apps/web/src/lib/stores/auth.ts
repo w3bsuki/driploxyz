@@ -49,7 +49,7 @@ export const userInitials = derived(profile, ($profile) => {
   if ($profile.full_name) {
     return $profile.full_name
       .split(' ')
-      .map(name => name.charAt(0).toUpperCase())
+      .map((name: string) => name.charAt(0).toUpperCase())
       .slice(0, 2)
       .join('');
   }

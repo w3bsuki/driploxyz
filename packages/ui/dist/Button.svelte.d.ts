@@ -6,6 +6,7 @@ interface Props {
     loading?: boolean;
     href?: string;
     type?: 'button' | 'submit' | 'reset';
+    form?: string;
     onclick?: (event: MouseEvent) => void;
     class?: string;
     children?: import('svelte').Snippet;

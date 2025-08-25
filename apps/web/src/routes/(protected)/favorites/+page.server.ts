@@ -16,17 +16,17 @@ export const load: PageServerLoad = async ({ locals: { supabase, session } }) =>
       .select(`
         product_id,
         created_at,
-        products!favorites_product_id_fkey (
+        products!product_id (
           *,
           favorite_count,
-          product_images!product_images_product_id_fkey (
+          product_images!product_id (
             id,
             image_url,
             alt_text,
             sort_order
           ),
-          categories!products_category_id_fkey (name),
-          profiles!products_seller_id_fkey (username, rating, avatar_url)
+          categories!category_id (name),
+          profiles!seller_id (username, rating, avatar_url)
         )
       `)
       .eq('user_id', session.user.id)

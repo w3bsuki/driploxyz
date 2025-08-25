@@ -1,21 +1,35 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { SignupSchema } from '$lib/validation/auth';
 import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
+import { CSRFProtection } from '$lib/server/csrf';
 import type { Actions, PageServerLoad } from './$types';
 import { detectLanguage } from '@repo/i18n';
 
-export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
-  const { session } = await safeGetSession();
+export const load: PageServerLoad = async (event) => {
+  const { session } = await event.locals.safeGetSession();
   
   if (session) {
     throw redirect(303, '/');
   }
   
-  return {};
+  // Generate CSRF token for the form
+  const csrfToken = await CSRFProtection.getToken(event);
+  
+  return { csrfToken };
 };
 
 export const actions: Actions = {
-  signup: async ({ request, locals: { supabase }, cookies, url, getClientAddress }) => {
+  signup: async (event) => {
+    // CSRF Protection - must be first
+    const isValidCSRF = await CSRFProtection.check(event);
+    if (!isValidCSRF) {
+      return fail(403, { 
+        errors: { _form: 'Security validation failed. Please refresh the page and try again.' }
+      });
+    }
+
+    const { request, locals: { supabase }, cookies, url, getClientAddress } = event;
+
     // Get PUBLIC_SITE_URL from environment (dynamic)
     const PUBLIC_SITE_URL = process.env.PUBLIC_SITE_URL;
     

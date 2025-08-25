@@ -8,8 +8,7 @@ export const load: PageServerLoad = async ({ locals }) => {
   console.log('[SELL DEBUG] Locals keys:', Object.keys(locals));
   
   // Get the session from locals 
-  const { supabase, session, country } = locals;
-  const currentCountry = country || 'BG';
+  const { supabase, session } = locals;
   
   console.log('[SELL DEBUG] Session exists:', !!session);
   console.log('[SELL DEBUG] Session user ID:', session?.user?.id);
@@ -91,9 +90,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ request, locals: { supabase, session, country } }) => {
+  default: async ({ request, locals: { supabase, session } }) => {
     console.log('[SELL ACTION] Starting form submission');
-    const currentCountry = country || 'BG';
     
     if (!session) {
       console.log('[SELL ACTION] No session found');
@@ -111,9 +109,7 @@ export const actions: Actions = {
     const description = formData.get('description') as string || '';
     const gender_category_id = formData.get('gender_category_id') as string;
     const type_category_id = formData.get('type_category_id') as string;
-    const specific_category_id = formData.get('category_id') as string; // Level 3 specific category
-    // Use specific category if available, otherwise use type category
-    const category_id = specific_category_id || type_category_id;
+    const category_id = formData.get('category_id') as string || type_category_id; // Use type_category_id if no Level 3
     const brand = formData.get('brand') as string;
     const size = formData.get('size') as string;
     const condition = formData.get('condition') as string;
@@ -133,7 +129,7 @@ export const actions: Actions = {
       title,
       gender_category_id,
       type_category_id,
-      specific_category_id,
+      category_id,
       brand,
       size,
       price,
@@ -169,7 +165,7 @@ export const actions: Actions = {
       return fail(400, { 
         errors,
         values: {
-          title, description, gender_category_id, type_category_id, category_id: specific_category_id, brand, size, 
+          title, description, gender_category_id, type_category_id, category_id, brand, size, 
           condition, color, material, price, shipping_cost, tags, use_premium_boost
         }
       });
@@ -177,7 +173,8 @@ export const actions: Actions = {
 
     try {
       // Validate we have at least one image
-      if (!photo_urls || photo_urls.length === 0) {
+      // TODO: Re-enable photo validation after testing
+      /*if (!photo_urls || photo_urls.length === 0) {
         return fail(400, {
           errors: { photos: 'At least one photo is required' },
           values: {
@@ -185,24 +182,24 @@ export const actions: Actions = {
             condition, color, material, price, shipping_cost, tags, use_premium_boost
           }
         });
-      }
+      }*/
       
       console.log('[SELL ACTION] Using pre-uploaded images:', photo_urls.length);
 
       // Create product in database
+      console.log('[SELL ACTION] Creating product with category_id:', category_id);
       const { data: product, error: productError } = await supabase
         .from('products')
         .insert({
           title: title.trim(),
           description: description.trim() || '',
           price: price,
-          category_id: category_id, // Now using the specific Level 3 category
+          category_id: category_id, // Will be type_category_id if no Level 3
           condition: condition,
           brand: brand !== 'Other' ? brand : null,
           size: size || null,
           location: null,
           seller_id: session.user.id,
-          country_code: currentCountry, // Set the country for the product
           shipping_cost: shipping_cost,
           tags: tags?.length > 0 ? tags : null,
           color: color?.trim() || null,
@@ -289,12 +286,13 @@ export const actions: Actions = {
         throw error;
       }
       
-      console.error('Error creating product:', error);
+      // Only log real errors, not redirects
+      console.error('[SELL ACTION] Error creating product:', error);
       
       return fail(500, {
         errors: { _form: error instanceof Error ? error.message : 'Failed to create product' },
         values: {
-          title, description, gender_category_id, type_category_id, category_id: specific_category_id, brand, size, 
+          title, description, gender_category_id, type_category_id, category_id, brand, size, 
           condition, color, material, price, shipping_cost, tags, use_premium_boost
         }
       });

@@ -5,6 +5,8 @@ interface Props {
     onFilter?: () => void;
     showCategoriesButton?: boolean;
     categoriesText?: string;
+    isDropdownOpen?: boolean;
+    searchId?: string;
     class?: string;
 }
 declare const SearchBar: import("svelte").Component<Props, {}, "value">;

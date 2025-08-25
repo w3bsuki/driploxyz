@@ -39,7 +39,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       id,
       title,
       price,
-      images:product_images(image_url)
+      images:product_images!product_id(image_url)
     `)
     .eq('seller_id', profile.id)
     .eq('is_active', true)
@@ -54,7 +54,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       rating,
       comment,
       created_at,
-      reviewer:profiles!reviews_reviewer_id_fkey(
+      reviewer:profiles!reviewer_id(
         id,
         username,
         avatar_url

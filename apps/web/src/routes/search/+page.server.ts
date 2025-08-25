@@ -33,17 +33,17 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         seller_id,
         category_id,
         country_code,
-        categories!inner (
+        categories!category_id (
           id,
           name,
           slug,
           parent_id
         ),
-        profiles!products_seller_id_fkey (
+        profiles!seller_id (
           username,
           avatar_url
         ),
-        product_images!inner (
+        product_images!product_id (
           image_url
         )
       `)
@@ -178,7 +178,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
     });
 
     // Transform products data for frontend - minimal processing
-    const transformedProducts = (products || []).map(product => {
+    const transformedProducts = (products || []).map((product: any) => {
       // Get the product's category
       const productCategory = product.categories;
       
@@ -210,8 +210,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         category_name: mainCategory?.name,
         subcategory_name: subcategory?.name,
         seller: {
-          username: product.profiles?.username,
-          avatar_url: product.profiles?.avatar_url
+          username: (product as any).profiles?.username,
+          avatar_url: (product as any).profiles?.avatar_url
         },
         created_at: product.created_at,
         location: product.location

@@ -8,6 +8,8 @@ interface Props {
     isLoadingFavorite?: boolean;
     currency?: string;
     formatPrice?: (price: number) => string;
+    index?: number;
+    totalCount?: number;
 }
 declare const ProductHighlight: import("svelte").Component<Props, {}, "">;
 type ProductHighlight = ReturnType<typeof ProductHighlight>;

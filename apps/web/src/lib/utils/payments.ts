@@ -416,7 +416,7 @@ export function formatPayoutMethodDisplay(method: PayoutMethod): string {
 			return `Bank Transfer (${method.name || 'Bank Account'})`;
 		
 		default:
-			return method.type.replace('_', ' ').toUpperCase();
+			return (method as any).type?.replace('_', ' ').toUpperCase() || 'UNKNOWN';
 	}
 }
 

@@ -110,9 +110,11 @@
     class="sr-only"
   >
     <option value="">Select condition</option>
-    <option value="new">New with tags</option>
-    <option value="like-new">Like new</option>
+    <option value="brand_new_with_tags">New with tags</option>
+    <option value="new_without_tags">New without tags</option>
+    <option value="like_new">Like new</option>
     <option value="good">Good</option>
+    <option value="worn">Worn</option>
     <option value="fair">Fair</option>
   </select>
 </div>

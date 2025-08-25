@@ -127,6 +127,8 @@
       };
     }}
   >
+    <!-- CSRF Protection -->
+    <input type="hidden" name="csrf_token" value={data.csrfToken} />
     <div class="space-y-1">
       <!-- Full Name -->
       <div>

@@ -1,4 +1,4 @@
-type ConditionValue = 'new' | 'like-new' | 'good' | 'fair';
+type ConditionValue = 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair';
 interface Props {
     value?: ConditionValue;
     label?: string;

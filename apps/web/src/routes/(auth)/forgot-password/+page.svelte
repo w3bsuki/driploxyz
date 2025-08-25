@@ -58,6 +58,9 @@
         await update();
       };
     }}>
+      <!-- CSRF Protection -->
+      <input type="hidden" name="csrf_token" value={data.csrfToken} />
+      
       <div class="space-y-6">
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700">

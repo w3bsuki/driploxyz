@@ -22,11 +22,13 @@ interface Props {
     };
     loading?: boolean;
     onProductClick: (product: Product) => void;
-    onFavorite: (product: Product) => void;
+    onFavorite: (productId: string) => void;
     onBrowseAll?: () => void;
     onSellClick?: () => void;
     formatPrice?: (price: number) => string;
     translations: Translations;
+    sectionTitle?: string;
+    favoritesState?: any;
 }
 declare const FeaturedProducts: import("svelte").Component<Props, {}, "">;
 type FeaturedProducts = ReturnType<typeof FeaturedProducts>;

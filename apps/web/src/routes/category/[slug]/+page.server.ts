@@ -115,7 +115,7 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase, co
       .from('products')
       .select(`
         seller_id,
-        seller:profiles!products_seller_id_fkey (
+        seller:profiles!seller_id (
           id,
           username,
           avatar_url,

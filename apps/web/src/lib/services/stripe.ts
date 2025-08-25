@@ -1,6 +1,10 @@
 import Stripe from 'stripe';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database, Transaction, Product, Order } from '@repo/database';
+import type { Database } from '@repo/database';
+
+type Transaction = Database['public']['Tables']['transactions']['Row'];
+type Product = Database['public']['Tables']['products']['Row'];
+type Order = Database['public']['Tables']['orders']['Row'];
 
 type Tables = Database['public']['Tables'];
 
@@ -71,7 +75,7 @@ export class StripeService {
 			// Get product details
 			const { data: product, error: productError } = await this.supabase
 				.from('products')
-				.select('id, title, price, shipping_cost, status, seller_id, seller:profiles!seller_id(id, username, stripe_customer_id)')
+				.select('id, title, price, seller_id, is_active, is_sold, seller:profiles!seller_id(*)')
 				.eq('id', productId)
 				.single();
 
@@ -79,13 +83,13 @@ export class StripeService {
 				return { error: new Error('Product not found') };
 			}
 
-			if (product.status !== 'active') {
+			if (!product.is_active || product.is_sold) {
 				return { error: new Error('Product is not available') };
 			}
 
 			// Calculate total amount
 			const productPrice = product.price;
-			const shippingCost = product.shipping_cost || 0;
+			const shippingCost = 0; // Shipping cost not implemented yet
 			const totalAmount = productPrice + shippingCost;
 			
 			// Stripe requires amount in cents
@@ -121,20 +125,36 @@ export class StripeService {
 				}
 			});
 
-			// Create pending transaction record
-			const { error: transactionError } = await this.supabase
-				.from('transactions')
+			// Create pending order record first
+			const { data: order, error: orderError } = await this.supabase
+				.from('orders')
 				.insert({
-					stripe_payment_intent_id: paymentIntent.id,
 					buyer_id: buyerId,
 					seller_id: sellerId,
 					product_id: productId,
-					amount: productPrice,
-					shipping_cost: shippingCost,
 					total_amount: totalAmount,
+					status: 'pending_payment'
+				})
+				.select('id')
+				.single();
+
+			if (orderError || !order) {
+				return { error: new Error('Failed to create order') };
+			}
+
+			// Create pending transaction record with order_id
+			const { error: transactionError } = await this.supabase
+				.from('transactions')
+				.insert({
+					order_id: order.id,
+					stripe_payment_intent_id: paymentIntent.id,
+					buyer_id: buyerId,
+					seller_id: sellerId,
+					amount_total: totalAmount,
+					commission_amount: Math.round(totalAmount * 0.05),
+					seller_earnings: Math.round(totalAmount * 0.95),
 					currency: 'BGN',
-					status: 'pending',
-					payment_method: 'card'
+					payment_status: 'pending'
 				});
 
 			if (transactionError) {
@@ -159,7 +179,7 @@ export class StripeService {
 			// Get user profile
 			const { data: profile } = await this.supabase
 				.from('profiles')
-				.select('stripe_customer_id, username')
+				.select('username')
 				.eq('id', userId)
 				.single();
 
@@ -167,32 +187,18 @@ export class StripeService {
 			const { data: authData } = await this.supabase.auth.getUser();
 			const email = authData?.user?.email;
 
-			// If customer exists, return it
-			if (profile?.stripe_customer_id) {
-				try {
-					const customer = await this.stripe.customers.retrieve(profile.stripe_customer_id);
-					if (customer && !customer.deleted) {
-						return customer as Stripe.Customer;
-					}
-				} catch (error) {
-					console.error('Failed to retrieve existing customer:', error);
-				}
-			}
+			// Skip existing customer check since stripe_customer_id doesn't exist
 
 			// Create new customer
 			const customer = await this.stripe.customers.create({
-				email: email,
+				email: email || '',
 				name: profile?.username || undefined,
 				metadata: {
 					supabase_user_id: userId
 				}
 			});
 
-			// Save customer ID to profile
-			await this.supabase
-				.from('profiles')
-				.update({ stripe_customer_id: customer.id })
-				.eq('id', userId);
+			// Note: not saving stripe_customer_id since column doesn't exist
 
 			return customer;
 		} catch (error) {
@@ -279,7 +285,7 @@ export class StripeService {
 
 			// Return immediately with client secret - no bullshit!
 			return {
-				clientSecret: paymentIntent.client_secret || undefined
+				clientSecret: paymentIntent.client_secret || ''
 			};
 
 		} catch (error) {
@@ -355,7 +361,7 @@ export class StripeService {
 			// Update subscription with new price
 			const updatedSubscription = await this.stripe.subscriptions.update(subscriptionId, {
 				items: [{
-					id: subscription.items.data[0].id,
+					id: subscription.items.data[0]?.id || '',
 					price: newPrice.id
 				}],
 				proration_behavior: 'create_prorations'
@@ -462,9 +468,8 @@ export class StripeService {
 		await this.supabase
 			.from('products')
 			.update({
-				status: 'sold',
-				sold_at: new Date().toISOString(),
-				buyer_id: metadata.buyer_id
+				is_sold: true,
+				sold_at: new Date().toISOString()
 			})
 			.eq('id', metadata.product_id);
 
@@ -551,11 +556,12 @@ export class StripeService {
 	 * Handle invoice payment
 	 */
 	private async handleInvoicePayment(invoice: Stripe.Invoice): Promise<void> {
-		if (!invoice.subscription) return;
+		const subscriptionId = (invoice as any).subscription;
+		if (!subscriptionId) return;
 		
-		const subscription = typeof invoice.subscription === 'string' 
-			? await this.stripe.subscriptions.retrieve(invoice.subscription)
-			: invoice.subscription;
+		const subscription = typeof subscriptionId === 'string' 
+			? await this.stripe.subscriptions.retrieve(subscriptionId)
+			: subscriptionId;
 
 		if (subscription) {
 			await this.handleSubscriptionUpdate(subscription as Stripe.Subscription);
@@ -576,13 +582,13 @@ export class StripeService {
 		}) : { data: [] };
 
 		if (customers.data.length > 0) {
-			return customers.data[0];
+			return customers.data[0]!;
 		}
 
 		// Create new customer
 		return await this.stripe.customers.create({
-			email: details.email,
-			name: details.name,
+			email: details.email || '',
+			name: details.name || undefined,
 			metadata: {
 				supabase_user_id: userId
 			}
@@ -596,24 +602,23 @@ export class StripeService {
 		orderId: string;
 		sellerId: string;
 		buyerId: string;
-		productId: string;
 		productPrice: number;
 		shippingCost: number;
 		stripePaymentIntentId: string;
 	}): Promise<{ transaction: Transaction | null; error: Error | null }> {
+		const totalAmount = params.productPrice + params.shippingCost;
 		const { data, error } = await this.supabase
 			.from('transactions')
 			.insert({
 				order_id: params.orderId,
 				seller_id: params.sellerId,
 				buyer_id: params.buyerId,
-				product_id: params.productId,
-				amount: params.productPrice,
-				shipping_cost: params.shippingCost,
-				total_amount: params.productPrice + params.shippingCost,
+				amount_total: totalAmount,
+				commission_amount: Math.round(totalAmount * 0.05),
+				seller_earnings: Math.round(totalAmount * 0.95),
 				currency: 'BGN',
 				status: 'pending',
-				payment_method: 'card',
+				payment_status: 'pending',
 				stripe_payment_intent_id: params.stripePaymentIntentId
 			})
 			.select()

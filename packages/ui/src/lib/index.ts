@@ -125,6 +125,9 @@ export { default as Accordion } from './Accordion.svelte';
 
 // Seller components
 export { default as SellerQuickView } from './SellerQuickView.svelte';
+export { default as SellerBalance } from './SellerBalance.svelte';
+export { default as SalesHistory } from './SalesHistory.svelte';
+export { default as SubscriptionStatus } from './SubscriptionStatus.svelte';
 
 // Product quick view components
 export { default as ProductQuickView } from './ProductQuickView.svelte';

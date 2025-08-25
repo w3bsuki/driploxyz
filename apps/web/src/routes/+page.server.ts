@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 
 export const load: PageServerLoad = async ({ url, locals: { supabase, country } }) => {
   // Check if this is an auth callback that went to the wrong URL
@@ -155,7 +156,9 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
     };
     
   } catch (error) {
-    console.error('Error loading homepage data:', error);
+    if (dev) {
+      console.error('Error loading homepage data:', error);
+    }
     return {
       featuredProducts: [],
       categories: [],

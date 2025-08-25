@@ -2,7 +2,7 @@ import type { Product } from './types.js';
 interface Props {
     product: Product;
     favorited?: boolean;
-    onFavorite?: (product: Product) => void;
+    onFavorite?: () => void;
     addToFavoritesText?: string;
     removeFromFavoritesText?: string;
     showCount?: boolean;

@@ -114,6 +114,9 @@
       };
     }}
   >
+    <!-- CSRF Protection -->
+    <input type="hidden" name="csrf_token" value={data.csrfToken} />
+    
     <div class="space-y-1">
       <div>
         <label for="email" class="block text-sm font-semibold text-gray-700 mb-1 pl-1">

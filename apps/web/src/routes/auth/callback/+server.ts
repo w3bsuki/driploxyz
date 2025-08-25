@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 import type { RequestHandler } from './$types';
 
 /**
@@ -17,11 +18,13 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
   const providerError = url.searchParams.get('error');
   const errorDescription = url.searchParams.get('error_description');
   
-  console.log('[AUTH CALLBACK] Processing callback:', {
-    hasCode: !!code,
-    nextRedirect: next,
-    providerError
-  });
+  if (dev) {
+    console.log('[AUTH CALLBACK] Processing callback:', {
+      hasCode: !!code,
+      nextRedirect: next,
+      providerError
+    });
+  }
 
   // Handle provider-side errors immediately
   if (providerError) {
@@ -55,7 +58,9 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
       throw redirect(303, '/login?error=auth_failed');
     }
 
-    console.log('[AUTH CALLBACK] Session exchanged successfully for user:', data.user.email);
+    if (dev) {
+      console.log('[AUTH CALLBACK] Session exchanged successfully for user:', data.user.email);
+    }
 
     // Check profile status (profiles should always exist due to DB trigger)
     const { data: profile, error: profileError } = await supabase
@@ -66,7 +71,9 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
     // If no profile exists (extremely rare due to DB trigger), redirect to onboarding
     if (profileError?.code === 'PGRST116') {
-      console.log('[AUTH CALLBACK] No profile found (DB trigger failed?), redirecting to onboarding');
+      if (dev) {
+        console.log('[AUTH CALLBACK] No profile found (DB trigger failed?), redirecting to onboarding');
+      }
       throw redirect(303, '/onboarding?welcome=true');
     }
 
@@ -81,7 +88,9 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     
     // Route based on onboarding status
     if (profile.onboarding_completed !== true) {
-      console.log('[AUTH CALLBACK] User needs onboarding');
+      if (dev) {
+        console.log('[AUTH CALLBACK] User needs onboarding');
+      }
       // Show success page first for email verification
       if (isEmailVerification) {
         throw redirect(303, '/auth/verified');
@@ -90,7 +99,9 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     }
 
     // User is fully onboarded - redirect to intended destination
-    console.log('[AUTH CALLBACK] User fully onboarded, redirecting to:', next);
+    if (dev) {
+      console.log('[AUTH CALLBACK] User fully onboarded, redirecting to:', next);
+    }
     
     // Validate and sanitize redirect URL
     let redirectPath = '/dashboard';

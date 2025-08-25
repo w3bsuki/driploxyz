@@ -3,11 +3,19 @@
 Shows available balance, earnings, and payout button
 -->
 <script lang="ts">
-	import type { Database } from '@repo/database';
-	import { Button } from './Button.svelte';
-	import { Badge } from './Badge.svelte';
+	import type { Profile } from './types/index.js';
+	import Button from './Button.svelte';
+	import Badge from './Badge.svelte';
 
-	type SellerBalance = Database['public']['Tables']['seller_balances']['Row'];
+	interface SellerBalance {
+		id: string;
+		user_id: string;
+		available_balance: number;
+		pending_balance: number;
+		total_earnings: number;
+		currency: string;
+		updated_at: string;
+	}
 
 	interface Props {
 		balance: SellerBalance;

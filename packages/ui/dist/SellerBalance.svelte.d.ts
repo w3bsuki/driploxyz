@@ -1,5 +1,12 @@
-import type { Database } from '@repo/database';
-type SellerBalance = Database['public']['Tables']['seller_balances']['Row'];
+interface SellerBalance {
+    id: string;
+    user_id: string;
+    available_balance: number;
+    pending_balance: number;
+    total_earnings: number;
+    currency: string;
+    updated_at: string;
+}
 interface Props {
     balance: SellerBalance;
     loading?: boolean;

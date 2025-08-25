@@ -11,6 +11,8 @@ interface Props {
     onUpload: (files: File[]) => Promise<UploadedImage[]>;
     onDelete?: (path: string) => Promise<boolean>;
     uploading?: boolean;
+    acceptedFormats?: string;
+    maxFileSize?: number;
 }
 declare const ImageUploaderSupabase: import("svelte").Component<Props, {}, "images" | "uploading">;
 type ImageUploaderSupabase = ReturnType<typeof ImageUploaderSupabase>;

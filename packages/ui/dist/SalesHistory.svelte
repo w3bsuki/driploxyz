@@ -3,12 +3,19 @@
 Lightweight display component with pagination
 -->
 <script lang="ts">
-	import type { Database } from '@repo/database';
-	import { Badge } from './Badge.svelte';
-	import { Button } from './Button.svelte';
+	import type { Product } from './types/index.js';
+	import Badge from './Badge.svelte';
+	import Button from './Button.svelte';
 
-	type Order = Database['public']['Tables']['orders']['Row'];
-	type Product = Database['public']['Tables']['products']['Row'];
+	interface Order {
+		id: string;
+		product_id: string;
+		buyer_id: string;
+		total_amount: number;
+		currency: string;
+		status: string;
+		created_at: string;
+	}
 
 	interface SaleRecord {
 		order: Order;

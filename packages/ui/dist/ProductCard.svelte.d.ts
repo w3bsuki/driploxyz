@@ -7,6 +7,8 @@ interface Props {
     highlighted?: boolean;
     class?: string;
     priority?: boolean;
+    index?: number;
+    totalCount?: number;
     translations?: {
         size?: string;
         currency?: string;

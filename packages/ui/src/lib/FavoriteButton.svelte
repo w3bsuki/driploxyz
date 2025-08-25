@@ -5,7 +5,7 @@
   interface Props {
     product: Product;
     favorited?: boolean;
-    onFavorite?: (product: Product) => void;
+    onFavorite?: () => void;
     addToFavoritesText?: string;
     removeFromFavoritesText?: string;
     showCount?: boolean;
@@ -22,7 +22,7 @@
 
   let isLoading = $state(false);
   let currentFavorited = $state(favorited);
-  let favoriteCount = $state(product.favorite_count || 0);
+  let favoriteCount = $state(product.favorites_count || 0);
 
   // Update internal state when props change
   $effect(() => {
@@ -30,7 +30,7 @@
   });
 
   $effect(() => {
-    favoriteCount = product.favorite_count || 0;
+    favoriteCount = product.favorites_count || 0;
   });
 
   async function handleFavorite(event: MouseEvent) {
@@ -40,7 +40,14 @@
 
     // If there's a custom onFavorite handler, use it
     if (onFavorite) {
-      onFavorite(product);
+      onFavorite();
+      // Update local state optimistically
+      currentFavorited = !currentFavorited;
+      if (currentFavorited) {
+        favoriteCount++;
+      } else {
+        favoriteCount = Math.max(0, favoriteCount - 1);
+      }
       return;
     }
 
@@ -88,11 +95,11 @@
   <button 
     onclick={handleFavorite}
     disabled={isLoading}
-    class="group flex items-center gap-1.5 px-2.5 py-2 bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 shadow-md hover:shadow-lg border border-gray-200/50 min-h-[36px] {isLoading ? 'opacity-50 cursor-not-allowed' : ''} {currentFavorited ? 'bg-red-50/95 hover:bg-red-50 border-red-200/50' : ''}"
+    class="group flex items-center gap-1 {showCount && favoriteCount > 0 ? 'px-2 py-1.5' : 'p-1.5'} bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md border border-gray-200/50 {isLoading ? 'opacity-50 cursor-not-allowed' : ''} {currentFavorited ? 'bg-red-50/95 hover:bg-red-50 border-red-200/50' : ''}"
     aria-label={currentFavorited ? removeFromFavoritesText : addToFavoritesText}
   >
     <svg 
-      class="w-5 h-5 transition-all duration-200 {currentFavorited ? 'text-red-500 fill-current scale-110' : 'text-gray-500 group-hover:text-red-400'}" 
+      class="w-4 h-4 transition-all duration-200 {currentFavorited ? 'text-red-500 fill-current' : 'text-gray-500 group-hover:text-red-400'}" 
       viewBox="0 0 24 24"
       stroke="currentColor"
       stroke-width="2"
@@ -105,8 +112,8 @@
       />
     </svg>
     {#if showCount && favoriteCount > 0}
-      <span class="text-xs font-semibold {currentFavorited ? 'text-red-600' : 'text-gray-600'} min-w-[16px] text-center">
-        {favoriteCount > 999 ? `${(favoriteCount/1000).toFixed(1)}k` : favoriteCount}
+      <span class="text-xs font-semibold transition-all duration-200 {currentFavorited ? 'text-red-600' : 'text-gray-600'}">
+        {favoriteCount > 999 ? `${Math.floor(favoriteCount/1000)}k` : favoriteCount}
       </span>
     {/if}
   </button>

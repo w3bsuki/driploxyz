@@ -166,30 +166,8 @@ export class NotificationService {
 			console.log(`Subject: ${subject}`);
 			console.log(`Message: ${message}`);
 
-			// Update log as sent
-			if (log) {
-				await this.supabase
-					.from('notification_logs')
-					.update({ 
-						status: 'sent', 
-						sent_at: new Date().toISOString() 
-					})
-					.eq('id', log.id);
-			}
-
 			return { success: true };
 		} catch (error) {
-			// Update log as failed
-			if (log) {
-				await this.supabase
-					.from('notification_logs')
-					.update({ 
-						status: 'failed', 
-						error_message: (error as Error).message 
-					})
-					.eq('id', log.id);
-			}
-
 			return { success: false, error: error as Error };
 		}
 	}

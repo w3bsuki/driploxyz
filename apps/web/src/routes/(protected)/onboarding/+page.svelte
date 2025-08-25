@@ -18,7 +18,7 @@
   import { initializeLanguage } from '$lib/utils/language';
   import { page } from '$app/stores';
   import { toasts } from '@repo/ui';
-  import { uploadAvatar } from '$lib/supabase/storage';
+  import { uploadImage } from '$lib/supabase/storage';
   import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
   import type { PageData } from './$types';
 
@@ -162,10 +162,10 @@
       toasts.info('Uploading avatar...');
       
       // Upload avatar to Supabase Storage
-      const uploadedUrl = await uploadAvatar(data.supabase, file, data.user.id);
+      const { url } = await uploadImage(data.supabase, file, data.user.id, 'avatars');
       
       // Update the avatar URL with the uploaded URL
-      avatarUrl = uploadedUrl;
+      avatarUrl = url;
       
       toasts.success('Avatar uploaded successfully!');
     } catch (error) {

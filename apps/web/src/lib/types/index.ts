@@ -1,15 +1,4 @@
-// Seller types
-export interface Seller {
-  id: string;
-  name: string;
-  username?: string;
-  premium: boolean;
-  avatar: string | null;
-  rating: number;
-  itemCount: number;
-  followers: number;
-  description?: string;
-}
+// Use Seller type from @repo/ui instead
 
 // Product display types
 export interface ProductDisplay {
@@ -20,7 +9,7 @@ export interface ProductDisplay {
   images: string[];
   brand?: string;
   size?: string;
-  condition: 'new' | 'like-new' | 'good' | 'fair';
+  condition: 'new' | 'like_new' | 'good' | 'fair';
   category: string;
   sellerId: string;
   sellerName: string;

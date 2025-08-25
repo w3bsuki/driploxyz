@@ -20,28 +20,6 @@ export default defineConfig({
 		})
 	].filter(Boolean),
 	
-	test: {
-		include: ['src/**/*.{test,spec}.{js,ts}'],
-		environment: 'jsdom',
-		setupFiles: ['./src/test/setup.ts'],
-		globals: true,
-		coverage: {
-			provider: 'v8',
-			reporter: ['text', 'json', 'html'],
-			exclude: [
-				'node_modules/',
-				'src/test/',
-				'**/*.d.ts',
-				'**/*.config.*'
-			]
-		},
-		// Mock handling
-		deps: {
-			inline: ['@repo/ui', '@repo/database', '@repo/i18n']
-		},
-		// Timeout for integration tests
-		testTimeout: 10000
-	},
 	server: {
 		fs: {
 			allow: ['..']

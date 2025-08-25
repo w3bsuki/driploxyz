@@ -171,18 +171,31 @@ export async function createProduct(
 
   if (imagesError) throw imagesError;
 
-  // Apply premium boost if requested
+  // Premium boost handling - update profile directly
   if (data.use_premium_boost) {
-    const { error: boostError } = await supabase.rpc('decrement_premium_boosts', {
-      user_id_param: userId
-    });
-
-    if (!boostError) {
-      await supabase.from('product_boosts').insert({
-        product_id: product.id,
-        boost_type: 'premium',
-        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-      });
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('premium_boosts_remaining')
+      .eq('id', userId)
+      .single();
+    
+    if (profile && profile.premium_boosts_remaining && profile.premium_boosts_remaining > 0) {
+      // Decrement boosts and mark product as boosted
+      await supabase
+        .from('profiles')
+        .update({ 
+          premium_boosts_remaining: profile.premium_boosts_remaining - 1 
+        })
+        .eq('id', userId);
+      
+      await supabase
+        .from('products')
+        .update({ 
+          is_boosted: true,
+          boost_type: 'premium',
+          boosted_until: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+        })
+        .eq('id', product.id);
     }
   }
 

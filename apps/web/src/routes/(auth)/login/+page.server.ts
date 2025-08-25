@@ -1,17 +1,18 @@
 import { redirect, fail, error } from '@sveltejs/kit';
 import { LoginSchema } from '$lib/validation/auth';
 import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
+import { CSRFProtection } from '$lib/server/csrf';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) => {
-  const { session } = await safeGetSession();
+export const load: PageServerLoad = async (event) => {
+  const { session } = await event.locals.safeGetSession();
   
   if (session) {
     throw redirect(303, '/');
   }
   
   // Handle auth callback errors
-  const error = url.searchParams.get('error');
+  const error = event.url.searchParams.get('error');
   let errorMessage = null;
   
   if (error) {
@@ -33,11 +34,24 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, url }) 
     }
   }
   
-  return { errorMessage };
+  // Generate CSRF token for the form
+  const csrfToken = await CSRFProtection.getToken(event);
+  
+  return { errorMessage, csrfToken };
 };
 
 export const actions: Actions = {
-  signin: async ({ request, locals: { supabase }, getClientAddress }) => {
+  signin: async (event) => {
+    // CSRF Protection - must be first
+    const isValidCSRF = await CSRFProtection.check(event);
+    if (!isValidCSRF) {
+      return fail(403, { 
+        errors: { _form: 'Security validation failed. Please refresh the page and try again.' }
+      });
+    }
+
+    const { request, locals: { supabase }, getClientAddress } = event;
+
     const formData = await request.formData();
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;

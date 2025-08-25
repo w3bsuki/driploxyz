@@ -8,6 +8,7 @@
     loading?: boolean;
     href?: string;
     type?: 'button' | 'submit' | 'reset';
+    form?: string;
     onclick?: (event: MouseEvent) => void;
     class?: string;
     children?: import('svelte').Snippet;
@@ -20,6 +21,7 @@
     loading = false,
     href,
     type = 'button',
+    form,
     onclick,
     class: className = '',
     children
@@ -61,7 +63,7 @@
     {@render children?.()}
   </a>
 {:else}
-  <button {type} {disabled} {onclick} class={classes} aria-busy={loading}>
+  <button {type} {disabled} {onclick} {form} class={classes} aria-busy={loading}>
     {#if loading}
       <svg class="{spinnerSizes[size]} mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>

@@ -50,11 +50,19 @@ export interface Profile {
     onboarding_completed: boolean;
     created_at: string;
     updated_at: string;
+    account_type?: string;
+    verification_status?: string;
+    subscription_tier?: string;
+    subscription_expires_at?: string;
 }
 export interface Seller extends Profile {
     verification_status?: 'unverified' | 'pending' | 'verified';
     shop_name?: string;
     shop_banner?: string;
+    premium?: boolean;
+    itemCount?: number;
+    followers?: number;
+    description?: string;
 }
 export interface Category {
     id: string;
