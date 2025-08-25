@@ -320,41 +320,43 @@
     </div>
     
     <!-- Clean Step Indicator -->
-    <div class="px-4 pb-3">
-      <div class="flex items-center justify-between">
-        {#each [1, 2, 3, 4] as step}
-          <div class="flex items-center flex-1">
-            <div class="flex items-center">
-              <div class="{
-                step <= currentStep 
-                  ? 'w-8 h-8 bg-black text-white' 
-                  : 'w-8 h-8 bg-gray-100 text-gray-400'
-              } rounded-full flex items-center justify-center text-xs font-medium transition-colors">
-                {#if step < currentStep}
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                  </svg>
-                {:else}
-                  {step}
-                {/if}
+    <div class="pb-3">
+      <div class="flex justify-center px-6">
+        <div class="flex items-center justify-between w-full max-w-sm">
+          {#each [1, 2, 3, 4] as step, i}
+            <div class="relative flex-1 flex justify-center">
+              <div class="flex flex-col items-center">
+                <div class="{
+                  step <= currentStep 
+                    ? 'w-8 h-8 bg-black text-white' 
+                    : 'w-8 h-8 bg-gray-100 text-gray-400'
+                } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
+                  {#if step < currentStep}
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                  {:else}
+                    {step}
+                  {/if}
+                </div>
+                <span class="text-[10px] mt-1 whitespace-nowrap {
+                  currentStep === step ? 'text-gray-900 font-medium' : 'text-gray-400'
+                }">
+                  {#if step === 1}Photos
+                  {:else if step === 2}Details
+                  {:else if step === 3}Price
+                  {:else if step === 4}Review
+                  {/if}
+                </span>
               </div>
-              {#if step === 1}
-                <span class="ml-2 text-xs {currentStep === 1 ? 'text-gray-900 font-medium' : 'text-gray-500'} hidden sm:inline">Photos</span>
-              {:else if step === 2}
-                <span class="ml-2 text-xs {currentStep === 2 ? 'text-gray-900 font-medium' : 'text-gray-500'} hidden sm:inline">Details</span>
-              {:else if step === 3}
-                <span class="ml-2 text-xs {currentStep === 3 ? 'text-gray-900 font-medium' : 'text-gray-500'} hidden sm:inline">Pricing</span>
-              {:else if step === 4}
-                <span class="ml-2 text-xs {currentStep === 4 ? 'text-gray-900 font-medium' : 'text-gray-500'} hidden sm:inline">Review</span>
+              {#if i < 3}
+                <div class="absolute top-4 left-1/2 w-full h-[2px] {
+                  step < currentStep ? 'bg-black' : 'bg-gray-200'
+                } transition-colors"></div>
               {/if}
             </div>
-            {#if step < 4}
-              <div class="flex-1 h-[2px] mx-2 {
-                step < currentStep ? 'bg-black' : 'bg-gray-200'
-              } transition-colors" />
-            {/if}
-          </div>
-        {/each}
+          {/each}
+        </div>
       </div>
       {#if isDraftSaved}
         <p class="text-xs text-green-600 text-center mt-2">Draft saved</p>
