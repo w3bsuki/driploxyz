@@ -321,42 +321,45 @@
     
     <!-- Clean Step Indicator -->
     <div class="px-4 pb-3">
-      <div class="flex items-center justify-between">
+      <div class="relative flex items-center justify-between w-full">
         {#each [1, 2, 3, 4] as step, i}
-          <div class="relative {i === 0 ? '' : 'flex-1'}">
-            <div class="flex items-center">
-              {#if i > 0}
-                <div class="absolute -left-1/2 right-1/2 top-4 h-[2px] {
-                  step <= currentStep ? 'bg-black' : 'bg-gray-200'
-                } transition-colors"></div>
+          <div class="flex flex-col items-center">
+            <div class="{
+              step <= currentStep 
+                ? 'w-8 h-8 bg-black text-white' 
+                : 'w-8 h-8 bg-gray-100 text-gray-400'
+            } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
+              {#if step < currentStep}
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              {:else}
+                {step}
               {/if}
-              <div class="flex flex-col items-center relative z-10">
-                <div class="{
-                  step <= currentStep 
-                    ? 'w-8 h-8 bg-black text-white' 
-                    : 'w-8 h-8 bg-gray-100 text-gray-400'
-                } rounded-full flex items-center justify-center text-xs font-medium transition-colors">
-                  {#if step < currentStep}
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                  {:else}
-                    {step}
-                  {/if}
-                </div>
-                <span class="text-[10px] mt-1 whitespace-nowrap {
-                  currentStep === step ? 'text-gray-900 font-medium' : 'text-gray-400'
-                }">
-                  {#if step === 1}Photos
-                  {:else if step === 2}Details
-                  {:else if step === 3}Price
-                  {:else if step === 4}Review
-                  {/if}
-                </span>
-              </div>
             </div>
+            <span class="text-[10px] mt-1 whitespace-nowrap {
+              currentStep === step ? 'text-gray-900 font-medium' : 'text-gray-400'
+            }">
+              {#if step === 1}Photos
+              {:else if step === 2}Details
+              {:else if step === 3}Price
+              {:else if step === 4}Review
+              {/if}
+            </span>
           </div>
         {/each}
+        <!-- Connecting lines -->
+        <div class="absolute top-4 left-0 right-0 flex justify-between px-4">
+          <div class="flex-1 h-[2px] mx-4 {
+            currentStep > 1 ? 'bg-black' : 'bg-gray-200'
+          }"></div>
+          <div class="flex-1 h-[2px] mx-4 {
+            currentStep > 2 ? 'bg-black' : 'bg-gray-200'
+          }"></div>
+          <div class="flex-1 h-[2px] mx-4 {
+            currentStep > 3 ? 'bg-black' : 'bg-gray-200'
+          }"></div>
+        </div>
       </div>
       {#if isDraftSaved}
         <p class="text-xs text-green-600 text-center mt-2">Draft saved</p>
