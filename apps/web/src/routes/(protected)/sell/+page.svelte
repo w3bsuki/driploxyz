@@ -25,6 +25,17 @@
   let isUploadingImages = $state(false);
   let showSuccess = $state(false);
   let publishError = $state<string | null>(null);
+  let validationMessage = $state<string | null>(null);
+  let showValidationPopup = $state(false);
+  
+  // Show validation message with auto-hide
+  function showValidation(message: string) {
+    validationMessage = message;
+    showValidationPopup = true;
+    setTimeout(() => {
+      showValidationPopup = false;
+    }, 3000);
+  }
   let formElement: HTMLFormElement;
   let isDraftSaved = $state(false);
   let saveTimeout: ReturnType<typeof setTimeout>;
@@ -269,6 +280,18 @@
 </svelte:head>
 
 <div class="min-h-screen bg-white flex flex-col">
+  <!-- Validation Popup -->
+  {#if showValidationPopup}
+    <div class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top duration-200">
+      <div class="bg-black text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 max-w-xs">
+        <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+        </svg>
+        <p class="text-sm font-medium">{validationMessage}</p>
+      </div>
+    </div>
+  {/if}
+  
   <!-- Clean Header -->
   <header class="sticky top-0 z-50 bg-white border-b border-gray-200">
     <div class="px-4 py-3">
@@ -566,19 +589,19 @@
                 // Show specific validation message
                 if (currentStep === 1) {
                   if (uploadedImages.length === 0) {
-                    toasts.error('Please add at least one photo');
+                    showValidation('Please add at least one photo');
                   } else if (formData.title.length < 3) {
-                    toasts.error('Title must be at least 3 characters');
+                    showValidation('Title must be at least 3 characters');
                   } else if (!formData.gender_category_id || !formData.type_category_id) {
-                    toasts.error('Please select categories');
+                    showValidation('Please select categories');
                   }
                 } else if (currentStep === 2) {
-                  if (!formData.brand) toasts.error('Please select a brand');
-                  else if (!formData.size) toasts.error('Please select a size');
-                  else if (!formData.condition) toasts.error('Please select condition');
+                  if (!formData.brand) showValidation('Please select a brand');
+                  else if (!formData.size) showValidation('Please select a size');
+                  else if (!formData.condition) showValidation('Please select condition');
                 } else if (currentStep === 3) {
                   if (!formData.price || formData.price <= 0) {
-                    toasts.error('Please set a valid price');
+                    showValidation('Please set a valid price');
                   }
                 }
               }
