@@ -5,6 +5,7 @@
 	import * as i18n from '@repo/i18n';
 	import Header from '$lib/components/Header.svelte';
 	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
+	import TrendingDropdown from '$lib/components/TrendingDropdown.svelte';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
 	import { goto } from '$app/navigation';
 	import { page, navigating } from '$app/stores';
@@ -290,7 +291,7 @@
 						categoriesText={i18n.search_categories()}
 					/>
 					
-					<!-- Category Dropdown - positioned right under search bar -->
+					<!-- Trending Dropdown - positioned right under search bar -->
 					{#if showCategoryDropdown}
 						<!-- Click outside to close -->
 						<button 
@@ -299,39 +300,34 @@
 							aria-label="Close dropdown"
 						/>
 						<div class="absolute top-full left-0 right-0 mt-2 z-20">
-							<div class="bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-h-[400px] overflow-y-auto">
-								<CategoryDropdown
-									categories={mainCategories.map(cat => ({
-										id: cat.id,
-										name: cat.name,
-										slug: cat.slug,
-										icon: getCategoryIcon(cat.name)
-									}))}
-									products={products.slice(0, 3)}
-									sellers={sellers.slice(0, 3)}
-									onCategorySelect={(category) => {
-										showCategoryDropdown = false;
-										navigateToCategory(category.slug);
-									}}
-									onProductClick={(product) => {
-										showCategoryDropdown = false;
-										handleProductClick(product);
-									}}
-									onSellerClick={(seller) => {
-										showCategoryDropdown = false;
-										handleSellerClick(seller);
-									}}
-									onClose={() => (showCategoryDropdown = false)}
-									{formatPrice}
-									translations={{
-										newItems: i18n.home_newItems ? i18n.home_newItems() : 'New Items',
-										topSellers: i18n.home_topSellers ? i18n.home_topSellers() : 'Top Sellers',
-										categories: i18n.search_categories(),
-										viewAll: i18n.home_viewAll ? i18n.home_viewAll() : 'View All',
-										new: i18n.badge_new ? i18n.badge_new() : 'NEW'
-									}}
-								/>
-							</div>
+							<TrendingDropdown
+								trendingProducts={products.slice(0, 8)}
+								recentPriceDrops={products.slice(4, 8)}
+								topSellers={sellers}
+								onProductClick={(product) => {
+									showCategoryDropdown = false;
+									handleProductClick(product);
+								}}
+								onSellerClick={(seller) => {
+									showCategoryDropdown = false;
+									handleSellerClick(seller);
+								}}
+								onFilterClick={(filter) => {
+									showCategoryDropdown = false;
+									// Navigate based on filter
+									if (filter === 'price_under_20') {
+										goto('/search?max_price=20');
+									} else if (filter === 'new_today') {
+										goto('/search?sort=newest');
+									} else if (filter === 'on_sale') {
+										goto('/search?on_sale=true');
+									} else if (filter.startsWith('size_')) {
+										const size = filter.replace('size_', '').toUpperCase();
+										goto(`/search?size=${size}`);
+									}
+								}}
+								{formatPrice}
+							/>
 						</div>
 					{/if}
 				</div>
