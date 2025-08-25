@@ -476,21 +476,8 @@
           }}
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-blue-100 text-blue-800 hover:bg-blue-200 flex items-center gap-1"
         >
-          <span>✨</span>
+          <span>🆕</span>
           <span>{i18n.filter_newToday()}</span>
-        </button>
-        <button
-          onclick={async () => {
-            const url = new URL('/search', window.location.origin);
-            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
-            url.searchParams.set('condition', 'like-new');
-            await goto(url.pathname + url.search);
-          }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-red-100 text-red-800 hover:bg-red-200 flex items-center gap-1"
-        >
-          <span>✨</span>
-          <span>{i18n.condition_likeNew()}</span>
         </button>
         <button
           onclick={async () => {
@@ -510,13 +497,60 @@
             const url = new URL('/search', window.location.origin);
             if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
             if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
-            url.searchParams.set('free_shipping', 'true');
+            url.searchParams.set('brand', 'Nike');
             await goto(url.pathname + url.search);
           }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-yellow-100 text-yellow-800 hover:bg-yellow-200 flex items-center gap-1"
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-gray-100 text-gray-800 hover:bg-gray-200"
         >
-          <span>📦</span>
-          <span>{i18n.filter_freeShipping()}</span>
+          Nike
+        </button>
+        <button
+          onclick={async () => {
+            const url = new URL('/search', window.location.origin);
+            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            url.searchParams.set('brand', 'Adidas');
+            await goto(url.pathname + url.search);
+          }}
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-gray-100 text-gray-800 hover:bg-gray-200"
+        >
+          Adidas
+        </button>
+        <button
+          onclick={async () => {
+            const url = new URL('/search', window.location.origin);
+            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            url.searchParams.set('brand', 'Zara');
+            await goto(url.pathname + url.search);
+          }}
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-gray-100 text-gray-800 hover:bg-gray-200"
+        >
+          Zara
+        </button>
+        <button
+          onclick={async () => {
+            const url = new URL('/search', window.location.origin);
+            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            url.searchParams.set('size', 'M');
+            await goto(url.pathname + url.search);
+          }}
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-gray-100 text-gray-800 hover:bg-gray-200"
+        >
+          {i18n.product_size()} M
+        </button>
+        <button
+          onclick={async () => {
+            const url = new URL('/search', window.location.origin);
+            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            url.searchParams.set('size', 'L');
+            await goto(url.pathname + url.search);
+          }}
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-gray-100 text-gray-800 hover:bg-gray-200"
+        >
+          {i18n.product_size()} L
         </button>
       </div>
     </div>

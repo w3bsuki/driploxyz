@@ -7,143 +7,112 @@ export interface UploadedImage {
 }
 
 /**
- * MANDATORY WebP image conversion for ALL browsers and devices
- * This reduces bandwidth usage and ensures consistent format
+ * Robust WebP image conversion following SvelteKit best practices
+ * Ensures consistent quality and proper handling across all browsers
  */
 async function convertToWebP(file: File): Promise<File> {
-  console.log('[convertToWebP] Starting conversion for:', file.name, 'size:', file.size, 'type:', file.type);
-  
   return new Promise((resolve, reject) => {
     const img = new Image();
     const canvas = document.createElement('canvas');
     const reader = new FileReader();
     
-    // Set a timeout for the entire conversion process
-    const conversionTimeout = setTimeout(() => {
-      console.error('[convertToWebP] Conversion timeout after 10 seconds');
-      reject(new Error('Image conversion timeout'));
-    }, 10000);
-    
     reader.onload = (e) => {
-      img.onload = async () => {
+      img.onload = () => {
         try {
-          clearTimeout(conversionTimeout);
-          
-          // Max 1200px with INTEGER dimensions (critical for canvas)
+          // Calculate dimensions - max 1200px for optimal performance
           const MAX_SIZE = 1200;
           let width = img.width;
           let height = img.height;
           
-          if (width > height && width > MAX_SIZE) {
-            height = Math.floor((height * MAX_SIZE) / width);
-            width = MAX_SIZE;
-          } else if (height > MAX_SIZE) {
-            width = Math.floor((width * MAX_SIZE) / height);
-            height = MAX_SIZE;
+          // Scale down if needed, maintaining aspect ratio
+          if (width > MAX_SIZE || height > MAX_SIZE) {
+            const ratio = Math.min(MAX_SIZE / width, MAX_SIZE / height);
+            width = Math.floor(width * ratio);
+            height = Math.floor(height * ratio);
           } else {
-            // Ensure dimensions are integers even if no resizing
+            // Ensure integers even without scaling
             width = Math.floor(width);
             height = Math.floor(height);
           }
           
-          console.log('[convertToWebP] Canvas dimensions:', width, 'x', height);
-          
+          // Set canvas dimensions
           canvas.width = width;
           canvas.height = height;
           
           const ctx = canvas.getContext('2d');
           if (!ctx) {
-            throw new Error('Failed to get canvas context');
+            throw new Error('Canvas context not available');
           }
           
-          // White background for transparency handling
-          ctx.fillStyle = 'white';
+          // High quality image smoothing
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          
+          // White background for transparent images
+          ctx.fillStyle = '#FFFFFF';
           ctx.fillRect(0, 0, width, height);
+          
+          // Draw the image
           ctx.drawImage(img, 0, 0, width, height);
           
-          // FORCE WebP conversion with multiple quality attempts
-          let webpBlob: Blob | null = null;
-          const qualities = [0.85, 0.80, 0.75, 0.70]; // Try different qualities
-          
-          for (const quality of qualities) {
-            try {
-              webpBlob = await new Promise<Blob | null>((resolveBlob) => {
-                const blobTimeout = setTimeout(() => resolveBlob(null), 3000);
-                
+          // Convert to WebP with consistent quality
+          canvas.toBlob(
+            (blob) => {
+              if (!blob) {
+                // If WebP fails (very rare), fallback to JPEG
                 canvas.toBlob(
-                  (blob) => {
-                    clearTimeout(blobTimeout);
-                    resolveBlob(blob);
+                  (jpegBlob) => {
+                    if (!jpegBlob) {
+                      reject(new Error('Image conversion failed'));
+                      return;
+                    }
+                    
+                    // Create File from JPEG blob but still name it .webp
+                    const fallbackFile = new File(
+                      [jpegBlob],
+                      file.name.replace(/\.[^/.]+$/, '.webp'),
+                      { type: 'image/jpeg' }
+                    );
+                    
+                    console.warn('[convertToWebP] Used JPEG fallback for:', file.name);
+                    resolve(fallbackFile);
                   },
-                  'image/webp',
-                  quality
+                  'image/jpeg',
+                  0.85
                 );
-              });
-              
-              if (webpBlob && webpBlob.size > 0) {
-                console.log('[convertToWebP] WebP created with quality:', quality, 'size:', webpBlob.size);
-                break;
+                return;
               }
-            } catch (err) {
-              console.warn('[convertToWebP] WebP attempt failed with quality:', quality, err);
-            }
-          }
-          
-          // If WebP still fails, try JPEG as absolute last resort but convert filename
-          if (!webpBlob) {
-            console.warn('[convertToWebP] WebP conversion failed, attempting JPEG fallback');
-            
-            webpBlob = await new Promise<Blob | null>((resolveBlob) => {
-              const blobTimeout = setTimeout(() => resolveBlob(null), 3000);
               
-              canvas.toBlob(
-                (blob) => {
-                  clearTimeout(blobTimeout);
-                  resolveBlob(blob);
-                },
-                'image/jpeg',
-                0.80
+              // Create File from WebP blob
+              const webpFile = new File(
+                [blob],
+                file.name.replace(/\.[^/.]+$/, '.webp'),
+                { type: 'image/webp' }
               );
-            });
-          }
-          
-          if (!webpBlob) {
-            throw new Error('Failed to convert image to any format');
-          }
-          
-          // Convert Blob to File with proper type and name
-          const convertedFile = new File(
-            [webpBlob],
-            file.name.replace(/\.[^/.]+$/, '.webp'),
-            { type: 'image/webp' }
+              
+              // Log compression results
+              const reduction = ((1 - webpFile.size / file.size) * 100).toFixed(1);
+              console.log(`[convertToWebP] Compressed ${file.name}: ${reduction}% smaller`);
+              
+              resolve(webpFile);
+            },
+            'image/webp',
+            0.85 // Consistent quality for all images
           );
-          
-          console.log('[convertToWebP] Conversion successful:', {
-            originalSize: file.size,
-            convertedSize: convertedFile.size,
-            reduction: ((1 - convertedFile.size / file.size) * 100).toFixed(1) + '%',
-            type: convertedFile.type
-          });
-          
-          resolve(convertedFile);
         } catch (error) {
-          console.error('[convertToWebP] Conversion error:', error);
-          reject(error);
+          reject(new Error(`Image processing failed: ${error}`));
         }
       };
       
       img.onerror = () => {
-        clearTimeout(conversionTimeout);
-        console.error('[convertToWebP] Failed to load image');
         reject(new Error('Failed to load image'));
       };
       
+      // Use data URL for better compatibility
       img.src = e.target?.result as string;
     };
     
     reader.onerror = () => {
-      clearTimeout(conversionTimeout);
-      console.error('[convertToWebP] Failed to read file');
       reject(new Error('Failed to read file'));
     };
     
@@ -152,7 +121,7 @@ async function convertToWebP(file: File): Promise<File> {
 }
 
 /**
- * Upload image to Supabase Storage with MANDATORY WebP conversion
+ * Upload image to Supabase Storage with WebP conversion
  */
 export async function uploadImage(
   supabase: SupabaseClient,
@@ -160,48 +129,46 @@ export async function uploadImage(
   bucket: string = 'product-images',
   userId: string
 ): Promise<UploadedImage> {
-  console.log('[uploadImage] Starting upload for:', file.name);
+  let fileToUpload: File;
   
-  let fileToUpload: File = file;
-  
-  // ALWAYS convert to WebP in browser
+  // Convert to WebP if in browser environment
   if (typeof document !== 'undefined') {
     try {
       fileToUpload = await convertToWebP(file);
-      console.log('[uploadImage] Using converted WebP file:', fileToUpload.size, 'bytes');
     } catch (error) {
-      console.error('[uploadImage] Conversion failed, aborting upload:', error);
-      throw new Error('Image conversion failed. Please try a different image.');
+      console.error('[uploadImage] Conversion error:', error);
+      // If conversion fails, use original file
+      fileToUpload = file;
     }
+  } else {
+    fileToUpload = file;
   }
   
+  // Generate unique filename
   const timestamp = Date.now();
   const randomId = Math.random().toString(36).substring(2, 9);
-  // ALWAYS use .webp extension since we're forcing conversion
-  const fileName = `${userId}/${timestamp}-${randomId}.webp`;
+  const extension = fileToUpload.type === 'image/webp' ? 'webp' : 'jpg';
+  const fileName = `${userId}/${timestamp}-${randomId}.${extension}`;
   
-  console.log('[uploadImage] Uploading to path:', fileName);
-  
+  // Upload to Supabase
   const { data, error } = await supabase.storage
     .from(bucket)
     .upload(fileName, fileToUpload, {
       cacheControl: '3600',
       upsert: false,
-      contentType: 'image/webp'
+      contentType: fileToUpload.type
     });
   
   if (error) {
-    console.error('[uploadImage] Upload error:', error);
     throw error;
   }
   
   if (!data?.path) {
-    console.error('[uploadImage] No path returned from upload');
     throw new Error('Upload failed - no path returned');
   }
   
+  // Return public URL
   const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${data.path}`;
-  console.log('[uploadImage] Upload successful:', url);
   
   return { url, path: data.path };
 }
@@ -216,23 +183,20 @@ export async function uploadImages(
   userId: string,
   onProgress?: (current: number, total: number) => void
 ): Promise<UploadedImage[]> {
-  console.log('[uploadImages] Starting batch upload for', files.length, 'files');
   const uploadedImages: UploadedImage[] = [];
   
   for (let i = 0; i < files.length; i++) {
     try {
-      console.log(`[uploadImages] Processing file ${i + 1}/${files.length}`);
       const uploaded = await uploadImage(supabase, files[i], bucket, userId);
       uploadedImages.push(uploaded);
       onProgress?.(i + 1, files.length);
     } catch (error) {
-      console.error(`[uploadImages] Failed to upload file ${i + 1}:`, error);
-      // Continue with other files but log the error
+      console.error(`Failed to upload file ${i + 1}:`, error);
+      // Continue with remaining files
       onProgress?.(i + 1, files.length);
     }
   }
   
-  console.log('[uploadImages] Batch upload completed:', uploadedImages.length, 'successful');
   return uploadedImages;
 }
 
@@ -244,10 +208,6 @@ export async function deleteImage(
   const { error } = await supabase.storage
     .from(bucket)
     .remove([path]);
-  
-  if (error) {
-    console.error('[deleteImage] Delete error:', error);
-  }
   
   return !error;
 }
@@ -261,10 +221,6 @@ export async function deleteImages(
     .from(bucket)
     .remove(paths);
   
-  if (error) {
-    console.error('[deleteImages] Batch delete error:', error);
-  }
-  
   return !error;
 }
 
@@ -273,25 +229,24 @@ export async function uploadAvatar(
   file: File,
   userId: string
 ): Promise<string> {
-  console.log('[uploadAvatar] Starting avatar upload');
+  let fileToUpload: File;
   
-  let fileToUpload: File = file;
-  
-  // Convert avatar to WebP as well for consistency
+  // Try to convert avatar to WebP for consistency
   if (typeof document !== 'undefined') {
     try {
       fileToUpload = await convertToWebP(file);
-      console.log('[uploadAvatar] Avatar converted to WebP');
     } catch (error) {
-      console.error('[uploadAvatar] Avatar conversion failed:', error);
-      // For avatars, we can proceed with original if conversion fails
+      // For avatars, fallback to original is acceptable
       fileToUpload = file;
     }
+  } else {
+    fileToUpload = file;
   }
   
   const timestamp = Date.now();
   const randomId = Math.random().toString(36).substring(2, 9);
-  const fileName = `avatars/${userId}/${timestamp}-${randomId}.webp`;
+  const extension = fileToUpload.type === 'image/webp' ? 'webp' : 'jpg';
+  const fileName = `avatars/${userId}/${timestamp}-${randomId}.${extension}`;
   
   const { data, error } = await supabase.storage
     .from('avatars')
@@ -302,7 +257,6 @@ export async function uploadAvatar(
     });
   
   if (error) {
-    console.error('[uploadAvatar] Upload error:', error);
     throw error;
   }
   
@@ -310,8 +264,5 @@ export async function uploadAvatar(
     throw new Error('Upload failed - no path returned');
   }
   
-  const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${data.path}`;
-  console.log('[uploadAvatar] Avatar uploaded:', url);
-  
-  return url;
+  return `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${data.path}`;
 }
