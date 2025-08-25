@@ -186,9 +186,12 @@ export const actions: Actions = {
       // Profile creation failed, but continue with signup success
     }
 
-    // Success - return success response with message
+    // If user has a session (e.g., email confirmation not required), redirect to onboarding
+    if (data.session) {
+      throw redirect(303, '/onboarding');
+    }
     
-    // Return success response with email
+    // Otherwise return success response with email confirmation message
     return {
       success: true,
       message: `Account created successfully! We've sent a verification email to ${normalizedEmail}. Please check your inbox to complete your registration.`,
