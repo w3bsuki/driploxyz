@@ -464,7 +464,7 @@
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-green-100 text-green-800 hover:bg-green-200 flex items-center gap-1"
         >
           <span>💰</span>
-          <span>Under {i18n.common_currency()}20</span>
+          <span>{i18n.languageTag() === 'bg' ? `Под 20лв` : `Under $20`}</span>
         </button>
         <button
           onclick={async () => {
@@ -477,7 +477,7 @@
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-blue-100 text-blue-800 hover:bg-blue-200 flex items-center gap-1"
         >
           <span>✨</span>
-          <span>New Today</span>
+          <span>{i18n.languageTag() === 'bg' ? 'Нови днес' : 'New Today'}</span>
         </button>
         <button
           onclick={async () => {
@@ -490,7 +490,7 @@
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-red-100 text-red-800 hover:bg-red-200 flex items-center gap-1"
         >
           <span>🔥</span>
-          <span>On Sale</span>
+          <span>{i18n.languageTag() === 'bg' ? 'В намаление' : 'On Sale'}</span>
         </button>
         <button
           onclick={async () => {
@@ -503,7 +503,7 @@
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-purple-100 text-purple-800 hover:bg-purple-200 flex items-center gap-1"
         >
           <span>🏷️</span>
-          <span>Brand New</span>
+          <span>{i18n.condition_new()}</span>
         </button>
         <button
           onclick={async () => {
@@ -516,7 +516,7 @@
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-yellow-100 text-yellow-800 hover:bg-yellow-200 flex items-center gap-1"
         >
           <span>📦</span>
-          <span>Free Shipping</span>
+          <span>{i18n.languageTag() === 'bg' ? 'Безплатна доставка' : 'Free Shipping'}</span>
         </button>
       </div>
     </div>

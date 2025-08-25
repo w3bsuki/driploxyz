@@ -151,20 +151,30 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
     const categories = categoriesResult.status === 'fulfilled' ? categoriesResult.value.data || [] : [];
 
+    // Fetch all categories with their parents for mapping
+    const { data: allCategories } = await locals.supabase
+      .from('categories')
+      .select('id, name, slug, parent_id');
+    
+    // Create a map for quick parent lookup
+    const categoryMap = new Map();
+    allCategories?.forEach(cat => {
+      categoryMap.set(cat.id, cat);
+    });
+
     // Transform products data for frontend - minimal processing
     const transformedProducts = (products || []).map(product => {
-      // Determine main category and subcategory
-      const hasParent = product.categories?.parent_id !== null;
-      const mainCategory = hasParent ? product.categories?.parent : product.categories;
-      const subcategory = hasParent ? product.categories : null;
+      // Get the product's category
+      const productCategory = product.categories;
       
-      // Debug log to check what we're getting
-      if (product.title?.includes('Shirt') || product.title?.includes('Top')) {
-        console.log('Product:', product.title);
-        console.log('Category:', product.categories?.name);
-        console.log('Parent:', product.categories?.parent);
-        console.log('Main Category:', mainCategory?.name);
-        console.log('Subcategory:', subcategory?.name);
+      // Determine main category and subcategory
+      let mainCategory = productCategory;
+      let subcategory = null;
+      
+      if (productCategory?.parent_id) {
+        // This is a subcategory, get its parent
+        mainCategory = categoryMap.get(productCategory.parent_id);
+        subcategory = productCategory;
       }
       
       return {
