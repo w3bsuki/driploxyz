@@ -382,37 +382,6 @@
 </div>
 
 <style>
-  /* Tailwind doesn't support dynamic classes, so we need to define them */
-  .border-emerald-500 { border-color: rgb(16 185 129); }
-  .bg-emerald-50 { background-color: rgb(236 253 245); }
-  .text-emerald-700 { color: rgb(4 120 87); }
-  .ring-emerald-500 { --tw-ring-color: rgb(16 185 129); }
-  .text-emerald-600 { color: rgb(5 150 105); }
-  
-  .border-teal-500 { border-color: rgb(20 184 166); }
-  .bg-teal-50 { background-color: rgb(240 253 250); }
-  .text-teal-700 { color: rgb(15 118 110); }
-  .ring-teal-500 { --tw-ring-color: rgb(20 184 166); }
-  .text-teal-600 { color: rgb(13 148 136); }
-  
-  .border-indigo-500 { border-color: rgb(99 102 241); }
-  .bg-indigo-50 { background-color: rgb(238 242 255); }
-  .text-indigo-700 { color: rgb(67 56 202); }
-  .ring-indigo-500 { --tw-ring-color: rgb(99 102 241); }
-  .text-indigo-600 { color: rgb(79 70 229); }
-  
-  .border-purple-500 { border-color: rgb(168 85 247); }
-  .bg-purple-50 { background-color: rgb(250 245 255); }
-  .text-purple-700 { color: rgb(126 34 206); }
-  .ring-purple-500 { --tw-ring-color: rgb(168 85 247); }
-  .text-purple-600 { color: rgb(147 51 234); }
-  
-  .border-amber-500 { border-color: rgb(245 158 11); }
-  .bg-amber-50 { background-color: rgb(255 251 235); }
-  .text-amber-700 { color: rgb(180 83 9); }
-  .ring-amber-500 { --tw-ring-color: rgb(245 158 11); }
-  .text-amber-600 { color: rgb(217 119 6); }
-  
   /* Fade in animation */
   @keyframes fadeIn {
     from {
