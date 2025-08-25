@@ -47,17 +47,12 @@
   }
 
   async function processFiles(newFiles: File[]) {
-    console.log('🔥 ImageUploader: processFiles called with', newFiles.length, 'files');
-    
     const remainingSlots = maxImages - images.length;
     const filesToProcess = newFiles
       .filter(file => file.type.startsWith('image/'))
       .slice(0, remainingSlots);
-
-    console.log('📝 ImageUploader: filesToProcess', filesToProcess.length, 'files');
     
     if (filesToProcess.length === 0) {
-      console.warn('⚠️ ImageUploader: No files to process');
       return;
     }
 
@@ -65,12 +60,10 @@
     uploadProgress = { current: 0, total: filesToProcess.length };
 
     try {
-      console.log('🚀 ImageUploader: Calling onUpload...');
       const uploadedImages = await onUpload(filesToProcess);
-      console.log('✅ ImageUploader: Upload completed', uploadedImages);
       images = [...images, ...uploadedImages];
     } catch (error) {
-      console.error('❌ ImageUploader: Upload failed:', error);
+      // Handle error silently or pass to parent
     } finally {
       uploading = false;
       uploadProgress = { current: 0, total: 0 };
