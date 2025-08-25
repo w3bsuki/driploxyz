@@ -172,7 +172,9 @@
 	}
 
 	function formatPrice(price: number): string {
-		return `${i18n.common_currency()}${price.toFixed(2)}`;
+		// Format as integer if whole number, otherwise with decimals
+		const formatted = price % 1 === 0 ? price.toString() : price.toFixed(2);
+		return `${formatted}лв`;
 	}
 	
 	function translateCategory(categoryName: string): string {
