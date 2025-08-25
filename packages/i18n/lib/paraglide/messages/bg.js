@@ -2023,7 +2023,7 @@ export const filter_reset = () => `Нулирай филтри`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const filter_onSale = () => `В разпродажба`
+export const filter_onSale = () => `В намаление`
 
 
 /**
@@ -6098,3 +6098,27 @@ export const subcategory_topsShirts = () => `Топове и тениски`
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_pantsJeans = () => `Панталони и дънки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const filter_under20 = () => `Под 20лв`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const filter_newToday = () => `Нови днес`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const filter_freeShipping = () => `Безплатна доставка`

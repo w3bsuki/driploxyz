@@ -18436,3 +18436,75 @@ export const subcategory_pantsJeans = (params = {}, options = {}) => {
 	}[options.languageTag ?? languageTag()]()
 }
 
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const filter_under20 = (params = {}, options = {}) => {
+	return {
+		bg: bg.filter_under20,
+		en: en.filter_under20,
+		ru: ru.filter_under20,
+		ua: ua.filter_under20
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const filter_newToday = (params = {}, options = {}) => {
+	return {
+		bg: bg.filter_newToday,
+		en: en.filter_newToday,
+		ru: ru.filter_newToday,
+		ua: ua.filter_newToday
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const filter_freeShipping = (params = {}, options = {}) => {
+	return {
+		bg: bg.filter_freeShipping,
+		en: en.filter_freeShipping,
+		ru: ru.filter_freeShipping,
+		ua: ua.filter_freeShipping
+	}[options.languageTag ?? languageTag()]()
+}
+

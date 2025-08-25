@@ -5955,3 +5955,9 @@ export { subcategory_shorts } from "./en.js"
 export { subcategory_topsShirts } from "./en.js"
 
 export { subcategory_pantsJeans } from "./en.js"
+
+export { filter_under20 } from "./en.js"
+
+export { filter_newToday } from "./en.js"
+
+export { filter_freeShipping } from "./en.js"

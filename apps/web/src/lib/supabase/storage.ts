@@ -26,10 +26,10 @@ async function convertToWebP(file: File): Promise<Blob> {
         let height = img.height;
         
         if (width > height && width > MAX_SIZE) {
-          height = (height * MAX_SIZE) / width;
+          height = Math.floor((height * MAX_SIZE) / width);
           width = MAX_SIZE;
         } else if (height > MAX_SIZE) {
-          width = (width * MAX_SIZE) / height;
+          width = Math.floor((width * MAX_SIZE) / height);
           height = MAX_SIZE;
         }
         
