@@ -4,6 +4,7 @@
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import Header from '$lib/components/Header.svelte';
+	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
 	import { goto } from '$app/navigation';
 	import { page, navigating } from '$app/stores';
@@ -277,10 +278,10 @@
 
 	<main class="max-w-7xl mx-auto">
 		<!-- Hero Search -->
-		<div class="bg-gray-50 border-b border-gray-200">
-			<div class="px-4 sm:px-6 lg:px-8 py-3 space-y-2">
-				<!-- Search Bar -->
-				<div class="relative">
+		<div class="bg-white border-b border-gray-100 shadow-sm">
+			<div class="px-3 sm:px-6 lg:px-8 py-4 space-y-3">
+				<!-- Search Bar with Dropdown -->
+				<div class="max-w-2xl mx-auto relative">
 					<SearchBar 
 						bind:value={searchQuery}
 						onSearch={handleSearch}
@@ -288,22 +289,62 @@
 						placeholder={i18n.search_placeholder()}
 						categoriesText={i18n.search_categories()}
 					/>
+					
+					<!-- Category Dropdown - positioned right under search bar -->
+					{#if showCategoryDropdown}
+						<!-- Click outside to close -->
+						<button 
+							class="fixed inset-0 z-10" 
+							onclick={() => (showCategoryDropdown = false)}
+							aria-label="Close dropdown"
+						/>
+						<div class="absolute top-full left-0 right-0 mt-2 z-20">
+							<div class="bg-white rounded-lg shadow-lg border border-gray-200 p-4 max-h-[400px] overflow-y-auto">
+								<CategoryDropdown
+									categories={mainCategories.map(cat => ({
+										id: cat.id,
+										name: cat.name,
+										slug: cat.slug,
+										icon: getCategoryIcon(cat.name)
+									}))}
+									products={products.slice(0, 3)}
+									sellers={sellers.slice(0, 3)}
+									onCategorySelect={(category) => {
+										showCategoryDropdown = false;
+										navigateToCategory(category.slug);
+									}}
+									onProductClick={(product) => {
+										showCategoryDropdown = false;
+										handleProductClick(product);
+									}}
+									onSellerClick={(seller) => {
+										showCategoryDropdown = false;
+										handleSellerClick(seller);
+									}}
+									onClose={() => (showCategoryDropdown = false)}
+									{formatPrice}
+									translations={{
+										newItems: i18n.home_newItems ? i18n.home_newItems() : 'New Items',
+										topSellers: i18n.home_topSellers ? i18n.home_topSellers() : 'Top Sellers',
+										categories: i18n.search_categories(),
+										viewAll: i18n.home_viewAll ? i18n.home_viewAll() : 'View All',
+										new: i18n.badge_new ? i18n.badge_new() : 'NEW'
+									}}
+								/>
+							</div>
+						</div>
+					{/if}
 				</div>
 				
-				<!-- Category Pills (Hidden when dropdown is open) -->
-				{#if !showCategoryDropdown}
-					<div class="flex items-center justify-center gap-1.5 overflow-x-auto scrollbar-hide sm:gap-3">
+				<!-- Category Pills -->
+				<div class="flex items-center justify-center gap-2 overflow-x-auto scrollbar-hide">
 					<button 
-						onclick={navigateToAllSearch}
+						onclick={() => navigateToAllSearch()}
 						disabled={loadingCategory === 'all'}
-						class="category-nav-pill shrink-0 px-5 py-2.5 bg-black text-white rounded-xl text-sm font-semibold hover:bg-gray-900 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center"
-						style="width: 80px; height: 44px;"
+						class="category-nav-pill shrink-0 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-900 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[70px] h-10 transition-all"
 					>
 						{#if loadingCategory === 'all'}
-							<svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-								<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-							</svg>
+							<LoadingSpinner size="sm" color="white" />
 						{:else}
 							{i18n.search_all()}
 						{/if}
@@ -312,57 +353,21 @@
 						<button 
 							onclick={() => navigateToCategory(category.slug)}
 							disabled={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-5 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center"
-							style="min-width: 80px; height: 44px;"
+							class="category-nav-pill shrink-0 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[70px] h-10 transition-all"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<svg class="animate-spin h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-									<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-									<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-								</svg>
+								<LoadingSpinner size="sm" color="gray" />
 							{:else}
-								{i18n[`category_${category.slug.toLowerCase()}`] ? i18n[`category_${category.slug.toLowerCase()}`]() : category.name}
+								{@const categoryName = category.slug === 'women' ? i18n.category_women() : 
+								                       category.slug === 'men' ? i18n.category_men() : 
+								                       category.slug === 'kids' ? i18n.category_kids() : 
+								                       category.name}
+								{categoryName}
 							{/if}
 						</button>
 					{/each}
-					</div>
-				{/if}
-				
-				<!-- Category Dropdown -->
-				{#if showCategoryDropdown}
-					<CategoryDropdown
-						categories={mainCategories.map(cat => ({
-							id: cat.id,
-							name: cat.name,
-							slug: cat.slug,
-							icon: getCategoryIcon(cat.name)
-						}))}
-						products={products.slice(0, 3)}
-						sellers={sellers.slice(0, 3)}
-						onCategorySelect={(category) => {
-							showCategoryDropdown = false;
-							navigateToCategory(category.slug);
-						}}
-						onProductClick={(product) => {
-							showCategoryDropdown = false;
-							handleProductClick(product);
-						}}
-						onSellerClick={(seller) => {
-							showCategoryDropdown = false;
-							handleSellerClick(seller);
-						}}
-						onClose={() => showCategoryDropdown = false}
-						{formatPrice}
-						translations={{
-							newItems: i18n.home_newItems ? i18n.home_newItems() : 'New Items',
-							topSellers: i18n.home_topSellers ? i18n.home_topSellers() : 'Top Sellers',
-							categories: i18n.search_categories(),
-							viewAll: i18n.home_viewAll ? i18n.home_viewAll() : 'View All',
-							new: i18n.badge_new ? i18n.badge_new() : 'NEW'
-						}}
-					/>
-				{/if}
+				</div>
 			</div>
 		</div>
 

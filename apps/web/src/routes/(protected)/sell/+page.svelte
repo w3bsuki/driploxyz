@@ -133,10 +133,10 @@
     formData.size
   );
 
-  const canProceedStep2 = $derived(formData.price > 0);
+  const canProceedStep2 = $derived(true); // Step 2 is optional (description, color, tags)
 
   const canSubmit = $derived(
-    canProceedStep1 && canProceedStep2 && uploadedImages.length > 0
+    canProceedStep1 && uploadedImages.length > 0 && formData.price > 0
   );
 
   // Image upload handlers
