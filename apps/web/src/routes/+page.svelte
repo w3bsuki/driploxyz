@@ -295,11 +295,11 @@
 					{#if showCategoryDropdown}
 						<!-- Click outside to close -->
 						<button 
-							class="fixed inset-0 z-10" 
+							class="fixed inset-0 z-40" 
 							onclick={() => (showCategoryDropdown = false)}
 							aria-label="Close dropdown"
 						/>
-						<div class="absolute top-full left-0 right-0 mt-2 z-20">
+						<div class="absolute top-full left-0 right-0 mt-2 z-50">
 							<TrendingDropdown
 								trendingProducts={products.slice(0, 8)}
 								recentPriceDrops={products.slice(4, 8)}

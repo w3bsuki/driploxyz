@@ -83,7 +83,6 @@
     <div class="flex items-center justify-between mb-3">
       <div class="flex items-center gap-2">
         <span class="text-xs font-semibold text-gray-900 uppercase tracking-wide">{translations.trending_promoted}</span>
-        <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full font-medium">{translations.trending_featured}</span>
       </div>
       <div class="flex items-center gap-1 text-gray-400">
         <span class="text-xs">{translations.ui_scroll || 'Scroll'}</span>

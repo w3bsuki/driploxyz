@@ -347,41 +347,81 @@
   <!-- Main App Header -->
   <Header user={data.user} profile={data.profile} />
   
-  <!-- Clean Search Section -->
-  <div class="bg-gray-50 sticky top-14 sm:top-16 z-30">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+  <!-- Clean Search Section with Dynamic Pills -->
+  <div class="bg-white sticky top-14 sm:top-16 z-30 border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
+      <!-- Main Search Bar -->
       <div class="relative">
-        <!-- Main Search Bar -->
         <SearchBar 
           bind:value={searchQuery}
           placeholder={i18n.search_placeholder()}
           onSearch={handleSearch}
-          onFilter={handleOpenMegaMenu}
-          showCategoriesButton={true}
-          categoriesText="Categories"
+          onFilter={() => {}}
+          showCategoriesButton={false}
         />
         {#if activeFiltersCount() > 0}
-          <div class="absolute top-2 right-1 h-5 w-5 bg-black text-white text-xs rounded-full flex items-center justify-center pointer-events-none">
+          <div class="absolute top-2 right-12 h-5 w-5 bg-black text-white text-xs rounded-full flex items-center justify-center pointer-events-none">
             {activeFiltersCount()}
           </div>
         {/if}
-        
-        <!-- MegaMenu Dropdown -->
-        <MegaMenu
-          isOpen={showMegaMenu}
-          categories={categoryData()}
-          selectedCategory={selectedMainCategory}
-          selectedSubcategory={selectedSubcategory}
-          onCategorySelect={handleCategorySelectFromMega}
-          onSubcategorySelect={handleSubcategorySelectFromMega}
-          onClose={() => showMegaMenu = false}
-          translations={{
-            onSale: i18n.filter_onSale(),
-            newItems: i18n.filter_newItems(),
-            trending: i18n.filter_trending()
-          }}
-        />
       </div>
+      
+      <!-- Main Category Pills (Row 1) -->
+      <div class="flex overflow-x-auto scrollbar-hide gap-2">
+        <button
+          onclick={() => {
+            selectedMainCategory = null;
+            selectedSubcategory = null;
+          }}
+          class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-all
+            {selectedMainCategory === null 
+              ? 'bg-gray-900 text-white' 
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+        >
+          {i18n.search_all()}
+        </button>
+        {#each Object.entries(categoryData()).slice(0, 8) as [key, category]}
+          <button
+            onclick={() => {
+              selectedMainCategory = selectedMainCategory === key ? null : key;
+              selectedSubcategory = null;
+            }}
+            class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-all flex items-center gap-1
+              {selectedMainCategory === key
+                ? 'bg-gray-900 text-white' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+          >
+            <span class="text-base">{category.icon}</span>
+            <span>{category.name}</span>
+          </button>
+        {/each}
+      </div>
+      
+      <!-- Subcategory Pills (Row 2) - Dynamic based on selected main category -->
+      {#if selectedMainCategory && categoryData()[selectedMainCategory]}
+        <div class="flex overflow-x-auto scrollbar-hide gap-2 pb-1">
+          <button
+            onclick={() => selectedSubcategory = null}
+            class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all
+              {selectedSubcategory === null 
+                ? 'bg-black text-white' 
+                : 'bg-white text-gray-600 border border-gray-300 hover:border-gray-400'}"
+          >
+            All {categoryData()[selectedMainCategory].name}
+          </button>
+          {#each categoryData()[selectedMainCategory].subcategories as subcat}
+            <button
+              onclick={() => selectedSubcategory = subcat.name}
+              class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all
+                {selectedSubcategory === subcat.name
+                  ? 'bg-black text-white' 
+                  : 'bg-white text-gray-600 border border-gray-300 hover:border-gray-400'}"
+            >
+              {subcat.name}
+            </button>
+          {/each}
+        </div>
+      {/if}
     </div>
   </div>
 

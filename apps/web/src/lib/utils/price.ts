@@ -22,6 +22,13 @@ const LOCALE_MAP = {
  */
 export function formatPrice(price: number, locale?: string): string {
   const currentLocale = locale || i18n.languageTag() as keyof typeof CURRENCY_MAP;
+  
+  // For Bulgarian, use simple format: "5лв" instead of "лв 5.00"
+  if (currentLocale === 'bg') {
+    const roundedPrice = price % 1 === 0 ? Math.round(price) : price.toFixed(2);
+    return `${roundedPrice}лв`;
+  }
+  
   const currency = CURRENCY_MAP[currentLocale] || 'USD';
   const intlLocale = LOCALE_MAP[currentLocale] || 'en-US';
   
@@ -46,7 +53,7 @@ function formatPriceFallback(price: number, locale: string): string {
   const roundedPrice = price % 1 === 0 ? Math.round(price) : price.toFixed(2);
   
   switch (locale) {
-    case 'bg': return `${roundedPrice} лв.`;
+    case 'bg': return `${roundedPrice}лв`;
     case 'ru': return `${roundedPrice} ₽`;
     case 'ua': return `${roundedPrice} ₴`;
     default: return `$${roundedPrice}`;

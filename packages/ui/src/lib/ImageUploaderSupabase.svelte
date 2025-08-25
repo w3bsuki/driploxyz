@@ -47,26 +47,40 @@
   }
 
   async function processFiles(newFiles: File[]) {
+    console.log('[ImageUploader] Processing files:', newFiles.map(f => ({
+      name: f.name,
+      size: f.size,
+      type: f.type
+    })));
+    
     const remainingSlots = maxImages - images.length;
     const filesToProcess = newFiles
       .filter(file => file.type.startsWith('image/'))
       .slice(0, remainingSlots);
     
+    console.log('[ImageUploader] Files to process:', filesToProcess.length, 'remaining slots:', remainingSlots);
+    
     if (filesToProcess.length === 0) {
+      console.log('[ImageUploader] No files to process');
       return;
     }
 
     uploading = true;
     uploadProgress = { current: 0, total: filesToProcess.length };
+    console.log('[ImageUploader] Starting upload, total files:', filesToProcess.length);
 
     try {
+      console.log('[ImageUploader] Calling onUpload...');
       const uploadedImages = await onUpload(filesToProcess);
+      console.log('[ImageUploader] Upload returned:', uploadedImages);
       images = [...images, ...uploadedImages];
     } catch (error) {
+      console.error('[ImageUploader] Upload error:', error);
       // Handle error silently or pass to parent
     } finally {
       uploading = false;
       uploadProgress = { current: 0, total: 0 };
+      console.log('[ImageUploader] Upload complete, uploading set to false');
     }
   }
 
@@ -171,7 +185,7 @@
     bind:this={fileInput}
     {id}
     type="file"
-    accept="image/*"
+    accept="image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif"
     multiple
     class="hidden"
     onchange={handleFileSelect}

@@ -141,34 +141,47 @@
 
   // Image upload handlers
   async function handleImageUpload(files: File[]): Promise<UploadedImage[]> {
+    console.log('[handleImageUpload] Starting with files:', files.map(f => ({
+      name: f.name,
+      size: f.size,
+      type: f.type
+    })));
+    
     // Check file size first
     const tooLargeFiles = files.filter(f => f.size > 10 * 1024 * 1024); // 10MB limit
     if (tooLargeFiles.length > 0) {
       const fileNames = tooLargeFiles.map(f => `${f.name} (${(f.size / 1024 / 1024).toFixed(1)} MB)`);
+      console.error('[handleImageUpload] Files too large:', fileNames);
       toasts.error(`Images too large: ${fileNames.join(', ')}. Max 10MB per image.`);
       return [];
     }
 
     if (!data.user) {
+      console.error('[handleImageUpload] User not authenticated');
       toasts.error('User not authenticated - please refresh the page');
       return [];
     }
 
+    console.log('[handleImageUpload] User authenticated:', data.user.id);
     isUploadingImages = true;
 
     try {
+      console.log('[handleImageUpload] Calling uploadImages...');
       const uploaded = await uploadImages(
         supabase, 
         files, 
         'product-images', 
         data.user.id,
         (current, total) => {
-          // Progress updates handled internally
+          console.log(`[handleImageUpload] Progress: ${current}/${total}`);
         }
       );
 
+      console.log('[handleImageUpload] Upload successful:', uploaded);
       return uploaded;
     } catch (error) {
+      console.error('[handleImageUpload] Upload error:', error);
+      
       let errorMessage = 'Failed to upload images';
       if (error instanceof Error) {
         if (error.message.includes('timeout')) {
@@ -177,6 +190,8 @@
           errorMessage = 'Storage bandwidth limit reached. Please try again later.';
         } else if (error.message.includes('network') || error.message.includes('connection')) {
           errorMessage = 'Network error. Please check your connection and try again.';
+        } else if (error.message.includes('row-level security')) {
+          errorMessage = 'Permission denied. Please try signing out and back in.';
         } else {
           errorMessage = `Upload failed: ${error.message}`;
         }
@@ -186,6 +201,7 @@
       return [];
     } finally {
       isUploadingImages = false;
+      console.log('[handleImageUpload] Finished, isUploadingImages set to false');
     }
   }
 
