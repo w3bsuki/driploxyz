@@ -464,7 +464,7 @@
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-green-100 text-green-800 hover:bg-green-200 flex items-center gap-1"
         >
           <span>💰</span>
-          <span>{i18n.languageTag() === 'bg' ? `Под 20лв` : `Under $20`}</span>
+          <span>{i18n.filter_under20()}</span>
         </button>
         <button
           onclick={async () => {
@@ -477,20 +477,20 @@
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-blue-100 text-blue-800 hover:bg-blue-200 flex items-center gap-1"
         >
           <span>✨</span>
-          <span>{i18n.languageTag() === 'bg' ? 'Нови днес' : 'New Today'}</span>
+          <span>{i18n.filter_newToday()}</span>
         </button>
         <button
           onclick={async () => {
             const url = new URL('/search', window.location.origin);
             if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
             if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
-            url.searchParams.set('on_sale', 'true');
+            url.searchParams.set('condition', 'like-new');
             await goto(url.pathname + url.search);
           }}
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-red-100 text-red-800 hover:bg-red-200 flex items-center gap-1"
         >
-          <span>🔥</span>
-          <span>{i18n.languageTag() === 'bg' ? 'В намаление' : 'On Sale'}</span>
+          <span>✨</span>
+          <span>{i18n.condition_likeNew()}</span>
         </button>
         <button
           onclick={async () => {
@@ -503,7 +503,7 @@
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-purple-100 text-purple-800 hover:bg-purple-200 flex items-center gap-1"
         >
           <span>🏷️</span>
-          <span>{i18n.condition_new()}</span>
+          <span>{i18n.condition_newWithTags()}</span>
         </button>
         <button
           onclick={async () => {
@@ -516,7 +516,7 @@
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-yellow-100 text-yellow-800 hover:bg-yellow-200 flex items-center gap-1"
         >
           <span>📦</span>
-          <span>{i18n.languageTag() === 'bg' ? 'Безплатна доставка' : 'Free Shipping'}</span>
+          <span>{i18n.filter_freeShipping()}</span>
         </button>
       </div>
     </div>

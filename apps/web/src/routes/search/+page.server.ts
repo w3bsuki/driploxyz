@@ -5,12 +5,15 @@ export const load: PageServerLoad = async ({ url, locals }) => {
   const country = locals.country || 'BG';
   const query = url.searchParams.get('q') || '';
   const category = url.searchParams.get('category') || '';
+  const subcategory = url.searchParams.get('subcategory') || '';
   const minPrice = url.searchParams.get('min_price');
   const maxPrice = url.searchParams.get('max_price');
   const condition = url.searchParams.get('condition');
   const brand = url.searchParams.get('brand');
   const size = url.searchParams.get('size');
   const sortBy = url.searchParams.get('sort') || 'relevance';
+  const onSale = url.searchParams.get('on_sale') === 'true';
+  const freeShipping = url.searchParams.get('free_shipping') === 'true';
 
   // Show all products by default if no search criteria
 
@@ -93,6 +96,18 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       productsQuery = productsQuery.eq('size', size);
     }
 
+    // Apply special filters
+    if (sortBy === 'newest') {
+      // For "New Today" - filter to products created in last 24 hours
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      productsQuery = productsQuery.gte('created_at', yesterday.toISOString());
+    }
+    
+    // Note: onSale would require a discount_percentage or original_price field in DB
+    // Note: freeShipping would require a shipping_cost field in DB
+    // For now, these are placeholders for V2
+    
     // Apply sorting
     switch (sortBy) {
       case 'price-low':
@@ -210,6 +225,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       total: transformedProducts.length,
       filters: {
         category,
+        subcategory,
         minPrice,
         maxPrice,
         condition,
@@ -229,6 +245,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       error: 'Search failed. Please try again.',
       filters: {
         category,
+        subcategory,
         minPrice,
         maxPrice,
         condition,
