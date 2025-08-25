@@ -268,14 +268,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 </svelte:head>
 
-<div class="min-h-screen bg-gradient-to-b from-gray-50 to-white flex flex-col">
-  <!-- Modern Header -->
-  <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
+<div class="min-h-screen bg-white flex flex-col">
+  <!-- Clean Header -->
+  <header class="sticky top-0 z-50 bg-white border-b border-gray-200">
     <div class="px-4 py-3">
       <div class="flex items-center justify-between">
         <button 
           onclick={() => goto('/dashboard')}
-          class="p-2 -ml-2 hover:bg-gray-100 rounded-xl transition-colors"
+          class="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
           aria-label="Go back"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -283,14 +283,8 @@
           </svg>
         </button>
         
-        <div class="text-center">
-          <h1 class="text-lg font-semibold text-gray-900">Sell Your Item</h1>
-          <div class="flex items-center justify-center gap-2 mt-0.5">
-            <p class="text-xs text-gray-500">Step {currentStep} of 4</p>
-            {#if isDraftSaved}
-              <span class="text-xs text-green-600">• Saved</span>
-            {/if}
-          </div>
+        <div class="text-center flex-1">
+          <h1 class="text-base font-semibold text-gray-900">List Item</h1>
         </div>
         
         <button 
@@ -302,12 +296,46 @@
       </div>
     </div>
     
-    <!-- Beautiful Progress Bar -->
-    <div class="h-1 bg-gray-100">
-      <div 
-        class="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500 ease-out"
-        style="width: {(currentStep / 4) * 100}%"
-      />
+    <!-- Clean Step Indicator -->
+    <div class="px-4 pb-3">
+      <div class="flex items-center justify-between">
+        {#each [1, 2, 3, 4] as step}
+          <div class="flex items-center flex-1">
+            <div class="flex items-center">
+              <div class="{
+                step <= currentStep 
+                  ? 'w-8 h-8 bg-black text-white' 
+                  : 'w-8 h-8 bg-gray-100 text-gray-400'
+              } rounded-full flex items-center justify-center text-xs font-medium transition-colors">
+                {#if step < currentStep}
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                {:else}
+                  {step}
+                {/if}
+              </div>
+              {#if step === 1}
+                <span class="ml-2 text-xs {currentStep === 1 ? 'text-gray-900 font-medium' : 'text-gray-500'} hidden sm:inline">Photos</span>
+              {:else if step === 2}
+                <span class="ml-2 text-xs {currentStep === 2 ? 'text-gray-900 font-medium' : 'text-gray-500'} hidden sm:inline">Details</span>
+              {:else if step === 3}
+                <span class="ml-2 text-xs {currentStep === 3 ? 'text-gray-900 font-medium' : 'text-gray-500'} hidden sm:inline">Pricing</span>
+              {:else if step === 4}
+                <span class="ml-2 text-xs {currentStep === 4 ? 'text-gray-900 font-medium' : 'text-gray-500'} hidden sm:inline">Review</span>
+              {/if}
+            </div>
+            {#if step < 4}
+              <div class="flex-1 h-[2px] mx-2 {
+                step < currentStep ? 'bg-black' : 'bg-gray-200'
+              } transition-colors" />
+            {/if}
+          </div>
+        {/each}
+      </div>
+      {#if isDraftSaved}
+        <p class="text-xs text-green-600 text-center mt-2">Draft saved</p>
+      {/if}
     </div>
   </header>
 
@@ -454,8 +482,8 @@
         {#if currentStep === 4}
           <div class="space-y-6 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
             <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">Review Your Listing</h2>
-              <p class="text-gray-600">Everything look good?</p>
+              <h2 class="text-lg font-semibold text-gray-900 mb-1">Review Listing</h2>
+              <p class="text-sm text-gray-600">Everything look good?</p>
             </div>
             
             <!-- Preview Card -->
@@ -600,31 +628,43 @@
   {#if showSuccess}
     <div class="fixed inset-0 z-[100] flex items-center justify-center bg-white">
       <div class="text-center px-6 py-12 max-w-md mx-auto w-full">
-        <!-- Success Icon with animation -->
-        <div class="mb-8">
-          <div class="w-32 h-32 mx-auto bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-2xl animate-bounce-in">
-            <svg class="w-16 h-16 text-white animate-check-mark" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+        <!-- Clean Success Icon -->
+        <div class="mb-6">
+          <div class="w-24 h-24 mx-auto bg-black rounded-full flex items-center justify-center">
+            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
         </div>
         
         <!-- Success Message -->
-        <h2 class="text-3xl font-bold text-gray-900 mb-4">Success! 🎉</h2>
-        <p class="text-lg text-gray-600 mb-3">Your listing is now live!</p>
-        <p class="text-sm text-gray-500 mb-8">Buyers can now discover and purchase your item.</p>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">Listed Successfully</h2>
+        <p class="text-gray-600 mb-8">Your item is now live and available for purchase.</p>
+        
+        <!-- Product Preview -->
+        {#if uploadedImages[0]}
+          <div class="mb-6 bg-gray-50 rounded-lg p-3 flex items-center gap-3">
+            <img 
+              src={uploadedImages[0].url} 
+              alt={formData.title}
+              class="w-16 h-16 object-cover rounded-md"
+            />
+            <div class="text-left flex-1">
+              <p class="font-medium text-sm text-gray-900 line-clamp-1">{formData.title}</p>
+              <p class="text-lg font-bold">${formData.price}</p>
+            </div>
+          </div>
+        {/if}
         
         <!-- Action Buttons -->
-        <div class="space-y-3">
-          <Button
-            variant="primary"
+        <div class="space-y-2">
+          <button
             onclick={() => goto('/')}
-            class="w-full h-12"
+            class="w-full px-4 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
           >
-            Back to Home
-          </Button>
-          <Button
-            variant="ghost"
+            View Listing
+          </button>
+          <button
             onclick={() => {
               showSuccess = false;
               currentStep = 1;
@@ -647,10 +687,10 @@
               };
               uploadedImages = [];
             }}
-            class="w-full h-12"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors"
           >
             List Another Item
-          </Button>
+          </button>
         </div>
       </div>
     </div>
