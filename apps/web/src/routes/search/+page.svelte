@@ -36,6 +36,7 @@
     }
     if (data.filters) {
       if (data.filters.category) selectedMainCategory = data.filters.category;
+      if (data.filters.subcategory) selectedSubcategory = data.filters.subcategory;
       if (data.filters.size) selectedSize = data.filters.size;
       if (data.filters.brand) selectedBrand = data.filters.brand;
       if (data.filters.condition) selectedCondition = data.filters.condition;
@@ -369,9 +370,12 @@
       <!-- Main Category Pills (Row 1) -->
       <div class="flex overflow-x-auto scrollbar-hide gap-2">
         <button
-          onclick={() => {
+          onclick={async () => {
             selectedMainCategory = null;
             selectedSubcategory = null;
+            const url = new URL('/search', window.location.origin);
+            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+            await goto(url.pathname + url.search);
           }}
           class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-all
             {selectedMainCategory === null 
@@ -382,9 +386,15 @@
         </button>
         {#each Object.entries(categoryData()).slice(0, 8) as [key, category]}
           <button
-            onclick={() => {
+            onclick={async () => {
               selectedMainCategory = selectedMainCategory === key ? null : key;
               selectedSubcategory = null;
+              const url = new URL('/search', window.location.origin);
+              if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+              if (selectedMainCategory !== key) {
+                url.searchParams.set('category', key);
+              }
+              await goto(url.pathname + url.search);
             }}
             class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-all flex items-center gap-1
               {selectedMainCategory === key
@@ -401,7 +411,13 @@
       {#if selectedMainCategory && categoryData()[selectedMainCategory]}
         <div class="flex overflow-x-auto scrollbar-hide gap-2 pb-1">
           <button
-            onclick={() => selectedSubcategory = null}
+            onclick={async () => {
+              selectedSubcategory = null;
+              const url = new URL('/search', window.location.origin);
+              if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+              url.searchParams.set('category', selectedMainCategory);
+              await goto(url.pathname + url.search);
+            }}
             class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all
               {selectedSubcategory === null 
                 ? 'bg-black text-white' 
@@ -411,7 +427,14 @@
           </button>
           {#each categoryData()[selectedMainCategory].subcategories as subcat}
             <button
-              onclick={() => selectedSubcategory = subcat.name}
+              onclick={async () => {
+                selectedSubcategory = subcat.name;
+                const url = new URL('/search', window.location.origin);
+                if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+                url.searchParams.set('category', selectedMainCategory);
+                url.searchParams.set('subcategory', subcat.name);
+                await goto(url.pathname + url.search);
+              }}
               class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all
                 {selectedSubcategory === subcat.name
                   ? 'bg-black text-white' 
@@ -422,6 +445,75 @@
           {/each}
         </div>
       {/if}
+      
+      <!-- Quick Filters Row (Always visible) -->
+      <div class="flex overflow-x-auto scrollbar-hide gap-2 pt-1">
+        <button
+          onclick={async () => {
+            const url = new URL('/search', window.location.origin);
+            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            url.searchParams.set('max_price', '20');
+            await goto(url.pathname + url.search);
+          }}
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-green-100 text-green-800 hover:bg-green-200 flex items-center gap-1"
+        >
+          <span>💰</span>
+          <span>Under {i18n.common_currency()}20</span>
+        </button>
+        <button
+          onclick={async () => {
+            const url = new URL('/search', window.location.origin);
+            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            url.searchParams.set('sort', 'newest');
+            await goto(url.pathname + url.search);
+          }}
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-blue-100 text-blue-800 hover:bg-blue-200 flex items-center gap-1"
+        >
+          <span>✨</span>
+          <span>New Today</span>
+        </button>
+        <button
+          onclick={async () => {
+            const url = new URL('/search', window.location.origin);
+            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            url.searchParams.set('on_sale', 'true');
+            await goto(url.pathname + url.search);
+          }}
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-red-100 text-red-800 hover:bg-red-200 flex items-center gap-1"
+        >
+          <span>🔥</span>
+          <span>On Sale</span>
+        </button>
+        <button
+          onclick={async () => {
+            const url = new URL('/search', window.location.origin);
+            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            url.searchParams.set('condition', 'new');
+            await goto(url.pathname + url.search);
+          }}
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-purple-100 text-purple-800 hover:bg-purple-200 flex items-center gap-1"
+        >
+          <span>🏷️</span>
+          <span>Brand New</span>
+        </button>
+        <button
+          onclick={async () => {
+            const url = new URL('/search', window.location.origin);
+            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            url.searchParams.set('free_shipping', 'true');
+            await goto(url.pathname + url.search);
+          }}
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-yellow-100 text-yellow-800 hover:bg-yellow-200 flex items-center gap-1"
+        >
+          <span>📦</span>
+          <span>Free Shipping</span>
+        </button>
+      </div>
     </div>
   </div>
 
