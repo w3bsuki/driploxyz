@@ -107,6 +107,7 @@ export { default as Select } from './Select.svelte';
 export { default as StepIndicator } from './StepIndicator.svelte';
 export { default as ConditionSelector } from './ConditionSelector.svelte';
 export { default as BrandSelector } from './BrandSelector.svelte';
+export { default as CategorySelector } from './CategorySelector.svelte';
 export { default as ImageUploader } from './ImageUploader.svelte';
 export { default as ImageUploaderSupabase } from './ImageUploaderSupabase.svelte';
 export { default as PriceInput } from './PriceInput.svelte';

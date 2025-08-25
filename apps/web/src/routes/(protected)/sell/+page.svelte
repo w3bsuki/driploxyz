@@ -4,8 +4,11 @@
   import { SIZE_CATEGORIES } from '$lib/validation/product';
   import type { PageData, ActionData } from './$types';
   import { enhance } from '$app/forms';
-  import { Button, ImageUploaderSupabase, Input, Select, BrandSelector, ConditionSelector, PriceInput, TagInput, toasts } from '@repo/ui';
+  import { Button, toasts } from '@repo/ui';
   import { uploadImages, deleteImage } from '$lib/supabase/storage';
+  import StepPhotosAndBasicInfo from './components/StepPhotosAndBasicInfo.svelte';
+  import StepProductInfo from './components/StepProductInfo.svelte';
+  import StepPricing from './components/StepPricing.svelte';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import { onMount } from 'svelte';
 
@@ -34,11 +37,11 @@
     category_id: form?.values?.category_id || '',
     brand: form?.values?.brand || '',
     size: form?.values?.size || '',
-    condition: (form?.values?.condition as any) || 'good' as const,
+    condition: (form?.values?.condition || 'good') as 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair',
     color: form?.values?.color || '',
     material: form?.values?.material || '',
-    price: form?.values?.price || 0,
-    shipping_cost: form?.values?.shipping_cost || 0,
+    price: Number(form?.values?.price) || 0,
+    shipping_cost: Number(form?.values?.shipping_cost) || 0,
     tags: form?.values?.tags || [] as string[],
     use_premium_boost: form?.values?.use_premium_boost || false
   });
@@ -281,11 +284,11 @@
         </button>
         
         <div class="text-center">
-          <h1 class="text-base font-semibold text-gray-900">List an Item</h1>
+          <h1 class="text-lg font-semibold text-gray-900">Sell Your Item</h1>
           <div class="flex items-center justify-center gap-2 mt-0.5">
             <p class="text-xs text-gray-500">Step {currentStep} of 4</p>
             {#if isDraftSaved}
-              <span class="text-xs text-green-600">• Draft saved</span>
+              <span class="text-xs text-green-600">• Saved</span>
             {/if}
           </div>
         </div>
@@ -387,132 +390,17 @@
       >
         <!-- Step 1: Photos & Basic Info -->
         {#if currentStep === 1}
-          <div class="space-y-6 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">Add Photos</h2>
-              <p class="text-gray-600">Good photos sell items faster</p>
-            </div>
-            
-            <!-- Photo Tips -->
-            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
-              <h4 class="font-medium text-blue-900 mb-2">📸 Photo Tips</h4>
-              <ul class="text-sm text-blue-700 space-y-1">
-                <li>• Natural lighting works best</li>
-                <li>• Show all angles & flaws</li>
-                <li>• Include brand/size tags</li>
-                <li>• First photo = main image</li>
-              </ul>
-            </div>
-            
-            <div>
-              <ImageUploaderSupabase
-                maxImages={10}
-                bind:images={uploadedImages}
-                onUpload={handleImageUpload}
-                onDelete={handleImageDelete}
-                bind:uploading={isUploadingImages}
-              />
-              <div class="flex items-center justify-between text-sm mt-2">
-                <span class="text-gray-600">
-                  {uploadedImages.length}/10 photos
-                </span>
-                {#if uploadedImages.length === 0}
-                  <span class="text-red-600">Required</span>
-                {:else}
-                  <span class="text-green-600">✓ Ready</span>
-                {/if}
-              </div>
-            </div>
-            
-            <div>
-              <Input
-                type="text"
-                label="What are you selling?"
-                placeholder="e.g., Nike Air Max 90"
-                bind:value={formData.title}
-                maxlength={50}
-                name="title"
-                required
-              />
-              <div class="flex items-center justify-between mt-1">
-                <div class="text-xs">
-                  {#if formData.title.length < 3}
-                    <span class="text-red-600">Min 3 characters</span>
-                  {:else if formData.title.length < 15}
-                    <span class="text-yellow-600">Add brand/size for visibility</span>
-                  {:else}
-                    <span class="text-green-600">✓ Great title!</span>
-                  {/if}
-                </div>
-                <span class="text-xs text-gray-500">{formData.title.length}/50</span>
-              </div>
-            </div>
-            
-            <div class="space-y-4">
-              <Select
-                label="Who's it for?"
-                bind:value={formData.gender_category_id}
-                onchange={() => {
-                  formData.type_category_id = '';
-                  formData.category_id = '';
-                }}
-                name="gender_category_id"
-                required
-              >
-                <option value="">Select category</option>
-                {#each genderCategories as category}
-                  <option value={category.id}>{category.name}</option>
-                {/each}
-              </Select>
-              
-              {#if typeCategories.length > 0}
-                <Select
-                  label="Product type"
-                  bind:value={formData.type_category_id}
-                  onchange={() => {
-                    formData.category_id = '';
-                  }}
-                  name="type_category_id"
-                  required
-                >
-                  <option value="">Select type</option>
-                  {#each typeCategories as category}
-                    <option value={category.id}>{category.name}</option>
-                  {/each}
-                </Select>
-              {/if}
-              
-              {#if specificCategories.length > 0}
-                <Select
-                  label="Specific category"
-                  bind:value={formData.category_id}
-                  name="category_id"
-                  required
-                >
-                  <option value="">Select category</option>
-                  {#each specificCategories as category}
-                    <option value={category.id}>{category.name}</option>
-                  {/each}
-                </Select>
-              {/if}
-            </div>
-            
-            <div>
-              <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                Description (optional)
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                bind:value={formData.description}
-                placeholder="Add details about condition, measurements, flaws..."
-                rows="4"
-                maxlength="500"
-                class="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all"
-              />
-              <p class="text-xs text-gray-500 mt-1">{formData.description.length}/500</p>
-            </div>
-          </div>
+          <StepPhotosAndBasicInfo
+            bind:formData
+            bind:uploadedImages
+            categories={data.categories}
+            bind:isUploadingImages
+            onImageUpload={handleImageUpload}
+            onImageDelete={handleImageDelete}
+            onFieldChange={(field, value) => {
+              // Could add validation here if needed
+            }}
+          />
         {/if}
         
         <!-- Step 2: Product Details -->
@@ -523,49 +411,17 @@
               <p class="text-gray-600">Help buyers find what they're looking for</p>
             </div>
             
-            <BrandSelector
-              bind:value={formData.brand}
-              brands={['Nike', 'Adidas', 'Puma', 'New Balance', 'Vans', 'Converse', 'Other']}
-              label="Brand"
-              name="brand"
-              required
-            />
-            
-            <Select
-              label="Size"
-              bind:value={formData.size}
-              name="size"
-              required
-            >
-              <option value="">Select size</option>
-              {#each sizeOptions as size}
-                <option value={size.value}>{size.label}</option>
-              {/each}
-            </Select>
-            
-            <ConditionSelector
-              bind:value={formData.condition}
-              label="Condition"
-              name="condition"
-              required
-            />
-            
-            <Input
-              type="text"
-              label="Color (optional)"
-              placeholder="e.g., Black, Red, Multi"
-              bind:value={formData.color}
-              maxlength={30}
-              name="color"
-            />
-            
-            <Input
-              type="text"
-              label="Material (optional)"
-              placeholder="e.g., Cotton, Leather, Polyester"
-              bind:value={formData.material}
-              maxlength={50}
-              name="material"
+            <StepProductInfo
+              bind:formData
+              sizeOptions={sizeOptions}
+              errors={{}}
+              touched={{}}
+              onFieldChange={(field, value) => {
+                // Trigger validation if needed
+              }}
+              onFieldBlur={(field) => {
+                // Mark field as touched
+              }}
             />
           </div>
         {/if}
@@ -578,49 +434,19 @@
               <p class="text-gray-600">Competitive pricing sells faster</p>
             </div>
             
-            <PriceInput
-              bind:value={formData.price}
-              label="Price"
-              suggestion={priceSuggestion}
-              name="price"
-              required
+            <StepPricing
+              bind:formData
+              profile={data.profile}
+              {priceSuggestion}
+              errors={{}}
+              touched={{}}
+              onFieldChange={(field, value) => {
+                // Could trigger price suggestion update here
+              }}
+              onFieldBlur={(field) => {
+                // Mark field as touched
+              }}
             />
-            
-            <PriceInput
-              bind:value={formData.shipping_cost}
-              label="Shipping Cost"
-              placeholder="0.00"
-              name="shipping_cost"
-            />
-            
-            <TagInput
-              bind:tags={formData.tags}
-              label="Tags (optional)"
-              placeholder="Add tags for better discoverability"
-              maxTags={10}
-            />
-            
-            {#if data.profile?.premium_boosts_remaining && data.profile.premium_boosts_remaining > 0}
-              <div class="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
-                <label class="flex items-start cursor-pointer">
-                  <input
-                    type="checkbox"
-                    bind:checked={formData.use_premium_boost}
-                    name="use_premium_boost"
-                    class="mt-1 w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                  />
-                  <div class="ml-3">
-                    <span class="font-medium text-gray-900">Use Premium Boost</span>
-                    <p class="text-sm text-gray-600 mt-0.5">
-                      Get 7 days of increased visibility
-                    </p>
-                    <p class="text-xs text-purple-600 mt-1">
-                      {data.profile.premium_boosts_remaining} boosts remaining
-                    </p>
-                  </div>
-                </label>
-              </div>
-            {/if}
           </div>
         {/if}
         
