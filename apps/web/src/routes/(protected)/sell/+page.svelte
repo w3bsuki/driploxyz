@@ -320,17 +320,22 @@
     </div>
     
     <!-- Clean Step Indicator -->
-    <div class="pb-3">
-      <div class="flex justify-center px-6">
-        <div class="flex items-center justify-between w-full max-w-sm">
-          {#each [1, 2, 3, 4] as step, i}
-            <div class="relative flex-1 flex justify-center">
-              <div class="flex flex-col items-center">
+    <div class="px-4 pb-3">
+      <div class="flex items-center justify-between">
+        {#each [1, 2, 3, 4] as step, i}
+          <div class="relative {i === 0 ? '' : 'flex-1'}">
+            <div class="flex items-center">
+              {#if i > 0}
+                <div class="absolute -left-1/2 right-1/2 top-4 h-[2px] {
+                  step <= currentStep ? 'bg-black' : 'bg-gray-200'
+                } transition-colors"></div>
+              {/if}
+              <div class="flex flex-col items-center relative z-10">
                 <div class="{
                   step <= currentStep 
                     ? 'w-8 h-8 bg-black text-white' 
                     : 'w-8 h-8 bg-gray-100 text-gray-400'
-                } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
+                } rounded-full flex items-center justify-center text-xs font-medium transition-colors">
                   {#if step < currentStep}
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -349,14 +354,9 @@
                   {/if}
                 </span>
               </div>
-              {#if i < 3}
-                <div class="absolute top-4 left-1/2 w-full h-[2px] {
-                  step < currentStep ? 'bg-black' : 'bg-gray-200'
-                } transition-colors"></div>
-              {/if}
             </div>
-          {/each}
-        </div>
+          </div>
+        {/each}
       </div>
       {#if isDraftSaved}
         <p class="text-xs text-green-600 text-center mt-2">Draft saved</p>
