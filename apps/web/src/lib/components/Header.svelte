@@ -3,7 +3,6 @@
     Button, 
     Avatar, 
     NotificationBell, 
-    NotificationPanel, 
     MessageNotificationToast, 
     LanguageSwitcher,
     HeaderLogo,
@@ -26,6 +25,7 @@
   } from '$lib/stores/notifications';
   import { RealtimeNotificationService } from '$lib/services/realtime-notifications';
   import { switchLanguage, languages } from '$lib/utils/language-switcher';
+  import { browser } from '$app/environment';
   
   interface Props {
     showSearch?: boolean;
@@ -46,6 +46,8 @@
   let mobileMenuOpen = $state(false);
   let userMenuOpen = $state(false);
   let notificationService: RealtimeNotificationService | null = null;
+  let NotificationPanel: any = null;
+  let notificationPanelLoaded = $state(false);
   
   // Use props data if available (SSR), otherwise fall back to stores (client)
   const currentUser = $derived(propsUser || $authState.user);
@@ -85,7 +87,13 @@
   
   $effect(() => {
     const newLang = i18n.languageTag();
-    if (newLang !== currentLang) currentLang = newLang;
+    if (newLang !== currentLang) {
+      currentLang = newLang;
+      // Update HTML lang attribute
+      if (browser) {
+        document.documentElement.lang = newLang;
+      }
+    }
   });
 
   async function handleSignOut() {
@@ -175,7 +183,7 @@
       <div class="flex items-center">
         <!-- Mobile Menu Button -->
         <button
-          onclick={() => mobileMenuOpen = !mobileMenuOpen}
+          onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
           class="sm:hidden p-1 text-gray-700 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-50 mr-1"
           aria-label="Toggle menu"
         >
@@ -220,23 +228,33 @@
           <div class="relative">
             <NotificationBell 
               count={$unreadCount}
-              onclick={() => notificationActions.togglePanel()}
+              onclick={async () => {
+                if (!notificationPanelLoaded && !NotificationPanel) {
+                  const module = await import('@repo/ui');
+                  NotificationPanel = module.NotificationPanel;
+                  notificationPanelLoaded = true;
+                }
+                notificationActions.togglePanel();
+              }}
             />
             
-            <NotificationPanel 
-              notifications={$notifications}
-              show={$notificationPanelOpen}
-              onMarkAsRead={notificationActions.markAsRead}
-              onMarkAllAsRead={notificationActions.markAllAsRead}
-              onClose={notificationActions.closePanel}
-              translations={notificationTranslations}
-            />
+            {#if notificationPanelLoaded && NotificationPanel}
+              <svelte:component 
+                this={NotificationPanel}
+                notifications={$notifications}
+                show={$notificationPanelOpen}
+                onMarkAsRead={notificationActions.markAsRead}
+                onMarkAllAsRead={notificationActions.markAllAsRead}
+                onClose={notificationActions.closePanel}
+                translations={notificationTranslations}
+              />
+            {/if}
           </div>
 
           <!-- User Menu -->
           <div class="relative">
             <button
-              onclick={() => userMenuOpen = !userMenuOpen}
+              onclick={() => (userMenuOpen = !userMenuOpen)}
               class="block rounded-full hover:ring-2 hover:ring-gray-200 transition-all"
               aria-label="User menu"
             >
