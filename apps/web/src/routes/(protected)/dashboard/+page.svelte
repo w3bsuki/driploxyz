@@ -312,6 +312,15 @@
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {#if isLoading}
+        {#each Array(4) as _}
+          <div class="bg-white p-4 rounded-lg shadow-xs animate-pulse">
+            <div class="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+            <div class="h-8 bg-gray-300 rounded w-20 mb-1"></div>
+            <div class="h-3 bg-gray-200 rounded w-16"></div>
+          </div>
+        {/each}
+      {:else}
       <div class="bg-white p-4 rounded-lg shadow-xs">
         <p class="text-sm text-gray-600">{i18n.dashboard_totalRevenue()}</p>
         <p class="text-xl sm:text-2xl font-bold text-gray-900">${stats().totalRevenue.toFixed(0)}</p>
@@ -332,6 +341,7 @@
         <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats().conversionRate.toFixed(1)}%</p>
         <p class="text-xs text-gray-500 mt-1">{i18n.dashboard_viewsToSales()}</p>
       </div>
+      {/if}
     </div>
 
     <!-- Recent Orders -->
@@ -343,7 +353,19 @@
         </div>
       </div>
       <div class="overflow-x-auto">
-        {#if recentOrders().length === 0}
+        {#if isLoading}
+          <div class="p-4">
+            {#each Array(3) as _}
+              <div class="flex items-center py-3 border-b border-gray-100 animate-pulse">
+                <div class="h-4 bg-gray-200 rounded w-32 mr-4"></div>
+                <div class="h-4 bg-gray-200 rounded w-24 mr-4"></div>
+                <div class="h-4 bg-gray-200 rounded w-20 mr-4"></div>
+                <div class="h-6 bg-gray-200 rounded-full w-20 mr-4"></div>
+                <div class="h-4 bg-gray-200 rounded w-16"></div>
+              </div>
+            {/each}
+          </div>
+        {:else if recentOrders().length === 0}
           <div class="p-8 text-center text-gray-500">
             <p>{i18n.dashboard_noRecentOrders()}</p>
           </div>
@@ -384,7 +406,13 @@
         <h2 class="text-lg font-semibold">{i18n.dashboard_yourActiveListings()}</h2>
         <a href="/listings" class="text-sm text-blue-600 hover:underline">{i18n.dashboard_manageListings()}</a>
       </div>
-      {#if activeListings().length === 0}
+      {#if isLoading}
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {#each Array(6) as _}
+            <ProductCardSkeleton />
+          {/each}
+        </div>
+      {:else if activeListings().length === 0}
         <div class="text-center py-12 bg-white rounded-lg">
           <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
@@ -432,5 +460,4 @@
     onDismiss={handleTutorialDismiss}
     onNext={handleTutorialNext}
   />
-{/if}
 {/if}

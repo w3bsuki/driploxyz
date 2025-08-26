@@ -164,7 +164,7 @@ export async function signOut(supabase: SupabaseClient<Database>) {
   // Show toast notification
   if (typeof window !== 'undefined') {
     const { toasts } = await import('@repo/ui');
-    toasts.info('Signing you out...', { duration: 2000 });
+    toasts.info('Signing you out...');
   }
   
   try {

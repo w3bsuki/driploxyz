@@ -148,7 +148,7 @@ export class StripeService {
 					seller_id: sellerId,
 					product_id: productId,
 					total_amount: totalAmountInCurrency,
-					status: 'pending_payment',
+					status: 'pending',
 					currency: currency.toUpperCase(),
 					shipping_cost: shippingCostInCurrency,
 					tax_amount: 0,

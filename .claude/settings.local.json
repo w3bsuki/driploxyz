@@ -48,7 +48,8 @@
       "Bash(pnpm add:*)",
       "WebFetch(domain:www.vinted.co.uk)",
       "WebFetch(domain:www.depop.com)",
-      "mcp__supabase__generate_typescript_types"
+      "mcp__supabase__generate_typescript_types",
+      "Bash(tail:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
