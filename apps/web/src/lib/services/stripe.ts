@@ -95,7 +95,7 @@ export class StripeService {
 		productId: string;
 		sellerId: string;
 		buyerId: string;
-t	userEmail?: string;
+		userEmail?: string;
 		metadata?: Record<string, string>;
 	}): Promise<PaymentIntentResult> {
 		try {
