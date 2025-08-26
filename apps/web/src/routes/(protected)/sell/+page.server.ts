@@ -4,25 +4,17 @@ import type { PageServerLoad, Actions } from './$types';
 import { createServices } from '$lib/services';
 
 export const load: PageServerLoad = async ({ locals }) => {
-  console.log('[SELL DEBUG] Starting load function');
-  console.log('[SELL DEBUG] Locals keys:', Object.keys(locals));
-  
   // Get the session from locals 
   const { supabase, session } = locals;
   
-  console.log('[SELL DEBUG] Session exists:', !!session);
-  console.log('[SELL DEBUG] Session user ID:', session?.user?.id);
-  
   // Redirect to login if not authenticated
   if (!session) {
-    console.log('[SELL DEBUG] No session, redirecting to login');
     throw redirect(303, '/login?redirect=/sell');
   }
 
   const services = createServices(supabase, null); // No stripe needed for selling products
 
   try {
-    console.log('[SELL DEBUG] Fetching user profile...');
     // Get user profile
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
@@ -30,42 +22,21 @@ export const load: PageServerLoad = async ({ locals }) => {
       .eq('id', session.user.id)
       .single();
     
-    if (profileError) {
-      console.error('[SELL DEBUG] Profile fetch error:', profileError);
-    } else {
-      console.log('[SELL DEBUG] Profile fetched:', profile);
-
-    }
-    
     // Check if brand user can list products
     let canListProducts = true;
     if (profile?.account_type === 'brand') {
       canListProducts = profile.subscription_tier === 'brand';
     }
 
-    console.log('[SELL DEBUG] Fetching categories...');
     // Get ALL categories for the 3-tier selection system
     const { data: allCategories, error: categoriesError } = await services.categories.getCategories();
 
-    if (categoriesError) {
-      console.error('[SELL DEBUG] Categories error:', categoriesError);
-    } else {
-      console.log('[SELL DEBUG] All categories count:', allCategories?.length);
-    }
-
-    console.log('[SELL DEBUG] Fetching subscription plans...');
     // Get available subscription plans for upgrade prompt
     const { data: plans, error: plansError } = await supabase
       .from('subscription_plans')
       .select('*')
       .eq('is_active', true)
       .order('price_monthly', { ascending: true });
-    
-    if (plansError) {
-      console.error('[SELL DEBUG] Plans error:', plansError);
-    }
-
-    console.log('[SELL DEBUG] Returning data successfully');
     return {
       user: session.user,
       profile,
@@ -75,8 +46,6 @@ export const load: PageServerLoad = async ({ locals }) => {
       needsBrandSubscription: profile?.account_type === 'brand' && !canListProducts
     };
   } catch (error) {
-    console.error('[SELL DEBUG] Load error:', error);
-    
     // Return empty but valid data structure
     return {
       user: session.user,
@@ -91,18 +60,13 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions: Actions = {
   default: async ({ request, locals: { supabase, session } }) => {
-    console.log('[SELL ACTION] Starting form submission');
-    
     if (!session) {
-      console.log('[SELL ACTION] No session found');
       return fail(401, { 
         errors: { _form: 'Not authenticated' }
       });
     }
 
     const formData = await request.formData();
-    console.log('[SELL ACTION] Form data received');
-    console.log('[SELL ACTION] Form fields:', Array.from(formData.keys()));
     
     // Extract form values
     const title = formData.get('title') as string;
@@ -112,7 +76,7 @@ export const actions: Actions = {
     const category_id = formData.get('category_id') as string || type_category_id || gender_category_id; // Fallback to type or gender category
     const brand = formData.get('brand') as string;
     const size = formData.get('size') as string;
-    const condition = formData.get('condition') as string;
+    const condition = (formData.get('condition') as string) || 'good'; // Default to 'good' if empty
     const color = formData.get('color') as string || '';
     const material = formData.get('material') as string || '';
     const price = parseFloat(formData.get('price') as string);
@@ -124,18 +88,6 @@ export const actions: Actions = {
     const photo_urls = JSON.parse(formData.get('photo_urls') as string || '[]');
     const photo_paths = JSON.parse(formData.get('photo_paths') as string || '[]');
     
-    // Log key form values
-    console.log('[SELL ACTION] Key values:', {
-      title,
-      gender_category_id,
-      type_category_id,
-      category_id,
-      brand,
-      size,
-      price,
-      photos: formData.getAll('photos').length
-    });
-    console.log('[SELL ACTION] Brand processing - Original:', brand, 'Will save as:', brand?.trim() || null);
     
     // Manual validation using Zod schema
     const validation = ProductSchema.safeParse({
@@ -153,10 +105,7 @@ export const actions: Actions = {
       use_premium_boost
     });
     
-    console.log('[SELL ACTION] Form validation:', validation.success ? 'VALID' : 'INVALID');
-    
     if (!validation.success) {
-      console.error('Validation errors:', validation.error);
       const errors: Record<string, string> = {};
       validation.error.errors.forEach((error) => {
         if (error.path.length > 0) {
@@ -187,7 +136,6 @@ export const actions: Actions = {
       
       // CRITICAL: Ensure category is NEVER null
       if (!category_id) {
-        console.error('[SELL ACTION] No category selected!');
         return fail(400, {
           errors: { category_id: 'Category is required. Please select a category for your item.' },
           values: {
@@ -197,10 +145,11 @@ export const actions: Actions = {
         });
       }
       
-      console.log('[SELL ACTION] Using pre-uploaded images:', photo_urls.length);
+      // CRITICAL: Ensure condition is valid enum value
+      const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'];
+      const finalCondition = validConditions.includes(condition) ? condition : 'good';
 
       // Create product in database
-      console.log('[SELL ACTION] Creating product with category_id:', category_id);
       const { data: product, error: productError } = await supabase
         .from('products')
         .insert({
@@ -208,7 +157,7 @@ export const actions: Actions = {
           description: description.trim() || '',
           price: price,
           category_id: category_id, // Will be type_category_id if no Level 3
-          condition: condition,
+          condition: finalCondition, // Use validated condition
           brand: brand?.trim() || null,
           size: size || null,
           location: null,
@@ -226,7 +175,6 @@ export const actions: Actions = {
         .single();
 
       if (productError) {
-        console.error('Product creation error:', productError);
         throw new Error(`Failed to create product: ${productError.message}`);
       }
 
@@ -244,7 +192,6 @@ export const actions: Actions = {
           .insert(imageInserts);
 
         if (imagesError) {
-          console.error('Images insert error:', imagesError);
           // Try to delete the product if images fail
           await supabase.from('products').delete().eq('id', product.id);
           // Also try to delete uploaded images from storage
@@ -287,7 +234,6 @@ export const actions: Actions = {
       }
 
       // Return success instead of redirect
-      console.log('[SELL ACTION] Success! Product created:', product.id);
       return {
         success: true,
         productId: product.id
@@ -298,9 +244,6 @@ export const actions: Actions = {
       if (error instanceof Response) {
         throw error;
       }
-      
-      // Only log real errors, not redirects
-      console.error('[SELL ACTION] Error creating product:', error);
       
       return fail(500, {
         errors: { _form: error instanceof Error ? error.message : 'Failed to create product' },

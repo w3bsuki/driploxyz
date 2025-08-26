@@ -50,7 +50,7 @@
     category_id: form?.values?.category_id || '',
     brand: form?.values?.brand || '',
     size: form?.values?.size || '',
-    condition: (form?.values?.condition || 'good') as 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair',
+    condition: (form?.values?.condition || 'good') as 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair', // Ensure default is 'good'
     color: form?.values?.color || '',
     material: form?.values?.material || '',
     price: Number(form?.values?.price) || 0,
@@ -66,17 +66,6 @@
   let uploadedImages = $state<UploadedImage[]>([]);
   
   const supabase = createBrowserSupabaseClient();
-  console.log('[SELL] Supabase client created:', supabase);
-  console.log('[SELL] Storage module:', supabase.storage);
-  
-  // Get session to check auth
-  onMount(async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    console.log('[SELL] Current session:', session);
-    if (session) {
-      console.log('[SELL] Access token exists:', !!session.access_token);
-    }
-  });
   
   // Categories
   const genderCategories = $derived(
@@ -282,15 +271,8 @@
 
   // Auto-scroll to top when step changes
   function scrollToTop() {
-    // Use setTimeout to ensure DOM is updated before scrolling
-    setTimeout(() => {
-      const contentElement = document.querySelector('.flex-1.overflow-y-auto');
-      if (contentElement) {
-        contentElement.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }, 100);
+    // Instant jump to top
+    window.scrollTo(0, 0);
   }
 </script>
 
@@ -487,6 +469,11 @@
               formDataObj.append(key, value as string);
             }
           });
+          
+          // Explicitly ensure condition is sent (fallback to 'good' if empty)
+          if (!formDataObj.has('condition') || !formDataObj.get('condition')) {
+            formDataObj.set('condition', formData.condition || 'good');
+          }
           
           formDataObj.append('photo_urls', JSON.stringify(uploadedImages.map(img => img.url)));
           formDataObj.append('photo_paths', JSON.stringify(uploadedImages.map(img => img.path)));

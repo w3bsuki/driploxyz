@@ -114,7 +114,7 @@ export const actions: Actions = {
       throw redirect(303, '/onboarding');
     }
     
-    // Redirect to dashboard after successful login
-    throw redirect(303, '/dashboard');
+    // Redirect to homepage after successful login
+    throw redirect(303, '/');
   }
 };
