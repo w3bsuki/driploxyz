@@ -1,8 +1,5 @@
 import Stripe from 'stripe';
-import { env } from '$env/dynamic/private';
-
-// Use dynamic environment variables to handle missing keys gracefully
-const STRIPE_SECRET_KEY = env.STRIPE_SECRET_KEY;
+import { STRIPE_SECRET_KEY } from '$env/static/private';
 
 if (!STRIPE_SECRET_KEY) {
 	console.warn('STRIPE_SECRET_KEY not available - Stripe functionality disabled');

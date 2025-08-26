@@ -1,14 +1,12 @@
 import { json } from '@sveltejs/kit';
 import { stripe } from '$lib/stripe/server.js';
-import { env } from '$env/dynamic/private';
+import { STRIPE_WEBHOOK_SECRET, SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import type { RequestHandler } from './$types.js';
 import { createServerClient } from '@supabase/ssr';
 import { TransactionService } from '$lib/services/transactions.js';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 
 export const POST: RequestHandler = async ({ request }) => {
-  const STRIPE_WEBHOOK_SECRET = env.STRIPE_WEBHOOK_SECRET;
-  const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 	const body = await request.text();
 	const signature = request.headers.get('stripe-signature');
 
@@ -62,10 +60,9 @@ async function handlePaymentSuccess(paymentIntent: any) {
 	
 	if (productId && sellerId && buyerId && orderId) {
 		try {
-			const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 			if (!SUPABASE_SERVICE_ROLE_KEY) {
 				console.error('SUPABASE_SERVICE_ROLE_KEY not available');
-				return json({ error: 'Database not available' }, { status: 500 });
+				return;
 			}
 			
 			// Initialize Supabase client
@@ -133,7 +130,6 @@ async function handlePaymentFailed(paymentIntent: any) {
 	
 	if (productId && sellerId && buyerId && orderId) {
 		try {
-			const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 			if (!SUPABASE_SERVICE_ROLE_KEY) {
 				console.error('SUPABASE_SERVICE_ROLE_KEY not available');
 				return;
@@ -198,7 +194,6 @@ async function handlePaymentCanceled(paymentIntent: any) {
 	
 	if (productId && sellerId && buyerId && orderId) {
 		try {
-			const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 			if (!SUPABASE_SERVICE_ROLE_KEY) {
 				console.error('SUPABASE_SERVICE_ROLE_KEY not available');
 				return;
