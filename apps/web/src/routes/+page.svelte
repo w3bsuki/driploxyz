@@ -48,71 +48,48 @@
 		}
 	});
 
+	// Helper function to transform product data
+	function transformProduct(product: ProductWithImages): Product {
+		return {
+			id: product.id,
+			title: product.title,
+			price: product.price,
+			currency: i18n.common_currency(),
+			images: (product.product_images || product.images || []).map(img => 
+				typeof img === 'string' ? img : img?.image_url || ''
+			).filter(Boolean),
+			condition: product.condition as Product['condition'] || 'good',
+			seller_id: product.seller_id,
+			category_id: product.category_id || '',
+			size: product.size,
+			brand: product.brand,
+			description: product.description,
+			created_at: product.created_at,
+			updated_at: product.updated_at || product.created_at,
+			sold: false,
+			favorites_count: 0,
+			views_count: 0,
+			// Category fields for proper display
+			category_name: product.category_name,
+			main_category_name: product.main_category_name,
+			subcategory_name: product.subcategory_name,
+			product_images: product.product_images,
+			// Seller information
+			seller_name: product.seller_name,
+			seller_avatar: product.seller_avatar,
+			seller_rating: product.seller_rating
+		};
+	}
+
 	// Transform promoted products for highlights
 	const promotedProducts = $derived<Product[]>(
 		(data.promotedProducts?.length ? data.promotedProducts : data.featuredProducts?.slice(0, 8) || [])
-			.map((product: ProductWithImages) => ({
-				id: product.id,
-				title: product.title,
-				price: product.price,
-				currency: i18n.common_currency(),
-				images: (product.product_images || product.images || []).map(img => 
-					typeof img === 'string' ? img : img?.image_url || ''
-				).filter(Boolean),
-				condition: product.condition as Product['condition'] || 'good',
-				seller_id: product.seller_id,
-				category_id: product.category_id || '',
-				size: product.size,
-				brand: product.brand,
-				description: product.description,
-				created_at: product.created_at,
-				updated_at: product.updated_at || product.created_at,
-				sold: false,
-				favorites_count: 0,
-				views_count: 0,
-				// Category fields for proper display
-				category_name: product.category_name,
-				main_category_name: product.main_category_name,
-				subcategory_name: product.subcategory_name,
-				product_images: product.product_images,
-				// Seller information
-				seller_name: product.seller_name,
-				seller_avatar: product.seller_avatar,
-				seller_rating: product.seller_rating
-			}))
+			.map(transformProduct)
 	);
 
 	// Transform products to match Product interface
 	const products = $derived<Product[]>(
-		(data.featuredProducts || []).map((product: ProductWithImages) => ({
-				id: product.id,
-				title: product.title,
-				price: product.price,
-				currency: i18n.common_currency(),
-				images: (product.product_images || product.images || []).map(img => 
-					typeof img === 'string' ? img : img?.image_url || ''
-				).filter(Boolean),
-				condition: product.condition as Product['condition'] || 'good',
-				seller_id: product.seller_id,
-				category_id: product.category_id || '',
-				size: product.size,
-				brand: product.brand,
-				description: product.description,
-				created_at: product.created_at,
-				updated_at: product.updated_at || product.created_at,
-				sold: false,
-				favorites_count: 0,
-				views_count: 0,
-				// Category fields for proper display
-				category_name: product.category_name,
-				main_category_name: product.main_category_name,
-				subcategory_name: product.subcategory_name,
-				product_images: product.product_images,
-				// Seller information
-				seller_name: product.seller_name,
-				seller_avatar: product.seller_avatar,
-				seller_rating: product.seller_rating
-		}))
+		(data.featuredProducts || []).map(transformProduct)
 	);
 
 	// Transform sellers for display
@@ -173,7 +150,7 @@
 	function formatPrice(price: number): string {
 		// Format as integer if whole number, otherwise with decimals
 		const formatted = price % 1 === 0 ? price.toString() : price.toFixed(2);
-		return `${formatted}лв`;
+		return `${formatted}${i18n.common_currency()}`;
 	}
 	
 	function translateCategory(categoryName: string): string {
@@ -349,10 +326,10 @@
 
 	<main class="max-w-7xl mx-auto">
 		<!-- Hero Search -->
-		<div class="bg-white border-b border-gray-100 mt-2">
-			<div class="px-4 sm:px-6 lg:px-8 py-4">
+		<div class="bg-white border-b border-gray-100">
+			<div class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
 				<!-- Search Bar with Dropdown -->
-				<div class="max-w-2xl mx-auto relative mb-4">
+				<div class="max-w-2xl mx-auto relative mb-3">
 					<SearchBar 
 						bind:value={searchQuery}
 						onSearch={handleSearch}
@@ -406,7 +383,7 @@
 				<nav 
 					role="navigation"
 					aria-label="Browse categories"
-					class="flex items-center justify-center gap-2 overflow-x-auto scrollbar-hide"
+					class="flex items-center justify-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide"
 				>
 					<button 
 						onclick={() => navigateToAllSearch()}
@@ -415,7 +392,7 @@
 						aria-label="View all categories"
 						aria-busy={loadingCategory === 'all'}
 						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
-						class="category-nav-pill shrink-0 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-900 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[70px] h-10 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+						class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-black text-white rounded-lg text-[13px] sm:text-sm font-medium hover:bg-gray-900 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[65px] h-9 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
 					>
 						{#if loadingCategory === 'all'}
 							<LoadingSpinner size="sm" color="white" />
@@ -435,7 +412,7 @@
 							aria-label="Browse {categoryName} category"
 							aria-busy={loadingCategory === category.slug}
 							aria-current={$page.url.pathname.includes(category.slug) ? 'page' : undefined}
-							class="category-nav-pill shrink-0 px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[70px] h-10 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
+							class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-white border border-gray-200 rounded-lg text-[13px] sm:text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[65px] h-9 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
@@ -471,7 +448,9 @@
 					trending_promoted: i18n.trending_promoted(),
 					trending_featured: i18n.trending_featured(),
 					common_currency: i18n.common_currency(),
-					ui_scroll: i18n.ui_scroll()
+					ui_scroll: i18n.ui_scroll(),
+					promoted_hotPicks: i18n.promoted_hotPicks(),
+					promoted_premiumSellers: i18n.promoted_premiumSellers()
 				}}
 			/>
 		{:else}

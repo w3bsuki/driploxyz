@@ -3511,6 +3511,70 @@ export const banner_register = () => `Регистрирай се`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const banner_recentListings = () => `Скорошни обяви`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_live = () => `На живо`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_justAdded = () => `току-що добави`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_viewProduct = () => `Виж`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_by = () => `от`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_close = () => `Затвори банера`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const promoted_hotPicks = () => `Горещи предложения`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const promoted_premiumSellers = () => `Премиум продавачи`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const checkout_checkout = () => `Плащане`
 
 

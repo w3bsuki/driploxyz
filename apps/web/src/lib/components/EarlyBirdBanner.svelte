@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import * as i18n from '@repo/i18n';
   
   interface Listing {
     user: string;
@@ -55,23 +56,23 @@
 {#if !dismissed && current}
   <aside 
     role="banner"
-    aria-label="Скорошни обяви"
+    aria-label={i18n.banner_recentListings()}
     aria-live="polite"
     aria-atomic="true"
     class="bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 text-white border-b border-zinc-800"
   >
-    <div class="max-w-7xl mx-auto px-4 py-2.5">
-      <div class="flex items-center justify-between gap-4">
+    <div class="max-w-7xl mx-auto px-4 py-2">
+      <div class="flex items-center justify-between gap-3">
         <div 
-          class="flex items-center gap-1.5 px-2.5 py-1 bg-white text-black rounded-full"
+          class="flex items-center gap-1 px-1.5 py-0.5 bg-white text-black rounded-full"
           role="status"
-          aria-label="На живо"
+          aria-label={i18n.banner_live()}
         >
-          <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+          <span class="relative flex h-1.5 w-1.5">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
           </span>
-          <span class="text-black font-medium text-[11px] uppercase tracking-widest">Live</span>
+          <span class="font-medium text-[10px] uppercase tracking-wider">{i18n.banner_live()}</span>
         </div>
         
         <div class="flex-1 min-w-0">
@@ -79,11 +80,11 @@
             class="text-sm text-center whitespace-nowrap overflow-hidden text-ellipsis transition-all duration-300 {visible ? 'opacity-100' : 'opacity-0'}"
           >
             <span class="text-white font-medium">{current.user}</span>
-            <span class="mx-1.5 text-zinc-500">току-що добави</span>
+            <span class="mx-1.5 text-zinc-500">{i18n.banner_justAdded()}</span>
             <a 
               href="/product/{current.id}"
-              class="text-white font-medium hover:text-zinc-300 transition-colors focus:outline-none focus:ring-2 focus:ring-white/20 rounded"
-              aria-label="Виж {current.title} от {current.user}"
+              class="text-white font-medium underline decoration-dotted underline-offset-4 decoration-zinc-400 hover:decoration-solid hover:decoration-white hover:text-zinc-100 transition-all focus:outline-none focus:ring-2 focus:ring-white/20 rounded"
+              aria-label="{i18n.banner_viewProduct()} {current.title} {i18n.banner_by()} {current.user}"
             >
               {current.title}
             </a>
@@ -93,7 +94,7 @@
         <button 
           onclick={dismiss}
           class="text-zinc-500 hover:text-zinc-300 p-1.5 hover:bg-zinc-800/50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-white/20"
-          aria-label="Затвори банера за скорошни обяви"
+          aria-label={i18n.banner_close()}
           type="button"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

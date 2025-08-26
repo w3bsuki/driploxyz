@@ -11,6 +11,8 @@
     trending_featured: string;
     common_currency: string;
     ui_scroll?: string;
+    promoted_hotPicks?: string;
+    promoted_premiumSellers?: string;
   }
 
   interface FavoriteState {
@@ -112,18 +114,7 @@
 </script>
 
 <style>
-  @keyframes bounce-x {
-    0%, 100% {
-      transform: translateX(0);
-    }
-    50% {
-      transform: translateX(3px);
-    }
-  }
-  
-  .animate-bounce-x {
-    animation: bounce-x 1.5s ease-in-out infinite;
-  }
+  /* Clean, minimal styles */
 </style>
 
 <!-- Promoted Listings / Highlights -->
@@ -132,40 +123,34 @@
   aria-label={translations.trending_promoted}
   role="region"
 >
-  <div class="px-4 sm:px-6 lg:px-8 py-4">
+  <div class="px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3">
     <!-- Promoted header with improved a11y and typography -->
-    <header class="flex items-center justify-between mb-4">
-      <h2 class="flex items-center gap-3">
-        <!-- PROMOTED badge - exactly like LIVE badge styling -->
-        <span class="flex items-center gap-1.5 px-2.5 py-1 bg-white text-black rounded-full">
-          <span class="relative flex h-2 w-2">
-            <span class="animate-pulse absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-gradient-to-r from-yellow-400 to-amber-500"></span>
-          </span>
-          <span class="text-black font-medium text-[11px] uppercase tracking-widest">{translations.trending_promoted}</span>
+    <header class="flex items-center justify-between mb-3">
+      <h2 class="flex items-center">
+        <!-- PROMOTED badge compact with subtle border - clean, no extra text -->
+        <span class="flex items-center gap-1.5 px-2.5 py-1 bg-black text-white rounded-full">
+          <span class="font-semibold text-[11px] uppercase tracking-wide">{translations.trending_promoted}</span>
         </span>
         {#if hasProducts}
-          <span class="sr-only">
-            {promotedProducts.length} promoted products available
-          </span>
+          <span class="sr-only">{promotedProducts.length} promoted products available</span>
         {:else if hasSellers}
-          <span class="sr-only">
-            {sellers.length} premium sellers available
-          </span>
+          <span class="sr-only">{sellers.length} premium sellers available</span>
         {/if}
       </h2>
-      <!-- Improved scroll indicator with better visibility -->
-      <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-full" role="status" aria-live="polite">
-        <span class="text-sm font-medium text-gray-700">{translations.ui_scroll || 'Scroll'}</span>
-        <svg class="w-5 h-5 text-gray-600 animate-bounce-x" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-        </svg>
+      <!-- Elegant scroll indicator -->
+      <div class="hidden sm:flex items-center gap-1.5 text-xs text-gray-500" role="status" aria-live="polite">
+        <span class="hidden lg:inline">{translations.ui_scroll || 'Scroll'}</span>
+        <div class="flex gap-0.5">
+          <span class="inline-block w-1 h-1 bg-gray-400 rounded-full animate-pulse"></span>
+          <span class="inline-block w-1 h-1 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.2s"></span>
+          <span class="inline-block w-1 h-1 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.4s"></span>
+        </div>
       </div>
-      <!-- Mobile scroll indicator - more subtle -->
-      <div class="sm:hidden flex items-center" aria-hidden="true">
-        <svg class="w-6 h-6 text-gray-400 animate-bounce-x" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
+      <!-- Mobile scroll indicator - minimal dots -->
+      <div class="sm:hidden flex gap-0.5" aria-hidden="true">
+        <span class="inline-block w-1 h-1 bg-gray-300 rounded-full"></span>
+        <span class="inline-block w-1 h-1 bg-gray-300 rounded-full"></span>
+        <span class="inline-block w-1 h-1 bg-gray-400 rounded-full"></span>
       </div>
     </header>
     <nav 
@@ -175,7 +160,7 @@
       onkeydown={handleKeyNavigation}
     >
       <div 
-        class="flex flex-nowrap space-x-3 -mx-4 px-4 sm:mx-0 sm:px-0"
+        class="flex flex-nowrap gap-2.5 sm:gap-3 -mx-3 px-3 sm:mx-0 sm:px-0"
         data-highlights-container
         role="list"
       >

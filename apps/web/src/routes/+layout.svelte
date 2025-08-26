@@ -14,6 +14,7 @@
   import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer } from '@repo/ui';
   import PageLoader from '$lib/components/PageLoader.svelte';
   import OrderNotificationToast from '$lib/components/OrderNotificationToast.svelte';
+  import RegionSwitchModal from '$lib/components/RegionSwitchModal.svelte';
   import { page } from '$app/stores';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import { initializeLanguage } from '$lib/utils/language';
@@ -22,6 +23,9 @@
   import type { Snippet } from 'svelte';
 
   let { data, children }: { data: LayoutData; children?: Snippet } = $props();
+  
+  // Region switch modal state
+  let showRegionModal = $state(false);
 
   // CRITICAL: Initialize language IMMEDIATELY on mount, before any child components
   // This runs synchronously during component initialization
@@ -55,6 +59,16 @@
   const supabase = $derived(data && data.supabase ? data.supabase : null);
   const isAuthPage = $derived($page.route.id?.includes('(auth)'));
   const isSellPage = $derived($page.route.id?.includes('/sell'));
+  
+  // Check if we should show region prompt
+  $effect(() => {
+    if (browser && data.shouldPromptRegionSwitch && !showRegionModal) {
+      // Delay showing modal to avoid UI flash
+      setTimeout(() => {
+        showRegionModal = true;
+      }, 2000);
+    }
+  });
   
   // Initialize performance optimizations on mount
   $effect(() => {
@@ -216,3 +230,18 @@
     onDismiss={() => activeOrderNotification.set(null)}
   />
 {/if}
+
+<!-- Region Switch Modal -->
+<RegionSwitchModal
+  show={showRegionModal}
+  onClose={() => {
+    showRegionModal = false;
+    // Set cookie to not show again
+    document.cookie = 'region_prompt_dismissed=true; max-age=2592000; path=/';
+  }}
+  onSwitch={() => {
+    showRegionModal = false;
+  }}
+  detectedRegion={data.detectedRegion || 'BG'}
+  currentRegion={data.region || 'BG'}
+/>

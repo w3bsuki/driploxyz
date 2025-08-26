@@ -57,7 +57,7 @@
 
 <!-- Product Grid Section -->
 <section 
-  class="px-4 sm:px-6 lg:px-8 py-4"
+  class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4"
   aria-label={sectionTitle}
   role="region"
 >
@@ -139,7 +139,7 @@
 
   <!-- Load More -->
   {#if hasProducts}
-    <nav class="text-center mt-8" aria-label="Load more products">
+    <nav class="text-center mt-4 sm:mt-6" aria-label="Load more products">
       <Button 
         variant="ghost" 
         size="lg" 

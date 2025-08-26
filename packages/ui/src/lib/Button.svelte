@@ -27,20 +27,20 @@
     children
   }: Props = $props();
 
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-all duration-200 relative';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors duration-150 relative select-none';
 
   const variantClasses = {
-    primary: 'bg-blue-600 text-white focus-visible:ring-blue-500 hover:bg-blue-700',
-    secondary: 'bg-gray-100 text-gray-900 focus-visible:ring-gray-500 hover:bg-gray-200',
-    outline: 'border border-gray-300 bg-white text-gray-700 focus-visible:ring-gray-500 hover:bg-gray-50',
-    ghost: 'text-gray-700 focus-visible:ring-gray-500 hover:bg-gray-100',
-    danger: 'bg-red-600 text-white focus-visible:ring-red-500 hover:bg-red-700'
+    primary: 'bg-gray-900 text-white focus-visible:ring-gray-700 hover:bg-gray-800 active:bg-gray-950',
+    secondary: 'bg-gray-100 text-gray-900 focus-visible:ring-gray-400 hover:bg-gray-200 active:bg-gray-300',
+    outline: 'border-2 border-gray-200 bg-white text-gray-700 focus-visible:ring-gray-400 hover:bg-gray-50 active:bg-gray-100',
+    ghost: 'text-gray-700 focus-visible:ring-gray-400 hover:bg-gray-100 active:bg-gray-200',
+    danger: 'bg-red-600 text-white focus-visible:ring-red-500 hover:bg-red-700 active:bg-red-800'
   };
 
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-sm',
-    lg: 'px-6 py-3 text-base'
+    sm: 'px-3 py-1.5 text-sm min-h-[32px]',    // Compact for dense UI
+    md: 'px-4 py-2 text-sm min-h-[36px]',      // Standard - most buttons
+    lg: 'px-5 py-2.5 text-base min-h-[40px]'   // Primary CTAs (buy, sell)
   };
 
   const classes = $derived(`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${loading ? 'pointer-events-none opacity-70' : ''} ${className}`);

@@ -33,9 +33,26 @@ export declare const colors: {
         800: string;
         900: string;
     };
+    green: {
+        500: string;
+        600: string;
+    };
+    yellow: {
+        500: string;
+        600: string;
+    };
+    orange: {
+        500: string;
+        600: string;
+    };
+    red: {
+        500: string;
+        600: string;
+    };
 };
 export declare const typography: {
     fontSizes: {
+        '2xs': string;
         xs: string;
         sm: string;
         base: string;
@@ -46,21 +63,27 @@ export declare const typography: {
         '4xl': string;
     };
     fontWeights: {
+        light: string;
         normal: string;
         medium: string;
         semibold: string;
         bold: string;
     };
     lineHeights: {
-        tight: string;
-        normal: string;
+        display: string;
+        heading: string;
+        body: string;
+        caption: string;
         relaxed: string;
     };
 };
 export declare const spacing: {
     0: string;
+    '0.5': string;
     1: string;
+    '1.5': string;
     2: string;
+    '2.5': string;
     3: string;
     4: string;
     5: string;
@@ -110,5 +133,61 @@ export declare const animations: {
         'ease-in-out': string;
     };
 };
-export declare function generateCSSVariables(theme?: 'light' | 'dark'): string;
+export declare const componentTokens: {
+    button: {
+        sizes: {
+            sm: {
+                px: string;
+                py: string;
+                text: string;
+                minHeight: string;
+            };
+            md: {
+                px: string;
+                py: string;
+                text: string;
+                minHeight: string;
+            };
+            lg: {
+                px: string;
+                py: string;
+                text: string;
+                minHeight: string;
+            };
+        };
+        variants: {
+            primary: string;
+            secondary: string;
+            outline: string;
+            ghost: string;
+            danger: string;
+        };
+    };
+    card: {
+        padding: {
+            mobile: string;
+            desktop: string;
+        };
+        radius: string;
+        shadow: string;
+        border: string;
+    };
+    modal: {
+        sizes: {
+            sm: string;
+            md: string;
+            lg: string;
+            xl: string;
+            full: string;
+        };
+    };
+    form: {
+        input: {
+            padding: string;
+            text: string;
+            border: string;
+            focus: string;
+        };
+    };
+};
 //# sourceMappingURL=tokens.d.ts.map

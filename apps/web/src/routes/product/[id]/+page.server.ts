@@ -24,17 +24,17 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
       view_count,
       seller_id,
       category_id,
-      product_images!product_id (
+      product_images (
         id,
         image_url,
         sort_order
       ),
-      categories!category_id!left (
+      categories!left (
         id,
         name,
         parent_id
       ),
-      profiles!seller_id (
+      profiles!products_seller_id_fkey (
         id,
         username,
         avatar_url,
@@ -83,7 +83,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
             title,
             price,
             condition,
-            product_images!product_id (
+            product_images (
               image_url
             )
           `)

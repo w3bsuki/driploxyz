@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { LayoutServerLoad } from './$types';
+import { detectRegion } from '$lib/server/geo-detection';
 
 const REDIRECT_PATHS_TO_SKIP = [
   '/onboarding',
@@ -11,7 +12,8 @@ const REDIRECT_PATHS_TO_SKIP = [
   '/auth'
 ];
 
-export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fetch }) => {
+export const load: LayoutServerLoad = async (event) => {
+  const { url, cookies, depends, locals, fetch } = event;
   depends('supabase:auth');
   depends('app:homepage');
   depends('app:products');
@@ -89,6 +91,16 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
   // Get country from locals (set by server hooks)
   const country = locals.country || 'BG';
   
+  // Detect user's region
+  const geoLocation = detectRegion(event);
+  const userRegion = profile?.region || geoLocation.region;
+  
+  // Check if user should be prompted to switch regions
+  const shouldPromptRegionSwitch = 
+    !cookies.get('region_prompt_dismissed') && 
+    !profile?.region && // User hasn't set a preference
+    geoLocation.region !== userRegion;
+  
   return {
     session,
     user,
@@ -96,5 +108,9 @@ export const load: LayoutServerLoad = async ({ url, cookies, depends, locals, fe
     language, // Always return the determined language
     country, // Pass country for country-based filtering
     cookies: cookies.getAll(), // Pass cookies for SSR hydration
+    region: userRegion,
+    detectedRegion: geoLocation.region,
+    shouldPromptRegionSwitch,
+    currency: geoLocation.currency
   };
 };

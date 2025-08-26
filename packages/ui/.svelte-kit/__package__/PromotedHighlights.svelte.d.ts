@@ -6,6 +6,8 @@ interface Translations {
     trending_featured: string;
     common_currency: string;
     ui_scroll?: string;
+    promoted_hotPicks?: string;
+    promoted_premiumSellers?: string;
 }
 interface FavoriteState {
     isLoading: boolean;

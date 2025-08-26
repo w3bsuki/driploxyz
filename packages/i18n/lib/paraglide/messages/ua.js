@@ -3511,6 +3511,70 @@ export const banner_register = () => `Реєстрація`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const banner_recentListings = () => `Останні оголошення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_live = () => `Наживо`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_justAdded = () => `щойно додав`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_viewProduct = () => `Переглянути`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_by = () => `від`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_close = () => `Закрити банер`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const promoted_hotPicks = () => `Гарячі пропозиції`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const promoted_premiumSellers = () => `Преміум продавці`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const checkout_checkout = () => `Оформлення`
 
 

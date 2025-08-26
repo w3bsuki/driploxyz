@@ -3511,6 +3511,70 @@ export const banner_register = () => `Sign Up`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const banner_recentListings = () => `Recent Listings`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_live = () => `Live`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_justAdded = () => `just added`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_viewProduct = () => `View`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_by = () => `by`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const banner_close = () => `Close banner`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const promoted_hotPicks = () => `Hot picks today`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const promoted_premiumSellers = () => `Premium sellers`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const checkout_checkout = () => `Checkout`
 
 
