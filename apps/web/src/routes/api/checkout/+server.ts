@@ -4,15 +4,16 @@ import { createServices } from '$lib/services';
 import { stripe } from '$lib/stripe/server.js';
 
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
+  console.log('[Checkout API] Starting checkout process');
+  
+  const { session } = await safeGetSession();
+  
+  if (!session?.user) {
+    console.log('[Checkout API] No session found');
+    return json({ error: 'Authentication required' }, { status: 401 });
+  }
+  
   try {
-    console.log('[Checkout API] Starting checkout process');
-    
-    const { session } = await safeGetSession();
-    
-    if (!session?.user) {
-      console.log('[Checkout API] No session found');
-      return error(401, { message: 'Authentication required' });
-    }
 
     console.log('[Checkout API] User authenticated:', session.user.id);
 

@@ -162,30 +162,21 @@ export async function updateUserProfile(
  */
 export async function signOut(supabase: SupabaseClient<Database>) {
   try {
-    // Clear local storage immediately
-    if (typeof window !== 'undefined') {
-      Object.keys(localStorage).forEach(key => {
-        if (key.startsWith('sb-') || key.includes('supabase')) {
-          localStorage.removeItem(key);
-        }
-      });
-    }
-    
-    // Sign out with Supabase client
-    await supabase.auth.signOut();
-    
-    // Clear server-side session
-    await fetch('/logout', {
+    // Use server endpoint which handles everything properly
+    const response = await fetch('/logout', {
       method: 'POST',
       credentials: 'include'
     });
     
+    if (!response.ok) {
+      console.error('Sign out failed with status:', response.status);
+    }
   } catch (error) {
     console.error('Sign out error:', error);
-  } finally {
-    // Always redirect regardless of errors
-    window.location.href = '/';
   }
+  
+  // Always redirect to home page
+  window.location.href = '/';
 }
 
 

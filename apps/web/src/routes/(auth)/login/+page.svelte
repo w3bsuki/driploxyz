@@ -109,14 +109,11 @@
     use:enhance={() => {
       submitting = true;
       return async ({ result, update }) => {
-        if (result.type === 'redirect') {
-          // For redirects, just let SvelteKit handle it naturally
-          await update();
-        } else {
-          // For errors, update the form
-          submitting = false;
-          await update({ reset: false });
-        }
+        // Always reset submitting state
+        submitting = false;
+        
+        // Let SvelteKit handle all results naturally
+        await update({ reset: false });
       };
     }}
   >
