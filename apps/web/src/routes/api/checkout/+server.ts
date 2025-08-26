@@ -75,9 +75,21 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
     // Calculate total amount (convert price to cents)
     const productPriceCents = Math.round(product.price * 100);
+    console.log('[Checkout API] Product price in cents:', productPriceCents);
+    
     const calculation = services.stripe!.calculatePaymentAmounts(productPriceCents);
+    console.log('[Checkout API] Payment calculation:', calculation);
 
     // Create payment intent
+    console.log('[Checkout API] Creating payment intent with params:', {
+      amount: calculation.totalAmount,
+      currency: 'eur',
+      productId,
+      sellerId: product.seller_id,
+      buyerId: session.user.id,
+      userEmail: session.user.email
+    });
+    
     const { paymentIntent, clientSecret, error: stripeError } = await services.stripe!.createPaymentIntent({
       amount: calculation.totalAmount,
       currency: 'eur', // Using EUR as in your config
@@ -89,6 +101,12 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
         selectedSize: selectedSize || '',
         productTitle: product.title
       }
+    });
+    
+    console.log('[Checkout API] Payment intent result:', { 
+      paymentIntentId: paymentIntent?.id, 
+      clientSecretExists: !!clientSecret, 
+      error: stripeError?.message 
     });
 
     if (stripeError || !paymentIntent || !clientSecret) {
