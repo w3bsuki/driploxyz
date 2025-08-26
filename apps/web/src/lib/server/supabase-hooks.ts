@@ -48,14 +48,12 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   );
 
   /**
-   * Safe session validation with JWT validation
-   * Unlike `supabase.auth.getSession()`, this validates the JWT to ensure it's still valid.
+   * Ultra-fast session validation - only validates expiry, no API calls
+   * For auth-critical operations, manually call getUser() if needed
    */
   event.locals.safeGetSession = async () => {
-    const startTime = performance.now();
-
     try {
-      // Get session first (no API call if cached in cookies)
+      // Get session from cookies (no API call)
       const {
         data: { session },
       } = await event.locals.supabase.auth.getSession();
@@ -64,32 +62,14 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
         return { session: null, user: null };
       }
 
-      // Check if session is obviously expired to avoid unnecessary API call
+      // Check if session is expired
       const now = Date.now() / 1000;
       if (session.expires_at && session.expires_at < now) {
         return { session: null, user: null };
       }
 
-      // Validate JWT with getUser (this makes the API call)
-      const {
-        data: { user },
-        error: authError,
-      } = await event.locals.supabase.auth.getUser();
-
-      if (authError) {
-        // JWT validation failed
-        return { session: null, user: null };
-      }
-
-      // Performance monitoring in development
-      if (building === false) {
-        const duration = performance.now() - startTime;
-        if (duration > 1000) { // Log slow auth calls (>1s)
-          console.warn(`🐌 Slow auth validation: ${duration.toFixed(2)}ms for ${event.url.pathname}`);
-        }
-      }
-
-      return { session, user };
+      // Return session data without API validation for speed
+      return { session, user: session.user };
     } catch (error) {
       console.error('Auth session validation error:', error);
       return { session: null, user: null };

@@ -158,39 +158,33 @@ export async function updateUserProfile(
 }
 
 /**
- * Signs out user and redirects
+ * Signs out user and redirects - simplified and reliable
  */
 export async function signOut(supabase: SupabaseClient<Database>) {
   try {
-    // First, sign out with Supabase client directly
-    await supabase.auth.signOut();
-    
-    // Then make POST request to logout endpoint to clear server-side cookies
-    const response = await fetch('/logout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include'
-    });
-    
-    // Always redirect to home regardless of response
-    window.location.href = '/';
-  } catch (error) {
-    console.error('Sign out error:', error);
-    
-    // Force sign out even on error by clearing local storage and redirecting
+    // Clear local storage immediately
     if (typeof window !== 'undefined') {
-      // Clear any auth-related local storage
       Object.keys(localStorage).forEach(key => {
         if (key.startsWith('sb-') || key.includes('supabase')) {
           localStorage.removeItem(key);
         }
       });
-      
-      // Force redirect
-      window.location.href = '/';
     }
+    
+    // Sign out with Supabase client
+    await supabase.auth.signOut();
+    
+    // Clear server-side session
+    await fetch('/logout', {
+      method: 'POST',
+      credentials: 'include'
+    });
+    
+  } catch (error) {
+    console.error('Sign out error:', error);
+  } finally {
+    // Always redirect regardless of errors
+    window.location.href = '/';
   }
 }
 

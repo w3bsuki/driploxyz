@@ -94,7 +94,10 @@
       {translations.settings}
     </a>
     <button
-      onclick={onSignOut}
+      onclick={(e) => {
+        e.preventDefault();
+        onSignOut();
+      }}
       class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
     >
       <svg class="w-4 h-4 mr-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
