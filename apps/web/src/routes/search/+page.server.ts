@@ -324,7 +324,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
     return {
       products: transformedProducts,
-      categories: mainCategories || [],
+      categories: sortedLevel1 || [],
       categoryHierarchy,
       searchQuery: query,
       total: transformedProducts.length,

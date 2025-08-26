@@ -59,7 +59,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ request, locals: { supabase, session } }) => {
+  create: async ({ request, locals: { supabase, session } }) => {
     if (!session) {
       return fail(401, { 
         errors: { _form: 'Not authenticated' }
@@ -73,11 +73,11 @@ export const actions: Actions = {
     const description = formData.get('description') as string || '';
     const gender_category_id = formData.get('gender_category_id') as string;
     const type_category_id = formData.get('type_category_id') as string;
-    const category_id = formData.get('category_id') as string || type_category_id || gender_category_id; // Fallback to type or gender category
+    const category_id = formData.get('category_id') as string || type_category_id || gender_category_id;
     const brand = formData.get('brand') as string;
     const size = formData.get('size') as string;
     
-    // CRITICAL: Ensure condition is NEVER empty or invalid
+    // Extract and validate condition
     const rawCondition = formData.get('condition') as string;
     const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'];
     const condition = (rawCondition && validConditions.includes(rawCondition)) ? rawCondition : 'good';
@@ -150,9 +150,6 @@ export const actions: Actions = {
         });
       }
       
-      // Condition is already validated above, use it directly
-      const finalCondition = condition; // Already guaranteed to be valid
-
       // Create product in database
       const { data: product, error: productError } = await supabase
         .from('products')
@@ -160,8 +157,8 @@ export const actions: Actions = {
           title: title.trim(),
           description: description.trim() || '',
           price: price,
-          category_id: category_id, // Will be type_category_id if no Level 3
-          condition: finalCondition, // Use validated condition
+          category_id: category_id,
+          condition: condition,
           brand: brand?.trim() || null,
           size: size || null,
           location: null,

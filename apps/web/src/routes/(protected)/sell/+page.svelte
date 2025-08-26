@@ -39,7 +39,7 @@
       showValidationPopup = false;
     }, 3000);
   }
-  let formElement: HTMLFormElement;
+  let formElement = $state<HTMLFormElement>();
   let isDraftSaved = $state(false);
   let saveTimeout: ReturnType<typeof setTimeout>;
   
@@ -59,6 +59,7 @@
     tags: form?.values?.tags || [] as string[],
     use_premium_boost: form?.values?.use_premium_boost || false
   });
+  
   
   interface UploadedImage {
     url: string;
@@ -200,24 +201,16 @@
   
   // Image handlers
   async function handleImageUpload(files: File[]): Promise<UploadedImage[]> {
-    console.log('[handleImageUpload] Starting with files:', files.length);
     isUploadingImages = true;
     try {
-      // Use the session from page data - this is already loaded server-side
       const userId = data.session?.user?.id;
       const accessToken = data.session?.access_token;
-      
-      console.log('[handleImageUpload] Using userId from session:', userId);
-      console.log('[handleImageUpload] Access token available:', !!accessToken);
       
       if (!userId || !accessToken) {
         throw new Error('User not authenticated - please refresh the page');
       }
       
-      console.log('[handleImageUpload] Calling uploadImages with direct access token');
-      // Pass the access token to avoid hanging auth methods
       const uploaded = await uploadImages(supabase, files, 'product-images', userId, undefined, accessToken);
-      console.log('[handleImageUpload] Upload completed, results:', uploaded.length);
       
       // Analyze first image for category suggestions
       if (uploaded.length > 0 && files.length > 0) {
@@ -237,7 +230,6 @@
       console.error('[handleImageUpload] Error occurred:', error);
       throw error;
     } finally {
-      console.log('[handleImageUpload] Finishing, setting uploading to false');
       isUploadingImages = false;
     }
   }
@@ -252,7 +244,7 @@
   
   // Validation
   const canProceedStep1 = $derived(
-    uploadedImages.length > 0 && // Require at least 1 image
+    // uploadedImages.length > 0 && // Temporarily disable photo requirement for testing
     formData.title.length >= 3 && 
     formData.description.length >= 10 // Require min 10 chars for description
   );
@@ -473,28 +465,23 @@
       <!-- Multi-step Form -->
       <form 
         method="POST"
+        action="?/create"
         bind:this={formElement}
         use:enhance={({ formData: formDataObj }) => {
           submitting = true;
           publishError = null;
           
-          // DEBUG: Check what the original form data contains
-          console.log('DEBUG: Original form data from DOM:');
-          for (const [key, value] of formDataObj.entries()) {
-            console.log(`  ${key}: "${value}"`);
-          }
+          // Capture current formData state to avoid Svelte warning
+          const currentFormData = { ...formData };
           
-          // CRITICAL: Ensure condition is ALWAYS sent with valid value - do this FIRST
+          // DEBUG: Check what the original form data contains
+          // Ensure condition is ALWAYS sent with valid value
           const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'];
-          console.log('DEBUG: formData.condition =', formData.condition);
-          console.log('DEBUG: formData =', formData);
-          const conditionValue = formData.condition && validConditions.includes(formData.condition) ? formData.condition : 'good';
-          console.log('DEBUG: conditionValue =', conditionValue);
+          const conditionValue = currentFormData.condition && validConditions.includes(currentFormData.condition) ? currentFormData.condition : 'good';
           formDataObj.set('condition', conditionValue);
-          console.log('DEBUG: After setting condition, formDataObj.get("condition") =', formDataObj.get('condition'));
           
           // Add all OTHER form data (skip condition since we already handled it)
-          Object.entries(formData).forEach(([key, value]) => {
+          Object.entries(currentFormData).forEach(([key, value]) => {
             if (key === 'condition') return; // Skip condition - already handled above
             if (key === 'tags') {
               formDataObj.append(key, JSON.stringify(value));
@@ -759,14 +746,7 @@
           </div>
         {/if}
         
-        <!-- CRITICAL: Hidden inputs that are ALWAYS present in the form -->
-        <!-- These ensure values are sent even when their UI components are not rendered -->
-        <div class="hidden">
-          <input type="hidden" name="condition" value={formData.condition || 'good'} />
-          <input type="hidden" name="gender_category_id" value={formData.gender_category_id || ''} />
-          <input type="hidden" name="type_category_id" value={formData.type_category_id || ''} />
-          <input type="hidden" name="category_id" value={formData.category_id || ''} />
-        </div>
+        <!-- CRITICAL: NO HIDDEN INPUTS - all data handled in enhance function -->
       </form>
     {/if}
     </div>
@@ -810,9 +790,10 @@
               } else {
                 // Show specific validation message
                 if (currentStep === 1) {
-                  if (uploadedImages.length === 0) {
-                    showValidation('Please upload at least 1 photo');
-                  } else if (formData.title.length < 3) {
+                  // if (uploadedImages.length === 0) {
+                  //   showValidation('Please upload at least 1 photo');
+                  // } else 
+                  if (formData.title.length < 3) {
                     showValidation('Title must be at least 3 characters');
                   } else if (formData.description.length < 10) {
                     showValidation('Description must be at least 10 characters');

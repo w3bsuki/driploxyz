@@ -1,12 +1,13 @@
 import { json } from '@sveltejs/kit';
 import { z } from 'zod';
 import { getPriceSuggestions } from '$lib/server/products';
+import { ProductCondition } from '$lib/validation/product';
 import type { RequestHandler } from './$types';
 
 const PriceSuggestionSchema = z.object({
   categoryId: z.string().uuid(),
   brand: z.string().optional(),
-  condition: z.enum(['new', 'like-new', 'good', 'fair']),
+  condition: ProductCondition,
   size: z.string().optional()
 });
 

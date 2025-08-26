@@ -201,3 +201,83 @@ turbo.json          # Build pipeline
 - Test locally AND in production
 - Keep it simple, make it work
 - Reference `SVELTEKIT_AUDIT_MASTER.md` for systematic refactoring
+
+## Critical Bug Fixes & Solutions
+
+### Database Trigger Bug - Product Condition Enum Error
+**Issue**: Forms failing with `invalid input value for enum product_condition: ""` even when sending valid enum values.
+
+**Root Cause**: The `update_product_search_vector()` database trigger was incorrectly converting enum values to empty strings when creating text search vectors.
+
+**Solution**: Always cast enums to text in database triggers:
+```sql
+-- BROKEN:
+setweight(to_tsvector('english', COALESCE(NEW.condition, '')), 'C')
+
+-- FIXED:
+setweight(to_tsvector('english', COALESCE(NEW.condition::text, '')), 'C')
+```
+
+**Prevention**: 
+- Always use `::text` cast when converting enums in database functions/triggers
+- Test database inserts directly when debugging enum errors
+- Check `mcp__supabase__get_logs` for API-level errors vs application errors
+
+### SvelteKit Form Action Rules
+**Issue**: Forms not reaching server actions or getting "Cannot use reserved action name" errors.
+
+**Rules**:
+1. **NEVER mix default and named actions** in same file:
+   ```typescript
+   // BROKEN:
+   export const actions = {
+     default: async () => {},
+     create: async () => {}  // ERROR: Cannot mix
+   }
+   
+   // FIXED:
+   export const actions = {
+     create: async () => {}  // Use only named actions
+   }
+   ```
+
+2. **Form action routing**:
+   ```html
+   <!-- For named actions -->
+   <form method="POST" action="?/create">
+   
+   <!-- For default action (only if no named actions exist) -->
+   <form method="POST">
+   ```
+
+3. **Enhance function structure**:
+   ```typescript
+   // CORRECT:
+   use:enhance={({ formData }) => {
+     return async ({ result, update }) => {
+       // Handle result
+       await update();
+     };
+   }}
+   ```
+
+### Enum Validation Consistency
+**Issue**: Different parts of codebase using different enum values causing validation failures.
+
+**Solution**: Always import and reuse centralized enum definitions:
+```typescript
+// Use this everywhere:
+import { ProductCondition } from '$lib/validation/product';
+
+// NOT this:
+z.enum(['new', 'like-new', 'good', 'fair']) // Wrong values!
+```
+
+**Database enum values**: `['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair']`
+
+### Form Debugging Process
+1. **Check client logs**: Verify FormData is correctly set
+2. **Check server logs**: Add obvious console.logs to verify server action is hit
+3. **Check database logs**: Use `mcp__supabase__get_logs service=api`
+4. **Test direct database insert**: Bypass application to isolate database issues
+5. **Check database triggers**: Query `information_schema.triggers` for interference

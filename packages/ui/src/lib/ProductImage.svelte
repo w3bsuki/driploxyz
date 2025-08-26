@@ -15,24 +15,25 @@
     class: className = ''
   }: Props = $props();
 
-  // Get image URL - completely static, no reactivity
-  let imageUrl = '/placeholder-product.svg';
-  
-  if (product_images?.[0]?.image_url) {
-    imageUrl = product_images[0].image_url;
-  } else if (images?.[0]) {
-    const firstImage = images[0];
-    if (typeof firstImage === 'string') {
-      imageUrl = firstImage;
-    } else if (firstImage?.image_url) {
-      imageUrl = firstImage.image_url;
+  // Get image URL - reactive to prop changes
+  const imageUrl = $derived(() => {
+    if (product_images?.[0]?.image_url) {
+      return product_images[0].image_url;
+    } else if (images?.[0]) {
+      const firstImage = images[0];
+      if (typeof firstImage === 'string') {
+        return firstImage;
+      } else if (firstImage?.image_url) {
+        return firstImage.image_url;
+      }
     }
-  }
+    return '/placeholder-product.svg';
+  });
 </script>
 
 <div class="relative aspect-square bg-gray-50 overflow-hidden rounded-lg {className}">
   <img
-    src={imageUrl}
+    src={imageUrl()}
     {alt}
     loading={priority ? "eager" : "lazy"}
     fetchpriority={priority ? "high" : "auto"}

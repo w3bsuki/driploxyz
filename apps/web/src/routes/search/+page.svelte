@@ -298,9 +298,9 @@
   const brands = $derived(() => currentFilters().brands);
   const conditions = ['new', 'like-new', 'good', 'fair'];
   
-  // Transform server products to component format
+  // Transform server products to component format with client-side filtering
   const displayProducts = $derived(() => {
-    return (data.products || []).map(product => ({
+    let products = (data.products || []).map(product => ({
       id: product.id,
       title: product.title,
       description: product.description,
@@ -324,6 +324,58 @@
       createdAt: product.created_at,
       location: product.location || 'Unknown'
     }));
+
+    // Main category filtering is handled by server
+    // Only apply secondary client-side filters
+
+    if (selectedSubcategory) {
+      products = products.filter(p => p.subcategory_name === selectedSubcategory);
+    }
+
+    if (selectedSize !== 'all') {
+      products = products.filter(p => p.size === selectedSize);
+    }
+
+    if (selectedBrand !== 'all') {
+      products = products.filter(p => p.brand?.toLowerCase().includes(selectedBrand.toLowerCase()));
+    }
+
+    if (selectedCondition !== 'all') {
+      products = products.filter(p => p.condition === selectedCondition);
+    }
+
+    if (priceMin) {
+      const min = parseFloat(priceMin);
+      if (!isNaN(min)) {
+        products = products.filter(p => p.price >= min);
+      }
+    }
+
+    if (priceMax) {
+      const max = parseFloat(priceMax);
+      if (!isNaN(max)) {
+        products = products.filter(p => p.price <= max);
+      }
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'price-low':
+        products.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-high':
+        products.sort((a, b) => b.price - a.price);
+        break;
+      case 'newest':
+        products.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+      case 'relevance':
+      default:
+        // Keep original order for relevance
+        break;
+    }
+
+    return products;
   });
   
   let activeFiltersCount = $derived(() => {
@@ -473,6 +525,7 @@
           onclick={async () => {
             selectedMainCategory = null;
             selectedSubcategory = null;
+            // Navigate to load all products from server
             const url = new URL('/search', window.location.origin);
             if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
             await goto(url.pathname + url.search);
@@ -490,20 +543,19 @@
               // Toggle category selection
               if (selectedMainCategory === key) {
                 selectedMainCategory = null;
+                // Navigate to show all products
+                const url = new URL('/search', window.location.origin);
+                if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+                await goto(url.pathname + url.search);
               } else {
                 selectedMainCategory = key;
+                selectedSubcategory = null;
+                // Navigate to load category-specific products from server
+                const url = new URL('/search', window.location.origin);
+                if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+                url.searchParams.set('category', key);
+                await goto(url.pathname + url.search);
               }
-              selectedSubcategory = null;
-              
-              // Build URL with proper parameters
-              const url = new URL('/search', window.location.origin);
-              if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-              if (selectedMainCategory) {
-                url.searchParams.set('category', selectedMainCategory);
-              }
-              
-              // Navigate to trigger server-side filtering
-              await goto(url.pathname + url.search, { replaceState: false });
             }}
             class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-all flex items-center gap-1
               {selectedMainCategory === key
@@ -520,12 +572,8 @@
       {#if selectedMainCategory && categoryData()[selectedMainCategory]}
         <div class="flex overflow-x-auto scrollbar-hide gap-2 mb-3">
           <button
-            onclick={async () => {
+            onclick={() => {
               selectedSubcategory = null;
-              const url = new URL('/search', window.location.origin);
-              if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-              url.searchParams.set('category', selectedMainCategory);
-              await goto(url.pathname + url.search);
             }}
             class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all
               {selectedSubcategory === null 
@@ -536,13 +584,8 @@
           </button>
           {#each categoryData()[selectedMainCategory].subcategories as subcat}
             <button
-              onclick={async () => {
+              onclick={() => {
                 selectedSubcategory = subcat.name;
-                const url = new URL('/search', window.location.origin);
-                if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-                url.searchParams.set('category', selectedMainCategory);
-                url.searchParams.set('subcategory', subcat.name);
-                await goto(url.pathname + url.search);
               }}
               class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all
                 {selectedSubcategory === subcat.name
@@ -558,14 +601,12 @@
       <!-- Quick Filters Row (Always visible) -->
       <div class="flex overflow-x-auto scrollbar-hide gap-2 pb-2">
         <button
-          onclick={async () => {
-            const url = new URL('/search', window.location.origin);
-            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
-            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
-            url.searchParams.set('max_price', '20');
-            priceMax = '20'; // Update local state
-            await goto(url.pathname + url.search);
+          onclick={() => {
+            if (priceMax === '20') {
+              priceMax = '';
+            } else {
+              priceMax = '20';
+            }
           }}
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
             {priceMax === '20' 
@@ -576,14 +617,12 @@
           <span>{i18n.filter_under20()}</span>
         </button>
         <button
-          onclick={async () => {
-            const url = new URL('/search', window.location.origin);
-            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
-            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
-            url.searchParams.set('sort', 'newest');
-            sortBy = 'newest'; // Update local state
-            await goto(url.pathname + url.search);
+          onclick={() => {
+            if (sortBy === 'newest') {
+              sortBy = 'relevance';
+            } else {
+              sortBy = 'newest';
+            }
           }}
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
             {sortBy === 'newest' 
@@ -594,14 +633,12 @@
           <span>{i18n.filter_newToday()}</span>
         </button>
         <button
-          onclick={async () => {
-            const url = new URL('/search', window.location.origin);
-            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
-            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
-            url.searchParams.set('condition', 'new');
-            selectedCondition = 'new'; // Update local state
-            await goto(url.pathname + url.search);
+          onclick={() => {
+            if (selectedCondition === 'new') {
+              selectedCondition = 'all';
+            } else {
+              selectedCondition = 'new';
+            }
           }}
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
             {selectedCondition === 'new' 
@@ -612,14 +649,12 @@
           <span>{i18n.condition_newWithTags()}</span>
         </button>
         <button
-          onclick={async () => {
-            const url = new URL('/search', window.location.origin);
-            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
-            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
-            url.searchParams.set('brand', 'Nike');
-            selectedBrand = 'Nike'; // Update local state
-            await goto(url.pathname + url.search);
+          onclick={() => {
+            if (selectedBrand === 'Nike') {
+              selectedBrand = 'all';
+            } else {
+              selectedBrand = 'Nike';
+            }
           }}
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
             {selectedBrand === 'Nike' 
@@ -629,14 +664,12 @@
           Nike
         </button>
         <button
-          onclick={async () => {
-            const url = new URL('/search', window.location.origin);
-            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
-            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
-            url.searchParams.set('brand', 'Adidas');
-            selectedBrand = 'Adidas'; // Update local state
-            await goto(url.pathname + url.search);
+          onclick={() => {
+            if (selectedBrand === 'Adidas') {
+              selectedBrand = 'all';
+            } else {
+              selectedBrand = 'Adidas';
+            }
           }}
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
             {selectedBrand === 'Adidas' 
@@ -646,14 +679,12 @@
           Adidas
         </button>
         <button
-          onclick={async () => {
-            const url = new URL('/search', window.location.origin);
-            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
-            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
-            url.searchParams.set('brand', 'Zara');
-            selectedBrand = 'Zara'; // Update local state
-            await goto(url.pathname + url.search);
+          onclick={() => {
+            if (selectedBrand === 'Zara') {
+              selectedBrand = 'all';
+            } else {
+              selectedBrand = 'Zara';
+            }
           }}
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
             {selectedBrand === 'Zara' 
@@ -663,14 +694,12 @@
           Zara
         </button>
         <button
-          onclick={async () => {
-            const url = new URL('/search', window.location.origin);
-            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
-            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
-            url.searchParams.set('size', 'M');
-            selectedSize = 'M'; // Update local state
-            await goto(url.pathname + url.search);
+          onclick={() => {
+            if (selectedSize === 'M') {
+              selectedSize = 'all';
+            } else {
+              selectedSize = 'M';
+            }
           }}
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
             {selectedSize === 'M' 
@@ -680,14 +709,12 @@
           {i18n.product_size()} M
         </button>
         <button
-          onclick={async () => {
-            const url = new URL('/search', window.location.origin);
-            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-            if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
-            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
-            url.searchParams.set('size', 'L');
-            selectedSize = 'L'; // Update local state
-            await goto(url.pathname + url.search);
+          onclick={() => {
+            if (selectedSize === 'L') {
+              selectedSize = 'all';
+            } else {
+              selectedSize = 'L';
+            }
           }}
           class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
             {selectedSize === 'L' 
