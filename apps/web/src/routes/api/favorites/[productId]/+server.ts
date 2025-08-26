@@ -78,14 +78,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					throw new Error('Failed to remove favorite');
 				}
 				
-				// Decrement count
-				const { error: rpcError } = await locals.supabase.rpc('decrement_favorite_count', { product_uuid: productId });
-				
-				if (rpcError) {
-					console.error('Error decrementing count:', rpcError);
-				}
-				
-				// Get updated count
+				// Get updated count (trigger automatically decrements)
 				const { data: updatedProduct } = await locals.supabase
 					.from('products')
 					.select('favorite_count')
@@ -114,30 +107,14 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					throw new Error('Failed to add favorite');
 				}
 				
-				// Get count BEFORE increment for debugging
-				const { data: beforeProduct } = await locals.supabase
-					.from('products')
-					.select('favorite_count')
-					.eq('id', productId)
-					.single();
-				
-				console.log(`[FAVORITE API] Before increment: Product ${productId} has ${beforeProduct?.favorite_count || 0} favorites`);
-				
-				// Increment count
-				const { error: rpcError } = await locals.supabase.rpc('increment_favorite_count', { product_uuid: productId });
-				
-				if (rpcError) {
-					console.error('Error incrementing count:', rpcError);
-				}
-				
-				// Get updated count
+				// Get updated count (trigger automatically increments)
 				const { data: updatedProduct } = await locals.supabase
 					.from('products')
 					.select('favorite_count')
 					.eq('id', productId)
 					.single();
 				
-				console.log(`[FAVORITE API] After increment: Product ${productId} has ${updatedProduct?.favorite_count || 0} favorites`);
+				console.log(`[FAVORITE API] Added favorite. New count: ${updatedProduct?.favorite_count || 1}`);
 				
 				return json({ 
 					favorited: true,

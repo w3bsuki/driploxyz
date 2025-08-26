@@ -85,6 +85,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       productId,
       sellerId: product.seller_id,
       buyerId: session.user.id,
+userEmail: session.user.email,
       metadata: {
         selectedSize: selectedSize || '',
         productTitle: product.title

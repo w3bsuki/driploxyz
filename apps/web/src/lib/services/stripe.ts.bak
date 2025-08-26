@@ -95,11 +95,10 @@ export class StripeService {
 		productId: string;
 		sellerId: string;
 		buyerId: string;
-t	userEmail?: string;
 		metadata?: Record<string, string>;
 	}): Promise<PaymentIntentResult> {
 		try {
-			const { amount, currency, productId, sellerId, buyerId, userEmail, metadata = {} } = params;
+			const { amount, currency, productId, sellerId, buyerId, metadata = {} } = params;
 
 			// Get product details
 			const { data: product, error: productError } = await this.supabase
@@ -117,7 +116,7 @@ t	userEmail?: string;
 			}
 
 			// Get or create Stripe customer for buyer
-			const customer = await this.getOrCreateCustomerForUser(buyerId, userEmail);
+			const customer = await this.getOrCreateCustomerForUser(buyerId);
 			if (!customer) {
 				return { error: new Error('Failed to create customer') };
 			}
@@ -187,7 +186,7 @@ t	userEmail?: string;
 	/**
 	 * Get or create Stripe customer for user
 	 */
-	private async getOrCreateCustomerForUser(userId: string, userEmail?: string): Promise<Stripe.Customer | null> {
+	private async getOrCreateCustomerForUser(userId: string): Promise<Stripe.Customer | null> {
 		try {
 			// Get user profile
 			const { data: profile } = await this.supabase
@@ -196,8 +195,9 @@ t	userEmail?: string;
 				.eq('id', userId)
 				.single();
 
-			// Use provided email or fallback
-			const email = userEmail || "";
+			// Get user email from auth
+			const { data: authData } = await this.supabase.auth.getUser();
+			const email = authData?.user?.email;
 
 			// Skip existing customer check since stripe_customer_id doesn't exist
 

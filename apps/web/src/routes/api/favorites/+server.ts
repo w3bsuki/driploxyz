@@ -75,23 +75,56 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
     const services = createServices(supabase);
 
-    // Toggle favorite status
-    const { isFavorited, error: toggleError } = await services.favorites.toggleFavorite(
-      session.user.id,
-      productId
-    );
-
-    if (toggleError) {
-      return error(500, { message: 'Failed to toggle favorite' });
+    // Check if already favorited
+    const { data: existingFavorite } = await supabase
+      .from('favorites')
+      .select('id')
+      .eq('user_id', session.user.id)
+      .eq('product_id', productId)
+      .single();
+    
+    let isFavorited: boolean;
+    
+    if (existingFavorite) {
+      // Remove favorite
+      const { error: deleteError } = await supabase
+        .from('favorites')
+        .delete()
+        .eq('user_id', session.user.id)
+        .eq('product_id', productId);
+      
+      if (deleteError) {
+        return error(500, { message: 'Failed to remove favorite' });
+      }
+      
+      isFavorited = false;
+    } else {
+      // Add favorite
+      const { error: insertError } = await supabase
+        .from('favorites')
+        .insert({
+          user_id: session.user.id,
+          product_id: productId
+        });
+      
+      if (insertError) {
+        return error(500, { message: 'Failed to add favorite' });
+      }
+      
+      isFavorited = true;
     }
 
-    // Get updated favorite count
-    const { count } = await services.favorites.getProductFavoriteCount(productId);
+    // Get updated favorite count (trigger automatically handles count)
+    const { data: updatedProduct } = await supabase
+      .from('products')
+      .select('favorite_count')
+      .eq('id', productId)
+      .single();
 
     return json({ 
       success: true, 
       isFavorited,
-      favoriteCount: count
+      favoriteCount: updatedProduct?.favorite_count || 0
     });
 
   } catch (err) {
@@ -114,24 +147,27 @@ export const DELETE: RequestHandler = async ({ url, locals: { supabase, safeGetS
       return error(400, { message: 'Product ID is required' });
     }
 
-    const services = createServices(supabase);
-
     // Remove from favorites
-    const { success, error: removeError } = await services.favorites.removeFromFavorites(
-      session.user.id,
-      productId
-    );
+    const { error: deleteError } = await supabase
+      .from('favorites')
+      .delete()
+      .eq('user_id', session.user.id)
+      .eq('product_id', productId);
 
-    if (removeError) {
+    if (deleteError) {
       return error(500, { message: 'Failed to remove favorite' });
     }
 
-    // Get updated favorite count
-    const { count } = await services.favorites.getProductFavoriteCount(productId);
+    // Get updated favorite count (trigger automatically handles count)
+    const { data: updatedProduct } = await supabase
+      .from('products')
+      .select('favorite_count')
+      .eq('id', productId)
+      .single();
 
     return json({ 
-      success, 
-      favoriteCount: count
+      success: true, 
+      favoriteCount: updatedProduct?.favorite_count || 0
     });
 
   } catch (err) {
