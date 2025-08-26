@@ -79,7 +79,7 @@
         maxlength="50"
         name="title"
         required
-        class="w-full px-3 py-2 text-sm border border-gray-200 focus:ring-2 focus:ring-blue-500 rounded-md"
+        class="w-full px-3 py-2 text-base sm:text-sm border border-gray-200 focus:ring-2 focus:ring-blue-500 rounded-md"
       />
       <div class="flex items-center justify-between mt-1.5">
         <div class="text-[11px]">
@@ -105,7 +105,7 @@
         bind:value={formData.description}
         placeholder={i18n.sell_descriptionPlaceholder()}
         rows="3"
-        class="w-full px-3 py-2 text-sm border border-gray-200 focus:ring-2 focus:ring-blue-500 rounded-md resize-none"
+        class="w-full px-3 py-2 text-base sm:text-sm border border-gray-200 focus:ring-2 focus:ring-blue-500 rounded-md resize-none"
       ></textarea>
       <div class="text-[11px] text-gray-500 mt-1 text-right">
         {formData.description.length}/500

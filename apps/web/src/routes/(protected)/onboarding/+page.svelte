@@ -156,12 +156,15 @@
     showValidationError = false;
     if (step < totalSteps) {
       step++;
+      // Jump to top instantly
+      window.scrollTo(0, 0);
     }
   }
 
   function prevStep() {
     if (step > 1) {
       step--;
+      window.scrollTo(0, 0);
     }
   }
 

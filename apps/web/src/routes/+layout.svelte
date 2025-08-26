@@ -58,6 +58,7 @@
   const supabase = $derived(data && data.supabase ? data.supabase : null);
   const isAuthPage = $derived($page.route.id?.includes('(auth)'));
   const isSellPage = $derived($page.route.id?.includes('/sell'));
+  const isOnboardingPage = $derived($page.route.id?.includes('/onboarding'));
   
   // Check if we should show region prompt
   $effect(() => {
@@ -168,7 +169,7 @@
   });
 </script>
 
-{#if !isAuthPage && !isSellPage}
+{#if !isAuthPage && !isSellPage && !isOnboardingPage}
   <div class="sticky top-0 z-50">
     <EarlyBirdBanner />
     <Header user={data?.user} profile={data?.profile} />
