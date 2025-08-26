@@ -17,6 +17,9 @@ interface Props {
     includesText?: string;
     selectedText?: string;
     accessoriesListText?: string;
+    beMoreSpecificLabel?: string;
+    optionalText?: string;
+    typeCategoryPlaceholder?: string;
 }
 declare const CollapsibleCategorySelector: import("svelte").Component<Props, {}, "type" | "gender" | "specific">;
 type CollapsibleCategorySelector = ReturnType<typeof CollapsibleCategorySelector>;

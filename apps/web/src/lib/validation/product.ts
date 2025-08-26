@@ -92,12 +92,12 @@ export const ProductSchema = z.object({
 export const Step1Schema = ProductSchema.pick({
   title: true,
   description: true,
-  category_id: true,
-  subcategory_id: true,
   photos_count: true
 });
 
 export const Step2Schema = ProductSchema.pick({
+  category_id: true,
+  subcategory_id: true,
   brand: true,
   size: true,
   condition: true,

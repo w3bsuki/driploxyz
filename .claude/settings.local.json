@@ -47,7 +47,8 @@
       "mcp__supabase__get_logs",
       "Bash(pnpm add:*)",
       "WebFetch(domain:www.vinted.co.uk)",
-      "WebFetch(domain:www.depop.com)"
+      "WebFetch(domain:www.depop.com)",
+      "mcp__supabase__generate_typescript_types"
     ]
   },
   "enableAllProjectMcpServers": true,

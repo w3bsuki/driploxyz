@@ -27,6 +27,7 @@ export interface Product {
     seller_name?: string;
     seller_avatar?: string;
     seller_rating?: number;
+    is_promoted?: boolean;
 }
 export interface User {
     id: string;

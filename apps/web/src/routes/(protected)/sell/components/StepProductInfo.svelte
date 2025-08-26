@@ -166,7 +166,7 @@
   ]);
 </script>
 
-<div class="space-y-3">
+<div class="space-y-4">
   <!-- Condition Section -->
   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
     <label class="text-sm font-medium text-gray-700 mb-2 block">
@@ -227,7 +227,7 @@
           value={customBrand}
           oninput={handleCustomBrandInput}
           placeholder={i18n.sell_brandCustomPlaceholder()}
-          class="w-full px-3 py-2.5 text-sm border-2 border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
+          class="w-full px-3 py-2 text-sm border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500"
           aria-label="Custom brand name"
         />
       </div>
@@ -312,7 +312,7 @@
       placeholder={i18n.sell_colorCustomPlaceholder()}
       bind:value={formData.color}
       onblur={() => onFieldBlur('color')}
-      class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      class="w-full px-3 py-2 text-sm border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500"
       maxlength={30}
     />
   </div>
@@ -345,7 +345,7 @@
       placeholder={i18n.sell_materialCustomPlaceholder()}
       bind:value={formData.material}
       onblur={() => onFieldBlur('material')}
-      class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      class="w-full px-3 py-2 text-sm border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500"
       maxlength={50}
     />
   </div>
@@ -370,13 +370,13 @@
 <!-- Hidden fallback for form submission -->
 <div class="hidden">
   <select name="condition" bind:value={formData.condition} class="sr-only">
-    <option value="">Select condition</option>
-    <option value="brand_new_with_tags">New with tags</option>
-    <option value="new_without_tags">New without tags</option>
-    <option value="like_new">Like new</option>
-    <option value="good">Good</option>
-    <option value="worn">Worn</option>
-    <option value="fair">Fair</option>
+    <option value="">{i18n.sell_selectCondition()}</option>
+    <option value="brand_new_with_tags">{i18n.sell_condition_brandNewWithTags()}</option>
+    <option value="new_without_tags">{i18n.sell_condition_newWithoutTags()}</option>
+    <option value="like_new">{i18n.sell_condition_likeNew()}</option>
+    <option value="good">{i18n.sell_condition_good()}</option>
+    <option value="worn">{i18n.sell_condition_worn()}</option>
+    <option value="fair">{i18n.sell_condition_fair()}</option>
   </select>
   <input type="hidden" name="brand" value={formData.brand} />
   <input type="hidden" name="size" value={formData.size} />

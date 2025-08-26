@@ -66,16 +66,44 @@ export class StripeService {
 	) {}
 
 	/**
+	 * Calculate payment amounts including fees and shipping
+	 */
+	calculatePaymentAmounts(productPriceCents: number): {
+		productPrice: number;
+		shippingCost: number;
+		serviceFee: number;
+		totalAmount: number;
+	} {
+		const shippingCost = 500; // €5.00 in cents
+		const serviceFee = Math.round(productPriceCents * 0.05) + 70; // 5% + €0.70 fixed fee
+		const totalAmount = productPriceCents + shippingCost + serviceFee;
+
+		return {
+			productPrice: productPriceCents,
+			shippingCost,
+			serviceFee,
+			totalAmount
+		};
+	}
+
+	/**
 	 * Create payment intent for product purchase
 	 */
-	async createPaymentIntent(params: PaymentCreateParams): Promise<PaymentIntentResult> {
+	async createPaymentIntent(params: {
+		amount: number;
+		currency: string;
+		productId: string;
+		sellerId: string;
+		buyerId: string;
+		metadata?: Record<string, string>;
+	}): Promise<PaymentIntentResult> {
 		try {
-			const { productId, buyerId, sellerId, shippingAddress, billingAddress } = params;
+			const { amount, currency, productId, sellerId, buyerId, metadata = {} } = params;
 
 			// Get product details
 			const { data: product, error: productError } = await this.supabase
 				.from('products')
-				.select('id, title, price, seller_id, is_active, is_sold, seller:profiles!seller_id(*)')
+				.select('id, title, price, seller_id, is_active, is_sold')
 				.eq('id', productId)
 				.single();
 
@@ -87,43 +115,11 @@ export class StripeService {
 				return { error: new Error('Product is not available') };
 			}
 
-			// Calculate total amount
-			const productPrice = product.price;
-			const shippingCost = 0; // Shipping cost not implemented yet
-			const totalAmount = productPrice + shippingCost;
-			
-			// Stripe requires amount in cents
-			const amountInCents = Math.round(totalAmount * 100);
-
 			// Get or create Stripe customer for buyer
 			const customer = await this.getOrCreateCustomerForUser(buyerId);
 			if (!customer) {
 				return { error: new Error('Failed to create customer') };
 			}
-
-			// Create payment intent
-			const paymentIntent = await this.stripe.paymentIntents.create({
-				amount: amountInCents,
-				currency: 'bgn',
-				customer: customer.id,
-				description: `Purchase: ${product.title}`,
-				metadata: {
-					product_id: productId,
-					buyer_id: buyerId,
-					seller_id: sellerId,
-					product_price: productPrice.toString(),
-					shipping_cost: shippingCost.toString()
-				},
-				shipping: {
-					name: shippingAddress.name,
-					address: {
-						line1: shippingAddress.street,
-						city: shippingAddress.city,
-						postal_code: shippingAddress.postalCode,
-						country: shippingAddress.country
-					}
-				}
-			});
 
 			// Create pending order record first
 			const { data: order, error: orderError } = await this.supabase
@@ -132,7 +128,7 @@ export class StripeService {
 					buyer_id: buyerId,
 					seller_id: sellerId,
 					product_id: productId,
-					total_amount: totalAmount,
+					total_amount: amount / 100, // Convert from cents to currency units
 					status: 'pending_payment'
 				})
 				.select('id')
@@ -142,7 +138,23 @@ export class StripeService {
 				return { error: new Error('Failed to create order') };
 			}
 
+			// Create payment intent
+			const paymentIntent = await this.stripe.paymentIntents.create({
+				amount,
+				currency,
+				customer: customer.id,
+				description: `Purchase: ${product.title}`,
+				metadata: {
+					product_id: productId,
+					buyer_id: buyerId,
+					seller_id: sellerId,
+					order_id: order.id,
+					...metadata
+				}
+			});
+
 			// Create pending transaction record with order_id
+			const totalAmount = amount / 100;
 			const { error: transactionError } = await this.supabase
 				.from('transactions')
 				.insert({
@@ -151,9 +163,9 @@ export class StripeService {
 					buyer_id: buyerId,
 					seller_id: sellerId,
 					amount_total: totalAmount,
-					commission_amount: Math.round(totalAmount * 0.05),
-					seller_earnings: Math.round(totalAmount * 0.95),
-					currency: 'BGN',
+					commission_amount: Math.round(totalAmount * 0.05 * 100) / 100,
+					seller_earnings: Math.round(totalAmount * 0.95 * 100) / 100,
+					currency: currency.toUpperCase(),
 					payment_status: 'pending'
 				});
 

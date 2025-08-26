@@ -1,4 +1,4 @@
-import type { BadgeVariant, BadgeSize } from '../types';
+import type { BadgeVariant, BadgeSize } from '../types.js';
 interface Props {
     variant?: BadgeVariant;
     size?: BadgeSize;

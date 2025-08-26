@@ -124,15 +124,15 @@
   role="region"
 >
   <div class="px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3">
-    <!-- Promoted header with improved a11y and typography -->
+    <!-- Clean header with just scroll indicator - no promoted badge -->
     <header class="flex items-center justify-between mb-3">
       <h2 class="flex items-center">
-        <!-- PROMOTED badge compact with subtle border - clean, no extra text -->
-        <span class="flex items-center gap-1.5 px-2.5 py-1 bg-black text-white rounded-full">
-          <span class="font-semibold text-[11px] uppercase tracking-wide">{translations.trending_promoted}</span>
+        <!-- Clean section title - crowns on individual products show promotion -->
+        <span class="text-sm font-medium text-gray-900">
+          {translations.promoted_hotPicks || translations.trending_featured || 'Featured'}
         </span>
         {#if hasProducts}
-          <span class="sr-only">{promotedProducts.length} promoted products available</span>
+          <span class="sr-only">{promotedProducts.length} featured products available</span>
         {:else if hasSellers}
           <span class="sr-only">{sellers.length} premium sellers available</span>
         {/if}

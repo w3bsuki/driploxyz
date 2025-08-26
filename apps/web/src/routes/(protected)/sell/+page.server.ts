@@ -109,7 +109,7 @@ export const actions: Actions = {
     const description = formData.get('description') as string || '';
     const gender_category_id = formData.get('gender_category_id') as string;
     const type_category_id = formData.get('type_category_id') as string;
-    const category_id = formData.get('category_id') as string || type_category_id; // Use type_category_id if no Level 3
+    const category_id = formData.get('category_id') as string || type_category_id || gender_category_id; // Fallback to type or gender category
     const brand = formData.get('brand') as string;
     const size = formData.get('size') as string;
     const condition = formData.get('condition') as string;
@@ -184,6 +184,18 @@ export const actions: Actions = {
           }
         });
       }*/
+      
+      // CRITICAL: Ensure category is NEVER null
+      if (!category_id) {
+        console.error('[SELL ACTION] No category selected!');
+        return fail(400, {
+          errors: { category_id: 'Category is required. Please select a category for your item.' },
+          values: {
+            title, description, gender_category_id, type_category_id, category_id, brand, size, 
+            condition, color, material, price, shipping_cost, tags, use_premium_boost
+          }
+        });
+      }
       
       console.log('[SELL ACTION] Using pre-uploaded images:', photo_urls.length);
 

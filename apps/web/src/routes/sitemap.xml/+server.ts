@@ -27,7 +27,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 	const { data: products } = await supabase
 		.from('products')
 		.select('id, updated_at')
-		.eq('sold', false)
+		.eq('is_sold', false)
+		.eq('is_active', true)
 		.order('updated_at', { ascending: false })
 		.limit(1000);
 	

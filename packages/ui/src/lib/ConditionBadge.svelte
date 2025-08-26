@@ -35,15 +35,15 @@
   };
   
   const conditionColors = {
-    'brand_new_with_tags': 'bg-emerald-500 text-white',
-    'new_without_tags': 'bg-green-500 text-white',
-    'like_new': 'bg-blue-500 text-white',
-    'good': 'bg-yellow-500 text-white',
-    'worn': 'bg-orange-500 text-white',
-    'fair': 'bg-red-500 text-white'
+    'brand_new_with_tags': 'bg-emerald-500/90 text-white backdrop-blur-sm',
+    'new_without_tags': 'bg-green-500/90 text-white backdrop-blur-sm',
+    'like_new': 'bg-blue-500/90 text-white backdrop-blur-sm',
+    'good': 'bg-yellow-500/90 text-white backdrop-blur-sm',
+    'worn': 'bg-orange-500/90 text-white backdrop-blur-sm',
+    'fair': 'bg-red-500/90 text-white backdrop-blur-sm'
   };
 </script>
 
-<div class="absolute top-2 left-2 px-2 py-0.5 {conditionColors[condition]} text-xs font-medium rounded uppercase">
+<div class="absolute top-2 left-2 px-1.5 py-0.5 {conditionColors[condition]} text-[10px] font-medium rounded uppercase tracking-wider">
   {conditionLabels[condition]}
 </div>

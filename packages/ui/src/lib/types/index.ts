@@ -25,6 +25,8 @@ export interface Product {
   seller_name?: string;
   seller_avatar?: string;
   seller_rating?: number;
+  // Promotion status
+  is_promoted?: boolean;
 }
 
 export interface User {

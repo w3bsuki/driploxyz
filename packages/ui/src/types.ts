@@ -15,6 +15,7 @@ export interface Product {
   sellerName: string;
   sellerRating: number;
   sellerAvatar?: string;
+  sellerAccountType?: 'new_seller' | 'pro' | 'brand';
   createdAt: string;
   location?: string;
   tags?: string[];
@@ -22,6 +23,7 @@ export interface Product {
   sold_at?: string;
   status?: string;
   favorite_count?: number;
+  is_promoted?: boolean;
   product_images?: Array<{
     id: string;
     image_url: string;
@@ -79,6 +81,8 @@ export interface SearchFilters {
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 export type ButtonSize = 'sm' | 'md' | 'lg';
+export type BadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
+export type BadgeSize = 'sm' | 'md' | 'lg';
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search';
 export type SearchBarVariant = 'hero' | 'power' | 'compact';
 export type MegaMenuVariant = 'dropdown' | 'accordion';

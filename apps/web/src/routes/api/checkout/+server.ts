@@ -64,10 +64,10 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
     // Calculate total amount (convert price to cents)
     const productPriceCents = Math.round(product.price * 100);
-    const calculation = services.stripe['calculatePaymentAmounts'](productPriceCents);
+    const calculation = services.stripe!.calculatePaymentAmounts(productPriceCents);
 
     // Create payment intent
-    const { paymentIntent, clientSecret, error: stripeError } = await services.stripe.createPaymentIntent({
+    const { paymentIntent, clientSecret, error: stripeError } = await services.stripe!.createPaymentIntent({
       amount: calculation.totalAmount,
       currency: 'eur', // Using EUR as in your config
       productId,

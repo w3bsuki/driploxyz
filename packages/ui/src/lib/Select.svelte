@@ -49,16 +49,16 @@
     ) : []
   );
 
-  const baseClasses = 'block w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 appearance-none cursor-pointer';
+  const baseClasses = 'block w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 min-h-[36px] text-base sm:text-sm bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 appearance-none cursor-pointer';
   const stateClasses = $derived(error 
-    ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+    ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' 
     : '');
   const classes = $derived(`${baseClasses} ${stateClasses} ${className}`);
 </script>
 
 <div>
   {#if label}
-    <label for={selectId} class="block text-sm font-medium text-gray-700 mb-1">
+    <label for={selectId} class="block text-sm font-medium text-gray-700 mb-1.5">
       {label}
       {#if required}
         <span class="text-red-500">*</span>
@@ -66,7 +66,7 @@
     </label>
   {/if}
   
-  <div class="p-1">
+  <div>
     <div class="relative">
     <select
       bind:value

@@ -244,20 +244,25 @@
   
   // Validation
   const canProceedStep1 = $derived(
-    // For testing, allow proceeding without images
-    (uploadedImages.length > 0 || true) && // TODO: Remove || true after testing
+    uploadedImages.length > 0 && // Require at least 1 image
     formData.title.length >= 3 && 
+    formData.description.length >= 10 // Require min 10 chars for description
+  );
+  
+  const canProceedStep2 = $derived(
     formData.gender_category_id &&
     formData.type_category_id &&
     // Allow proceeding with just 2 tiers if no 3rd tier exists
     (formData.category_id || specificCategories.length === 0)
   );
   
-  const canProceedStep2 = $derived(
-    formData.brand && formData.size && formData.condition
+  const canProceedStep3 = $derived(
+    formData.brand && 
+    formData.size && 
+    formData.condition
   );
   
-  const canProceedStep3 = $derived(
+  const canProceedStep4 = $derived(
     formData.price > 0 && formData.shipping_cost >= 0
   );
   
@@ -274,6 +279,19 @@
     formData.price > 0 && 
     formData.shipping_cost >= 0
   );
+
+  // Auto-scroll to top when step changes
+  function scrollToTop() {
+    // Use setTimeout to ensure DOM is updated before scrolling
+    setTimeout(() => {
+      const contentElement = document.querySelector('.flex-1.overflow-y-auto');
+      if (contentElement) {
+        contentElement.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }, 100);
+  }
 </script>
 
 <svelte:head>
@@ -282,11 +300,11 @@
 </svelte:head>
 
 <div class="min-h-screen bg-white flex flex-col">
-  <!-- Validation Popup -->
+  <!-- Validation Popup - Top of screen -->
   {#if showValidationPopup}
-    <div class="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top duration-200">
-      <div class="bg-black text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 max-w-xs">
-        <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+    <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top duration-200">
+      <div class="bg-red-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 max-w-sm">
+        <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
         </svg>
         <p class="text-sm font-medium">{validationMessage}</p>
@@ -313,10 +331,10 @@
         </div>
         
         <button 
-          onclick={() => goto('/dashboard')}
+          onclick={() => goto('/')}
           class="text-sm text-gray-500 hover:text-gray-700 transition-colors"
         >
-          Cancel
+          {i18n.common_cancel()}
         </button>
       </div>
     </div>
@@ -532,7 +550,7 @@
         
         <!-- Step 3: Product Details -->
         {#if currentStep === 3}
-          <div class="space-y-6 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
+          <div class="space-y-4 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
             
             <StepProductInfo
               bind:formData
@@ -551,7 +569,7 @@
         
         <!-- Step 4: Pricing -->
         {#if currentStep === 4}
-          <div class="space-y-6 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
+          <div class="space-y-4 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
             
             <StepPricing
               bind:formData
@@ -569,51 +587,129 @@
           </div>
         {/if}
         
-        <!-- Step 4: Review -->
-        {#if currentStep === 4}
-          <div class="space-y-6 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
-            <div>
-              <h2 class="text-lg font-semibold text-gray-900 mb-1">{i18n.sell_reviewListing()}</h2>
-              <p class="text-sm text-gray-600">Everything look good?</p>
-            </div>
-            
-            <!-- Preview Card -->
-            <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-              {#if uploadedImages[0]}
-                <img 
-                  src={uploadedImages[0].url} 
-                  alt={formData.title}
-                  class="w-full h-48 object-cover"
-                />
-              {/if}
+        <!-- Step 5: Review -->
+        {#if currentStep === 5}
+          <div class="space-y-4 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
+            <div class="bg-white rounded-lg border-2 border-gray-200 p-4">
+              <div class="text-center mb-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-1">{i18n.sell_reviewListing()}</h2>
+                <p class="text-sm text-gray-600">Everything look good? Your listing will appear like this:</p>
+              </div>
               
-              <div class="p-4 space-y-3">
-                <h3 class="font-semibold text-lg">{formData.title}</h3>
+              <!-- Enhanced Preview Card -->
+              <div class="bg-gray-50 rounded-xl border border-gray-300 overflow-hidden max-w-sm mx-auto">
+                <!-- Image Gallery Preview -->
+                {#if uploadedImages.length > 0}
+                  <div class="relative">
+                    <img 
+                      src={uploadedImages[0].url} 
+                      alt={formData.title}
+                      class="w-full h-56 object-cover"
+                    />
+                    {#if uploadedImages.length > 1}
+                      <div class="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                        1/{uploadedImages.length}
+                      </div>
+                    {/if}
+                  </div>
+                {:else}
+                  <div class="h-56 bg-gray-200 flex items-center justify-center">
+                    <p class="text-gray-500 text-sm">No images uploaded</p>
+                  </div>
+                {/if}
                 
-                <div class="flex items-center justify-between">
-                  <span class="text-2xl font-bold">${formData.price}</span>
-                  {#if formData.shipping_cost > 0}
-                    <span class="text-sm text-gray-500">+ ${formData.shipping_cost} shipping</span>
+                <div class="p-4 space-y-3">
+                  <!-- Category Breadcrumb -->
+                  <div class="text-xs text-gray-500 uppercase tracking-wide">
+                    {#if genderCategories.find(c => c.id === formData.gender_category_id)}
+                      {genderCategories.find(c => c.id === formData.gender_category_id)?.name}
+                    {/if}
+                    {#if typeCategories.find(c => c.id === formData.type_category_id)}
+                      › {typeCategories.find(c => c.id === formData.type_category_id)?.name}
+                    {/if}
+                  </div>
+                  
+                  <h3 class="font-semibold text-lg line-clamp-2">{formData.title}</h3>
+                  
+                  <!-- Price Section -->
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <span class="text-2xl font-bold text-gray-900">${formData.price}</span>
+                      {#if formData.shipping_cost > 0}
+                        <div class="text-sm text-gray-500">+ ${formData.shipping_cost} shipping</div>
+                      {:else if formData.shipping_cost === 0}
+                        <div class="text-sm text-green-600 font-medium">{i18n.sell_free()} {i18n.sell_shippingCost()}</div>
+                      {/if}
+                    </div>
+                    <div class="text-right">
+                      <div class="text-xs text-gray-500">{i18n.sell_yourEarnings()}</div>
+                      <div class="text-sm font-semibold text-green-600">${(formData.price * 0.9).toFixed(2)}</div>
+                    </div>
+                  </div>
+                  
+                  <!-- Product Details -->
+                  <div class="flex flex-wrap gap-1.5">
+                    <span class="px-2 py-1 bg-white border text-xs rounded-full">{formData.brand}</span>
+                    <span class="px-2 py-1 bg-white border text-xs rounded-full">{i18n.product_size()} {formData.size}</span>
+                    <span class="px-2 py-1 bg-white border text-xs rounded-full capitalize">{formData.condition.replace('_', ' ').replace('-', ' ')}</span>
+                    {#if formData.color}
+                      <span class="px-2 py-1 bg-white border text-xs rounded-full">{formData.color}</span>
+                    {/if}
+                  </div>
+                  
+                  <!-- Description -->
+                  {#if formData.description}
+                    <div class="pt-2 border-t border-gray-200">
+                      <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">{formData.description}</p>
+                    </div>
+                  {/if}
+                  
+                  <!-- Tags -->
+                  {#if formData.tags && formData.tags.length > 0}
+                    <div class="flex flex-wrap gap-1">
+                      {#each formData.tags.slice(0, 3) as tag}
+                        <span class="text-xs text-gray-500">#{tag}</span>
+                      {/each}
+                      {#if formData.tags.length > 3}
+                        <span class="text-xs text-gray-400">+{formData.tags.length - 3} {i18n.sell_moreTag()}</span>
+                      {/if}
+                    </div>
+                  {/if}
+                  
+                  <!-- Premium Boost Indicator -->
+                  {#if formData.use_premium_boost}
+                    <div class="flex items-center justify-center gap-2 py-2 bg-purple-100 border border-purple-200 rounded-lg">
+                      <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      <span class="text-xs font-medium text-purple-700">{i18n.sell_premiumBoost()}</span>
+                    </div>
                   {/if}
                 </div>
-                
-                <div class="flex flex-wrap gap-2">
-                  <span class="px-2 py-1 bg-gray-100 text-xs rounded-full">{formData.brand}</span>
-                  <span class="px-2 py-1 bg-gray-100 text-xs rounded-full">Size {formData.size}</span>
-                  <span class="px-2 py-1 bg-gray-100 text-xs rounded-full capitalize">{formData.condition.replace('-', ' ')}</span>
+              </div>
+              
+              <!-- Summary Stats -->
+              <div class="mt-6 grid grid-cols-3 gap-4 p-3 bg-gray-50 rounded-lg">
+                <div class="text-center">
+                  <div class="text-lg font-bold text-gray-900">{uploadedImages.length}</div>
+                  <div class="text-xs text-gray-500">{i18n.sell_photos()}</div>
                 </div>
-                
-                {#if formData.description}
-                  <p class="text-sm text-gray-600 line-clamp-2">{formData.description}</p>
-                {/if}
+                <div class="text-center">
+                  <div class="text-lg font-bold text-gray-900">${formData.price}</div>
+                  <div class="text-xs text-gray-500">{i18n.price()}</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-lg font-bold text-green-600">${(formData.price * 0.9).toFixed(2)}</div>
+                  <div class="text-xs text-gray-500">{i18n.sell_yourEarnings()}</div>
+                </div>
               </div>
+              
+              {#if publishError}
+                <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+                  <p class="text-sm text-red-600">{publishError}</p>
+                </div>
+              {/if}
             </div>
-            
-            {#if publishError}
-              <div class="p-4 bg-red-50 border border-red-200 rounded-xl">
-                <p class="text-sm text-red-600">{publishError}</p>
-              </div>
-            {/if}
           </div>
         {/if}
       </form>
@@ -632,6 +728,7 @@
             onclick={() => {
               currentStep--;
               publishError = null;
+              scrollToTop();
             }}
             disabled={submitting}
             class="flex-1 h-12"
@@ -643,33 +740,45 @@
           </Button>
         {/if}
         
-        {#if currentStep < 4}
+        {#if currentStep < 5}
           <Button
             type="button"
             variant="primary"
             onclick={() => {
               if ((currentStep === 1 && canProceedStep1) ||
                   (currentStep === 2 && canProceedStep2) ||
-                  (currentStep === 3 && canProceedStep3)) {
+                  (currentStep === 3 && canProceedStep3) ||
+                  (currentStep === 4 && canProceedStep4)) {
                 currentStep++;
                 publishError = null;
+                scrollToTop();
               } else {
                 // Show specific validation message
                 if (currentStep === 1) {
                   if (uploadedImages.length === 0) {
-                    showValidation(i18n.sell_minPhotosRequired());
+                    showValidation('Please upload at least 1 photo');
                   } else if (formData.title.length < 3) {
-                    showValidation(i18n.sell_titleRequired());
-                  } else if (!formData.gender_category_id || !formData.type_category_id) {
-                    showValidation(i18n.sell_categoryRequired());
+                    showValidation('Title must be at least 3 characters');
+                  } else if (formData.description.length < 10) {
+                    showValidation('Description must be at least 10 characters');
                   }
                 } else if (currentStep === 2) {
-                  if (!formData.brand) showValidation(i18n.sell_brandRequired());
-                  else if (!formData.size) showValidation(i18n.sell_sizeRequired());
-                  else if (!formData.condition) showValidation(i18n.sell_conditionRequired());
+                  if (!formData.gender_category_id) {
+                    showValidation('Please select a gender category');
+                  } else if (!formData.type_category_id) {
+                    showValidation('Please select a category type');
+                  }
                 } else if (currentStep === 3) {
+                  if (!formData.brand) {
+                    showValidation('Please enter a brand');
+                  } else if (!formData.size) {
+                    showValidation('Please select a size');
+                  } else if (!formData.condition) {
+                    showValidation('Please select item condition');
+                  }
+                } else if (currentStep === 4) {
                   if (!formData.price || formData.price <= 0) {
-                    showValidation(i18n.sell_priceRequired());
+                    showValidation('Please enter a price');
                   }
                 }
               }
@@ -682,7 +791,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </Button>
-        {:else}
+        {:else if currentStep === 5}
           <Button
             type="button"
             variant="primary"

@@ -9,9 +9,12 @@ interface Translations {
     seller_unknown: string;
     common_currency: string;
     product_addToFavorites: string;
+    condition_brandNewWithTags?: string;
+    condition_newWithoutTags?: string;
     condition_new: string;
     condition_likeNew: string;
     condition_good: string;
+    condition_worn?: string;
     condition_fair: string;
     categoryTranslation?: (category: string) => string;
 }

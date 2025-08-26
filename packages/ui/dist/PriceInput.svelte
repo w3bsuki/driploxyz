@@ -69,9 +69,9 @@
     return amount.toFixed(2);
   }
 
-  const baseClasses = 'block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 pl-8';
+  const baseClasses = 'block w-full rounded-lg border-2 border-gray-200 px-3 py-2 text-sm placeholder-gray-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 pl-8';
   const stateClasses = $derived(error 
-    ? 'border-red-300 focus:ring-red-500 focus:border-red-500' 
+    ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' 
     : '');
   const classes = $derived(`${baseClasses} ${stateClasses} ${className}`);
 </script>

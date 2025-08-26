@@ -4,9 +4,28 @@
     currentPath: string;
     isNavigating?: boolean;
     navigatingTo?: string;
+    labels?: {
+      home: string;
+      search: string;
+      sell: string;
+      messages: string;
+      profile: string;
+    };
   }
   
-  let { unreadMessageCount = 0, currentPath, isNavigating = false, navigatingTo = '' }: Props = $props();
+  let { 
+    unreadMessageCount = 0, 
+    currentPath, 
+    isNavigating = false, 
+    navigatingTo = '',
+    labels = {
+      home: 'Home',
+      search: 'Search', 
+      sell: 'Sell',
+      messages: 'Messages',
+      profile: 'Profile'
+    }
+  }: Props = $props();
   
   interface NavItem {
     href: string;
@@ -20,30 +39,30 @@
   const navItems: NavItem[] = [
     {
       href: '/',
-      label: 'Home',
+      label: labels.home,
       icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
       matchPath: '/'
     },
     {
       href: '/search',
-      label: 'Search',
+      label: labels.search,
       icon: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
     },
     {
       href: '/sell',
-      label: 'Sell',
+      label: labels.sell,
       icon: 'M12 4v16m8-8H4',
       isSpecial: true
     },
     {
       href: '/messages',
-      label: 'Messages',
+      label: labels.messages,
       icon: 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z',
       showBadge: true
     },
     {
-      href: '/profile',
-      label: 'Profile',
+      href: '/profile/me',
+      label: labels.profile,
       icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
       matchPath: '/profile'
     }

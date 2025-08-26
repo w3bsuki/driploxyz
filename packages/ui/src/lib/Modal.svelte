@@ -79,11 +79,11 @@
 
       <!-- Body Section - with context passing -->
       {#if body}
-        <div class="px-6 py-4">
+        <div class="p-6">
           {@render body(closeContext)}
         </div>
       {:else if children}
-        <div class="px-6 py-4">
+        <div class="p-6">
           {@render children()}
         </div>
       {/if}

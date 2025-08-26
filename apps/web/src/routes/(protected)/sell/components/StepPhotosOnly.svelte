@@ -21,13 +21,14 @@
   }: Props = $props();
 </script>
 
-<div class="space-y-6">
-  <!-- Upload Photos Section -->
-  <div>
-    <h3 class="text-base font-semibold text-gray-900 mb-1">{i18n.sell_photos()}</h3>
-    <p class="text-sm text-gray-600 mb-4">{i18n.sell_uploadPhotos_description()}</p>
-    
-    <ImageUploaderSupabase
+<div class="space-y-4">
+  <div class="bg-white rounded-lg border-2 border-gray-200 p-4">
+    <!-- Upload Photos Section -->
+    <div class="mb-6">
+      <h3 class="text-base font-semibold text-gray-900 mb-1">{i18n.sell_photos()}</h3>
+      <p class="text-sm text-gray-600 mb-4">{i18n.sell_uploadPhotos_description()}</p>
+      
+      <ImageUploaderSupabase
       maxImages={10}
       bind:images={uploadedImages}
       onUpload={onImageUpload}
@@ -43,12 +44,12 @@
       photosUploadedText={(count) => i18n.sell_photosUploaded({ count, s: count === 1 ? '' : 's' })}
       moreAllowedText={(count) => i18n.sell_moreAllowed({ count })}
       optimizedForWebText={i18n.sell_optimizedForWeb()}
-    />
-  </div>
+      />
+    </div>
 
-  <!-- Title & Description -->
-  <div class="space-y-4">
-    <Input
+    <!-- Title & Description -->
+    <div class="space-y-4">
+      <Input
       type="text"
       label={i18n.sell_title()}
       bind:value={formData.title}
@@ -70,11 +71,12 @@
         placeholder={i18n.sell_descriptionPlaceholder()}
         rows="4"
         maxlength="500"
-        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent resize-none text-sm"
+        class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 resize-none text-sm"
       />
       <div class="text-[11px] text-gray-500 mt-1 text-right">
         {formData.description.length}/500
       </div>
+    </div>
     </div>
   </div>
 </div>

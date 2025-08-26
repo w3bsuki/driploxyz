@@ -3887,6 +3887,78 @@ export const search_priceHighToLow = () => `Цена ↓`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const sell_includes = () => `включва`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_selected = () => `избрано`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_accessoriesList = () => `списък с аксесоари`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_categoryTitle = () => `Избери категория`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_categoryDescription = () => `Избери категорията, която най-добре описва твоя артикул`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_beMoreSpecific = () => `Бъди по-конкретен`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_optional = () => `(опционално)`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_typeCategoryPlaceholder = () => `Въведи категория...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_moreTag = () => `още`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const filter_under20 = () => `Под 20лв`
 
 
@@ -4631,6 +4703,14 @@ export const sell_condition = () => `Състояние`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const sell_selectCondition = () => `Изберете състояние`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const sell_color = () => `Цвят`
 
 
@@ -4975,7 +5055,7 @@ export const dashboard_orders = () => `Поръчки`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const dashboard_totalRevenue = () => `Общи приходи`
+export const dashboard_sales = () => `Продажби`
 
 
 /**
@@ -4983,7 +5063,15 @@ export const dashboard_totalRevenue = () => `Общи приходи`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const dashboard_allTime = () => `За цялото време`
+export const dashboard_totalRevenue = () => `Обща печалба`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_allTime = () => `Общо`
 
 
 /**
@@ -4999,7 +5087,7 @@ export const dashboard_activeListings = () => `Активни обяви`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const dashboard_currentlyLive = () => `В момента активни`
+export const dashboard_currentlyLive = () => `Моментно активни`
 
 
 /**
@@ -5007,7 +5095,7 @@ export const dashboard_currentlyLive = () => `В момента активни`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const dashboard_totalViews = () => `Общи прегледи`
+export const dashboard_totalViews = () => `Общо прегледи`
 
 
 /**
@@ -5023,7 +5111,7 @@ export const dashboard_thisMonth = () => `Този месец`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const dashboard_conversionRate = () => `Степен на конверсия`
+export const dashboard_conversionRate = () => `Конверсия`
 
 
 /**
@@ -6561,14 +6649,6 @@ export const sell_good = () => `Добро`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const sell_optional = () => `(по избор)`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
 export const sell_whoIsItFor = () => `За кого е?`
 
 
@@ -7562,6 +7642,1054 @@ export const category_miniBags = () => `Мини чанти`
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const category_pocketSquares = () => `Джобни кърпички`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_title = () => `Моите поръчки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_subtitle = () => `Следете своите покупки и продажби на едно място`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_allOrders = () => `Всички поръчки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_purchases = () => `Покупки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_sales = () => `Продажби`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_toReview = () => `За преглед`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_issues = () => `Проблеми`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_noOrdersFound = () => `Няма намерени поръчки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_startShopping = () => `Започни пазаруване`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_seller = () => `Продавач`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_buyer = () => `Купувач`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_trackingNumber = () => `Номер за проследяване`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_leaveReview = () => `Остави отзив`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_cancelOrder = () => `Откажи поръчката`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_viewProduct = () => `Виж продукта`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_noImage = () => `Няма снимка`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_unknownProduct = () => `Неизвестен продукт`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_overview = () => `Преглед на продажбите`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_manageSoldItems = () => `Управлявайте продадените си артикули и печалби`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_totalEarnings = () => `Общи печалби`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_available = () => `Налични`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_itemsSold = () => `Продадени артикули`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_thisMonth = () => `Този месец`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_soldItems = () => `Продадени артикули`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_analytics = () => `Аналитика`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_noItemsSoldYet = () => `Няма продадени артикули още`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_startSelling = () => `Започнете да продавате, за да видите продадените си артикули тук`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_createFirstListing = () => `Създайте първата си обява`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_totalEarned = () => `Общо спечелено`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_availableBalance = () => `Наличен баланс`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_requestPayout = () => `Заявка за изплащане`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_paidOut = () => `Изплатено`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_recentOrders = () => `Последни поръчки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_noOrdersYet = () => `Няма поръчки още`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_thisMonthSales = () => `Продажби този месец`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_thisMonthEarnings = () => `Печалби този месец`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_averageOrder = () => `Средна поръчка`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_perSale = () => `За продажба`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_totalOrders = () => `Общо поръчки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_allTime = () => `За цялото време`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_salesPerformance = () => `Производителност на продажбите`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_chartComingSoon = () => `Графиката идва скоро - Данни за продажбите във времето`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_noChange = () => `Няма промяна`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_title = () => `Надградете акаунта си`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_subtitle = () => `Отключете премиум функции и развийте бизнеса си`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_currentPlan = () => `Текущ план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_choosePlan = () => `Изберете план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_features = () => `Функции`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_subscribe = () => `Абонирайте се`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_popular = () => `Популярен`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_recommended = () => `Препоръчителен`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const breadcrumb_dashboard = () => `Табло`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const breadcrumb_sales = () => `Продажби`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const breadcrumb_orders = () => `Поръчки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const breadcrumb_settings = () => `Настройки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const breadcrumb_upgrade = () => `Надграждане`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_freePlan = () => `Безплатен план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_premiumPlan = () => `Премиум план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_brandPlan = () => `Бранд план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_mostPopular = () => `Най-популярен`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_activePlan = () => `Активен`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_current = () => `Текущ`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_month = () => `месец`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_perMonth = () => `/ месец`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_getPremium = () => `Вземи Премиум`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_getBrand = () => `Вземи Бранд`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_cancelPlan = () => `Откажи план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_processing = () => `Обработва се...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_canceling = () => `Отказва се...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_freeFeature1 = () => `До 20 продукта`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_freeFeature2 = () => `Основна поддръжка`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_freeFeature3 = () => `Стандартни обяви`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_premiumFeature1 = () => `10 повишени обяви/месец`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_premiumFeature2 = () => `Приоритетна поддръжка`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_premiumFeature3 = () => `Разширена аналитика`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_brandFeature1 = () => `Неограничени продукти`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_brandFeature2 = () => `Верификация на бранд`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_brandFeature3 = () => `Инструменти за групова работа`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_discountFirstMonth = () => `50% ОТСТЪПКА първия месец!`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqTitle = () => `Имате въпроси?`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqSubtitle = () => `Всичко, което трябва да знаете за нашите планове`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqChangePlans = () => `Мога ли да сменям планове по всяко време?`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqChangePlansAnswer = () => `Абсолютно! Надграждайте, понижавайте или отказвайте абонамента си по всяко време. Промените влизат в сила при следващия ви цикъл на фактуриране.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqRemainingBoosts = () => `Какво става с останалите ми повишения?`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqRemainingBoostsAnswer = () => `Активните ви повишени обяви продължават до изтичането им, но не можете да създавате нови след отказване на Премиум.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqBusinessRequirements = () => `Изисквания за бизнес продажби?`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqBusinessRequirementsAnswer = () => `Да, бизнес профилите изискват активен Бранд абонамент за съответствие с правилата на пазара и верификацията.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqEarlyBirdRecurring = () => `Повтаря ли се отстъпката за ранни последователи?`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqEarlyBirdRecurringAnswer = () => `Отстъпката за ранни последователи е еднократно специално предложение за първия месец. Редовните цени се прилагат от втория месец нататък.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_supportTitle = () => `Все още имате въпроси?`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_supportSubtitle = () => `Нашият екип за поддръжка е тук, за да ви помогне да изберете перфектния план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_contactSupport = () => `Свържете се с поддръжката`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_cancelConfirm = () => `Сигурни ли сте, че искате да откажете абонамента си? Той ще остане активен до края на периода ви на фактуриране.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_cancelSuccess = () => `Абонаментът е отказан успешно. Ще остане активен до края на периода ви на фактуриране.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_paymentFailed = () => `Плащането неуспешно:`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_subscriptionFailed = () => `Неуспешно обработване на абонамент`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_createSubscriptionFailed = () => `Неуспешно създаване на абонамент:`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_paymentSetupFailed = () => `Настройката на плащането неуспешна`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_cancelSubscriptionFailed = () => `Неуспешно отказване на абонамент:`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_pleaseLogin = () => `Моля, влезте, за да получите достъп до вашата табло`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_logIn = () => `Влизане`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_completeProfile = () => `Завършете настройката на профила`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_completeProfileDesc = () => `Трябва да завършите настройката на профила си, преди да получите достъп до таблото.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_completeSetup = () => `Завърши настройката`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_noRecentOrders = () => `Няма последни поръчки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_yourActiveListings = () => `Вашите активни обяви`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_noActiveListings = () => `Няма активни обяви`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_createFirstListing = () => `Създайте първата си обява, за да започнете продажби`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_createListing = () => `Създай обява`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_itemsToShip = () => `Артикули за изпращане`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_totalOrders = () => `Общо поръчки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_ship = () => `Изпрати`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_shipped = () => `Изпратено`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_myOrders = () => `Поръчки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_completed = () => `Завършени`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_noOrdersYet = () => `Поръчките ще се появят тук след обработка.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_markAsShipped = () => `Маркирай като изпратено`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_shipTo = () => `Изпрати до`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_updating = () => `Обновяване...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const listings_pageTitle = () => `Моите обяви`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const listings_myListings = () => `Моите обяви`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const listings_manageProducts = () => `Управлявайте продуктите си`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const listings_newListing = () => `Нова обява`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const listings_total = () => `Общо`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const listings_active = () => `Активни`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const listings_sold = () => `Продадени`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const listings_draft = () => `Чернови`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const listings_all = () => `Всички`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const listings_noListings = () => `Няма обяви`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const listings_getStarted = () => `Започнете да продавате днес!`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const listings_createFirst = () => `Създай първата обява`
 
 
 /**

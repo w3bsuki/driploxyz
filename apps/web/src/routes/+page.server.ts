@@ -2,7 +2,17 @@ import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 
-export const load: PageServerLoad = async ({ url, locals: { supabase, country } }) => {
+// MANUAL PROMOTION SYSTEM
+// Add product IDs here to promote them with crown badges 👑
+// TODO: Replace with database is_promoted field when premium plans launch
+const MANUALLY_PROMOTED_IDS = [
+  // Add product IDs you want to promote, e.g.:
+  // 'product-id-1',
+  // 'product-id-2',
+  // 'product-id-3'
+];
+
+export const load: PageServerLoad = async ({ url, locals: { supabase, country, safeGetSession } }) => {
   // Check if this is an auth callback that went to the wrong URL
   const code = url.searchParams.get('code');
   if (code) {
@@ -26,6 +36,10 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
       }
     };
   }
+
+  // Get current user session
+  const { session } = await safeGetSession();
+  const userId = session?.user?.id;
 
   try {
     // Optimized parallel queries - select only needed columns to minimize egress
@@ -57,7 +71,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
         .order('created_at', { ascending: false })
         .limit(8),
       
-      // Get featured products with images and categories
+      // Get featured products with images, categories, and favorite counts
       supabase
         .from('products')
         .select(`
@@ -70,6 +84,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
           created_at,
           seller_id,
           country_code,
+          favorite_count,
           product_images!inner (
             image_url
           ),
@@ -80,7 +95,8 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
           ),
           profiles!products_seller_id_fkey (
             username,
-            avatar_url
+            avatar_url,
+            account_type
           )
         `)
         .eq('is_active', true)
@@ -98,48 +114,106 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
     if (featuredResult.status === 'fulfilled') {
       const { data: rawProducts } = featuredResult.value;
       if (rawProducts) {
-        // Get unique parent category IDs
-        const parentIds = [...new Set(
+        // Get unique parent category IDs (need to get level 1 categories)
+        const categoryIds = [...new Set(
           rawProducts
-            .map(item => item.categories?.parent_id)
+            .map(item => item.categories?.parent_id || item.categories?.id)
             .filter(Boolean)
         )];
 
-        // Fetch parent categories if needed
-        let parentCategories: Record<string, string> = {};
-        if (parentIds.length > 0) {
+        // Fetch parent categories and their parents (to get level 1)
+        let categoryHierarchy: Record<string, any> = {};
+        if (categoryIds.length > 0) {
           const { data: parents } = await supabase
             .from('categories')
-            .select('id, name')
-            .in('id', parentIds);
+            .select('id, name, parent_id')
+            .in('id', categoryIds);
           
           if (parents) {
-            parentCategories = Object.fromEntries(
-              parents.map(p => [p.id, p.name])
-            );
+            // Get level 1 parent IDs if these are level 2 categories
+            const grandparentIds = [...new Set(
+              parents
+                .map(p => p.parent_id)
+                .filter(Boolean)
+            )];
+            
+            let level1Categories: Record<string, string> = {};
+            if (grandparentIds.length > 0) {
+              const { data: grandparents } = await supabase
+                .from('categories')
+                .select('id, name')
+                .in('id', grandparentIds);
+              
+              if (grandparents) {
+                level1Categories = Object.fromEntries(
+                  grandparents.map(g => [g.id, g.name])
+                );
+              }
+            }
+            
+            // Build hierarchy map
+            parents.forEach(p => {
+              categoryHierarchy[p.id] = {
+                name: p.name,
+                level1Name: p.parent_id ? level1Categories[p.parent_id] : p.name
+              };
+            });
           }
         }
 
         // Transform products for frontend
-        featuredProducts = rawProducts.map(item => ({
-          id: item.id,
-          title: item.title,
-          price: item.price,
-          condition: item.condition,
-          size: item.size,
-          location: item.location,
-          created_at: item.created_at,
-          seller_id: item.seller_id,
-          // Simplify image structure
-          images: item.product_images?.map((img: any) => img.image_url) || [],
-          product_images: item.product_images?.map((img: any) => img.image_url) || [],
-          // Category info
-          category_name: parentCategories[item.categories?.parent_id] || item.categories?.name || 'Other',
-          subcategory_name: item.categories?.parent_id ? item.categories.name : null,
-          // Seller info
-          seller_name: item.profiles?.username,
-          seller_avatar: item.profiles?.avatar_url
-        }));
+        featuredProducts = rawProducts.map((item, index) => {
+          // AUTO PROMOTION: Promote newest listings (first 3 items since ordered by created_at DESC)
+          // Later: Replace with database field when premium plans are active
+          const isPromoted = index < 3 || MANUALLY_PROMOTED_IDS.includes(item.id);
+          
+          return {
+            id: item.id,
+            title: item.title,
+            price: item.price,
+            condition: item.condition,
+            size: item.size,
+            location: item.location,
+            created_at: item.created_at,
+            seller_id: item.seller_id,
+            // Promote newest listings + any manually added IDs
+            is_promoted: isPromoted,
+            // Add favorite count
+            favorite_count: item.favorite_count || 0,
+            // Simplify image structure
+            images: item.product_images?.map((img: any) => img.image_url) || [],
+            product_images: item.product_images?.map((img: any) => img.image_url) || [],
+            // Category info - ALWAYS show level 1 category at top
+            main_category_name: item.categories?.parent_id 
+              ? categoryHierarchy[item.categories.parent_id]?.level1Name 
+              : (item.categories?.id ? categoryHierarchy[item.categories.id]?.level1Name || categoryHierarchy[item.categories.id]?.name : null),
+            category_name: item.categories?.name,
+            subcategory_name: item.categories?.parent_id ? item.categories.name : null,
+            // Seller info
+            seller_name: item.profiles?.username,
+            seller_avatar: item.profiles?.avatar_url,
+            sellerAccountType: item.profiles?.account_type === 'brand' ? 'brand' : 
+                              item.profiles?.account_type === 'pro' || item.profiles?.account_type === 'premium' ? 'pro' :
+                              'new_seller'
+          };
+        });
+      }
+    }
+
+    // Fetch user's favorites if logged in
+    let userFavorites: Record<string, boolean> = {};
+    if (userId && featuredProducts.length > 0) {
+      const productIds = featuredProducts.map(p => p.id);
+      const { data: favorites } = await supabase
+        .from('favorites')
+        .select('product_id')
+        .eq('user_id', userId)
+        .in('product_id', productIds);
+      
+      if (favorites) {
+        userFavorites = Object.fromEntries(
+          favorites.map(f => [f.product_id, true])
+        );
       }
     }
 
@@ -147,6 +221,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country } 
       featuredProducts,
       categories,
       topSellers,
+      userFavorites,
       country: country || 'BG', // Pass country to frontend
       errors: {
         products: featuredResult.status === 'rejected' ? 'Failed to load' : null,

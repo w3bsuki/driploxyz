@@ -5,11 +5,12 @@
   import ConditionBadge from './ConditionBadge.svelte';
   import ProductPrice from './ProductPrice.svelte';
   import FavoriteButton from './FavoriteButton.svelte';
+  import UserBadge from './UserBadge.svelte';
   import { PerformanceMonitor } from './utils/performance.js';
   
   interface Props {
     product: Product;
-    onFavorite?: (product: Product) => void;
+    onFavorite?: (productId: string) => void | Promise<void>;
     onclick?: (product: Product) => void;
     favorited?: boolean;
     highlighted?: boolean;
@@ -84,7 +85,7 @@
 </script>
 
 <div 
-  class="product-card cursor-pointer {highlighted ? 'highlighted' : ''} {className}"
+  class="product-card cursor-pointer transition-shadow duration-150 hover:shadow-md {highlighted ? 'highlighted' : ''} {className}"
   onclick={handleClick}
   onkeydown={(e) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -131,14 +132,21 @@
   </div>
   
   <!-- Content -->
-  <div class="pt-1">
-    {#if product.main_category_name || product.category_name}
-      <p class="text-xs font-medium text-gray-600 uppercase tracking-wide leading-none">
-        {translations.categoryTranslation ? translations.categoryTranslation(product.main_category_name || product.category_name || '') : (product.main_category_name || product.category_name)}
-      </p>
-    {/if}
+  <div class="px-2 pt-1.5 pb-1.5">
+    <div class="flex items-center gap-1.5 min-h-[14px]">
+      {#if product.main_category_name || product.category_name}
+        <p class="text-[11px] font-medium text-gray-600 uppercase tracking-wider leading-none flex-1 truncate">
+          {translations.categoryTranslation ? translations.categoryTranslation(product.main_category_name || product.category_name || '') : (product.main_category_name || product.category_name)}
+        </p>
+      {/if}
+      {#if product.is_promoted}
+        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200/60">
+          <span class="bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">PRO</span>
+        </span>
+      {/if}
+    </div>
     
-    <h3 class="text-sm font-medium text-gray-900 line-clamp-2 leading-none">
+    <h3 class="text-sm font-medium text-gray-900 line-clamp-1 leading-none">
       {product.title}
     </h3>
     
@@ -158,7 +166,7 @@
       </p>
     {/if}
     
-    <div class="-mt-0.5">
+    <div class="-mt-1">
       <ProductPrice 
         price={product.price}
         currency={translations.currency}

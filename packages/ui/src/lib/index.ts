@@ -6,6 +6,7 @@ export { default as Card } from './Card.svelte';
 export { default as Modal } from './Modal.svelte';
 export { default as ProductCard } from './ProductCard.svelte';
 export { default as SearchBar } from './SearchBar.svelte';
+export { default as SearchDropdown } from './SearchDropdown.svelte';
 export { default as CategoryDropdown } from './CategoryDropdown.svelte';
 export { default as Avatar } from './Avatar.svelte';
 export { default as Breadcrumb } from './Breadcrumb.svelte';
@@ -47,6 +48,7 @@ export { default as BrandBadge } from './BrandBadge.svelte';
 export { default as NewSellerBadge } from './NewSellerBadge.svelte';
 export { default as AdminBadge } from './AdminBadge.svelte';
 export { default as PremiumBadge } from './PremiumBadge.svelte';
+export { default as UserBadge } from './UserBadge.svelte';
 export { default as BrandPaymentModal } from './BrandPaymentModal.svelte';
 export { default as WelcomeTutorialFlow } from './WelcomeTutorialFlow.svelte';
 
@@ -72,6 +74,9 @@ export { default as ImageOptimized } from './ImageOptimized.svelte';
 
 // Search components
 export { default as SearchDebounced } from './SearchDebounced.svelte';
+export { default as TrendingDropdown } from './TrendingDropdown.svelte';
+export { default as HeroSearchDropdown } from './HeroSearchDropdown.svelte';
+export { default as SmartStickySearch } from './SmartStickySearch.svelte';
 
 // Virtual scrolling and search components
 export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';

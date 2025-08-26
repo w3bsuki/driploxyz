@@ -69,7 +69,7 @@
     <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-md transition-shadow">
       <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
         <!-- Product image -->
-        <figure class="w-32 h-32 sm:w-40 sm:h-40 relative">
+        <figure class="w-[108px] h-[108px] sm:w-36 sm:h-36 lg:w-40 lg:h-40 relative">
           <img 
             src={imageUrl} 
             alt="{product.title} product image"
@@ -77,6 +77,15 @@
             loading="lazy"
             decoding="async"
           />
+          
+          <!-- Promoted Badge - Centered Top -->
+          {#if product.is_promoted}
+            <div class="absolute top-1.5 left-1/2 -translate-x-1/2">
+              <div class="bg-white text-gray-800 text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm border border-gray-200">
+                <span class="bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">PRO</span>
+              </div>
+            </div>
+          {/if}
           
           <!-- Bottom info -->
           <figcaption class="absolute bottom-2 left-2 right-2 flex items-center justify-between">
@@ -103,7 +112,7 @@
     </div>
     
     <!-- Title below -->
-    <div class="mt-1.5 px-1 w-32 sm:w-40">
+    <div class="mt-1.5 px-1 w-[108px] sm:w-36 lg:w-40">
       <h3 class="text-xs text-gray-700 truncate">
         {product.title}
       </h3>

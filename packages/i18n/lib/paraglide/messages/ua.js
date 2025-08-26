@@ -3882,6 +3882,78 @@ export const search_priceLowToHigh = () => `Ціна: за зростанням`
 export const search_priceHighToLow = () => `Ціна: за спаданням`
 
 
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_includes = () => `включає`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_selected = () => `вибрано`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_accessoriesList = () => `список аксесуарів`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_categoryTitle = () => `Обрати категорію`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_categoryDescription = () => `Оберіть категорію, яка найкраще описує ваш товар`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_beMoreSpecific = () => `Будьте точнішими`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_optional = () => `(необов'язково)`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_typeCategoryPlaceholder = () => `Введіть категорію...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sell_moreTag = () => `ще`
+
+
 export { filter_under20 } from "./en.js"
 
 export { filter_newToday } from "./en.js"
@@ -4613,6 +4685,14 @@ export const sell_condition = () => `Стан`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const sell_selectCondition = () => `Виберіть стан`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const sell_color = () => `Колір`
 
 
@@ -4952,6 +5032,8 @@ export const dashboard_listings = () => `Оголошення`
 export const dashboard_orders = () => `Замовлення`
 
 
+export { dashboard_sales } from "./en.js"
+
 /**
  * 
  * @returns {string}
@@ -4981,7 +5063,7 @@ export const dashboard_activeListings = () => `Активні оголошенн
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const dashboard_currentlyLive = () => `Зараз активні`
+export const dashboard_currentlyLive = () => `Активні зараз`
 
 
 /**
@@ -5013,7 +5095,7 @@ export const dashboard_conversionRate = () => `Конверсія`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const dashboard_viewsToSales = () => `Перегляди в продажі`
+export const dashboard_viewsToSales = () => `Перегляди у продажі`
 
 
 /**
@@ -5021,7 +5103,7 @@ export const dashboard_viewsToSales = () => `Перегляди в продаж�
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const dashboard_recentOrders = () => `Останні замовлення`
+export const dashboard_recentOrders = () => `Недавні замовлення`
 
 
 /**
@@ -5029,7 +5111,7 @@ export const dashboard_recentOrders = () => `Останні замовлення
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const dashboard_viewAll = () => `Переглянути все`
+export const dashboard_viewAll = () => `Переглянути всі`
 
 
 /**
@@ -5101,7 +5183,7 @@ export const dashboard_activeListingsTitle = () => `Ваші активні ог
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const dashboard_manageListings = () => `Керувати оголошеннями`
+export const dashboard_manageListings = () => `Керування оголошеннями`
 
 
 /**
@@ -6543,14 +6625,6 @@ export const sell_good = () => `Добре`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const sell_optional = () => `(необов'язково)`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
 export const sell_whoIsItFor = () => `Для кого?`
 
 
@@ -7545,6 +7619,922 @@ export const category_miniBags = () => `Міні-сумки`
 /* @__NO_SIDE_EFFECTS__ */
 export const category_pocketSquares = () => `Нагрудні хустки`
 
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_title = () => `Мої замовлення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_subtitle = () => `Відстежуйте свої покупки та продажі в одному місці`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_allOrders = () => `Всі замовлення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_purchases = () => `Покупки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_sales = () => `Продажі`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_toReview = () => `До розгляду`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_issues = () => `Проблеми`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_noOrdersFound = () => `Замовлень не знайдено`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_startShopping = () => `Почати покупки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_seller = () => `Продавець`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_buyer = () => `Покупець`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_trackingNumber = () => `Номер відстеження`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_leaveReview = () => `Залишити відгук`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_cancelOrder = () => `Скасувати замовлення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_viewProduct = () => `Переглянути товар`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_noImage = () => `Немає зображення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const orders_unknownProduct = () => `Невідомий товар`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_overview = () => `Огляд продажів`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_manageSoldItems = () => `Керуйте проданими товарами та доходами`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_totalEarnings = () => `Загальні доходи`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_available = () => `Доступно`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_itemsSold = () => `Продані товари`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_thisMonth = () => `Цього місяця`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_soldItems = () => `Продані товари`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_analytics = () => `Аналітика`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_noItemsSoldYet = () => `Товари ще не продані`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_startSelling = () => `Почніть продавати, щоб побачити свої продані товари тут`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_createFirstListing = () => `Створити перше оголошення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_totalEarned = () => `Всього заробили`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_availableBalance = () => `Доступний баланс`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_requestPayout = () => `Запит виплати`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_paidOut = () => `Виплачено`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_recentOrders = () => `Останні замовлення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_noOrdersYet = () => `Замовлень поки немає`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_thisMonthSales = () => `Продажі цього місяця`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_thisMonthEarnings = () => `Доходи цього місяця`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_averageOrder = () => `Середнє замовлення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_perSale = () => `За продаж`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_totalOrders = () => `Всього замовлень`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_allTime = () => `За весь час`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_salesPerformance = () => `Ефективність продажів`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_chartComingSoon = () => `Графік скоро з'явиться - Дані про продажі в часі`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const sales_noChange = () => `Без змін`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_title = () => `Оновити акаунт`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_subtitle = () => `Розблокувати преміум функції та розвинути бізнес`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_currentPlan = () => `Поточний план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_choosePlan = () => `Обрати план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_features = () => `Функції`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_subscribe = () => `Підписатися`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_popular = () => `Популярний`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_recommended = () => `Рекомендований`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const breadcrumb_dashboard = () => `Панель`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const breadcrumb_sales = () => `Продажі`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const breadcrumb_orders = () => `Замовлення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const breadcrumb_settings = () => `Налаштування`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const breadcrumb_upgrade = () => `Оновлення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_freePlan = () => `Безкоштовний план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_premiumPlan = () => `Преміум план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_brandPlan = () => `Бренд план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_mostPopular = () => `Найпопулярніший`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_activePlan = () => `Активний`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_current = () => `Поточний`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_month = () => `місяць`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_perMonth = () => `/ місяць`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_getPremium = () => `Отримати Преміум`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_getBrand = () => `Отримати Бренд`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_cancelPlan = () => `Скасувати план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_processing = () => `Обробка...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_canceling = () => `Скасування...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_freeFeature1 = () => `До 20 продуктів`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_freeFeature2 = () => `Базова підтримка`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_freeFeature3 = () => `Стандартні оголошення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_premiumFeature1 = () => `10 просуваних оголошень/місяць`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_premiumFeature2 = () => `Пріоритетна підтримка`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_premiumFeature3 = () => `Розширена аналітика`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_brandFeature1 = () => `Необмежена кількість продуктів`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_brandFeature2 = () => `Верифікація бренду`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_brandFeature3 = () => `Масові інструменти`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_discountFirstMonth = () => `50% ЗНИЖКИ перший місяць!`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqTitle = () => `Є питання?`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqSubtitle = () => `Все, що вам потрібно знати про наші плани`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqChangePlans = () => `Чи можу я змінювати плани у будь-який час?`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqChangePlansAnswer = () => `Абсолютно! Поліпшуйте, понижуйте або скасовуйте вашу підписку у будь-який час. Зміни набувають чинності на наступному циклі оплати.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqRemainingBoosts = () => `Що стається з моїми залишковими просуваннями?`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqRemainingBoostsAnswer = () => `Ваші активні просувані оголошення продовжують діяти до закінчення, але ви не зможете створювати нові після скасування Преміум.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqBusinessRequirements = () => `Вимоги до бізнес-продажів?`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqBusinessRequirementsAnswer = () => `Так, бізнес-акаунти потребують активної підписки на Бренд для відповідності правилам маркетплейсу та верифікації.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqEarlyBirdRecurring = () => `Чи повторюється знижка для ранніх користувачів?`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_faqEarlyBirdRecurringAnswer = () => `Знижка для ранніх користувачів – це одноразова спеціальна пропозиція на перший місяць. З другого місяця діють звичайні ціни.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_supportTitle = () => `Ще є питання?`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_supportSubtitle = () => `Наша команда підтримки завжди готова допомогти вам вибрати ідеальний план`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_contactSupport = () => `Зв'язатися з підтримкою`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_cancelConfirm = () => `Ви впевнені, що хочете скасувати свою підписку? Вона залишиться активною до кінця вашого платіжного періоду.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_cancelSuccess = () => `Підписку успішно скасовано. Вона залишиться активною до кінця вашого платіжного періоду.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_paymentFailed = () => `Помилка платежу:`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_subscriptionFailed = () => `Помилка обробки підписки`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_createSubscriptionFailed = () => `Помилка створення підписки:`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_paymentSetupFailed = () => `Помилка налаштування платежів`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const upgrade_cancelSubscriptionFailed = () => `Помилка скасування підписки:`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_pleaseLogin = () => `Будь ласка, увійдіть, щоб отримати доступ до вашої панелі`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_logIn = () => `Увійти`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_completeProfile = () => `Завершіть налаштування профілю`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_completeProfileDesc = () => `Вам потрібно завершити налаштування профілю перед доступом до панелі.`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_completeSetup = () => `Завершити налаштування`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_noRecentOrders = () => `Немає недавніх замовлень`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_yourActiveListings = () => `Ваші активні оголошення`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_noActiveListings = () => `Немає активних оголошень`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_createFirstListing = () => `Створіть своє перше оголошення, щоб почати продавати`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const dashboard_createListing = () => `Створити оголошення`
+
+
+export { orders_itemsToShip } from "./en.js"
+
+export { orders_totalOrders } from "./en.js"
+
+export { orders_ship } from "./en.js"
+
+export { orders_shipped } from "./en.js"
+
+export { orders_myOrders } from "./en.js"
+
+export { orders_completed } from "./en.js"
+
+export { orders_noOrdersYet } from "./en.js"
+
+export { orders_markAsShipped } from "./en.js"
+
+export { orders_shipTo } from "./en.js"
+
+export { orders_updating } from "./en.js"
+
+export { listings_pageTitle } from "./en.js"
+
+export { listings_myListings } from "./en.js"
+
+export { listings_manageProducts } from "./en.js"
+
+export { listings_newListing } from "./en.js"
+
+export { listings_total } from "./en.js"
+
+export { listings_active } from "./en.js"
+
+export { listings_sold } from "./en.js"
+
+export { listings_draft } from "./en.js"
+
+export { listings_all } from "./en.js"
+
+export { listings_noListings } from "./en.js"
+
+export { listings_getStarted } from "./en.js"
+
+export { listings_createFirst } from "./en.js"
 
 export { common_scroll } from "./en.js"
 

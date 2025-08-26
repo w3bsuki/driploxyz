@@ -5,8 +5,8 @@ import type { Database } from '@repo/database';
 export const load: PageServerLoad = async ({ url, locals }) => {
   const country = locals.country || 'BG';
   const query = url.searchParams.get('q') || '';
-  const category = url.searchParams.get('category') || '';
-  const subcategory = url.searchParams.get('subcategory') || '';
+  const categorySlug = url.searchParams.get('category') || '';
+  const subcategorySlug = url.searchParams.get('subcategory') || '';
   const minPrice = url.searchParams.get('min_price');
   const maxPrice = url.searchParams.get('max_price');
   const condition = url.searchParams.get('condition');
@@ -19,7 +19,80 @@ export const load: PageServerLoad = async ({ url, locals }) => {
   // Show all products by default if no search criteria
 
   try {
-    // Build optimized products query - select only essential fields for search results
+    // First, get category IDs from slugs if provided
+    let categoryIds: string[] = [];
+    let mainCategoryId: string | null = null;
+    let subcategoryId: string | null = null;
+
+    if (categorySlug) {
+      // Map common category slugs to their names for filtering
+      const categoryMap: Record<string, string> = {
+        'women': 'Women',
+        'men': 'Men',
+        'kids': 'Kids',
+        'unisex': 'Unisex',
+        'shoes': 'Shoes',
+        'bags': 'Bags',
+        'accessories': 'Accessories',
+        'home': 'Home',
+        'beauty': 'Beauty',
+        'pets': 'Pets'
+      };
+
+      const categoryName = categoryMap[categorySlug] || categorySlug;
+      
+      // Get main category ID
+      const { data: mainCat } = await locals.supabase
+        .from('categories')
+        .select('id, name')
+        .or(`slug.eq.${categorySlug},name.ilike.${categoryName}`)
+        .is('parent_id', null)
+        .single();
+      
+      if (mainCat) {
+        mainCategoryId = mainCat.id;
+        
+        // Get all child categories of this main category
+        const { data: childCats } = await locals.supabase
+          .from('categories')
+          .select('id')
+          .eq('parent_id', mainCategoryId);
+        
+        if (childCats) {
+          categoryIds = [mainCategoryId, ...childCats.map(c => c.id)];
+          
+          // Also get grandchildren (level 3 categories)
+          const { data: grandchildCats } = await locals.supabase
+            .from('categories')
+            .select('id')
+            .in('parent_id', childCats.map(c => c.id));
+          
+          if (grandchildCats) {
+            categoryIds = [...categoryIds, ...grandchildCats.map(c => c.id)];
+          }
+        } else {
+          categoryIds = [mainCategoryId];
+        }
+      }
+    }
+
+    if (subcategorySlug && mainCategoryId) {
+      // Get specific subcategory within the main category
+      const { data: subCat } = await locals.supabase
+        .from('categories')
+        .select('id')
+        .ilike('name', `%${subcategorySlug}%`)
+        .in('parent_id', categoryIds.length > 0 ? categoryIds : [mainCategoryId])
+        .single();
+      
+      if (subCat) {
+        subcategoryId = subCat.id;
+        // For subcategory, only show products in that specific subcategory
+        categoryIds = [subCat.id];
+      }
+    }
+
+    // Build the products query with search
     let productsQuery = locals.supabase
       .from('products')
       .select(`
@@ -34,40 +107,37 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         seller_id,
         category_id,
         country_code,
-        categories!category_id (
+        product_images (
+          image_url
+        ),
+        profiles!products_seller_id_fkey (
+          username,
+          avatar_url,
+          account_type
+        ),
+        categories (
           id,
           name,
           slug,
           parent_id
-        ),
-        profiles!seller_id (
-          username,
-          avatar_url
-        ),
-        product_images!product_id (
-          image_url
         )
       `)
       .eq('is_sold', false)
       .eq('is_active', true)
       .eq('country_code', country);
 
-    // OFFICIAL SUPABASE FULL-TEXT SEARCH PATTERN
-    if (query) {
-      // Use proper full-text search with websearch type for better results
-      productsQuery = productsQuery.textSearch('title', query, {
-        type: 'websearch',
-        config: 'english'
-      });
+    // Apply category filter if we have category IDs
+    if (categoryIds.length > 0) {
+      productsQuery = productsQuery.in('category_id', categoryIds);
     }
 
-    // Apply category filter
-    if (category) {
-      // Filter by category slug or name
-      productsQuery = productsQuery.or(`categories.slug.eq.${category},categories.name.ilike.%${category}%`);
+    // Apply search if query exists
+    if (query && query.trim()) {
+      // Use ilike for simple text search (works immediately)
+      productsQuery = productsQuery.ilike('title', `%${query}%`);
     }
 
-    // Apply price filters
+    // Apply filters
     if (minPrice) {
       const min = parseFloat(minPrice);
       if (!isNaN(min)) {
@@ -82,33 +152,18 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       }
     }
 
-    // Apply condition filter
     if (condition) {
-      productsQuery = productsQuery.eq('condition', condition as Database['public']['Enums']['product_condition']);
+      productsQuery = productsQuery.eq('condition', condition);
     }
 
-    // Apply brand filter
     if (brand) {
       productsQuery = productsQuery.ilike('brand', `%${brand}%`);
     }
 
-    // Apply size filter
     if (size) {
       productsQuery = productsQuery.eq('size', size);
     }
 
-    // Apply special filters
-    if (sortBy === 'newest') {
-      // For "New Today" - filter to products created in last 24 hours
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      productsQuery = productsQuery.gte('created_at', yesterday.toISOString());
-    }
-    
-    // Note: onSale would require a discount_percentage or original_price field in DB
-    // Note: freeShipping would require a shipping_cost field in DB
-    // For now, these are placeholders for V2
-    
     // Apply sorting
     switch (sortBy) {
       case 'price-low':
@@ -118,22 +173,14 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         productsQuery = productsQuery.order('price', { ascending: false });
         break;
       case 'newest':
-        productsQuery = productsQuery.order('created_at', { ascending: false });
-        break;
-      case 'relevance':
       default:
-        // For text search, Supabase orders by relevance automatically
-        // For other searches, default to newest first
-        if (!query) {
-          productsQuery = productsQuery.order('created_at', { ascending: false });
-        }
+        productsQuery = productsQuery.order('created_at', { ascending: false });
         break;
     }
 
-    // Limit results for performance
+    // Limit results
     productsQuery = productsQuery.limit(100);
 
-    // Execute products query
     const { data: products, error: productsError } = await productsQuery;
 
     if (productsError) {
@@ -141,11 +188,13 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       return {
         products: [],
         categories: [],
+        categoryHierarchy: {},
         searchQuery: query,
         total: 0,
         error: 'Search failed. Please try again.',
         filters: {
-          category,
+          category: categorySlug,
+          subcategory: subcategorySlug,
           minPrice,
           maxPrice,
           condition,
@@ -156,22 +205,36 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       };
     }
 
-    // Parallel fetch of categories for navigation
-    const [categoriesResult] = await Promise.allSettled([
-      locals.supabase
-        .from('categories')
-        .select('id, name, slug')
-        .is('parent_id', null)
-        .order('name')
-    ]);
-
-    const categories = categoriesResult.status === 'fulfilled' ? categoriesResult.value.data || [] : [];
-
-    // Fetch all categories with their parents for mapping
+    // Fetch all categories with hierarchy for navigation
     const { data: allCategories } = await locals.supabase
       .from('categories')
-      .select('id, name, slug, parent_id');
+      .select('id, name, slug, parent_id')
+      .order('parent_id', { ascending: true, nullsFirst: true })
+      .order('name');
+
+    // Build category hierarchy
+    const mainCategories = allCategories?.filter(c => !c.parent_id) || [];
+    const categoryHierarchy: any = {};
     
+    mainCategories.forEach(mainCat => {
+      const subcats = allCategories?.filter(c => c.parent_id === mainCat.id) || [];
+      categoryHierarchy[mainCat.slug || mainCat.name.toLowerCase()] = {
+        id: mainCat.id,
+        name: mainCat.name,
+        slug: mainCat.slug,
+        subcategories: subcats.map(subcat => {
+          // Get level 3 categories
+          const level3 = allCategories?.filter(c => c.parent_id === subcat.id) || [];
+          return {
+            id: subcat.id,
+            name: subcat.name,
+            slug: subcat.slug,
+            children: level3
+          };
+        })
+      };
+    });
+
     // Create a map for quick parent lookup
     const categoryMap = new Map();
     allCategories?.forEach(cat => {
@@ -180,16 +243,22 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
     // Transform products data for frontend - minimal processing
     const transformedProducts = (products || []).map((product: any) => {
-      // Get the product's category
-      const productCategory = product.categories;
+      // Get category from the product data
+      const productCategory = product.categories || categoryMap.get(product.category_id);
       
-      // Determine main category and subcategory
-      let mainCategory = productCategory;
+      // Function to find level 1 category (Men/Women/Kids/Unisex)
+      const findLevel1Category = (category: any): any => {
+        if (!category) return null;
+        if (!category.parent_id) return category; // This is level 1
+        const parent = categoryMap.get(category.parent_id);
+        return findLevel1Category(parent); // Recursively find level 1
+      };
+      
+      // Get the actual level 1 category
+      const level1Category = findLevel1Category(productCategory);
       let subcategory = null;
       
       if (productCategory?.parent_id) {
-        // This is a subcategory, get its parent
-        mainCategory = categoryMap.get(productCategory.parent_id);
         subcategory = productCategory;
       }
       
@@ -197,23 +266,26 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         id: product.id,
         title: product.title,
         price: Number(product.price),
-        images: [product.product_images?.[0]?.image_url].filter(Boolean), // Only first image for search results
+        images: product.product_images?.map((img: any) => img.image_url).filter(Boolean) || [],
         product_images: product.product_images,
         brand: product.brand,
         size: product.size,
         condition: product.condition,
         category: {
-          name: product.categories?.name,
-          slug: product.categories?.slug
+          name: productCategory?.name,
+          slug: productCategory?.slug
         },
-        // Add proper category hierarchy
-        main_category_name: mainCategory?.name,
-        category_name: mainCategory?.name,
+        // Add proper category hierarchy - ALWAYS use level 1 for main_category_name
+        main_category_name: level1Category?.name,
+        category_name: productCategory?.name,
         subcategory_name: subcategory?.name,
         seller: {
-          username: (product as any).profiles?.username,
-          avatar_url: (product as any).profiles?.avatar_url
+          username: product.profiles?.username,
+          avatar_url: product.profiles?.avatar_url
         },
+        sellerAccountType: product.profiles?.account_type === 'brand' ? 'brand' : 
+                          product.profiles?.account_type === 'pro' || product.profiles?.account_type === 'premium' ? 'pro' :
+                          'new_seller',
         created_at: product.created_at,
         location: product.location
       };
@@ -221,12 +293,13 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
     return {
       products: transformedProducts,
-      categories: categories || [],
+      categories: mainCategories || [],
+      categoryHierarchy,
       searchQuery: query,
       total: transformedProducts.length,
       filters: {
-        category,
-        subcategory,
+        category: categorySlug,
+        subcategory: subcategorySlug,
         minPrice,
         maxPrice,
         condition,
@@ -244,9 +317,10 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       searchQuery: query,
       total: 0,
       error: 'Search failed. Please try again.',
+      categoryHierarchy: {},
       filters: {
-        category,
-        subcategory,
+        category: categorySlug,
+        subcategory: subcategorySlug,
         minPrice,
         maxPrice,
         condition,

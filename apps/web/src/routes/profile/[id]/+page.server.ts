@@ -1,10 +1,29 @@
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { ProfileService } from '$lib/services/profiles';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
   const { session } = await locals.safeGetSession();
   const profileService = new ProfileService(locals.supabase);
+  
+  // Handle special "me" case - redirect to current user's profile
+  if (params.id === 'me') {
+    if (!session?.user) {
+      throw redirect(303, '/login');
+    }
+    // Get current user's profile to get their username
+    const { data: currentUserProfile } = await locals.supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', session.user.id)
+      .single();
+    
+    if (currentUserProfile?.username) {
+      throw redirect(303, `/profile/${currentUserProfile.username}`);
+    } else {
+      throw redirect(303, `/profile/${session.user.id}`);
+    }
+  }
   
   // Check if the ID is a UUID or username
   // UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
@@ -31,6 +50,46 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
   // Check if this is the current user's profile
   const isOwnProfile = session?.user?.id === profile.id;
+
+  // Get user's favorites/wishlist if it's their own profile
+  let favorites = [];
+  if (isOwnProfile) {
+    const { data: userFavorites } = await locals.supabase
+      .from('favorites')
+      .select(`
+        id,
+        created_at,
+        products!product_id (
+          id,
+          title,
+          price,
+          condition,
+          is_sold,
+          seller_id,
+          product_images!inner (
+            image_url
+          ),
+          profiles!products_seller_id_fkey (
+            username,
+            avatar_url
+          )
+        )
+      `)
+      .eq('user_id', profile.id)
+      .order('created_at', { ascending: false });
+    
+    if (userFavorites) {
+      favorites = userFavorites
+        .filter(f => f.products)
+        .map(f => ({
+          ...f.products,
+          images: f.products.product_images?.map((img: any) => img.image_url) || [],
+          seller_name: f.products.profiles?.username,
+          seller_avatar: f.products.profiles?.avatar_url,
+          favorited_at: f.created_at
+        }));
+    }
+  }
 
   // Get user's products
   const { data: products } = await locals.supabase
@@ -86,10 +145,12 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       ...profile,
       products_count: products?.length || 0,
       active_listings: products?.length || 0,
-      sold_listings: profile.sales_count || 0
+      sold_listings: profile.sales_count || 0,
+      favorites_count: favorites.length
     },
     products: productsWithImages,
     reviews: reviews || [],
+    favorites,
     isOwnProfile,
     currentUser: session?.user || null,
     isFollowing

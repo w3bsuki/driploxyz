@@ -20,6 +20,9 @@
     includesText?: string;
     selectedText?: string;
     accessoriesListText?: string;
+    beMoreSpecificLabel?: string;
+    optionalText?: string;
+    typeCategoryPlaceholder?: string;
   }
 
   let {
@@ -35,7 +38,10 @@
     translateCategory = (name: string) => name,
     includesText = "Includes:",
     selectedText = "Selected:",
-    accessoriesListText = "Hats, Caps, Belts, Scarves, Sunglasses, Bags, Wallets"
+    accessoriesListText = "Hats, Caps, Belts, Scarves, Sunglasses, Bags, Wallets",
+    beMoreSpecificLabel = "Be more specific",
+    optionalText = "(optional)",
+    typeCategoryPlaceholder = "Type category..."
   }: Props = $props();
 
   // Component state
@@ -248,7 +254,7 @@
       {#if showSpecificLevel && specificCategories.length > 0}
         <div class="animate-in fade-in slide-in-from-left-2 duration-200">
           <label class="block text-xs font-medium text-gray-600 mb-1.5">
-            Be more specific <span class="text-gray-400">(optional)</span>
+            {beMoreSpecificLabel} <span class="text-gray-400">{optionalText}</span>
           </label>
           
           <!-- Quick input option -->
@@ -256,7 +262,7 @@
             <input
               type="text"
               bind:value={customCategoryInput}
-              placeholder="Type category or leave empty for {translateCategory(typeCategories.find(c => c.id === type)?.name || '')}"
+              placeholder="{typeCategoryPlaceholder}"
               onkeydown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
@@ -275,7 +281,7 @@
                 <button
                   type="button"
                   onclick={() => selectSpecific(category.id)}
-                  class="px-2 py-1.5 text-[11px] font-medium rounded border transition-all text-left {
+                  class="px-3 py-2.5 text-sm font-medium rounded border transition-all text-left {
                     specific === category.id 
                       ? 'border-gray-900 bg-gray-50 text-gray-900 ring-1 ring-gray-900' 
                       : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'

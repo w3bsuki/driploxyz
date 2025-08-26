@@ -15,7 +15,6 @@
   let { data }: Props = $props();
   
   let isLoading = $state(false);
-  let tabLoading = $state(false);
   let showWelcomeModal = $state(false);
   let currentTutorialStep = $state<any>(null);
   
@@ -129,16 +128,6 @@
       }));
   });
   
-  let activeTab = $state<'overview' | 'listings' | 'orders' | 'analytics' | 'settings'>('overview');
-  
-  async function changeTab(newTab: typeof activeTab) {
-    if (newTab === activeTab) return;
-    
-    tabLoading = true;
-    await new Promise(resolve => setTimeout(resolve, 200)); // Simulate loading
-    activeTab = newTab;
-    tabLoading = false;
-  }
   
   const timeAgo = (date: string) => {
     const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
@@ -170,72 +159,125 @@
   <title>Seller Dashboard - Driplo</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gray-50">
-
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-    <!-- Welcome Section -->
-    <div class="mb-6">
-      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">{i18n.dashboard_welcomeBack({ username: data.profile?.username || data.profile?.full_name || 'User' })}</h1>
-      <p class="text-gray-600 text-sm sm:text-base mt-1">{i18n.dashboard_shopStatus()}</p>
+{#if !data.user}
+  <!-- Not logged in state -->
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div class="text-center">
+      <h2 class="text-xl font-semibold mb-4">{i18n.dashboard_pleaseLogin()}</h2>
+      <Button href="/login">{i18n.dashboard_logIn()}</Button>
     </div>
+  </div>
+{:else if data.profile && data.profile.onboarding_completed === false}
+  <!-- Onboarding not complete -->
+  <div class="min-h-screen bg-gray-50 flex items-center justify-center">
+    <div class="text-center max-w-md">
+      <h2 class="text-xl font-semibold mb-4">{i18n.dashboard_completeProfile()}</h2>
+      <p class="text-gray-600 mb-6">{i18n.dashboard_completeProfileDesc()}</p>
+      <Button href="/onboarding">{i18n.dashboard_completeSetup()}</Button>
+    </div>
+  </div>
+{:else}
+  <!-- Main dashboard content -->
+  <div class="min-h-screen bg-gray-50">
 
-    <!-- Quick Actions -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
-      <a href="/sell">
-        <Button variant="primary" class="w-full">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          {i18n.dashboard_newListing()}
-        </Button>
-      </a>
-      <a href="/dashboard/sold">
-        <Button variant="outline" class="w-full">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          {i18n.dashboard_soldItems()}
-        </Button>
-      </a>
-      <a href="/dashboard/earnings">
-        <Button variant="outline" class="w-full">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-          </svg>
-          {i18n.dashboard_earnings()}
-        </Button>
-      </a>
-      <a href="/dashboard/upgrade">
-        <Button variant="outline" class="w-full bg-linear-to-r from-yellow-50 to-orange-50 border-yellow-200 text-yellow-800 hover:from-yellow-100 hover:to-orange-100">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-          </svg>
-          {i18n.dashboard_upgrade()}
-        </Button>
-      </a>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <!-- Welcome Section -->
+      <div class="mb-6">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">{i18n.dashboard_welcomeBack({ username: data.profile?.username || data.profile?.full_name || 'User' })}</h1>
+        <p class="text-gray-600 text-sm sm:text-base mt-1">{i18n.dashboard_shopStatus()}</p>
+      </div>
+
+    <!-- Quick Actions - Mobile Optimized -->
+    <div class="space-y-2 sm:space-y-3 mb-6">
+      <!-- Top Row: Primary Actions -->
+      <div class="grid grid-cols-2 gap-2 sm:gap-3">
+        <a href="/sell" class="block">
+          <Button variant="primary" class="w-full h-10 sm:h-12 text-sm sm:text-base">
+            <span class="flex items-center justify-center gap-1 sm:gap-2">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              <span class="truncate">{i18n.dashboard_newListing()}</span>
+            </span>
+          </Button>
+        </a>
+        
+        <a href="/dashboard/upgrade" class="block">
+          <Button variant="outline" class="w-full h-10 sm:h-12 text-sm sm:text-base bg-gradient-to-r from-yellow-50 to-orange-50 border-yellow-300 text-yellow-900 hover:from-yellow-100 hover:to-orange-100 font-medium">
+            <span class="flex items-center justify-center gap-1 sm:gap-2">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+              </svg>
+              <span class="truncate">{i18n.dashboard_upgrade()}</span>
+            </span>
+          </Button>
+        </a>
+      </div>
+      
+      <!-- Middle Row: Business Functions -->
+      <div class="grid grid-cols-2 gap-2 sm:gap-3">
+        <a href="/dashboard/order-management" class="block">
+          <Button variant="outline" class="w-full h-10 sm:h-12 text-sm sm:text-base hover:bg-gray-50">
+            <span class="flex items-center justify-center gap-1 sm:gap-2">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              <span class="truncate">{i18n.dashboard_orders()}</span>
+            </span>
+          </Button>
+        </a>
+        
+        <a href="/dashboard/sales" class="block">
+          <Button variant="outline" class="w-full h-10 sm:h-12 text-sm sm:text-base hover:bg-gray-50">
+            <span class="flex items-center justify-center gap-1 sm:gap-2">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span class="truncate">{i18n.dashboard_sales()}</span>
+            </span>
+          </Button>
+        </a>
+      </div>
+      
+      <!-- Bottom Row: Management -->
+      <div class="grid grid-cols-2 gap-2 sm:gap-3">
+        <a href="/listings" class="block">
+          <Button variant="outline" class="w-full h-10 sm:h-12 text-sm sm:text-base hover:bg-gray-50">
+            <span class="flex items-center justify-center gap-1 sm:gap-2">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              </svg>
+              <span class="truncate">{i18n.dashboard_listings()}</span>
+            </span>
+          </Button>
+        </a>
+        
+        <a href="/settings" class="block">
+          <Button variant="outline" class="w-full h-10 sm:h-12 text-sm sm:text-base hover:bg-gray-50">
+            <span class="flex items-center justify-center gap-1 sm:gap-2">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span class="truncate">{i18n.dashboard_settings()}</span>
+            </span>
+          </Button>
+        </a>
+      </div>
+      
+      <!-- Admin Panel (Only for admins) -->
       {#if data.profile?.role === 'admin'}
-        <a href="/admin/payouts">
-          <Button variant="outline" class="w-full bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-purple-800 hover:from-purple-100 hover:to-pink-100">
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            {i18n.dashboard_adminPanel()}
+        <a href="/admin/payouts" class="block">
+          <Button variant="outline" class="w-full h-10 sm:h-12 text-sm sm:text-base bg-gradient-to-r from-purple-50 to-pink-50 border-purple-300 text-purple-900 hover:from-purple-100 hover:to-pink-100 font-medium">
+            <span class="flex items-center justify-center gap-1 sm:gap-2">
+              <svg class="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span class="truncate">{i18n.dashboard_adminPanel()}</span>
+            </span>
           </Button>
         </a>
       {/if}
-      <Button variant="outline" class="w-full">
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-        </svg>
-        {i18n.dashboard_analytics()}
-      </Button>
-      <Button variant="outline" class="w-full">
-        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-        {i18n.dashboard_settings()}
-      </Button>
     </div>
 
     <!-- Balance Cards -->
@@ -267,101 +309,53 @@
       </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="border-b border-gray-200 mb-6">
-      <nav class="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto">
-        <button
-          onclick={() => changeTab('overview')}
-          class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
-            {activeTab === 'overview' 
-              ? 'border-black text-gray-900' 
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-        >
-          {i18n.dashboard_overview()}
-        </button>
-        <button
-          onclick={() => changeTab('listings')}
-          class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
-            {activeTab === 'listings' 
-              ? 'border-black text-gray-900' 
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-        >
-          {i18n.dashboard_listings()} ({stats().activeListings})
-        </button>
-        <button
-          onclick={() => changeTab('orders')}
-          class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
-            {activeTab === 'orders' 
-              ? 'border-black text-gray-900' 
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-        >
-          {i18n.dashboard_orders()}
-        </button>
-        <button
-          onclick={() => changeTab('analytics')}
-          class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
-            {activeTab === 'analytics' 
-              ? 'border-black text-gray-900' 
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-        >
-          {i18n.dashboard_analytics()}
-        </button>
-        <button
-          onclick={() => changeTab('settings')}
-          class="py-2 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors
-            {activeTab === 'settings' 
-              ? 'border-black text-gray-900' 
-              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-        >
-          {i18n.dashboard_settings()}
-        </button>
-      </nav>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white p-4 rounded-lg shadow-xs">
+        <p class="text-sm text-gray-600">{i18n.dashboard_totalRevenue()}</p>
+        <p class="text-xl sm:text-2xl font-bold text-gray-900">${stats().totalRevenue.toFixed(0)}</p>
+        <p class="text-xs text-gray-500 mt-1">{i18n.dashboard_allTime()}</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow-xs">
+        <p class="text-sm text-gray-600">{i18n.dashboard_activeListings()}</p>
+        <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats().activeListings}</p>
+        <p class="text-xs text-gray-500 mt-1">{i18n.dashboard_currentlyLive()}</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow-xs">
+        <p class="text-sm text-gray-600">{i18n.dashboard_totalViews()}</p>
+        <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats().monthlyViews}</p>
+        <p class="text-xs text-gray-500 mt-1">{i18n.dashboard_thisMonth()}</p>
+      </div>
+      <div class="bg-white p-4 rounded-lg shadow-xs">
+        <p class="text-sm text-gray-600">{i18n.dashboard_conversionRate()}</p>
+        <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats().conversionRate.toFixed(1)}%</p>
+        <p class="text-xs text-gray-500 mt-1">{i18n.dashboard_viewsToSales()}</p>
+      </div>
     </div>
 
-    <!-- Tab Content -->
-    {#if activeTab === 'overview'}
-      <!-- Stats Grid -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white p-4 rounded-lg shadow-xs">
-          <p class="text-sm text-gray-600">Total Revenue</p>
-          <p class="text-xl sm:text-2xl font-bold text-gray-900">${stats().totalRevenue.toFixed(0)}</p>
-          <p class="text-xs text-gray-500 mt-1">All time</p>
-        </div>
-        <div class="bg-white p-4 rounded-lg shadow-xs">
-          <p class="text-sm text-gray-600">Active Listings</p>
-          <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats().activeListings}</p>
-          <p class="text-xs text-gray-500 mt-1">Currently live</p>
-        </div>
-        <div class="bg-white p-4 rounded-lg shadow-xs">
-          <p class="text-sm text-gray-600">Total Views</p>
-          <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats().monthlyViews}</p>
-          <p class="text-xs text-gray-500 mt-1">This month</p>
-        </div>
-        <div class="bg-white p-4 rounded-lg shadow-xs">
-          <p class="text-sm text-gray-600">Conversion Rate</p>
-          <p class="text-xl sm:text-2xl font-bold text-gray-900">{stats().conversionRate.toFixed(1)}%</p>
-          <p class="text-xs text-gray-500 mt-1">Views to sales</p>
+    <!-- Recent Orders -->
+    <div class="bg-white rounded-lg shadow-xs mb-6">
+      <div class="p-4 sm:p-6 border-b border-gray-200">
+        <div class="flex justify-between items-center">
+          <h2 class="text-lg font-semibold">{i18n.dashboard_recentOrders()}</h2>
+          <a href="/orders" class="text-sm text-blue-600 hover:underline">{i18n.dashboard_viewAll()}</a>
         </div>
       </div>
-
-      <!-- Recent Orders -->
-      <div class="bg-white rounded-lg shadow-xs mb-6">
-        <div class="p-4 sm:p-6 border-b border-gray-200">
-          <div class="flex justify-between items-center">
-            <h2 class="text-lg font-semibold">Recent Orders</h2>
-            <button onclick={() => activeTab = 'orders'} class="text-sm text-blue-600 hover:underline">View all</button>
+      <div class="overflow-x-auto">
+        {#if recentOrders().length === 0}
+          <div class="p-8 text-center text-gray-500">
+            <p>{i18n.dashboard_noRecentOrders()}</p>
           </div>
-        </div>
-        <div class="overflow-x-auto">
+        {:else}
           <table class="w-full">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Buyer</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{i18n.dashboard_product()}</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{i18n.dashboard_buyer()}</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{i18n.dashboard_price()}</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{i18n.dashboard_status()}</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{i18n.dashboard_time()}</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
@@ -376,290 +370,43 @@
                     </span>
                   </td>
                   <td class="px-4 py-3 text-sm text-gray-500">{timeAgo(order.date)}</td>
-                  <td class="px-4 py-3">
-                    <Button size="sm" variant="outline">View</Button>
-                  </td>
                 </tr>
               {/each}
             </tbody>
           </table>
-        </div>
+        {/if}
       </div>
+    </div>
 
-      <!-- Active Listings Preview -->
-      <div>
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-lg font-semibold">Your Active Listings</h2>
-          <button onclick={() => activeTab = 'listings'} class="text-sm text-blue-600 hover:underline">View all</button>
+    <!-- Active Listings Preview -->
+    <div>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold">{i18n.dashboard_yourActiveListings()}</h2>
+        <a href="/listings" class="text-sm text-blue-600 hover:underline">{i18n.dashboard_manageListings()}</a>
+      </div>
+      {#if activeListings().length === 0}
+        <div class="text-center py-12 bg-white rounded-lg">
+          <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">{i18n.dashboard_noActiveListings()}</h3>
+          <p class="text-gray-500 mb-4">{i18n.dashboard_createFirstListing()}</p>
+          <Button href="/sell">{i18n.dashboard_createListing()}</Button>
         </div>
+      {:else}
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {#each activeListings() as product}
-            <div class="group cursor-pointer">
+            <a href="/product/{product.id}" class="group cursor-pointer">
               <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
                 <img src={product.images[0]} alt={product.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
               </div>
               <p class="text-xs sm:text-sm font-medium truncate">{product.title}</p>
               <p class="text-sm font-bold">${product.price}</p>
-            </div>
+            </a>
           {/each}
         </div>
-      </div>
-
-    {:else if activeTab === 'listings'}
-      <div class="bg-white rounded-lg shadow-xs">
-        <div class="p-4 sm:p-6 border-b border-gray-200">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-            <h2 class="text-lg font-semibold">Manage Listings</h2>
-            <div class="flex space-x-2 w-full sm:w-auto">
-              <input 
-                type="search" 
-                placeholder="Search listings..."
-                class="flex-1 sm:flex-none px-3 py-2 border border-gray-300 rounded-lg text-sm"
-              />
-              <Button size="sm">Filter</Button>
-            </div>
-          </div>
-        </div>
-        {#if tabLoading}
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4 sm:p-6">
-            {#each Array(8) as _}
-              <ProductCardSkeleton />
-            {/each}
-          </div>
-        {:else}
-          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 p-4 sm:p-6">
-            {#each activeListings() as product}
-              <div class="relative group">
-                <ProductCard {product} onclick={() => window.location.href = `/product/${product.id}`} />
-                <div class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button aria-label="Edit product" class="p-1 bg-white rounded-full shadow-lg">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            {/each}
-          </div>
-        {/if}
-      </div>
-
-    {:else if activeTab === 'orders'}
-      <div class="bg-white rounded-lg shadow-xs">
-        <div class="p-4 sm:p-6 border-b border-gray-200">
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-            <h2 class="text-lg font-semibold">Order Management</h2>
-            <div class="flex space-x-2">
-              <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                <option>All Orders</option>
-                <option>Pending Shipment</option>
-                <option>Shipped</option>
-                <option>Delivered</option>
-                <option>Cancelled</option>
-              </select>
-              <Button size="sm" variant="outline">Export</Button>
-            </div>
-          </div>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="w-full">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Buyer</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              {#each [...recentOrders(), ...recentOrders()] as order}
-                <tr class="hover:bg-gray-50">
-                  <td class="px-4 py-3 text-sm text-gray-900">#{order.id}</td>
-                  <td class="px-4 py-3 text-sm text-gray-900">{order.productTitle}</td>
-                  <td class="px-4 py-3 text-sm text-gray-600">{order.buyerName}</td>
-                  <td class="px-4 py-3 text-sm font-medium text-gray-900">${order.price}</td>
-                  <td class="px-4 py-3">
-                    <span class="inline-flex px-2 py-1 text-xs rounded-full {getStatusColor(order.status)}">
-                      {getStatusText(order.status)}
-                    </span>
-                  </td>
-                  <td class="px-4 py-3 text-sm text-gray-500">{timeAgo(order.date)}</td>
-                  <td class="px-4 py-3">
-                    <div class="flex space-x-2">
-                      <Button size="sm" variant="outline">View</Button>
-                      {#if order.status === 'pending_shipment'}
-                        <Button size="sm">Ship</Button>
-                      {/if}
-                    </div>
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-    {:else if activeTab === 'analytics'}
-      <div class="space-y-6">
-        <!-- Performance Chart -->
-        <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6">
-          <h2 class="text-lg font-semibold mb-4">Performance Overview</h2>
-          <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-            <p class="text-gray-500">Chart will be implemented with a charting library</p>
-          </div>
-        </div>
-
-        <!-- Top Products -->
-        <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6">
-          <h2 class="text-lg font-semibold mb-4">Top Performing Products</h2>
-          <div class="space-y-4">
-            {#each activeListings().slice(0, 5) as product, i}
-              <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                  <span class="text-sm font-medium text-gray-500">#{i + 1}</span>
-                  <img src={product.images[0]} alt={product.title} class="w-10 h-10 rounded-sm object-cover" />
-                  <div>
-                    <p class="text-sm font-medium text-gray-900">{product.title}</p>
-                    <p class="text-xs text-gray-500">{product.view_count || 0} views</p>
-                  </div>
-                </div>
-                <p class="text-sm font-bold">${product.price}</p>
-              </div>
-            {/each}
-          </div>
-        </div>
-
-        <!-- Traffic Sources -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6">
-            <h2 class="text-lg font-semibold mb-4">Traffic Sources</h2>
-            <div class="space-y-3">
-              <div>
-                <div class="flex justify-between text-sm mb-1">
-                  <span>Search</span>
-                  <span>45%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-blue-600 h-2 rounded-full" style="width: 45%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between text-sm mb-1">
-                  <span>Direct</span>
-                  <span>30%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-green-600 h-2 rounded-full" style="width: 30%"></div>
-                </div>
-              </div>
-              <div>
-                <div class="flex justify-between text-sm mb-1">
-                  <span>Social</span>
-                  <span>25%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                  <div class="bg-purple-600 h-2 rounded-full" style="width: 25%"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6">
-            <h2 class="text-lg font-semibold mb-4">Customer Demographics</h2>
-            <div class="space-y-3">
-              <div class="flex justify-between">
-                <span class="text-sm text-gray-600">Age 18-24</span>
-                <span class="text-sm font-medium">32%</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-sm text-gray-600">Age 25-34</span>
-                <span class="text-sm font-medium">45%</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-sm text-gray-600">Age 35-44</span>
-                <span class="text-sm font-medium">18%</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-sm text-gray-600">Age 45+</span>
-                <span class="text-sm font-medium">5%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    {:else if activeTab === 'settings'}
-      <div class="max-w-2xl">
-        <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6 mb-6">
-          <h2 class="text-lg font-semibold mb-4">Shop Settings</h2>
-          <div class="space-y-4">
-            <div>
-              <label for="shop-name" class="block text-sm font-medium text-gray-700 mb-1">Shop Name</label>
-              <input id="shop-name" type="text" value={data.profile?.username || ''} class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
-            </div>
-            <div>
-              <label for="shop-description" class="block text-sm font-medium text-gray-700 mb-1">Shop Description</label>
-              <textarea id="shop-description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg" placeholder="Tell buyers about your shop..."></textarea>
-            </div>
-            <div>
-              <div class="text-sm font-medium text-gray-700 mb-1">Vacation Mode</div>
-              <div class="flex items-center space-x-3">
-                <button aria-label="Toggle vacation mode" class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200">
-                  <span class="inline-block h-4 w-4 transform rounded-full bg-white transition translate-x-1"></span>
-                </button>
-                <span class="text-sm text-gray-600">Your shop is currently active</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6 mb-6">
-          <h2 class="text-lg font-semibold mb-4">Shipping Settings</h2>
-          <div class="space-y-4">
-            <div>
-              <label for="processing-time" class="block text-sm font-medium text-gray-700 mb-1">Processing Time</label>
-              <select id="processing-time" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                <option>1-2 business days</option>
-                <option>3-5 business days</option>
-                <option>1 week</option>
-              </select>
-            </div>
-            <div>
-              <label for="shipping-price" class="block text-sm font-medium text-gray-700 mb-1">Default Shipping Price</label>
-              <input id="shipping-price" type="number" value="8.99" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-xs p-4 sm:p-6">
-          <h2 class="text-lg font-semibold mb-4">Payment Settings</h2>
-          <div class="space-y-4">
-            <div>
-              <div class="text-sm font-medium text-gray-700 mb-1">Bank Account</div>
-              <div class="flex items-center justify-between p-3 border border-gray-300 rounded-lg">
-                <span class="text-sm">**** **** **** 1234</span>
-                <Button size="sm" variant="outline">Change</Button>
-              </div>
-            </div>
-            <div>
-              <label for="payout-schedule" class="block text-sm font-medium text-gray-700 mb-1">Payout Schedule</label>
-              <select id="payout-schedule" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
-                <option>Daily</option>
-                <option>Weekly</option>
-                <option>Monthly</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-6">
-          <Button size="lg" class="w-full">Save Settings</Button>
-        </div>
-      </div>
-    {/if}
+      {/if}
+    </div>
   </div>
 </div>
 
@@ -685,4 +432,5 @@
     onDismiss={handleTutorialDismiss}
     onNext={handleTutorialNext}
   />
+{/if}
 {/if}

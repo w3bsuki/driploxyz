@@ -14,9 +14,12 @@
     seller_unknown: string;
     common_currency: string;
     product_addToFavorites: string;
+    condition_brandNewWithTags?: string;
+    condition_newWithoutTags?: string;
     condition_new: string;
     condition_likeNew: string;
     condition_good: string;
+    condition_worn?: string;
     condition_fair: string;
     categoryTranslation?: (category: string) => string;
   }
@@ -104,9 +107,12 @@
               unknownSeller: translations.seller_unknown,
               currency: translations.common_currency,
               addToFavorites: translations.product_addToFavorites,
+              brandNewWithTags: translations.condition_brandNewWithTags,
+              newWithoutTags: translations.condition_newWithoutTags,
               new: translations.condition_new,
               likeNew: translations.condition_likeNew,
               good: translations.condition_good,
+              worn: translations.condition_worn,
               fair: translations.condition_fair,
               formatPrice: formatPrice,
               categoryTranslation: translations.categoryTranslation

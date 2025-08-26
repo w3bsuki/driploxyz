@@ -28,12 +28,11 @@ export const favoritesActions = {
     }));
 
     try {
-      const response = await fetch('/api/favorites', {
+      const response = await fetch(`/api/favorites/${productId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ productId })
+        }
       });
 
       const data = await response.json();
@@ -43,20 +42,25 @@ export const favoritesActions = {
       }
 
       // Update store state
-      favoritesStore.update(state => ({
-        ...state,
-        isLoading: false,
-        favorites: {
-          ...state.favorites,
-          [productId]: data.isFavorited
-        },
-        favoriteCounts: {
-          ...state.favoriteCounts,
-          [productId]: data.favoriteCount
-        }
-      }));
+      favoritesStore.update(state => {
+        const newFavorited = data.favorited;
+        const newCount = data.favoriteCount !== undefined ? data.favoriteCount : state.favoriteCounts[productId] || 0;
+        
+        return {
+          ...state,
+          isLoading: false,
+          favorites: {
+            ...state.favorites,
+            [productId]: newFavorited
+          },
+          favoriteCounts: {
+            ...state.favoriteCounts,
+            [productId]: newCount
+          }
+        };
+      });
 
-      return data.isFavorited;
+      return data.favorited;
 
     } catch (error) {
       favoritesStore.update(state => ({

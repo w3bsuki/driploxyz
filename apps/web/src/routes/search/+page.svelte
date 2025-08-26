@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ProductCard, Button, SearchBar, MegaMenu, CategorySidebar, ProductCardSkeleton, BottomNav, type Product, type CategoryData } from '@repo/ui';
+  import { ProductCard, Button, SearchBar, SearchDropdown, SmartStickySearch, MegaMenu, CategorySidebar, ProductCardSkeleton, BottomNav, type Product, type CategoryData } from '@repo/ui';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { goto } from '$app/navigation';
   import { page, navigating } from '$app/stores';
@@ -45,8 +45,29 @@
     }
   });
   
-  // Category data structure with subcategories using i18n
-  const categoryData = $derived<CategoryData>(() => ({
+  // Use category data from server or fallback to default structure
+  const categoryData = $derived<CategoryData>(() => {
+    // If we have real category hierarchy from server, use it
+    if (data.categoryHierarchy && Object.keys(data.categoryHierarchy).length > 0) {
+      const hierarchy: CategoryData = {};
+      
+      // Transform server data to match component format
+      Object.entries(data.categoryHierarchy).forEach(([slug, catData]: [string, any]) => {
+        hierarchy[slug] = {
+          name: catData.name,
+          icon: getCategoryIcon(catData.name),
+          subcategories: (catData.subcategories || []).map((sub: any) => ({
+            name: sub.name,
+            icon: getSubcategoryIcon(sub.name)
+          }))
+        };
+      });
+      
+      return hierarchy;
+    }
+    
+    // Fallback to hardcoded structure
+    return {
     women: {
       name: i18n.category_women(),
       icon: '👗',
@@ -183,7 +204,53 @@
         { name: 'Wallets', icon: '👛' }
       ]
     }
-  }));
+  };
+  });
+  
+  // Helper functions for category icons
+  function getCategoryIcon(name: string): string {
+    const iconMap: Record<string, string> = {
+      'Women': '👗',
+      'Men': '👔',
+      'Kids': '👶',
+      'Unisex': '👥',
+      'Shoes': '👟',
+      'Bags': '👜',
+      'Accessories': '💍',
+      'Home': '🏠',
+      'Beauty': '💄',
+      'Pets': '🐕'
+    };
+    return iconMap[name] || '📦';
+  }
+  
+  function getSubcategoryIcon(name: string): string {
+    const iconMap: Record<string, string> = {
+      'Dresses': '👗',
+      'Tops': '👚',
+      'T-Shirts': '👕',
+      'Shirts': '👔',
+      'Jeans': '👖',
+      'Pants': '👖',
+      'Skirts': '👗',
+      'Jackets': '🧥',
+      'Shoes': '👟',
+      'Bags': '👜',
+      'Accessories': '💍',
+      'Watches': '⌚',
+      'Sneakers': '👟',
+      'Boots': '🥾',
+      'Heels': '👠',
+      'Sandals': '👡'
+    };
+    // Try to find a match in the name
+    for (const [key, icon] of Object.entries(iconMap)) {
+      if (name.includes(key)) {
+        return icon;
+      }
+    }
+    return '🏷️';
+  }
   
   
   // Smart filter data based on category
@@ -342,6 +409,31 @@
     // Toggle mobile filter drawer (size, brand, condition, price)
     showFilters = !showFilters;
   }
+
+  // Quick filters for sticky search (most popular)
+  const stickyQuickFilters = [
+    { label: i18n.filter_under20(), value: 'price_under_20', style: 'price' },
+    { label: i18n.filter_newToday(), value: 'new_today', style: 'new' },
+    { label: `${i18n.product_size()} M`, value: 'size_M', style: 'size' },
+    { label: `${i18n.product_size()} L`, value: 'size_L', style: 'size' }
+  ];
+
+  function handleStickyFilterClick(filterValue: string) {
+    const url = new URL('/search', window.location.origin);
+    if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+    
+    if (filterValue.startsWith('price_under_')) {
+      const price = filterValue.replace('price_under_', '');
+      url.searchParams.set('max_price', price);
+    } else if (filterValue.startsWith('size_')) {
+      const size = filterValue.replace('size_', '');
+      url.searchParams.set('size', size);
+    } else if (filterValue === 'new_today') {
+      url.searchParams.set('sort', 'newest');
+    }
+    
+    goto(url.pathname + url.search);
+  }
 </script>
 
 <svelte:head>
@@ -351,25 +443,23 @@
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
   
   <!-- Clean Search Section with Dynamic Pills -->
-  <div class="bg-white border-b">
+  <div id="search-main-section" class="bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-      <!-- Main Search Bar -->
-      <div class="relative mb-3">
-        <SearchBar 
+      <!-- Main Search Bar with Dropdown -->
+      <div class="relative mb-4">
+        <SearchDropdown 
           bind:value={searchQuery}
           placeholder={i18n.search_placeholder()}
           onSearch={handleSearch}
-          onFilter={() => {}}
-          showCategoriesButton={false}
         />
         {#if activeFiltersCount() > 0}
-          <div class="absolute top-2 right-12 h-5 w-5 bg-black text-white text-xs rounded-full flex items-center justify-center pointer-events-none">
+          <div class="absolute top-2 right-2 h-5 w-5 bg-black text-white text-xs rounded-full flex items-center justify-center pointer-events-none z-10">
             {activeFiltersCount()}
           </div>
         {/if}
       </div>
       <!-- Main Category Pills (Row 1) -->
-      <div class="flex overflow-x-auto scrollbar-hide gap-2">
+      <div class="flex overflow-x-auto scrollbar-hide gap-2 mb-3">
         <button
           onclick={async () => {
             selectedMainCategory = null;
@@ -385,7 +475,7 @@
         >
           {i18n.search_all()}
         </button>
-        {#each Object.entries(categoryData()).slice(0, 8) as [key, category]}
+        {#each Object.entries(categoryData()).filter(([key]) => ['women', 'men', 'kids', 'unisex', 'shoes', 'bags', 'accessories', 'home'].includes(key)).slice(0, 8) as [key, category]}
           <button
             onclick={async () => {
               selectedMainCategory = selectedMainCategory === key ? null : key;
@@ -410,7 +500,7 @@
       
       <!-- Subcategory Pills (Row 2) - Dynamic based on selected main category -->
       {#if selectedMainCategory && categoryData()[selectedMainCategory]}
-        <div class="flex overflow-x-auto scrollbar-hide gap-2 pb-1">
+        <div class="flex overflow-x-auto scrollbar-hide gap-2 mb-3">
           <button
             onclick={async () => {
               selectedSubcategory = null;
@@ -448,16 +538,21 @@
       {/if}
       
       <!-- Quick Filters Row (Always visible) -->
-      <div class="flex overflow-x-auto scrollbar-hide gap-2 pt-1">
+      <div class="flex overflow-x-auto scrollbar-hide gap-2 pb-2">
         <button
           onclick={async () => {
             const url = new URL('/search', window.location.origin);
             if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
             if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
             url.searchParams.set('max_price', '20');
+            priceMax = '20'; // Update local state
             await goto(url.pathname + url.search);
           }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-green-100 text-green-800 hover:bg-green-200 flex items-center gap-1"
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
+            {priceMax === '20' 
+              ? 'bg-green-600 text-white' 
+              : 'bg-green-100 text-green-800 hover:bg-green-200'}"
         >
           <span>💰</span>
           <span>{i18n.filter_under20()}</span>
@@ -467,10 +562,15 @@
             const url = new URL('/search', window.location.origin);
             if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
             if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
             url.searchParams.set('sort', 'newest');
+            sortBy = 'newest'; // Update local state
             await goto(url.pathname + url.search);
           }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-blue-100 text-blue-800 hover:bg-blue-200 flex items-center gap-1"
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
+            {sortBy === 'newest' 
+              ? 'bg-blue-600 text-white' 
+              : 'bg-blue-100 text-blue-800 hover:bg-blue-200'}"
         >
           <span>🆕</span>
           <span>{i18n.filter_newToday()}</span>
@@ -480,10 +580,15 @@
             const url = new URL('/search', window.location.origin);
             if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
             if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
             url.searchParams.set('condition', 'new');
+            selectedCondition = 'new'; // Update local state
             await goto(url.pathname + url.search);
           }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-purple-100 text-purple-800 hover:bg-purple-200 flex items-center gap-1"
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
+            {selectedCondition === 'new' 
+              ? 'bg-purple-600 text-white' 
+              : 'bg-purple-100 text-purple-800 hover:bg-purple-200'}"
         >
           <span>🏷️</span>
           <span>{i18n.condition_newWithTags()}</span>
@@ -493,10 +598,15 @@
             const url = new URL('/search', window.location.origin);
             if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
             if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
             url.searchParams.set('brand', 'Nike');
+            selectedBrand = 'Nike'; // Update local state
             await goto(url.pathname + url.search);
           }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-gray-100 text-gray-800 hover:bg-gray-200"
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
+            {selectedBrand === 'Nike' 
+              ? 'bg-gray-800 text-white' 
+              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}"
         >
           Nike
         </button>
@@ -505,10 +615,15 @@
             const url = new URL('/search', window.location.origin);
             if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
             if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
             url.searchParams.set('brand', 'Adidas');
+            selectedBrand = 'Adidas'; // Update local state
             await goto(url.pathname + url.search);
           }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-gray-100 text-gray-800 hover:bg-gray-200"
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
+            {selectedBrand === 'Adidas' 
+              ? 'bg-gray-800 text-white' 
+              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}"
         >
           Adidas
         </button>
@@ -517,10 +632,15 @@
             const url = new URL('/search', window.location.origin);
             if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
             if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
             url.searchParams.set('brand', 'Zara');
+            selectedBrand = 'Zara'; // Update local state
             await goto(url.pathname + url.search);
           }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-gray-100 text-gray-800 hover:bg-gray-200"
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
+            {selectedBrand === 'Zara' 
+              ? 'bg-gray-800 text-white' 
+              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}"
         >
           Zara
         </button>
@@ -529,10 +649,15 @@
             const url = new URL('/search', window.location.origin);
             if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
             if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
             url.searchParams.set('size', 'M');
+            selectedSize = 'M'; // Update local state
             await goto(url.pathname + url.search);
           }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-gray-100 text-gray-800 hover:bg-gray-200"
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
+            {selectedSize === 'M' 
+              ? 'bg-gray-800 text-white' 
+              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}"
         >
           {i18n.product_size()} M
         </button>
@@ -541,10 +666,15 @@
             const url = new URL('/search', window.location.origin);
             if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
             if (selectedMainCategory) url.searchParams.set('category', selectedMainCategory);
+            if (selectedSubcategory) url.searchParams.set('subcategory', selectedSubcategory);
             url.searchParams.set('size', 'L');
+            selectedSize = 'L'; // Update local state
             await goto(url.pathname + url.search);
           }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all bg-gray-100 text-gray-800 hover:bg-gray-200"
+          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
+            {selectedSize === 'L' 
+              ? 'bg-gray-800 text-white' 
+              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}"
         >
           {i18n.product_size()} L
         </button>
@@ -921,12 +1051,29 @@
     </div>
   </div>
 
+<!-- Smart Sticky Search for Search Page -->
+<SmartStickySearch 
+  bind:value={searchQuery}
+  onSearch={handleSearch}
+  placeholder={i18n.search_placeholder()}
+  quickFilters={stickyQuickFilters}
+  onFilterClick={handleStickyFilterClick}
+  observeTarget="#search-main-section"
+/>
+
 {#if !showMegaMenu}
   <BottomNav 
     currentPath={$page.url.pathname}
     isNavigating={!!$navigating}
     navigatingTo={$navigating?.to?.url.pathname}
     unreadMessageCount={$unreadMessageCount}
+    labels={{
+      home: i18n.nav_home(),
+      search: i18n.nav_search(),
+      sell: i18n.nav_sell(),
+      messages: i18n.nav_messages(),
+      profile: i18n.nav_profile()
+    }}
   />
 {/if}
 

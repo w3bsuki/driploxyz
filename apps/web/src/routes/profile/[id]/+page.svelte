@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Avatar, ProductCard, BrandBadge, NewSellerBadge, AdminBadge, PremiumBadge, BottomNav } from '@repo/ui';
+  import { Button, Avatar, ProductCard, UserBadge, BottomNav } from '@repo/ui';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
@@ -12,7 +12,7 @@
   
   let { data }: Props = $props();
   
-  let activeTab = $state<'posts' | 'reviews' | 'about'>('posts');
+  let activeTab = $state<'posts' | 'reviews' | 'about' | 'likes'>('posts');
   let isFollowing = $state(data.isFollowing || false);
   let showFollowersModal = $state(false);
   let showFollowingModal = $state(false);
@@ -105,6 +105,15 @@
             <div class="text-lg font-semibold">{data.profile.active_listings || 0}</div>
             <div class="text-xs text-gray-600">{i18n.profile_posts()}</div>
           </div>
+          {#if data.isOwnProfile}
+            <button
+              onclick={() => activeTab = 'likes'}
+              class="hover:bg-gray-50 rounded p-1"
+            >
+              <div class="text-lg font-semibold">{data.profile.favorites_count || 0}</div>
+              <div class="text-xs text-gray-600">{i18n.profile_likes ? i18n.profile_likes() : 'Likes'}</div>
+            </button>
+          {/if}
           <button 
             onclick={async () => {
               showFollowersModal = true;
@@ -153,9 +162,16 @@
             <a href="/profile/edit" class="flex-1">
               <Button variant="outline" size="sm" class="w-full text-sm">{i18n.profile_editProfile()}</Button>
             </a>
-            <a href="/dashboard" class="flex-1">
-              <Button size="sm" class="w-full text-sm">{i18n.profile_dashboard()}</Button>
-            </a>
+            <Button 
+              onclick={() => {
+                console.log('Account button clicked');
+                window.location.href = '/dashboard';
+              }}
+              size="sm" 
+              class="flex-1 text-sm"
+            >
+              {i18n.profile_dashboard()}
+            </Button>
           </div>
         {:else}
           <div class="flex space-x-2">
@@ -180,24 +196,15 @@
       <div class="flex items-center space-x-2 flex-wrap gap-y-1">
         <h1 class="font-semibold text-sm">{data.profile.username}</h1>
         
-        <!-- Admin Badge -->
-        {#if data.profile.role === 'admin' || data.profile.account_type === 'admin'}
-          <AdminBadge size="sm" />
-        {/if}
-        
-        <!-- Premium Badge -->
-        {#if data.profile.account_type === 'premium'}
-          <PremiumBadge size="sm" />
-        {/if}
-        
-        <!-- Brand Badge -->
-        {#if data.profile.brand_status === 'active' || data.profile.account_type === 'brand'}
-          <BrandBadge size="sm" verified={data.profile.verified} />
-        {/if}
-        
-        <!-- New Seller Badge (shows for first 30 days after completing onboarding) -->
-        {#if data.profile.onboarding_completed && data.profile.sales_count < 5 && data.profile.role !== 'admin' && data.profile.account_type === 'personal'}
-          <NewSellerBadge size="sm" />
+        <!-- User Badge based on account type -->
+        {#if data.profile.account_type === 'brand'}
+          <UserBadge type="brand" size="sm" />
+        {:else if data.profile.account_type === 'premium' || data.profile.account_type === 'pro'}
+          <UserBadge type="pro" size="sm" />
+        {:else if !data.profile.account_type || data.profile.account_type === 'personal'}
+          {#if data.profile.sales_count < 5}
+            <UserBadge type="new_seller" size="sm" />
+          {/if}
         {/if}
         
         <!-- Rating -->
@@ -266,6 +273,17 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       </button>
+      {#if data.isOwnProfile}
+        <button
+          onclick={() => activeTab = 'likes'}
+          class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'likes' ? 'border-black' : 'border-transparent'}"
+          aria-label="Likes"
+        >
+          <svg class="w-6 h-6 mx-auto {activeTab === 'likes' ? 'text-black' : 'text-gray-400'}" fill="{activeTab === 'likes' ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </button>
+      {/if}
     </div>
   </div>
 
@@ -370,6 +388,50 @@
           </div>
         </div>
       </div>
+    {:else if activeTab === 'likes'}
+      <!-- Wishlist/Likes -->
+      {#if data.favorites && data.favorites.length > 0}
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {#each data.favorites as favorite}
+            <button 
+              onclick={() => goto(`/product/${favorite.id}`)}
+              class="bg-white border rounded-lg overflow-hidden hover:shadow-md transition-shadow relative group"
+            >
+              {#if favorite.is_sold}
+                <div class="absolute inset-0 bg-black bg-opacity-50 z-10 flex items-center justify-center">
+                  <span class="text-white font-semibold text-lg">SOLD</span>
+                </div>
+              {/if}
+              {#if favorite.images && favorite.images[0]}
+                <img 
+                  src={favorite.images[0]} 
+                  alt={favorite.title}
+                  class="w-full h-40 object-cover"
+                />
+              {:else}
+                <div class="w-full h-40 bg-gray-200 flex items-center justify-center">
+                  <span class="text-gray-400">{i18n.product_noImage()}</span>
+                </div>
+              {/if}
+              <div class="p-2">
+                <h4 class="font-medium text-sm line-clamp-1">{favorite.title}</h4>
+                <p class="text-lg font-semibold">{i18n.common_currency()}{favorite.price}</p>
+                {#if favorite.seller_name}
+                  <p class="text-xs text-gray-500">by {favorite.seller_name}</p>
+                {/if}
+              </div>
+            </button>
+          {/each}
+        </div>
+      {:else}
+        <div class="text-center py-12 text-gray-500">
+          <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+          <p class="text-lg font-medium mb-2">{i18n.profile_noFavorites ? i18n.profile_noFavorites() : 'No favorites yet'}</p>
+          <p class="text-sm">{i18n.profile_startBrowsing ? i18n.profile_startBrowsing() : 'Start browsing to add items to your wishlist'}</p>
+        </div>
+      {/if}
     {/if}
   </div>
 </div>
@@ -477,4 +539,11 @@
   isNavigating={!!$navigating}
   navigatingTo={$navigating?.to?.url.pathname}
   unreadMessageCount={$unreadMessageCount}
+  labels={{
+    home: i18n.nav_home(),
+    search: i18n.nav_search(),
+    sell: i18n.nav_sell(),
+    messages: i18n.nav_messages(),
+    profile: i18n.nav_profile()
+  }}
 />

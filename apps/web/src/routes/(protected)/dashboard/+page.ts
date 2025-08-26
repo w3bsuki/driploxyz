@@ -1,13 +1,12 @@
-import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
 /**
  * Dashboard Page Load Function
  * 
  * This is the primary landing page after onboarding completion.
- * Must check onboarding status and redirect incomplete users.
+ * Uses profile from parent layout to avoid re-fetching.
  */
-export const load: PageLoad = async ({ parent, url }) => {
+export const load: PageLoad = async ({ parent }) => {
   const { supabase, user, profile } = await parent();
 
   console.log('[DASHBOARD] Loading dashboard for user:', user?.email);
@@ -19,36 +18,26 @@ export const load: PageLoad = async ({ parent, url }) => {
   });
 
   if (!user) {
-    console.log('[DASHBOARD] No user, redirecting to login');
-    throw redirect(303, '/login');
+    console.log('[DASHBOARD] No user found in parent data');
+    return {
+      products: [],
+      orders: [],
+      profile: null,
+      user: null
+    };
   }
 
-  // CRITICAL: Re-fetch profile directly to ensure we have the latest data
-  // This prevents cache issues where the profile might be stale
-  const { data: freshProfile, error: profileError } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
-
-  if (profileError) {
-    console.error('[DASHBOARD] Error fetching fresh profile:', profileError);
+  // Trust the profile from parent layout - it's already fresh from the server
+  // This prevents unnecessary re-fetching and potential loops
+  
+  // Only redirect if profile explicitly shows onboarding not completed
+  // Allow dashboard access if onboarding_completed is null (for backward compatibility)
+  if (profile && profile.onboarding_completed === false) {
+    console.log('[DASHBOARD] Onboarding not completed, user should complete it');
+    // Don't redirect here, let the UI show a message instead
   }
 
-  console.log('[DASHBOARD] Fresh profile data:', {
-    hasProfile: !!freshProfile,
-    onboardingCompleted: freshProfile?.onboarding_completed,
-    accountType: freshProfile?.account_type,
-    username: freshProfile?.username
-  });
-
-  // Use fresh profile for the check
-  if (!freshProfile || freshProfile.onboarding_completed !== true) {
-    console.log('[DASHBOARD] User has not completed onboarding, redirecting');
-    throw redirect(303, '/onboarding');
-  }
-
-  console.log('[DASHBOARD] User has completed onboarding, loading dashboard data');
+  console.log('[DASHBOARD] Loading dashboard data');
 
   // Fetch user's products with images and categories
   const { data: products, error: productsError } = await supabase
@@ -86,17 +75,17 @@ export const load: PageLoad = async ({ parent, url }) => {
     .order('created_at', { ascending: false });
 
   if (productsError) {
-    console.error('Error fetching products:', productsError);
+    console.error('[DASHBOARD] Error fetching products:', productsError);
   }
 
   if (ordersError) {
-    console.error('Error fetching orders:', ordersError);
+    console.error('[DASHBOARD] Error fetching orders:', ordersError);
   }
 
   return {
     products: products || [],
     orders: orders || [],
-    profile,
+    profile: profile || null,
     user
   };
 };

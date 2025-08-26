@@ -162,7 +162,29 @@
       goto('/login');
       return;
     }
-    goto(`/checkout/${data.product.id}`);
+    
+    // Debug logging
+    console.log('handleBuyNow - data.product:', data.product);
+    console.log('handleBuyNow - data.product.id:', data.product.id);
+    console.log('handleBuyNow - typeof data.product.id:', typeof data.product.id);
+    
+    if (!data.product?.id) {
+      console.error('Product ID is missing!', data.product);
+      return;
+    }
+    
+    // Ensure product ID is a string
+    const productId = typeof data.product.id === 'string' 
+      ? data.product.id 
+      : String(data.product.id);
+    
+    if (productId === '[object Object]' || productId === 'undefined' || productId === 'null') {
+      console.error('Invalid product ID:', productId, data.product);
+      return;
+    }
+    
+    console.log('Going to checkout with productId:', productId);
+    goto(`/checkout/${productId}`);
   }
   
   async function handleMessage() {

@@ -1,7 +1,7 @@
 import type { Product } from '../types';
 interface Props {
     product: Product;
-    onFavorite?: (product: Product) => void;
+    onFavorite?: (productId: string) => void | Promise<void>;
     onclick?: (product: Product) => void;
     favorited?: boolean;
     highlighted?: boolean;

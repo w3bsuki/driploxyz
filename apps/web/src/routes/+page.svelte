@@ -1,10 +1,8 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { SearchBar, CategoryDropdown, BottomNav, AuthPopup, PromotedHighlights, FeaturedProducts } from '@repo/ui';
+	import { SearchBar, HeroSearchDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, PromotedHighlights, FeaturedProducts, LoadingSpinner } from '@repo/ui';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
-	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
-	import TrendingDropdown from '$lib/components/TrendingDropdown.svelte';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
 	import { goto } from '$app/navigation';
 	import { page, navigating } from '$app/stores';
@@ -41,6 +39,38 @@
 		
 	});
 	
+	// Initialize favorites from server data on mount
+	$effect(() => {
+		if (browser && data.user && data.userFavorites) {
+			// Initialize favorites state from server
+			favoritesStore.update(state => ({
+				...state,
+				favorites: {
+					...state.favorites,
+					...data.userFavorites
+				}
+			}));
+			
+			// Initialize favorite counts from products
+			const counts: Record<string, number> = {};
+			[...promotedProducts, ...products].forEach(product => {
+				if (product.favorites_count !== undefined) {
+					counts[product.id] = product.favorites_count;
+				}
+			});
+			
+			if (Object.keys(counts).length > 0) {
+				favoritesStore.update(state => ({
+					...state,
+					favoriteCounts: {
+						...state.favoriteCounts,
+						...counts
+					}
+				}));
+			}
+		}
+	});
+	
 	// Lazy load heavy components
 	$effect(() => {
 		if (browser) {
@@ -67,7 +97,7 @@
 			created_at: product.created_at,
 			updated_at: product.updated_at || product.created_at,
 			sold: false,
-			favorites_count: 0,
+			favorite_count: product.favorite_count || 0,
 			views_count: 0,
 			// Category fields for proper display
 			category_name: product.category_name,
@@ -77,7 +107,9 @@
 			// Seller information
 			seller_name: product.seller_name,
 			seller_avatar: product.seller_avatar,
-			seller_rating: product.seller_rating
+			seller_rating: product.seller_rating,
+			// PROMOTION: Keep the is_promoted field from server
+			is_promoted: product.is_promoted || false
 		};
 	}
 
@@ -292,17 +324,67 @@
 		return CATEGORY_ICONS[categoryName] || DEFAULT_CATEGORY_ICON;
 	}
 
-	// Load favorites for products when user is authenticated
-	$effect(() => {
-		if (data.user && browser) {
-			const productIds = [
-				...(data.promotedProducts || []).map(p => p.id),
-				...(data.featuredProducts || []).map(p => p.id)
-			];
+	// Prepare quick filters for hero search
+	const heroQuickFilters = [
+		{ label: i18n.filter_under20(), value: 'price_under_20', style: 'price' },
+		{ label: i18n.filter_newToday(), value: 'new_today', style: 'new' },
+		{ label: i18n.condition_newWithTags(), value: 'condition_new', style: 'condition' },
+		{ label: 'Nike', value: 'brand_Nike', style: 'brand' },
+		{ label: 'Adidas', value: 'brand_Adidas', style: 'brand' },
+		{ label: `${i18n.product_size()} M`, value: 'size_M', style: 'size' },
+		{ label: `${i18n.product_size()} L`, value: 'size_L', style: 'size' }
+	];
 
-			if (productIds.length > 0) {
-				favoritesActions.loadMultipleFavoriteStatuses(productIds);
-			}
+	function handleHeroFilterClick(filterValue: string) {
+		const url = new URL('/search', window.location.origin);
+		
+		if (filterValue.startsWith('price_under_')) {
+			const price = filterValue.replace('price_under_', '');
+			url.searchParams.set('max_price', price);
+		} else if (filterValue.startsWith('brand_')) {
+			const brand = filterValue.replace('brand_', '');
+			url.searchParams.set('brand', brand);
+		} else if (filterValue.startsWith('size_')) {
+			const size = filterValue.replace('size_', '');
+			url.searchParams.set('size', size);
+		} else if (filterValue.startsWith('condition_')) {
+			const condition = filterValue.replace('condition_', '');
+			url.searchParams.set('condition', condition);
+		} else if (filterValue === 'new_today') {
+			url.searchParams.set('sort', 'newest');
+		}
+		
+		goto(url.pathname + url.search);
+	}
+
+	// Initialize favorites from server data
+	$effect(() => {
+		if (data.user && browser && data.userFavorites) {
+			// Initialize the favorites store with server data
+			favoritesStore.update(state => ({
+				...state,
+				favorites: {
+					...state.favorites,
+					...data.userFavorites
+				}
+			}));
+			
+			// Also initialize favorite counts from products
+			const favCounts: Record<string, number> = {};
+			[...(data.promotedProducts || []), ...(data.featuredProducts || [])]
+				.forEach(p => {
+					if (p.favorite_count !== undefined) {
+						favCounts[p.id] = p.favorite_count;
+					}
+				});
+			
+			favoritesStore.update(state => ({
+				...state,
+				favoriteCounts: {
+					...state.favoriteCounts,
+					...favCounts
+				}
+			}));
 		}
 	});
 
@@ -328,55 +410,27 @@
 		<!-- Hero Search -->
 		<div class="bg-white border-b border-gray-100">
 			<div class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
-				<!-- Search Bar with Dropdown -->
-				<div class="max-w-2xl mx-auto relative mb-3">
-					<SearchBar 
+				<!-- Hero Search with Trending Dropdown -->
+				<div id="hero-search-container" class="max-w-2xl mx-auto relative mb-3">
+					<HeroSearchDropdown 
 						bind:value={searchQuery}
 						onSearch={handleSearch}
-						onFilter={handleFilter}
 						placeholder={i18n.search_placeholder()}
-						categoriesText={i18n.search_categories()}
+						categoriesText={i18n.search_categories ? i18n.search_categories() : 'Categories'}
+						trendingProducts={products.slice(0, 8)}
+						topSellers={sellers}
+						quickFilters={heroQuickFilters}
+						onProductClick={handleProductClick}
+						onSellerClick={handleSellerClick}
+						onFilterClick={handleHeroFilterClick}
+						{formatPrice}
+						translations={{
+							trendingNow: i18n.trending_hotPicks ? i18n.trending_hotPicks() : 'Trending Now',
+							topSellers: i18n.promoted_premiumSellers ? i18n.promoted_premiumSellers() : 'Top Sellers',
+							items: i18n.seller_itemsCount ? i18n.seller_itemsCount() : 'items',
+							viewAllResults: i18n.search_viewAllResults ? i18n.search_viewAllResults() : 'View all results for'
+						}}
 					/>
-					
-					<!-- Trending Dropdown - positioned right under search bar -->
-					{#if showCategoryDropdown}
-						<!-- Click outside to close -->
-						<button 
-							class="fixed inset-0 z-40" 
-							onclick={() => (showCategoryDropdown = false)}
-							aria-label="Close dropdown"
-						/>
-						<div class="absolute top-full left-0 right-0 mt-2 z-50">
-							<TrendingDropdown
-								trendingProducts={products.slice(0, 8)}
-								recentPriceDrops={products.slice(4, 8)}
-								topSellers={sellers}
-								onProductClick={(product) => {
-									showCategoryDropdown = false;
-									handleProductClick(product);
-								}}
-								onSellerClick={(seller) => {
-									showCategoryDropdown = false;
-									handleSellerClick(seller);
-								}}
-								onFilterClick={(filter) => {
-									showCategoryDropdown = false;
-									// Navigate based on filter
-									if (filter === 'price_under_20') {
-										goto('/search?max_price=20');
-									} else if (filter === 'new_today') {
-										goto('/search?sort=newest');
-									} else if (filter === 'on_sale') {
-										goto('/search?on_sale=true');
-									} else if (filter.startsWith('size_')) {
-										const size = filter.replace('size_', '').toUpperCase();
-										goto(`/search?size=${size}`);
-									}
-								}}
-								{formatPrice}
-							/>
-						</div>
-					{/if}
 				</div>
 				
 				<!-- Category Pills -->
@@ -487,9 +541,12 @@
 					seller_unknown: i18n.seller_unknown(),
 					common_currency: i18n.common_currency(),
 					product_addToFavorites: i18n.product_addToFavorites(),
+					condition_brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
+					condition_newWithoutTags: i18n.sell_condition_newWithoutTags(),
 					condition_new: i18n.condition_new(),
 					condition_likeNew: i18n.condition_likeNew(),
 					condition_good: i18n.condition_good(),
+					condition_worn: i18n.sell_condition_worn(),
 					condition_fair: i18n.condition_fair(),
 					categoryTranslation: translateCategory
 				}}
@@ -515,11 +572,28 @@
 	</main>
 </div>
 
+<!-- Smart Sticky Search -->
+<SmartStickySearch 
+	bind:value={searchQuery}
+	onSearch={handleSearch}
+	placeholder={i18n.search_placeholder()}
+	quickFilters={heroQuickFilters.slice(0, 4)}
+	onFilterClick={handleHeroFilterClick}
+	observeTarget="#hero-search-container"
+/>
+
 <BottomNav 
 	currentPath={$page.url.pathname}
 	isNavigating={!!$navigating}
 	navigatingTo={$navigating?.to?.url.pathname}
 	unreadMessageCount={$unreadMessageCount}
+	labels={{
+		home: i18n.nav_home(),
+		search: i18n.nav_search(),
+		sell: i18n.nav_sell(),
+		messages: i18n.nav_messages(),
+		profile: i18n.nav_profile()
+	}}
 />
 
 <!-- Quick View Dialog for Premium Sellers (Lazy Loaded) -->
