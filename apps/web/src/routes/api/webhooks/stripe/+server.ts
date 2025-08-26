@@ -1,12 +1,14 @@
 import { json } from '@sveltejs/kit';
 import { stripe } from '$lib/stripe/server.js';
-import { STRIPE_WEBHOOK_SECRET, SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types.js';
 import { createServerClient } from '@supabase/ssr';
 import { TransactionService } from '$lib/services/transactions.js';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 
 export const POST: RequestHandler = async ({ request }) => {
+	const STRIPE_WEBHOOK_SECRET = env.STRIPE_WEBHOOK_SECRET;
+	const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 	const body = await request.text();
 	const signature = request.headers.get('stripe-signature');
 
