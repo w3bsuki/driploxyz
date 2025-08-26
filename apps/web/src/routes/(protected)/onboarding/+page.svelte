@@ -45,6 +45,7 @@
   let submitting = $state(false);
   let languageInitialized = $state(false);
   let completionInProgress = $state(false);
+  let showValidationError = $state(false);
 
   const totalSteps = 4;
 
@@ -126,6 +127,33 @@
       return;
     }
     
+    // Validate current step before proceeding
+    if (!canProceed()) {
+      showValidationError = true;
+      
+      // Show specific error messages based on current step
+      switch (step) {
+        case 2:
+          if (!username || username.trim().length < 3) {
+            toasts.error('Username must be at least 3 characters long');
+          } else if (!fullName || fullName.trim().length === 0) {
+            toasts.error('Please enter your full name');
+          } else if (!avatarUrl) {
+            toasts.error('Please upload a profile photo');
+          }
+          break;
+        case 3:
+          if (!payoutDetails || payoutDetails.trim().length === 0) {
+            toasts.error('Please enter your payout account details (e.g., @revolut_tag)');
+          } else if (!payoutName || payoutName.trim().length === 0) {
+            toasts.error('Please enter the account holder name for payouts');
+          }
+          break;
+      }
+      return;
+    }
+    
+    showValidationError = false;
     if (step < totalSteps) {
       step++;
     }

@@ -177,7 +177,7 @@
           
           <div>
             <label for="payout-details" class="block text-sm font-medium text-gray-700 mb-2">
-              {currentMethod.name} Account
+              {currentMethod.name} Account <span class="text-red-500">*</span>
             </label>
             <Input
               id="payout-details"
@@ -196,15 +196,16 @@
 
           <div>
             <label for="payout-name" class="block text-sm font-medium text-gray-700 mb-2">
-              Display Name <span class="text-gray-400 font-normal text-xs">(Optional)</span>
+              Account Holder Name <span class="text-red-500">*</span>
             </label>
             <Input
               id="payout-name"
               bind:value={payoutName}
-              placeholder="e.g., 'My {currentMethod.name} Account'"
+              placeholder="Your full legal name"
+              required
               class="bg-gray-50 border-gray-300 focus:bg-white"
             />
-            <p class="text-xs text-gray-500 mt-1">This helps you identify this payment method later</p>
+            <p class="text-xs text-gray-500 mt-1">Must match the name on your {currentMethod.name} account for payouts</p>
           </div>
         </div>
       </div>
@@ -229,10 +230,12 @@
           </div>
           <div>
             <p class="text-sm font-medium text-gray-900">{currentMethod.name} selected</p>
-            {#if payoutDetails}
-              <p class="text-xs text-gray-500 truncate max-w-[200px]">{payoutDetails}</p>
+            {#if !payoutDetails || !payoutName}
+              <p class="text-xs text-red-500 font-medium">
+                ⚠️ Missing: {!payoutDetails ? 'Account details' : ''}{!payoutDetails && !payoutName ? ' & ' : ''}{!payoutName ? 'Account holder name' : ''}
+              </p>
             {:else}
-              <p class="text-xs text-red-500">Click to add details (required)</p>
+              <p class="text-xs text-gray-500 truncate max-w-[200px]">{payoutDetails}</p>
             {/if}
           </div>
         </div>
