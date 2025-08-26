@@ -1,0 +1,20 @@
+import type { CategoryData } from '../types';
+interface Props {
+    isOpen?: boolean;
+    categories: CategoryData;
+    selectedCategory?: string | null;
+    selectedSubcategory?: string | null;
+    onCategorySelect?: (category: string | null) => void;
+    onSubcategorySelect?: (subcategory: string | null, category: string) => void;
+    onClose?: () => void;
+    class?: string;
+    translations?: {
+        onSale?: string;
+        newItems?: string;
+        trending?: string;
+    };
+}
+declare const MegaMenu: import("svelte").Component<Props, {}, "">;
+type MegaMenu = ReturnType<typeof MegaMenu>;
+export default MegaMenu;
+//# sourceMappingURL=MegaMenu.svelte.d.ts.map

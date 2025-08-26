@@ -59,29 +59,54 @@
   let isProcessing = $state(false);
   let conversionProgress = $state({ current: 0, total: 0 });
   let currentError = $state('');
+  let failedFiles = $state<File[]>([]);
+  let retryAttempts = $state(0);
 
   // Derived states using $derived
   const remainingSlots = $derived(maxImages - images.length);
   const canUploadMore = $derived(remainingSlots > 0 && !uploading && !isProcessing);
   const hasError = $derived(error || currentError);
 
-  // File validation function
+  // Enhanced file validation with user-friendly messages
   function validateFiles(files: File[]): string | null {
     for (const file of files) {
-      // Check file type
+      // Check file type with specific guidance
       if (!file.type.startsWith('image/')) {
-        return `"${file.name}" is not an image file`;
+        const fileExt = file.name.split('.').pop()?.toLowerCase();
+        if (fileExt && ['pdf', 'doc', 'docx', 'txt'].includes(fileExt)) {
+          return `"${file.name}" is a document file. Please upload photos of your item instead.`;
+        } else if (fileExt && ['mp4', 'mov', 'avi', 'mkv'].includes(fileExt)) {
+          return `"${file.name}" is a video file. Please upload photos instead, or take screenshots from your video.`;
+        } else {
+          return `"${file.name}" is not a supported image format. Please use JPG, PNG, or WEBP images.`;
+        }
       }
       
-      // Check file size (convert MB to bytes)
+      // Check file size with helpful suggestions
       if (file.size > maxFileSize * 1024 * 1024) {
-        return `"${file.name}" is too large (max ${maxFileSize}MB)`;
+        const fileSizeMB = Math.round(file.size / (1024 * 1024) * 10) / 10;
+        if (fileSizeMB > 50) {
+          return `"${file.name}" is ${fileSizeMB}MB, which is very large. Try taking a new photo with your phone camera instead of using saved images.`;
+        } else {
+          return `"${file.name}" is ${fileSizeMB}MB (max ${maxFileSize}MB). Try compressing the image or taking a new photo.`;
+        }
+      }
+      
+      // Check for corrupted or empty files
+      if (file.size === 0) {
+        return `"${file.name}" appears to be empty or corrupted. Please try selecting the file again.`;
       }
     }
     
-    // Check if total would exceed limit
+    // Check if total would exceed limit with context
     if (files.length > remainingSlots) {
-      return `Too many files. Can only add ${remainingSlots} more image${remainingSlots === 1 ? '' : 's'}`;
+      const trying = files.length;
+      const allowed = remainingSlots;
+      if (allowed === 0) {
+        return `You've reached the maximum of ${maxImages} photos. Remove some photos to add new ones.`;
+      } else {
+        return `You selected ${trying} photos, but can only add ${allowed} more. You can upload up to ${maxImages} photos total.`;
+      }
     }
     
     return null;
@@ -175,16 +200,60 @@
       
       console.log('[ImageUploader] Upload completed:', uploadedImages.length);
       
+      // Check if all files were uploaded successfully
+      if (uploadedImages.length === 0) {
+        throw new Error('No images were uploaded successfully. Please check your internet connection and try again.');
+      } else if (uploadedImages.length < imageFiles.length) {
+        currentError = `Only ${uploadedImages.length} of ${imageFiles.length} images uploaded successfully. Some may have been too large or corrupted.`;
+      }
+      
       // Add successfully uploaded images
       images = [...images, ...uploadedImages];
       console.log('[ImageUploader] Images added to collection:', images.length);
       
     } catch (error) {
       console.error('[ImageUploader] Upload error:', error);
-      currentError = error instanceof Error ? error.message : 'Failed to upload images';
+      failedFiles = imageFiles; // Store failed files for retry
+      retryAttempts++;
+      
+      // Provide specific user-friendly error messages
+      if (error instanceof Error) {
+        const errorMsg = error.message.toLowerCase();
+        if (errorMsg.includes('network') || errorMsg.includes('fetch')) {
+          currentError = retryAttempts < 3 
+            ? 'Upload failed due to network issues. Click "Try Again" or check your internet connection.' 
+            : 'Upload failed multiple times due to network issues. Please check your internet connection and try again later.';
+        } else if (errorMsg.includes('token') || errorMsg.includes('auth')) {
+          currentError = 'Upload failed due to authentication issues. Please refresh the page and try again.';
+        } else if (errorMsg.includes('size') || errorMsg.includes('large')) {
+          currentError = 'One or more images are too large to upload. Try using smaller images or taking new photos.';
+        } else if (errorMsg.includes('format') || errorMsg.includes('type')) {
+          currentError = 'One or more files are in an unsupported format. Please use JPG, PNG, or WEBP images only.';
+        } else if (errorMsg.includes('quota') || errorMsg.includes('limit')) {
+          currentError = 'Upload failed due to storage limits. Please contact support if this continues.';
+        } else if (errorMsg.includes('timeout')) {
+          currentError = 'Upload timed out. This usually happens with very large images or slow connections. Try again with smaller images.';
+        } else {
+          currentError = retryAttempts < 3 
+            ? `Upload failed: ${error.message}. Click "Try Again" or contact support if the problem persists.` 
+            : `Upload failed multiple times: ${error.message}. Please contact support.`;
+        }
+      } else {
+        currentError = retryAttempts < 3 
+          ? 'Upload failed due to an unknown error. Click "Try Again" below or contact support if the problem continues.' 
+          : 'Upload failed multiple times due to unknown errors. Please contact support.';
+      }
     } finally {
       isProcessing = false;
       conversionProgress = { current: 0, total: 0 };
+    }
+  }
+
+  // Retry failed upload
+  async function retryUpload() {
+    if (failedFiles.length > 0) {
+      currentError = '';
+      await processFiles(failedFiles);
     }
   }
 
@@ -214,24 +283,61 @@
     }
   }
 
-  // Trigger file input - Enhanced for mobile/Android
+  // Trigger file input - Enhanced for mobile/Android with detailed error handling
   function triggerFileInput() {
     if (!canUploadMore) {
+      if (remainingSlots === 0) {
+        currentError = `You've reached the maximum of ${maxImages} photos. Remove some photos to add more.`;
+      } else if (uploading) {
+        currentError = 'Please wait for current upload to finish before adding more photos.';
+      }
       return;
     }
     
     currentError = '';
     console.log('[ImageUploader] Triggering file input');
     
+    // Detect user agent for specific Android handling
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    
     try {
-      // Android/mobile browsers sometimes need a slight delay
-      setTimeout(() => {
+      if (isAndroid || isMobile) {
+        // Android-specific handling with longer delay
+        console.log('[ImageUploader] Detected mobile/Android, using enhanced handling');
+        setTimeout(() => {
+          try {
+            // Try multiple methods for Android compatibility
+            fileInput.focus();
+            fileInput.click();
+            
+            // Fallback: trigger the input change event manually
+            setTimeout(() => {
+              if (!fileInput.files || fileInput.files.length === 0) {
+                console.warn('[ImageUploader] File picker may not have opened properly on Android');
+              }
+            }, 1000);
+            
+          } catch (innerError) {
+            console.error('[ImageUploader] Android click failed:', innerError);
+            currentError = 'Camera/gallery access failed. Please check app permissions and try again.';
+          }
+        }, 150);
+      } else {
+        // Desktop handling
         fileInput.focus();
         fileInput.click();
-      }, 100);
+      }
     } catch (error) {
       console.error('[ImageUploader] Error triggering file input:', error);
-      currentError = 'Unable to open file picker. Please try again.';
+      
+      if (isAndroid) {
+        currentError = 'Unable to access camera/gallery. Please check that Driplo has permission to access your photos, then try again.';
+      } else if (isMobile) {
+        currentError = 'Unable to open file picker. Please try using a different browser or check your browser permissions.';
+      } else {
+        currentError = 'Unable to open file picker. Please try again or use a different browser.';
+      }
     }
   }
 
@@ -369,13 +475,64 @@
   <!-- Info and error messages -->
   <div class="space-y-2">
     {#if hasError}
-      <div class="p-3 bg-red-50 border border-red-200 rounded-lg">
-        <p class="text-sm text-red-600 flex items-start">
-          <svg class="h-4 w-4 text-red-500 mt-0.5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          {hasError}
-        </p>
+      <div class="p-4 bg-red-50 border-l-4 border-red-400 rounded-r-lg">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3 flex-1">
+            <h3 class="text-sm font-medium text-red-800">Upload Issue</h3>
+            <div class="mt-1 text-sm text-red-700">
+              <p>{hasError}</p>
+            </div>
+            <!-- Action buttons for errors -->
+            <div class="mt-3 flex gap-2">
+              <!-- Retry button for retryable errors -->
+              {#if failedFiles.length > 0 && retryAttempts < 3 && (hasError.includes('network') || hasError.includes('timeout') || hasError.includes('Try Again'))}
+                <button
+                  type="button"
+                  class="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-md hover:bg-blue-700 transition-colors"
+                  onclick={retryUpload}
+                  disabled={isProcessing}
+                >
+                  {isProcessing ? 'Retrying...' : 'Try Again'}
+                </button>
+              {/if}
+              
+              <!-- Help button for complex errors -->
+              {#if hasError.includes('permission') || hasError.includes('Android') || hasError.includes('browser')}
+                <button
+                  type="button"
+                  class="text-xs bg-red-100 text-red-800 px-3 py-1 rounded-full hover:bg-red-200 transition-colors"
+                  onclick={() => {
+                    // Show help modal or instructions
+                    if (hasError.includes('permission')) {
+                      alert('To fix permissions on Android:\n1. Open your browser settings\n2. Find "Site permissions" or "Privacy"\n3. Allow camera/storage access for driplo.xyz\n4. Refresh the page and try again');
+                    } else if (hasError.includes('browser')) {
+                      alert('Try these steps:\n1. Update your browser to the latest version\n2. Try using Chrome or Firefox\n3. Clear your browser cache\n4. Try in incognito/private mode');
+                    }
+                  }}
+                >
+                  Need help?
+                </button>
+              {/if}
+            </div>
+          </div>
+          <!-- Dismiss button -->
+          <div class="ml-auto pl-3">
+            <button
+              type="button"
+              onclick={() => currentError = ''}
+              class="inline-flex rounded-md bg-red-50 p-1.5 text-red-400 hover:bg-red-100 focus:outline-none"
+            >
+              <svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     {:else if helpText}
       <div class="flex items-start space-x-2">

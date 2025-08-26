@@ -478,8 +478,24 @@
           submitting = true;
           publishError = null;
           
-          // Add all form data
+          // DEBUG: Check what the original form data contains
+          console.log('DEBUG: Original form data from DOM:');
+          for (const [key, value] of formDataObj.entries()) {
+            console.log(`  ${key}: "${value}"`);
+          }
+          
+          // CRITICAL: Ensure condition is ALWAYS sent with valid value - do this FIRST
+          const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'];
+          console.log('DEBUG: formData.condition =', formData.condition);
+          console.log('DEBUG: formData =', formData);
+          const conditionValue = formData.condition && validConditions.includes(formData.condition) ? formData.condition : 'good';
+          console.log('DEBUG: conditionValue =', conditionValue);
+          formDataObj.set('condition', conditionValue);
+          console.log('DEBUG: After setting condition, formDataObj.get("condition") =', formDataObj.get('condition'));
+          
+          // Add all OTHER form data (skip condition since we already handled it)
           Object.entries(formData).forEach(([key, value]) => {
+            if (key === 'condition') return; // Skip condition - already handled above
             if (key === 'tags') {
               formDataObj.append(key, JSON.stringify(value));
             } else if (typeof value === 'boolean' || typeof value === 'number') {
@@ -488,11 +504,6 @@
               formDataObj.append(key, value as string);
             }
           });
-          
-          // CRITICAL: Ensure condition is ALWAYS sent with valid value
-          const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'];
-          const conditionValue = formData.condition && validConditions.includes(formData.condition) ? formData.condition : 'good';
-          formDataObj.set('condition', conditionValue);
           
           formDataObj.append('photo_urls', JSON.stringify(uploadedImages.map(img => img.url)));
           formDataObj.append('photo_paths', JSON.stringify(uploadedImages.map(img => img.path)));
