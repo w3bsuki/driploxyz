@@ -2,18 +2,20 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
+import { PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 
-// Initialize Supabase with service role key for admin operations
-const supabase = createClient<Database>(
-  process.env.PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
+function createSupabaseAdmin() {
+  return createClient<Database>(
+    PUBLIC_SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
     }
-  }
-);
+  );
+}
 
 export const GET: RequestHandler = async ({ request }) => {
   try {
@@ -26,6 +28,8 @@ export const GET: RequestHandler = async ({ request }) => {
     }
 
     console.log('Running automated order archiving...');
+
+    const supabase = createSupabaseAdmin();
 
     // Call the database function to archive completed orders
     const { data: result, error: archiveError } = await supabase

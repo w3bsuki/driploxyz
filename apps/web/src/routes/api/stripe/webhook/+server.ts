@@ -3,23 +3,25 @@ import type { RequestHandler } from './$types';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
+import { PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET } from '$env/static/private';
 
 // Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(STRIPE_SECRET_KEY, {
   apiVersion: '2025-07-30.basil',
 });
 
-// Initialize Supabase with service role key for admin operations
-const supabase = createClient<Database>(
-  process.env.PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
+function createSupabaseAdmin() {
+  return createClient<Database>(
+    PUBLIC_SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
     }
-  }
-);
+  );
+}
 
 export const POST: RequestHandler = async ({ request }) => {
   const body = await request.text();
@@ -35,7 +37,7 @@ export const POST: RequestHandler = async ({ request }) => {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      STRIPE_WEBHOOK_SECRET
     );
   } catch (err) {
     console.error('Webhook signature verification failed:', err);
@@ -80,6 +82,8 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
   }
 
   const { product_id, buyer_id, seller_id } = metadata;
+
+  const supabase = createSupabaseAdmin();
 
   // Update transaction status to completed
   const { error: transactionError } = await supabase
@@ -166,6 +170,8 @@ async function handlePaymentFailure(paymentIntent: Stripe.PaymentIntent) {
     paymentIntentId: paymentIntent.id,
     metadata
   });
+
+  const supabase = createSupabaseAdmin();
 
   // Update transaction status to failed
   const { error: transactionError } = await supabase

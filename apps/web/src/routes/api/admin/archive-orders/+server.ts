@@ -2,18 +2,20 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
+import { PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 
-// Initialize Supabase with service role key for admin operations
-const supabase = createClient<Database>(
-  process.env.PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false
+function createSupabaseAdmin() {
+  return createClient<Database>(
+    PUBLIC_SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false
+      }
     }
-  }
-);
+  );
+}
 
 export const POST: RequestHandler = async ({ request, locals: { safeGetSession } }) => {
   try {
@@ -27,6 +29,8 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession }
     // For now, allow any authenticated user to trigger archiving
     // In production, you might want to restrict this to admin users
     // You can add a role check here later
+
+    const supabase = createSupabaseAdmin();
 
     // Call the database function to archive completed orders
     const { data: result, error: archiveError } = await supabase
@@ -66,6 +70,8 @@ export const GET: RequestHandler = async ({ locals: { safeGetSession } }) => {
     if (!session?.user) {
       return error(401, 'Authentication required');
     }
+
+    const supabase = createSupabaseAdmin();
 
     // Get archiving statistics
     const { data: stats, error: statsError } = await supabase

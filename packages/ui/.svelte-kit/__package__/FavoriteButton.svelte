@@ -23,14 +23,11 @@
   let isLoading = $state(false);
   let currentFavorited = $state(favorited);
   let favoriteCount = $state(product.favorite_count || 0);
-  let isProcessing = $state(false); // Additional guard
 
-  // Update internal state when props change
   $effect(() => {
     currentFavorited = favorited;
   });
 
-  // Initialize favorite count from product
   $effect(() => {
     favoriteCount = product.favorite_count || 0;
   });
@@ -39,25 +36,14 @@
     event.stopPropagation();
     event.preventDefault();
     
-    // Triple protection against double clicks
-    if (isLoading || isProcessing || !browser) {
-      console.log(`[FAVORITE] Blocked: isLoading=${isLoading}, isProcessing=${isProcessing}`);
-      return;
-    }
+    if (isLoading || !browser) return;
     
-    // Set both guards
     isLoading = true;
-    isProcessing = true;
-    
-    console.log(`[FAVORITE] Starting: product=${product.id}, current state: favorited=${currentFavorited}, count=${favoriteCount}`);
     
     try {
-      // Make direct API call - no more custom handlers to avoid confusion
       const response = await fetch(`/api/favorites/${product.id}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' }
       });
 
       if (!response.ok) {
@@ -69,22 +55,13 @@
       }
 
       const result = await response.json();
-      
-      console.log(`[FAVORITE] API response:`, result);
-      
-      // Update state from API response ONLY - no local calculation
       currentFavorited = result.favorited;
       favoriteCount = result.favoriteCount || 0;
       
-      console.log(`[FAVORITE] Updated state: favorited=${currentFavorited}, count=${favoriteCount}`);
-      
     } catch (error) {
       console.error('[FAVORITE] Error:', error);
-      // Don't change any state on error
     } finally {
-      // Always clear both guards
       isLoading = false;
-      isProcessing = false;
     }
   }
 </script>
@@ -92,8 +69,8 @@
 <div class="absolute top-2 right-2 z-10">
   <button 
     onclick={handleFavorite}
-    disabled={isLoading || isProcessing}
-    class="group flex items-center gap-1 px-2 py-1.5 bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md border border-gray-200/50 {(isLoading || isProcessing) ? 'opacity-50 cursor-not-allowed' : ''} {currentFavorited ? 'bg-red-50/95 hover:bg-red-50 border-red-200/50' : ''}"
+    disabled={isLoading}
+    class="group flex items-center gap-1 px-2 py-1.5 bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md border border-gray-200/50 {isLoading ? 'opacity-50 cursor-not-allowed' : ''} {currentFavorited ? 'bg-red-50/95 hover:bg-red-50 border-red-200/50' : ''}"
     aria-label={currentFavorited ? removeFromFavoritesText : addToFavoritesText}
   >
     <svg 

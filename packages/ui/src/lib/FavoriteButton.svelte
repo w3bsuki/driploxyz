@@ -69,8 +69,8 @@
 <div class="absolute top-2 right-2 z-10">
   <button 
     onclick={handleFavorite}
-    disabled={isLoading || isProcessing}
-    class="group flex items-center gap-1 px-2 py-1.5 bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md border border-gray-200/50 {(isLoading || isProcessing) ? 'opacity-50 cursor-not-allowed' : ''} {currentFavorited ? 'bg-red-50/95 hover:bg-red-50 border-red-200/50' : ''}"
+    disabled={isLoading}
+    class="group flex items-center gap-1 px-2 py-1.5 bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md border border-gray-200/50 {isLoading ? 'opacity-50 cursor-not-allowed' : ''} {currentFavorited ? 'bg-red-50/95 hover:bg-red-50 border-red-200/50' : ''}"
     aria-label={currentFavorited ? removeFromFavoritesText : addToFavoritesText}
   >
     <svg 
