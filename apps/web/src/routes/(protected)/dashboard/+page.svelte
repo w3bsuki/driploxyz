@@ -437,6 +437,7 @@
     </div>
   </div>
 </div>
+{/if}
 
 <!-- Welcome Modal for first-time users -->
 {#if showWelcomeModal}
