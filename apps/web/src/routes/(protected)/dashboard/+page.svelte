@@ -14,7 +14,7 @@
   
   let { data }: Props = $props();
   
-  let isLoading = $state(false);
+  let isLoading = $state(!data.products && !data.orders);
   let showWelcomeModal = $state(false);
   let currentTutorialStep = $state<any>(null);
   

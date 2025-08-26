@@ -6,6 +6,7 @@ interface Props {
     canSell: boolean;
     onSignOut: () => void;
     onClose: () => void;
+    signingOut?: boolean;
     translations?: {
         myProfile?: string;
         orders?: string;
@@ -13,6 +14,7 @@ interface Props {
         startSelling?: string;
         settings?: string;
         signOut?: string;
+        signingOut?: string;
     };
 }
 declare const HeaderUserMenu: import("svelte").Component<Props, {}, "">;

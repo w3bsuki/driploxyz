@@ -12,12 +12,14 @@ interface Props {
     onSignOut: () => void;
     onCategoryClick: (category: string) => void;
     onLanguageChange: (lang: string) => void;
+    signingOut?: boolean;
     translations?: {
         sellItems?: string;
         myProfile?: string;
         startSelling?: string;
         settings?: string;
         signOut?: string;
+        signingOut?: string;
         signIn?: string;
         signUp?: string;
         browseCategories?: string;

@@ -133,6 +133,13 @@ export class StripeService {
 				return { error: new Error('Buyer cannot be the same as seller') };
 			}
 
+			// Calculate the actual fees
+			const calculation = this.calculatePaymentAmounts(amount);
+			const shippingCostInCurrency = calculation.shippingCost / 100;
+			const serviceFeeInCurrency = calculation.serviceFee / 100;
+			const platformFeeInCurrency = totalAmountInCurrency * 0.10; // 10% platform fee
+			const sellerNetAmountInCurrency = totalAmountInCurrency - platformFeeInCurrency;
+
 			// Create pending order record first with required fields
 			const { data: order, error: orderError } = await this.supabase
 				.from('orders')
@@ -143,11 +150,11 @@ export class StripeService {
 					total_amount: totalAmountInCurrency,
 					status: 'pending_payment',
 					currency: currency.toUpperCase(),
-					shipping_cost: 0,
+					shipping_cost: shippingCostInCurrency,
 					tax_amount: 0,
-					service_fee: 0,
-					platform_fee: 0,
-					seller_net_amount: 0,
+					service_fee: serviceFeeInCurrency,
+					platform_fee: platformFeeInCurrency,
+					seller_net_amount: sellerNetAmountInCurrency,
 					commission_rate: 10.00,
 					country_code: 'BG'
 				})

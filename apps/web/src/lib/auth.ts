@@ -161,6 +161,12 @@ export async function updateUserProfile(
  * Signs out user and redirects - simplified and reliable
  */
 export async function signOut(supabase: SupabaseClient<Database>) {
+  // Show toast notification
+  if (typeof window !== 'undefined') {
+    const { toasts } = await import('@repo/ui');
+    toasts.info('Signing you out...', { duration: 2000 });
+  }
+  
   try {
     // Use server endpoint which handles everything properly
     const response = await fetch('/logout', {
@@ -174,6 +180,9 @@ export async function signOut(supabase: SupabaseClient<Database>) {
   } catch (error) {
     console.error('Sign out error:', error);
   }
+  
+  // Small delay to show the toast before redirect
+  await new Promise(resolve => setTimeout(resolve, 300));
   
   // Always redirect to home page
   window.location.href = '/';

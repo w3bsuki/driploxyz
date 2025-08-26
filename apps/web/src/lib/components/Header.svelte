@@ -45,6 +45,7 @@
   
   let mobileMenuOpen = $state(false);
   let userMenuOpen = $state(false);
+  let signingOut = $state(false);
   let notificationService: RealtimeNotificationService | null = null;
   let NotificationPanel: any = null;
   let notificationPanelLoaded = $state(false);
@@ -97,13 +98,15 @@
   });
 
   async function handleSignOut() {
+    signingOut = true;
     try {
       if ($authState.supabase) {
         await signOut($authState.supabase);
       }
-      window.location.href = '/';
+      // The signOut function handles the redirect
     } catch (error) {
       console.error('Sign out error:', error);
+      signingOut = false;
     }
   }
 
@@ -146,7 +149,8 @@
     favorites: i18n.nav_favorites(),
     startSelling: i18n.nav_startSelling(),
     settings: i18n.nav_settings(),
-    signOut: i18n.auth_signOut()
+    signOut: i18n.auth_signOut(),
+    signingOut: 'Signing out...'
   });
   
   const notificationTranslations = $derived({
@@ -164,6 +168,7 @@
     startSelling: i18n.nav_startSelling(),
     settings: i18n.nav_settings(),
     signOut: i18n.auth_signOut(),
+    signingOut: 'Signing out...',
     signIn: i18n.auth_signIn(),
     signUp: i18n.auth_signUp(),
     browseCategories: i18n.nav_browseCategories(),
@@ -283,6 +288,7 @@
                   canSell={userCanSell}
                   onSignOut={handleSignOut}
                   onClose={closeMenus}
+                  {signingOut}
                   translations={userMenuTranslations}
                 />
               </div>
@@ -315,6 +321,7 @@
       canSell={userCanSell}
       currentLanguage={currentLang}
       {languages}
+      {signingOut}
       onLanguageChange={switchLanguage}
       onSignOut={handleSignOut}
       onClose={closeMenus}

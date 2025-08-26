@@ -12,7 +12,6 @@
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications';
   import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer } from '@repo/ui';
-  import PageLoader from '$lib/components/PageLoader.svelte';
   import OrderNotificationToast from '$lib/components/OrderNotificationToast.svelte';
   import RegionSwitchModal from '$lib/components/RegionSwitchModal.svelte';
   import { page } from '$app/stores';
@@ -181,9 +180,6 @@
 
 <!-- Toast Container -->
 <ToastContainer />
-
-<!-- Page Loader - iOS style centered spinner -->
-<PageLoader />
 
 <!-- Unified Cookie & Language Consent (handles everything) -->
 <UnifiedCookieConsent />
