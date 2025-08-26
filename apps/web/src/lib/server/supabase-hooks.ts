@@ -48,19 +48,10 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   );
 
   /**
-   * Optimized session validation with request-level caching
-   * Unlike `supabase.auth.getSession()`, this validates the JWT and caches the result
-   * to avoid multiple API calls within a single request lifecycle.
+   * Safe session validation with JWT validation
+   * Unlike `supabase.auth.getSession()`, this validates the JWT to ensure it's still valid.
    */
-  let cachedSessionResult: { session: any; user: any } | null = null;
-  let sessionValidated = false;
-
   event.locals.safeGetSession = async () => {
-    // Return cached result if already validated within this request
-    if (sessionValidated) {
-      return cachedSessionResult || { session: null, user: null };
-    }
-
     const startTime = performance.now();
 
     try {
@@ -70,17 +61,13 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
       } = await event.locals.supabase.auth.getSession();
 
       if (!session) {
-        cachedSessionResult = { session: null, user: null };
-        sessionValidated = true;
-        return cachedSessionResult;
+        return { session: null, user: null };
       }
 
       // Check if session is obviously expired to avoid unnecessary API call
       const now = Date.now() / 1000;
       if (session.expires_at && session.expires_at < now) {
-        cachedSessionResult = { session: null, user: null };
-        sessionValidated = true;
-        return cachedSessionResult;
+        return { session: null, user: null };
       }
 
       // Validate JWT with getUser (this makes the API call)
@@ -91,13 +78,8 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
 
       if (authError) {
         // JWT validation failed
-        cachedSessionResult = { session: null, user: null };
-        sessionValidated = true;
-        return cachedSessionResult;
+        return { session: null, user: null };
       }
-
-      cachedSessionResult = { session, user };
-      sessionValidated = true;
 
       // Performance monitoring in development
       if (building === false) {
@@ -107,12 +89,10 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
         }
       }
 
-      return cachedSessionResult;
+      return { session, user };
     } catch (error) {
       console.error('Auth session validation error:', error);
-      cachedSessionResult = { session: null, user: null };
-      sessionValidated = true;
-      return cachedSessionResult;
+      return { session: null, user: null };
     }
   };
 }

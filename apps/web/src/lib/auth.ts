@@ -162,24 +162,35 @@ export async function updateUserProfile(
  */
 export async function signOut(supabase: SupabaseClient<Database>) {
   try {
-    // Make POST request to logout endpoint with credentials
+    // First, sign out with Supabase client directly
+    await supabase.auth.signOut();
+    
+    // Then make POST request to logout endpoint to clear server-side cookies
     const response = await fetch('/logout', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      credentials: 'include' // Include cookies for authentication
+      credentials: 'include'
     });
     
-    if (response.redirected) {
-      window.location.href = response.url;
-    } else {
-      window.location.href = '/';
-    }
+    // Always redirect to home regardless of response
+    window.location.href = '/';
   } catch (error) {
     console.error('Sign out error:', error);
-    // Force redirect even on error
-    window.location.href = '/';
+    
+    // Force sign out even on error by clearing local storage and redirecting
+    if (typeof window !== 'undefined') {
+      // Clear any auth-related local storage
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('sb-') || key.includes('supabase')) {
+          localStorage.removeItem(key);
+        }
+      });
+      
+      // Force redirect
+      window.location.href = '/';
+    }
   }
 }
 

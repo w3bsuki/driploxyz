@@ -55,7 +55,7 @@
   const isLoggedIn = $derived(!!currentUser);
   const userCanSell = $derived(canSell(currentProfile));
   const userDisplayName = $derived(
-    currentProfile?.username || currentProfile?.full_name || 'User'
+    currentProfile?.full_name || currentProfile?.username || 'User'
   );
   const initials = $derived(
     currentProfile?.full_name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() || 
