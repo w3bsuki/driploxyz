@@ -62,6 +62,7 @@ async function handlePaymentSuccess(paymentIntent: any) {
 	
 	if (productId && sellerId && buyerId && orderId) {
 		try {
+			const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 			if (!SUPABASE_SERVICE_ROLE_KEY) {
 				console.error('SUPABASE_SERVICE_ROLE_KEY not available');
 				return json({ error: 'Database not available' }, { status: 500 });
@@ -128,16 +129,131 @@ async function handlePaymentSuccess(paymentIntent: any) {
 async function handlePaymentFailed(paymentIntent: any) {
 	console.log('Payment failed:', paymentIntent.id);
 	
-	// TODO: Handle payment failure:
-	// 1. Update order status to failed
-	// 2. Notify buyer of failure
-	// 3. Free up product inventory
+	const { productId, sellerId, buyerId, orderId } = paymentIntent.metadata;
+	
+	if (productId && sellerId && buyerId && orderId) {
+		try {
+			const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
+			if (!SUPABASE_SERVICE_ROLE_KEY) {
+				console.error('SUPABASE_SERVICE_ROLE_KEY not available');
+				return;
+			}
+			
+			// Initialize Supabase client
+			const supabase = createServerClient(
+				PUBLIC_SUPABASE_URL!,
+				SUPABASE_SERVICE_ROLE_KEY!,
+				{
+					cookies: {
+						getAll: () => [],
+						setAll: () => {}
+					}
+				}
+			);
+
+			// Update order status to failed
+			await supabase
+				.from('orders')
+				.update({ 
+					status: 'failed',
+					updated_at: new Date().toISOString()
+				})
+				.eq('id', orderId);
+
+			// Update transaction status to failed
+			await supabase
+				.from('transactions')
+				.update({
+					status: 'failed',
+					payment_status: 'failed',
+					processed_at: new Date().toISOString()
+				})
+				.eq('stripe_payment_intent_id', paymentIntent.id);
+
+			// Notify buyer of failure
+			await supabase
+				.from('notifications')
+				.insert({
+					user_id: buyerId,
+					title: 'Payment Failed',
+					message: 'Your payment could not be processed. Please try again or contact support.',
+					type: 'payment_failed',
+					metadata: {
+						product_id: productId,
+						order_id: orderId
+					}
+				});
+
+			console.log('Successfully processed payment failure for:', paymentIntent.id);
+		} catch (error) {
+			console.error('Error processing payment failure:', error);
+		}
+	}
 }
 
 async function handlePaymentCanceled(paymentIntent: any) {
 	console.log('Payment canceled:', paymentIntent.id);
 	
-	// TODO: Handle payment cancellation:
-	// 1. Update order status to canceled
-	// 2. Free up product inventory
+	const { productId, sellerId, buyerId, orderId } = paymentIntent.metadata;
+	
+	if (productId && sellerId && buyerId && orderId) {
+		try {
+			const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
+			if (!SUPABASE_SERVICE_ROLE_KEY) {
+				console.error('SUPABASE_SERVICE_ROLE_KEY not available');
+				return;
+			}
+			
+			// Initialize Supabase client
+			const supabase = createServerClient(
+				PUBLIC_SUPABASE_URL!,
+				SUPABASE_SERVICE_ROLE_KEY!,
+				{
+					cookies: {
+						getAll: () => [],
+						setAll: () => {}
+					}
+				}
+			);
+
+			// Update order status to canceled
+			await supabase
+				.from('orders')
+				.update({ 
+					status: 'cancelled',
+					cancelled_at: new Date().toISOString(),
+					updated_at: new Date().toISOString()
+				})
+				.eq('id', orderId);
+
+			// Update transaction status to cancelled
+			await supabase
+				.from('transactions')
+				.update({
+					status: 'cancelled',
+					payment_status: 'cancelled',
+					processed_at: new Date().toISOString()
+				})
+				.eq('stripe_payment_intent_id', paymentIntent.id);
+
+			// Product remains available for purchase (don't mark as sold)
+			// Notify buyer of cancellation
+			await supabase
+				.from('notifications')
+				.insert({
+					user_id: buyerId,
+					title: 'Payment Cancelled',
+					message: 'Your payment was cancelled. The item is still available for purchase.',
+					type: 'payment_cancelled',
+					metadata: {
+						product_id: productId,
+						order_id: orderId
+					}
+				});
+
+			console.log('Successfully processed payment cancellation for:', paymentIntent.id);
+		} catch (error) {
+			console.error('Error processing payment cancellation:', error);
+		}
+	}
 }

@@ -48,29 +48,71 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   );
 
   /**
-   * Unlike `supabase.auth.getSession()`, which returns the session _without_
-   * validating the JWT, this function also calls `getUser()` to validate the
-   * JWT before returning the session.
+   * Optimized session validation with request-level caching
+   * Unlike `supabase.auth.getSession()`, this validates the JWT and caches the result
+   * to avoid multiple API calls within a single request lifecycle.
    */
+  let cachedSessionResult: { session: any; user: any } | null = null;
+  let sessionValidated = false;
+
   event.locals.safeGetSession = async () => {
-    const {
-      data: { session },
-    } = await event.locals.supabase.auth.getSession();
-
-    if (!session) {
-      return { session: null, user: null };
+    // Return cached result if already validated within this request
+    if (sessionValidated) {
+      return cachedSessionResult || { session: null, user: null };
     }
 
-    const {
-      data: { user },
-      error: authError,
-    } = await event.locals.supabase.auth.getUser();
+    const startTime = performance.now();
 
-    if (authError) {
-      // JWT validation has failed
-      return { session: null, user: null };
+    try {
+      // Get session first (no API call if cached in cookies)
+      const {
+        data: { session },
+      } = await event.locals.supabase.auth.getSession();
+
+      if (!session) {
+        cachedSessionResult = { session: null, user: null };
+        sessionValidated = true;
+        return cachedSessionResult;
+      }
+
+      // Check if session is obviously expired to avoid unnecessary API call
+      const now = Date.now() / 1000;
+      if (session.expires_at && session.expires_at < now) {
+        cachedSessionResult = { session: null, user: null };
+        sessionValidated = true;
+        return cachedSessionResult;
+      }
+
+      // Validate JWT with getUser (this makes the API call)
+      const {
+        data: { user },
+        error: authError,
+      } = await event.locals.supabase.auth.getUser();
+
+      if (authError) {
+        // JWT validation failed
+        cachedSessionResult = { session: null, user: null };
+        sessionValidated = true;
+        return cachedSessionResult;
+      }
+
+      cachedSessionResult = { session, user };
+      sessionValidated = true;
+
+      // Performance monitoring in development
+      if (building === false) {
+        const duration = performance.now() - startTime;
+        if (duration > 1000) { // Log slow auth calls (>1s)
+          console.warn(`🐌 Slow auth validation: ${duration.toFixed(2)}ms for ${event.url.pathname}`);
+        }
+      }
+
+      return cachedSessionResult;
+    } catch (error) {
+      console.error('Auth session validation error:', error);
+      cachedSessionResult = { session: null, user: null };
+      sessionValidated = true;
+      return cachedSessionResult;
     }
-
-    return { session, user };
   };
 }

@@ -122,21 +122,45 @@ export class StripeService {
 				return { error: new Error('Failed to create customer') };
 			}
 
-			// Create pending order record first
+			// Validate total amount is positive
+			const totalAmountInCurrency = amount / 100;
+			if (totalAmountInCurrency <= 0) {
+				return { error: new Error('Invalid amount: must be greater than 0') };
+			}
+
+			// Validate buyer is not seller (double check)
+			if (buyerId === sellerId) {
+				return { error: new Error('Buyer cannot be the same as seller') };
+			}
+
+			// Create pending order record first with required fields
 			const { data: order, error: orderError } = await this.supabase
 				.from('orders')
 				.insert({
 					buyer_id: buyerId,
 					seller_id: sellerId,
 					product_id: productId,
-					total_amount: amount / 100, // Convert from cents to currency units
-					status: 'pending_payment'
+					total_amount: totalAmountInCurrency,
+					status: 'pending_payment',
+					currency: currency.toUpperCase(),
+					shipping_cost: 0,
+					tax_amount: 0,
+					service_fee: 0,
+					platform_fee: 0,
+					seller_net_amount: 0,
+					commission_rate: 10.00,
+					country_code: 'BG'
 				})
 				.select('id')
 				.single();
 
-			if (orderError || !order) {
-				return { error: new Error('Failed to create order') };
+			if (orderError) {
+				console.error('Order creation error:', orderError);
+				return { error: new Error(`Failed to create order: ${orderError.message}`) };
+			}
+
+			if (!order) {
+				return { error: new Error('Failed to create order: no data returned') };
 			}
 
 			// Create payment intent

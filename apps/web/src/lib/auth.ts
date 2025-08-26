@@ -64,9 +64,10 @@ export function canSell(profile: Database['public']['Tables']['profiles']['Row']
     profile.full_name &&
     profile.payout_method &&
     typeof profile.payout_method === 'object' &&
-    profile.payout_method.type &&
-    profile.payout_method.details &&
-    profile.payout_method.name
+    !Array.isArray(profile.payout_method) &&
+    (profile.payout_method as Record<string, any>).type &&
+    (profile.payout_method as Record<string, any>).details &&
+    (profile.payout_method as Record<string, any>).name
   );
   
   return hasRequiredFields;
@@ -88,10 +89,10 @@ export function getCannotSellReason(profile: Database['public']['Tables']['profi
   if (!profile.full_name) missingFields.push('full name');
   
   // Check payout method
-  if (!profile.payout_method || typeof profile.payout_method !== 'object') {
+  if (!profile.payout_method || typeof profile.payout_method !== 'object' || Array.isArray(profile.payout_method)) {
     missingFields.push('payout method');
   } else {
-    const payout = profile.payout_method as any;
+    const payout = profile.payout_method as Record<string, any>;
     if (!payout.type || !payout.details || !payout.name) {
       missingFields.push('complete payout information');
     }
@@ -202,7 +203,7 @@ export function isProfileCompleteForSelling(profile: Database['public']['Tables'
  */
 export function createAuthGuard(options: {
   requireAuth?: boolean;
-  requireRole?: 'buyer' | 'seller' | 'admin';
+  requireRole?: 'seller' | 'admin';
   redirectTo?: string;
 } = {}) {
   return async function authGuard(
