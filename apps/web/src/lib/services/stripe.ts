@@ -693,7 +693,7 @@ t	userEmail?: string;
 				.from('orders')
 				.update({
 					status: 'paid',
-					paid_at: new Date().toISOString()
+					updated_at: new Date().toISOString()
 				})
 				.eq('id', metadata.order_id)
 				.select()
