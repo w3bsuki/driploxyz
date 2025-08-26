@@ -656,7 +656,7 @@ t	userEmail?: string;
 
 		return { success: !error, error };
 	}
-
+}
 	/**
 	 * Confirm payment intent and process order
 	 */

@@ -2,11 +2,12 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServices } from '$lib/services';
 import Stripe from 'stripe';
+import { STRIPE_SECRET_KEY } from '$env/static/private';
 
 // Initialize Stripe with secret key - only on server runtime
-const stripe = process.env.STRIPE_SECRET_KEY 
-  ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-06-20'
+const stripe = STRIPE_SECRET_KEY 
+  ? new Stripe(STRIPE_SECRET_KEY, {
+      apiVersion: '2025-07-30.basil'
     })
   : null;
 
