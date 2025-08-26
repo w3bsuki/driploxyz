@@ -3,7 +3,8 @@ import type { RequestHandler } from './$types';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
-import { PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET } from '$env/static/private';
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { SUPABASE_SERVICE_ROLE_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET } from '$env/static/private';
 
 // Initialize Stripe
 const stripe = new Stripe(STRIPE_SECRET_KEY, {
