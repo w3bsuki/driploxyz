@@ -62,7 +62,7 @@ export class CSRFProtection {
 	}
 	
 	// Middleware to check CSRF token
-	static async check(event: any): Promise<boolean> {
+	static async check(event: any, providedToken?: string): Promise<boolean> {
 		// Skip CSRF check for GET requests and API routes
 		if (event.request.method === 'GET' || event.url.pathname.startsWith('/api/')) {
 			return true;
@@ -71,8 +71,9 @@ export class CSRFProtection {
 		const session = await event.locals.safeGetSession();
 		const sessionId = session?.session?.access_token || event.clientAddress;
 		
-		// Get token from headers or cookies only (don't consume request body)
-		const token = event.request.headers.get('x-csrf-token') ||
+		// Get token from provided value, headers, or cookies
+		const token = providedToken ||
+			event.request.headers.get('x-csrf-token') ||
 			event.cookies.get('csrf_token');
 		
 		if (!token) {

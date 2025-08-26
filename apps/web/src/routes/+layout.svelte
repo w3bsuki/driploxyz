@@ -155,12 +155,12 @@
 </script>
 
 {#if !isAuthPage && !isSellPage}
-  <div class="fixed top-0 left-0 right-0 z-50">
+  <div class="sticky top-0 z-50">
     <EarlyBirdBanner />
     <Header user={data?.user} profile={data?.profile} />
   </div>
 {/if}
-<div class="{!isAuthPage && !isSellPage ? 'pt-[104px]' : ''}">
+<div>
   {@render children?.()}
 </div>
 

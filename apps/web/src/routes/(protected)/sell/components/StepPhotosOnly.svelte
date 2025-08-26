@@ -24,18 +24,25 @@
 <div class="space-y-6">
   <!-- Upload Photos Section -->
   <div>
-    <h3 class="text-base font-semibold text-gray-900 mb-1">{i18n.sell_uploadPhotos()}</h3>
-    <p class="text-sm text-gray-600 mb-4">{i18n.sell_uploadPhotosDescription()}</p>
+    <h3 class="text-base font-semibold text-gray-900 mb-1">{i18n.sell_photos()}</h3>
+    <p class="text-sm text-gray-600 mb-4">{i18n.sell_uploadPhotos_description()}</p>
     
     <ImageUploaderSupabase
-      bind:uploadedImages
-      maxImages={8}
+      maxImages={10}
+      bind:images={uploadedImages}
       onUpload={onImageUpload}
       onDelete={onImageDelete}
-      bind:isUploading={isUploadingImages}
-      uploadText={i18n.sell_uploadText()}
-      maxImagesText={i18n.sell_maxImagesText()}
-      dragDropText={i18n.sell_dragDropText()}
+      bind:uploading={isUploadingImages}
+      helpText={i18n.sell_uploadJPGPNG()}
+      uploadingImagesText={i18n.sell_uploadingImages()}
+      imagesOptimizedText={i18n.sell_imagesOptimized()}
+      dropHereText={i18n.sell_dropHere()}
+      addPhotoText={i18n.sell_addPhoto()}
+      coverText={i18n.sell_cover()}
+      removeImageText={i18n.sell_removeImage()}
+      photosUploadedText={(count) => i18n.sell_photosUploaded({ count, s: count === 1 ? '' : 's' })}
+      moreAllowedText={(count) => i18n.sell_moreAllowed({ count })}
+      optimizedForWebText={i18n.sell_optimizedForWeb()}
     />
   </div>
 
@@ -43,7 +50,7 @@
   <div class="space-y-4">
     <Input
       type="text"
-      label={i18n.sell_titleLabel()}
+      label={i18n.sell_title()}
       bind:value={formData.title}
       placeholder={i18n.sell_titlePlaceholder()}
       required
@@ -56,7 +63,7 @@
     
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-1">
-        {i18n.sell_descriptionLabel()}
+        {i18n.sell_description()}
       </label>
       <textarea
         bind:value={formData.description}

@@ -351,7 +351,7 @@
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
   
   <!-- Clean Search Section with Dynamic Pills -->
-  <div class="bg-white sticky top-[104px] z-30 border-b">
+  <div class="bg-white border-b">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
       <!-- Main Search Bar -->
       <div class="relative mb-3">
