@@ -142,7 +142,8 @@
         session.set(newSession);
         // Subscribe to order notifications for newly signed in user
         await orderNotificationActions.subscribeToNotifications(supabase, newSession.user.id);
-        await invalidate('supabase:auth'); // Only invalidate on real sign in
+        // TEMP FIX: Skip invalidation to prevent hanging
+        // await invalidate('supabase:auth'); // Only invalidate on real sign in
       } else if (event === 'SIGNED_OUT') {
         user.set(null);
         session.set(null);
