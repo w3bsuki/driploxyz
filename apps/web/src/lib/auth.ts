@@ -50,7 +50,7 @@ export function isUser(profile: Database['public']['Tables']['profiles']['Row'] 
 
 /**
  * Checks if user can perform seller actions
- * Requires: onboarding_completed, username, full_name, location, and payout_method
+ * Requires: onboarding_completed, username, full_name, and payout_method
  */
 export function canSell(profile: Database['public']['Tables']['profiles']['Row'] | null): boolean {
   if (!profile) return false;
@@ -58,11 +58,10 @@ export function canSell(profile: Database['public']['Tables']['profiles']['Row']
   // Must have completed onboarding
   if (!profile.onboarding_completed) return false;
   
-  // Must have all required seller fields
+  // Must have all required seller fields (location is NOT required)
   const hasRequiredFields = !!(
     profile.username &&
     profile.full_name &&
-    profile.location &&
     profile.payout_method &&
     typeof profile.payout_method === 'object' &&
     profile.payout_method.type &&
@@ -87,7 +86,6 @@ export function getCannotSellReason(profile: Database['public']['Tables']['profi
   const missingFields = [];
   if (!profile.username) missingFields.push('username');
   if (!profile.full_name) missingFields.push('full name');
-  if (!profile.location) missingFields.push('location');
   
   // Check payout method
   if (!profile.payout_method || typeof profile.payout_method !== 'object') {

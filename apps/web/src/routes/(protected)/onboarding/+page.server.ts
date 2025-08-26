@@ -76,9 +76,7 @@ export const actions: Actions = {
       return fail(400, { error: 'Full name is required' });
     }
 
-    if (!location || location.trim().length === 0) {
-      return fail(400, { error: 'Location is required' });
-    }
+    // Location is optional
 
     if (!payoutDetails || payoutDetails.trim().length === 0) {
       return fail(400, { error: 'Payout details are required' });
@@ -119,7 +117,7 @@ export const actions: Actions = {
         account_type: accountType,
         username: username.trim(),
         full_name: fullName.trim(),
-        location: location.trim(),
+        location: location?.trim() || null,
         avatar_url: avatarUrl || null,
         payout_method: { 
           type: payoutMethod, 

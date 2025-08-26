@@ -218,7 +218,7 @@
     
     switch (step) {
       case 1: return accountType;
-      case 2: return username && username.trim().length >= 3 && fullName && fullName.trim().length > 0 && location && location.trim().length > 0 && avatarUrl; // All required
+      case 2: return username && username.trim().length >= 3 && fullName && fullName.trim().length > 0 && avatarUrl; // Location is optional
       case 3: return payoutDetails && payoutDetails.trim().length > 0 && payoutName && payoutName.trim().length > 0;
       case 4: return true; // Social links are optional
       default: return false;
@@ -367,10 +367,9 @@
         
         <Input
           bind:value={location}
-          placeholder="Enter your city or location"
-          label="Location"
+          placeholder="Enter your city or location (optional)"
+          label="Location (Optional)"
           class="bg-white/80"
-          required
         />
 
         {#if username.trim().length > 0 && username.trim().length < 3}
