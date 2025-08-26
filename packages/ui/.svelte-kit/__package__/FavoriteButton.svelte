@@ -23,52 +23,36 @@
   let isLoading = $state(false);
   let currentFavorited = $state(favorited);
   let favoriteCount = $state(product.favorite_count || 0);
+  let isProcessing = $state(false); // Additional guard
 
   // Update internal state when props change
   $effect(() => {
     currentFavorited = favorited;
   });
 
-  // Initialize favorite count from product but don't update it reactively
-  // The count will be managed by the parent component/store
+  // Initialize favorite count from product
   $effect(() => {
-    if (favoriteCount === 0) {
-      favoriteCount = product.favorite_count || 0;
-    }
+    favoriteCount = product.favorite_count || 0;
   });
 
   async function handleFavorite(event: MouseEvent) {
     event.stopPropagation();
+    event.preventDefault();
     
-    if (isLoading || !browser) return;
+    // Triple protection against double clicks
+    if (isLoading || isProcessing || !browser) {
+      console.log(`[FAVORITE] Blocked: isLoading=${isLoading}, isProcessing=${isProcessing}`);
+      return;
+    }
     
-    console.log(`[FAVORITE BUTTON] Clicked heart for product ${product.id}, current count: ${favoriteCount}`);
-
-    // TEMPORARILY DISABLE custom handler to test direct API calls
-    // if (onFavorite) {
-    //   isLoading = true;
-    //   // Only update the favorited state optimistically, NOT the count
-    //   // The count will be updated from the store/props
-    //   const previousState = currentFavorited;
-    //   currentFavorited = !currentFavorited;
-    //   
-    //   try {
-    //     await onFavorite();
-    //     // Don't update count here - it will come from props/store
-    //   } catch (error) {
-    //     // Revert on error
-    //     console.error('Failed to toggle favorite:', error);
-    //     currentFavorited = previousState;
-    //   } finally {
-    //     isLoading = false;
-    //   }
-    //   return;
-    // }
-
-    // Otherwise, make API call
+    // Set both guards
     isLoading = true;
+    isProcessing = true;
+    
+    console.log(`[FAVORITE] Starting: product=${product.id}, current state: favorited=${currentFavorited}, count=${favoriteCount}`);
     
     try {
+      // Make direct API call - no more custom handlers to avoid confusion
       const response = await fetch(`/api/favorites/${product.id}`, {
         method: 'POST',
         headers: {
@@ -78,28 +62,29 @@
 
       if (!response.ok) {
         if (response.status === 401) {
-          // Redirect to login
           window.location.href = '/login';
           return;
         }
-        throw new Error('Failed to update favorite');
+        throw new Error(`HTTP ${response.status}`);
       }
 
       const result = await response.json();
-      currentFavorited = result.favorited;
       
-      // Use the actual count from the API response
-      if (result.favoriteCount !== undefined) {
-        console.log(`[FAVORITE BUTTON] API returned count: ${result.favoriteCount}`);
-        favoriteCount = result.favoriteCount;
-      }
+      console.log(`[FAVORITE] API response:`, result);
+      
+      // Update state from API response ONLY - no local calculation
+      currentFavorited = result.favorited;
+      favoriteCount = result.favoriteCount || 0;
+      
+      console.log(`[FAVORITE] Updated state: favorited=${currentFavorited}, count=${favoriteCount}`);
       
     } catch (error) {
-      console.error('Error updating favorite:', error);
-      // Revert on error
-      currentFavorited = !currentFavorited;
+      console.error('[FAVORITE] Error:', error);
+      // Don't change any state on error
     } finally {
+      // Always clear both guards
       isLoading = false;
+      isProcessing = false;
     }
   }
 </script>
@@ -107,8 +92,8 @@
 <div class="absolute top-2 right-2 z-10">
   <button 
     onclick={handleFavorite}
-    disabled={isLoading}
-    class="group flex items-center gap-1 px-2 py-1.5 bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md border border-gray-200/50 {isLoading ? 'opacity-50 cursor-not-allowed' : ''} {currentFavorited ? 'bg-red-50/95 hover:bg-red-50 border-red-200/50' : ''}"
+    disabled={isLoading || isProcessing}
+    class="group flex items-center gap-1 px-2 py-1.5 bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md border border-gray-200/50 {(isLoading || isProcessing) ? 'opacity-50 cursor-not-allowed' : ''} {currentFavorited ? 'bg-red-50/95 hover:bg-red-50 border-red-200/50' : ''}"
     aria-label={currentFavorited ? removeFromFavoritesText : addToFavoritesText}
   >
     <svg 

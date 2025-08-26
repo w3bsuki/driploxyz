@@ -6,19 +6,25 @@ import Stripe from 'stripe';
 // Initialize Stripe with secret key - only on server runtime
 const stripe = process.env.STRIPE_SECRET_KEY 
   ? new Stripe(process.env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-06-20'
+      apiVersion: '2025-07-30.basil'
     })
   : null;
 
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
   try {
+    console.log('[Checkout API] Starting checkout process');
+    
     const { session } = await safeGetSession();
     
     if (!session?.user) {
+      console.log('[Checkout API] No session found');
       return error(401, { message: 'Authentication required' });
     }
 
+    console.log('[Checkout API] User authenticated:', session.user.id);
+
     const { productId, selectedSize } = await request.json();
+    console.log('[Checkout API] Request data:', { productId, selectedSize });
 
     if (!productId) {
       return error(400, { message: 'Product ID is required' });
@@ -52,15 +58,20 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
     // Check if Stripe is configured
     if (!stripe) {
+      console.log('[Checkout API] Stripe not configured');
       return error(500, { message: 'Payment service not configured' });
     }
 
+    console.log('[Checkout API] Creating services...');
     // Create services with Stripe instance
     const services = createServices(supabase, stripe);
 
     if (!services.stripe) {
+      console.log('[Checkout API] Services.stripe not available');
       return error(500, { message: 'Payment service not available' });
     }
+
+    console.log('[Checkout API] Services created successfully');
 
     // Calculate total amount (convert price to cents)
     const productPriceCents = Math.round(product.price * 100);
