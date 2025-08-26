@@ -49,7 +49,8 @@
       "WebFetch(domain:www.vinted.co.uk)",
       "WebFetch(domain:www.depop.com)",
       "mcp__supabase__generate_typescript_types",
-      "Bash(tail:*)"
+      "Bash(tail:*)",
+      "Bash(grep:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

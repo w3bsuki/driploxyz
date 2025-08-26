@@ -20,10 +20,16 @@
   const current = $derived(items[idx]);
   
   onMount(() => {
+    // Check if banner was dismissed recently (within a week)
     const stored = localStorage.getItem('banner-dismissed-time');
     if (stored && Date.now() - +stored < WEEK_MS) {
       dismissed = true;
       return;
+    }
+    
+    // Reset dismissed state if it's been more than a week
+    if (stored && Date.now() - +stored >= WEEK_MS) {
+      localStorage.removeItem('banner-dismissed-time');
     }
     
     fetchListings();
@@ -34,8 +40,15 @@
   async function fetchListings() {
     try {
       const res = await fetch('/api/recent-listings');
-      if (res.ok) items = await res.json();
-    } catch {}
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.length > 0) {
+          items = data;
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch recent listings:', err);
+    }
   }
   
   function rotate() {

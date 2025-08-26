@@ -5,6 +5,7 @@
   import * as i18n from '@repo/i18n';
   import { onMount, onDestroy } from 'svelte';
   import type { RealtimeChannel } from '@supabase/supabase-js';
+  import { page, navigating } from '$app/stores';
   
   interface Props {
     data: PageData;
@@ -186,8 +187,7 @@
     }
   });
   
-  // Import needed modules
-  import { page, navigating } from '$app/stores';
+  // Additional imports (page and navigating already imported at top)
   import { goto, invalidate } from '$app/navigation';
   import { browser } from '$app/environment';
   

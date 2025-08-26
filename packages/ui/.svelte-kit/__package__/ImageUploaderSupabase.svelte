@@ -38,7 +38,8 @@
     onUpload,
     onDelete,
     uploading = $bindable(false),
-    acceptedFormats = 'image/jpeg,image/jpg,image/png,image/webp,image/heic,image/heif',
+    // Android fix: Use wildcard for better compatibility
+    acceptedFormats = 'image/*',
     maxFileSize = 10,
     // Translation props with defaults
     uploadingImagesText = 'Uploading images...',
@@ -86,13 +87,28 @@
     return null;
   }
 
-  // File selection handler
+  // File selection handler - Enhanced for Android compatibility
   async function handleFileSelect(event: Event) {
     const input = event.target as HTMLInputElement;
-    if (input.files) {
-      await processFiles(Array.from(input.files));
-      // Clear input to allow re-selecting same files
-      input.value = '';
+    console.log('[ImageUploader] File input changed, files:', input.files?.length);
+    
+    if (input.files && input.files.length > 0) {
+      const files = Array.from(input.files);
+      console.log('[ImageUploader] Processing files:', files.map(f => ({ name: f.name, type: f.type, size: f.size })));
+      
+      await processFiles(files);
+      
+      // Clear input to allow re-selecting same files (Android fix)
+      try {
+        input.value = '';
+        input.type = '';
+        input.type = 'file';
+      } catch (error) {
+        // Fallback if above doesn't work on some Android browsers
+        console.warn('[ImageUploader] Could not reset input:', error);
+      }
+    } else {
+      console.warn('[ImageUploader] No files selected or input.files is null');
     }
   }
 
@@ -198,11 +214,24 @@
     }
   }
 
-  // Trigger file input
+  // Trigger file input - Enhanced for mobile/Android
   function triggerFileInput() {
-    if (canUploadMore) {
-      currentError = '';
-      fileInput.click();
+    if (!canUploadMore) {
+      return;
+    }
+    
+    currentError = '';
+    console.log('[ImageUploader] Triggering file input');
+    
+    try {
+      // Android/mobile browsers sometimes need a slight delay
+      setTimeout(() => {
+        fileInput.focus();
+        fileInput.click();
+      }, 100);
+    } catch (error) {
+      console.error('[ImageUploader] Error triggering file input:', error);
+      currentError = 'Unable to open file picker. Please try again.';
     }
   }
 
@@ -324,14 +353,15 @@
     {/if}
   </div>
 
-  <!-- File input -->
+  <!-- File input - Fixed for Android compatibility -->
   <input
     bind:this={fileInput}
     {id}
     type="file"
     accept={acceptedFormats}
     multiple
-    class="hidden"
+    class="sr-only"
+    style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;"
     onchange={handleFileSelect}
     disabled={!canUploadMore}
   />

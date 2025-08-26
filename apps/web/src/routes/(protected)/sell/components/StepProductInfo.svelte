@@ -8,7 +8,6 @@
     formData: {
       brand: string;
       size: string;
-      condition: 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair';
       color: string;
       material: string;
       [key: string]: any; // Allow other fields to be present
@@ -32,47 +31,6 @@
   function showError(field: string): boolean {
     return touched[field] && !!errors[field];
   }
-
-  // Condition options - professional without emojis
-  const conditions = $derived([
-    {
-      value: 'brand_new_with_tags' as const,
-      label: i18n.sell_condition_brandNewWithTags(),
-      description: i18n.sell_condition_brandNewWithTags_desc(),
-      color: 'green'
-    },
-    {
-      value: 'new_without_tags' as const,
-      label: i18n.sell_condition_newWithoutTags(),
-      description: i18n.sell_condition_newWithoutTags_desc(),
-      color: 'teal'
-    },
-    {
-      value: 'like_new' as const,
-      label: i18n.sell_condition_likeNew(),
-      description: i18n.sell_condition_likeNew_desc(),
-      color: 'blue'
-    },
-    {
-      value: 'good' as const,
-      label: i18n.sell_condition_good(),
-      description: i18n.sell_condition_good_desc(),
-      color: 'indigo'
-    },
-    {
-      value: 'worn' as const,
-      label: i18n.sell_condition_worn(),
-      description: i18n.sell_condition_worn_desc(),
-      color: 'purple'
-    },
-    {
-      value: 'fair' as const,
-      label: i18n.sell_condition_fair(),
-      description: i18n.sell_condition_fair_desc(),
-      color: 'yellow'
-    }
-  ]);
-
 
   // Size groups
   const sizeGroups = $derived(() => {
@@ -121,11 +79,6 @@
     onFieldChange('brand', formData.brand);
   }
 
-  function selectCondition(value: typeof formData.condition) {
-    formData.condition = value;
-    onFieldChange('condition', value);
-  }
-
   function selectSize(size: string) {
     formData.size = size;
     onFieldChange('size', size);
@@ -167,35 +120,6 @@
 </script>
 
 <div class="space-y-4">
-  <!-- Condition Section -->
-  <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
-    <label class="text-sm font-medium text-gray-700 mb-2 block">
-      {i18n.sell_condition()} <span class="text-red-500">*</span>
-    </label>
-    
-    <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-1.5">
-      {#each conditions as condition}
-        <button
-          type="button"
-          onclick={() => selectCondition(condition.value)}
-          class="relative px-2.5 py-2.5 text-center rounded-lg border transition-all text-xs {
-            formData.condition === condition.value 
-              ? 'border-black bg-black text-white' 
-              : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
-          }"
-          aria-pressed={formData.condition === condition.value}
-        >
-          <div class="font-medium text-[13px]">{condition.label}</div>
-          <div class="text-[10px] opacity-70 mt-0.5">{condition.description}</div>
-        </button>
-      {/each}
-    </div>
-    
-    {#if showError('condition')}
-      <p class="text-xs text-red-600 mt-1">{errors.condition}</p>
-    {/if}
-  </div>
-
   <!-- Brand Section -->
   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
     <label class="text-sm font-medium text-gray-700 mb-2 block">
@@ -351,11 +275,10 @@
   </div>
 
   <!-- Summary of selections -->
-  {#if formData.condition && formData.brand && formData.size}
+  {#if formData.brand && formData.size}
     <div class="text-xs text-gray-600 bg-gray-50 rounded-lg px-3 py-2">
       <span class="font-medium">{i18n.sell_summary()}</span>
-      {conditions.find(c => c.value === formData.condition)?.label}
-      • {formData.brand}
+      {formData.brand}
       • Size {formData.size}
       {#if formData.color}
         • {formData.color}
@@ -369,15 +292,6 @@
 
 <!-- Hidden fallback for form submission -->
 <div class="hidden">
-  <select name="condition" bind:value={formData.condition} class="sr-only">
-    <option value="">{i18n.sell_selectCondition()}</option>
-    <option value="brand_new_with_tags">{i18n.sell_condition_brandNewWithTags()}</option>
-    <option value="new_without_tags">{i18n.sell_condition_newWithoutTags()}</option>
-    <option value="like_new">{i18n.sell_condition_likeNew()}</option>
-    <option value="good">{i18n.sell_condition_good()}</option>
-    <option value="worn">{i18n.sell_condition_worn()}</option>
-    <option value="fair">{i18n.sell_condition_fair()}</option>
-  </select>
   <input type="hidden" name="brand" value={formData.brand} />
   <input type="hidden" name="size" value={formData.size} />
 </div>

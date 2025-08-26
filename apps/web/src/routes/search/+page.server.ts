@@ -41,37 +41,56 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
       const categoryName = categoryMap[categorySlug] || categorySlug;
       
-      // Get main category ID
+      // Get main category ID (Level 1 - Men/Women/Kids/Unisex)
       const { data: mainCat } = await locals.supabase
         .from('categories')
         .select('id, name')
         .or(`slug.eq.${categorySlug},name.ilike.${categoryName}`)
-        .is('parent_id', null)
+        .eq('level', 1)  // Only get level 1 categories
         .single();
       
       if (mainCat) {
         mainCategoryId = mainCat.id;
         
-        // Get all child categories of this main category
-        const { data: childCats } = await locals.supabase
+        // Get all Level 2 categories (Clothing, Shoes, etc) under this Level 1
+        const { data: level2Cats } = await locals.supabase
           .from('categories')
           .select('id')
-          .eq('parent_id', mainCategoryId);
+          .eq('parent_id', mainCategoryId)
+          .eq('level', 2);
         
-        if (childCats) {
-          categoryIds = [mainCategoryId, ...childCats.map(c => c.id)];
-          
-          // Also get grandchildren (level 3 categories)
-          const { data: grandchildCats } = await locals.supabase
+        if (level2Cats) {
+          // Get all Level 3 categories (actual product categories) under these Level 2
+          const { data: level3Cats } = await locals.supabase
             .from('categories')
             .select('id')
-            .in('parent_id', childCats.map(c => c.id));
+            .in('parent_id', level2Cats.map(c => c.id))
+            .eq('level', 3);
           
-          if (grandchildCats) {
-            categoryIds = [...categoryIds, ...grandchildCats.map(c => c.id)];
+          if (level3Cats) {
+            // Only include Level 3 category IDs for filtering products
+            categoryIds = level3Cats.map(c => c.id);
           }
-        } else {
-          categoryIds = [mainCategoryId];
+        }
+      } else {
+        // Check if it's a Level 2 category (like "Shoes" or "Bags" across all genders)
+        const { data: level2Cat } = await locals.supabase
+          .from('categories')
+          .select('id, name')
+          .or(`slug.eq.${categorySlug},name.ilike.${categoryName}`)
+          .eq('level', 2);
+        
+        if (level2Cat && level2Cat.length > 0) {
+          // Get all Level 3 categories under all matching Level 2 categories
+          const { data: level3Cats } = await locals.supabase
+            .from('categories')
+            .select('id')
+            .in('parent_id', level2Cat.map(c => c.id))
+            .eq('level', 3);
+          
+          if (level3Cats) {
+            categoryIds = level3Cats.map(c => c.id);
+          }
         }
       }
     }
@@ -205,26 +224,38 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       };
     }
 
-    // Fetch all categories with hierarchy for navigation
+    // Fetch all categories with hierarchy for navigation - ONLY Level 1 categories for pills
     const { data: allCategories } = await locals.supabase
       .from('categories')
-      .select('id, name, slug, parent_id')
-      .order('parent_id', { ascending: true, nullsFirst: true })
+      .select('id, name, slug, parent_id, level')
+      .order('level', { ascending: true })
       .order('name');
 
-    // Build category hierarchy
-    const mainCategories = allCategories?.filter(c => !c.parent_id) || [];
+    // Get only Level 1 categories for the main pills
+    const level1Categories = allCategories?.filter(c => c.level === 1) || [];
+    
+    // Sort Level 1 categories: Women, Men, Kids, Unisex (in that order)
+    const categoryOrder = ['Women', 'Men', 'Kids', 'Unisex'];
+    const sortedLevel1 = level1Categories.sort((a, b) => {
+      const aIndex = categoryOrder.indexOf(a.name);
+      const bIndex = categoryOrder.indexOf(b.name);
+      if (aIndex === -1 && bIndex === -1) return a.name.localeCompare(b.name);
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+      return aIndex - bIndex;
+    });
+
+    // Build category hierarchy for the sidebar/navigation
     const categoryHierarchy: any = {};
     
-    mainCategories.forEach(mainCat => {
-      const subcats = allCategories?.filter(c => c.parent_id === mainCat.id) || [];
+    sortedLevel1.forEach(mainCat => {
+      const level2cats = allCategories?.filter(c => c.parent_id === mainCat.id && c.level === 2) || [];
       categoryHierarchy[mainCat.slug || mainCat.name.toLowerCase()] = {
         id: mainCat.id,
         name: mainCat.name,
         slug: mainCat.slug,
-        subcategories: subcats.map(subcat => {
-          // Get level 3 categories
-          const level3 = allCategories?.filter(c => c.parent_id === subcat.id) || [];
+        subcategories: level2cats.map(subcat => {
+          const level3 = allCategories?.filter(c => c.parent_id === subcat.id && c.level === 3) || [];
           return {
             id: subcat.id,
             name: subcat.name,

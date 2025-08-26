@@ -76,7 +76,12 @@ export const actions: Actions = {
     const category_id = formData.get('category_id') as string || type_category_id || gender_category_id; // Fallback to type or gender category
     const brand = formData.get('brand') as string;
     const size = formData.get('size') as string;
-    const condition = (formData.get('condition') as string) || 'good'; // Default to 'good' if empty
+    
+    // CRITICAL: Ensure condition is NEVER empty or invalid
+    const rawCondition = formData.get('condition') as string;
+    const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'];
+    const condition = (rawCondition && validConditions.includes(rawCondition)) ? rawCondition : 'good';
+    
     const color = formData.get('color') as string || '';
     const material = formData.get('material') as string || '';
     const price = parseFloat(formData.get('price') as string);
@@ -145,9 +150,8 @@ export const actions: Actions = {
         });
       }
       
-      // CRITICAL: Ensure condition is valid enum value
-      const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'];
-      const finalCondition = validConditions.includes(condition) ? condition : 'good';
+      // Condition is already validated above, use it directly
+      const finalCondition = condition; // Already guaranteed to be valid
 
       // Create product in database
       const { data: product, error: productError } = await supabase

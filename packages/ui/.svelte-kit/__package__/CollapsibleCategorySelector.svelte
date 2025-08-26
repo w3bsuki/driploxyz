@@ -257,25 +257,8 @@
             {beMoreSpecificLabel} <span class="text-gray-400">{optionalText}</span>
           </label>
           
-          <!-- Quick input option -->
-          <div class="mb-1.5">
-            <input
-              type="text"
-              bind:value={customCategoryInput}
-              placeholder="{typeCategoryPlaceholder}"
-              onkeydown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  selectSpecific(customCategoryInput || '');
-                }
-              }}
-              class="w-full px-2.5 py-2 text-xs rounded-md border border-gray-200 bg-white text-gray-700 placeholder-gray-400 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none"
-            />
-            <p class="mt-0.5 text-[10px] text-gray-500">Press Enter to confirm or select from below</p>
-          </div>
-
-          <!-- Specific options in compact grid -->
-          <div class="max-h-32 overflow-y-auto border border-gray-200 rounded-md p-1.5">
+          <!-- Specific options in compact grid FIRST -->
+          <div class="max-h-32 overflow-y-auto border border-gray-200 rounded-md p-1.5 mb-2">
             <div class="grid grid-cols-2 gap-1">
               {#each specificCategories as category}
                 <button
@@ -291,6 +274,23 @@
                 </button>
               {/each}
             </div>
+          </div>
+
+          <!-- Quick input option BELOW the categories -->
+          <div>
+            <input
+              type="text"
+              bind:value={customCategoryInput}
+              placeholder="{typeCategoryPlaceholder}"
+              onkeydown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  selectSpecific(customCategoryInput || '');
+                }
+              }}
+              class="w-full px-2.5 py-2 text-xs rounded-md border border-gray-200 bg-white text-gray-700 placeholder-gray-400 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none"
+            />
+            <p class="mt-0.5 text-[10px] text-gray-500">Press Enter to confirm custom category</p>
           </div>
         </div>
       {/if}

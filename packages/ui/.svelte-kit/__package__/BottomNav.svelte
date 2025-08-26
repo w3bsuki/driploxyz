@@ -27,6 +27,17 @@
     }
   }: Props = $props();
   
+  // Track which button was clicked for loading state
+  let clickedItem = $state<string | null>(null);
+  
+  function handleClick(item: NavItem) {
+    clickedItem = item.href;
+    // Clear after navigation completes or timeout
+    setTimeout(() => {
+      clickedItem = null;
+    }, 3000);
+  }
+  
   interface NavItem {
     href: string;
     label: string;
@@ -79,39 +90,71 @@
       return 'flex items-center justify-center py-1.5 min-h-[48px]';
     }
     const active = isActive(item);
-    const isNavigatingTo = isNavigating && navigatingTo === item.href;
+    const isLoading = clickedItem === item.href || (isNavigating && navigatingTo === item.href);
     return `flex flex-col items-center py-2 px-1 min-h-[48px] transition-all duration-200 ${
-      active ? 'text-gray-900' : isNavigatingTo ? 'text-gray-700 opacity-70' : 'text-gray-500 hover:text-gray-700'
+      active ? 'text-gray-900' : isLoading ? 'text-gray-700 opacity-70' : 'text-gray-500 hover:text-gray-700'
     }`;
   }
+  
+  // Clear clicked state when navigation completes
+  $effect(() => {
+    if (!isNavigating && clickedItem) {
+      // Give a small delay for visual feedback
+      setTimeout(() => {
+        clickedItem = null;
+      }, 100);
+    }
+  });
 </script>
 
 <nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-white shadow-lg pb-safe sm:hidden z-50 before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gray-200 before:to-transparent">
   <div class="grid grid-cols-5">
     {#each navItems as item}
+      {@const isLoading = clickedItem === item.href || (isNavigating && navigatingTo === item.href)}
       <a 
         href={item.href}
         class={getItemClasses(item)}
         aria-label={item.label}
+        onclick={() => handleClick(item)}
         data-sveltekit-preload-data="hover"
         data-sveltekit-preload-code="hover"
       >
         {#if item.isSpecial}
-          <div class="bg-gray-900 text-white rounded-full p-2.5 shadow-lg transform {isActive(item) ? 'scale-105' : ''} {isNavigating && navigatingTo === item.href ? 'opacity-70' : ''} transition-all duration-200 hover:bg-gray-800">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
-            </svg>
+          <div class="bg-gray-900 text-white rounded-full p-2.5 shadow-lg transform {isActive(item) ? 'scale-105' : ''} {isLoading ? 'opacity-70' : ''} transition-all duration-200 hover:bg-gray-800 relative">
+            {#if isLoading}
+              <div class="absolute inset-0 rounded-full bg-white/20 animate-pulse"></div>
+              <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
+              </svg>
+            {:else}
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
+              </svg>
+            {/if}
           </div>
         {:else}
           <div class="relative">
-            <svg class="w-5 h-5 transition-opacity duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
-            </svg>
+            {#if isLoading}
+              <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
+              </svg>
+            {:else}
+              <svg class="w-5 h-5 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
+              </svg>
+            {/if}
             {#if item.showBadge && unreadMessageCount > 0}
               <span class="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full animate-pulse"></span>
             {/if}
           </div>
-          <span class="text-[10px] mt-0.5 font-medium transition-opacity duration-200">{item.label}</span>
+          <span class="text-[10px] mt-0.5 font-medium transition-opacity duration-200 {isLoading ? 'opacity-50' : ''}">
+            {#if isLoading}
+              <span class="inline-block">{item.label}</span>
+              <span class="ml-0.5 inline-block animate-pulse">...</span>
+            {:else}
+              {item.label}
+            {/if}
+          </span>
         {/if}
       </a>
     {/each}

@@ -13,6 +13,7 @@
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import { onMount } from 'svelte';
   import * as i18n from '@repo/i18n';
+  import { analyzeImageForCategories, mergeSuggestions, type CategorySuggestion } from '$lib/utils/imageAnalysis';
 
   interface Props {
     data: PageData;
@@ -50,7 +51,7 @@
     category_id: form?.values?.category_id || '',
     brand: form?.values?.brand || '',
     size: form?.values?.size || '',
-    condition: (form?.values?.condition || 'good') as 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair', // Ensure default is 'good'
+    condition: (form?.values?.condition || 'good') as 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair', // Always default to 'good'
     color: form?.values?.color || '',
     material: form?.values?.material || '',
     price: Number(form?.values?.price) || 0,
@@ -64,6 +65,10 @@
     path: string;
   }
   let uploadedImages = $state<UploadedImage[]>([]);
+  
+  // Image analysis suggestions
+  let categorySuggestions = $state<CategorySuggestion | null>(null);
+  let showSuggestions = $state(false);
   
   const supabase = createBrowserSupabaseClient();
   
@@ -213,6 +218,20 @@
       // Pass the access token to avoid hanging auth methods
       const uploaded = await uploadImages(supabase, files, 'product-images', userId, undefined, accessToken);
       console.log('[handleImageUpload] Upload completed, results:', uploaded.length);
+      
+      // Analyze first image for category suggestions
+      if (uploaded.length > 0 && files.length > 0) {
+        try {
+          const suggestions = await analyzeImageForCategories(files[0], uploaded[0].url);
+          if (suggestions.length > 0) {
+            categorySuggestions = mergeSuggestions(suggestions);
+            showSuggestions = true;
+          }
+        } catch (error) {
+          console.error('Image analysis failed:', error);
+        }
+      }
+      
       return uploaded;
     } catch (error) {
       console.error('[handleImageUpload] Error occurred:', error);
@@ -242,13 +261,13 @@
     formData.gender_category_id &&
     formData.type_category_id &&
     // Allow proceeding with just 2 tiers if no 3rd tier exists
-    (formData.category_id || specificCategories.length === 0)
+    (formData.category_id || specificCategories.length === 0) &&
+    formData.condition // Now condition is required in Step 2
   );
   
   const canProceedStep3 = $derived(
     formData.brand && 
-    formData.size && 
-    formData.condition
+    formData.size // Condition removed from Step 3 validation
   );
   
   const canProceedStep4 = $derived(
@@ -470,10 +489,10 @@
             }
           });
           
-          // Explicitly ensure condition is sent (fallback to 'good' if empty)
-          if (!formDataObj.has('condition') || !formDataObj.get('condition')) {
-            formDataObj.set('condition', formData.condition || 'good');
-          }
+          // CRITICAL: Ensure condition is ALWAYS sent with valid value
+          const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'];
+          const conditionValue = formData.condition && validConditions.includes(formData.condition) ? formData.condition : 'good';
+          formDataObj.set('condition', conditionValue);
           
           formDataObj.append('photo_urls', JSON.stringify(uploadedImages.map(img => img.url)));
           formDataObj.append('photo_paths', JSON.stringify(uploadedImages.map(img => img.path)));
@@ -526,11 +545,40 @@
           <StepCategory
             categories={data.categories}
             bind:formData
+            suggestions={categorySuggestions}
+            showSuggestions={showSuggestions}
             onFieldChange={(field, value) => {
               // Update category fields
               if (field === 'gender') formData.gender_category_id = value;
               if (field === 'type') formData.type_category_id = value;
               if (field === 'specific') formData.category_id = value;
+              if (field === 'condition') formData.condition = value;
+            }}
+            onDismissSuggestions={() => showSuggestions = false}
+            onApplySuggestions={() => {
+              if (categorySuggestions) {
+                // Map suggestion to actual category IDs
+                if (categorySuggestions.gender) {
+                  const genderCat = genderCategories.find(c => c.name === categorySuggestions.gender);
+                  if (genderCat) {
+                    formData.gender_category_id = genderCat.id;
+                  }
+                }
+                if (categorySuggestions.type && formData.gender_category_id) {
+                  const typeCat = typeCategories.find(c => c.name === categorySuggestions.type);
+                  if (typeCat) {
+                    formData.type_category_id = typeCat.id;
+                  }
+                }
+                if (categorySuggestions.specific && formData.type_category_id) {
+                  const specificCat = specificCategories.find(c => c.name === categorySuggestions.specific);
+                  if (specificCat) {
+                    formData.category_id = specificCat.id;
+                  }
+                }
+                showSuggestions = false;
+                toasts.success('Applied category suggestions!');
+              }
             }}
           />
         {/if}
@@ -699,6 +747,15 @@
             </div>
           </div>
         {/if}
+        
+        <!-- CRITICAL: Hidden inputs that are ALWAYS present in the form -->
+        <!-- These ensure values are sent even when their UI components are not rendered -->
+        <div class="hidden">
+          <input type="hidden" name="condition" value={formData.condition || 'good'} />
+          <input type="hidden" name="gender_category_id" value={formData.gender_category_id || ''} />
+          <input type="hidden" name="type_category_id" value={formData.type_category_id || ''} />
+          <input type="hidden" name="category_id" value={formData.category_id || ''} />
+        </div>
       </form>
     {/if}
     </div>
@@ -754,14 +811,14 @@
                     showValidation('Please select a gender category');
                   } else if (!formData.type_category_id) {
                     showValidation('Please select a category type');
+                  } else if (!formData.condition) {
+                    showValidation('Please select item condition');
                   }
                 } else if (currentStep === 3) {
                   if (!formData.brand) {
                     showValidation('Please enter a brand');
                   } else if (!formData.size) {
                     showValidation('Please select a size');
-                  } else if (!formData.condition) {
-                    showValidation('Please select item condition');
                   }
                 } else if (currentStep === 4) {
                   if (!formData.price || formData.price <= 0) {

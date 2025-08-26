@@ -8,10 +8,19 @@
     image: string | null;
   }
 
+  interface CategorySuggestion {
+    id: string;
+    name: string;
+    level: number;
+    path: string;
+    icon?: string;
+  }
+
   interface Props {
     value: string;
     placeholder?: string;
     onSearch?: (query: string) => void;
+    onCategorySelect?: (categoryId: string, categoryName: string) => void;
     class?: string;
   }
 
@@ -19,38 +28,45 @@
     value = $bindable(''),
     placeholder = 'Search products...',
     onSearch,
+    onCategorySelect,
     class: className = ''
   }: Props = $props();
 
   let searchResults = $state<SearchResult[]>([]);
+  let categorySuggestions = $state<CategorySuggestion[]>([]);
   let isLoading = $state(false);
   let showDropdown = $state(false);
+  let showInitialSuggestions = $state(false);
   let selectedIndex = $state(-1);
   let searchTimeout: NodeJS.Timeout;
   let inputElement: HTMLInputElement;
   
-  // Popular search suggestions
+  // Popular search suggestions - brands and items
   const popularSearches = [
-    'Nike', 'Adidas', 'Vintage', 'Designer', 'Jacket', 
-    'Jeans', 'Dress', 'Shoes', 'Bag', 'Watch'
+    'Nike', 'Adidas', 'Zara', 'H&M', 'Levi\'s'
   ];
 
   async function performSearch(query: string) {
     if (!query.trim()) {
       searchResults = [];
+      categorySuggestions = []; // Don't show categories when empty - we have pills for that
       showDropdown = false;
+      showInitialSuggestions = false;
       return;
     }
 
     isLoading = true;
+    showInitialSuggestions = false;
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&limit=5`);
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&limit=5&include_categories=true`);
       const data = await response.json();
       searchResults = data.products || [];
-      showDropdown = searchResults.length > 0;
+      categorySuggestions = data.categories || [];
+      showDropdown = searchResults.length > 0 || categorySuggestions.length > 0;
     } catch (error) {
       console.error('Search failed:', error);
       searchResults = [];
+      categorySuggestions = [];
     } finally {
       isLoading = false;
     }
@@ -61,21 +77,45 @@
     if (value.trim()) {
       searchTimeout = setTimeout(() => performSearch(value), 300);
     } else {
+      // Don't show anything when input is cleared
       searchResults = [];
+      categorySuggestions = [];
       showDropdown = false;
+      showInitialSuggestions = false;
+    }
+  }
+
+  function handleFocus() {
+    if (!value.trim()) {
+      // Don't show suggestions on focus - let user type
+      showDropdown = false;
+    } else if (searchResults.length > 0 || categorySuggestions.length > 0) {
+      showDropdown = true;
     }
   }
   
   function clearSearch() {
     value = '';
     searchResults = [];
+    categorySuggestions = [];
     showDropdown = false;
+    showInitialSuggestions = false;
     inputElement?.focus();
   }
   
   function handleSuggestionClick(suggestion: string) {
     value = suggestion;
     performSearch(suggestion);
+  }
+
+  function handleCategoryClick(category: CategorySuggestion) {
+    showDropdown = false;
+    if (onCategorySelect) {
+      onCategorySelect(category.id, category.name);
+    } else {
+      // Navigate to search with category filter
+      goto(`/search?category=${category.id}`);
+    }
   }
 
   function handleKeyDown(e: KeyboardEvent) {
@@ -159,6 +199,7 @@
           aria-label={placeholder}
           class="flex-1 bg-transparent text-[15px] sm:text-base placeholder-gray-500 focus:outline-none border-0 focus:ring-0 min-w-0 pl-10 pr-2 py-2.5 sm:py-3"
           oninput={handleInput}
+          onfocus={handleFocus}
           onkeydown={handleKeyDown}
         />
         
@@ -185,7 +226,7 @@
 
   {#if showDropdown && searchResults.length > 0}
     <div class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-96 overflow-y-auto">
-      <!-- Search results -->
+      <!-- Search results only -->
       {#each searchResults as result, index}
         <button
           onclick={() => navigateToProduct(result)}
@@ -211,14 +252,16 @@
         </button>
       {/each}
       
-      <div class="border-t border-gray-100">
-        <button
-          onclick={() => onSearch?.(value.trim())}
-          class="w-full px-4 py-3 text-sm text-center text-blue-600 hover:bg-gray-50 transition-colors font-medium"
-        >
-          View all results for "{value}"
-        </button>
-      </div>
+      {#if value}
+        <div class="border-t border-gray-100">
+          <button
+            onclick={() => onSearch?.(value.trim())}
+            class="w-full px-4 py-3 text-sm text-center text-blue-600 hover:bg-gray-50 transition-colors font-medium"
+          >
+            View all results for "{value}"
+          </button>
+        </div>
+      {/if}
     </div>
   {/if}
 </div>

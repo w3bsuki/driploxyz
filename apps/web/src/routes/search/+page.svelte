@@ -45,9 +45,9 @@
     }
   });
   
-  // Use category data from server or fallback to default structure
+  // Use category data from server
   const categoryData = $derived<CategoryData>(() => {
-    // If we have real category hierarchy from server, use it
+    // Always use real category hierarchy from server
     if (data.categoryHierarchy && Object.keys(data.categoryHierarchy).length > 0) {
       const hierarchy: CategoryData = {};
       
@@ -253,6 +253,13 @@
   }
   
   
+  // Get ordered categories - Women, Men, Kids, Unisex in that order
+  function getOrderedCategories() {
+    const cats = Object.entries(categoryData());
+    // Categories are already sorted from server in correct order
+    return cats;
+  }
+
   // Smart filter data based on category
   const smartFilterData = {
     women: {
@@ -298,6 +305,7 @@
       title: product.title,
       description: product.description,
       price: Number(product.price),
+      // Fix: Server sends 'images' array directly
       images: product.images && product.images.length > 0 ? product.images : ['/placeholder-product.svg'],
       product_images: product.product_images,
       brand: product.brand,
@@ -308,10 +316,11 @@
       main_category_name: product.main_category_name, // This should be Men/Women/Kids
       category_name: product.main_category_name || product.category_name, // Use main category
       subcategory_name: product.subcategory_name, // This should be Tops/T-Shirts/etc
-      sellerId: product.seller_id,
+      sellerId: product.seller_id || product.seller?.id,
       sellerName: product.seller?.username || 'Unknown',
       sellerRating: product.seller?.rating ? Number(product.seller.rating) : null,
       sellerAvatar: product.seller?.avatar_url,
+      sellerAccountType: product.sellerAccountType,
       createdAt: product.created_at,
       location: product.location || 'Unknown'
     }));
@@ -475,17 +484,26 @@
         >
           {i18n.search_all()}
         </button>
-        {#each Object.entries(categoryData()).filter(([key]) => ['women', 'men', 'kids', 'unisex', 'shoes', 'bags', 'accessories', 'home'].includes(key)).slice(0, 8) as [key, category]}
+        {#each getOrderedCategories() as [key, category]}
           <button
             onclick={async () => {
-              selectedMainCategory = selectedMainCategory === key ? null : key;
+              // Toggle category selection
+              if (selectedMainCategory === key) {
+                selectedMainCategory = null;
+              } else {
+                selectedMainCategory = key;
+              }
               selectedSubcategory = null;
+              
+              // Build URL with proper parameters
               const url = new URL('/search', window.location.origin);
               if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-              if (selectedMainCategory !== key) {
-                url.searchParams.set('category', key);
+              if (selectedMainCategory) {
+                url.searchParams.set('category', selectedMainCategory);
               }
-              await goto(url.pathname + url.search);
+              
+              // Navigate to trigger server-side filtering
+              await goto(url.pathname + url.search, { replaceState: false });
             }}
             class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-all flex items-center gap-1
               {selectedMainCategory === key
