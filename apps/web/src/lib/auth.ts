@@ -30,21 +30,80 @@ export function requireNoAuth(user: User | null, redirectTo = '/') {
 /**
  * Checks if user has specific role
  */
-export function hasRole(profile: Database['public']['Tables']['profiles']['Row'] | null, role: 'buyer' | 'seller' | 'admin'): boolean {
+export function hasRole(profile: Database['public']['Tables']['profiles']['Row'] | null, role: 'seller' | 'admin'): boolean {
   return profile?.role === role || profile?.role === 'admin';
 }
 
 /**
+ * Checks if user is admin
+ */
+export function isAdmin(profile: Database['public']['Tables']['profiles']['Row'] | null): boolean {
+  return profile?.role === 'admin';
+}
+
+/**
+ * All authenticated users are regular users who can buy and sell
+ */
+export function isUser(profile: Database['public']['Tables']['profiles']['Row'] | null): boolean {
+  return !!profile && profile.role !== 'admin';
+}
+
+/**
  * Checks if user can perform seller actions
+ * Requires: onboarding_completed, username, full_name, location, and payout_method
  */
 export function canSell(profile: Database['public']['Tables']['profiles']['Row'] | null): boolean {
   if (!profile) return false;
-  return (
-    (profile.role === 'seller' || profile.role === 'admin') &&
-    !!profile.full_name &&
-    !!profile.username &&
-    !!profile.location
+  
+  // Must have completed onboarding
+  if (!profile.onboarding_completed) return false;
+  
+  // Must have all required seller fields
+  const hasRequiredFields = !!(
+    profile.username &&
+    profile.full_name &&
+    profile.location &&
+    profile.payout_method &&
+    typeof profile.payout_method === 'object' &&
+    profile.payout_method.type &&
+    profile.payout_method.details &&
+    profile.payout_method.name
   );
+  
+  return hasRequiredFields;
+}
+
+/**
+ * Gets the reason why user cannot sell (for user feedback)
+ */
+export function getCannotSellReason(profile: Database['public']['Tables']['profiles']['Row'] | null): string | null {
+  if (!profile) return 'Please create an account to start selling.';
+  
+  if (!profile.onboarding_completed) {
+    return 'Please complete your account setup to start selling.';
+  }
+  
+  // Check specific missing fields
+  const missingFields = [];
+  if (!profile.username) missingFields.push('username');
+  if (!profile.full_name) missingFields.push('full name');
+  if (!profile.location) missingFields.push('location');
+  
+  // Check payout method
+  if (!profile.payout_method || typeof profile.payout_method !== 'object') {
+    missingFields.push('payout method');
+  } else {
+    const payout = profile.payout_method as any;
+    if (!payout.type || !payout.details || !payout.name) {
+      missingFields.push('complete payout information');
+    }
+  }
+  
+  if (missingFields.length > 0) {
+    return `Please add your ${missingFields.join(', ')} to start selling.`;
+  }
+  
+  return null; // User can sell
 }
 
 /**

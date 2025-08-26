@@ -239,38 +239,6 @@ export class ProfileService {
     }
   }
 
-  /**
-   * Upgrade to seller role
-   */
-  async becomeSeller(userId: string): Promise<{ error: string | null }> {
-    try {
-      // Check if profile is complete enough for selling
-      const { data: profile, error: profileError } = await this.getProfile(userId);
-      
-      if (profileError || !profile) {
-        return { error: profileError || 'Profile not found' };
-      }
-
-      if (!profile.full_name || !profile.location) {
-        return { error: 'Please complete your profile (full name and location) before becoming a seller' };
-      }
-
-      const { error } = await this.supabase
-        .from('profiles')
-        .update({ role: 'seller' })
-        .eq('id', userId);
-
-      if (error) {
-        console.error('Error becoming seller:', error);
-        return { error: error.message };
-      }
-
-      return { error: null };
-    } catch (error) {
-      console.error('Error in becomeSeller:', error);
-      return { error: 'Failed to upgrade to seller account' };
-    }
-  }
 
   /**
    * Upload avatar image

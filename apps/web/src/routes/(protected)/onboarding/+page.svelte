@@ -40,6 +40,7 @@
   let payoutMethod = $state<'revolut' | 'paypal' | 'card'>('revolut');
   let payoutDetails = $state<string>('');
   let payoutName = $state<string>('');
+  let location = $state<string>('');
   let socialLinks = $state<Array<{ type: string; url: string }>>([]);
   let submitting = $state(false);
   let languageInitialized = $state(false);
@@ -217,8 +218,8 @@
     
     switch (step) {
       case 1: return accountType;
-      case 2: return username && username.trim().length >= 3 && avatarUrl; // Combined validation
-      case 3: return payoutDetails && payoutDetails.trim().length > 0;
+      case 2: return username && username.trim().length >= 3 && fullName && fullName.trim().length > 0 && location && location.trim().length > 0 && avatarUrl; // All required
+      case 3: return payoutDetails && payoutDetails.trim().length > 0 && payoutName && payoutName.trim().length > 0;
       case 4: return true; // Social links are optional
       default: return false;
     }
@@ -358,9 +359,18 @@
         
         <Input
           bind:value={fullName}
-          placeholder={m.onboarding_fullNameOptional()}
+          placeholder="Enter your full name"
           label={m.profile_fullName()}
           class="bg-white/80"
+          required
+        />
+        
+        <Input
+          bind:value={location}
+          placeholder="Enter your city or location"
+          label="Location"
+          class="bg-white/80"
+          required
         />
 
         {#if username.trim().length > 0 && username.trim().length < 3}
@@ -510,6 +520,7 @@
         <input type="hidden" name="accountType" value={accountType} />
         <input type="hidden" name="username" value={username.trim()} />
         <input type="hidden" name="fullName" value={fullName.trim()} />
+        <input type="hidden" name="location" value={location.trim()} />
         <input type="hidden" name="avatarUrl" value={avatarUrl} />
         <input type="hidden" name="payoutMethod" value={payoutMethod} />
         <input type="hidden" name="payoutDetails" value={payoutDetails} />

@@ -31,8 +31,9 @@ export const isAuthenticated = derived(user, ($user) => !!$user);
 
 export const isAdmin = derived(profile, ($profile) => $profile?.role === 'admin');
 
+// Deprecated: All users can sell if they have completed onboarding
 export const isSeller = derived(profile, ($profile) => 
-  $profile?.role === 'seller' || $profile?.role === 'admin'
+  !!$profile?.onboarding_completed
 );
 
 export const canSell = derived(profile, ($profile) => canSellHelper($profile));

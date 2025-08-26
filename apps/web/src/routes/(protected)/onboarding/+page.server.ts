@@ -52,6 +52,7 @@ export const actions: Actions = {
     const accountType = formData.get('accountType') as string;
     const username = formData.get('username') as string;
     const fullName = formData.get('fullName') as string;
+    const location = formData.get('location') as string;
     const avatarUrl = formData.get('avatarUrl') as string;
     const payoutMethod = formData.get('payoutMethod') as string;
     const payoutDetails = formData.get('payoutDetails') as string;
@@ -69,6 +70,22 @@ export const actions: Actions = {
 
     if (!username || username.trim().length < 3) {
       return fail(400, { error: 'Username must be at least 3 characters' });
+    }
+
+    if (!fullName || fullName.trim().length === 0) {
+      return fail(400, { error: 'Full name is required' });
+    }
+
+    if (!location || location.trim().length === 0) {
+      return fail(400, { error: 'Location is required' });
+    }
+
+    if (!payoutDetails || payoutDetails.trim().length === 0) {
+      return fail(400, { error: 'Payout details are required' });
+    }
+
+    if (!payoutName || payoutName.trim().length === 0) {
+      return fail(400, { error: 'Payout name is required' });
     }
 
     try {
@@ -101,13 +118,14 @@ export const actions: Actions = {
       const profileUpdate = {
         account_type: accountType,
         username: username.trim(),
-        full_name: fullName?.trim() || null,
+        full_name: fullName.trim(),
+        location: location.trim(),
         avatar_url: avatarUrl || null,
-        payout_method: payoutDetails ? { 
+        payout_method: { 
           type: payoutMethod, 
           details: payoutDetails.trim(), 
-          name: payoutName?.trim() || null 
-        } : null,
+          name: payoutName.trim()
+        },
         social_links: parsedSocialLinks.filter((link: any) => link.url?.trim()),
         onboarding_completed: true,
         verified: (accountType === 'brand' || accountType === 'premium') && brandPaid,

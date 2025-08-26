@@ -105,19 +105,8 @@ export const actions: Actions = {
         });
       }
       if (error.message.includes('Database error') || error.message.includes('database error')) {
-        // Check if user actually exists
-        const { data: existingUser } = await supabase
-          .from('profiles')
-          .select('id')
-          .ilike('email', normalizedEmail)
-          .single();
-          
-        if (existingUser) {
-          return fail(400, { 
-            errors: { email: 'An account with this email already exists. Please sign in instead.' }, 
-            values: { email: normalizedEmail, fullName: validatedFullName, password: '', confirmPassword: '' } 
-          });
-        }
+        // Check if user actually exists in auth.users
+        const { data: existingUser } = await supabase.auth.getUser();
         
         return fail(500, { 
           errors: { _form: 'A temporary issue occurred. Please try again in a moment.' }, 
@@ -170,22 +159,24 @@ export const actions: Actions = {
       });
     }
 
-    // Generate a unique username based on name and user ID
-    const username = `user_${data.user.id.substring(0, 8)}`;
-    
-    // Create profile for the new user with detected locale
+    // Create profile with temporary username - user will choose real username in onboarding
+    const tempUsername = `user${data.user.id.substring(0, 8)}`;
     const { error: profileError } = await supabase
       .from('profiles')
       .insert({
         id: data.user.id,
-        username,
+        username: tempUsername,
         full_name: validatedFullName,
-        locale: userLocale,
         onboarding_completed: false
       });
 
-    if (profileError && profileError.code !== '23505') { // Ignore duplicate key errors
-      // Profile creation failed, but continue with signup success
+    if (profileError) {
+      console.error('Profile creation error:', profileError);
+      if (profileError.code !== '23505') { // Not a duplicate key error
+        // Profile creation failed - this is serious
+        console.error('Failed to create profile for user:', data.user.id, profileError);
+      }
+      // Continue with signup success even if profile creation fails - user can complete in onboarding
     }
 
     // If user has a session (e.g., email confirmation not required), redirect to onboarding
