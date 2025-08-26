@@ -11,7 +11,7 @@ export const load: LayoutServerLoad = async ({ locals: { supabase, safeGetSessio
   const { data: profile } = await supabase
     .from('profiles')
     .select('*')
-    .eq('id', user.id)
+    .eq('id', user?.id || '')
     .single();
 
   // Check if user is admin

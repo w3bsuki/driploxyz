@@ -1,4 +1,4 @@
-import type { Product } from './types.js';
+import type { Product } from '../types';
 interface Props {
     products: Product[];
     onProductSold?: (productId: string, buyerId: string) => void;

@@ -120,7 +120,7 @@ export function getValidationMessage(
   const currentLocale = (locale || i18n.languageTag()) as LocaleKey;
   const messages = VALIDATION_MESSAGES[currentLocale] || VALIDATION_MESSAGES.en;
   
-  let message = messages[key];
+  let message = messages[key as keyof typeof messages] || key;
   
   // Replace placeholders with actual values
   if (params) {

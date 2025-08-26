@@ -1,6 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
-  import type { Product } from './types.js';
+  import type { Product } from '../types';
   import ProductImage from './ProductImage.svelte';
   import ConditionBadge from './ConditionBadge.svelte';
   import ProductPrice from './ProductPrice.svelte';

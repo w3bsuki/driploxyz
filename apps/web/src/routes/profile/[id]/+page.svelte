@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Button, Avatar, ProductCard, BrandBadge, NewSellerBadge, AdminBadge, PremiumBadge, BottomNav } from '@repo/ui';
-  import Header from '$lib/components/Header.svelte';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
@@ -78,7 +77,6 @@
 </svelte:head>
 
 <div class="min-h-screen bg-white pb-20 sm:pb-0">
-  <Header />
 
   <!-- Profile Section -->
   <div class="px-4 py-6 overflow-visible">

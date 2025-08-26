@@ -21,6 +21,10 @@ export const POST: RequestHandler = async ({ request }) => {
   let event: any;
 
   try {
+    if (!stripe) {
+      console.error('Stripe not initialized');
+      return json({ error: 'Stripe not available' }, { status: 500 });
+    }
     event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
   } catch (err: any) {
     if (isDebug) console.error('[Webhook] Signature verification failed:', err.message);
@@ -52,6 +56,10 @@ export const POST: RequestHandler = async ({ request }) => {
 
       case 'invoice.payment_failed':
         if (isDebug) console.log('[Webhook] Payment failed');
+        if (!stripe) {
+          console.error('Stripe not initialized');
+          break;
+        }
         const subscription = await stripe.subscriptions.retrieve(event.data.object.subscription);
         await subscriptionService.handleStripeWebhook({
           type: 'customer.subscription.updated',

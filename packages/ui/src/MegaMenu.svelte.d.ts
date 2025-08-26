@@ -1,4 +1,4 @@
-import type { CategoryData } from './types.js';
+import type { CategoryData } from '../types';
 interface Props {
     isOpen?: boolean;
     categories: CategoryData;

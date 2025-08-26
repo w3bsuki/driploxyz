@@ -1,4 +1,4 @@
-import type { InputType } from './types.js';
+import type { InputType } from '../types';
 interface Props {
     type?: InputType;
     value?: string;

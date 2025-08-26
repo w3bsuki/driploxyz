@@ -1,4 +1,4 @@
-import type { SearchBarVariant } from './types.js';
+import type { SearchBarVariant } from '../types';
 interface Props {
     value?: string;
     placeholder?: string;

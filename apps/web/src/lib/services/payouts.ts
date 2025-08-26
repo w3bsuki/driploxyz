@@ -5,57 +5,35 @@ import { validatePayoutMethod, validatePayoutAmount } from '$lib/utils/payments.
 import type { PayoutMethod } from '$lib/stripe/types.js';
 
 type Tables = Database['public']['Tables'];
-type Payout = Tables['payouts']['Row'];
-type PayoutInsert = Tables['payouts']['Insert'];
+type Transaction = Tables['transactions']['Row'];
+type TransactionUpdate = Tables['transactions']['Update'];
 
 export class PayoutService {
 	constructor(private supabase: SupabaseClient<Database>) {}
 
 	/**
-	 * Request a payout for a seller
+	 * Process payouts for completed transactions
 	 */
-	async requestPayout(sellerId: string, amount: number, payoutMethod: PayoutMethod): Promise<{ payout: Payout | null; error: Error | null }> {
+	async processPayouts(sellerId: string): Promise<{ transactions: Transaction[] | null; error: Error | null }> {
 		try {
-			// Validate payout method and amount
-			const methodValidation = validatePayoutMethod(payoutMethod);
-			if (!methodValidation.valid) {
-				throw new Error(methodValidation.error);
-			}
-
-			// For now, skip balance validation - just check basic amount
-			const amountValidation = validatePayoutAmount(amount, amount + 1000);
-			if (!amountValidation.valid) {
-				throw new Error(amountValidation.error);
-			}
-
-			// Check seller's available balance
-			const { data: profile } = await this.supabase
-				.from('profiles')
+			// Get completed transactions that haven't been paid out yet
+			const { data: transactions, error } = await this.supabase
+				.from('transactions')
 				.select('*')
-				.eq('id', sellerId)
-				.single();
-
-			// Create payout record
-			const { data: payout, error } = await this.supabase
-				.from('payouts')
-				.insert({
-					user_id: sellerId,
-					amount,
-					method: payoutMethod,
-					status: 'pending'
-				})
-				.select()
-				.single();
+				.eq('seller_id', sellerId)
+				.eq('status', 'completed')
+				.is('payout_status', null)
+				.order('created_at', { ascending: false });
 
 			if (error) throw error;
 
 			return {
-				payout,
+				transactions: transactions || [],
 				error: null
 			};
 		} catch (error) {
-			console.error('Error requesting payout:', error);
-			return { payout: null, error: error as Error };
+			console.error('Error processing payouts:', error);
+			return { transactions: null, error: error as Error };
 		}
 	}
 
@@ -64,10 +42,11 @@ export class PayoutService {
 	 */
 	async getSellerPayouts(sellerId: string) {
 		return await this.supabase
-			.from('payouts')
+			.from('transactions')
 			.select('*')
-			.eq('user_id', sellerId)
-			.order('created_at', { ascending: false });
+			.eq('seller_id', sellerId)
+			.not('payout_status', 'is', null)
+			.order('payout_date', { ascending: false });
 	}
 
 	/**
@@ -75,12 +54,13 @@ export class PayoutService {
 	 */
 	async getPendingPayouts() {
 		return await this.supabase
-			.from('payouts')
+			.from('transactions')
 			.select(`
 				*,
-				profiles!user_id(username, full_name)
+				profiles!seller_id(username, full_name)
 			`)
-			.eq('status', 'pending')
+			.eq('status', 'completed')
+			.is('payout_status', null)
 			.order('created_at', { ascending: true });
 	}
 
@@ -88,43 +68,30 @@ export class PayoutService {
 	 * Update payout status (admin only)
 	 */
 	async updatePayoutStatus(
-		payoutId: string, 
+		transactionId: string, 
 		status: 'processing' | 'completed' | 'failed',
-		processedBy: string,
-		notes?: string
+		payoutReference?: string
 	) {
-		const updates: any = {
-			status
+		const updates: TransactionUpdate = {
+			payout_status: status
 		};
 
 		if (status === 'processing') {
 			updates.processed_at = new Date().toISOString();
 		} else if (status === 'completed') {
+			updates.payout_date = new Date().toISOString();
 			updates.processed_at = new Date().toISOString();
+			if (payoutReference) {
+				updates.payout_reference = payoutReference;
+			}
 		}
 
 		const { error } = await this.supabase
-			.from('payouts')
+			.from('transactions')
 			.update(updates)
-			.eq('id', payoutId);
+			.eq('id', transactionId);
 
 		if (error) throw error;
-
-		// If payout completed, update seller's updated_at
-		if (status === 'completed') {
-			const { data: payout } = await this.supabase
-				.from('payouts')
-				.select('user_id')
-				.eq('id', payoutId)
-				.single();
-
-			if (payout) {
-				await this.supabase
-					.from('profiles')
-					.update({ updated_at: new Date().toISOString() })
-					.eq('id', payout.user_id);
-			}
-		}
 
 		return { success: true };
 	}
@@ -141,25 +108,26 @@ export class PayoutService {
 	 * Get seller's earnings summary
 	 */
 	async getSellerEarnings(sellerId: string) {
-		const { data: profile } = await this.supabase
-			.from('profiles')
-			.select('*')
-			.eq('id', sellerId)
-			.single();
-
-		const { data: completedPayouts } = await this.supabase
-			.from('payouts')
-			.select('amount')
-			.eq('user_id', sellerId)
+		// Get all completed transactions for this seller
+		const { data: completedTransactions } = await this.supabase
+			.from('transactions')
+			.select('seller_earnings, payout_status, payout_date')
+			.eq('seller_id', sellerId)
 			.eq('status', 'completed');
 
-		const totalPaidOut = completedPayouts?.reduce((sum, payout) => sum + payout.amount, 0) || 0;
+		const totalEarnings = completedTransactions?.reduce((sum, txn) => sum + (txn.seller_earnings || 0), 0) || 0;
+		const totalPaidOut = completedTransactions?.filter(txn => txn.payout_status === 'completed')
+			.reduce((sum, txn) => sum + (txn.seller_earnings || 0), 0) || 0;
+		const pendingPayout = totalEarnings - totalPaidOut;
+		
+		const lastPayout = completedTransactions?.filter(txn => txn.payout_date)
+			.sort((a, b) => new Date(b.payout_date!).getTime() - new Date(a.payout_date!).getTime())[0];
 
 		return {
-			totalEarnings: 0,
-			pendingPayout: 0,
+			totalEarnings,
+			pendingPayout,
 			totalPaidOut,
-			lastPayoutAt: profile?.updated_at
+			lastPayoutAt: lastPayout?.payout_date || null
 		};
 	}
 }

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { ProductCard, Button, SearchBar, MegaMenu, CategorySidebar, ProductCardSkeleton, BottomNav, type Product, type CategoryData } from '@repo/ui';
-  import Header from '$lib/components/Header.svelte';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { goto } from '$app/navigation';
   import { page, navigating } from '$app/stores';
@@ -350,14 +349,12 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
-  <!-- Main App Header -->
-  <Header user={data.user} profile={data.profile} />
   
   <!-- Clean Search Section with Dynamic Pills -->
-  <div class="bg-white sticky top-14 sm:top-16 z-30 border-b">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
+  <div class="bg-white sticky top-[104px] z-30 border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
       <!-- Main Search Bar -->
-      <div class="relative">
+      <div class="relative mb-3">
         <SearchBar 
           bind:value={searchQuery}
           placeholder={i18n.search_placeholder()}
@@ -371,7 +368,6 @@
           </div>
         {/if}
       </div>
-      
       <!-- Main Category Pills (Row 1) -->
       <div class="flex overflow-x-auto scrollbar-hide gap-2">
         <button
@@ -852,20 +848,58 @@
               categoryTranslation: (categoryName: string) => {
                 // Map English category names to translation keys
                 const categoryMap: Record<string, string> = {
+                  // Level 1 - Gender categories
                   'Women': i18n.category_women(),
                   'Men': i18n.category_men(),
                   'Kids': i18n.category_kids(),
-                  'Pets': i18n.category_pets(),
-                  'Shoes': i18n.category_shoes(),
-                  'Bags': i18n.category_bags(),
-                  'Home': i18n.category_home(),
-                  'Beauty': i18n.category_beauty(),
-                  'T-Shirts': i18n.subcategory_tshirts ? i18n.subcategory_tshirts() : 'T-Shirts',
-                  'Tops & T-Shirts': i18n.subcategory_tops ? i18n.subcategory_tops() : 'Tops & T-Shirts',
-                  'Dresses': i18n.subcategory_dresses ? i18n.subcategory_dresses() : 'Dresses',
-                  'Jeans': i18n.subcategory_jeans ? i18n.subcategory_jeans() : 'Jeans',
-                  'Jackets': i18n.subcategory_jackets ? i18n.subcategory_jackets() : 'Jackets',
-                  'Accessories': i18n.subcategory_accessories ? i18n.subcategory_accessories() : 'Accessories'
+                  'Unisex': i18n.category_unisex(),
+                  
+                  // Level 2 - Product Types
+                  'Clothing': i18n.category_clothing(),
+                  'Shoes': i18n.category_shoesType(),
+                  'Accessories': i18n.category_accessoriesType(),
+                  'Bags': i18n.category_bagsType(),
+                  
+                  // Level 3 - Specific items (old Level 2)
+                  'Activewear': i18n.category_activewear(),
+                  'Boots': i18n.category_boots(),
+                  'Dresses': i18n.category_dresses(),
+                  'Flats': i18n.category_flats(),
+                  'Formal Shoes': i18n.category_formalShoes(),
+                  'Heels': i18n.category_heels(),
+                  'Hoodies': i18n.category_hoodies(),
+                  'Jackets': i18n.category_jackets(),
+                  'Jackets & Coats': i18n.category_jacketsCoats(),
+                  'Jeans': i18n.category_jeans(),
+                  'Jewelry': i18n.category_jewelry(),
+                  'Lingerie & Underwear': i18n.category_lingerie(),
+                  'Pants & Jeans': i18n.category_pantsJeans(),
+                  'Pants & Trousers': i18n.category_pantsTrousers(),
+                  'Sandals': i18n.category_sandals(),
+                  'Sandals & Slides': i18n.category_sandalsSlides(),
+                  'Shirts': i18n.category_shirts(),
+                  'Shirts & Blouses': i18n.category_shirtsBlouses(),
+                  'Shorts': i18n.category_shorts(),
+                  'Skirts': i18n.category_skirts(),
+                  'Sneakers': i18n.category_sneakers(),
+                  'Suits & Blazers': i18n.category_suitsBlazers(),
+                  'Sweaters & Hoodies': i18n.category_sweatersHoodies(),
+                  'Swimwear': i18n.category_swimwear(),
+                  'T-Shirts': i18n.category_tshirts(),
+                  'Tops & T-Shirts': i18n.category_topsTshirts(),
+                  'Underwear': i18n.category_underwear(),
+                  'Watches': i18n.category_watches(),
+                  
+                  // Level 3 - Accessory subcategories
+                  'Hats & Caps': i18n.category_hatsAndCaps(),
+                  'Belts': i18n.category_belts(),
+                  'Scarves': i18n.category_scarves(),
+                  'Sunglasses': i18n.category_sunglasses(),
+                  'Wallets': i18n.category_wallets(),
+                  'Hair Accessories': i18n.category_hairAccessories(),
+                  'Ties': i18n.category_ties(),
+                  'Cufflinks': i18n.category_cufflinks(),
+                  'Backpacks': i18n.category_backpacks()
                 };
                 return categoryMap[categoryName] || categoryName;
               }

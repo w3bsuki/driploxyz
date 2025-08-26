@@ -2,7 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import type { Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
 	import Button from './Button.svelte';
-	import type { PaymentIntent } from './types.js';
+	import type { PaymentIntent } from '../types';
 
 	// Local utility functions (since we can't import from web app)
 	function formatCurrency(amount: number, currency: string = 'eur'): string {

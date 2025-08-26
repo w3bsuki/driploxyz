@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Button, Avatar, ProductCard, ProductCardSkeleton, ListItemSkeleton, WelcomeModal, type Product, toasts } from '@repo/ui';
-  import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
   import { page } from '$app/stores';
   import { replaceState } from '$app/navigation';
@@ -172,7 +171,6 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
-  <Header user={data.user} profile={data.profile} />
 
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <!-- Welcome Section -->

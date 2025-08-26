@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Button, SoldNotificationPanel, OrderStatus, OrderTimeline, OrderActions } from '@repo/ui';
-  import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
   import { onMount } from 'svelte';
   
@@ -191,7 +190,6 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
-  <Header />
   
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     <!-- Page Header -->

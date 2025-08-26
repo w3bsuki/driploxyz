@@ -18,7 +18,7 @@ export interface ProductFilters {
   category_ids?: string[];
   min_price?: number;
   max_price?: number;
-  conditions?: ('new' | 'like-new' | 'good' | 'fair')[];
+  conditions?: Database['public']['Enums']['product_condition'][];
   sizes?: string[];
   brands?: string[];
   location?: string;
@@ -51,7 +51,7 @@ export class ProductService {
         .from('products')
         .select(`
           *,
-          product_images!product_id (id, image_url, sort_order),
+          product_images!product_id (id, image_url, alt_text, sort_order, created_at, product_id),
           categories!category_id (name),
           profiles!seller_id (username, rating, avatar_url)
         `)
@@ -75,7 +75,7 @@ export class ProductService {
         category_name: (data.categories && typeof data.categories === 'object' && 'name' in data.categories) ? data.categories.name : undefined,
         seller_name: (data.profiles && typeof data.profiles === 'object' && 'username' in data.profiles) ? data.profiles.username : undefined,
         seller_username: (data.profiles && typeof data.profiles === 'object' && 'username' in data.profiles) ? data.profiles.username : undefined,
-        seller_rating: (data.profiles && typeof data.profiles === 'object' && 'rating' in data.profiles) ? data.profiles.rating : undefined
+        seller_rating: (data.profiles && typeof data.profiles === 'object' && 'rating' in data.profiles) ? data.profiles.rating ?? undefined : undefined
       };
 
       // Increment view count
@@ -278,7 +278,7 @@ export class ProductService {
         .from('products')
         .select(`
           *,
-          product_images!product_id (id, image_url, sort_order),
+          product_images!product_id (id, image_url, alt_text, sort_order, created_at, product_id),
           categories!category_id (name),
           profiles!seller_id (username, rating, avatar_url)
         `)
@@ -317,7 +317,7 @@ export class ProductService {
           .from('products')
           .select(`
             *,
-            product_images (id, image_url, sort_order),
+            product_images (id, image_url, alt_text, sort_order, created_at, product_id),
             categories (name),
             profiles!seller_id (username, rating, avatar_url)
           `)

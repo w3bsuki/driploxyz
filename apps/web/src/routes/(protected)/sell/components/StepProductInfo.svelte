@@ -2,6 +2,7 @@
   import { Input } from '@repo/ui';
   import { POPULAR_BRANDS } from '$lib/validation/product';
   import type { SizeOption } from '$lib/types/product';
+  import * as i18n from '@repo/i18n';
   
   interface Props {
     formData: {
@@ -33,44 +34,44 @@
   }
 
   // Condition options - professional without emojis
-  const conditions = [
+  const conditions = $derived([
     {
       value: 'brand_new_with_tags' as const,
-      label: 'New with tags',
-      description: 'Never worn',
+      label: i18n.sell_condition_brandNewWithTags(),
+      description: i18n.sell_condition_brandNewWithTags_desc(),
       color: 'green'
     },
     {
       value: 'new_without_tags' as const,
-      label: 'New no tags',
-      description: 'Never worn',
+      label: i18n.sell_condition_newWithoutTags(),
+      description: i18n.sell_condition_newWithoutTags_desc(),
       color: 'teal'
     },
     {
       value: 'like_new' as const,
-      label: 'Like new',
-      description: 'Worn 1-2x',
+      label: i18n.sell_condition_likeNew(),
+      description: i18n.sell_condition_likeNew_desc(),
       color: 'blue'
     },
     {
       value: 'good' as const,
-      label: 'Good',
-      description: 'Minor wear',
+      label: i18n.sell_condition_good(),
+      description: i18n.sell_condition_good_desc(),
       color: 'indigo'
     },
     {
       value: 'worn' as const,
-      label: 'Worn',
-      description: 'Visible wear',
+      label: i18n.sell_condition_worn(),
+      description: i18n.sell_condition_worn_desc(),
       color: 'purple'
     },
     {
       value: 'fair' as const,
-      label: 'Fair',
-      description: 'Heavy wear',
+      label: i18n.sell_condition_fair(),
+      description: i18n.sell_condition_fair_desc(),
       color: 'yellow'
     }
-  ];
+  ]);
 
 
   // Size groups
@@ -138,54 +139,54 @@
     }
   });
 
-  // Common colors for color picker
-  const commonColors = [
-    { name: 'Black', hex: '#000000' },
-    { name: 'White', hex: '#FFFFFF' },
-    { name: 'Gray', hex: '#6B7280' },
-    { name: 'Navy', hex: '#1E3A8A' },
-    { name: 'Brown', hex: '#92400E' },
-    { name: 'Beige', hex: '#D6B693' },
-    { name: 'Red', hex: '#DC2626' },
-    { name: 'Blue', hex: '#2563EB' },
-    { name: 'Green', hex: '#16A34A' },
-    { name: 'Pink', hex: '#EC4899' },
-    { name: 'Purple', hex: '#9333EA' },
-    { name: 'Multi', hex: 'linear-gradient(to right, #ff0000, #00ff00, #0000ff)' }
-  ];
+  // Common colors for color picker - using $derived for translations
+  const commonColors = $derived([
+    { name: i18n.sell_colorBlack(), hex: '#000000' },
+    { name: i18n.sell_colorWhite(), hex: '#FFFFFF' },
+    { name: i18n.sell_colorGray(), hex: '#6B7280' },
+    { name: i18n.sell_colorNavy(), hex: '#1E3A8A' },
+    { name: i18n.sell_colorBrown(), hex: '#92400E' },
+    { name: i18n.sell_colorBeige(), hex: '#D6B693' },
+    { name: i18n.sell_colorRed(), hex: '#DC2626' },
+    { name: i18n.sell_colorBlue(), hex: '#2563EB' },
+    { name: i18n.sell_colorGreen(), hex: '#16A34A' },
+    { name: i18n.sell_colorPink(), hex: '#EC4899' },
+    { name: i18n.sell_colorPurple(), hex: '#9333EA' },
+    { name: i18n.sell_colorMulti(), hex: 'linear-gradient(to right, #ff0000, #00ff00, #0000ff)' }
+  ]);
 
-  // Common materials
-  const commonMaterials = [
-    'Cotton',
-    'Polyester',
-    'Leather',
-    'Denim',
-    'Wool',
-    'Silk'
-  ];
+  // Common materials - using $derived for translations
+  const commonMaterials = $derived([
+    i18n.sell_materialCotton(),
+    i18n.sell_materialPolyester(),
+    i18n.sell_materialLeather(),
+    i18n.sell_materialDenim(),
+    i18n.sell_materialWool(),
+    i18n.sell_materialSilk()
+  ]);
 </script>
 
 <div class="space-y-3">
   <!-- Condition Section -->
   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
     <label class="text-sm font-medium text-gray-700 mb-2 block">
-      Condition <span class="text-red-500">*</span>
+      {i18n.sell_condition()} <span class="text-red-500">*</span>
     </label>
     
-    <div class="grid grid-cols-3 gap-1.5">
+    <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-1.5">
       {#each conditions as condition}
         <button
           type="button"
           onclick={() => selectCondition(condition.value)}
-          class="relative px-2 py-2 text-center rounded-md border transition-all text-xs {
+          class="relative px-2.5 py-2.5 text-center rounded-lg border transition-all text-xs {
             formData.condition === condition.value 
               ? 'border-black bg-black text-white' 
               : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
           }"
           aria-pressed={formData.condition === condition.value}
         >
-          <div class="font-medium">{condition.label}</div>
-          <div class="text-[10px] opacity-70">{condition.description}</div>
+          <div class="font-medium text-[13px]">{condition.label}</div>
+          <div class="text-[10px] opacity-70 mt-0.5">{condition.description}</div>
         </button>
       {/each}
     </div>
@@ -198,22 +199,22 @@
   <!-- Brand Section -->
   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
     <label class="text-sm font-medium text-gray-700 mb-2 block">
-      Brand <span class="text-red-500">*</span>
+      {i18n.sell_brand()} <span class="text-red-500">*</span>
     </label>
     
-    <div class="grid grid-cols-3 gap-1.5">
+    <div class="grid grid-cols-3 gap-2 sm:gap-1.5">
       {#each POPULAR_BRANDS as brand}
         <button
           type="button"
           onclick={() => selectBrand(brand)}
-          class="px-2 py-2 text-xs font-medium rounded-md border transition-all {
+          class="px-2.5 py-2.5 text-xs font-medium rounded-lg border transition-all {
             formData.brand === brand || (brand === 'Other' && showCustomBrand)
               ? 'border-black bg-black text-white' 
               : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
           }"
           aria-pressed={formData.brand === brand || (brand === 'Other' && showCustomBrand)}
         >
-          {brand}
+          {brand === 'Other' ? i18n.sell_brandOther() : brand}
         </button>
       {/each}
     </div>
@@ -225,7 +226,7 @@
           type="text"
           value={customBrand}
           oninput={handleCustomBrandInput}
-          placeholder="Type brand name..."
+          placeholder={i18n.sell_brandCustomPlaceholder()}
           class="w-full px-3 py-2.5 text-sm border-2 border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-blue-50"
           aria-label="Custom brand name"
         />
@@ -240,19 +241,19 @@
   <!-- Size Section -->
   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
     <label class="text-sm font-medium text-gray-700 mb-2 block">
-      Size <span class="text-red-500">*</span>
+      {i18n.sell_size()} <span class="text-red-500">*</span>
     </label>
     
     <div class="space-y-2">
       {#each sizeGroups() as [group, sizes]}
         <div>
-          <span class="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">{group}</span>
-          <div class="grid grid-cols-4 gap-1 mt-1">
+          <span class="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">{group === 'XS-XL' ? i18n.sell_sizeGroupXSXL() : group === 'Numbers' ? i18n.sell_sizeGroupNumbers() : group === 'UK/EU' ? i18n.sell_sizeGroupUKEU() : i18n.sell_sizeGroupOther()}</span>
+          <div class="grid grid-cols-3 gap-1.5 mt-1 sm:grid-cols-4 sm:gap-1">
             {#each sizes as size}
               <button
                 type="button"
                 onclick={() => selectSize(size.value)}
-                class="px-1 py-1.5 text-xs font-medium rounded-md border transition-all {
+                class="px-2 py-2 text-xs font-medium rounded-lg border transition-all {
                   formData.size === size.value 
                     ? 'border-black bg-black text-white' 
                     : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
@@ -275,7 +276,7 @@
   <!-- Step 4: Color (optional) - Visual color picker + custom -->
   <div>
     <label class="block text-sm font-medium text-gray-700 mb-2">
-      Color <span class="text-gray-400 text-xs">(optional)</span>
+      {i18n.sell_color()} <span class="text-gray-400 text-xs">{i18n.sell_optional()}</span>
     </label>
     
     <div class="grid grid-cols-6 gap-2 mb-2">
@@ -308,7 +309,7 @@
     <!-- Custom color input -->
     <input
       type="text"
-      placeholder="Or type custom color..."
+      placeholder={i18n.sell_colorCustomPlaceholder()}
       bind:value={formData.color}
       onblur={() => onFieldBlur('color')}
       class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -319,15 +320,15 @@
   <!-- Step 5: Material (optional) - Common materials -->
   <div>
     <label class="block text-sm font-medium text-gray-700 mb-2">
-      Material <span class="text-gray-400 text-xs">(optional)</span>
+      {i18n.sell_material()} <span class="text-gray-400 text-xs">{i18n.sell_optional()}</span>
     </label>
     
-    <div class="grid grid-cols-3 gap-2 mb-2">
+    <div class="grid grid-cols-2 gap-2 mb-2 sm:grid-cols-3">
       {#each commonMaterials as material}
         <button
           type="button"
           onclick={() => { formData.material = material; onFieldChange('material', material); }}
-          class="flex items-center gap-1 px-2 py-2 text-xs font-medium rounded-lg border transition-all {
+          class="flex items-center justify-center px-2.5 py-2.5 text-xs font-medium rounded-lg border transition-all {
             formData.material === material 
               ? 'border-blue-500 bg-blue-50 text-blue-700' 
               : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
@@ -341,7 +342,7 @@
     <!-- Custom material input -->
     <input
       type="text"
-      placeholder="Or type custom material..."
+      placeholder={i18n.sell_materialCustomPlaceholder()}
       bind:value={formData.material}
       onblur={() => onFieldBlur('material')}
       class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -352,7 +353,7 @@
   <!-- Summary of selections -->
   {#if formData.condition && formData.brand && formData.size}
     <div class="text-xs text-gray-600 bg-gray-50 rounded-lg px-3 py-2">
-      <span class="font-medium">Summary:</span>
+      <span class="font-medium">{i18n.sell_summary()}</span>
       {conditions.find(c => c.value === formData.condition)?.label}
       • {formData.brand}
       • Size {formData.size}

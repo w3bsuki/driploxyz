@@ -1,5 +1,6 @@
 <script lang="ts">
   import { PriceInput, TagInput } from '@repo/ui';
+  import * as i18n from '@repo/i18n';
   
   interface Profile {
     subscription_tier?: string;
@@ -67,7 +68,7 @@
   <div>
     <PriceInput
       bind:value={formData.price}
-      label="Price"
+      label={i18n.sell_priceLabel()}
       error={showError('price') ? errors.price : ''}
       required
       suggestion={priceSuggestion}
@@ -77,21 +78,18 @@
     
     {#if priceSuggestion?.suggested}
       <div class="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-        <div class="flex items-center gap-2">
-          <span class="text-lg">💡</span>
-          <div class="text-sm">
-            <p class="font-medium text-blue-900">
-              Suggested: ${priceSuggestion.suggested.toFixed(2)}
+        <div class="text-sm">
+          <p class="font-medium text-blue-900">
+            {i18n.sell_suggested()}: {i18n.currency_symbol()}{priceSuggestion.suggested.toFixed(2)}
+          </p>
+          {#if priceSuggestion.range}
+            <p class="text-blue-700 text-xs mt-1">
+              {i18n.sell_similarItems()}: {i18n.currency_symbol()}{priceSuggestion.range.min} - {i18n.currency_symbol()}{priceSuggestion.range.max}
             </p>
-            {#if priceSuggestion.range}
-              <p class="text-blue-700 text-xs">
-                Similar items: ${priceSuggestion.range.min} - ${priceSuggestion.range.max}
-              </p>
-            {/if}
-            <p class="text-xs text-blue-600 mt-1">
-              Confidence: {priceSuggestion.confidence}
-            </p>
-          </div>
+          {/if}
+          <p class="text-xs text-blue-600 mt-1">
+            {i18n.sell_confidence()}: {priceSuggestion.confidence}
+          </p>
         </div>
       </div>
     {/if}
@@ -101,14 +99,14 @@
   <div>
     <PriceInput
       bind:value={formData.shipping_cost}
-      label="Shipping Cost"
+      label={i18n.sell_shippingCostLabel()}
       error={showError('shipping_cost') ? errors.shipping_cost : ''}
       placeholder="0.00"
       name="shipping_cost"
       onchange={() => onFieldChange('shipping_cost', formData.shipping_cost)}
     />
     <p class="text-xs text-gray-500 mt-1">
-      💡 Free shipping attracts more buyers
+      {i18n.sell_freeShippingAttractsBuyers()}
     </p>
   </div>
   
@@ -116,12 +114,12 @@
   <div>
     <TagInput
       bind:tags={formData.tags}
-      label="Tags (optional)"
-      placeholder="Add tags like 'vintage', 'y2k', 'streetwear'..."
+      label={i18n.sell_tagsOptional()}
+      placeholder={i18n.sell_tagsPlaceholder()}
       maxTags={5}
     />
     <p class="text-xs text-gray-500 mt-1">
-      🏷️ Tags help buyers find your item
+      {i18n.sell_tagsHelp()}
     </p>
   </div>
   
@@ -137,61 +135,69 @@
         />
         <div class="flex-1">
           <div class="flex items-center gap-2">
-            <span class="text-2xl">{boostEmoji}</span>
-            <span class="font-semibold text-purple-900">Premium Boost</span>
+            <span class="font-semibold text-purple-900">{i18n.sell_premiumBoost()}</span>
             {#if profile?.subscription_tier !== 'premium' && profile?.premium_boosts_remaining}
               <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
-                {profile.premium_boosts_remaining} left
+                {profile.premium_boosts_remaining} {i18n.sell_premiumLeft()}
               </span>
             {/if}
           </div>
           <p class="text-sm text-purple-700 mt-1">
-            Get 3x more visibility for 7 days
+            {i18n.sell_getVisibility()}
           </p>
           <ul class="text-xs text-purple-600 mt-2 space-y-1">
-            <li>✅ Featured in search results</li>
-            <li>✅ Homepage spotlight</li>
-            <li>✅ Push notifications to followers</li>
+            <li>• {i18n.sell_featuredSearch()}</li>
+            <li>• {i18n.sell_homepageSpotlight()}</li>
+            <li>• {i18n.sell_pushNotifications()}</li>
           </ul>
         </div>
       </label>
     </div>
   {/if}
   
-  <!-- Pricing Summary -->
-  <div class="bg-gray-50 rounded-lg p-4">
-    <h4 class="font-medium text-gray-900 mb-3">Pricing Summary</h4>
-    <div class="space-y-2 text-sm">
-      <div class="flex justify-between">
-        <span class="text-gray-600">Item Price</span>
-        <span class="font-medium">${safePrice.toFixed(2)}</span>
-      </div>
-      <div class="flex justify-between">
-        <span class="text-gray-600">Shipping</span>
-        <span class="font-medium">
-          {#if formData.shipping_cost === 0}
-            <span class="text-green-600">FREE</span>
-          {:else}
-            ${safeShippingCost.toFixed(2)}
-          {/if}
-        </span>
-      </div>
-      <div class="pt-2 border-t border-gray-200">
-        <div class="flex justify-between">
-          <span class="font-medium text-gray-900">Buyer Pays</span>
-          <span class="font-bold text-lg">
-            ${(safePrice + safeShippingCost).toFixed(2)}
+  <!-- Pricing Summary - Cleaner Design -->
+  <div class="bg-white border border-gray-200 rounded-lg">
+    <div class="px-4 py-3 border-b border-gray-100">
+      <h4 class="text-sm font-medium text-gray-900">{i18n.sell_estimatedEarnings()}</h4>
+    </div>
+    <div class="p-4 space-y-3">
+      <!-- Item pricing -->
+      <div class="space-y-2">
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-600">{i18n.sell_listingPrice()}</span>
+          <span class="font-medium">{i18n.currency_symbol()}{safePrice.toFixed(2)}</span>
+        </div>
+        <div class="flex justify-between text-sm">
+          <span class="text-gray-600">{i18n.sell_shippingCost()}</span>
+          <span class="font-medium">
+            {#if formData.shipping_cost === 0}
+              <span class="text-green-600">{i18n.sell_free()}</span>
+            {:else}
+              {i18n.currency_symbol()}{safeShippingCost.toFixed(2)}
+            {/if}
           </span>
         </div>
       </div>
-      <div class="pt-2">
-        <div class="flex justify-between text-xs">
-          <span class="text-gray-500">Platform fee (10%)</span>
-          <span class="text-gray-500">-${(safePrice * 0.1).toFixed(2)}</span>
+      
+      <!-- Total -->
+      <div class="pt-3 border-t border-gray-200">
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-medium text-gray-900">{i18n.sell_totalBuyerPays()}</span>
+          <span class="text-lg font-bold text-gray-900">
+            {i18n.currency_symbol()}{(safePrice + safeShippingCost).toFixed(2)}
+          </span>
         </div>
-        <div class="flex justify-between font-medium mt-1">
-          <span class="text-gray-700">You'll earn</span>
-          <span class="text-green-600">${(safePrice * 0.9).toFixed(2)}</span>
+      </div>
+      
+      <!-- Earnings breakdown -->
+      <div class="pt-3 border-t border-gray-100 space-y-1.5">
+        <div class="flex justify-between text-xs">
+          <span class="text-gray-500">{i18n.sell_driploFee()} (10%)</span>
+          <span class="text-gray-500">-{i18n.currency_symbol()}{(safePrice * 0.1).toFixed(2)}</span>
+        </div>
+        <div class="flex justify-between items-center">
+          <span class="text-sm font-medium text-gray-700">{i18n.sell_yourEarnings()}</span>
+          <span class="text-base font-semibold text-green-600">{i18n.currency_symbol()}{(safePrice * 0.9).toFixed(2)}</span>
         </div>
       </div>
     </div>

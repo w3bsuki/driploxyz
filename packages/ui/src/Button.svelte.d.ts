@@ -1,4 +1,4 @@
-import type { ButtonVariant, ButtonSize } from './types.js';
+import type { ButtonVariant, ButtonSize } from '../types';
 interface Props {
     variant?: ButtonVariant;
     size?: ButtonSize;

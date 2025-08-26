@@ -3,7 +3,6 @@
 	import { SearchBar, CategoryDropdown, BottomNav, AuthPopup, PromotedHighlights, FeaturedProducts } from '@repo/ui';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
-	import Header from '$lib/components/Header.svelte';
 	import LoadingSpinner from '$lib/components/LoadingSpinner.svelte';
 	import TrendingDropdown from '$lib/components/TrendingDropdown.svelte';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
@@ -45,7 +44,6 @@
 	// Lazy load heavy components
 	$effect(() => {
 		if (browser) {
-			
 			// Load heavy homepage components after critical content
 		}
 	});
@@ -181,16 +179,60 @@
 	function translateCategory(categoryName: string): string {
 		// Map English category names to translation keys
 		const categoryMap: Record<string, string> = {
+			// Level 1 - Gender categories
 			'Women': i18n.category_women(),
 			'Men': i18n.category_men(),
 			'Kids': i18n.category_kids(),
-			'Pets': i18n.category_pets(),
-			'Shoes': i18n.category_shoes(),
+			'Unisex': i18n.category_unisex(),
+			
+			// Level 2 - Main categories
+			'Accessories': i18n.category_accessories(),
+			'Activewear': i18n.category_activewear(),
 			'Bags': i18n.category_bags(),
-			'Home': i18n.category_home(),
-			'Beauty': i18n.category_beauty(),
-			'T-Shirts': i18n.subcategory_tshirts ? i18n.subcategory_tshirts() : 'T-Shirts',
-			'Tops & T-Shirts': i18n.subcategory_tops ? i18n.subcategory_tops() : 'Tops & T-Shirts'
+			'Boots': i18n.category_boots(),
+			'Dresses': i18n.category_dresses(),
+			'Flats': i18n.category_flats(),
+			'Formal Shoes': i18n.category_formalShoes(),
+			'Heels': i18n.category_heels(),
+			'Hoodies': i18n.category_hoodies(),
+			'Jackets': i18n.category_jackets(),
+			'Jackets & Coats': i18n.category_jacketsCoats(),
+			'Jeans': i18n.category_jeans(),
+			'Jewelry': i18n.category_jewelry(),
+			'Lingerie & Underwear': i18n.category_lingerie(),
+			'Pants & Jeans': i18n.category_pantsJeans(),
+			'Pants & Trousers': i18n.category_pantsTrousers(),
+			'Sandals': i18n.category_sandals(),
+			'Sandals & Slides': i18n.category_sandalsSlides(),
+			'Shirts': i18n.category_shirts(),
+			'Shirts & Blouses': i18n.category_shirtsBlouses(),
+			'Shorts': i18n.category_shorts(),
+			'Skirts': i18n.category_skirts(),
+			'Sneakers': i18n.category_sneakers(),
+			'Suits & Blazers': i18n.category_suitsBlazers(),
+			'Sweaters & Hoodies': i18n.category_sweatersHoodies(),
+			'Swimwear': i18n.category_swimwear(),
+			'T-Shirts': i18n.category_tshirts(),
+			'Tops & T-Shirts': i18n.category_topsTshirts(),
+			'Underwear': i18n.category_underwear(),
+			'Watches': i18n.category_watches(),
+			
+			// Level 2 - Product Types
+			'Clothing': i18n.category_clothing(),
+			'Shoes': i18n.category_shoesType(),
+			'Accessories': i18n.category_accessoriesType(),
+			'Bags': i18n.category_bagsType(),
+			
+			// Level 3 - Accessory subcategories
+			'Hats & Caps': i18n.category_hatsAndCaps(),
+			'Belts': i18n.category_belts(),
+			'Scarves': i18n.category_scarves(),
+			'Sunglasses': i18n.category_sunglasses(),
+			'Wallets': i18n.category_wallets(),
+			'Hair Accessories': i18n.category_hairAccessories(),
+			'Ties': i18n.category_ties(),
+			'Cufflinks': i18n.category_cufflinks(),
+			'Backpacks': i18n.category_backpacks()
 		};
 		return categoryMap[categoryName] || categoryName;
 	}
@@ -304,16 +346,13 @@
 
 {#key currentLang}
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
-	<Header initialLanguage={data.language} user={data.user} profile={data.profile} />
-
-	<!-- Compact Sticky Search Bar removed for cleaner UX -->
 
 	<main class="max-w-7xl mx-auto">
 		<!-- Hero Search -->
-		<div class="bg-white border-b border-gray-100 shadow-sm">
-			<div class="px-3 sm:px-6 lg:px-8 py-4 space-y-3">
+		<div class="bg-white border-b border-gray-100 mt-2">
+			<div class="px-4 sm:px-6 lg:px-8 py-4">
 				<!-- Search Bar with Dropdown -->
-				<div class="max-w-2xl mx-auto relative">
+				<div class="max-w-2xl mx-auto relative mb-4">
 					<SearchBar 
 						bind:value={searchQuery}
 						onSearch={handleSearch}
@@ -478,7 +517,7 @@
 			/>
 		{:else}
 			<!-- Loading skeleton for featured products -->
-			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 				<div class="mb-6">
 					<div class="w-48 h-8 bg-gray-200 rounded animate-pulse mb-2"></div>
 					<div class="w-32 h-4 bg-gray-100 rounded animate-pulse"></div>

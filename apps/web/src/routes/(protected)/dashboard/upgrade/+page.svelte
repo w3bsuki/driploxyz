@@ -3,7 +3,6 @@
   import { goto } from '$app/navigation';
   import { loadStripe } from '@stripe/stripe-js';
   import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
-  import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
 
@@ -197,7 +196,6 @@
   <title>Upgrade Your Plan - Dashboard</title>
 </svelte:head>
 
-<Header />
 
 <div class="min-h-screen bg-white pb-16">
   <!-- Discount Banner Only -->

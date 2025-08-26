@@ -43,9 +43,18 @@ export const GET: RequestHandler = async ({ locals }) => {
 	const xml = generateSitemap({
 		baseUrl,
 		staticPages,
-		categories: categories || [],
-		products: products || [],
-		sellers: sellers || []
+		categories: (categories || []).filter(c => c.updated_at).map(c => ({
+			...c,
+			updated_at: c.updated_at!
+		})),
+		products: (products || []).filter(p => p.updated_at).map(p => ({
+			...p,
+			updated_at: p.updated_at!
+		})),
+		sellers: (sellers || []).filter(s => s.updated_at).map(s => ({
+			...s,
+			updated_at: s.updated_at!
+		}))
 	});
 	
 	return new Response(xml, {

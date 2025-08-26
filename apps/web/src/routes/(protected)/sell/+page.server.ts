@@ -135,6 +135,7 @@ export const actions: Actions = {
       price,
       photos: formData.getAll('photos').length
     });
+    console.log('[SELL ACTION] Brand processing - Original:', brand, 'Will save as:', brand?.trim() || null);
     
     // Manual validation using Zod schema
     const validation = ProductSchema.safeParse({
@@ -196,7 +197,7 @@ export const actions: Actions = {
           price: price,
           category_id: category_id, // Will be type_category_id if no Level 3
           condition: condition,
-          brand: brand !== 'Other' ? brand : null,
+          brand: brand?.trim() || null,
           size: size || null,
           location: null,
           seller_id: session.user.id,

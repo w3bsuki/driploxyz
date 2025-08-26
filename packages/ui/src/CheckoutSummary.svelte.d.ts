@@ -1,4 +1,4 @@
-import type { Product } from './types.js';
+import type { Product } from '../types';
 interface Translations {
     orderSummary?: string;
     subtotal?: string;

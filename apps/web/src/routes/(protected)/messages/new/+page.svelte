@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Avatar, Button } from '@repo/ui';
-  import Header from '$lib/components/Header.svelte';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import type { PageData } from './$types';
@@ -53,7 +52,6 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
-  <Header />
   
   <div class="max-w-2xl mx-auto px-4 sm:px-6 py-6">
     <!-- Header -->

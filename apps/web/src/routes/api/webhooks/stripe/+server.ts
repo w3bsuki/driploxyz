@@ -22,6 +22,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		if (!STRIPE_WEBHOOK_SECRET) {
 			console.warn('STRIPE_WEBHOOK_SECRET not configured - skipping signature verification');
 			event = JSON.parse(body);
+		} else if (!stripe) {
+			console.error('Stripe not initialized');
+			return json({ error: 'Stripe not available' }, { status: 500 });
 		} else {
 			event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
 		}
@@ -59,6 +62,11 @@ async function handlePaymentSuccess(paymentIntent: any) {
 	
 	if (productId && sellerId && buyerId && orderId) {
 		try {
+			if (!SUPABASE_SERVICE_ROLE_KEY) {
+				console.error('SUPABASE_SERVICE_ROLE_KEY not available');
+				return json({ error: 'Database not available' }, { status: 500 });
+			}
+			
 			// Initialize Supabase client
 			const supabase = createServerClient(
 				PUBLIC_SUPABASE_URL!,

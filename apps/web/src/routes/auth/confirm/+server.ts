@@ -62,6 +62,11 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     throw redirect(303, '/onboarding?email_verified=true&welcome=true');
 
     // Check profile status (should exist due to DB trigger)
+    if (!data.user) {
+      console.error('[AUTH CONFIRM] User data is null');
+      throw redirect(303, '/login');
+    }
+
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('onboarding_completed')
@@ -76,11 +81,11 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
     if (profileError) {
       console.error('[AUTH CONFIRM] Profile fetch error:', profileError);
-      throw redirect(303, '/login?verified=success&email=' + encodeURIComponent(data.user.email));
+      throw redirect(303, '/login?verified=success&email=' + encodeURIComponent(data.user.email || ''));
     }
 
     // Route based on onboarding status
-    if (profile.onboarding_completed !== true) {
+    if (!profile || profile.onboarding_completed !== true) {
       console.log('[AUTH CONFIRM] User needs onboarding after verification');
       throw redirect(303, '/onboarding?verified=true');
     }

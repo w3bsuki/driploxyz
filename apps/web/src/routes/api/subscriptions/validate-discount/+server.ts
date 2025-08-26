@@ -61,7 +61,7 @@ export const POST: RequestHandler = async (event) => {
     console.log('[Discount Validation] Result:', validationResult);
 
     // Handle both nested and flat response structures
-    const result = validationResult?.validate_discount_code || validationResult;
+    const result = (validationResult as any)?.validate_discount_code || validationResult;
     
     // Return the validation result
     if (result && result.valid) {

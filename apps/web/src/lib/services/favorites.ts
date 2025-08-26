@@ -10,12 +10,13 @@ export interface FavoriteWithProduct extends Favorite {
     id: string;
     title: string;
     price: number;
-    is_sold: boolean;
-    sold_at?: string;
+    is_sold: boolean | null;
+    sold_at: string | null;
+    seller_id: string;
     product_images?: { image_url: string }[];
     profiles?: {
       username: string;
-      avatar_url?: string;
+      avatar_url?: string | null;
     };
   };
 }
@@ -261,6 +262,7 @@ export class FavoriteService {
             price,
             is_sold,
             sold_at,
+            seller_id,
             product_images!product_id (image_url),
             profiles!seller_id (
               username,

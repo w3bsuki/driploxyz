@@ -5,10 +5,14 @@ node_modules/
 
 # Build outputs - ALL dist folders should be gitignored
 dist/
-.svelte-kit/
+packages/*/dist/
+apps/*/.svelte-kit/
+apps/*/build/
 .turbo/
-build/
 out/
+
+# TypeScript build info
+*.tsbuildinfo
 
 # Environment
 .env

@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@repo/database';
 
 export const load: PageServerLoad = async ({ url, locals }) => {
   const country = locals.country || 'BG';
@@ -83,7 +84,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
     // Apply condition filter
     if (condition) {
-      productsQuery = productsQuery.eq('condition', condition);
+      productsQuery = productsQuery.eq('condition', condition as Database['public']['Enums']['product_condition']);
     }
 
     // Apply brand filter

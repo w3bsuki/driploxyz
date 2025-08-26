@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
   import UnifiedCookieConsent from '$lib/components/UnifiedCookieConsent.svelte';
+  import Header from '$lib/components/Header.svelte';
   import '../app.css';
   // Deploy to driplo.xyz
   import '$lib/styles/cyrillic-typography.css';
@@ -53,6 +54,7 @@
   // Use $derived for reactive destructuring in Svelte 5 with safety checks
   const supabase = $derived(data && data.supabase ? data.supabase : null);
   const isAuthPage = $derived($page.route.id?.includes('(auth)'));
+  const isSellPage = $derived($page.route.id?.includes('/sell'));
   
   // Initialize performance optimizations on mount
   $effect(() => {
@@ -152,10 +154,15 @@
   });
 </script>
 
-{#if !isAuthPage}
-  <EarlyBirdBanner />
+{#if !isAuthPage && !isSellPage}
+  <div class="fixed top-0 left-0 right-0 z-50">
+    <EarlyBirdBanner />
+    <Header user={data?.user} profile={data?.profile} />
+  </div>
 {/if}
-{@render children?.()}
+<div class="{!isAuthPage && !isSellPage ? 'pt-[104px]' : ''}">
+  {@render children?.()}
+</div>
 
 <!-- Toast Container -->
 <ToastContainer />

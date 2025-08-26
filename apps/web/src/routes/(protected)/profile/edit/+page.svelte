@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Button, Input, Avatar } from '@repo/ui';
   import { goto } from '$app/navigation';
-  import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
 
@@ -71,7 +70,6 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
-  <Header />
   
   <div class="max-w-2xl mx-auto p-4">
     <div class="bg-white rounded-lg p-6">

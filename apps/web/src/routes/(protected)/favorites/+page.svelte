@@ -1,6 +1,5 @@
 <script lang="ts">
   import { ProductCard, Button, Avatar, type Product } from '@repo/ui';
-  import Header from '$lib/components/Header.svelte';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   
@@ -111,7 +110,6 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
-  <Header />
   
   <!-- Page Header -->
   <div class="bg-white shadow-xs sticky top-14 sm:top-16 z-30">

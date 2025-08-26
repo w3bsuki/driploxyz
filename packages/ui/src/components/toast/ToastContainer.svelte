@@ -1,6 +1,6 @@
 <script lang="ts">
   import Toast from './Toast.svelte';
-  import { toasts } from '../../lib/toast-store.js';
+  import { toasts } from '../../lib/toast-store';
 </script>
 
 <div 

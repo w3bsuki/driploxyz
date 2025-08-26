@@ -139,7 +139,16 @@ export function pluralize(key: PluralKey, count: number, locale?: string): strin
   }
   
   // Default to 'one' or 'other'
-  return pluralForms[rule as 'one' | 'other'] || pluralForms.other || pluralForms.one;
+  if ('other' in pluralForms && (rule === 'other' || rule === 'many')) {
+    return pluralForms.other;
+  }
+  
+  if ('one' in pluralForms) {
+    return pluralForms.one;
+  }
+  
+  // Should never reach here, but return first available form
+  return Object.values(pluralForms)[0] as string;
 }
 
 /**

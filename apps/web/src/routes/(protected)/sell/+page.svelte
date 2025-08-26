@@ -6,11 +6,13 @@
   import { enhance } from '$app/forms';
   import { Button, toasts } from '@repo/ui';
   import { uploadImages, deleteImage } from '$lib/supabase/storage';
-  import StepPhotosAndBasicInfo from './components/StepPhotosAndBasicInfo.svelte';
+  import StepPhotosOnly from './components/StepPhotosOnly.svelte';
+  import StepCategory from './components/StepCategory.svelte';
   import StepProductInfo from './components/StepProductInfo.svelte';
   import StepPricing from './components/StepPricing.svelte';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import { onMount } from 'svelte';
+  import * as i18n from '@repo/i18n';
 
   interface Props {
     data: PageData;
@@ -307,7 +309,7 @@
         </button>
         
         <div class="text-center flex-1">
-          <h1 class="text-base font-semibold text-gray-900">List Item</h1>
+          <h1 class="text-base font-semibold text-gray-900">{i18n.sell_listItem()}</h1>
         </div>
         
         <button 
@@ -339,7 +341,7 @@
           </div>
           <span class="text-[10px] mt-1 whitespace-nowrap {
             currentStep === 1 ? 'text-gray-900 font-medium' : 'text-gray-400'
-          }">Photos</span>
+          }">{i18n.sell_step1()}</span>
         </div>
         
         <!-- Line 1-2 -->
@@ -364,7 +366,7 @@
           </div>
           <span class="text-[10px] mt-1 whitespace-nowrap {
             currentStep === 2 ? 'text-gray-900 font-medium' : 'text-gray-400'
-          }">Details</span>
+          }">{i18n.sell_step2()}</span>
         </div>
         
         <!-- Line 2-3 -->
@@ -389,7 +391,7 @@
           </div>
           <span class="text-[10px] mt-1 whitespace-nowrap {
             currentStep === 3 ? 'text-gray-900 font-medium' : 'text-gray-400'
-          }">Price</span>
+          }">{i18n.sell_step3()}</span>
         </div>
         
         <!-- Line 3-4 -->
@@ -414,7 +416,7 @@
           </div>
           <span class="text-[10px] mt-1 whitespace-nowrap {
             currentStep === 4 ? 'text-gray-900 font-medium' : 'text-gray-400'
-          }">Review</span>
+          }">{i18n.sell_step4()}</span>
         </div>
       </div>
       {#if isDraftSaved}
@@ -500,12 +502,11 @@
           };
         }}
       >
-        <!-- Step 1: Photos & Basic Info -->
+        <!-- Step 1: Photos Only -->
         {#if currentStep === 1}
-          <StepPhotosAndBasicInfo
+          <StepPhotosOnly
             bind:formData
             bind:uploadedImages
-            categories={data.categories}
             bind:isUploadingImages
             onImageUpload={handleImageUpload}
             onImageDelete={handleImageDelete}
@@ -514,14 +515,24 @@
             }}
           />
         {/if}
-        
-        <!-- Step 2: Product Details -->
+
+        <!-- Step 2: Category Selection -->
         {#if currentStep === 2}
+          <StepCategory
+            categories={data.categories}
+            bind:formData
+            onFieldChange={(field, value) => {
+              // Update category fields
+              if (field === 'gender') formData.gender_category_id = value;
+              if (field === 'type') formData.type_category_id = value;
+              if (field === 'specific') formData.category_id = value;
+            }}
+          />
+        {/if}
+        
+        <!-- Step 3: Product Details -->
+        {#if currentStep === 3}
           <div class="space-y-6 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">Product Details</h2>
-              <p class="text-gray-600">Help buyers find what they're looking for</p>
-            </div>
             
             <StepProductInfo
               bind:formData
@@ -538,13 +549,9 @@
           </div>
         {/if}
         
-        <!-- Step 3: Pricing -->
-        {#if currentStep === 3}
+        <!-- Step 4: Pricing -->
+        {#if currentStep === 4}
           <div class="space-y-6 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
-            <div>
-              <h2 class="text-2xl font-bold text-gray-900 mb-2">Set Your Price</h2>
-              <p class="text-gray-600">Competitive pricing sells faster</p>
-            </div>
             
             <StepPricing
               bind:formData
@@ -566,7 +573,7 @@
         {#if currentStep === 4}
           <div class="space-y-6 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
             <div>
-              <h2 class="text-lg font-semibold text-gray-900 mb-1">Review Listing</h2>
+              <h2 class="text-lg font-semibold text-gray-900 mb-1">{i18n.sell_reviewListing()}</h2>
               <p class="text-sm text-gray-600">Everything look good?</p>
             </div>
             
@@ -632,7 +639,7 @@
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
-            Back
+            {i18n.common_back()}
           </Button>
         {/if}
         
@@ -650,19 +657,19 @@
                 // Show specific validation message
                 if (currentStep === 1) {
                   if (uploadedImages.length === 0) {
-                    showValidation('Please add at least one photo');
+                    showValidation(i18n.sell_minPhotosRequired());
                   } else if (formData.title.length < 3) {
-                    showValidation('Title must be at least 3 characters');
+                    showValidation(i18n.sell_titleRequired());
                   } else if (!formData.gender_category_id || !formData.type_category_id) {
-                    showValidation('Please select categories');
+                    showValidation(i18n.sell_categoryRequired());
                   }
                 } else if (currentStep === 2) {
-                  if (!formData.brand) showValidation('Please select a brand');
-                  else if (!formData.size) showValidation('Please select a size');
-                  else if (!formData.condition) showValidation('Please select condition');
+                  if (!formData.brand) showValidation(i18n.sell_brandRequired());
+                  else if (!formData.size) showValidation(i18n.sell_sizeRequired());
+                  else if (!formData.condition) showValidation(i18n.sell_conditionRequired());
                 } else if (currentStep === 3) {
                   if (!formData.price || formData.price <= 0) {
-                    showValidation('Please set a valid price');
+                    showValidation(i18n.sell_priceRequired());
                   }
                 }
               }
@@ -670,7 +677,7 @@
             disabled={submitting}
             class="flex-1 h-12"
           >
-            Continue
+            {i18n.common_next()}
             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
@@ -694,10 +701,10 @@
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Publishing...
+                {i18n.sell_publishing()}
               </span>
             {:else}
-              Publish Listing
+              {i18n.sell_confirmPublish()}
               <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
@@ -722,7 +729,7 @@
         </div>
         
         <!-- Success Message -->
-        <h2 class="text-2xl font-bold text-gray-900 mb-2">Listed Successfully</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">{i18n.sell_listingSuccess()}</h2>
         <p class="text-gray-600 mb-8">Your item is now live and available for purchase.</p>
         
         <!-- Product Preview -->
@@ -746,7 +753,7 @@
             onclick={() => goto('/')}
             class="w-full px-4 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
           >
-            View Listing
+            {i18n.sell_viewListing()}
           </button>
           <button
             onclick={() => {
@@ -773,7 +780,7 @@
             }}
             class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors"
           >
-            List Another Item
+            {i18n.sell_listAnother()}
           </button>
         </div>
       </div>

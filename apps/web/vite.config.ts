@@ -1,10 +1,12 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { enhancedImages } from '@sveltejs/enhanced-img';
 import { defineConfig } from 'vite';
+import { defineConfig as defineVitestConfig } from 'vitest/config';
 import tailwindcss from '@tailwindcss/vite';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
 
-export default defineConfig({
+export default defineConfig(
+	defineVitestConfig({
 	plugins: [
 		tailwindcss(), 
 		enhancedImages(), 
@@ -24,5 +26,12 @@ export default defineConfig({
 		fs: {
 			allow: ['..']
 		}
+	},
+	
+	test: {
+		include: ['src/**/*.{test,spec}.{js,ts}'],
+		globals: true,
+		environment: 'jsdom',
+		setupFiles: ['src/test/setup.ts']
 	}
-});
+}));

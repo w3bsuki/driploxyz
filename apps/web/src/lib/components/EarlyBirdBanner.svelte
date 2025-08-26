@@ -63,15 +63,15 @@
     <div class="max-w-7xl mx-auto px-4 py-2.5">
       <div class="flex items-center justify-between gap-4">
         <div 
-          class="flex items-center gap-1.5 px-2.5 py-1 bg-red-500/10 rounded-full"
+          class="flex items-center gap-1.5 px-2.5 py-1 bg-white text-black rounded-full"
           role="status"
           aria-label="На живо"
         >
           <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
           </span>
-          <span class="text-red-500 font-medium text-[11px] uppercase tracking-widest">Live</span>
+          <span class="text-black font-medium text-[11px] uppercase tracking-widest">Live</span>
         </div>
         
         <div class="flex-1 min-w-0">

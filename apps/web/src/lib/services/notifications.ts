@@ -2,7 +2,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 
 type Tables = Database['public']['Tables'];
-type AdminNotification = Tables['admin_notifications']['Row'];
+type AdminNotification = Tables['notifications']['Row'];
 
 export class NotificationService {
 	constructor(private supabase: SupabaseClient<Database>) {}
@@ -12,9 +12,9 @@ export class NotificationService {
 	 */
 	async getUnreadNotifications(limit: number = 50) {
 		return await this.supabase
-			.from('admin_notifications')
-			.select('id, title, message, type, priority, is_read, created_at, related_id, related_table')
-			.eq('is_read', false)
+			.from('notifications')
+			.select('id, title, message, type, priority, read, created_at, order_id')
+			.eq('read', false)
 			.order('created_at', { ascending: false })
 			.limit(limit);
 	}
@@ -24,7 +24,7 @@ export class NotificationService {
 	 */
 	async getAdminNotifications(page: number = 1, limit: number = 20, type?: string) {
 		let query = this.supabase
-			.from('admin_notifications')
+			.from('notifications')
 			.select('*', { count: 'exact' });
 
 		if (type) {
@@ -42,10 +42,9 @@ export class NotificationService {
 	 */
 	async markAsRead(notificationId: string) {
 		return await this.supabase
-			.from('admin_notifications')
+			.from('notifications')
 			.update({ 
-				is_read: true, 
-				read_at: new Date().toISOString() 
+				read: true
 			})
 			.eq('id', notificationId);
 	}
@@ -55,12 +54,11 @@ export class NotificationService {
 	 */
 	async markAllAsRead() {
 		return await this.supabase
-			.from('admin_notifications')
+			.from('notifications')
 			.update({ 
-				is_read: true, 
-				read_at: new Date().toISOString() 
+				read: true
 			})
-			.eq('is_read', false);
+			.eq('read', false);
 	}
 
 	/**
@@ -69,17 +67,17 @@ export class NotificationService {
 	async getNotificationCounts() {
 		// Use SQL aggregation instead of client-side processing
 		const { data: totalData } = await this.supabase
-			.from('admin_notifications')
+			.from('notifications')
 			.select('id', { count: 'exact', head: true });
 
 		const { data: unreadData } = await this.supabase
-			.from('admin_notifications')
+			.from('notifications')
 			.select('id', { count: 'exact', head: true })
-			.eq('is_read', false);
+			.eq('read', false);
 
 		// For type counts, we still need to fetch but only the type column
 		const { data: typeData, error } = await this.supabase
-			.from('admin_notifications')
+			.from('notifications')
 			.select('type');
 
 		if (error) return { total: 0, unread: 0, byType: {} };
@@ -99,13 +97,13 @@ export class NotificationService {
 	 */
 	subscribeToNotifications(callback: (notification: AdminNotification) => void) {
 		return this.supabase
-			.channel('admin_notifications')
+			.channel('notifications')
 			.on(
 				'postgres_changes',
 				{
 					event: 'INSERT',
 					schema: 'public',
-					table: 'admin_notifications'
+					table: 'notifications'
 				},
 				(payload) => {
 					callback(payload.new as AdminNotification);
@@ -132,8 +130,7 @@ export class NotificationService {
 				title,
 				message,
 				type,
-				related_id: relatedId,
-				related_table: relatedTable
+				order_id: relatedId
 			});
 	}
 
@@ -180,7 +177,7 @@ export class NotificationService {
 		startDate.setDate(startDate.getDate() - days);
 
 		const { data } = await this.supabase
-			.from('admin_notifications')
+			.from('notifications')
 			.select('type, priority, created_at')
 			.gte('created_at', startDate.toISOString());
 
@@ -196,11 +193,17 @@ export class NotificationService {
 			stats.byType[notification.type] = (stats.byType[notification.type] || 0) + 1;
 			
 			// Count by priority
-			stats.byPriority[notification.priority] = (stats.byPriority[notification.priority] || 0) + 1;
+			if (notification.priority) {
+				stats.byPriority[notification.priority] = (stats.byPriority[notification.priority] || 0) + 1;
+			}
 			
 			// Count by day
-			const day = notification.created_at.split('T')[0];
-			stats.dailyCount[day] = (stats.dailyCount[day] || 0) + 1;
+			if (notification.created_at) {
+				const dayPart = notification.created_at.split('T')[0];
+				if (dayPart) {
+					stats.dailyCount[dayPart] = (stats.dailyCount[dayPart] || 0) + 1;
+				}
+			}
 		});
 
 		return stats;

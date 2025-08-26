@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Button } from '@repo/ui';
-  import Header from '$lib/components/Header.svelte';
   import { enhance } from '$app/forms';
   import type { PageData, ActionData } from './$types';
   
@@ -47,7 +46,6 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
-  <Header />
   
   <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
     <!-- Page Header -->

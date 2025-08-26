@@ -29,8 +29,8 @@ export function formatPrice(price: number, locale?: string): string {
     return `${roundedPrice}лв`;
   }
   
-  const currency = CURRENCY_MAP[currentLocale] || 'USD';
-  const intlLocale = LOCALE_MAP[currentLocale] || 'en-US';
+  const currency = CURRENCY_MAP[currentLocale as keyof typeof CURRENCY_MAP] || 'USD';
+  const intlLocale = LOCALE_MAP[currentLocale as keyof typeof LOCALE_MAP] || 'en-US';
   
   try {
     return new Intl.NumberFormat(intlLocale, {

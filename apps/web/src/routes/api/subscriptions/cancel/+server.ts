@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServerSupabaseClient } from '$lib/supabase/server';
 import { SubscriptionService } from '$lib/services/subscriptions.js';
+import { stripe } from '$lib/stripe/server.js';
 import { env } from '$env/dynamic/private';
 
 const DEBUG = env.DEBUG === 'true';
@@ -25,7 +26,7 @@ export const POST: RequestHandler = async (event) => {
 
     const subscriptionService = new SubscriptionService(supabase);
     
-    const result = await subscriptionService.cancelSubscription(user.id, subscriptionId);
+    const result = await subscriptionService.cancelSubscription(user.id, subscriptionId, stripe);
 
     if (result.error) {
       return json({ error: result.error.message }, { status: 400 });

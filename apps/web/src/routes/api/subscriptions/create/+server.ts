@@ -84,7 +84,7 @@ export const POST: RequestHandler = async (event) => {
         }
 
         // Handle nested response structure
-        const result = validationResult?.validate_discount_code || validationResult;
+        const result = (validationResult as any)?.validate_discount_code || validationResult;
         
         if (!result?.valid) {
           return json({ error: result?.error || 'Invalid discount code' }, { status: 400 });

@@ -5,9 +5,9 @@
     ProductCard,
     ProductGallery,
     ProductDetailSkeleton,
-    ProductCardSkeleton
+    ProductCardSkeleton,
+    Breadcrumb
   } from '@repo/ui';
-  import Header from '$lib/components/Header.svelte';
   import SEOMetaTags from '$lib/components/SEOMetaTags.svelte';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
@@ -28,16 +28,90 @@
     data.product.images || []
   );
   
+  // Create breadcrumb items
+  const breadcrumbItems = $derived(() => {
+    const items = [
+      { label: i18n.nav_home(), href: '/' }
+    ];
+    
+    // Add parent category (Men/Women/Kids)
+    if (data.product.parent_category) {
+      items.push({
+        label: getCategoryTranslation(data.product.parent_category.name),
+        href: `/category/${data.product.parent_category.id}`
+      });
+    }
+    
+    // Add current category if different from parent
+    if (data.product.category_name && data.product.category_name !== data.product.parent_category?.name) {
+      items.push({
+        label: getCategoryTranslation(data.product.category_name),
+        href: `/category/${data.product.category_id}`
+      });
+    }
+    
+    // Add product name (no href for current page)
+    items.push({
+      label: data.product.title
+    });
+    
+    return items;
+  });
+  
   function getCategoryTranslation(categoryName: string) {
     const categoryMap: Record<string, () => string> = {
+      // Level 1 - Gender categories
       'Women': () => i18n.category_women(),
       'Men': () => i18n.category_men(),
       'Kids': () => i18n.category_kids(),
-      'Pets': () => i18n.category_pets(),
-      'Shoes': () => i18n.category_shoes(),
-      'Bags': () => i18n.category_bags(),
-      'Home': () => i18n.category_home(),
-      'Beauty': () => i18n.category_beauty()
+      'Unisex': () => i18n.category_unisex(),
+      
+      // Level 2 - Product Types
+      'Clothing': () => i18n.category_clothing(),
+      'Shoes': () => i18n.category_shoesType(),
+      'Accessories': () => i18n.category_accessoriesType(),
+      'Bags': () => i18n.category_bagsType(),
+      
+      // Level 3 - Specific items (old Level 2)
+      'Activewear': () => i18n.category_activewear(),
+      'Boots': () => i18n.category_boots(),
+      'Dresses': () => i18n.category_dresses(),
+      'Flats': () => i18n.category_flats(),
+      'Formal Shoes': () => i18n.category_formalShoes(),
+      'Heels': () => i18n.category_heels(),
+      'Hoodies': () => i18n.category_hoodies(),
+      'Jackets': () => i18n.category_jackets(),
+      'Jackets & Coats': () => i18n.category_jacketsCoats(),
+      'Jeans': () => i18n.category_jeans(),
+      'Jewelry': () => i18n.category_jewelry(),
+      'Lingerie & Underwear': () => i18n.category_lingerie(),
+      'Pants & Jeans': () => i18n.category_pantsJeans(),
+      'Pants & Trousers': () => i18n.category_pantsTrousers(),
+      'Sandals': () => i18n.category_sandals(),
+      'Sandals & Slides': () => i18n.category_sandalsSlides(),
+      'Shirts': () => i18n.category_shirts(),
+      'Shirts & Blouses': () => i18n.category_shirtsBlouses(),
+      'Shorts': () => i18n.category_shorts(),
+      'Skirts': () => i18n.category_skirts(),
+      'Sneakers': () => i18n.category_sneakers(),
+      'Suits & Blazers': () => i18n.category_suitsBlazers(),
+      'Sweaters & Hoodies': () => i18n.category_sweatersHoodies(),
+      'Swimwear': () => i18n.category_swimwear(),
+      'T-Shirts': () => i18n.category_tshirts(),
+      'Tops & T-Shirts': () => i18n.category_topsTshirts(),
+      'Underwear': () => i18n.category_underwear(),
+      'Watches': () => i18n.category_watches(),
+      
+      // Level 3 - Accessory subcategories
+      'Hats & Caps': () => i18n.category_hatsAndCaps(),
+      'Belts': () => i18n.category_belts(),
+      'Scarves': () => i18n.category_scarves(),
+      'Sunglasses': () => i18n.category_sunglasses(),
+      'Wallets': () => i18n.category_wallets(),
+      'Hair Accessories': () => i18n.category_hairAccessories(),
+      'Ties': () => i18n.category_ties(),
+      'Cufflinks': () => i18n.category_cufflinks(),
+      'Backpacks': () => i18n.category_backpacks()
     };
     return categoryMap[categoryName]?.() || categoryName;
   }
@@ -140,31 +214,23 @@
   ].filter(Boolean)}
 />
 
-<div class="min-h-screen bg-white">
-  <Header showSearch={true} />
-  
+<div class="min-h-screen bg-gray-50">
   <!-- Breadcrumb -->
-  <div class="px-4 lg:px-8 py-3 max-w-7xl mx-auto">
-    <div class="flex items-center gap-2 text-sm text-gray-600">
-      <a href="/" class="hover:text-black transition-colors">{i18n.nav_home()}</a>
-      <span>›</span>
-      <a href="/category/{data.product.category_id}" class="hover:text-black transition-colors">
-        {getCategoryTranslation(data.product.category_name)}
-      </a>
-      <span>›</span>
-      <span class="text-black truncate max-w-[200px]">{data.product.title}</span>
+  <div class="bg-white border-b border-gray-100">
+    <div class="px-4 lg:px-8 py-2.5 max-w-7xl mx-auto">
+      <Breadcrumb items={breadcrumbItems()} class="text-xs sm:text-sm" />
     </div>
   </div>
   
-  <div class="lg:grid lg:grid-cols-2 lg:gap-8 max-w-7xl mx-auto">
-    <!-- Gallery - Highlight style with borders -->
-    <div class="lg:sticky lg:top-16 lg:h-[calc(100vh-4rem)] px-4 lg:px-0">
+  <div class="lg:grid lg:grid-cols-2 lg:gap-6 max-w-7xl mx-auto bg-white">
+    <!-- Gallery - Compact mobile view -->
+    <div class="lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)]">
       <ProductGallery 
         images={productImages}
         title={data.product.title}
         condition={data.product.condition}
         isAuthenticated={!!data.user}
-        class="w-full h-[65vh] lg:h-full"
+        class="w-full h-[50vh] sm:h-[60vh] lg:h-full"
         translations={{
           new: i18n.product_newWithTags(),
           likeNew: i18n.product_likeNewCondition(),
@@ -174,81 +240,74 @@
       />
     </div>
     
-    <!-- Info section - clean, no containers -->
-    <div class="px-4 lg:px-8 py-6 lg:py-8 pb-32 lg:pb-8">
-      <!-- Title on same row as wishlist/share buttons -->
-      <div class="flex items-center justify-between mb-2">
-        <h1 class="text-xl font-semibold">{data.product.title}</h1>
-        <div class="flex gap-2">
+    <!-- Info section - Compact and mobile-optimized -->
+    <div class="px-4 lg:px-6 py-4 lg:py-6 pb-24 lg:pb-8">
+      <!-- Title and actions row -->
+      <div class="flex items-start justify-between gap-3 mb-3">
+        <div class="flex-1">
+          <h1 class="text-lg sm:text-xl font-semibold text-gray-900">{data.product.title}</h1>
+          {#if data.product.brand}
+            <p class="text-sm text-gray-600 mt-0.5">{data.product.brand}</p>
+          {/if}
+        </div>
+        <div class="flex gap-1">
           <button
             onclick={handleFavorite}
-            class="p-2.5 rounded-full hover:bg-gray-50 transition-all {isFavorited ? 'text-red-500' : 'text-gray-400'}"
+            class="p-2 rounded-full hover:bg-gray-100 transition-colors {isFavorited ? 'text-red-500' : 'text-gray-400'}"
             aria-label="{isFavorited ? 'Remove from favorites' : 'Add to favorites'}"
           >
-            <svg class="w-6 h-6" fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5" fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
             </svg>
           </button>
           <button
             onclick={handleShare}
-            class="p-2.5 rounded-full hover:bg-gray-50 transition-all text-gray-400"
+            class="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400"
             aria-label="Share this product"
           >
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 01-7.432 0"/>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/>
             </svg>
           </button>
         </div>
       </div>
       
-      <!-- Brand and price -->
-      <div class="mb-4">
-        {#if data.product.brand}
-          <p class="text-sm text-gray-600 mb-1">{data.product.brand}</p>
-        {/if}
-        <div class="hidden lg:block">
-          <p class="text-3xl font-bold">{formatPrice(data.product.price)}</p>
-          {#if data.product.shipping_price}
-            <p class="text-sm text-gray-600 mt-1">
-              + {formatPrice(data.product.shipping_price)} shipping
-            </p>
-          {:else if data.product.shipping_price === 0}
-            <p class="text-sm text-green-600 mt-1">Free shipping</p>
-          {/if}
-        </div>
+      <!-- Price (Desktop only) -->
+      <div class="hidden lg:block mb-4">
+        <p class="text-2xl font-bold text-gray-900">{formatPrice(data.product.price)}</p>
       </div>
       
-      <!-- Quick info chips -->
-      <div class="flex flex-wrap gap-2 mb-5">
+      <!-- Quick info badges -->
+      <div class="flex flex-wrap gap-1.5 mb-4">
         {#if data.product.size}
-          <span class="px-3 py-1 bg-blue-50 border border-blue-200 text-blue-800 rounded-lg text-sm font-medium">
-            Size {data.product.size}
+          <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
+            {i18n.product_size()} {data.product.size}
           </span>
         {/if}
-        <span class="px-3 py-1 bg-green-50 border border-green-200 text-green-800 rounded-lg text-sm font-medium">
+        <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
           {conditionLabel}
         </span>
         {#if data.product.color}
-          <span class="px-3 py-1 bg-purple-50 border border-purple-200 text-purple-800 rounded-lg text-sm font-medium">
+          <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
             {data.product.color}
           </span>
         {/if}
       </div>
       
-      <!-- Seller strip -->
-      <div class="py-4 border-t border-gray-100 mb-5">
-        <a href="/profile/{data.product.seller_username || data.product.seller_id}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+      <!-- Seller section -->
+      <div class="py-3 border-y border-gray-100 mb-4">
+        <a href="/profile/{data.product.seller_username || data.product.seller_id}" class="flex items-center gap-3 hover:bg-gray-50 -mx-2 px-2 py-2 rounded-lg transition-colors">
           <Avatar 
             src={data.product.seller_avatar} 
             alt={data.product.seller_name}
-            size="md"
-            fallback={data.product.seller_name?.[0] || '?'}
+            size="sm"
+            fallback={data.product.seller_name?.[0]?.toUpperCase() || 'S'}
           />
-          <div>
-            <p class="font-semibold text-sm">{data.product.seller_name}</p>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-sm text-gray-900">{data.product.seller_name}</p>
             <div class="flex items-center gap-2 text-xs text-gray-600 mt-0.5">
               {#if data.product.seller_rating}
-                <span class="flex items-center gap-1">
+                <span class="flex items-center gap-0.5">
                   <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                   </svg>
@@ -256,25 +315,27 @@
                 </span>
               {/if}
               {#if data.product.seller_sales_count}
-                <span>• {data.product.seller_sales_count} sales</span>
+                <span>{data.product.seller_sales_count} {i18n.seller_sales()}</span>
               {/if}
             </div>
           </div>
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
         </a>
       </div>
       
       <!-- Description -->
       {#if data.product.description}
-        <div class="mb-5">
-          <h3 class="font-medium text-sm uppercase tracking-wide text-gray-500 mb-2">Description</h3>
-          <p class="text-gray-600 text-sm leading-relaxed {!showFullDescription ? 'line-clamp-3' : ''}">
+        <div class="mb-4">
+          <h3 class="font-medium text-sm text-gray-900 mb-2">{i18n.product_description()}</h3>
+          <p class="text-gray-700 text-sm leading-6 whitespace-pre-wrap {!showFullDescription ? 'line-clamp-4' : ''}">
             {data.product.description}
           </p>
-          {#if data.product.description.length > 150}
+          {#if data.product.description.length > 200}
             <button 
               onclick={() => showFullDescription = !showFullDescription}
-              class="text-sm text-black font-medium mt-2"
-              aria-label="{showFullDescription ? 'Show less description' : 'Show more description'}"
+              class="text-xs font-medium text-gray-900 mt-2 underline"
             >
               {showFullDescription ? 'Show less' : 'Show more'}
             </button>
@@ -283,26 +344,21 @@
       {/if}
       
       <!-- Item details -->
-      <div class="space-y-2.5 text-sm mb-6 py-4 border-t border-gray-100">
+      <div class="space-y-2 text-xs py-3 border-t border-gray-100 mb-4">
         <div class="flex justify-between">
           <span class="text-gray-600">Category</span>
-          <span>{getCategoryTranslation(data.product.category_name)}</span>
+          <span class="text-gray-900">{getCategoryTranslation(data.product.category_name)}</span>
         </div>
         <div class="flex justify-between">
           <span class="text-gray-600">Listed</span>
-          <span>{formatDate(data.product.created_at)}</span>
+          <span class="text-gray-900">{formatDate(data.product.created_at)}</span>
         </div>
-        <div class="flex justify-between">
-          <span class="text-gray-600">Views</span>
-          {#if data.product.view_count}
-            <span class="flex items-center gap-1">
-              <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-              {data.product.view_count} views
-            </span>
-          {:else}
-            <span class="text-gray-500">No views data</span>
-          {/if}
-        </div>
+        {#if data.product.view_count}
+          <div class="flex justify-between">
+            <span class="text-gray-600">Views</span>
+            <span class="text-gray-900">{data.product.view_count}</span>
+          </div>
+        {/if}
       </div>
       
       <!-- Desktop action buttons -->
@@ -325,9 +381,9 @@
       
       <!-- Similar products -->
       {#if data.similarProducts && data.similarProducts.length > 0}
-        <div class="mt-12">
-          <h2 class="font-semibold mb-4">{i18n.product_youMightLike()}</h2>
-          <div class="grid grid-cols-2 gap-3">
+        <div class="mt-6">
+          <h2 class="font-semibold text-sm mb-3">{i18n.product_youMightLike()}</h2>
+          <div class="grid grid-cols-2 gap-2">
             {#each data.similarProducts.slice(0, 4) as product}
               <ProductCard 
                 product={{
@@ -338,6 +394,7 @@
                   sellerAvatar: product.seller_avatar
                 }}
                 onclick={() => goto(`/product/${product.id}`)}
+                compact={true}
                 translations={{
                   size: i18n.product_size(),
                   newSeller: i18n.trending_newSeller(),
@@ -357,40 +414,43 @@
         </div>
       {/if}
       
-      <!-- More from seller -->
+      <!-- More from seller - Horizontal scroll -->
       {#if data.sellerProducts && data.sellerProducts.length > 0}
-        <div class="mt-8">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="font-semibold">{i18n.product_moreFromSeller()} {data.product.seller_name}</h2>
-            <a href="/profile/{data.product.seller_username || data.product.seller_id}" class="text-sm text-black font-medium">
-              {i18n.product_viewAll()} →
+        <div class="mt-6 -mx-4 px-4">
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="font-semibold text-sm">{i18n.product_moreFromSeller()} {data.product.seller_name}</h2>
+            <a href="/profile/{data.product.seller_username || data.product.seller_id}" class="text-xs text-gray-600 font-medium">
+              {i18n.product_viewAll()}
             </a>
           </div>
-          <div class="grid grid-cols-2 gap-3">
-            {#each data.sellerProducts.slice(0, 4) as product}
-              <ProductCard 
-                product={{
-                  ...product,
-                  images: (product.images || []).map(img => img.image_url),
-                  sellerName: product.seller_name,
-                  sellerRating: product.seller_rating,
-                  sellerAvatar: product.seller_avatar
-                }}
-                onclick={() => goto(`/product/${product.id}`)}
-                translations={{
-                  size: i18n.product_size(),
-                  newSeller: i18n.trending_newSeller(),
-                  unknownSeller: i18n.seller_unknown(),
-                  currency: i18n.common_currency(),
-                  addToFavorites: i18n.product_addToFavorites(),
-                  formatPrice: (price: number) => formatPrice(price),
-                  new: i18n.product_new(),
-                  likeNew: i18n.product_likeNew(),
-                  good: i18n.product_good(),
-                  fair: i18n.product_fair(),
-                  categoryTranslation: getCategoryTranslation
-                }}
-              />
+          <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
+            {#each data.sellerProducts as product}
+              <div class="w-40 shrink-0">
+                <ProductCard 
+                  product={{
+                    ...product,
+                    images: (product.images || []).map(img => img.image_url),
+                    sellerName: product.seller_name,
+                    sellerRating: product.seller_rating,
+                    sellerAvatar: product.seller_avatar
+                  }}
+                  onclick={() => goto(`/product/${product.id}`)}
+                  compact={true}
+                  translations={{
+                    size: i18n.product_size(),
+                    newSeller: i18n.trending_newSeller(),
+                    unknownSeller: i18n.seller_unknown(),
+                    currency: i18n.common_currency(),
+                    addToFavorites: i18n.product_addToFavorites(),
+                    formatPrice: (price: number) => formatPrice(price),
+                    new: i18n.product_new(),
+                    likeNew: i18n.product_likeNew(),
+                    good: i18n.product_good(),
+                    fair: i18n.product_fair(),
+                    categoryTranslation: getCategoryTranslation
+                  }}
+                />
+              </div>
             {/each}
           </div>
         </div>
@@ -398,41 +458,31 @@
     </div>
   </div>
   
-  <!-- Mobile bottom action bar - keep this perfect as is -->
-  <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t px-4 py-3 z-30">
-    <div class="flex items-center justify-between mb-3">
-      <div>
-        <p class="text-2xl font-bold">{formatPrice(data.product.price)}</p>
-        <p class="text-xs text-gray-600">
-          {#if data.product.shipping_price}
-            + {formatPrice(data.product.shipping_price)} {i18n.product_shipping()}
-          {:else if data.product.shipping_price === 0}
-            {i18n.product_freeShipping()}
-          {/if}
-        </p>
-      </div>
-    </div>
+  <!-- Mobile bottom action bar - clean and compact -->
+  <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-3 py-2.5 z-30 safe-area-bottom">
     <div class="flex gap-2">
       <Button 
         variant="outline" 
         onclick={handleMessage}
-        class="flex-1"
+        class="px-3 py-2"
       >
-        {i18n.seller_message()}
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+        </svg>
       </Button>
       <Button 
         variant="outline" 
         onclick={handleMakeOffer}
-        class="flex-1"
+        class="flex-1 py-2 text-sm"
       >
         {i18n.product_makeOffer()}
       </Button>
       <Button 
         variant="primary" 
         onclick={handleBuyNow}
-        class="flex-1"
+        class="flex-1 py-2 font-semibold text-sm"
       >
-        {i18n.product_buyNow()}
+        {i18n.product_buyNow()} {formatPrice(data.product.price)}
       </Button>
     </div>
   </div>

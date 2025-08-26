@@ -1,4 +1,4 @@
-import type { BreadcrumbItem } from './types.js';
+import type { BreadcrumbItem } from '../types';
 interface Props {
     items: BreadcrumbItem[];
     class?: string;

@@ -211,7 +211,7 @@ export class ProfileService {
           .from('orders')
           .select('total_amount', { count: 'exact' })
           .eq('seller_id', sellerId)
-          .eq('status', 'completed'),
+          .eq('status', 'delivered'),
           
         // Get favorites count
         this.supabase

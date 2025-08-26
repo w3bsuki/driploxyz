@@ -2,7 +2,6 @@
   import { page, navigating } from '$app/stores';
   import { goto } from '$app/navigation';
   import { Button, ProductCard, Breadcrumb, SellerQuickView, SearchBar, BottomNav, type Product, type BreadcrumbItem } from '@repo/ui';
-  import Header from '$lib/components/Header.svelte';
   import * as i18n from '@repo/i18n';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { formatPrice } from '$lib/utils/price';
@@ -30,38 +29,58 @@
     return translations[name] || name;
   }
 
-  // Translation mapping for subcategory names  
+  // Translation mapping for all category names  
   function translateSubcategoryName(name: string): string {
     const translations: Record<string, string> = {
-      'Dresses': i18n.subcategory_dresses(),
-      'Tops & T-Shirts': i18n.subcategory_topsShirts(),
-      'Shirts & Blouses': i18n.subcategory_shirts(),
-      'Sweaters & Hoodies': i18n.subcategory_sweatersHoodies(),
-      'Jackets & Coats': i18n.subcategory_jacketsCoats(),
-      'Jeans': i18n.subcategory_jeans(),
-      'Pants & Trousers': i18n.subcategory_pantsTraousers(),
-      'Shorts': i18n.subcategory_shorts(),
-      'Skirts': i18n.subcategory_skirts(),
-      'Activewear': i18n.subcategory_activewear(),
-      'Swimwear': i18n.subcategory_swimwear(),
-      'Lingerie & Underwear': i18n.subcategory_lingerieUnderwear(),
-      'Sneakers': i18n.subcategory_sneakers(),
-      'Boots': i18n.subcategory_boots(),
-      'Heels': i18n.subcategory_heels(),
-      'Flats': i18n.subcategory_flats(),
-      'Sandals': i18n.subcategory_sandals(),
-      'Bags & Purses': i18n.subcategory_bagssPurses(),
-      'Jewelry': i18n.subcategory_jewelry(),
-      'Accessories': i18n.subcategory_accessories(),
-      'T-Shirts': i18n.subcategory_tShirts(),
-      'Shirts': i18n.subcategory_shirts(),
-      'Suits & Blazers': i18n.subcategory_suiBbazers(),
-      'Formal Shoes': i18n.subcategory_formalShoes(),
-      'Sandals & Slides': i18n.subcategory_sandalsSlides(),
-      'Underwear': i18n.subcategory_underwear(),
-      'Bags': i18n.subcategory_bags(),
-      'Watches': i18n.subcategory_watches(),
-      'Pants & Jeans': i18n.subcategory_pantsJeans()
+      // Level 1 - Gender categories
+      'Women': i18n.category_women(),
+      'Men': i18n.category_men(),
+      'Kids': i18n.category_kids(),
+      'Unisex': i18n.category_unisex(),
+      
+      // Level 2 - Main categories
+      'Accessories': i18n.category_accessories(),
+      'Activewear': i18n.category_activewear(),
+      'Bags': i18n.category_bags(),
+      'Boots': i18n.category_boots(),
+      'Dresses': i18n.category_dresses(),
+      'Flats': i18n.category_flats(),
+      'Formal Shoes': i18n.category_formalShoes(),
+      'Heels': i18n.category_heels(),
+      'Hoodies': i18n.category_hoodies(),
+      'Jackets': i18n.category_jackets(),
+      'Jackets & Coats': i18n.category_jacketsCoats(),
+      'Jeans': i18n.category_jeans(),
+      'Jewelry': i18n.category_jewelry(),
+      'Lingerie & Underwear': i18n.category_lingerie(),
+      'Pants & Jeans': i18n.category_pantsJeans(),
+      'Pants & Trousers': i18n.category_pantsTrousers(),
+      'Sandals': i18n.category_sandals(),
+      'Sandals & Slides': i18n.category_sandalsSlides(),
+      'Shirts': i18n.category_shirts(),
+      'Shirts & Blouses': i18n.category_shirtsBlouses(),
+      'Shorts': i18n.category_shorts(),
+      'Skirts': i18n.category_skirts(),
+      'Sneakers': i18n.category_sneakers(),
+      'Suits & Blazers': i18n.category_suitsBlazers(),
+      'Sweaters & Hoodies': i18n.category_sweatersHoodies(),
+      'Swimwear': i18n.category_swimwear(),
+      'T-Shirts': i18n.category_tshirts(),
+      'Tops & T-Shirts': i18n.category_topsTshirts(),
+      'Underwear': i18n.category_underwear(),
+      'Watches': i18n.category_watches(),
+      'Bags & Purses': i18n.category_bags(),
+      
+      // Level 3 - Accessory subcategories
+      'Hats & Caps': i18n.category_hatsAndCaps(),
+      'Belts': i18n.category_belts(),
+      'Scarves': i18n.category_scarves(),
+      'Sunglasses': i18n.category_sunglasses(),
+      'Wallets': i18n.category_wallets(),
+      'Hair Accessories': i18n.category_hairAccessories(),
+      'Ties': i18n.category_ties(),
+      'Cufflinks': i18n.category_cufflinks(),
+      'Backpacks': i18n.category_backpacks()
     };
     return translations[name] || name;
   }
@@ -209,12 +228,10 @@
 </svelte:head>
 
 <div class="min-h-screen bg-gray-50">
-  <!-- Unified Header -->
-  <Header showSearch={true} user={data.user} profile={data.profile} />
 
   <!-- Breadcrumb -->
   <div class="bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       <Breadcrumb items={[
         { label: i18n.category_home(), href: '/' },
         { label: translateCategoryName(category.name) }
@@ -459,7 +476,8 @@
                 likeNew: i18n.condition_likeNew(),
                 good: i18n.condition_good(),
                 fair: i18n.condition_fair(),
-                formatPrice: (price: number) => formatPrice(price)
+                formatPrice: (price: number) => formatPrice(price),
+                categoryTranslation: translateSubcategoryName
               }}
             />
           {/each}

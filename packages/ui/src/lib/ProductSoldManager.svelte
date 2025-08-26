@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Product } from './types.js';
+  import type { Product } from '../types';
   import SoldNotificationToast from './SoldNotificationToast.svelte';
 
   interface Props {

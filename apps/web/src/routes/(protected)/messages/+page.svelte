@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Avatar, Button, TabGroup, TypingIndicator, BottomNav } from '@repo/ui';
-  import Header from '$lib/components/Header.svelte';
   import { messageNotificationActions, unreadMessageCount } from '$lib/stores/messageNotifications';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
@@ -336,8 +335,7 @@
   <!-- Header only for conversation list -->
   {#if !selectedConversation()}
     <div class="shrink-0">
-      <Header />
-    </div>
+        </div>
     
     <!-- Page Header -->
     <div class="bg-white border-b border-gray-200 shrink-0">

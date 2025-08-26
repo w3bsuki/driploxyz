@@ -2,8 +2,8 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { activateBrandStatus } from '$lib/services/brand-service';
 
-export const load: PageServerLoad = async ({ url, locals: { supabase, getSession } }) => {
-  const session = await getSession();
+export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSession } }) => {
+  const { session } = await safeGetSession();
   
   if (!session) {
     throw redirect(303, '/login');
