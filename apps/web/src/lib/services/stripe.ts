@@ -384,7 +384,7 @@ t	userEmail?: string;
 				.from('user_subscriptions')
 				.update({ 
 					plan_id: newPlanId,
-					updated_at: new Date().toISOString()
+					processed_at: new Date().toISOString()
 				})
 				.eq('stripe_subscription_id', subscriptionId);
 
@@ -438,7 +438,7 @@ t	userEmail?: string;
 					account_type: metadata.plan_type as any,
 					subscription_tier: metadata.plan_type as any,
 					verified: true,
-					updated_at: new Date().toISOString()
+					processed_at: new Date().toISOString()
 				})
 				.eq('id', metadata.user_id);
 
@@ -447,7 +447,7 @@ t	userEmail?: string;
 				.from('user_payments')
 				.update({
 					status: 'completed',
-					completed_at: new Date().toISOString()
+					processed_at: new Date().toISOString()
 				})
 				.eq('stripe_payment_intent_id', paymentIntent.id);
 
@@ -472,7 +472,7 @@ t	userEmail?: string;
 			.from('transactions')
 			.update({
 				status: 'completed',
-				completed_at: new Date().toISOString()
+				processed_at: new Date().toISOString()
 			})
 			.eq('stripe_payment_intent_id', paymentIntent.id);
 
@@ -537,7 +537,7 @@ t	userEmail?: string;
 				status: subscription.status as any,
 				current_period_start: new Date((subscription as any).current_period_start * 1000).toISOString(),
 				current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
-				updated_at: new Date().toISOString()
+				processed_at: new Date().toISOString()
 			})
 			.eq('stripe_subscription_id', subscription.id);
 	}
@@ -650,7 +650,7 @@ t	userEmail?: string;
 			.from('transactions')
 			.update({ 
 				status,
-				...(status === 'completed' ? { completed_at: new Date().toISOString() } : {})
+				...(status === 'completed' ? { processed_at: new Date().toISOString() } : {})
 			})
 			.eq('id', transactionId);
 
@@ -693,7 +693,7 @@ t	userEmail?: string;
 				.from('orders')
 				.update({
 					status: 'paid',
-					updated_at: new Date().toISOString()
+					processed_at: new Date().toISOString()
 				})
 				.eq('id', metadata.order_id)
 				.select()
@@ -710,7 +710,7 @@ t	userEmail?: string;
 				.update({
 					payment_status: 'completed',
 					status: 'completed',
-					completed_at: new Date().toISOString()
+					processed_at: new Date().toISOString()
 				})
 				.eq('stripe_payment_intent_id', params.paymentIntentId)
 				.select()
