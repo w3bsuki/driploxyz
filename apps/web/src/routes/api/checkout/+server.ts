@@ -7,7 +7,7 @@ import { STRIPE_SECRET_KEY } from '$env/static/private';
 // Initialize Stripe with secret key - only on server runtime
 const stripe = STRIPE_SECRET_KEY 
   ? new Stripe(STRIPE_SECRET_KEY, {
-      apiVersion: '2025-07-30.basil'
+      apiVersion: '2024-09-30.acacia'
     })
   : null;
 
