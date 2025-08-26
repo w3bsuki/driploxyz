@@ -108,9 +108,15 @@
     action="?/signin" 
     use:enhance={() => {
       submitting = true;
-      return async ({ update }) => {
-        await update();
-        submitting = false;
+      return async ({ result, update }) => {
+        if (result.type === 'redirect') {
+          // For redirects, just let SvelteKit handle it naturally
+          await update();
+        } else {
+          // For errors, update the form
+          submitting = false;
+          await update({ reset: false });
+        }
       };
     }}
   >

@@ -103,6 +103,10 @@ export const actions: Actions = {
     // Reset rate limit on successful login
     rateLimiter.reset(rateLimitKey);
     
+    // Force session to be available immediately by updating locals
+    event.locals.session = data.session;
+    event.locals.user = data.user;
+    
     // Check if user has completed onboarding
     const { data: profile } = await supabase
       .from('profiles')
