@@ -37,7 +37,6 @@ export function setStoredLanguage(lang: string) {
   try {
     document.cookie = `${LANGUAGE_COOKIE_NAME}=${encodeURIComponent(lang)}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax; Secure=${location.protocol === 'https:'}`;
   } catch (e) {
-    console.warn('Failed to set language cookie:', e);
   }
 }
 

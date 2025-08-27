@@ -72,21 +72,8 @@ export const load: LayoutServerLoad = async (event) => {
     }
   }
 
-  // CRITICAL FIX: Always get language from cookie FIRST, then locals
-  // This ensures language persists through auth invalidations
-  const cookieLocale = cookies.get('locale');
-  const language = cookieLocale || locals.locale || 'en';
-  
-  if (dev) {
-    console.log('🌍 Layout Server: Cookie locale =', cookieLocale, ', locals.locale =', locals.locale, ', final =', language);
-  }
-  
-  // Ensure we're always returning a valid language
-  if (!['en', 'bg', 'ru', 'ua'].includes(language)) {
-    if (dev) {
-      console.warn('🌍 Layout Server: Invalid language detected, falling back to English:', language);
-    }
-  }
+  // Language is already set in locals by the i18n hook
+  const language = locals.locale || 'en';
   
   // Get country from locals (set by server hooks)
   const country = locals.country || 'BG';

@@ -5975,6 +5975,22 @@ export const category_clearAll = () => `Изчисти всички`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const category_filters = () => `Филтри`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_categories = () => `Категории`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const ui_scroll = () => `Скролвай`
 
 
@@ -9218,22 +9234,6 @@ export const category_men_title = () => `Мъже`
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const category_kids_title = () => `Деца`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const category_categories = () => `Категории`
-
-
-/**
- * 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const category_filters = () => `Филтри`
 
 
 /**

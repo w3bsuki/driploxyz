@@ -120,7 +120,6 @@ export async function getUserProfile(
       .single();
 
     if (error) {
-      console.error('Error fetching user profile:', error);
       return null;
     }
 
@@ -146,7 +145,6 @@ export async function updateUserProfile(
       .eq('id', userId);
 
     if (error) {
-      console.error('Error updating user profile:', error);
       return { success: false, error: error.message };
     }
 
@@ -175,10 +173,8 @@ export async function signOut(supabase: SupabaseClient<Database>) {
     });
     
     if (!response.ok) {
-      console.error('Sign out failed with status:', response.status);
     }
   } catch (error) {
-    console.error('Sign out error:', error);
   }
   
   // Small delay to show the toast before redirect

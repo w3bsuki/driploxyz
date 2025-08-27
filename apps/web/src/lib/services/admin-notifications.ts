@@ -34,14 +34,6 @@ export class AdminNotificationService {
   async createNotification(notification: Omit<AdminNotification, 'id' | 'created_at' | 'is_read'>): Promise<AdminNotification | null> {
     try {
       // For now, just log the notification since the table might not exist yet
-      console.log('Admin notification would be created:', {
-        type: notification.type,
-        title: notification.title,
-        message: notification.message,
-        priority: notification.priority,
-        country_code: notification.country_code,
-        user_id: notification.user_id
-      });
 
       // Create a mock notification object for return
       const mockNotification: AdminNotification = {
@@ -64,7 +56,6 @@ export class AdminNotificationService {
 
       return mockNotification;
     } catch (error) {
-      console.error('Failed to create admin notification:', error);
       return null;
     }
   }
@@ -82,12 +73,10 @@ export class AdminNotificationService {
   }): Promise<AdminNotification[]> {
     try {
       // Return mock notifications for now
-      console.log('Would fetch admin notifications with filters:', filters);
       
       // Return empty array until the table is properly set up
       return [];
     } catch (error) {
-      console.error('Failed to fetch notifications:', error);
       return [];
     }
   }
@@ -98,7 +87,6 @@ export class AdminNotificationService {
   async getNotificationStats(): Promise<NotificationStats> {
     try {
       // Return mock stats for now
-      console.log('Would fetch notification stats');
       
       return {
         total_unread: 0,
@@ -114,7 +102,6 @@ export class AdminNotificationService {
         }
       };
     } catch (error) {
-      console.error('Failed to fetch notification stats:', error);
       return {
         total_unread: 0,
         by_priority: { urgent: 0, high: 0, normal: 0, low: 0 },
@@ -136,10 +123,8 @@ export class AdminNotificationService {
    */
   async markAsRead(notificationId: string): Promise<boolean> {
     try {
-      console.log('Would mark notification as read:', notificationId);
       return true;
     } catch (error) {
-      console.error('Failed to mark notification as read:', error);
       return false;
     }
   }
@@ -149,10 +134,8 @@ export class AdminNotificationService {
    */
   async markAllAsRead(): Promise<boolean> {
     try {
-      console.log('Would mark all notifications as read');
       return true;
     } catch (error) {
-      console.error('Failed to mark all notifications as read:', error);
       return false;
     }
   }
@@ -376,7 +359,6 @@ export class AdminNotificationService {
       // await this.sendBrowserNotification(notification);
       
     } catch (error) {
-      console.error('Failed to trigger real-time notification:', error);
     }
   }
 
@@ -422,7 +404,6 @@ export class AdminNotificationService {
         body: JSON.stringify(payload)
       });
     } catch (error) {
-      console.error('Failed to send Slack notification:', error);
     }
   }
 }

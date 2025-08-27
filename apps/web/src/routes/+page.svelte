@@ -445,7 +445,7 @@
 						aria-label="View all categories"
 						aria-busy={loadingCategory === 'all'}
 						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
-						class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-black text-white rounded-lg text-[13px] sm:text-sm font-medium hover:bg-gray-900 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[65px] h-9 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+						class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-black text-white rounded-lg text-[13px] sm:text-sm font-medium hover:bg-gray-900 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[65px] min-h-[36px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
 					>
 						{#if loadingCategory === 'all'}
 							<LoadingSpinner size="sm" color="white" />
@@ -465,7 +465,7 @@
 							aria-label="Browse {categoryName} category"
 							aria-busy={loadingCategory === category.slug}
 							aria-current={$page.url.pathname.includes(category.slug) ? 'page' : undefined}
-							class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-white border border-gray-200 rounded-lg text-[13px] sm:text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[65px] h-9 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
+							class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-white border border-gray-200 rounded-lg text-[13px] sm:text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[65px] min-h-[36px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}

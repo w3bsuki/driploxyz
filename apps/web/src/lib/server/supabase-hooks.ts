@@ -48,12 +48,12 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   );
 
   /**
-   * Ultra-fast session validation - only validates expiry, no API calls
-   * For auth-critical operations, manually call getUser() if needed
+   * Secure session validation with proper authentication
+   * Uses getUser() to verify the session is valid
    */
   event.locals.safeGetSession = async () => {
     try {
-      // Get session from cookies (no API call)
+      // Get session from cookies first
       const {
         data: { session },
       } = await event.locals.supabase.auth.getSession();
@@ -62,16 +62,18 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
         return { session: null, user: null };
       }
 
-      // Check if session is expired
-      const now = Date.now() / 1000;
-      if (session.expires_at && session.expires_at < now) {
+      // Validate the session with the server
+      const { data: { user }, error } = await event.locals.supabase.auth.getUser();
+      
+      if (error || !user) {
+        // Session is invalid, clear it
         return { session: null, user: null };
       }
 
-      // Return session data without API validation for speed
-      return { session, user: session.user };
+      // Return validated session and user
+      return { session, user };
     } catch (error) {
-      console.error('Auth session validation error:', error);
+      // Silent fail - don't log errors to avoid spam
       return { session: null, user: null };
     }
   };

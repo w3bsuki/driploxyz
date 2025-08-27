@@ -121,7 +121,6 @@
     
     // Set up auth state listener for session changes
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      if (dev) console.log('Auth state changed:', event);
       
       // CRITICAL FIX: Don't invalidate on INITIAL_SESSION or TOKEN_REFRESHED
       // These happen during language switches and cause the page to reload

@@ -4,7 +4,7 @@ import * as i18n from '@repo/i18n';
 import { checkServerConsent, COOKIES } from '$lib/cookies/production-cookie-system';
 
 // Debug flag for controlled logging
-const isDebug = dev;
+const isDebug = false; // Disabled to reduce console spam
 
 /**
  * Setup internationalization for the request event
@@ -31,16 +31,10 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   if (!locale) {
     // Try both cookie names (production and fallback)
     locale = event.cookies.get(COOKIES.LOCALE) || event.cookies.get('locale') || null;
-    if (isDebug && locale) {
-      console.log(`🌍 Language from cookie: ${locale}`);
-    }
   }
   
-  // Check functional consent status for debugging
+  // Check functional consent status
   const hasFunctionalConsent = checkServerConsent(event.cookies, 'functional');
-  if (isDebug) {
-    console.log(`🍪 Functional consent: ${hasFunctionalConsent}, locale cookie: ${event.cookies.get(COOKIES.LOCALE) || event.cookies.get('locale')}`);
-  }
   
   // Detect from headers if no cookie or URL param
   if (!locale) {
@@ -53,9 +47,6 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
     }
   }
   
-  if (isDebug) {
-    console.log(`🌍 Final locale: ${locale}`);
-  }
   
   // Update cookie if locale was set via URL parameter and consent exists
   if (event.url.searchParams.get('locale') && hasFunctionalConsent) {
@@ -80,17 +71,8 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   // Apply locale with error handling
   try {
     if (locale && i18n.isAvailableLanguageTag(locale)) {
-      if (isDebug) {
-        console.log(`🌍 Setting language tag to: ${locale}`);
-      }
       i18n.setLanguageTag(locale as any);
-      if (isDebug) {
-        console.log(`🌍 Successfully set language tag. Current tag: ${i18n.languageTag()}`);
-      }
     } else {
-      if (isDebug) {
-        console.log(`🌍 Invalid locale '${locale}', falling back to English`);
-      }
       i18n.setLanguageTag('en');
     }
   } catch (error) {

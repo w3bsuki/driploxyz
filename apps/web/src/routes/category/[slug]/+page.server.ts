@@ -21,21 +21,43 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase, co
       services.categories.getSubcategories(category.id)
     ]);
     
-    // Also get all grandchild subcategories for detailed navigation
+    const breadcrumb = breadcrumbResult.status === 'fulfilled' ? breadcrumbResult.value.data || [] : [];
     const directSubcategories = subcategoriesResult.status === 'fulfilled' ? subcategoriesResult.value.data || [] : [];
-    let allSubcategories: any[] = [];
+    
+    // Get subcategories with product counts for quick pills
+    let subcategoriesWithCounts: any[] = [];
     
     if (directSubcategories.length > 0) {
-      // Get all subcategories and their children
-      const { data: detailedSubs } = await supabase
-        .from('categories')
-        .select('id, name, slug, parent_id')
-        .or(`parent_id.eq.${category.id},parent_id.in.(${directSubcategories.map(s => s.id).join(',')})`);
-      allSubcategories = detailedSubs || [];
+      // For each subcategory, get product count
+      const subcategoryPromises = directSubcategories.map(async (subcat) => {
+        // Get all descendant category IDs for this subcategory
+        const { data: descendants } = await supabase
+          .from('categories')
+          .select('id')
+          .or(`id.eq.${subcat.id},parent_id.eq.${subcat.id}`);
+        
+        const categoryIds = descendants?.map(d => d.id) || [subcat.id];
+        
+        // Count products in this subcategory and its children
+        const { count } = await supabase
+          .from('products')
+          .select('*', { count: 'exact', head: true })
+          .in('category_id', categoryIds)
+          .eq('is_active', true)
+          .eq('is_sold', false)
+          .eq('country_code', currentCountry);
+        
+        return {
+          ...subcat,
+          productCount: count || 0
+        };
+      });
+      
+      subcategoriesWithCounts = await Promise.all(subcategoryPromises);
+      
+      // Sort by product count (most products first)
+      subcategoriesWithCounts.sort((a, b) => b.productCount - a.productCount);
     }
-
-    const breadcrumb = breadcrumbResult.status === 'fulfilled' ? breadcrumbResult.value.data || [] : [];
-    const subcategories = subcategoriesResult.status === 'fulfilled' ? subcategoriesResult.value.data || [] : [];
 
     // Parse query parameters for filtering
     const searchParams = url.searchParams;
@@ -102,7 +124,6 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase, co
     });
 
     if (productsError) {
-      console.error('Error loading category products:', productsError);
     }
 
     // Calculate pagination
@@ -129,7 +150,6 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase, co
       .not('seller_id', 'is', null);
 
     if (sellersError) {
-      console.error('Error loading sellers:', sellersError);
     }
 
     // Process sellers to get unique list with item counts
@@ -160,12 +180,11 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase, co
         return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       });
 
-    console.log(`Found ${sellers.length} sellers in ${category.name} category with ${categoryIds.length} category IDs`);
 
     return {
       category,
       breadcrumb,
-      subcategories: allSubcategories.length > 0 ? allSubcategories : subcategories,
+      subcategories: subcategoriesWithCounts,
       products: products || [],
       sellers, // Add sellers to the returned data
       pagination: {
@@ -187,7 +206,6 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase, co
       }
     };
   } catch (err) {
-    console.error('Error loading category page:', err);
     throw error(500, 'Failed to load category');
   }
 };

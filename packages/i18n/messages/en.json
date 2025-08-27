@@ -756,6 +756,8 @@
   "category_loadMore": "Load More Items",
   "category_searchPlaceholder": "Search in category...",
   "category_clearAll": "Clear all",
+  "category_filters": "Filters",
+  "category_categories": "Categories",
   "ui_scroll": "Scroll",
   "onboarding_tutorial_welcomeTitle": "Welcome to Driplo! 👋",
   "onboarding_tutorial_welcomeContent": "Everything is ready! Let us show you how to make the most of our marketplace.",

@@ -67,7 +67,6 @@ export class TransactionService {
 
 			return { transaction, error: null };
 		} catch (error) {
-			console.error('Error creating transaction:', error);
 			return { transaction: null, error: error as Error };
 		}
 	}

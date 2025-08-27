@@ -11,9 +11,8 @@
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "check": "turbo run check",
-    "db:types": "supabase gen types typescript --linked > packages/database/src/generated.ts",
-    "db:types:local": "supabase gen types typescript --local > packages/database/src/generated.ts",
-    "postinstall": "pnpm db:types || echo 'Warning: Could not generate database types. Supabase may not be configured.'"
+    "db:types": "npx supabase gen types typescript --project-id koowfhsaqmarfdkwsfiz > packages/database/src/generated.ts",
+    "db:types:local": "npx supabase gen types typescript --local > packages/database/src/generated.ts"
   },
   "devDependencies": {
     "prettier": "^3.6.0",

@@ -17899,6 +17899,54 @@ export const category_clearAll = (params = {}, options = {}) => {
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const category_filters = (params = {}, options = {}) => {
+	return {
+		bg: bg.category_filters,
+		en: en.category_filters,
+		ru: ru.category_filters,
+		ua: ua.category_filters
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_categories = (params = {}, options = {}) => {
+	return {
+		bg: bg.category_categories,
+		en: en.category_categories,
+		ru: ru.category_categories,
+		ua: ua.category_categories
+	}[options.languageTag ?? languageTag()]()
+}
+
+
+
+/**
+ * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
+ *
+ * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
+ *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
+ * 
+ * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
+ * 
+ * @param {{}} params
+ * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const ui_scroll = (params = {}, options = {}) => {
 	return {
 		bg: bg.ui_scroll,
@@ -27793,54 +27841,6 @@ export const category_kids_title = (params = {}, options = {}) => {
 		en: en.category_kids_title,
 		ru: ru.category_kids_title,
 		ua: ua.category_kids_title
-	}[options.languageTag ?? languageTag()]()
-}
-
-
-
-/**
- * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
- *
- * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
- *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
- * 
- * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
- * 
- * @param {{}} params
- * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const category_categories = (params = {}, options = {}) => {
-	return {
-		bg: bg.category_categories,
-		en: en.category_categories,
-		ru: ru.category_categories,
-		ua: ua.category_categories
-	}[options.languageTag ?? languageTag()]()
-}
-
-
-
-/**
- * This message has been compiled by [inlang paraglide](https://inlang.com/m/gerre34r/library-inlang-paraglideJs).
- *
- * - Don't edit the message's code. Use [Sherlock (VS Code extension)](https://inlang.com/m/r7kp499g/app-inlang-ideExtension),
- *   the [web editor](https://inlang.com/m/tdozzpar/app-inlang-finkLocalizationEditor) instead, or edit the translation files manually.
- * 
- * - The params are NonNullable<unknown> because the inlang SDK does not provide information on the type of a param (yet).
- * 
- * @param {{}} params
- * @param {{ languageTag?: "en" | "bg" | "ru" | "ua" }} options
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const category_filters = (params = {}, options = {}) => {
-	return {
-		bg: bg.category_filters,
-		en: en.category_filters,
-		ru: ru.category_filters,
-		ua: ua.category_filters
 	}[options.languageTag ?? languageTag()]()
 }
 

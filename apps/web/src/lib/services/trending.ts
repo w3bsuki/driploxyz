@@ -72,7 +72,6 @@ export async function getTrendingData(supabase: SupabaseClient): Promise<Trendin
       }))
     };
   } catch (error) {
-    console.error('Error fetching trending data:', error);
     // Return fallback data if queries fail
     return {
       searches: [] as TrendingSearch[],
@@ -101,7 +100,6 @@ export async function getTrendingSearches(supabase: SupabaseClient): Promise<str
     // Final fallback: category-based suggestions
     return ['Vintage Jackets', 'Designer Bags', 'Y2K Jeans'];
   } catch (error) {
-    console.error('Error fetching trending searches:', error);
     return ['Vintage Jackets', 'Designer Bags', 'Y2K Jeans'];
   }
 }

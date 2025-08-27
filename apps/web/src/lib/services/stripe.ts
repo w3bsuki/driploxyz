@@ -319,12 +319,6 @@ export class StripeService {
 					}
 				});
 
-			console.log('[Stripe] Created one-time payment for account upgrade:', {
-				paymentIntentId: paymentIntent.id,
-				amount: amountInCents,
-				planType: plan.plan_type,
-				userId
-			});
 
 			// Return immediately with client secret - no bullshit!
 			return {
@@ -482,10 +476,6 @@ export class StripeService {
 				})
 				.eq('stripe_payment_intent_id', paymentIntent.id);
 
-			console.log('[Webhook] Account upgrade completed:', {
-				userId: metadata.user_id,
-				planType: metadata.plan_type
-			});
 		} else if (metadata.product_id) {
 			// Handle product purchase
 			await this.handleProductPurchaseSuccess(paymentIntent);

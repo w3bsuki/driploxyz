@@ -40,7 +40,7 @@
   const sizeClasses = {
     sm: 'px-3 py-1.5 text-sm min-h-[32px]',    // Compact for dense UI
     md: 'px-4 py-2 text-sm min-h-[36px]',      // Standard - most buttons
-    lg: 'px-5 py-2.5 text-base min-h-[40px]'   // Primary CTAs (buy, sell)
+    lg: 'px-5 py-3 text-base min-h-[44px]'     // Primary CTAs (buy, sell) - MOBILE FIRST
   };
 
   const classes = $derived(`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${loading ? 'pointer-events-none opacity-70' : ''} ${className}`);

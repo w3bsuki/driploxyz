@@ -60,7 +60,6 @@ export class ProductService {
         .single();
 
       if (error) {
-        console.error('Error fetching product:', error);
         return { data: null, error: error.message };
       }
 
@@ -83,7 +82,6 @@ export class ProductService {
 
       return { data: product, error: null };
     } catch (error) {
-      console.error('Error in getProduct:', error);
       return { data: null, error: 'Failed to fetch product' };
     }
   }
@@ -180,7 +178,6 @@ export class ProductService {
       const { data, error, count } = await query;
 
       if (error) {
-        console.error('Error fetching products:', error);
         return { data: [], error: error.message };
       }
 
@@ -195,7 +192,6 @@ export class ProductService {
 
       return { data: products, error: null, total: count || 0 };
     } catch (error) {
-      console.error('Error in getProducts:', error);
       return { data: [], error: 'Failed to fetch products' };
     }
   }
@@ -215,7 +211,6 @@ export class ProductService {
         .single();
 
       if (error) {
-        console.error('Error creating product:', error);
         return { data: null, error: error.message };
       }
 
@@ -226,7 +221,6 @@ export class ProductService {
 
       return { data, error: null };
     } catch (error) {
-      console.error('Error in createProduct:', error);
       return { data: null, error: 'Failed to create product' };
     }
   }
@@ -249,13 +243,11 @@ export class ProductService {
         .single();
 
       if (error) {
-        console.error('Error updating product:', error);
         return { data: null, error: error.message };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Error in updateProduct:', error);
       return { data: null, error: 'Failed to update product' };
     }
   }
@@ -288,7 +280,6 @@ export class ProductService {
         .limit(limit);
 
       if (manualError) {
-        console.error('Manual promoted products error:', manualError);
         throw new Error('Failed to fetch promoted products');
       }
 
@@ -327,7 +318,6 @@ export class ProductService {
           .limit(remainingLimit);
 
         if (newestError) {
-          console.error('Newest products error:', newestError);
         } else {
           // Add newest products that aren't already in promoted list
           const promotedIds = new Set(limitedProducts.map((p: any) => p.id));
@@ -351,7 +341,6 @@ export class ProductService {
 
       return { data: products, error: null };
     } catch (error) {
-      console.error('Error in getPromotedProducts:', error);
       return { data: [], error: 'Failed to fetch promoted products' };
     }
   }
@@ -368,13 +357,11 @@ export class ProductService {
         .eq('seller_id', userId);
 
       if (error) {
-        console.error('Error deleting product:', error);
         return { error: error.message };
       }
 
       return { error: null };
     } catch (error) {
-      console.error('Error in deleteProduct:', error);
       return { error: 'Failed to delete product' };
     }
   }
@@ -395,13 +382,11 @@ export class ProductService {
         .insert(images);
 
       if (error) {
-        console.error('Error adding product images:', error);
         return { error: error.message };
       }
 
       return { error: null };
     } catch (error) {
-      console.error('Error in addProductImages:', error);
       return { error: 'Failed to add product images' };
     }
   }
@@ -418,13 +403,11 @@ export class ProductService {
         .in('id', imageIds);
 
       if (error) {
-        console.error('Error removing product images:', error);
         return { error: error.message };
       }
 
       return { error: null };
     } catch (error) {
-      console.error('Error in removeProductImages:', error);
       return { error: 'Failed to remove product images' };
     }
   }
@@ -436,7 +419,6 @@ export class ProductService {
     try {
       await this.supabase.rpc('increment_product_view', { product_id: id });
     } catch (error) {
-      console.error('Error incrementing view count:', error);
     }
   }
 
@@ -474,7 +456,6 @@ export class ProductService {
       });
 
       if (error) {
-        console.error('Error searching products:', error);
         return { data: [], error: error.message };
       }
 
@@ -489,7 +470,6 @@ export class ProductService {
 
       return { data: products, error: null };
     } catch (error) {
-      console.error('Error in searchProducts:', error);
       return { data: [], error: 'Failed to search products' };
     }
   }

@@ -13,18 +13,15 @@
   
   let { data }: Props = $props();
   
-  // Debug: log what we're receiving
-  $effect(() => {
-    console.log('Category page data:', data);
-  });
 
-  // Translation mapping for category names
+  // Translate category name using proper i18n
   function translateCategoryName(name: string): string {
+    // Try to get translation from i18n functions
     const translations: Record<string, string> = {
-      'Women': i18n.category_women_title(),
-      'Men': i18n.category_men_title(),
-      'Kids': i18n.category_kids_title(),
-      'Unisex': 'Унисекс'
+      'Women': i18n.category_women(),
+      'Men': i18n.category_men(),
+      'Kids': i18n.category_kids(),
+      'Unisex': i18n.category_unisex()
     };
     return translations[name] || name;
   }
@@ -321,28 +318,32 @@
         </div>
       </div>
 
-      <!-- Category Pills -->
+      <!-- Category Pills with Product Counts -->
       {#if subcategories.length > 0}
         <div class="flex justify-center">
           <div class="flex overflow-x-auto scrollbar-hide space-x-2 px-4">
             <button
-              onclick={() => selectedSubcategory = null}
-              class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors
-                {selectedSubcategory === null 
+              onclick={() => goto(`/category/${categorySlug}`)}
+              class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors flex items-center gap-2
+                {!selectedSubcategory 
                   ? 'bg-gray-900 text-white' 
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
             >
-              {i18n.category_all()}
+              <span>{i18n.category_all()}</span>
+              <span class="text-xs opacity-75">({products.length})</span>
             </button>
-            {#each subcategories as subcat}
+            {#each subcategories.filter(s => s.productCount > 0) as subcat}
               <button
-                onclick={() => selectedSubcategory = subcat.id}
-                class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors
+                onclick={() => goto(`/category/${subcat.slug}`)}
+                class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors flex items-center gap-2
                   {selectedSubcategory === subcat.id
                     ? 'bg-gray-900 text-white' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
               >
-                {translateSubcategoryName(subcat.name)}
+                <span>{translateSubcategoryName(subcat.name)}</span>
+                {#if subcat.productCount > 0}
+                  <span class="text-xs opacity-75">({subcat.productCount})</span>
+                {/if}
               </button>
             {/each}
           </div>
@@ -508,8 +509,8 @@
     <div class="fixed bottom-16 left-0 right-0 bg-white rounded-t-2xl h-[calc(90vh-4rem)] flex flex-col shadow-2xl">
       <!-- Header -->
       <div class="flex justify-between items-center p-4 border-b border-gray-100">
-        <h2 class="text-lg font-semibold">Filters</h2>
-        <button onclick={() => showFilters = false} class="p-1">
+        <h2 class="text-lg font-semibold">{i18n.category_filters()}</h2>
+        <button onclick={() => showFilters = false} class="p-1" aria-label="Close filters">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -520,7 +521,7 @@
       <div class="flex-1 overflow-y-auto p-4 space-y-6">
         <!-- Sizes -->
         <div>
-          <h4 class="font-medium text-sm mb-3">Size</h4>
+          <h4 class="font-medium text-sm mb-3">{i18n.filter_size()}</h4>
           <div class="grid grid-cols-3 gap-2">
             {#each sizes as size}
               <button
@@ -538,7 +539,7 @@
         
         <!-- Condition -->
         <div>
-          <h4 class="font-medium text-sm mb-3">Condition</h4>
+          <h4 class="font-medium text-sm mb-3">{i18n.filter_condition()}</h4>
           <div class="space-y-2">
             {#each conditions as condition}
               <button
@@ -556,19 +557,19 @@
         
         <!-- Price Range -->
         <div>
-          <h4 class="font-medium text-sm mb-3">Price Range</h4>
+          <h4 class="font-medium text-sm mb-3">{i18n.filter_priceRange()}</h4>
           <div class="flex items-center space-x-2">
             <input 
               type="number" 
               bind:value={priceRange.min}
-              placeholder="Min"
+              placeholder={i18n.search_min()}
               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
             />
             <span class="text-gray-500">-</span>
             <input 
               type="number" 
               bind:value={priceRange.max}
-              placeholder="Max"
+              placeholder={i18n.search_max()}
               class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
             />
           </div>
@@ -577,8 +578,8 @@
       
       <!-- Footer Actions -->
       <div class="flex space-x-3 p-4 border-t border-gray-100">
-        <Button onclick={clearFilters} variant="outline" class="flex-1">Clear All</Button>
-        <Button onclick={() => showFilters = false} class="flex-1">Apply Filters</Button>
+        <Button onclick={clearFilters} variant="outline" class="flex-1">{i18n.category_clearAll()}</Button>
+        <Button onclick={() => showFilters = false} class="flex-1">{i18n.filter_apply()}</Button>
       </div>
     </div>
   </div>

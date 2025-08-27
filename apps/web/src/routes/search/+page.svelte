@@ -602,13 +602,18 @@
         {/each}
       </div>
       
-      <!-- Level 2: WHAT TYPE (Product Categories) - Shows when Level 1 selected -->
+      <!-- Level 2: WHAT TYPE (Product Categories) - Shows when Level 1 selected OR as quick access -->
       {#if selectedLevel1 && perfectUXHierarchy.level2[selectedLevel1]}
         <div class="flex overflow-x-auto scrollbar-hide gap-2 mb-3">
           <button
-            onclick={() => {
+            onclick={async () => {
               selectedLevel2 = null;
               selectedLevel3 = null;
+              // Navigate to show all products in this Level 1 category
+              const url = new URL('/search', window.location.origin);
+              if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+              url.searchParams.set('category', selectedLevel1);
+              await goto(url.pathname + url.search);
             }}
             class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
               {selectedLevel2 === null 
@@ -623,6 +628,11 @@
                 if (selectedLevel2 === level2Item.key) {
                   selectedLevel2 = null;
                   selectedLevel3 = null;
+                  // Navigate back to just Level 1
+                  const url = new URL('/search', window.location.origin);
+                  if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+                  url.searchParams.set('category', selectedLevel1);
+                  await goto(url.pathname + url.search);
                 } else {
                   selectedLevel2 = level2Item.key;
                   selectedLevel3 = null;
@@ -643,6 +653,66 @@
               <span>{level2Item.name}</span>
             </button>
           {/each}
+        </div>
+      {:else if !selectedLevel1}
+        <!-- Quick access to major categories when no Level 1 is selected -->
+        <div class="flex overflow-x-auto scrollbar-hide gap-2 mb-3">
+          <button
+            onclick={async () => {
+              // Show ALL Accessories across all genders
+              const url = new URL('/search', window.location.origin);
+              if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+              url.searchParams.set('category', 'accessories');
+              await goto(url.pathname + url.search);
+            }}
+            class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
+              bg-white text-gray-600 border border-gray-300 hover:border-gray-400"
+          >
+            <span class="text-sm">💍</span>
+            <span>Accessories</span>
+          </button>
+          <button
+            onclick={async () => {
+              // Show ALL Clothing across all genders
+              const url = new URL('/search', window.location.origin);
+              if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+              url.searchParams.set('category', 'clothing');
+              await goto(url.pathname + url.search);
+            }}
+            class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
+              bg-white text-gray-600 border border-gray-300 hover:border-gray-400"
+          >
+            <span class="text-sm">👔</span>
+            <span>Clothing</span>
+          </button>
+          <button
+            onclick={async () => {
+              // Show ALL Shoes across all genders
+              const url = new URL('/search', window.location.origin);
+              if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+              url.searchParams.set('category', 'shoes');
+              await goto(url.pathname + url.search);
+            }}
+            class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
+              bg-white text-gray-600 border border-gray-300 hover:border-gray-400"
+          >
+            <span class="text-sm">👟</span>
+            <span>Shoes</span>
+          </button>
+          <button
+            onclick={async () => {
+              // Show ALL Bags across all genders
+              const url = new URL('/search', window.location.origin);
+              if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+              url.searchParams.set('category', 'bags');
+              await goto(url.pathname + url.search);
+            }}
+            class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
+              bg-white text-gray-600 border border-gray-300 hover:border-gray-400"
+          >
+            <span class="text-sm">👜</span>
+            <span>Bags</span>
+          </button>
         </div>
       {/if}
       
@@ -1024,15 +1094,31 @@
             </button>
           </span>
         {/if}
-        {#if selectedSubcategory}
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
-            {selectedSubcategory}
-            <button onclick={() => selectedSubcategory = null} class="ml-2" aria-label="Remove subcategory filter">
+        {#if selectedLevel2 && selectedLevel1 && perfectUXHierarchy.level2[selectedLevel1]}
+          {@const level2Item = perfectUXHierarchy.level2[selectedLevel1].find(item => item.key === selectedLevel2)}
+          {#if level2Item}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
+              {level2Item.name}
+              <button onclick={() => { selectedLevel2 = null; selectedSubcategory = null; }} class="ml-2" aria-label="Remove subcategory filter">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
               </svg>
             </button>
-          </span>
+            </span>
+          {/if}
+        {/if}
+        {#if selectedLevel3 && selectedLevel1 && selectedLevel2 && perfectUXHierarchy.level3[`${selectedLevel1}-${selectedLevel2}`]}
+          {@const level3Item = perfectUXHierarchy.level3[`${selectedLevel1}-${selectedLevel2}`].find(item => item.key === selectedLevel3)}
+          {#if level3Item}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
+              {level3Item.name}
+              <button onclick={() => { selectedLevel3 = null; }} class="ml-2" aria-label="Remove specific filter">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+            </span>
+          {/if}
         {/if}
         {#if selectedSize !== 'all'}
           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">

@@ -5975,6 +5975,22 @@ export const category_clearAll = () => `Clear all`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
+export const category_filters = () => `Filters`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const category_categories = () => `Categories`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
 export const ui_scroll = () => `Scroll`
 
 
@@ -9272,22 +9288,6 @@ export const category_men_title = () => "category_men_title"
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const category_kids_title = () => "category_kids_title"
-
-
-/**
- * Failed to resolve message category_categories for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const category_categories = () => "category_categories"
-
-
-/**
- * Failed to resolve message category_filters for languageTag "en". 
- * @returns {string}
- */
-/* @__NO_SIDE_EFFECTS__ */
-export const category_filters = () => "category_filters"
 
 
 /**

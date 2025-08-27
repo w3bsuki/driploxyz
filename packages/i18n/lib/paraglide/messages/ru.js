@@ -5946,6 +5946,10 @@ export const category_searchPlaceholder = () => `Искать в категор�
 export const category_clearAll = () => `Очистить все`
 
 
+export { category_filters } from "./en.js"
+
+export { category_categories } from "./en.js"
+
 /**
  * 
  * @returns {string}
@@ -8889,10 +8893,6 @@ export { category_women_title } from "./en.js"
 export { category_men_title } from "./en.js"
 
 export { category_kids_title } from "./en.js"
-
-export { category_categories } from "./en.js"
-
-export { category_filters } from "./en.js"
 
 export { subcategory_shirtsBBousesr } from "./en.js"
 

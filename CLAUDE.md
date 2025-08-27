@@ -18,10 +18,19 @@
 
 ## 📱 **MOBILE-FIRST RULES**
 
-### Touch Targets
+### Touch Targets (STANDARDIZED)
 ```css
-Primary actions: 44px (11 * 4px grid)
-Secondary actions: 36px minimum
+/* Use these exact classes for consistency */
+Primary CTAs: min-h-[44px] (Buy, Sell, Checkout)
+Standard buttons: min-h-[36px] (Category pills, filters)  
+Compact UI: min-h-[32px] (Tags, chips in dense lists)
+Icon buttons: w-10 h-10 (40px for icons)
+
+/* Button component sizes map to: */
+size="lg": min-h-[44px] - Primary CTAs
+size="md": min-h-[36px] - Standard actions  
+size="sm": min-h-[32px] - Compact/secondary
+
 Spacing between: 8px minimum
 ```
 

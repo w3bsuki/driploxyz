@@ -2,6 +2,93 @@ import type { PageServerLoad } from './$types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 
+/**
+ * Get all descendant category IDs using a recursive CTE
+ * This replaces multiple database queries with a single efficient query
+ */
+async function getCategoryDescendants(
+  supabase: SupabaseClient<Database>,
+  rootCategoryId: string
+): Promise<string[]> {
+  try {
+    const { data, error } = await supabase.rpc('get_category_descendants', {
+      root_category_id: rootCategoryId
+    });
+    
+    if (error) {
+      console.error('Error getting category descendants, using fallback:', error);
+      return await getCategoryDescendantsFallback(supabase, rootCategoryId);
+    }
+    
+    return data?.map((row: { id: string }) => row.id) || [rootCategoryId];
+  } catch (fallbackError) {
+    console.error('Database function not available, using fallback approach');
+    return await getCategoryDescendantsFallback(supabase, rootCategoryId);
+  }
+}
+
+/**
+ * Fallback approach for getting category descendants - more efficient than original
+ * Uses fewer queries by batching level lookups
+ */
+async function getCategoryDescendantsFallback(
+  supabase: SupabaseClient<Database>,
+  rootCategoryId: string
+): Promise<string[]> {
+  const categoryIds = [rootCategoryId];
+  
+  // Get Level 2 children
+  const { data: level2 } = await supabase
+    .from('categories')
+    .select('id')
+    .eq('parent_id', rootCategoryId)
+    .eq('is_active', true);
+  
+  if (level2 && level2.length > 0) {
+    const level2Ids = level2.map(c => c.id);
+    categoryIds.push(...level2Ids);
+    
+    // Get Level 3 children in one query
+    const { data: level3 } = await supabase
+      .from('categories')
+      .select('id')
+      .in('parent_id', level2Ids)
+      .eq('is_active', true);
+    
+    if (level3 && level3.length > 0) {
+      categoryIds.push(...level3.map(c => c.id));
+    }
+  }
+  
+  return categoryIds;
+}
+
+/**
+ * Find category by slug or name with efficient single query
+ */
+async function findCategoryBySlugOrName(
+  supabase: SupabaseClient<Database>,
+  slugOrName: string,
+  level?: number,
+  parentId?: string
+): Promise<{ id: string; name: string; slug: string } | null> {
+  let query = supabase
+    .from('categories')
+    .select('id, name, slug')
+    .or(`slug.eq.${slugOrName},name.ilike.${slugOrName}`);
+  
+  if (level) {
+    query = query.eq('level', level);
+  }
+  
+  if (parentId) {
+    query = query.eq('parent_id', parentId);
+  }
+  
+  const { data, error } = await query.single();
+  return error ? null : data;
+}
+
 export const load: PageServerLoad = async ({ url, locals }) => {
   const country = locals.country || 'BG';
   const query = url.searchParams.get('q') || '';
@@ -9,7 +96,6 @@ export const load: PageServerLoad = async ({ url, locals }) => {
   const subcategorySlug = url.searchParams.get('subcategory') || '';
   const specificSlug = url.searchParams.get('specific') || '';
   
-  console.log('Search params:', { categorySlug, subcategorySlug, specificSlug, query });
   const minPrice = url.searchParams.get('min_price');
   const maxPrice = url.searchParams.get('max_price');
   const condition = url.searchParams.get('condition');
@@ -19,104 +105,71 @@ export const load: PageServerLoad = async ({ url, locals }) => {
   const onSale = url.searchParams.get('on_sale') === 'true';
   const freeShipping = url.searchParams.get('free_shipping') === 'true';
 
-  // Show all products by default if no search criteria
-
   try {
-    // First, get category IDs from slugs if provided
+    // Initialize category filtering - single efficient approach
     let categoryIds: string[] = [];
-    let mainCategoryId: string | null = null;
-    let subcategoryId: string | null = null;
+    let targetCategory: { id: string; name: string; slug: string } | null = null;
 
     if (categorySlug) {
       // Map common category slugs to their names for filtering
       const categoryMap: Record<string, string> = {
         'women': 'Women',
-        'men': 'Men',
+        'men': 'Men', 
         'kids': 'Kids',
         'unisex': 'Unisex'
       };
 
       const categoryName = categoryMap[categorySlug] || categorySlug;
       
-      // Check if this is a special Level 2 category request (accessories, shoes, bags)
-      if (['accessories', 'shoes', 'bags'].includes(categorySlug.toLowerCase())) {
+      // Check if this is a special Level 2 category request (accessories, shoes, bags, clothing)
+      if (['accessories', 'shoes', 'bags', 'clothing'].includes(categorySlug.toLowerCase())) {
         const categoryNameMap: Record<string, string> = {
           'accessories': 'Accessories',
-          'shoes': 'Shoes', 
-          'bags': 'Bags'
+          'shoes': 'Shoes',
+          'bags': 'Bags', 
+          'clothing': 'Clothing'
         };
         
         const targetCategoryName = categoryNameMap[categorySlug.toLowerCase()];
         
-        // Get all Level 2 categories with this name across all Level 1 parents
-        const { data: level2Cats } = await locals.supabase
+        // Get all Level 2 categories with this name efficiently
+        const { data: level2Categories } = await locals.supabase
           .from('categories')
           .select('id')
           .eq('name', targetCategoryName)
-          .eq('level', 2);
+          .eq('level', 2)
+          .eq('is_active', true);
         
-        if (level2Cats && level2Cats.length > 0) {
-          // Get all Level 3 categories under these Level 2 categories
-          const { data: level3Cats } = await locals.supabase
+        if (level2Categories && level2Categories.length > 0) {
+          const level2Ids = level2Categories.map(c => c.id);
+          
+          // Get all their descendants in one batch query
+          const { data: level3Categories } = await locals.supabase
             .from('categories')
             .select('id')
-            .in('parent_id', level2Cats.map(c => c.id))
-            .eq('level', 3);
+            .in('parent_id', level2Ids)
+            .eq('level', 3)
+            .eq('is_active', true);
           
-          if (level3Cats && level3Cats.length > 0) {
-            categoryIds = level3Cats.map(c => c.id);
-            console.log(`Found ${categoryIds.length} Level 3 categories for ${targetCategoryName}:`, categoryIds);
+          // Include both Level 2 and Level 3 categories
+          categoryIds = [...level2Ids];
+          if (level3Categories && level3Categories.length > 0) {
+            categoryIds.push(...level3Categories.map(c => c.id));
           }
         }
       } else {
-        // Get main category ID (Level 1 - Men/Women/Kids/Unisex)
-        const { data: mainCat } = await locals.supabase
-          .from('categories')
-          .select('id, name')
-          .or(`slug.eq.${categorySlug},name.ilike.${categoryName}`)
-          .eq('level', 1)  // Only get level 1 categories
-          .single();
+        // Find the main category (Level 1) efficiently
+        targetCategory = await findCategoryBySlugOrName(locals.supabase, categoryName, 1);
         
-        if (mainCat) {
-          mainCategoryId = mainCat.id;
-          console.log(`Found Level 1 category: ${mainCat.name} (${mainCat.id})`);
-          
-          // Get all Level 2 categories (Clothing, Shoes, etc) under this Level 1
-          const { data: level2Cats } = await locals.supabase
-            .from('categories')
-            .select('id, name')
-            .eq('parent_id', mainCategoryId)
-            .eq('level', 2);
-          
-          if (level2Cats && level2Cats.length > 0) {
-            console.log(`Found ${level2Cats.length} Level 2 categories:`, level2Cats.map(c => c.name));
-            
-            // Get all Level 3 categories (actual product categories) under these Level 2
-            const { data: level3Cats } = await locals.supabase
-              .from('categories')
-              .select('id, name')
-              .in('parent_id', level2Cats.map(c => c.id))
-              .eq('level', 3);
-            
-            if (level3Cats && level3Cats.length > 0) {
-              // Only include Level 3 category IDs for filtering products
-              categoryIds = level3Cats.map(c => c.id);
-              console.log(`Found ${categoryIds.length} Level 3 categories for filtering:`, level3Cats.map(c => c.name));
-            } else {
-              console.log('No Level 3 categories found under Level 2 categories');
-            }
-          } else {
-            console.log('No Level 2 categories found under Level 1 category');
-          }
+        if (targetCategory) {
+          // Get all descendants of this category using recursive CTE
+          categoryIds = await getCategoryDescendants(locals.supabase, targetCategory.id);
         }
       }
     }
 
-    // Handle Level 2 category selection (e.g., "accessories" under "women")
-    if (subcategorySlug && mainCategoryId) {
-      console.log(`Looking for subcategory: ${subcategorySlug} under main category ${mainCategoryId}`);
-      
-      // Map subcategory slugs to names
+    // Handle subcategory filtering - more efficient approach
+    if (subcategorySlug && targetCategory) {
       const subcategoryMap: Record<string, string> = {
         'clothing': 'Clothing',
         'shoes': 'Shoes',
@@ -127,41 +180,23 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       const subcategoryName = subcategoryMap[subcategorySlug] || subcategorySlug;
       
       // Find the Level 2 category under the selected Level 1
-      const { data: level2Cat } = await locals.supabase
-        .from('categories')
-        .select('id, name')
-        .eq('parent_id', mainCategoryId)
-        .ilike('name', subcategoryName)
-        .eq('level', 2)
-        .single();
+      const subcategory = await findCategoryBySlugOrName(
+        locals.supabase, 
+        subcategoryName, 
+        2, 
+        targetCategory.id
+      );
       
-      if (level2Cat) {
-        console.log(`Found Level 2 category: ${level2Cat.name} (${level2Cat.id})`);
-        // Replace categoryIds with only Level 3 categories under this specific Level 2
-        const { data: level3Cats } = await locals.supabase
-          .from('categories')
-          .select('id, name')
-          .eq('parent_id', level2Cat.id)
-          .eq('level', 3);
-        
-        if (level3Cats && level3Cats.length > 0) {
-          // IMPORTANT: Replace the categoryIds to narrow down to this Level 2's children only
-          categoryIds = level3Cats.map(c => c.id);
-          console.log(`Narrowed to ${categoryIds.length} Level 3 categories under ${level2Cat.name}:`, level3Cats.map(c => c.name));
-        } else {
-          // No Level 3 categories found - clear the filter
-          categoryIds = [];
-          console.log(`No Level 3 categories found under ${level2Cat.name}`);
-        }
+      if (subcategory) {
+        // Get all descendants of this subcategory
+        categoryIds = await getCategoryDescendants(locals.supabase, subcategory.id);
       }
     }
     
-    // Handle specific Level 3 category selection
+    // Handle specific category filtering - efficient single query
     if (specificSlug && categoryIds.length > 0) {
-      console.log(`Looking for specific Level 3 category: ${specificSlug}`);
-      
-      // Find the specific Level 3 category from our already filtered categoryIds
-      const { data: specificCat } = await locals.supabase
+      // Find the specific category from our filtered set
+      const { data: specificCategory } = await locals.supabase
         .from('categories')
         .select('id, name')
         .ilike('name', `%${specificSlug}%`)
@@ -169,13 +204,12 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         .eq('level', 3)
         .single();
       
-      if (specificCat) {
-        console.log(`Found specific Level 3 category: ${specificCat.name} (${specificCat.id})`);
-        categoryIds = [specificCat.id];
+      if (specificCategory) {
+        categoryIds = [specificCategory.id];
       }
     }
 
-    // Build the products query with search
+    // Build optimized products query
     let productsQuery = locals.supabase
       .from('products')
       .select(`
@@ -209,12 +243,15 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       .eq('is_active', true)
       .eq('country_code', country);
 
-    // Apply category filter if we have category IDs
+    // Apply category filter efficiently - use index-friendly approach
     if (categoryIds.length > 0) {
-      console.log(`Filtering products by ${categoryIds.length} category IDs:`, categoryIds);
-      productsQuery = productsQuery.in('category_id', categoryIds);
-    } else {
-      console.log('No category filter applied - showing all products');
+      if (categoryIds.length === 1) {
+        // Single category - most efficient
+        productsQuery = productsQuery.eq('category_id', categoryIds[0]);
+      } else {
+        // Multiple categories - still efficient with proper index
+        productsQuery = productsQuery.in('category_id', categoryIds);
+      }
     }
 
     // Apply search if query exists
@@ -269,10 +306,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
     const { data: products, error: productsError } = await productsQuery;
     
-    console.log(`Query returned ${products?.length || 0} products`);
 
     if (productsError) {
-      console.error('Search error:', productsError);
       return {
         products: [],
         categories: [],
@@ -294,11 +329,13 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       };
     }
 
-    // Fetch all categories with hierarchy for navigation - ONLY Level 1 categories for pills
+    // Fetch categories efficiently - use single query with proper ordering
     const { data: allCategories } = await locals.supabase
       .from('categories')
       .select('id, name, slug, parent_id, level')
+      .eq('is_active', true)
       .order('level', { ascending: true })
+      .order('sort_order', { ascending: true, nullsLast: true })
       .order('name');
 
     // Get only Level 1 categories for the main pills
@@ -438,7 +475,6 @@ export const load: PageServerLoad = async ({ url, locals }) => {
     };
 
   } catch (error) {
-    console.error('Search error:', error);
     return {
       products: [],
       categories: [],

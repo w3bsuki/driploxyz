@@ -52,14 +52,12 @@
   onMount(async () => {
     if (!browser) return;
     
-    console.log('[COOKIE CONSENT] Initializing...');
     
     consentManager = ProductionCookieManager.getInstance();
     localeManager = ProductionLocaleManager.getInstance();
     
     // Check existing consent
     const existingConsent = consentManager.getConsent();
-    console.log('[COOKIE CONSENT] Existing consent:', existingConsent);
     
     if (existingConsent) {
       hasExistingConsent = true;
@@ -73,12 +71,10 @@
       // Check if consent needs renewal (365 days)
       const age = Date.now() - existingConsent.timestamp;
       if (age > 365 * 24 * 60 * 60 * 1000) {
-        console.log('[COOKIE CONSENT] Consent expired, showing banner');
         showBanner = true;
       }
     } else {
       // First visit - detect location for language suggestion
-      console.log('[COOKIE CONSENT] First visit, detecting location...');
       await detectLocation();
       showBanner = true;
       showLanguageSelector = true;
@@ -86,12 +82,10 @@
     
     // Get current locale
     const currentLocale = localeManager.getLocale();
-    console.log('[COOKIE CONSENT] Current locale:', currentLocale);
     selectedLocale = currentLocale;
     
     // Listen for requests to show cookie consent (e.g., for language switching)
     const handleCookieConsentRequest = (event: CustomEvent) => {
-      console.log('[COOKIE CONSENT] Request received:', event.detail);
       
       // Check if there's a pending language switch
       const pendingLang = sessionStorage.getItem('pendingLanguageSwitch');
@@ -120,7 +114,6 @@
       
       // Set the detected country name
       detectedCountryName = countryNames[detectedCountry] || data.country_name || detectedCountry;
-      console.log('[LOCATION] Detected country:', detectedCountry, detectedCountryName);
       
       // Map country to language
       const countryToLang: Record<string, string> = {
@@ -139,11 +132,9 @@
       if (detectedCountry === 'GB' || detectedCountry === 'UK') {
         // Set country cookie to GB for UK visitors
         document.cookie = `country=GB; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
-        console.log('[LOCATION] Set country cookie to GB for UK visitor');
       } else if (detectedCountry === 'BG') {
         // Set country cookie to BG for Bulgarian visitors
         document.cookie = `country=BG; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
-        console.log('[LOCATION] Set country cookie to BG for Bulgarian visitor');
       }
       
       // Also check for existing country cookie to sync region
@@ -153,10 +144,8 @@
         ?.split('=')[1];
       
       if (countryCookie && countryCookie !== detectedCountry) {
-        console.log('[LOCATION] Cookie country differs:', countryCookie, 'vs detected:', detectedCountry);
       }
     } catch (error) {
-      console.error('[LOCATION] Failed to detect location:', error);
       // Fallback to browser language
       const browserLang = navigator.language.split('-')[0].toLowerCase();
       if (languages.find(l => l.code === browserLang)) {
@@ -180,7 +169,6 @@
     // Save language preference if language selector was shown or there's a pending switch
     if (showLanguageSelector && selectedLocale || pendingLang) {
       const targetLang = pendingLang || selectedLocale;
-      console.log('[COOKIE CONSENT] Setting language to:', targetLang);
       try {
         // Simple approach: Set cookie and refresh
         document.cookie = `locale=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
@@ -198,7 +186,6 @@
         }, 100);
         
       } catch (e) {
-        console.error('[COOKIE CONSENT] Failed to set language:', e);
         // Fallback: Set the locale cookie directly
         document.cookie = `locale=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
         
@@ -224,7 +211,6 @@
     
     // Note: Language preference cannot be saved without functional cookies
     // But we still close the banner
-    console.log('[COOKIE CONSENT] Essential only - language preference not saved (requires functional cookies)');
     
     showBanner = false;
     showLanguageSelector = false;
@@ -240,7 +226,6 @@
     // Save language if functional cookies enabled
     if (preferences.functional && (showLanguageSelector && selectedLocale || pendingLang)) {
       const targetLang = pendingLang || selectedLocale;
-      console.log('[COOKIE CONSENT] Setting language to:', targetLang);
       try {
         // Use the proper locale manager now that functional cookies are enabled
         await localeManager.setLocale(targetLang, true); // true = skip reload for instant switching
@@ -258,7 +243,6 @@
         showLanguageSelector = false;
         
       } catch (e) {
-        console.error('[COOKIE CONSENT] Failed to set language:', e);
         // Fallback: Set the locale cookie directly
         document.cookie = `locale=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
         
@@ -275,7 +259,6 @@
   }
   
   async function saveLanguage() {
-    console.log('[COOKIE CONSENT] saveLanguage called with locale:', selectedLocale);
     if (selectedLocale) {
       try {
         // Simple approach: Set cookie and refresh
@@ -285,7 +268,6 @@
           window.location.reload();
         }, 100);
       } catch (e) {
-        console.error('[COOKIE CONSENT] Failed to set language:', e);
         // Fallback: Force refresh anyway
         window.location.reload();
       }

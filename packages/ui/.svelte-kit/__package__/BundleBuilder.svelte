@@ -69,19 +69,16 @@
   let error = $state('');
   let showAllProducts = $state(false);
   
-  // Calculate totals (all prices in BGN)
+  // Calculate totals (all prices in BGN) - NO SHIPPING (paid on delivery)
   const itemsTotal = $derived(
     selectedItems.reduce((sum, item) => sum + item.price, 0)
   );
   
-  const shippingCost = 8; // 8 BGN flat shipping
   const serviceFee = $derived(Math.round(itemsTotal * 0.05 * 100) / 100 + 1.40); // 5% + 1.40 BGN
-  const totalAmount = $derived(itemsTotal + shippingCost + serviceFee);
+  const totalAmount = $derived(itemsTotal + serviceFee);
   
-  // Calculate savings (shipping saved on additional items)
-  const savings = $derived(
-    selectedItems.length > 1 ? (selectedItems.length - 1) * shippingCost : 0
-  );
+  // Bundle benefit - save time by receiving all items in one delivery
+  const bundleBenefit = $derived(selectedItems.length > 1);
   
   // Visible products (limited or all)
   const visibleProducts = $derived(
@@ -108,23 +105,32 @@
     try {
       console.log('Fetching products for seller:', sellerId);
       
-      // TEMP: Use mock data while Supabase is having issues
-      // The seller has 25 products but query hangs - using mock for now
-      const mockProducts = [
-        { id: '1', title: 'Vintage Nike Hoodie', price: 35, images: ['/placeholder-product.svg'] },
-        { id: '2', title: 'Adidas Track Pants', price: 25, images: ['/placeholder-product.svg'] },
-        { id: '3', title: 'Champion T-Shirt', price: 15, images: ['/placeholder-product.svg'] },
-        { id: '4', title: 'Puma Sneakers', price: 45, images: ['/placeholder-product.svg'] },
-        { id: '5', title: 'Reebok Classic', price: 55, images: ['/placeholder-product.svg'] },
-        { id: '6', title: 'Nike Air Max', price: 75, images: ['/placeholder-product.svg'] },
-        { id: '7', title: 'Levi\'s Jeans', price: 40, images: ['/placeholder-product.svg'] },
-        { id: '8', title: 'Tommy Hilfiger Polo', price: 30, images: ['/placeholder-product.svg'] }
-      ].filter(p => p.id !== initialItem.id);
-      
-      const data = mockProducts;
-      const fetchError = null;
+      // Fetch real products from Supabase with images
+      const { data, error: fetchError } = await supabaseClient
+        .from('products')
+        .select(`
+          id,
+          title,
+          price,
+          condition,
+          size,
+          brand,
+          seller_id,
+          is_sold,
+          created_at,
+          updated_at,
+          product_images (
+            image_url,
+            sort_order
+          )
+        `)
+        .eq('seller_id', sellerId)
+        .eq('is_sold', false)
+        .neq('id', initialItem.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
         
-      console.log('Using mock data:', { data, dataLength: data?.length });
+      console.log('Supabase response:', { data, dataLength: data?.length, error: fetchError });
       
       if (fetchError) {
         console.error('Supabase fetch error:', fetchError);
@@ -133,21 +139,21 @@
       
       const rawProducts = data || [];
       
-      // Map mock/real data to Product type
+      // Map real data to Product type
       const products: Product[] = rawProducts.map((p: any) => ({
         id: p.id,
         title: p.title,
         price: p.price,
-        currency: 'EUR',
-        images: ['/placeholder-product.svg'], // Mock images for now
+        currency: 'BGN',
+        images: p.product_images?.sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0)).map((img: any) => img.image_url) || ['/placeholder-product.svg'],
         condition: p.condition || 'good',
         seller_id: sellerId,
         category_id: '',
-        size: p.size || 'M',
+        size: p.size || '',
         brand: p.brand || '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        sold: false,
+        created_at: p.created_at,
+        updated_at: p.updated_at,
+        sold: p.is_sold || false,
         favorites_count: 0,
         views_count: 0
       }));
@@ -217,14 +223,14 @@
                 </div>
               {/if}
             </div>
-            <p class="text-xs text-[oklch(40%_0.02_250)]">Купете повече и спестете от доставката</p>
+            <p class="text-xs text-[oklch(40%_0.02_250)]">Купете повече артикули в една доставка</p>
           </div>
         </div>
         
-        {#if savings > 0}
+        {#if bundleBenefit}
           <div class="bg-[oklch(45%_0.15_145)]/10 border border-[oklch(45%_0.15_145)]/20 rounded-lg p-2 flex items-center justify-center">
             <span class="text-sm font-medium text-[oklch(45%_0.15_145)]">
-              💰 Спестявате лв.{savings} от доставка
+              📦 Получете всички артикули в една доставка
             </span>
           </div>
         {/if}
@@ -334,19 +340,12 @@
           <span>лв.{itemsTotal.toFixed(2)}</span>
         </div>
         <div class="flex justify-between text-sm text-[oklch(40%_0.02_250)]">
-          <span>Доставка</span>
-          <span>лв.{shippingCost.toFixed(2)}</span>
-        </div>
-        <div class="flex justify-between text-sm text-[oklch(40%_0.02_250)]">
           <span>Такса услуга</span>
           <span>лв.{serviceFee.toFixed(2)}</span>
         </div>
-        {#if savings > 0}
-          <div class="flex justify-between text-sm font-semibold text-[oklch(45%_0.15_145)]">
-            <span>Спестявате</span>
-            <span>-лв.{savings.toFixed(2)}</span>
-          </div>
-        {/if}
+        <div class="text-xs text-[oklch(60%_0.02_250)] italic">
+          * Доставката се плаща при получаване
+        </div>
         <div class="flex justify-between text-base font-bold text-[oklch(10%_0.02_250)] pt-2 border-t border-[oklch(90%_0.02_250)]">
           <span>Общо</span>
           <span>лв.{totalAmount.toFixed(2)}</span>
@@ -364,7 +363,7 @@
         {#if selectedItems.length === 1}
           Продължи към плащане
         {:else}
-          Плащане за {selectedItems.length} артикула • Спестете лв.{savings}
+          Плащане за {selectedItems.length} артикула
         {/if}
       </Button>
     </div>

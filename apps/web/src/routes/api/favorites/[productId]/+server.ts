@@ -46,11 +46,9 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	}
 	
 	const requestKey = `${session.user.id}:${productId}`;
-	console.log(`[FAVORITE API] User ${session.user.id} requesting favorite toggle for product ${productId}`);
 	
 	// Check if this exact request is already being processed
 	if (processingRequests.has(requestKey)) {
-		console.log(`[FAVORITE API] Duplicate request detected, returning cached promise`);
 		return processingRequests.get(requestKey)!;
 	}
 	
@@ -74,7 +72,6 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					.eq('product_id', productId);
 				
 				if (deleteError) {
-					console.error('Error removing favorite:', deleteError);
 					throw new Error('Failed to remove favorite');
 				}
 				
@@ -85,8 +82,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					.eq('id', productId)
 					.single();
 				
-				console.log(`[FAVORITE API] Removed favorite. New count: ${updatedProduct?.favorite_count || 0}`);
-				
+					
 				return json({ 
 					favorited: false,
 					action: 'removed',
@@ -103,7 +99,6 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					});
 				
 				if (insertError) {
-					console.error('Error adding favorite:', insertError);
 					throw new Error('Failed to add favorite');
 				}
 				
@@ -114,8 +109,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					.eq('id', productId)
 					.single();
 				
-				console.log(`[FAVORITE API] Added favorite. New count: ${updatedProduct?.favorite_count || 1}`);
-				
+					
 				return json({ 
 					favorited: true,
 					action: 'added',
