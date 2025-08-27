@@ -31,7 +31,6 @@
   }: Props = $props();
 
   let selectedIndex = $state(0);
-  let isZoomed = $state(false);
   let galleryRef: HTMLDivElement;
   let imageRef: HTMLImageElement;
 
@@ -60,17 +59,11 @@
     'fair': translations.fair || 'Fair condition'
   }[condition || ''] || condition));
 
-  function handleImageClick() {
-    isZoomed = !isZoomed;
-  }
-
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'ArrowLeft' && selectedIndex > 0) {
       selectedIndex--;
     } else if (event.key === 'ArrowRight' && images && selectedIndex < images.length - 1) {
       selectedIndex++;
-    } else if (event.key === 'Escape') {
-      isZoomed = false;
     }
   }
 
@@ -109,29 +102,24 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <div 
-  class="relative h-full bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden max-w-lg mx-auto {className}"
+  class="relative bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden {className}"
   bind:this={galleryRef}
 >
-  <!-- Main Image Container -->
-  <button 
-    class="relative h-full w-full bg-gray-50 overflow-hidden cursor-zoom-{isZoomed ? 'out' : 'in'} border-0 p-0 text-left rounded-2xl"
-    onclick={handleImageClick}
+  <!-- Main Image Container with fixed aspect ratio -->
+  <div 
+    class="relative w-full h-full bg-gray-50"
     ontouchstart={handleTouchStart}
     ontouchend={handleTouchEnd}
-    aria-label="Product image gallery - click to zoom"
   >
     {#key selectedIndex}
-      <!-- Use standard img for dynamic/Supabase images to avoid breaking functionality -->
       <img 
         bind:this={imageRef}
         src={selectedImage}
         alt="{title} - Image {selectedIndex + 1}"
-        class="w-full h-full object-contain transition-transform duration-300 ease-out
-               {isZoomed ? 'scale-150' : 'scale-100'}"
+        class="absolute inset-0 w-full h-full object-cover"
         draggable="false"
         loading="eager"
         decoding="async"
-        sizes="(max-width: 768px) 100vw, 90vw"
       />
     {/key}
 
@@ -182,13 +170,7 @@
       </div>
     {/if}
 
-    <!-- Zoom Indicator -->
-    {#if isZoomed}
-      <div class="absolute bottom-4 left-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm backdrop-blur-xs">
-        Click to zoom out • ESC to exit
-      </div>
-    {/if}
-  </button>
+  </div>
 
   <!-- Thumbnail Strip -->
   {#if images && images.length > 1}

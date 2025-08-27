@@ -1,5 +1,6 @@
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { processImage, IMAGE_SIZES } from './image-processor';
 
 export interface UploadedImage {
   url: string;
@@ -7,96 +8,16 @@ export interface UploadedImage {
 }
 
 /**
- * Convert image to WebP format in the browser with timeout protection
+ * Convert image to WebP format (800x800 square)
  */
 async function convertToWebP(file: File): Promise<Blob> {
-  console.log('[convertToWebP] Starting conversion for:', file.name, file.type, file.size);
-  
-  return new Promise((resolve, reject) => {
-    // 15 second timeout to prevent hanging
-    const timeout = setTimeout(() => {
-      console.log('[convertToWebP] Timeout - falling back to original file');
-      resolve(file);
-    }, 15000);
-
-    const img = new Image();
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    
-    if (!ctx) {
-      clearTimeout(timeout);
-      console.log('[convertToWebP] No canvas context - using original file');
-      resolve(file);
-      return;
-    }
-    
-    img.onload = () => {
-      console.log('[convertToWebP] Image loaded:', img.width, 'x', img.height);
-      
-      try {
-        // Set canvas size to image size (max 1200px for performance)
-        const maxSize = 1200;
-        let width = img.width;
-        let height = img.height;
-        
-        if (width > maxSize || height > maxSize) {
-          const scale = Math.min(maxSize / width, maxSize / height);
-          width = Math.floor(width * scale);
-          height = Math.floor(height * scale);
-          console.log('[convertToWebP] Resizing to:', width, 'x', height);
-        }
-        
-        canvas.width = width;
-        canvas.height = height;
-        
-        // Draw image
-        ctx.drawImage(img, 0, 0, width, height);
-        console.log('[convertToWebP] Image drawn to canvas');
-        
-        // Convert to WebP with timeout protection
-        const blobTimeout = setTimeout(() => {
-          clearTimeout(timeout);
-          console.log('[convertToWebP] toBlob timeout - using original file');
-          resolve(file);
-        }, 5000);
-        
-        canvas.toBlob(
-          (blob) => {
-            clearTimeout(timeout);
-            clearTimeout(blobTimeout);
-            
-            if (blob) {
-              console.log('[convertToWebP] Successfully converted to WebP:', blob.size);
-              resolve(blob);
-            } else {
-              console.log('[convertToWebP] toBlob failed - using original file');
-              resolve(file);
-            }
-          },
-          'image/webp',
-          0.85
-        );
-      } catch (error) {
-        clearTimeout(timeout);
-        console.log('[convertToWebP] Conversion error - using original file:', error);
-        resolve(file);
-      }
-    };
-    
-    img.onerror = (error) => {
-      clearTimeout(timeout);
-      console.log('[convertToWebP] Image load error - using original file:', error);
-      resolve(file);
-    };
-    
-    try {
-      img.src = URL.createObjectURL(file);
-    } catch (error) {
-      clearTimeout(timeout);
-      console.log('[convertToWebP] ObjectURL error - using original file:', error);
-      resolve(file);
-    }
-  });
+  try {
+    const webpBlob = await processImage(file, IMAGE_SIZES.medium);
+    return webpBlob;
+  } catch (error) {
+    console.error('[convertToWebP] Failed, using original:', error);
+    return file;
+  }
 }
 
 /**

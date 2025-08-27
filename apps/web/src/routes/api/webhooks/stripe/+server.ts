@@ -6,9 +6,10 @@ import { createServerClient } from '@supabase/ssr';
 import { TransactionService } from '$lib/services/transactions.js';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 
+const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
+
 export const POST: RequestHandler = async ({ request }) => {
 	const STRIPE_WEBHOOK_SECRET = env.STRIPE_WEBHOOK_SECRET;
-	const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 	const body = await request.text();
 	const signature = request.headers.get('stripe-signature');
 
@@ -56,9 +57,10 @@ export const POST: RequestHandler = async ({ request }) => {
 };
 
 async function handlePaymentSuccess(paymentIntent: any) {
-	console.log('Payment succeeded:', paymentIntent.id);
+	console.log('🎉 Payment succeeded:', paymentIntent.id);
+	console.log('📦 Metadata:', paymentIntent.metadata);
 	
-	const { productId, sellerId, buyerId, orderId, productPrice, shippingCost } = paymentIntent.metadata;
+	const { product_id: productId, seller_id: sellerId, buyer_id: buyerId, order_id: orderId } = paymentIntent.metadata;
 	
 	if (productId && sellerId && buyerId && orderId) {
 		try {
@@ -79,6 +81,18 @@ async function handlePaymentSuccess(paymentIntent: any) {
 				}
 			);
 
+			// Get order details to extract amounts
+			const { data: order, error: orderError } = await supabase
+				.from('orders')
+				.select('total_amount, shipping_cost')
+				.eq('id', orderId)
+				.single();
+
+			if (orderError || !order) {
+				console.error('Failed to get order details:', orderError);
+				return;
+			}
+
 			const transactionService = new TransactionService(supabase);
 			
 			// Create transaction record with commission calculation
@@ -87,8 +101,8 @@ async function handlePaymentSuccess(paymentIntent: any) {
 				sellerId,
 				buyerId,
 				productId,
-				productPrice: parseFloat(productPrice),
-				shippingCost: shippingCost ? parseFloat(shippingCost) : 0,
+				productPrice: order.total_amount - (order.shipping_cost || 0),
+				shippingCost: order.shipping_cost || 0,
 				stripePaymentIntentId: paymentIntent.id
 			});
 
@@ -116,8 +130,10 @@ async function handlePaymentSuccess(paymentIntent: any) {
 				})
 				.eq('id', productId);
 
-			console.log(`Transaction created successfully: ${transaction?.id}`);
-			console.log(`Commission: ${transaction?.commission_amount} BGN, Seller gets: ${transaction?.seller_amount} BGN`);
+			console.log(`✅ Transaction created successfully: ${transaction?.id}`);
+			console.log(`💰 Commission: ${transaction?.commission_amount} BGN, Seller gets: ${transaction?.seller_earnings} BGN`);
+			console.log(`📋 Order ${orderId} updated to 'paid' status`);
+			console.log(`🏷️ Product ${productId} marked as sold`);
 			
 		} catch (error) {
 			console.error('Error processing payment success:', error);
@@ -128,7 +144,7 @@ async function handlePaymentSuccess(paymentIntent: any) {
 async function handlePaymentFailed(paymentIntent: any) {
 	console.log('Payment failed:', paymentIntent.id);
 	
-	const { productId, sellerId, buyerId, orderId } = paymentIntent.metadata;
+	const { product_id: productId, seller_id: sellerId, buyer_id: buyerId, order_id: orderId } = paymentIntent.metadata;
 	
 	if (productId && sellerId && buyerId && orderId) {
 		try {
@@ -192,7 +208,7 @@ async function handlePaymentFailed(paymentIntent: any) {
 async function handlePaymentCanceled(paymentIntent: any) {
 	console.log('Payment canceled:', paymentIntent.id);
 	
-	const { productId, sellerId, buyerId, orderId } = paymentIntent.metadata;
+	const { product_id: productId, seller_id: sellerId, buyer_id: buyerId, order_id: orderId } = paymentIntent.metadata;
 	
 	if (productId && sellerId && buyerId && orderId) {
 		try {

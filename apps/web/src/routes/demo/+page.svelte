@@ -5,6 +5,43 @@
   let showModal = $state(false);
   let inputValue = $state('');
   let selectValue = $state('');
+  let selectedHighlightVariant = $state(0);
+  
+  // Sample products for highlight cards demo
+  const highlightProducts = [
+    {
+      title: 'Vintage Nike Hoodie',
+      price: 45,
+      image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop',
+      seller: 'JohnDoe',
+      sellerInitial: 'J',
+      isPro: true
+    },
+    {
+      title: 'Adidas Track Jacket',
+      price: 38,
+      image: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=400&h=400&fit=crop',
+      seller: 'SarahStyle',
+      sellerInitial: 'S',
+      isPro: true
+    },
+    {
+      title: 'Champion Sweatshirt',
+      price: 29,
+      image: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?w=400&h=400&fit=crop',
+      seller: 'MikeVintage',
+      sellerInitial: 'M',
+      isPro: false
+    },
+    {
+      title: 'Patagonia Fleece',
+      price: 65,
+      image: 'https://images.unsplash.com/photo-1608667508764-33cf0726b13a?w=400&h=400&fit=crop',
+      seller: 'EmmaCloset',
+      sellerInitial: 'E',
+      isPro: true
+    }
+  ];
   
   // Sample product for ProductCard demo
   const sampleProduct: Product = {
@@ -398,6 +435,395 @@
           </div>
         </div>
       </Modal>
+    </section>
+
+    <!-- Highlight Card Variants Section -->
+    <section class="mb-12 bg-white rounded-lg p-6">
+      <h2 class="text-2xl font-semibold mb-6">Highlight Card Design Variants</h2>
+      <p class="text-gray-600 mb-6">Compare different layouts to improve mobile UX and reduce visual clutter</p>
+      
+      <!-- Variant selector buttons -->
+      <div class="mb-8 flex flex-wrap gap-2">
+        <Button 
+          onclick={() => selectedHighlightVariant = 0}
+          variant={selectedHighlightVariant === 0 ? 'primary' : 'outline'}
+          size="sm"
+        >
+          Current Design
+        </Button>
+        <Button 
+          onclick={() => selectedHighlightVariant = 1}
+          variant={selectedHighlightVariant === 1 ? 'primary' : 'outline'}
+          size="sm"
+        >
+          Clean Overlay
+        </Button>
+        <Button 
+          onclick={() => selectedHighlightVariant = 2}
+          variant={selectedHighlightVariant === 2 ? 'primary' : 'outline'}
+          size="sm"
+        >
+          Info Bar
+        </Button>
+        <Button 
+          onclick={() => selectedHighlightVariant = 3}
+          variant={selectedHighlightVariant === 3 ? 'primary' : 'outline'}
+          size="sm"
+        >
+          Price Focus
+        </Button>
+        <Button 
+          onclick={() => selectedHighlightVariant = 4}
+          variant={selectedHighlightVariant === 4 ? 'primary' : 'outline'}
+          size="sm"
+        >
+          No Overlays
+        </Button>
+        <Button 
+          onclick={() => selectedHighlightVariant = 5}
+          variant={selectedHighlightVariant === 5 ? 'primary' : 'outline'}
+          size="sm"
+        >
+          Minimal
+        </Button>
+        <Button 
+          onclick={() => selectedHighlightVariant = 6}
+          variant={selectedHighlightVariant === 6 ? 'primary' : 'outline'}
+          size="sm"
+        >
+          Instagram Style
+        </Button>
+        <Button 
+          onclick={() => selectedHighlightVariant = 7}
+          variant={selectedHighlightVariant === 7 ? 'primary' : 'outline'}
+          size="sm"
+        >
+          Clean Focus
+        </Button>
+      </div>
+
+      <!-- Display selected variant -->
+      <div class="bg-gray-50 p-4 rounded-lg mb-6">
+        <h3 class="text-sm font-medium text-gray-700 mb-4">
+          {selectedHighlightVariant === 0 ? 'Current Design (3 overlays on image)' :
+           selectedHighlightVariant === 1 ? 'Variant 1: Clean Overlay (Minimal badges)' :
+           selectedHighlightVariant === 2 ? 'Variant 2: Info Bar (Single bottom overlay)' :
+           selectedHighlightVariant === 3 ? 'Variant 3: Price Focus (E-commerce standard)' :
+           selectedHighlightVariant === 4 ? 'Variant 4: No Overlays (Card extension)' :
+           selectedHighlightVariant === 5 ? 'Variant 5: Minimal (Ultra clean)' :
+           selectedHighlightVariant === 6 ? 'Variant 6: Instagram Style (Avatar next to title, price badge bottom-center)' :
+           'Variant 7: Clean Focus (No avatar, price badge bottom-center)'}
+        </h3>
+        
+        <div class="flex gap-3 overflow-x-auto pb-2">
+          {#each [1, 2, 3, 4] as copy}
+            {@const product = highlightProducts[copy - 1]}
+            {#if selectedHighlightVariant === 0}
+              <!-- Current Design -->
+              <article class="relative shrink-0 group">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all">
+                  <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-md transition-shadow">
+                    <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
+                      <figure class="w-36 h-36 relative">
+                        <img src={product.image} alt={product.title} class="w-full h-full object-cover" />
+                        <!-- PRO Badge - Top -->
+                        {#if product.isPro}
+                          <div class="absolute top-1.5 left-1/2 -translate-x-1/2">
+                            <div class="bg-white text-gray-800 text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm border border-gray-200">
+                              <span class="bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">PRO</span>
+                            </div>
+                          </div>
+                        {/if}
+                        <!-- Bottom info -->
+                        <figcaption class="absolute bottom-2 left-2 right-2 flex items-center justify-between">
+                          <div class="w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm">
+                            <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
+                              {product.sellerInitial}
+                            </div>
+                          </div>
+                          <div class="bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg shadow-sm">
+                            {product.price}€
+                          </div>
+                        </figcaption>
+                      </figure>
+                    </div>
+                  </div>
+                  <div class="mt-1.5 px-1 w-36">
+                    <h3 class="text-xs text-gray-700 truncate">{product.title}</h3>
+                  </div>
+                </button>
+              </article>
+
+            {:else if selectedHighlightVariant === 1}
+              <!-- Variant 1: Clean Overlay -->
+              <article class="relative shrink-0 group">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all">
+                  <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-md transition-shadow">
+                    <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
+                      <figure class="w-36 h-36 relative">
+                        <img src={product.image} alt={product.title} class="w-full h-full object-cover" />
+                        <div class="absolute top-2 left-2">
+                          <div class="w-5 h-5 rounded-full border border-white bg-gray-200 overflow-hidden shadow-sm">
+                            <div class="w-full h-full bg-gray-300 flex items-center justify-center text-[10px] text-gray-600 font-medium">
+                              {product.sellerInitial}
+                            </div>
+                          </div>
+                        </div>
+                        <div class="absolute bottom-2 right-2">
+                          <div class="bg-black text-white text-sm font-bold px-2.5 py-1.5 rounded-lg shadow-lg">
+                            {product.price}€
+                          </div>
+                        </div>
+                      </figure>
+                    </div>
+                  </div>
+                  <div class="mt-1.5 px-1 w-36">
+                    <div class="flex items-center gap-1">
+                      {#if product.isPro}
+                        <span class="bg-gradient-to-r from-amber-500 to-yellow-500 text-[10px] font-bold bg-clip-text text-transparent">PRO</span>
+                      {/if}
+                      <h3 class="text-xs text-gray-700 truncate flex-1">{product.title}</h3>
+                    </div>
+                  </div>
+                </button>
+              </article>
+
+            {:else if selectedHighlightVariant === 2}
+              <!-- Variant 2: Info Bar -->
+              <article class="relative shrink-0 group">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all">
+                  <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-md transition-shadow">
+                    <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
+                      <figure class="w-36 h-36 relative">
+                        <img src={product.image} alt={product.title} class="w-full h-full object-cover" />
+                        <figcaption class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm">
+                          <div class="flex items-center justify-between px-2 py-1.5">
+                            <div class="flex items-center gap-1.5">
+                              <div class="w-5 h-5 rounded-full bg-gray-200 overflow-hidden">
+                                <div class="w-full h-full bg-gray-300 flex items-center justify-center text-[10px] text-gray-600 font-medium">
+                                  {product.sellerInitial}
+                                </div>
+                              </div>
+                              {#if product.isPro}
+                                <span class="bg-gradient-to-r from-amber-500 to-yellow-500 text-[10px] font-bold bg-clip-text text-transparent">PRO</span>
+                              {/if}
+                            </div>
+                            <div class="text-gray-900 text-sm font-bold">{product.price}€</div>
+                          </div>
+                        </figcaption>
+                      </figure>
+                    </div>
+                  </div>
+                  <div class="mt-1.5 px-1 w-36">
+                    <h3 class="text-xs text-gray-700 truncate">{product.title}</h3>
+                  </div>
+                </button>
+              </article>
+
+            {:else if selectedHighlightVariant === 3}
+              <!-- Variant 3: Price Focus -->
+              <article class="relative shrink-0 group">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all">
+                  <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-md transition-shadow">
+                    <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
+                      <figure class="w-36 h-36 relative">
+                        <img src={product.image} alt={product.title} class="w-full h-full object-cover" />
+                        <div class="absolute bottom-2 right-2">
+                          <div class="bg-black text-white text-base font-bold px-3 py-1.5 rounded-xl shadow-lg">
+                            {product.price}€
+                          </div>
+                        </div>
+                      </figure>
+                    </div>
+                  </div>
+                  <div class="mt-1.5 px-1 w-36">
+                    <div class="flex items-center gap-1 mb-0.5">
+                      {#if product.isPro}
+                        <svg class="w-3 h-3 text-amber-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                        </svg>
+                      {/if}
+                      <h3 class="text-xs text-gray-700 truncate flex-1">{product.title}</h3>
+                    </div>
+                    <p class="text-[10px] text-gray-500">@{product.seller}</p>
+                  </div>
+                </button>
+              </article>
+
+            {:else if selectedHighlightVariant === 4}
+              <!-- Variant 4: No Overlays -->
+              <article class="relative shrink-0 group">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all">
+                  <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-md transition-shadow">
+                    <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
+                      <figure class="w-36 h-36 relative">
+                        <img src={product.image} alt={product.title} class="w-full h-full object-cover" />
+                      </figure>
+                    </div>
+                    <div class="px-2 py-1.5">
+                      <div class="flex items-center justify-between mb-1">
+                        <div class="flex items-center gap-1.5">
+                          <div class="w-4 h-4 rounded-full bg-gray-200 overflow-hidden">
+                            <div class="w-full h-full bg-gray-300 flex items-center justify-center text-[9px] text-gray-600 font-medium">
+                              {product.sellerInitial}
+                            </div>
+                          </div>
+                          {#if product.isPro}
+                            <span class="bg-gradient-to-r from-amber-500 to-yellow-500 text-[9px] font-bold bg-clip-text text-transparent">PRO</span>
+                          {/if}
+                        </div>
+                        <div class="text-gray-900 text-sm font-bold">{product.price}€</div>
+                      </div>
+                      <h3 class="text-xs text-gray-700 truncate">{product.title}</h3>
+                    </div>
+                  </div>
+                </button>
+              </article>
+
+            {:else if selectedHighlightVariant === 5}
+              <!-- Variant 5: Minimal -->
+              <article class="relative shrink-0 group">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-xl transition-all">
+                  <div class="relative">
+                    <figure class="w-36 h-36 relative rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
+                      <img src={product.image} alt={product.title} class="w-full h-full object-cover" />
+                      <div class="absolute bottom-1.5 right-1.5">
+                        <div class="bg-white/90 backdrop-blur text-gray-900 text-xs font-semibold px-2 py-1 rounded-md">
+                          {product.price}€
+                        </div>
+                      </div>
+                      {#if product.isPro}
+                        <div class="absolute top-1.5 left-1.5">
+                          <div class="w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center">
+                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                            </svg>
+                          </div>
+                        </div>
+                      {/if}
+                    </figure>
+                    <div class="mt-1.5 px-0.5 w-36">
+                      <h3 class="text-xs text-gray-700 truncate">{product.title}</h3>
+                    </div>
+                  </div>
+                </button>
+              </article>
+
+            {:else if selectedHighlightVariant === 6}
+              <!-- Variant 6: Instagram Style -->
+              <article class="relative shrink-0 group">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all pt-2">
+                  <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-lg transition-all duration-200 group-hover:scale-[1.02]">
+                    <!-- PRO Badge - Outside frame, top center -->
+                    {#if product.isPro}
+                      <div class="absolute -top-1.5 left-1/2 -translate-x-1/2 z-10">
+                        <div class="bg-black text-white text-[9px] font-bold px-2.5 py-1 rounded-full shadow-lg border border-white/20">
+                          PRO
+                        </div>
+                      </div>
+                    {/if}
+                    
+                    <div class="bg-gray-50/60 relative rounded-xl border border-gray-200/60 overflow-hidden backdrop-blur-sm">
+                      <figure class="w-36 h-36 relative">
+                        <img src={product.image} alt={product.title} class="w-full h-full object-cover" />
+                      </figure>
+                    </div>
+                    
+                    <!-- Price badge - Bottom center like PRO badge -->
+                    <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 z-10">
+                      <div class="bg-black text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg border border-white/20">
+                        {product.price}€
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Title with avatar (Instagram style) -->
+                  <div class="mt-2.5 px-1 w-36">
+                    <div class="flex items-center gap-1.5">
+                      <div class="w-4 h-4 rounded-full bg-gray-200 overflow-hidden shrink-0">
+                        <div class="w-full h-full bg-gray-300 flex items-center justify-center text-[9px] text-gray-600 font-medium">
+                          {product.sellerInitial}
+                        </div>
+                      </div>
+                      <h3 class="text-xs text-gray-700 truncate flex-1">{product.title}</h3>
+                    </div>
+                  </div>
+                </button>
+              </article>
+
+            {:else if selectedHighlightVariant === 7}
+              <!-- Variant 7: Clean Focus -->
+              <article class="relative shrink-0 group">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all pt-2">
+                  <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-lg transition-all duration-200 group-hover:scale-[1.02]">
+                    <!-- PRO Badge - Outside frame, top center -->
+                    {#if product.isPro}
+                      <div class="absolute -top-1.5 left-1/2 -translate-x-1/2 z-10">
+                        <div class="bg-black text-white text-[9px] font-bold px-2.5 py-1 rounded-full shadow-lg border border-white/20">
+                          PRO
+                        </div>
+                      </div>
+                    {/if}
+                    
+                    <div class="bg-gray-50/60 relative rounded-xl border border-gray-200/60 overflow-hidden backdrop-blur-sm">
+                      <figure class="w-36 h-36 relative">
+                        <img src={product.image} alt={product.title} class="w-full h-full object-cover" />
+                      </figure>
+                    </div>
+                    
+                    <!-- Price badge - Bottom center like PRO badge -->
+                    <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 z-10">
+                      <div class="bg-black text-white text-sm font-bold px-3 py-1.5 rounded-full shadow-lg border border-white/20">
+                        {product.price}€
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Title only (no avatar) -->
+                  <div class="mt-2.5 px-1 w-36">
+                    <h3 class="text-xs text-gray-700 truncate text-center">{product.title}</h3>
+                  </div>
+                </button>
+              </article>
+            {/if}
+          {/each}
+        </div>
+      </div>
+
+      <!-- Variant comparison -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <Card>
+          <div class="p-4">
+            <h4 class="font-medium text-sm mb-2">Current Issues</h4>
+            <ul class="text-xs text-gray-600 space-y-1">
+              <li>❌ 3 overlapping badges clutter image</li>
+              <li>❌ PRO badge fights for attention</li>
+              <li>❌ Avatar + price compete visually</li>
+              <li>❌ Poor mobile tap targets</li>
+            </ul>
+          </div>
+        </Card>
+        
+        <Card>
+          <div class="p-4">
+            <h4 class="font-medium text-sm mb-2">Best for Mobile</h4>
+            <ul class="text-xs text-gray-600 space-y-1">
+              <li>✅ Variant 2: Clean info bar</li>
+              <li>✅ Variant 3: Price-focused</li>
+              <li>✅ Variant 5: Ultra minimal</li>
+            </ul>
+          </div>
+        </Card>
+        
+        <Card>
+          <div class="p-4">
+            <h4 class="font-medium text-sm mb-2">Recommendation</h4>
+            <p class="text-xs text-gray-600">
+              <strong>Variant 2 (Info Bar)</strong> or <strong>Variant 3 (Price Focus)</strong> provide the best balance of information density and visual clarity for mobile users.
+            </p>
+          </div>
+        </Card>
+      </div>
     </section>
 
     <!-- Visual Hierarchy Demo -->

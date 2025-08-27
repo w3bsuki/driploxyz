@@ -86,11 +86,18 @@ function buildCategoryHierarchy(categories: Category[]) {
   return hierarchy;
 }
 
-export const load: PageServerLoad = async ({ url, locals }) => {
+export const load: PageServerLoad = async ({ url, locals, setHeaders }) => {
   const country = locals.country || 'BG';
+  
+  // Set cache headers for better performance
+  setHeaders({
+    'cache-control': 'public, max-age=60, s-maxage=120' // Cache for 1 min client, 2 min CDN
+  });
   
   // Parse all URL parameters
   const query = url.searchParams.get('q') || '';
+  const page = parseInt(url.searchParams.get('page') || '1', 10);
+  const pageSize = 50; // Reasonable page size
   
   // Category hierarchy parameters - support both old and new param names
   // Level 1: Gender (women/men/kids/unisex)
@@ -346,8 +353,10 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         break;
     }
 
-    // Execute query with limit
-    productsQuery = productsQuery.limit(100);
+    // Execute query with pagination
+    const offset = (page - 1) * pageSize;
+    productsQuery = productsQuery
+      .range(offset, offset + pageSize - 1);
     const { data: products, error: productsError } = await productsQuery;
 
     if (productsError) {
@@ -439,6 +448,9 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       categoryHierarchy,
       searchQuery: query,
       total: transformedProducts.length,
+      hasMore: transformedProducts.length === pageSize, // Simple check for more results
+      currentPage: page,
+      pageSize,
       filters: {
         category: level1,
         subcategory: level2,

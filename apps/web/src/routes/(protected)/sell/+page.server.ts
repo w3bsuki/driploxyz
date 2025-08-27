@@ -83,7 +83,9 @@ export const actions: Actions = {
     // Extract and validate condition
     const rawCondition = formData.get('condition') as string;
     const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'];
-    const condition = (rawCondition && validConditions.includes(rawCondition)) ? rawCondition : 'good';
+    const condition = (rawCondition && validConditions.includes(rawCondition)) 
+      ? rawCondition as 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair'
+      : 'good' as const;
     
     const color = formData.get('color') as string || '';
     const material = formData.get('material') as string || '';
@@ -174,6 +176,7 @@ export const actions: Actions = {
           color: color?.trim() || null,
           material: material?.trim() || null,
           is_active: true,
+          status: 'active', // Required for RLS policy
           is_sold: false,
           view_count: 0,
           favorite_count: 0,

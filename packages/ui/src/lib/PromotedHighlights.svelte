@@ -119,11 +119,14 @@
 
 <!-- Promoted Listings / Highlights -->
 <section 
-  class="bg-white border-b border-gray-200"
+  class="bg-gradient-to-br from-gray-50/90 to-white/95 border-y border-gray-200/60 backdrop-blur-sm relative overflow-hidden"
   aria-label={translations.trending_promoted}
   role="region"
 >
-  <div class="px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3">
+  <!-- Subtle inner shadow for depth -->
+  <div class="absolute inset-0 bg-gradient-to-b from-black/[0.02] to-transparent pointer-events-none"></div>
+  
+  <div class="relative px-4 sm:px-5 lg:px-6 py-3 sm:py-3.5">
     <!-- Screen reader only announcements for accessibility -->
     {#if hasProducts}
       <span class="sr-only">{promotedProducts.length} featured products available</span>
@@ -137,7 +140,7 @@
       onkeydown={handleKeyNavigation}
     >
       <div 
-        class="flex flex-nowrap gap-2.5 sm:gap-3 -mx-3 px-3 sm:mx-0 sm:px-0"
+        class="flex flex-nowrap gap-2 sm:gap-3"
         data-highlights-container
         role="list"
       >

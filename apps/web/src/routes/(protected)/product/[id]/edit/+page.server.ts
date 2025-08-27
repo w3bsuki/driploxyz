@@ -44,7 +44,7 @@ export const actions: Actions = {
       description: formData.get('description') as string,
       price: parseFloat(formData.get('price') as string),
       category_id: formData.get('category_id') as string,
-      condition: formData.get('condition') as 'new' | 'like-new' | 'good' | 'fair',
+      condition: formData.get('condition') as 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair',
       brand: formData.get('brand') as string || null,
       size: formData.get('size') as string || null,
       color: formData.get('color') as string || null,

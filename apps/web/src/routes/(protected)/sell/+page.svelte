@@ -292,7 +292,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 </svelte:head>
 
-<div class="min-h-screen bg-white flex flex-col">
+<div class="h-screen bg-white flex flex-col fixed inset-0">
   <!-- Validation Popup - Top of screen -->
   {#if showValidationPopup}
     <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top duration-200">
@@ -305,139 +305,123 @@
     </div>
   {/if}
   
-  <!-- Clean Header -->
-  <header class="sticky top-0 z-50 bg-white border-b border-gray-200">
-    <div class="px-4 py-3">
-      <div class="flex items-center justify-between">
-        <button 
-          onclick={() => goto('/dashboard')}
-          class="p-2 -ml-2 hover:bg-gray-100 rounded-lg transition-colors"
-          aria-label="Go back"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        
-        <div class="text-center flex-1">
-          <h1 class="text-base font-semibold text-gray-900">{i18n.sell_listItem()}</h1>
-        </div>
-        
-        <button 
-          onclick={() => goto('/')}
-          class="text-sm text-gray-500 hover:text-gray-700 transition-colors"
-        >
-          {i18n.common_cancel()}
-        </button>
-      </div>
-    </div>
+  <!-- Fixed Stepper at top of viewport -->
+  <div class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-4 py-3">
+    <!-- Close button -->
+    <button 
+      onclick={() => goto('/')}
+      class="absolute right-4 top-3 p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+      aria-label="Close"
+    >
+      <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
     
-    <!-- Clean Step Indicator -->
-    <div class="px-4 pb-3">
-      <div class="relative flex items-center w-full">
-        <!-- Step 1 -->
-        <div class="flex flex-col items-center">
-          <div class="{
-            1 <= currentStep 
-              ? 'w-8 h-8 bg-black text-white' 
-              : 'w-8 h-8 bg-gray-100 text-gray-400'
-          } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
-            {#if 1 < currentStep}
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-              </svg>
-            {:else}
-              1
-            {/if}
-          </div>
-          <span class="text-[10px] mt-1 whitespace-nowrap {
-            currentStep === 1 ? 'text-gray-900 font-medium' : 'text-gray-400'
-          }">{i18n.sell_step1()}</span>
+    <div class="relative flex items-center w-full pr-8">
+      <!-- Step 1 -->
+      <div class="flex flex-col items-center">
+        <div class="{
+          1 <= currentStep 
+            ? 'w-8 h-8 bg-black text-white' 
+            : 'w-8 h-8 bg-gray-100 text-gray-400'
+        } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
+          {#if 1 < currentStep}
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+          {:else}
+            1
+          {/if}
         </div>
-        
-        <!-- Line 1-2 -->
-        <div class="flex-1 h-[2px] -mt-6 {
-          currentStep > 1 ? 'bg-black' : 'bg-gray-200'
-        }"></div>
-        
-        <!-- Step 2 -->
-        <div class="flex flex-col items-center -ml-2">
-          <div class="{
-            2 <= currentStep 
-              ? 'w-8 h-8 bg-black text-white' 
-              : 'w-8 h-8 bg-gray-100 text-gray-400'
-          } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
-            {#if 2 < currentStep}
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-              </svg>
-            {:else}
-              2
-            {/if}
-          </div>
-          <span class="text-[10px] mt-1 whitespace-nowrap {
-            currentStep === 2 ? 'text-gray-900 font-medium' : 'text-gray-400'
-          }">{i18n.sell_step2()}</span>
-        </div>
-        
-        <!-- Line 2-3 -->
-        <div class="flex-1 h-[2px] -mt-6 {
-          currentStep > 2 ? 'bg-black' : 'bg-gray-200'
-        }"></div>
-        
-        <!-- Step 3 -->
-        <div class="flex flex-col items-center">
-          <div class="{
-            3 <= currentStep 
-              ? 'w-8 h-8 bg-black text-white' 
-              : 'w-8 h-8 bg-gray-100 text-gray-400'
-          } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
-            {#if 3 < currentStep}
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-              </svg>
-            {:else}
-              3
-            {/if}
-          </div>
-          <span class="text-[10px] mt-1 whitespace-nowrap {
-            currentStep === 3 ? 'text-gray-900 font-medium' : 'text-gray-400'
-          }">{i18n.sell_step3()}</span>
-        </div>
-        
-        <!-- Line 3-4 -->
-        <div class="flex-1 h-[2px] -mt-6 {
-          currentStep > 3 ? 'bg-black' : 'bg-gray-200'
-        }"></div>
-        
-        <!-- Step 4 -->
-        <div class="flex flex-col items-center">
-          <div class="{
-            4 <= currentStep 
-              ? 'w-8 h-8 bg-black text-white' 
-              : 'w-8 h-8 bg-gray-100 text-gray-400'
-          } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
-            {#if 4 < currentStep}
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-              </svg>
-            {:else}
-              4
-            {/if}
-          </div>
-          <span class="text-[10px] mt-1 whitespace-nowrap {
-            currentStep === 4 ? 'text-gray-900 font-medium' : 'text-gray-400'
-          }">{i18n.sell_step4()}</span>
-        </div>
+        <span class="text-[10px] mt-1 whitespace-nowrap {
+          currentStep === 1 ? 'text-gray-900 font-medium' : 'text-gray-400'
+        }">{i18n.sell_step1()}</span>
       </div>
-      {#if isDraftSaved}
-        <p class="text-xs text-green-600 text-center mt-2">Draft saved</p>
-      {/if}
+      
+      <!-- Line 1-2 -->
+      <div class="flex-1 h-[2px] -mt-6 {
+        currentStep > 1 ? 'bg-black' : 'bg-gray-200'
+      }"></div>
+      
+      <!-- Step 2 -->
+      <div class="flex flex-col items-center -ml-2">
+        <div class="{
+          2 <= currentStep 
+            ? 'w-8 h-8 bg-black text-white' 
+            : 'w-8 h-8 bg-gray-100 text-gray-400'
+        } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
+          {#if 2 < currentStep}
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+          {:else}
+            2
+          {/if}
+        </div>
+        <span class="text-[10px] mt-1 whitespace-nowrap {
+          currentStep === 2 ? 'text-gray-900 font-medium' : 'text-gray-400'
+        }">{i18n.sell_step2()}</span>
+      </div>
+      
+      <!-- Line 2-3 -->
+      <div class="flex-1 h-[2px] -mt-6 {
+        currentStep > 2 ? 'bg-black' : 'bg-gray-200'
+      }"></div>
+      
+      <!-- Step 3 -->
+      <div class="flex flex-col items-center">
+        <div class="{
+          3 <= currentStep 
+            ? 'w-8 h-8 bg-black text-white' 
+            : 'w-8 h-8 bg-gray-100 text-gray-400'
+        } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
+          {#if 3 < currentStep}
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+          {:else}
+            3
+          {/if}
+        </div>
+        <span class="text-[10px] mt-1 whitespace-nowrap {
+          currentStep === 3 ? 'text-gray-900 font-medium' : 'text-gray-400'
+        }">{i18n.sell_step3()}</span>
+      </div>
+      
+      <!-- Line 3-4 -->
+      <div class="flex-1 h-[2px] -mt-6 {
+        currentStep > 3 ? 'bg-black' : 'bg-gray-200'
+      }"></div>
+      
+      <!-- Step 4 -->
+      <div class="flex flex-col items-center">
+        <div class="{
+          4 <= currentStep 
+            ? 'w-8 h-8 bg-black text-white' 
+            : 'w-8 h-8 bg-gray-100 text-gray-400'
+        } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
+          {#if 4 < currentStep}
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+          {:else}
+            4
+          {/if}
+        </div>
+        <span class="text-[10px] mt-1 whitespace-nowrap {
+          currentStep === 4 ? 'text-gray-900 font-medium' : 'text-gray-400'
+        }">{i18n.sell_step4()}</span>
+      </div>
     </div>
-  </header>
+    {#if isDraftSaved}
+      <p class="text-xs text-green-600 text-center mt-2">Draft saved</p>
+    {/if}
+  </div>
 
   <!-- Content - flex-1 to fill available space -->
-  <div class="flex-1 overflow-y-auto pb-24">
+  <!-- Scrollable content area between fixed header and footer -->
+  <div class="flex-1 overflow-y-auto pt-[72px] pb-[88px]">
     <div class="max-w-lg mx-auto px-4 py-6">
     {#if data.needsBrandSubscription}
       <!-- Brand subscription required -->

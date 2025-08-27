@@ -38,19 +38,15 @@
   
   // Language initialization - Header component handles switching
   $effect(() => {
-    if (browser && data) {
-      if (dev) console.log('🌍 Client: Effect - checking language with server data:', data.language);
-      
-      // Only initialize if not already set correctly
-      if (data.language && i18n.languageTag() !== data.language) {
-        if (dev) console.log('🌍 Client: Language mismatch, setting to:', data.language);
+    if (browser && data?.language) {
+      // Only initialize if language actually changed
+      if (i18n.languageTag() !== data.language) {
+        if (dev) console.log('🌍 Client: Language change detected, updating to:', data.language);
         initializeLanguage(data.language);
         if (i18n.isAvailableLanguageTag(data.language)) {
           sessionStorage.setItem('selectedLocale', data.language);
         }
       }
-      
-      if (dev) console.log('🌍 Client: Final language set to:', i18n.languageTag());
     }
   });
 
@@ -59,6 +55,7 @@
   const isAuthPage = $derived($page.route.id?.includes('(auth)'));
   const isSellPage = $derived($page.route.id?.includes('/sell'));
   const isOnboardingPage = $derived($page.route.id?.includes('/onboarding'));
+  const isMessagesConversation = $derived($page.route.id?.includes('/messages') && $page.url.searchParams.has('conversation'));
   
   // Check if we should show region prompt
   $effect(() => {
@@ -169,7 +166,7 @@
   });
 </script>
 
-{#if !isAuthPage && !isOnboardingPage}
+{#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
   <div class="sticky top-0 z-50">
     <EarlyBirdBanner />
     <Header user={data?.user} profile={data?.profile} />

@@ -15,6 +15,7 @@
 	import type { ProductWithImages } from '$lib/services';
 	import type { Seller, ProductDisplay, PromotedProduct } from '$lib/types';
 	import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '$lib/types';
+	import { getProductUrl } from '$lib/utils/seo-urls';
 
 	let { data }: { data: PageData } = $props();
 
@@ -109,7 +110,9 @@
 			seller_avatar: product.seller_avatar,
 			seller_rating: product.seller_rating,
 			// PROMOTION: Keep the is_promoted field from server
-			is_promoted: product.is_promoted || false
+			is_promoted: product.is_promoted || false,
+			// SEO: Include slug for URL generation
+			slug: product.slug || null
 		};
 	}
 
@@ -146,7 +149,7 @@
 	}
 
 	function handleProductClick(product: Product) {
-		goto(`/product/${product.id}`);
+		goto(getProductUrl(product));
 	}
 
 	async function handleFavorite(productId: string) {

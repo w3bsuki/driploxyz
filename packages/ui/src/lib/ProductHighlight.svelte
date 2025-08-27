@@ -61,15 +61,24 @@
   <button 
     onclick={handleClick}
     onkeydown={handleKeyDown}
-    class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all"
+    class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all pt-2"
     aria-label="View {product.title} - {formattedPrice}"
     aria-describedby="product-{product.id}-info"
     tabindex={index === 0 ? 0 : -1}
   >
-    <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-md transition-shadow">
-      <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
+    <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-lg transition-all duration-200 group-hover:scale-[1.02]">
+      <!-- PRO Badge - Outside frame, top center -->
+      {#if product.is_promoted}
+        <div class="absolute -top-1.5 left-1/2 -translate-x-1/2 z-10">
+          <div class="bg-black text-white text-[9px] font-bold px-2.5 py-1 rounded-full shadow-lg border border-white/20">
+            PRO
+          </div>
+        </div>
+      {/if}
+      
+      <div class="bg-gray-50/60 relative rounded-xl border border-gray-200/60 overflow-hidden backdrop-blur-sm">
         <!-- Product image -->
-        <figure class="w-[108px] h-[108px] sm:w-36 sm:h-36 lg:w-40 lg:h-40 relative">
+        <figure class="w-[calc((100vw-4.8rem)/3)] h-[calc((100vw-4.8rem)/3)] sm:w-32 sm:h-32 lg:w-36 lg:h-36 relative max-w-32">
           <img 
             src={imageUrl} 
             alt="{product.title} product image"
@@ -77,43 +86,23 @@
             loading="lazy"
             decoding="async"
           />
-          
-          <!-- Promoted Badge - Centered Top -->
-          {#if product.is_promoted}
-            <div class="absolute top-1.5 left-1/2 -translate-x-1/2">
-              <div class="bg-white text-gray-800 text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm border border-gray-200">
-                <span class="bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">PRO</span>
-              </div>
-            </div>
-          {/if}
-          
-          <!-- Bottom info -->
-          <figcaption class="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-            <!-- Seller avatar -->
-            <div 
-              class="w-6 h-6 rounded-full border-2 border-white bg-gray-200 overflow-hidden shadow-sm"
-              aria-hidden="true"
-            >
-              <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
-                {sellerInitial}
-              </div>
-            </div>
-            
-            <!-- Price badge -->
-            <div 
-              class="bg-white/90 backdrop-blur-sm text-gray-900 text-xs font-semibold px-2 py-1 rounded-lg shadow-sm"
-              aria-label="Price"
-            >
-              {formattedPrice}
-            </div>
-          </figcaption>
         </figure>
+      </div>
+      
+      <!-- Price badge - Bottom center like PRO badge -->
+      <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 z-10">
+        <div 
+          class="bg-black text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-lg border border-white/20"
+          aria-label="Price"
+        >
+          {formattedPrice}
+        </div>
       </div>
     </div>
     
-    <!-- Title below -->
-    <div class="mt-1.5 px-1 w-[108px] sm:w-36 lg:w-40">
-      <h3 class="text-xs text-gray-700 truncate">
+    <!-- Title only (no avatar) -->
+    <div class="mt-2.5 px-1 w-[calc((100vw-4.8rem)/3)] sm:w-32 lg:w-36 max-w-32">
+      <h3 class="text-xs text-gray-700 truncate text-center">
         {product.title}
       </h3>
     </div>
@@ -122,6 +111,7 @@
   <!-- Screen reader info -->
   <div id="product-{product.id}-info" class="sr-only">
     <p>Product {index + 1} of {totalCount}</p>
+    <p>Price: {formattedPrice}</p>
     {#if product.seller_name}
       <p>Sold by {product.seller_name}</p>
     {/if}

@@ -143,6 +143,18 @@
     return `${Math.floor(diffInDays / 30)} ${i18n.product_monthsAgo()}`;
   }
   
+  function getRelativeTime(dateString: string) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+    return `${Math.floor(diffInSeconds / 604800)}w ago`;
+  }
+  
   async function handleFavorite() {
     if (!data.user) {
       goto('/login');
@@ -246,223 +258,311 @@
 />
 
 <div class="min-h-screen bg-gray-50">
-  <!-- Breadcrumb -->
-  <div class="bg-white border-b border-gray-100">
-    <div class="px-4 lg:px-8 py-2.5 max-w-7xl mx-auto">
-      <Breadcrumb items={breadcrumbItems()} class="text-xs sm:text-sm" />
+  <!-- Compact Sticky Breadcrumb -->
+  <div class="bg-white border-b border-gray-200 sticky top-0 z-20">
+    <div class="max-w-7xl mx-auto px-3 py-2">
+      <nav class="flex items-center gap-1.5 text-xs text-gray-500">
+        <a href="/" class="hover:text-gray-900 transition-colors">Home</a>
+        <span class="text-gray-400">/</span>
+        {#if data.product.category_name}
+          <a href="/search?category={data.product.category_name}" class="hover:text-gray-900 transition-colors">
+            {getCategoryTranslation(data.product.category_name)}
+          </a>
+          <span class="text-gray-400">/</span>
+        {/if}
+        <span class="text-gray-700 font-medium truncate max-w-[120px]">{data.product.title}</span>
+      </nav>
     </div>
   </div>
-  
-  <div class="lg:grid lg:grid-cols-2 lg:gap-6 max-w-7xl mx-auto bg-white">
-    <!-- Gallery - Compact mobile view -->
-    <div class="lg:sticky lg:top-20 lg:h-[calc(100vh-5rem)]">
-      <ProductGallery 
-        images={productImages}
-        title={data.product.title}
-        condition={data.product.condition}
-        isAuthenticated={!!data.user}
-        class="w-full h-[50vh] sm:h-[60vh] lg:h-full"
-        translations={{
-          new: i18n.product_newWithTags(),
-          likeNew: i18n.product_likeNewCondition(),
-          good: i18n.product_goodCondition(),
-          fair: i18n.product_fairCondition()
-        }}
-      />
-    </div>
-    
-    <!-- Info section - Compact and mobile-optimized -->
-    <div class="px-4 lg:px-6 py-4 lg:py-6 pb-24 lg:pb-8">
-      <!-- Title and actions row -->
-      <div class="flex items-start justify-between gap-3 mb-3">
-        <div class="flex-1">
-          <h1 class="text-lg sm:text-xl font-semibold text-gray-900">{data.product.title}</h1>
-          {#if data.product.brand}
-            <p class="text-sm text-gray-600 mt-0.5">{data.product.brand}</p>
-          {/if}
-        </div>
-        <div class="flex gap-1">
-          <button
-            onclick={handleFavorite}
-            class="p-2 rounded-full hover:bg-gray-100 transition-colors {isFavorited ? 'text-red-500' : 'text-gray-400'}"
-            aria-label="{isFavorited ? 'Remove from favorites' : 'Add to favorites'}"
+
+  <div class="max-w-7xl mx-auto pb-24 lg:pb-8">
+    <div class="lg:grid lg:grid-cols-2 lg:gap-6 lg:p-6">
+      <!-- Left Column: Social Media Style Product Card -->
+      <div class="bg-white lg:rounded-2xl lg:shadow-sm overflow-hidden">
+        <!-- Seller Header (Instagram-style) -->
+        <div class="border-b border-gray-100">
+          <a 
+            href="/profile/{data.product.seller_username || data.product.seller_id}" 
+            class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
           >
-            <svg class="w-5 h-5" fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-            </svg>
-          </button>
-          <button
-            onclick={handleShare}
-            class="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400"
-            aria-label="Share this product"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-      
-      <!-- Price (Desktop only) -->
-      <div class="hidden lg:block mb-4">
-        <p class="text-2xl font-bold text-gray-900">{formatPrice(data.product.price)}</p>
-      </div>
-      
-      <!-- Quick info badges -->
-      <div class="flex flex-wrap gap-1.5 mb-4">
-        {#if data.product.size}
-          <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-            {i18n.product_size()} {data.product.size}
-          </span>
-        {/if}
-        <ConditionBadge 
-          condition={data.product.condition}
-          translations={{
-            brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
-            newWithoutTags: i18n.sell_condition_newWithoutTags(),
-            likeNew: i18n.sell_condition_likeNew(),
-            good: i18n.sell_condition_good(),
-            worn: i18n.sell_condition_worn(),
-            fair: i18n.sell_condition_fair()
-          }}
-        />
-        {#if data.product.color}
-          <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-            {data.product.color}
-          </span>
-        {/if}
-      </div>
-      
-      <!-- Seller section -->
-      <div class="py-3 border-y border-gray-100 mb-4">
-        <a href="/profile/{data.product.seller_username || data.product.seller_id}" class="flex items-center gap-3 hover:bg-gray-50 -mx-2 px-2 py-2 rounded-lg transition-colors">
-          <Avatar 
-            src={data.product.seller_avatar} 
-            alt={data.product.seller_name}
-            size="sm"
-            fallback={data.product.seller_name?.[0]?.toUpperCase() || 'S'}
-          />
-          <div class="flex-1 min-w-0">
-            <p class="font-medium text-sm text-gray-900">{data.product.seller_name}</p>
-            <div class="flex items-center gap-2 text-xs text-gray-600 mt-0.5">
-              {#if data.product.seller_rating}
-                <span class="flex items-center gap-0.5">
-                  <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                  </svg>
-                  {data.product.seller_rating.toFixed(1)}
-                </span>
-              {/if}
-              {#if data.product.seller_sales_count}
-                <span>{data.product.seller_sales_count} {i18n.seller_sales()}</span>
-              {/if}
+            <Avatar 
+              src={data.product.seller_avatar} 
+              alt={data.product.seller_name}
+              size="sm"
+              fallback={data.product.seller_name?.[0]?.toUpperCase() || 'S'}
+            />
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-gray-900">{data.product.seller_name}</p>
+              <div class="flex items-center gap-2 text-xs text-gray-500">
+                <span>{data.sellerProducts?.length || 0} items</span>
+                {#if data.product.seller_rating}
+                  <span>•</span>
+                  <div class="flex items-center gap-0.5">
+                    <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    </svg>
+                    <span>{data.product.seller_rating.toFixed(1)}</span>
+                  </div>
+                {/if}
+                <span>•</span>
+                <span>{getRelativeTime(data.product.created_at)}</span>
+              </div>
             </div>
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+
+        <!-- Product Image -->
+        <div class="aspect-square p-4 bg-gray-50">
+          <ProductGallery
+            images={productImages}
+            title={data.product.title}
+            condition={data.product.condition}
+            class="w-full h-full"
+            translations={{
+              new: i18n.product_newWithTags(),
+              likeNew: i18n.product_likeNewCondition(),
+              good: i18n.product_goodCondition(),
+              fair: i18n.product_fairCondition()
+            }}
+          />
+        </div>
+
+        <!-- Action Bar (Instagram-style) -->
+        <div class="border-t border-gray-100">
+          <div class="flex items-center justify-between px-4 py-3">
+            <div class="flex items-center gap-3">
+              <button 
+                onclick={handleFavorite}
+                disabled={!data.user}
+                class="hover:scale-110 transition-transform"
+                aria-label="{isFavorited ? 'Remove from favorites' : 'Add to favorites'}"
+              >
+                <svg 
+                  class="w-6 h-6 {isFavorited ? 'text-red-500' : 'text-gray-700 hover:text-red-500'} transition-colors" 
+                  fill={isFavorited ? 'currentColor' : 'none'} 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+              </button>
+              <button 
+                onclick={handleShare}
+                class="hover:scale-110 transition-transform" 
+                aria-label="Share"
+              >
+                <svg class="w-6 h-6 text-gray-700 hover:text-gray-900 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a3 3 0 10-4.056-4.424M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              </button>
+            </div>
+            <span class="text-xs text-gray-500">{data.product.view_count || 0} views</span>
           </div>
-          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </a>
-      </div>
-      
-      <!-- Description -->
-      {#if data.product.description}
-        <div class="mb-4">
-          <h3 class="font-medium text-sm text-gray-900 mb-2">{i18n.product_description()}</h3>
-          <p class="text-gray-700 text-sm leading-6 whitespace-pre-wrap {!showFullDescription ? 'line-clamp-4' : ''}">
-            {data.product.description}
-          </p>
-          {#if data.product.description.length > 200}
+        </div>
+
+        <!-- Title and Price (Prominent) -->
+        <div class="px-4 pb-3 border-b border-gray-100">
+          <h1 class="text-lg font-bold text-gray-900 mb-1">{data.product.title}</h1>
+          <div class="flex items-center justify-between">
+            <p class="text-2xl font-black text-gray-900">{formatPrice(data.product.price)}</p>
+            {#if data.product.is_sold}
+              <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs font-semibold">SOLD</span>
+            {:else}
+              <span class="px-3 py-1 bg-green-100 text-green-600 rounded-full text-xs font-semibold">Available</span>
+            {/if}
+          </div>
+        </div>
+
+        <!-- Product Details Grid -->
+        <div class="px-4 py-3">
+          <div class="grid grid-cols-2 gap-3">
+            {#if data.product.brand}
+              <div class="bg-gray-50 rounded-lg px-3 py-2">
+                <p class="text-xs text-gray-500 mb-0.5">Brand</p>
+                <p class="text-sm font-semibold text-gray-900">{data.product.brand}</p>
+              </div>
+            {/if}
+            {#if data.product.size}
+              <div class="bg-gray-50 rounded-lg px-3 py-2">
+                <p class="text-xs text-gray-500 mb-0.5">Size</p>
+                <p class="text-sm font-semibold text-gray-900">{data.product.size}</p>
+              </div>
+            {/if}
+            <div class="bg-gray-50 rounded-lg px-3 py-2">
+              <p class="text-xs text-gray-500 mb-0.5">Condition</p>
+              <p class="text-sm font-semibold text-gray-900">{conditionLabel}</p>
+            </div>
+            {#if data.product.color}
+              <div class="bg-gray-50 rounded-lg px-3 py-2">
+                <p class="text-xs text-gray-500 mb-0.5">Color</p>
+                <p class="text-sm font-semibold text-gray-900">{data.product.color}</p>
+              </div>
+            {/if}
+            <div class="bg-gray-50 rounded-lg px-3 py-2">
+              <p class="text-xs text-gray-500 mb-0.5">Category</p>
+              <p class="text-sm font-semibold text-gray-900">{getCategoryTranslation(data.product.category_name)}</p>
+            </div>
+            {#if data.product.location}
+              <div class="bg-gray-50 rounded-lg px-3 py-2">
+                <p class="text-xs text-gray-500 mb-0.5">Location</p>
+                <p class="text-sm font-semibold text-gray-900">{data.product.location}</p>
+              </div>
+            {/if}
+          </div>
+        </div>
+
+        <!-- Description -->
+        {#if data.product.description}
+          <div class="px-4 py-3 border-t border-gray-100">
+            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{data.product.description}</p>
+          </div>
+        {/if}
+
+        <!-- Mobile Buy Button -->
+        <div class="lg:hidden sticky bottom-0 bg-white border-t border-gray-200 p-3">
+          {#if !data.product.is_sold && data.product.seller_id !== data.user?.id}
             <button 
-              onclick={() => showFullDescription = !showFullDescription}
-              class="text-xs font-medium text-gray-900 mt-2 underline"
+              onclick={handleBuyNow}
+              class="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors"
             >
-              {showFullDescription ? 'Show less' : 'Show more'}
+              {i18n.product_buyNow()} • {formatPrice(data.product.price)}
+            </button>
+          {:else if data.product.is_sold}
+            <button 
+              disabled
+              class="w-full bg-gray-200 text-gray-500 py-3 rounded-xl font-semibold cursor-not-allowed"
+            >
+              {i18n.product_sold()}
             </button>
           {/if}
         </div>
-      {/if}
-      
-      <!-- Item details -->
-      <div class="space-y-2 text-xs py-3 border-t border-gray-100 mb-4">
-        <div class="flex justify-between">
-          <span class="text-gray-600">Category</span>
-          <span class="text-gray-900">{getCategoryTranslation(data.product.category_name)}</span>
+      </div>
+
+      <!-- Right Column: Actions and Recommendations (Desktop) -->
+      <div class="px-3 lg:px-0 mt-4 lg:mt-0">
+        <!-- Desktop Buy Section -->
+        <div class="hidden lg:block bg-white rounded-2xl shadow-sm p-4 mb-4">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <p class="text-sm text-gray-500">Price</p>
+              <p class="text-3xl font-black text-gray-900">{formatPrice(data.product.price)}</p>
+            </div>
+            {#if data.product.is_sold}
+              <span class="px-4 py-2 bg-red-100 text-red-600 rounded-full text-sm font-semibold">SOLD</span>
+            {:else}
+              <span class="px-4 py-2 bg-green-100 text-green-600 rounded-full text-sm font-semibold">Available</span>
+            {/if}
+          </div>
+          {#if !data.product.is_sold && data.product.seller_id !== data.user?.id}
+            <button 
+              onclick={handleBuyNow}
+              class="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors mb-2"
+            >
+              {i18n.product_buyNow()}
+            </button>
+            <button 
+              onclick={handleMakeOffer}
+              class="w-full bg-white text-black border border-gray-300 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+            >
+              {i18n.product_makeOffer()}
+            </button>
+          {:else if data.product.is_sold}
+            <button 
+              disabled
+              class="w-full bg-gray-200 text-gray-500 py-3 rounded-xl font-semibold cursor-not-allowed"
+            >
+              {i18n.product_sold()}
+            </button>
+          {/if}
         </div>
-        <div class="flex justify-between">
-          <span class="text-gray-600">Listed</span>
-          <span class="text-gray-900">{formatDate(data.product.created_at)}</span>
-        </div>
-        {#if data.product.view_count}
-          <div class="flex justify-between">
-            <span class="text-gray-600">Views</span>
-            <span class="text-gray-900">{data.product.view_count}</span>
+        <!-- Similar Products (moved here for desktop) -->
+        {#if data.similarProducts && data.similarProducts.length > 0}
+          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 mb-4">
+            <div class="flex justify-between items-center mb-3">
+              <h2 class="font-semibold text-base">{i18n.product_youMightLike()}</h2>
+              {#if data.similarProducts.length > 3}
+                <span class="text-xs text-gray-500">{data.similarProducts.length} items</span>
+              {/if}
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              {#each data.similarProducts.slice(0, 4) as product}
+                <a 
+                  href={getProductUrl(product)}
+                  class="bg-gray-50 rounded-lg p-2 hover:bg-gray-100 transition-colors"
+                >
+                  <div class="aspect-square rounded overflow-hidden mb-2">
+                    <img 
+                      src={product.images?.[0]?.image_url || '/placeholder-product.svg'} 
+                      alt={product.title}
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+                  <p class="text-xs font-medium text-gray-900 truncate">{product.title}</p>
+                  <p class="text-xs font-bold text-gray-900">{formatPrice(product.price)}</p>
+                </a>
+              {/each}
+            </div>
           </div>
         {/if}
       </div>
-      
-      <!-- Desktop action buttons -->
-      <div class="hidden lg:flex gap-3">
-        <Button 
-          variant="outline" 
-          onclick={handleMakeOffer}
-          class="flex-1"
-        >
-          {i18n.product_makeOffer()}
-        </Button>
-        <Button 
-          variant="primary" 
-          onclick={handleBuyNow}
-          class="flex-1"
-        >
-          {i18n.product_buyNow()}
-        </Button>
-      </div>
-      
-      <!-- Similar products -->
+    </div>
+    
+    <!-- Mobile Similar products section - Horizontal scroll -->
+    <div class="lg:hidden">
       {#if data.similarProducts && data.similarProducts.length > 0}
-        <div class="mt-6">
-          <h2 class="font-semibold text-sm mb-3">{i18n.product_youMightLike()}</h2>
-          <div class="grid grid-cols-2 gap-2">
-            {#each data.similarProducts.slice(0, 4) as product}
-              <ProductCard 
-                product={{
-                  ...product,
-                  images: (product.images || []).map(img => img.image_url),
-                  sellerName: product.seller_name,
-                  sellerRating: product.seller_rating,
-                  sellerAvatar: product.seller_avatar
-                }}
-                onclick={() => goto(getProductUrl(product))}
-                compact={true}
-                translations={{
-                  size: i18n.product_size(),
-                  newSeller: i18n.trending_newSeller(),
-                  unknownSeller: i18n.seller_unknown(),
-                  currency: i18n.common_currency(),
-                  addToFavorites: i18n.product_addToFavorites(),
-                  formatPrice: (price: number) => formatPrice(price),
-                  new: i18n.product_new(),
-                  likeNew: i18n.product_likeNew(),
-                  good: i18n.product_good(),
-                  fair: i18n.product_fair(),
-                  categoryTranslation: getCategoryTranslation
-                }}
-              />
+        <div class="bg-white border-t border-gray-200 px-4 py-3">
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="font-semibold text-base">{i18n.product_youMightLike()}</h2>
+            {#if data.similarProducts.length > 4}
+              <span class="text-xs text-gray-500">{data.similarProducts.length} items</span>
+            {/if}
+          </div>
+          <div class="flex gap-3 overflow-x-auto scrollbar-hide -mx-2 px-2 pb-1">
+            {#each data.similarProducts as product}
+              <div class="w-40 shrink-0">
+                <ProductCard 
+                  product={{
+                    ...product,
+                    images: (product.images || []).map(img => img.image_url),
+                    sellerName: product.seller_name,
+                    sellerRating: product.seller_rating,
+                    sellerAvatar: product.seller_avatar
+                  }}
+                  onclick={() => goto(getProductUrl(product))}
+                  compact={true}
+                  translations={{
+                    size: i18n.product_size(),
+                    newSeller: i18n.trending_newSeller(),
+                    unknownSeller: i18n.seller_unknown(),
+                    currency: i18n.common_currency(),
+                    addToFavorites: i18n.product_addToFavorites(),
+                    formatPrice: (price: number) => formatPrice(price),
+                    new: i18n.product_new(),
+                    likeNew: i18n.product_likeNew(),
+                    good: i18n.product_good(),
+                    fair: i18n.product_fair(),
+                    categoryTranslation: getCategoryTranslation
+                  }}
+                />
+              </div>
             {/each}
           </div>
         </div>
       {/if}
       
-      <!-- More from seller - Horizontal scroll -->
+      <!-- More from seller section - Horizontal scroll -->
       {#if data.sellerProducts && data.sellerProducts.length > 0}
-        <div class="mt-6 -mx-4 px-4">
+        <div class="bg-white border-t border-gray-200 px-4 py-3">
           <div class="flex justify-between items-center mb-3">
-            <h2 class="font-semibold text-sm">{i18n.product_moreFromSeller()} {data.product.seller_name}</h2>
-            <a href="/profile/{data.product.seller_username || data.product.seller_id}" class="text-xs text-gray-600 font-medium">
-              {i18n.product_viewAll()}
+            <h2 class="font-semibold text-base">More from {data.product.seller_name}</h2>
+            <a href="/profile/{data.product.seller_username || data.product.seller_id}" class="text-xs text-gray-600 font-medium hover:text-gray-900">
+              View all →
             </a>
           </div>
-          <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
+          <div class="flex gap-3 overflow-x-auto scrollbar-hide -mx-2 px-2 pb-1">
             {#each data.sellerProducts as product}
               <div class="w-40 shrink-0">
                 <ProductCard 
@@ -497,35 +597,38 @@
     </div>
   </div>
   
-  <!-- Mobile bottom action bar - clean and compact -->
-  <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-3 py-2.5 z-30 safe-area-bottom">
+  <!-- Mobile bottom action bar - Fixed at bottom -->
+  <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-3 py-2.5 z-30 safe-area-bottom">
     <div class="flex gap-2">
       <Button 
         variant="outline" 
-        onclick={handleMessage}
-        class="px-3 py-2"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-        </svg>
-      </Button>
-      <Button 
-        variant="outline" 
         onclick={handleMakeOffer}
-        class="flex-1 py-2 text-sm"
+        class="flex-1"
+        size="md"
       >
         {i18n.product_makeOffer()}
       </Button>
       <Button 
         variant="primary" 
         onclick={handleBuyNow}
-        class="flex-1 py-2 font-semibold text-sm"
+        class="flex-1"
+        size="md"
       >
-        {i18n.product_buyNow()} {formatPrice(data.product.price)}
+        {i18n.product_buyNow()}
       </Button>
     </div>
   </div>
 </div>
+
+<style>
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+</style>
 
 <!-- Bundle Builder Modal -->
 {#if showBundleBuilder}

@@ -85,6 +85,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
           seller_id,
           country_code,
           favorite_count,
+          slug,
           product_images!inner (
             image_url
           ),

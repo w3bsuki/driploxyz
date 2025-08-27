@@ -97,6 +97,20 @@ export const messageNotificationActions = {
       ...store,
       unreadCount: count
     }));
+  },
+
+  incrementUnread: () => {
+    messageNotifications.update(store => ({
+      ...store,
+      unreadCount: store.unreadCount + 1
+    }));
+  },
+
+  decrementUnread: () => {
+    messageNotifications.update(store => ({
+      ...store,
+      unreadCount: Math.max(0, store.unreadCount - 1)
+    }));
   }
 };
 

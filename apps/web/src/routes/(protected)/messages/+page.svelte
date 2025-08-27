@@ -3,7 +3,7 @@
   import { messageNotificationActions, unreadMessageCount } from '$lib/stores/messageNotifications';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
-  import { onMount, onDestroy } from 'svelte';
+  import { onDestroy } from 'svelte';
   import type { RealtimeChannel } from '@supabase/supabase-js';
   import { page, navigating } from '$app/stores';
   
@@ -13,9 +13,24 @@
   
   let { data }: Props = $props();
   
+  // State variables (must be defined before use)
+  let messageText = $state('');
+  let activeTab = $state<'all' | 'buying' | 'selling' | 'offers' | 'unread'>('all');
+  let isTyping = $state(false);
+  let typingTimeout: NodeJS.Timeout | null = null;
+  let typingUsers = $state<Map<string, { username: string; conversationId: string }>>(new Map());
+  
+  // Channel references
   let messageChannel: RealtimeChannel | null = null;
+  let presenceChannel: RealtimeChannel | null = null;
+  let presenceSubscription: RealtimeChannel | null = null;
   let messagesContainer: HTMLDivElement | null = null;
+  
+  // UI state
   let isKeyboardOpen = $state(false);
+  let connectionStatus = $state<'connected' | 'connecting' | 'disconnected'>('connecting');
+  let onlineUsers = $state<Set<string>>(new Set());
+  let isSending = $state(false);
 
   // Set initial unread count from server data
   $effect(() => {
@@ -24,47 +39,225 @@
     }
   });
   
-  // Set up real-time subscription for messages
-  onMount(() => {
+  // Message change handler function
+  async function handleMessageChange(payload) {
+    console.log('📨 Real-time message event:', {
+      type: payload.eventType,
+      table: payload.table,
+      messageId: payload.new?.id,
+      senderId: payload.new?.sender_id,
+      receiverId: payload.new?.receiver_id,
+      content: payload.new?.content?.substring(0, 50) + '...',
+      timestamp: new Date().toISOString()
+    });
+    
+    if (payload.eventType === 'INSERT') {
+      // Fetch full message details from the view
+      const newMessage = payload.new;
+      if (newMessage) {
+        const { data: fullMessage, error } = await data.supabase
+          .from('messages_with_details' as any)
+          .select('*')
+          .eq('id', newMessage.id)
+          .single() as any;
+        
+        if (fullMessage && !error) {
+          // Update local messages array
+          data.messages = [...(data.messages || []), fullMessage];
+          
+          // Mark as delivered if we're the receiver
+          if (newMessage.receiver_id === data.user.id && newMessage.sender_id !== data.user.id) {
+            try {
+              await data.supabase.rpc('mark_message_delivered', {
+                p_message_id: newMessage.id
+              });
+            } catch (e) {
+              console.log('Could not mark as delivered:', e);
+            }
+          }
+          
+          // Auto-scroll to bottom
+          requestAnimationFrame(() => scrollToBottom());
+          
+          // Update unread count if we're the receiver
+          if (newMessage.receiver_id === data.user.id && !newMessage.is_read) {
+            messageNotificationActions.incrementUnread();
+          }
+        } else if (error) {
+          console.error('Error fetching full message:', error);
+        }
+      }
+    } else if (payload.eventType === 'UPDATE') {
+      // Update message status (delivered/read)
+      const updatedMessage = payload.new;
+      if (updatedMessage && data.messages) {
+        // Fetch the updated message with full details
+        const { data: fullMessage, error } = await data.supabase
+          .from('messages_with_details' as any)
+          .select('*')
+          .eq('id', updatedMessage.id)
+          .single() as any;
+          
+        if (fullMessage && !error) {
+          data.messages = data.messages.map(msg => 
+            msg.id === fullMessage.id ? fullMessage : msg
+          );
+        }
+        
+        // Update unread count if message was marked as read
+        if (updatedMessage.is_read && !data.messages.find(m => m.id === updatedMessage.id)?.is_read) {
+          messageNotificationActions.decrementUnread();
+        }
+      }
+    }
+  }
+
+  // Set up real-time subscription for messages with proper error handling
+  $effect(() => {
     if (!data.user || !data.supabase) return;
     
-    // Subscribe to new messages - only for received messages
+    // Set up message subscription for messages where user is sender OR receiver
     messageChannel = data.supabase
-      .channel(`messages_${data.user.id}`)
+      .channel(`messages_${data.user.id}`, {
+        config: {
+          broadcast: { self: false },
+          presence: { key: data.user.id }
+        }
+      })
+      // Listen to messages where user is the sender
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*',
+          schema: 'public',
+          table: 'messages',
+          filter: `sender_id=eq.${data.user.id}`
+        },
+        handleMessageChange
+      )
+      // Listen to messages where user is the receiver
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
           schema: 'public',
           table: 'messages',
           filter: `receiver_id=eq.${data.user.id}`
         },
-        async (payload) => {
-          // Force reload the page data
-          await invalidate('messages:all');
-          // Auto-scroll to bottom after new message
-          scrollToBottom();
-        }
+        handleMessageChange
       )
-      .subscribe();
+      .subscribe((status, err) => {
+        const prevStatus = connectionStatus;
+        connectionStatus = status === 'SUBSCRIBED' ? 'connected' : 
+                          status === 'CHANNEL_ERROR' ? 'disconnected' : 'connecting';
+        
+        console.log('📡 Real-time connection status changed:', {
+          from: prevStatus,
+          to: connectionStatus,
+          status,
+          error: err,
+          userId: data.user?.id,
+          timestamp: new Date().toISOString()
+        });
+        
+        if (err) {
+          console.error('❌ Real-time subscription error:', err);
+        }
+        
+        // Test connection by sending a simple query when connected
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Real-time connected! Testing database access...');
+          data.supabase
+            .from('messages')
+            .select('count')
+            .eq('sender_id', data.user.id)
+            .limit(1)
+            .then(({ data: testData, error: testError }) => {
+              if (testError) {
+                console.error('❌ Database access test failed:', testError);
+              } else {
+                console.log('✅ Database access test passed');
+              }
+            });
+        }
+      });
+    
+    // Set up presence channel for online status and typing
+    presenceChannel = data.supabase
+      .channel('presence_global')
+      .on('presence', { event: 'sync' }, () => {
+        const state = presenceChannel?.presenceState();
+        if (state) {
+          onlineUsers = new Set(Object.keys(state));
+        }
+      })
+      .on('presence', { event: 'join' }, ({ key }) => {
+        onlineUsers.add(key);
+      })
+      .on('presence', { event: 'leave' }, ({ key }) => {
+        onlineUsers.delete(key);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          // Track our presence
+          await presenceChannel?.track({
+            user_id: data.user.id,
+            online_at: new Date().toISOString()
+          });
+          
+          // Update database presence
+          try {
+            await data.supabase.rpc('update_user_presence', {
+              p_status: 'online'
+            });
+          } catch (e) {
+            console.log('Presence function not available:', e.message);
+          }
+        }
+      });
+    
+    // Note: Typing indicators disabled until presence table is created
+    // This would subscribe to typing indicators from presence table if it exists
     
     // Detect keyboard open/close on mobile
-    if (browser && window.visualViewport) {
+    if (typeof window !== 'undefined' && window.visualViewport) {
       const handleViewportChange = () => {
         const hasKeyboard = window.visualViewport.height < window.innerHeight - 100;
         isKeyboardOpen = hasKeyboard;
       };
       
       window.visualViewport.addEventListener('resize', handleViewportChange);
+      
+      // Cleanup function for effect
       return () => {
         window.visualViewport?.removeEventListener('resize', handleViewportChange);
       };
     }
   });
   
-  onDestroy(() => {
+  onDestroy(async () => {
+    // Clean up subscriptions
     if (messageChannel) {
-      data.supabase?.removeChannel(messageChannel);
+      await data.supabase?.removeChannel(messageChannel);
+    }
+    if (presenceChannel) {
+      await presenceChannel?.untrack();
+      await data.supabase?.removeChannel(presenceChannel);
+    }
+    
+    if (presenceSubscription) {
+      await data.supabase?.removeChannel(presenceSubscription);
+    }
+    
+    // Update presence to offline
+    if (data.user && data.supabase) {
+      try {
+        await data.supabase.rpc('update_user_presence', {
+          p_status: 'offline'
+        });
+      } catch (e) {
+        console.log('Could not update offline status:', e);
+      }
     }
   });
   
@@ -79,6 +272,62 @@
   $effect(() => {
     if (selectedConversation() && messagesContainer) {
       requestAnimationFrame(() => scrollToBottom());
+    }
+  });
+  
+  // Auto-reconnect on disconnect with improved logic
+  $effect(() => {
+    if (connectionStatus === 'disconnected' && data.supabase && data.user) {
+      const reconnectTimer = setTimeout(async () => {
+        console.log('🔄 Attempting to reconnect real-time...');
+        
+        try {
+          // Clean up existing channel
+          if (messageChannel) {
+            await data.supabase.removeChannel(messageChannel);
+            messageChannel = null;
+          }
+          
+          // Re-establish message subscription
+          messageChannel = data.supabase
+            .channel(`messages_${data.user.id}_reconnect`, {
+              config: {
+                broadcast: { self: false },
+                presence: { key: data.user.id }
+              }
+            })
+            .on('postgres_changes', {
+              event: '*',
+              schema: 'public',
+              table: 'messages',
+              filter: `sender_id=eq.${data.user.id}`
+            }, handleMessageChange)
+            .on('postgres_changes', {
+              event: '*',
+              schema: 'public',
+              table: 'messages',
+              filter: `receiver_id=eq.${data.user.id}`
+            }, handleMessageChange)
+            .subscribe((status, err) => {
+              connectionStatus = status === 'SUBSCRIBED' ? 'connected' : 
+                                status === 'CHANNEL_ERROR' ? 'disconnected' : 'connecting';
+              console.log('🔄 Reconnected real-time status:', {
+                status,
+                error: err,
+                timestamp: new Date().toISOString()
+              });
+              
+              if (err) {
+                console.error('❌ Reconnection error:', err);
+              }
+            });
+          
+        } catch (error) {
+          console.error('Error reconnecting:', error);
+        }
+      }, 5000);
+      
+      return () => clearTimeout(reconnectTimer);
     }
   });
   
@@ -207,11 +456,6 @@
     }
     return null;
   });
-  let messageText = $state('');
-  let activeTab = $state<'all' | 'buying' | 'selling' | 'offers' | 'unread'>('all');
-  let isTyping = $state(false);
-  let typingTimeout: NodeJS.Timeout | null = null;
-  let typingUsers = $state<Record<string, string>>({});
   
   const selectedConvMessages = $derived(() => {
     if (!selectedConversation()) {
@@ -230,14 +474,30 @@
     return i18n.messages_now();
   };
   
-  const getActiveStatus = (lastActiveAt: string | null) => {
-    // Use fixed status to prevent hydration mismatch
-    return i18n.messages_activeNow();
+  const getActiveStatus = (userId: string | null, lastActiveAt: string | null) => {
+    if (!userId) return '';
+    
+    // Check if user is online
+    if (onlineUsers.has(userId)) {
+      return i18n.messages_activeNow();
+    }
+    
+    // Otherwise show last active time
+    if (!lastActiveAt) return 'Offline';
+    
+    const lastActive = new Date(lastActiveAt);
+    const now = new Date();
+    const diffMinutes = Math.floor((now.getTime() - lastActive.getTime()) / 60000);
+    
+    if (diffMinutes < 5) return 'Active recently';
+    if (diffMinutes < 60) return `Active ${diffMinutes}m ago`;
+    if (diffMinutes < 1440) return `Active ${Math.floor(diffMinutes / 60)}h ago`;
+    return 'Offline';
   };
   
-  // Handle typing indicator
-  function handleTyping() {
-    if (!selectedConversation() || !data.user) return;
+  // Handle typing indicator with presence
+  async function handleTyping() {
+    if (!selectedConversation() || !data.user || !data.supabase) return;
     
     // Clear existing timeout
     if (typingTimeout) {
@@ -247,70 +507,211 @@
     // Set typing state
     if (!isTyping) {
       isTyping = true;
-      // Send typing indicator to other user via Supabase channel
-      // This would be implemented with presence features
+      
+      // Update presence with typing status
+      try {
+        await data.supabase.rpc('update_user_presence', {
+          p_status: 'online',
+          p_typing_in: selectedConversation()
+        });
+      } catch (e) {
+        console.log('Could not update typing status:', e);
+      }
     }
     
     // Clear typing after 3 seconds of inactivity
-    typingTimeout = setTimeout(() => {
+    typingTimeout = setTimeout(async () => {
       isTyping = false;
+      
+      // Clear typing status in presence
+      if (data.supabase) {
+        try {
+          await data.supabase.rpc('update_user_presence', {
+            p_status: 'online',
+            p_typing_in: null
+          });
+        } catch (e) {
+          console.log('Could not clear typing status:', e);
+        }
+      }
     }, 3000);
   }
 
   async function sendMessage() {
-    
-    if (!messageText.trim() || !selectedConversation() || !data.user) {
+    // Prevent multiple submissions
+    if (isSending) {
+      console.log('⚠️ Already sending message, ignoring duplicate call');
       return;
     }
     
-    // Clear typing indicator
+    console.log('🚀 sendMessage called', { 
+      messageText: messageText.trim(),
+      selectedConversation: selectedConversation(),
+      connectionStatus,
+      isSending
+    });
+    
+    // Validation
+    if (!messageText.trim()) {
+      console.error('❌ No message text');
+      return;
+    }
+    
+    if (!selectedConversation()) {
+      console.error('❌ No selected conversation');
+      return;
+    }
+    
+    if (!data.user?.id) {
+      console.error('❌ No user data');
+      alert('Please log in to send messages.');
+      return;
+    }
+    
+    if (!data.supabase) {
+      console.error('❌ No supabase client');
+      alert('Connection error. Please refresh the page.');
+      return;
+    }
+    
+    // Set loading state
+    isSending = true;
+    console.log('✅ Validation passed, sending message...');
+    
+    // Clear typing indicator (non-blocking)
     isTyping = false;
     if (typingTimeout) {
       clearTimeout(typingTimeout);
-    }
-    
-    // Extract user ID and product ID from conversation key
-    const [recipientId, productId] = selectedConversation().split('__');
-    
-    if (recipientId === data.user.id) {
-      alert('Cannot send message to yourself!');
-      return;
-    }
-    
-    // Validate UUID format
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    
-    if (!uuidRegex.test(recipientId)) {
-      return;
-    }
-    
-    if (productId && productId !== 'general' && !uuidRegex.test(productId)) {
-      return;
+      // Don't await this - it can fail and shouldn't block message sending
+      data.supabase.rpc('update_user_presence', {
+        p_status: 'online',
+        p_typing_in: null
+      }).catch(e => console.log('Could not clear typing:', e));
     }
     
     try {
-      const messageData = {
+      // Extract and validate conversation details
+      const conversationId = selectedConversation();
+      if (!conversationId?.includes('__')) {
+        throw new Error('Invalid conversation format');
+      }
+      
+      const [recipientId, productId] = conversationId.split('__');
+      console.log('📝 Sending to:', { recipientId, productId });
+      
+      // Validate UUIDs
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(recipientId)) {
+        throw new Error('Invalid recipient ID');
+      }
+      
+      if (productId && productId !== 'general' && !uuidRegex.test(productId)) {
+        throw new Error('Invalid product ID');
+      }
+      
+      // Store message content and clear input
+      const messageContent = messageText.trim();
+      messageText = '';
+      
+      // Create optimistic message
+      const tempMessage = {
+        id: 'temp_' + Date.now(),
         sender_id: data.user.id,
         receiver_id: recipientId,
-        product_id: productId && productId !== 'general' ? productId : null,
-        content: messageText.trim()
+        product_id: productId === 'general' ? null : productId,
+        content: messageContent,
+        status: 'sending',
+        created_at: new Date().toISOString(),
+        is_read: false,
+        sender: {
+          id: data.user.id,
+          username: data.user.user_metadata?.username || data.user.email,
+          avatar_url: data.user.user_metadata?.avatar_url
+        },
+        receiver: { id: recipientId }
       };
       
-      const { error } = await data.supabase
+      // Add optimistic message to UI
+      data.messages = [...(data.messages || []), tempMessage];
+      requestAnimationFrame(() => scrollToBottom());
+      
+      console.log('💾 Inserting message into database...');
+      
+      // Insert message into database with timeout
+      const insertPromise = data.supabase
         .from('messages')
-        .insert(messageData);
+        .insert({
+          sender_id: data.user.id,
+          receiver_id: recipientId,
+          product_id: productId === 'general' ? null : productId,
+          content: messageContent
+        })
+        .select('*')
+        .single();
+      
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Message send timeout')), 10000)
+      );
+      
+      const { data: newMessage, error } = await Promise.race([
+        insertPromise,
+        timeoutPromise
+      ]) as any;
       
       if (error) {
         throw error;
       }
       
-      messageText = '';
-      // Force refresh messages
-      await invalidate('messages:all');
-      // Scroll to bottom after sending
-      requestAnimationFrame(() => scrollToBottom());
-    } catch (err) {
-      alert('Failed to send message: ' + (err?.message || 'Unknown error'));
+      console.log('✅ Message inserted successfully:', newMessage.id);
+      
+      // Update optimistic message with real data
+      data.messages = data.messages.map(m => 
+        m.id === tempMessage.id 
+          ? { ...tempMessage, ...newMessage, status: 'sent' } 
+          : m
+      );
+      
+      // Fetch full message details (non-blocking)
+      data.supabase
+        .from('messages_with_details' as any)
+        .select('*')
+        .eq('id', newMessage.id)
+        .single()
+        .then(({ data: fullMessage }) => {
+          if (fullMessage) {
+            data.messages = data.messages.map(m => 
+              m.id === tempMessage.id ? fullMessage : m
+            );
+          }
+        })
+        .catch(e => console.log('Could not fetch full message details:', e));
+      
+    } catch (error) {
+      console.error('❌ Send message failed:', error);
+      
+      // Remove optimistic message
+      data.messages = data.messages.filter(m => !m.id.toString().startsWith('temp_'));
+      
+      // Restore message text
+      if (!messageText) {
+        messageText = error.message?.includes('timeout') 
+          ? messageText 
+          : messageText || '';
+      }
+      
+      // Show user-friendly error
+      const errorMessage = error.message?.includes('timeout') 
+        ? 'Message send timeout. Please try again.'
+        : error.message?.includes('Invalid') 
+          ? 'Invalid conversation. Please refresh the page.'
+          : 'Failed to send message. Please try again.';
+          
+      alert(errorMessage);
+      
+    } finally {
+      isSending = false;
+      console.log('📤 Send message completed');
     }
   }
   
@@ -332,17 +733,13 @@
 </svelte:head>
 
 <div class="h-screen bg-gray-50 flex flex-col overflow-hidden">
-  <!-- Header only for conversation list -->
+  <!-- Page Header - COMPLETELY HIDDEN on mobile when in conversation -->
   {#if !selectedConversation()}
-    <div class="shrink-0">
-        </div>
-    
-    <!-- Page Header -->
-    <div class="bg-white border-b border-gray-200 shrink-0">
-      <div class="max-w-7xl mx-auto">
-        <div class="px-4 sm:px-6 lg:px-8 py-3">
-          <h1 class="text-lg font-semibold text-gray-900">{i18n.messages_inbox()}</h1>
-        </div>
+  <div class="bg-white border-b border-gray-200 shrink-0">
+    <div class="max-w-7xl mx-auto">
+      <div class="px-4 sm:px-6 lg:px-8 py-3">
+        <h1 class="text-lg font-semibold text-gray-900">{i18n.messages_inbox()}</h1>
+      </div>
         
         <!-- Mobile Filter Pills (Full Width) -->
         <div class="sm:hidden">
@@ -386,9 +783,9 @@
             onTabChange={(tab) => activeTab = tab}
           />
         </div>
-        <div class="h-1"></div>
-      </div>
+      <div class="h-1"></div>
     </div>
+  </div>
   {/if}
 
   <div class="flex-1 max-w-7xl mx-auto sm:px-6 lg:px-8 overflow-hidden flex flex-col w-full">
@@ -456,9 +853,17 @@
       <!-- Chat View -->
       {#if selectedConversation()}
         {@const conv = conversations().find(c => c.id === selectedConversation())}
-        <div class="sm:col-span-2 lg:col-span-3 bg-white flex flex-col h-full {selectedConversation() ? 'chat-mobile-full' : ''} sm:relative">
+        <div class="sm:col-span-2 lg:col-span-3 bg-white flex flex-col h-full {selectedConversation() ? 'absolute inset-0 z-10 sm:relative' : 'hidden sm:flex'} sm:relative">
           <!-- Chat Header - Fixed -->
-          <div class="bg-white border-b border-gray-200 px-4 py-3 shrink-0 {selectedConversation() ? 'sm:border-t-0' : ''}">
+          <div class="bg-white border-b border-gray-200 px-4 py-3 shrink-0">
+            <!-- Connection Status Bar -->
+            {#if connectionStatus !== 'connected'}
+              <div class="absolute top-0 left-0 right-0 h-1 {connectionStatus === 'connecting' ? 'bg-yellow-400 animate-pulse' : 'bg-red-400'} transition-colors" title={connectionStatus === 'connecting' ? 'Connecting...' : 'Disconnected'}></div>
+            {:else}
+              <!-- Show briefly when connected -->
+              <div class="absolute top-0 left-0 right-0 h-1 bg-green-400 transition-all duration-1000 opacity-0"></div>
+            {/if}
+            
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-3">
                 <button
@@ -473,7 +878,7 @@
                 <Avatar src={conv?.userAvatar} name={conv?.userName} size="sm" />
                 <div>
                   <h3 class="font-medium text-gray-900 text-sm">{conv?.userName}</h3>
-                  <p class="text-xs text-gray-500">{getActiveStatus(conv?.lastActiveAt)}</p>
+                  <p class="text-xs text-gray-500">{getActiveStatus(conv?.userId, conv?.lastActiveAt)}</p>
                 </div>
               </div>
               <div class="flex items-center space-x-1">
@@ -556,19 +961,29 @@
                       {timeAgo(message.created_at)}
                     </p>
                     
-                    <!-- Read Receipt for sent messages -->
+                    <!-- Message Status for sent messages -->
                     {#if message.sender_id === data.user?.id}
                       <div class="flex items-center space-x-1 text-[10px] text-gray-400">
-                        {#if message.is_read}
-                          <svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                        {#if message.status === 'sending'}
+                          <svg class="w-3 h-3 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10" stroke-width="2" />
                           </svg>
-                          <span class="text-blue-500">{i18n.messages_read()}</span>
-                        {:else}
+                          <span>Sending...</span>
+                        {:else if message.status === 'sent' || (!message.status && !message.delivered_at)}
                           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                           </svg>
-                          <span>{i18n.messages_sent()}</span>
+                          <span>Sent</span>
+                        {:else if message.status === 'delivered' || message.delivered_at}
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          <span>Delivered</span>
+                        {:else if message.status === 'read' || message.is_read}
+                          <svg class="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span class="text-blue-500">Read</span>
                         {/if}
                       </div>
                     {/if}
@@ -578,11 +993,18 @@
             {/each}
             
             <!-- Typing Indicator -->
-            {#if selectedConversation() && typingUsers[selectedConversation()]}
-              <TypingIndicator 
-                show={true}
-                username={typingUsers[selectedConversation()]}
-              />
+            {#if selectedConversation()}
+              {@const conv = conversations().find(c => c.id === selectedConversation())}
+              {@const otherUserId = conv?.userId}
+              {@const typingUser = Array.from(typingUsers.values()).find(u => 
+                u.conversationId === selectedConversation()
+              )}
+              {#if typingUser}
+                <TypingIndicator 
+                  show={true}
+                  username={typingUser.username}
+                />
+              {/if}
             {/if}
           </div>
 
@@ -629,8 +1051,8 @@
               </div>
               <button 
                 onclick={sendMessage}
-                class="p-2.5 bg-black text-white rounded-full hover:bg-gray-800 transition-colors {messageText.trim() ? '' : 'opacity-50 cursor-not-allowed'}"
-                disabled={!messageText.trim()}
+                class="p-2.5 bg-black text-white rounded-full hover:bg-gray-800 transition-colors {messageText.trim() && !isSending ? '' : 'opacity-50 cursor-not-allowed'}"
+                disabled={!messageText.trim() || isSending}
                 aria-label="Send message"
               >
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
