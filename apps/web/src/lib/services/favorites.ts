@@ -15,7 +15,7 @@ export interface FavoriteWithProduct extends Favorite {
     seller_id: string;
     product_images?: { image_url: string }[];
     profiles?: {
-      username: string;
+      username: string | null;
       avatar_url?: string | null;
     };
   };

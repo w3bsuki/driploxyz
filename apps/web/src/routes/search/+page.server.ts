@@ -1,215 +1,149 @@
 import type { PageServerLoad } from './$types';
-import type { SupabaseClient } from '@supabase/supabase-js';
-import type { Database } from '@repo/database';
+import { error } from '@sveltejs/kit';
+import { dev } from '$app/environment';
+import { buildCategoryHierarchy } from '$lib/categories/mapping';
 
 /**
- * Get all descendant category IDs using a recursive CTE
- * This replaces multiple database queries with a single efficient query
+ * Get category and all its descendants using recursive CTE
+ * This is much more efficient than building arrays manually
  */
-async function getCategoryDescendants(
-  supabase: SupabaseClient<Database>,
-  rootCategoryId: string
-): Promise<string[]> {
-  try {
-    const { data, error } = await supabase.rpc('get_category_descendants', {
-      root_category_id: rootCategoryId
-    });
-    
-    if (error) {
-      console.error('Error getting category descendants, using fallback:', error);
-      return await getCategoryDescendantsFallback(supabase, rootCategoryId);
-    }
-    
-    return data?.map((row: { id: string }) => row.id) || [rootCategoryId];
-  } catch (fallbackError) {
-    console.error('Database function not available, using fallback approach');
-    return await getCategoryDescendantsFallback(supabase, rootCategoryId);
-  }
+async function getCategoryWithDescendants(supabase: any, categoryId: string) {
+  const { data, error } = await supabase
+    .rpc('get_category_descendants', { root_category_id: categoryId });
+  
+  if (error || !data) return [];
+  return data.map((d: any) => d.id);
 }
 
 /**
- * Fallback approach for getting category descendants - more efficient than original
- * Uses fewer queries by batching level lookups
+ * Get categories by name across all genders (Level 2)
  */
-async function getCategoryDescendantsFallback(
-  supabase: SupabaseClient<Database>,
-  rootCategoryId: string
-): Promise<string[]> {
-  const categoryIds = [rootCategoryId];
+async function getCategoriesAcrossGenders(supabase: any, categoryName: string) {
+  const { data, error } = await supabase
+    .rpc('get_products_by_category_name_across_genders', { category_name: categoryName });
   
-  // Get Level 2 children
-  const { data: level2 } = await supabase
-    .from('categories')
-    .select('id')
-    .eq('parent_id', rootCategoryId)
-    .eq('is_active', true);
-  
-  if (level2 && level2.length > 0) {
-    const level2Ids = level2.map(c => c.id);
-    categoryIds.push(...level2Ids);
-    
-    // Get Level 3 children in one query
-    const { data: level3 } = await supabase
-      .from('categories')
-      .select('id')
-      .in('parent_id', level2Ids)
-      .eq('is_active', true);
-    
-    if (level3 && level3.length > 0) {
-      categoryIds.push(...level3.map(c => c.id));
-    }
-  }
-  
-  return categoryIds;
-}
-
-/**
- * Find category by slug or name with efficient single query
- */
-async function findCategoryBySlugOrName(
-  supabase: SupabaseClient<Database>,
-  slugOrName: string,
-  level?: number,
-  parentId?: string
-): Promise<{ id: string; name: string; slug: string } | null> {
-  let query = supabase
-    .from('categories')
-    .select('id, name, slug')
-    .or(`slug.eq.${slugOrName},name.ilike.${slugOrName}`);
-  
-  if (level) {
-    query = query.eq('level', level);
-  }
-  
-  if (parentId) {
-    query = query.eq('parent_id', parentId);
-  }
-  
-  const { data, error } = await query.single();
-  return error ? null : data;
+  if (error || !data) return [];
+  return data.map((d: any) => d.category_id);
 }
 
 export const load: PageServerLoad = async ({ url, locals }) => {
   const country = locals.country || 'BG';
-  const query = url.searchParams.get('q') || '';
-  const categorySlug = url.searchParams.get('category') || '';
-  const subcategorySlug = url.searchParams.get('subcategory') || '';
-  const specificSlug = url.searchParams.get('specific') || '';
   
+  // Parse all URL parameters
+  const query = url.searchParams.get('q') || '';
+  
+  // Category hierarchy parameters
+  // Level 1: Gender (women/men/kids/unisex)
+  const level1 = url.searchParams.get('category') || url.searchParams.get('level1') || '';
+  // Level 2: Type (clothing/shoes/bags/accessories)
+  const level2 = url.searchParams.get('subcategory') || url.searchParams.get('level2') || '';
+  // Level 3: Specific item (t-shirts/dresses/sneakers/etc)
+  const level3 = url.searchParams.get('specific') || url.searchParams.get('level3') || '';
+  
+  // Other filters
   const minPrice = url.searchParams.get('min_price');
   const maxPrice = url.searchParams.get('max_price');
   const condition = url.searchParams.get('condition');
   const brand = url.searchParams.get('brand');
   const size = url.searchParams.get('size');
   const sortBy = url.searchParams.get('sort') || 'relevance';
-  const onSale = url.searchParams.get('on_sale') === 'true';
-  const freeShipping = url.searchParams.get('free_shipping') === 'true';
 
   try {
-    // Initialize category filtering - single efficient approach
     let categoryIds: string[] = [];
-    let targetCategory: { id: string; name: string; slug: string } | null = null;
-
-    if (categorySlug) {
-      // Map common category slugs to their names for filtering
-      const categoryMap: Record<string, string> = {
-        'women': 'Women',
-        'men': 'Men', 
-        'kids': 'Kids',
-        'unisex': 'Unisex'
-      };
-
-      const categoryName = categoryMap[categorySlug] || categorySlug;
-      
-      // Check if this is a special Level 2 category request (accessories, shoes, bags, clothing)
-      if (['accessories', 'shoes', 'bags', 'clothing'].includes(categorySlug.toLowerCase())) {
-        const categoryNameMap: Record<string, string> = {
-          'accessories': 'Accessories',
-          'shoes': 'Shoes',
-          'bags': 'Bags', 
-          'clothing': 'Clothing'
-        };
-        
-        const targetCategoryName = categoryNameMap[categorySlug.toLowerCase()];
-        
-        // Get all Level 2 categories with this name efficiently
-        const { data: level2Categories } = await locals.supabase
-          .from('categories')
-          .select('id')
-          .eq('name', targetCategoryName)
-          .eq('level', 2)
-          .eq('is_active', true);
-        
-        if (level2Categories && level2Categories.length > 0) {
-          const level2Ids = level2Categories.map(c => c.id);
-          
-          // Get all their descendants in one batch query
-          const { data: level3Categories } = await locals.supabase
-            .from('categories')
-            .select('id')
-            .in('parent_id', level2Ids)
-            .eq('level', 3)
-            .eq('is_active', true);
-          
-          // Include both Level 2 and Level 3 categories
-          categoryIds = [...level2Ids];
-          if (level3Categories && level3Categories.length > 0) {
-            categoryIds.push(...level3Categories.map(c => c.id));
-          }
-        }
-      } else {
-        // Find the main category (Level 1) efficiently
-        targetCategory = await findCategoryBySlugOrName(locals.supabase, categoryName, 1);
-        
-        if (targetCategory) {
-          // Get all descendants of this category using recursive CTE
-          categoryIds = await getCategoryDescendants(locals.supabase, targetCategory.id);
-        }
-      }
-    }
-
-    // Handle subcategory filtering - more efficient approach
-    if (subcategorySlug && targetCategory) {
-      const subcategoryMap: Record<string, string> = {
-        'clothing': 'Clothing',
-        'shoes': 'Shoes',
-        'accessories': 'Accessories',
-        'bags': 'Bags'
-      };
-      
-      const subcategoryName = subcategoryMap[subcategorySlug] || subcategorySlug;
-      
-      // Find the Level 2 category under the selected Level 1
-      const subcategory = await findCategoryBySlugOrName(
-        locals.supabase, 
-        subcategoryName, 
-        2, 
-        targetCategory.id
-      );
-      
-      if (subcategory) {
-        // Get all descendants of this subcategory
-        categoryIds = await getCategoryDescendants(locals.supabase, subcategory.id);
-      }
-    }
     
-    // Handle specific category filtering - efficient single query
-    if (specificSlug && categoryIds.length > 0) {
-      // Find the specific category from our filtered set
-      const { data: specificCategory } = await locals.supabase
+    // Build category filter using database functions
+    if (level1 && level1 !== 'all') {
+      // Find Level 1 category
+      const { data: l1Cat } = await locals.supabase
         .from('categories')
-        .select('id, name')
-        .ilike('name', `%${specificSlug}%`)
-        .in('id', categoryIds)
-        .eq('level', 3)
+        .select('id, name, slug')
+        .eq('slug', level1)
+        .eq('level', 1)
+        .eq('is_active', true)
         .single();
       
-      if (specificCategory) {
-        categoryIds = [specificCategory.id];
+      if (l1Cat) {
+        if (level2 && level2 !== 'all') {
+          // Normalize Level 2 name
+          const level2Name = level2.charAt(0).toUpperCase() + level2.slice(1).toLowerCase();
+          
+          // Find Level 2 under Level 1
+          const { data: l2Cat } = await locals.supabase
+            .from('categories')
+            .select('id, name, slug')
+            .eq('name', level2Name)
+            .eq('parent_id', l1Cat.id)
+            .eq('level', 2)
+            .eq('is_active', true)
+            .single();
+          
+          if (l2Cat) {
+            if (level3 && level3 !== 'all') {
+              // Find specific Level 3 categories
+              const searchTerm = level3.replace(/-/g, ' ');
+              const { data: l3Cats } = await locals.supabase
+                .from('categories')
+                .select('id')
+                .ilike('name', `%${searchTerm}%`)
+                .eq('parent_id', l2Cat.id)
+                .eq('level', 3)
+                .eq('is_active', true);
+              
+              if (l3Cats && l3Cats.length > 0) {
+                categoryIds = l3Cats.map(c => c.id);
+              } else {
+                // No Level 3 match, use Level 2 and all children
+                categoryIds = await getCategoryWithDescendants(locals.supabase, l2Cat.id);
+              }
+            } else {
+              // Get Level 2 and all its descendants
+              categoryIds = await getCategoryWithDescendants(locals.supabase, l2Cat.id);
+            }
+          } else {
+            // Level 2 not found, use all of Level 1
+            categoryIds = await getCategoryWithDescendants(locals.supabase, l1Cat.id);
+          }
+        } else {
+          // No Level 2 specified, get all descendants of Level 1
+          categoryIds = await getCategoryWithDescendants(locals.supabase, l1Cat.id);
+        }
+      }
+    } else if (level2 && level2 !== 'all') {
+      // Cross-gender Level 2 search (e.g., all "Clothing" across all genders)
+      const level2Name = level2.charAt(0).toUpperCase() + level2.slice(1).toLowerCase();
+      categoryIds = await getCategoriesAcrossGenders(locals.supabase, level2Name);
+      
+      // If Level 3 is specified, filter further
+      if (level3 && level3 !== 'all' && categoryIds.length > 0) {
+        const searchTerm = level3.replace(/-/g, ' ');
+        const { data: l3Cats } = await locals.supabase
+          .from('categories')
+          .select('id')
+          .ilike('name', `%${searchTerm}%`)
+          .in('id', categoryIds)
+          .eq('level', 3)
+          .eq('is_active', true);
+        
+        if (l3Cats && l3Cats.length > 0) {
+          categoryIds = l3Cats.map(c => c.id);
+        }
+      }
+    } else if (level3 && level3 !== 'all') {
+      // Direct Level 3 search across all categories
+      const searchTerm = level3.replace(/-/g, ' ');
+      const { data: l3Cats } = await locals.supabase
+        .from('categories')
+        .select('id')
+        .ilike('name', `%${searchTerm}%`)
+        .eq('level', 3)
+        .eq('is_active', true);
+      
+      if (l3Cats && l3Cats.length > 0) {
+        categoryIds = l3Cats.map(c => c.id);
       }
     }
 
-    // Build optimized products query
+    // Build the products query
     let productsQuery = locals.supabase
       .from('products')
       .select(`
@@ -236,31 +170,25 @@ export const load: PageServerLoad = async ({ url, locals }) => {
           id,
           name,
           slug,
-          parent_id
+          parent_id,
+          level
         )
       `)
       .eq('is_sold', false)
       .eq('is_active', true)
       .eq('country_code', country);
 
-    // Apply category filter efficiently - use index-friendly approach
+    // Apply category filter
     if (categoryIds.length > 0) {
-      if (categoryIds.length === 1) {
-        // Single category - most efficient
-        productsQuery = productsQuery.eq('category_id', categoryIds[0]);
-      } else {
-        // Multiple categories - still efficient with proper index
-        productsQuery = productsQuery.in('category_id', categoryIds);
-      }
+      productsQuery = productsQuery.in('category_id', categoryIds);
     }
 
-    // Apply search if query exists
+    // Apply search query
     if (query && query.trim()) {
-      // Use ilike for simple text search (works immediately)
       productsQuery = productsQuery.ilike('title', `%${query}%`);
     }
 
-    // Apply filters
+    // Apply price filters
     if (minPrice) {
       const min = parseFloat(minPrice);
       if (!isNaN(min)) {
@@ -275,15 +203,16 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       }
     }
 
-    if (condition) {
+    // Apply other filters
+    if (condition && condition !== 'all') {
       productsQuery = productsQuery.eq('condition', condition);
     }
 
-    if (brand) {
+    if (brand && brand !== 'all') {
       productsQuery = productsQuery.ilike('brand', `%${brand}%`);
     }
 
-    if (size) {
+    if (size && size !== 'all') {
       productsQuery = productsQuery.eq('size', size);
     }
 
@@ -301,13 +230,12 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         break;
     }
 
-    // Limit results
+    // Execute query with limit
     productsQuery = productsQuery.limit(100);
-
     const { data: products, error: productsError } = await productsQuery;
-    
 
     if (productsError) {
+      if (dev) console.error('Products query error:', productsError);
       return {
         products: [],
         categories: [],
@@ -316,9 +244,9 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         total: 0,
         error: 'Search failed. Please try again.',
         filters: {
-          category: categorySlug,
-          subcategory: subcategorySlug,
-          specific: specificSlug,
+          category: level1,
+          subcategory: level2,
+          specific: level3,
           minPrice,
           maxPrice,
           condition,
@@ -329,142 +257,54 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       };
     }
 
-    // Fetch categories efficiently - use single query with proper ordering
+    // Fetch all categories for filters
     const { data: allCategories } = await locals.supabase
       .from('categories')
       .select('id, name, slug, parent_id, level')
       .eq('is_active', true)
-      .order('level', { ascending: true })
-      .order('sort_order', { ascending: true, nullsLast: true })
-      .order('name');
+      .order('level')
+      .order('sort_order');
 
-    // Get only Level 1 categories for the main pills
+    // Build hierarchy for UI
+    const categoryHierarchy = allCategories ? buildCategoryHierarchy(allCategories) : {};
+
+    // Get Level 1 categories for pills
     const level1Categories = allCategories?.filter(c => c.level === 1) || [];
     
-    // Sort Level 1 categories: Women, Men, Kids, Unisex (in that order)
+    // Sort by predefined order
     const categoryOrder = ['Women', 'Men', 'Kids', 'Unisex'];
-    const sortedLevel1 = level1Categories.sort((a, b) => {
+    const sortedCategories = level1Categories.sort((a, b) => {
       const aIndex = categoryOrder.indexOf(a.name);
       const bIndex = categoryOrder.indexOf(b.name);
-      if (aIndex === -1 && bIndex === -1) return a.name.localeCompare(b.name);
+      if (aIndex === -1 && bIndex === -1) return 0;
       if (aIndex === -1) return 1;
       if (bIndex === -1) return -1;
       return aIndex - bIndex;
     });
 
-    // Build category hierarchy for the sidebar/navigation
-    const categoryHierarchy: any = {};
-    
-    // Add Level 1 categories (Women, Men, Kids, Unisex)
-    sortedLevel1.forEach(mainCat => {
-      const level2cats = allCategories?.filter(c => c.parent_id === mainCat.id && c.level === 2) || [];
-      categoryHierarchy[mainCat.slug || mainCat.name.toLowerCase()] = {
-        id: mainCat.id,
-        name: mainCat.name,
-        slug: mainCat.slug,
-        subcategories: level2cats.map(subcat => {
-          const level3 = allCategories?.filter(c => c.parent_id === subcat.id && c.level === 3) || [];
-          return {
-            id: subcat.id,
-            name: subcat.name,
-            slug: subcat.slug,
-            children: level3
-          };
-        })
-      };
-    });
-    
-    // Add special Level 2 categories as separate main categories (Accessories, Shoes, Bags)
-    const specialLevel2Categories = ['Accessories', 'Shoes', 'Bags'];
-    specialLevel2Categories.forEach(categoryName => {
-      const level2cats = allCategories?.filter(c => c.name === categoryName && c.level === 2) || [];
-      if (level2cats.length > 0) {
-        // Combine all Level 3 subcategories from all genders
-        const allLevel3 = [];
-        for (const level2cat of level2cats) {
-          const level3 = allCategories?.filter(c => c.parent_id === level2cat.id && c.level === 3) || [];
-          allLevel3.push(...level3);
-        }
-        
-        categoryHierarchy[categoryName.toLowerCase()] = {
-          id: `level2-${categoryName.toLowerCase()}`, // Special ID for Level 2 categories
-          name: categoryName,
-          slug: categoryName.toLowerCase(),
-          subcategories: allLevel3.map(subcat => ({
-            id: subcat.id,
-            name: subcat.name,
-            slug: subcat.slug
-          }))
-        };
-      }
-    });
-
-    // Create a map for quick parent lookup
-    const categoryMap = new Map();
-    allCategories?.forEach(cat => {
-      categoryMap.set(cat.id, cat);
-    });
-
-    // Transform products data for frontend - minimal processing
-    const transformedProducts = (products || []).map((product: any) => {
-      // Get category from the product data
-      const productCategory = product.categories || categoryMap.get(product.category_id);
-      
-      // Function to find level 1 category (Men/Women/Kids/Unisex)
-      const findLevel1Category = (category: any): any => {
-        if (!category) return null;
-        if (!category.parent_id) return category; // This is level 1
-        const parent = categoryMap.get(category.parent_id);
-        return findLevel1Category(parent); // Recursively find level 1
-      };
-      
-      // Get the actual level 1 category
-      const level1Category = findLevel1Category(productCategory);
-      let subcategory = null;
-      
-      if (productCategory?.parent_id) {
-        subcategory = productCategory;
-      }
-      
-      return {
-        id: product.id,
-        title: product.title,
-        price: Number(product.price),
-        images: product.product_images?.map((img: any) => img.image_url).filter(Boolean) || [],
-        product_images: product.product_images,
-        brand: product.brand,
-        size: product.size,
-        condition: product.condition,
-        category: {
-          name: productCategory?.name,
-          slug: productCategory?.slug
-        },
-        // Add proper category hierarchy - ALWAYS use level 1 for main_category_name
-        main_category_name: level1Category?.name,
-        category_name: productCategory?.name,
-        subcategory_name: subcategory?.name,
-        seller: {
-          username: product.profiles?.username,
-          avatar_url: product.profiles?.avatar_url
-        },
-        sellerAccountType: product.profiles?.account_type === 'brand' ? 'brand' : 
-                          product.profiles?.account_type === 'pro' || product.profiles?.account_type === 'premium' ? 'pro' :
-                          'new_seller',
-        created_at: product.created_at,
-        location: product.location
-      };
-    });
+    // Transform products for UI
+    const transformedProducts = products?.map(product => ({
+      ...product,
+      images: product.product_images?.map((img: any) => img.image_url) || [],
+      seller: product.profiles ? {
+        id: product.seller_id,
+        username: product.profiles.username,
+        avatar_url: product.profiles.avatar_url,
+        account_type: product.profiles.account_type
+      } : null,
+      category: product.categories || null
+    })) || [];
 
     return {
       products: transformedProducts,
-      categories: allCategories || [],  // Pass ALL categories so client can build full hierarchy
+      categories: sortedCategories,
       categoryHierarchy,
       searchQuery: query,
       total: transformedProducts.length,
       filters: {
-        category: categorySlug,
-        subcategory: subcategorySlug,
-        specific: specificSlug,
+        category: level1,
+        subcategory: level2,
+        specific: level3,
         minPrice,
         maxPrice,
         condition,
@@ -474,25 +314,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       }
     };
 
-  } catch (error) {
-    return {
-      products: [],
-      categories: [],
-      searchQuery: query,
-      total: 0,
-      error: 'Search failed. Please try again.',
-      categoryHierarchy: {},
-      filters: {
-        category: categorySlug,
-        subcategory: subcategorySlug,
-        specific: specificSlug,
-        minPrice,
-        maxPrice,
-        condition,
-        brand,
-        size,
-        sortBy
-      }
-    };
+  } catch (err) {
+    if (dev) console.error('Search error:', err);
+    throw error(500, 'Failed to load search results');
   }
 };

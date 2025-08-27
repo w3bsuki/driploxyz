@@ -154,7 +154,7 @@ export class CategoryService {
     try {
       const { data, error } = await this.supabase
         .from('categories')
-        .select('id, name, description, slug, parent_id, sort_order, is_active, image_url, created_at, updated_at')
+        .select('id, name, description, slug, parent_id, sort_order, is_active, image_url, created_at, updated_at, level')
         .is('parent_id', null)
         .eq('is_active', true)
         .order('sort_order')
@@ -179,7 +179,7 @@ export class CategoryService {
     try {
       const { data, error } = await this.supabase
         .from('categories')
-        .select('id, name, description, slug, parent_id, sort_order, is_active, image_url, created_at, updated_at')
+        .select('id, name, description, slug, parent_id, sort_order, is_active, image_url, created_at, updated_at, level')
         .eq('parent_id', parentId)
         .eq('is_active', true)
         .order('sort_order')
@@ -230,7 +230,7 @@ export class CategoryService {
     try {
       const { data, error } = await this.supabase
         .from('categories')
-        .select('id, name, description, slug, parent_id, sort_order, is_active, image_url, created_at, updated_at')
+        .select('id, name, description, slug, parent_id, sort_order, is_active, image_url, created_at, updated_at, level')
         .or(`name.ilike.%${query}%,description.ilike.%${query}%`)
         .eq('is_active', true)
         .order('name')
