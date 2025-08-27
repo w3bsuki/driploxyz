@@ -1,12 +1,10 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
   import type { Product } from '../types';
   import ProductImage from './ProductImage.svelte';
   import ConditionBadge from './ConditionBadge.svelte';
   import ProductPrice from './ProductPrice.svelte';
   import FavoriteButton from './FavoriteButton.svelte';
   import UserBadge from './UserBadge.svelte';
-  import { PerformanceMonitor } from './utils/performance.js';
   
   interface Props {
     product: Product;
@@ -59,28 +57,9 @@
       new: 'New'
     }
   }: Props = $props();
-  
-  // Performance monitoring
-  const perf = browser ? PerformanceMonitor.getInstance() : null;
-  let renderStartTime = $state(0);
-  
-  // Track component render time
-  $effect(() => {
-    if (perf && browser) {
-      renderStartTime = performance.now();
-      return () => {
-        const renderTime = performance.now() - renderStartTime;
-        if (renderTime > 50) {
-          console.warn(`ProductCard render took ${renderTime.toFixed(2)}ms for product: ${product.title}`);
-        }
-      };
-    }
-  });
 
   function handleClick() {
-    perf?.startTiming(`product-click-${product.id}`);
     onclick?.(product);
-    perf?.endTiming(`product-click-${product.id}`);
   }
 </script>
 
@@ -94,7 +73,7 @@
     }
   }}
   role="button"
-  tabindex={index === 0 ? 0 : -1}
+  tabindex="0"
   aria-label="{product.title} - Price: {translations.formatPrice ? translations.formatPrice(product.price) : `${translations.currency}${product.price}`}"
 >
   <!-- Image Container with overlays -->
@@ -140,8 +119,8 @@
         </p>
       {/if}
       {#if product.is_promoted}
-        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200/60">
-          <span class="bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">PRO</span>
+        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-yellow-50 border border-yellow-200/60">
+          <span class="text-yellow-600 font-bold">PRO</span>
         </span>
       {/if}
     </div>
@@ -183,7 +162,10 @@
   
   .product-card.highlighted {
     padding: 3px;
-    background: #FFD700;
+    background: linear-gradient(135deg, 
+      oklch(0.9 0.15 85),  /* Yellow highlight */
+      oklch(0.95 0.1 85)   /* Lighter yellow */
+    );
     border-radius: 0.75rem;
   }
   
@@ -197,6 +179,6 @@
   }
   
   .product-card.highlighted > div:first-child {
-    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+    box-shadow: 0 4px 12px oklch(0.8 0.12 85 / 0.2);
   }
 </style>

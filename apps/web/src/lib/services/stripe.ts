@@ -719,52 +719,148 @@ export class StripeService {
 				return { success: false, error: new Error('Unauthorized payment confirmation') };
 			}
 
-			// Update order status
-			const { data: order, error: orderError } = await this.supabase
-				.from('orders')
-				.update({
-					status: 'paid',
-					processed_at: new Date().toISOString()
-				})
-				.eq('id', metadata.order_id)
-				.select()
-				.single();
+			// Check if this is a bundle order
+			const isBundle = metadata.isBundle === 'true';
+			const itemCount = parseInt(metadata.itemCount || '1');
+			
+			if (isBundle && metadata.itemIds) {
+				// Handle bundle order confirmation
+				const itemIds = metadata.itemIds.split(',');
+				
+				// Update order status (order was already created during payment intent creation)
+				const { data: order, error: orderError } = await this.supabase
+					.from('orders')
+					.update({
+						status: 'paid',
+						processed_at: new Date().toISOString(),
+						is_bundle: true,
+						items_count: itemCount
+					})
+					.eq('id', metadata.order_id)
+					.select()
+					.single();
 
-			if (orderError) {
-				console.error('Error updating order:', orderError);
-				return { success: false, error: new Error('Failed to update order') };
+				if (orderError) {
+					console.error('Error updating order:', orderError);
+					return { success: false, error: new Error('Failed to update order') };
+				}
+
+				// Create order items for bundle
+				const orderItems = await Promise.all(
+					itemIds.map(async (productId) => {
+						const { data: product } = await this.supabase
+							.from('products')
+							.select('price, title')
+							.eq('id', productId)
+							.single();
+						
+						return {
+							order_id: metadata.order_id,
+							product_id: productId,
+							price: product?.price || 0,
+							quantity: 1
+						};
+					})
+				);
+
+				// Insert order items
+				await this.supabase
+					.from('order_items')
+					.insert(orderItems);
+
+				// Mark all products as sold
+				await this.supabase
+					.from('products')
+					.update({
+						is_sold: true,
+						sold_at: new Date().toISOString()
+					})
+					.in('id', itemIds);
+
+				// Mark bundle session as completed if exists
+				if (metadata.bundleSessionId) {
+					await this.supabase
+						.from('bundle_sessions')
+						.update({ completed: true })
+						.eq('id', metadata.bundleSessionId);
+				}
+
+				// Update transaction status
+				const { data: transaction } = await this.supabase
+					.from('transactions')
+					.update({
+						payment_status: 'completed',
+						status: 'completed',
+						processed_at: new Date().toISOString()
+					})
+					.eq('stripe_payment_intent_id', params.paymentIntentId)
+					.select()
+					.single();
+
+				return {
+					success: true,
+					order,
+					transaction
+				};
+				
+			} else {
+				// Single product order (original logic)
+				const { data: order, error: orderError } = await this.supabase
+					.from('orders')
+					.update({
+						status: 'paid',
+						processed_at: new Date().toISOString()
+					})
+					.eq('id', metadata.order_id)
+					.select()
+					.single();
+
+				if (orderError) {
+					console.error('Error updating order:', orderError);
+					return { success: false, error: new Error('Failed to update order') };
+				}
+
+				// Create single order item
+				await this.supabase
+					.from('order_items')
+					.insert({
+						order_id: metadata.order_id,
+						product_id: metadata.product_id,
+						price: order.total_amount - (order.shipping_cost || 0) - (order.service_fee || 0),
+						quantity: 1
+					});
+
+				// Update transaction status
+				const { data: transaction, error: transactionError } = await this.supabase
+					.from('transactions')
+					.update({
+						payment_status: 'completed',
+						status: 'completed',
+						processed_at: new Date().toISOString()
+					})
+					.eq('stripe_payment_intent_id', params.paymentIntentId)
+					.select()
+					.single();
+
+				if (transactionError) {
+					console.error('Error updating transaction:', transactionError);
+				}
+
+				// Mark product as sold
+				await this.supabase
+					.from('products')
+					.update({
+						is_sold: true,
+						sold_at: new Date().toISOString()
+					})
+					.eq('id', metadata.product_id);
+
+				return {
+					success: true,
+					order,
+					transaction
+				};
 			}
-
-			// Update transaction status
-			const { data: transaction, error: transactionError } = await this.supabase
-				.from('transactions')
-				.update({
-					payment_status: 'completed',
-					status: 'completed',
-					processed_at: new Date().toISOString()
-				})
-				.eq('stripe_payment_intent_id', params.paymentIntentId)
-				.select()
-				.single();
-
-			if (transactionError) {
-				console.error('Error updating transaction:', transactionError);
-			}
-
-			// Mark product as sold
-			await this.supabase
-				.from('products')
-				.update({
-					is_sold: true,
-					sold_at: new Date().toISOString()
-				})
-				.eq('id', metadata.product_id);
-
-			return {
-				success: true,
-				order,
-				transaction
-			};
 
 		} catch (error) {
 			console.error('Error confirming payment intent:', error);

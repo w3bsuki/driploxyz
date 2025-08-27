@@ -67,18 +67,6 @@
   // Language handling
   let currentLang = $state(initialLanguage || i18n.languageTag());
   
-  // Animated emoji for logo
-  let currentEmojiIndex = $state(0);
-  
-  // Cycle through emojis every 2 seconds
-  $effect(() => {
-    const interval = setInterval(() => {
-      currentEmojiIndex = (currentEmojiIndex + 1) % 4;
-    }, 2000);
-    
-    return () => clearInterval(interval);
-  });
-  
   $effect(() => {
     if (initialLanguage && initialLanguage !== i18n.languageTag()) {
       i18n.setLanguageTag(initialLanguage);
@@ -202,7 +190,7 @@
         </button>
         
         <!-- Logo -->
-        <HeaderLogo animated={true} emojiIndex={currentEmojiIndex} />
+        <HeaderLogo />
       </div>
       
       <!-- Center: Desktop Navigation or Search -->

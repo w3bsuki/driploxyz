@@ -64,6 +64,7 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.56.0",
     "tslib": "^2.7.0"
   }
 }

@@ -414,8 +414,18 @@
               
               <div class="border border-gray-200 rounded-xl hover:shadow-md transition-all p-5 bg-white">
                 <div class="flex items-start gap-4">
-                  <!-- Product Image -->
-                  {#if order.product?.first_image || order.product?.images?.[0]}
+                  <!-- Product/Bundle Image -->
+                  {#if order.is_bundle && order.items_count > 1}
+                    <!-- Bundle display -->
+                    <div class="relative w-24 h-24">
+                      <div class="w-24 h-24 bg-gradient-to-br from-purple-100 to-blue-100 rounded-xl flex items-center justify-center shadow-sm">
+                        <span class="text-3xl">📦</span>
+                      </div>
+                      <span class="absolute -top-2 -right-2 bg-primary-500 text-white text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center shadow-sm">
+                        {order.items_count}
+                      </span>
+                    </div>
+                  {:else if order.product?.first_image || order.product?.images?.[0]}
                     <img
                       src={order.product.first_image || order.product.images[0]}
                       alt={order.product.title}
@@ -434,7 +444,11 @@
                     <div class="flex justify-between items-start">
                       <div>
                         <h3 class="font-semibold text-lg text-gray-900">
-                          {order.product?.title || 'Unknown Product'}
+                          {#if order.is_bundle && order.items_count > 1}
+                            Bundle Order ({order.items_count} items)
+                          {:else}
+                            {order.product?.title || 'Unknown Product'}
+                          {/if}
                         </h3>
                         <div class="flex items-center gap-3 mt-1">
                           <span class="inline-flex items-center gap-1 text-xs font-medium bg-gray-100 text-gray-700 px-2 py-1 rounded-md">
@@ -462,6 +476,9 @@
                       
                       <div class="text-right">
                         <p class="text-2xl font-bold text-gray-900">${order.total_amount}</p>
+                        {#if order.is_bundle && order.items_count > 1}
+                          <p class="text-xs text-green-600 font-medium">Saved ${((order.items_count - 1) * 5).toFixed(2)} on shipping</p>
+                        {/if}
                         <div class="mt-1">
                           <OrderStatus status={order.status} />
                         </div>

@@ -155,6 +155,9 @@ export { default as HighlightQuickView } from './HighlightQuickView.svelte';
 // Auth components
 export { default as AuthPopup } from './AuthPopup.svelte';
 
+// Bundle components
+export { default as BundleBuilder } from './BundleBuilder.svelte';
+
 // Header components - NEW modular header components
 export { default as HeaderLogo } from './HeaderLogo.svelte';
 export { default as HeaderUserMenu } from './HeaderUserMenu.svelte';

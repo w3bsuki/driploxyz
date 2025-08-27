@@ -17,36 +17,36 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
     console.log('[Checkout API] User authenticated:', session.user.id);
 
-    const { productId, selectedSize } = await request.json();
-    console.log('[Checkout API] Request data:', { productId, selectedSize });
+    const { productId, selectedSize, bundleItems } = await request.json();
+    console.log('[Checkout API] Request data:', { productId, selectedSize, bundleItemsCount: bundleItems?.length });
 
-    if (!productId) {
+    // Handle bundle checkout
+    if (bundleItems && bundleItems.length > 0) {
+      // Validate all items are from the same seller
+      const sellerIds = [...new Set(bundleItems.map((item: any) => item.seller_id))];
+      if (sellerIds.length > 1) {
+        return error(400, { message: 'All items must be from the same seller' });
+      }
+
+      // Check if any items are sold or belong to buyer
+      for (const item of bundleItems) {
+        const { data: product } = await supabase
+          .from('products')
+          .select('id, is_sold, seller_id')
+          .eq('id', item.id)
+          .single();
+        
+        if (!product || product.is_sold) {
+          return error(400, { message: `Product ${item.title} is no longer available` });
+        }
+        if (product.seller_id === session.user.id) {
+          return error(400, { message: 'You cannot buy your own products' });
+        }
+      }
+
+      // Continue with bundle logic below
+    } else if (!productId) {
       return error(400, { message: 'Product ID is required' });
-    }
-
-    // Get product details
-    const { data: product, error: productError } = await supabase
-      .from('products')
-      .select(`
-        *,
-        profiles!products_seller_id_fkey (
-          id,
-          username
-        )
-      `)
-      .eq('id', productId)
-      .single();
-
-    if (productError || !product) {
-      return error(404, { message: 'Product not found' });
-    }
-
-    if (product.is_sold) {
-      return error(400, { message: 'Product is no longer available' });
-    }
-
-    if (product.seller_id === session.user.id) {
-      return error(400, { message: 'You cannot buy your own product' });
     }
 
     // Check if Stripe is configured
@@ -66,67 +66,149 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
     console.log('[Checkout API] Services created successfully');
 
-    // Calculate total amount (convert price to cents)
-    const productPriceCents = Math.round(product.price * 100);
-    console.log('[Checkout API] Product price in cents:', productPriceCents);
-    
-    const calculation = services.stripe!.calculatePaymentAmounts(productPriceCents);
-    console.log('[Checkout API] Payment calculation:', calculation);
+    // Single product logic (backward compatible)
+    if (!bundleItems) {
+      // Get product details
+      const { data: product, error: productError } = await supabase
+        .from('products')
+        .select(`
+          *,
+          profiles!products_seller_id_fkey (
+            id,
+            username
+          )
+        `)
+        .eq('id', productId)
+        .single();
 
-    // Create payment intent
-    console.log('[Checkout API] Creating payment intent with params:', {
-      amount: calculation.totalAmount,
-      currency: 'eur',
-      productId,
-      sellerId: product.seller_id,
-      buyerId: session.user.id,
-      userEmail: session.user.email
-    });
-    
-    const { paymentIntent, clientSecret, error: stripeError } = await services.stripe!.createPaymentIntent({
-      amount: calculation.totalAmount,
-      currency: 'eur', // Using EUR as in your config
-      productId,
-      sellerId: product.seller_id,
-      buyerId: session.user.id,
-      userEmail: session.user.email,
-      metadata: {
-        selectedSize: selectedSize || '',
-        productTitle: product.title
+      if (productError || !product) {
+        return error(404, { message: 'Product not found' });
       }
-    });
-    
-    console.log('[Checkout API] Payment intent result:', { 
-      paymentIntentId: paymentIntent?.id, 
-      clientSecretExists: !!clientSecret, 
-      error: stripeError?.message 
-    });
 
-    if (stripeError || !paymentIntent || !clientSecret) {
-      console.error('Stripe error:', stripeError);
-      return error(500, { message: 'Failed to create payment intent' });
+      if (product.is_sold) {
+        return error(400, { message: 'Product is no longer available' });
+      }
+
+      if (product.seller_id === session.user.id) {
+        return error(400, { message: 'You cannot buy your own product' });
+      }
+
+      // Calculate total amount for single product (convert price to cents)
+      const productPriceCents = Math.round(product.price * 100);
+      console.log('[Checkout API] Product price in cents:', productPriceCents);
+      
+      const calculation = services.stripe!.calculatePaymentAmounts(productPriceCents);
+      console.log('[Checkout API] Payment calculation:', calculation);
+
+      // Create payment intent for single product
+      console.log('[Checkout API] Creating payment intent for single product');
+      
+      const { paymentIntent, clientSecret, error: stripeError } = await services.stripe!.createPaymentIntent({
+        amount: calculation.totalAmount,
+        currency: 'eur',
+        productId,
+        sellerId: product.seller_id,
+        buyerId: session.user.id,
+        userEmail: session.user.email,
+        metadata: {
+          selectedSize: selectedSize || '',
+          productTitle: product.title,
+          isBundle: 'false',
+          itemCount: '1'
+        }
+      });
+    
+      console.log('[Checkout API] Payment intent result:', { 
+        paymentIntentId: paymentIntent?.id, 
+        clientSecretExists: !!clientSecret, 
+        error: stripeError?.message 
+      });
+
+      if (stripeError || !paymentIntent || !clientSecret) {
+        console.error('Stripe error:', stripeError);
+        return error(500, { message: 'Failed to create payment intent' });
+      }
+
+      // Return checkout session data for single product
+      return json({
+        success: true,
+        paymentIntentId: paymentIntent.id,
+        clientSecret,
+        product: {
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          image: product.product_images?.[0]?.image_url || '/placeholder-product.svg',
+          seller: product.profiles?.username,
+          selectedSize
+        },
+        amounts: {
+          productPrice: calculation.productPrice / 100,
+          serviceFee: calculation.serviceFee / 100,
+          shippingCost: calculation.shippingCost / 100,
+          totalAmount: calculation.totalAmount / 100
+        },
+        isBundle: false
+      });
+    } else {
+      // Bundle checkout logic
+      console.log('[Checkout API] Processing bundle checkout for', bundleItems.length, 'items');
+      
+      // Calculate bundle total
+      const itemsTotal = bundleItems.reduce((sum: number, item: any) => sum + (item.price * 100), 0);
+      const shippingCost = 500; // €5 once for bundle
+      const serviceFee = Math.round(itemsTotal * 0.05) + 70; // 5% + €0.70
+      const totalAmount = itemsTotal + shippingCost + serviceFee;
+      
+      // Create bundle session
+      const { data: bundleSession } = await supabase
+        .from('bundle_sessions')
+        .insert({
+          buyer_id: session.user.id,
+          seller_id: bundleItems[0].seller_id,
+          product_ids: bundleItems.map((item: any) => item.id),
+          expires_at: new Date(Date.now() + 30 * 60000).toISOString()
+        })
+        .select()
+        .single();
+      
+      // Create payment intent for bundle
+      const { paymentIntent, clientSecret, error: stripeError } = await services.stripe!.createPaymentIntent({
+        amount: totalAmount,
+        currency: 'eur',
+        productId: bundleItems[0].id, // Primary item
+        sellerId: bundleItems[0].seller_id,
+        buyerId: session.user.id,
+        userEmail: session.user.email,
+        metadata: {
+          isBundle: 'true',
+          itemCount: bundleItems.length.toString(),
+          itemIds: bundleItems.map((item: any) => item.id).join(','),
+          bundleSessionId: bundleSession?.id || ''
+        }
+      });
+      
+      if (stripeError || !paymentIntent || !clientSecret) {
+        console.error('Stripe error:', stripeError);
+        return error(500, { message: 'Failed to create payment intent' });
+      }
+      
+      // Return bundle checkout data
+      return json({
+        success: true,
+        paymentIntentId: paymentIntent.id,
+        clientSecret,
+        bundleDetails: {
+          items: bundleItems,
+          sessionId: bundleSession?.id,
+          itemsTotal: itemsTotal / 100,
+          shippingCost: shippingCost / 100,
+          serviceFee: serviceFee / 100,
+          totalAmount: totalAmount / 100
+        },
+        isBundle: true
+      });
     }
-
-    // Return checkout session data
-    return json({
-      success: true,
-      paymentIntentId: paymentIntent.id,
-      clientSecret,
-      product: {
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        image: product.product_images?.[0]?.image_url || '/placeholder-product.svg',
-        seller: product.profiles?.username,
-        selectedSize
-      },
-      amounts: {
-        productPrice: calculation.productPrice / 100,
-        serviceFee: calculation.serviceFee / 100,
-        shippingCost: calculation.shippingCost / 100,
-        totalAmount: calculation.totalAmount / 100
-      }
-    });
 
   } catch (err) {
     console.error('Checkout API error:', err);

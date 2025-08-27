@@ -32,11 +32,13 @@
 </script>
 
 <div class="relative aspect-square bg-gray-50 overflow-hidden rounded-lg {className}">
+  <!-- Images are already WebP optimized during upload - no runtime transformations needed -->
   <img
     src={imageUrl()}
     {alt}
     loading={priority ? "eager" : "lazy"}
     fetchpriority={priority ? "high" : "auto"}
+    decoding="async"
     class="w-full h-full object-cover"
     sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
   />

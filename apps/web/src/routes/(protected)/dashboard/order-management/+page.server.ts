@@ -40,6 +40,19 @@ export const load: PageServerLoad = async ({ locals, url }) => {
         username,
         full_name,
         avatar_url
+      ),
+      order_items(
+        id,
+        product_id,
+        price,
+        quantity,
+        size,
+        product:products(
+          id,
+          title,
+          images,
+          first_image
+        )
       )
     `)
     .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)

@@ -42,43 +42,9 @@
   let inView = $state(false);
   let observer: IntersectionObserver | undefined;
 
-  // Generate WebP URLs for optimization
-  const webpSources = $derived(() => {
-    if (!src || src.includes('placeholder')) {
-      return [];
-    }
-
-    const sources = [];
-    
-    // Try .webp extension replacement for Supabase images
-    if (src.includes('supabase.co/storage') && /\.(jpe?g|png)$/i.test(src)) {
-      let webpUrl = src.replace(/\.(jpe?g|png)$/i, '.webp');
-      
-      // Add quality parameter if supported
-      if (quality !== 85) {
-        const separator = webpUrl.includes('?') ? '&' : '?';
-        webpUrl += `${separator}quality=${quality}`;
-      }
-      
-      sources.push(webpUrl);
-    }
-    
-    return sources;
-  });
-
-  // Generate optimized src with quality parameter
-  const optimizedSrc = $derived(() => {
-    if (!src || src.includes('placeholder')) {
-      return src;
-    }
-
-    if (quality !== 85 && src.includes('supabase.co/storage')) {
-      const separator = src.includes('?') ? '&' : '?';
-      return `${src}${separator}quality=${quality}`;
-    }
-
-    return src;
-  });
+  // Images are already optimized during upload - no runtime transformations needed
+  // This prevents unnecessary Supabase egress charges
+  const imageSource = $derived(src || placeholder);
 
   // Generate blur data URL for placeholder
   const blurDataUrl = $derived(() => {
@@ -185,41 +151,20 @@
 
   <!-- Optimized Image with WebP Support -->
   {#if shouldLoadImage}
-    {#if webpSources.length > 0}
-      <picture>
-        {#each webpSources as webpSrc}
-          <source srcset={webpSrc} type="image/webp" {sizes} />
-        {/each}
-        <img
-          bind:this={imageElement}
-          src={optimizedSrc}
-          {alt}
-          {sizes}
-          {width}
-          {height}
-          loading={priority ? 'eager' : 'lazy'}
-          decoding="async"
-          onload={handleLoad}
-          onerror={handleError}
-          class="w-full h-full object-cover {imageLoaded ? 'opacity-100' : 'opacity-0'}"
-        />
-      </picture>
-    {:else}
-      <!-- Standard Image -->
-      <img
-        bind:this={imageElement}
-        src={optimizedSrc}
-        {alt}
-        {sizes}
-        {width}
-        {height}
-        loading={priority ? 'eager' : 'lazy'}
-        decoding="async"
-        onload={handleLoad}
-        onerror={handleError}
-        class="w-full h-full object-cover {imageLoaded ? 'opacity-100' : 'opacity-0'}"
-      />
-    {/if}
+    <!-- Images are already WebP optimized during upload -->
+    <img
+      bind:this={imageElement}
+      src={imageSource}
+      {alt}
+      {sizes}
+      {width}
+      {height}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding="async"
+      onload={handleLoad}
+      onerror={handleError}
+      class="w-full h-full object-cover {imageLoaded ? 'opacity-100' : 'opacity-0'}"
+    />
   {/if}
 
   <!-- Error State with Retry -->
@@ -236,7 +181,7 @@
           imageError = false;
           imageLoaded = false;
           if (imageElement) {
-            imageElement.src = optimizedSrc;
+            imageElement.src = imageSource;
           }
         }}
       >

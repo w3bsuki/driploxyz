@@ -6,6 +6,7 @@
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
+  import { translateCategory, getCategoryIcon } from '$lib/categories/mapping';
   
   interface Props {
     data: PageData;
@@ -13,8 +14,9 @@
   
   // Search and filter states
   let searchQuery = $state('');
-  let selectedMainCategory = $state<string | null>(null);
-  let selectedSubcategory = $state<string | null>(null);
+  let selectedLevel1 = $state<string | null>(null); // WHO: women/men/kids/unisex
+  let selectedLevel2 = $state<string | null>(null); // WHAT TYPE: clothing/shoes/bags/accessories
+  let selectedLevel3 = $state<string | null>(null); // SPECIFIC: t-shirts/dresses/sneakers
   let selectedSize = $state('all');
   let selectedBrand = $state('all');
   let selectedCondition = $state('all');
@@ -25,6 +27,10 @@
   let showMegaMenu = $state(false);
   let isLoading = $state(false);
   let isSearching = $state(false);
+  
+  // Legacy compatibility
+  let selectedMainCategory = $derived(selectedLevel1);
+  let selectedSubcategory = $derived(selectedLevel3);
   
   let { data }: Props = $props();
 
@@ -45,29 +51,24 @@
     }
   });
   
-  // Use category data from server
-  const categoryData = $derived<CategoryData>(() => {
-    // Always use real category hierarchy from server
-    if (data.categoryHierarchy && Object.keys(data.categoryHierarchy).length > 0) {
-      const hierarchy: CategoryData = {};
-      
-      // Transform server data to match component format
-      Object.entries(data.categoryHierarchy).forEach(([slug, catData]: [string, any]) => {
-        hierarchy[slug] = {
-          name: catData.name,
-          icon: getCategoryIcon(catData.name),
-          subcategories: (catData.subcategories || []).map((sub: any) => ({
-            name: sub.name,
-            icon: getSubcategoryIcon(sub.name)
-          }))
-        };
-      });
-      
-      return hierarchy;
-    }
+  // Use category data from server - properly reactive without function call
+  const categoryData = $derived<CategoryData>(data.categoryHierarchy && Object.keys(data.categoryHierarchy).length > 0 ? (() => {
+    const hierarchy: CategoryData = {};
     
-    // Fallback to hardcoded structure
-    return {
+    // Transform server data to match component format
+    Object.entries(data.categoryHierarchy).forEach(([slug, catData]: [string, any]) => {
+      hierarchy[slug] = {
+        name: catData.name,
+        icon: getCategoryIcon(catData.name),
+        subcategories: (catData.subcategories || []).map((sub: any) => ({
+          name: sub.name,
+          icon: getSubcategoryIcon(sub.name)
+        }))
+      };
+    });
+    
+    return hierarchy;
+  })() : {
     women: {
       name: i18n.category_women(),
       icon: '👗',
@@ -190,74 +191,93 @@
         { name: 'Hats', icon: '🧢' },
         { name: 'Sunglasses', icon: '🕶️' }
       ]
-    },
-    accessories: {
-      name: 'Accessories',
-      icon: '💍',
-      subcategories: [
-        { name: 'Jewelry', icon: '💍' },
-        { name: 'Watches', icon: '⌚' },
-        { name: 'Sunglasses', icon: '🕶️' },
-        { name: 'Hats', icon: '🧢' },
-        { name: 'Scarves', icon: '🧣' },
-        { name: 'Belts', icon: '👔' },
-        { name: 'Wallets', icon: '👛' }
-      ]
     }
-  };
   });
   
-  // Helper functions for category icons
-  function getCategoryIcon(name: string): string {
-    const iconMap: Record<string, string> = {
-      'Women': '👗',
-      'Men': '👔',
-      'Kids': '👶',
-      'Unisex': '👥',
-      'Shoes': '👟',
-      'Bags': '👜',
-      'Accessories': '💍',
-      'Home': '🏠',
-      'Beauty': '💄',
-      'Pets': '🐕'
-    };
-    return iconMap[name] || '📦';
+  // Helper function for subcategory icons (uses main mapping for consistency)
+  function getSubcategoryIcon(name: string): string {
+    return getCategoryIcon(name);
   }
   
-  function getSubcategoryIcon(name: string): string {
-    const iconMap: Record<string, string> = {
-      'Dresses': '👗',
-      'Tops': '👚',
-      'T-Shirts': '👕',
-      'Shirts': '👔',
-      'Jeans': '👖',
-      'Pants': '👖',
-      'Skirts': '👗',
-      'Jackets': '🧥',
-      'Shoes': '👟',
-      'Bags': '👜',
-      'Accessories': '💍',
-      'Watches': '⌚',
-      'Sneakers': '👟',
-      'Boots': '🥾',
-      'Heels': '👠',
-      'Sandals': '👡'
-    };
-    // Try to find a match in the name
-    for (const [key, icon] of Object.entries(iconMap)) {
-      if (name.includes(key)) {
-        return icon;
-      }
+  // Build Perfect UX Hierarchy from database categories
+  const perfectUXHierarchy = $derived((() => {
+    if (!data.categories || data.categories.length === 0) {
+      // Fallback if no categories loaded
+      return {
+        level1: [
+          { key: 'women', name: i18n.category_women(), icon: '👩' },
+          { key: 'men', name: i18n.category_men(), icon: '👨' },
+          { key: 'kids', name: i18n.category_kids(), icon: '👶' },
+          { key: 'unisex', name: i18n.category_unisex(), icon: '👥' }
+        ],
+        level2: {},
+        level3: {}
+      };
     }
-    return '🏷️';
-  }
+    
+    // Get Level 1 categories (Gender)
+    const level1Categories = data.categories
+      .filter((c: any) => c.level === 1)
+      .map((c: any) => ({
+        key: c.slug || c.name.toLowerCase(),
+        name: translateCategory(c.name),
+        icon: getCategoryIcon(c.name),
+        id: c.id
+      }));
+    
+    // Build Level 2 categories (Product Types) for each Level 1
+    const level2Map: Record<string, any[]> = {};
+    const level3Map: Record<string, any[]> = {};
+    
+    level1Categories.forEach((l1: any) => {
+      // Get Level 2 children
+      const level2Children = data.categories
+        .filter((c: any) => c.parent_id === l1.id && c.level === 2)
+        .map((c: any) => ({
+          key: c.slug || c.name.toLowerCase(),
+          name: translateCategory(c.name),
+          icon: getCategoryIcon(c.name),
+          id: c.id
+        }));
+      
+      level2Map[l1.key] = level2Children;
+      
+      // Build Level 3 for each Level 2
+      level2Children.forEach((l2: any) => {
+        const level3Children = data.categories
+          .filter((c: any) => c.parent_id === l2.id && c.level === 3)
+          .map((c: any) => ({
+            key: c.slug || c.name.toLowerCase(),
+            name: translateCategory(c.name),
+            icon: getCategoryIcon(c.name),
+            id: c.id
+          }));
+        
+        level3Map[`${l1.key}-${l2.key}`] = level3Children;
+      });
+    });
+    
+    return {
+      level1: level1Categories,
+      level2: level2Map,
+      level3: level3Map
+    };
+  })());
   
   
   // Get ordered categories - Women, Men, Kids, Unisex in that order
   function getOrderedCategories() {
-    const cats = Object.entries(categoryData());
-    // Categories are already sorted from server in correct order
-    return cats;
+    const cats = Object.entries(categoryData);
+    // Sort categories in preferred order: Women, Men, Kids, Unisex
+    const order = ['women', 'men', 'kids', 'unisex'];
+    return cats.sort(([a], [b]) => {
+      const aIndex = order.indexOf(a);
+      const bIndex = order.indexOf(b);
+      if (aIndex === -1 && bIndex === -1) return 0;
+      if (aIndex === -1) return 1;
+      if (bIndex === -1) return -1;
+      return aIndex - bIndex;
+    });
   }
 
   // Smart filter data based on category
@@ -288,18 +308,15 @@
     }
   };
   
-  // Get smart filters based on selected category
-  const currentFilters = $derived(() => {
-    const category = selectedMainCategory || 'default';
-    return smartFilterData[category] || smartFilterData.default;
-  });
+  // Get smart filters based on selected category - no function calls in $derived
+  const currentFilters = $derived(smartFilterData[selectedMainCategory || 'default'] || smartFilterData.default);
   
-  const sizes = $derived(() => currentFilters().sizes);
-  const brands = $derived(() => currentFilters().brands);
+  const sizes = $derived(currentFilters.sizes);
+  const brands = $derived(currentFilters.brands);
   const conditions = ['new', 'like-new', 'good', 'fair'];
   
   // Transform server products to component format with client-side filtering
-  const displayProducts = $derived(() => {
+  const displayProducts = $derived((() => {
     let products = (data.products || []).map(product => ({
       id: product.id,
       title: product.title,
@@ -376,9 +393,9 @@
     }
 
     return products;
-  });
+  })());
   
-  let activeFiltersCount = $derived(() => {
+  let activeFiltersCount = $derived((() => {
     let count = 0;
     if (selectedMainCategory) count++;
     if (selectedSubcategory) count++;
@@ -387,7 +404,7 @@
     if (selectedCondition !== 'all') count++;
     if (priceMin || priceMax) count++;
     return count;
-  });
+  })());
   
   
   function clearFilters() {
@@ -513,86 +530,147 @@
           placeholder={i18n.search_placeholder()}
           onSearch={handleSearch}
         />
-        {#if activeFiltersCount() > 0}
+        {#if activeFiltersCount > 0}
           <div class="absolute top-2 right-2 h-5 w-5 bg-black text-white text-xs rounded-full flex items-center justify-center pointer-events-none z-10">
-            {activeFiltersCount()}
+            {activeFiltersCount}
           </div>
         {/if}
       </div>
-      <!-- Main Category Pills (Row 1) -->
+      <!-- Level 1: WHO (Gender/Age) - Always visible -->
       <div class="flex overflow-x-auto scrollbar-hide gap-2 mb-3">
         <button
           onclick={async () => {
-            selectedMainCategory = null;
-            selectedSubcategory = null;
+            selectedLevel1 = null;
+            selectedLevel2 = null;
+            selectedLevel3 = null;
             // Navigate to load all products from server
             const url = new URL('/search', window.location.origin);
             if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
             await goto(url.pathname + url.search);
           }}
-          class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-all
-            {selectedMainCategory === null 
+          class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-all flex items-center gap-1
+            {selectedLevel1 === null 
               ? 'bg-gray-900 text-white' 
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
         >
-          {i18n.search_all()}
+          <span class="text-base">🌍</span>
+          <span>Всички</span>
         </button>
-        {#each getOrderedCategories() as [key, category]}
+        {#each perfectUXHierarchy.level1 as level1Item}
           <button
             onclick={async () => {
-              // Toggle category selection
-              if (selectedMainCategory === key) {
-                selectedMainCategory = null;
-                // Navigate to show all products
+              if (selectedLevel1 === level1Item.key) {
+                // Deselect if clicking same category
+                selectedLevel1 = null;
+                selectedLevel2 = null;
+                selectedLevel3 = null;
                 const url = new URL('/search', window.location.origin);
                 if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
                 await goto(url.pathname + url.search);
               } else {
-                selectedMainCategory = key;
-                selectedSubcategory = null;
+                // Select new Level 1, reset others
+                selectedLevel1 = level1Item.key;
+                selectedLevel2 = null;
+                selectedLevel3 = null;
                 // Navigate to load category-specific products from server
                 const url = new URL('/search', window.location.origin);
                 if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
-                url.searchParams.set('category', key);
+                url.searchParams.set('category', level1Item.key);
                 await goto(url.pathname + url.search);
               }
             }}
             class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-all flex items-center gap-1
-              {selectedMainCategory === key
+              {selectedLevel1 === level1Item.key
                 ? 'bg-gray-900 text-white' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
           >
-            <span class="text-base">{category.icon}</span>
-            <span>{category.name}</span>
+            <span class="text-base">{level1Item.icon}</span>
+            <span>{level1Item.name}</span>
           </button>
         {/each}
       </div>
       
-      <!-- Subcategory Pills (Row 2) - Dynamic based on selected main category -->
-      {#if selectedMainCategory && categoryData()[selectedMainCategory]}
+      <!-- Level 2: WHAT TYPE (Product Categories) - Shows when Level 1 selected -->
+      {#if selectedLevel1 && perfectUXHierarchy.level2[selectedLevel1]}
         <div class="flex overflow-x-auto scrollbar-hide gap-2 mb-3">
           <button
             onclick={() => {
-              selectedSubcategory = null;
+              selectedLevel2 = null;
+              selectedLevel3 = null;
             }}
-            class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all
-              {selectedSubcategory === null 
+            class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
+              {selectedLevel2 === null 
                 ? 'bg-black text-white' 
                 : 'bg-white text-gray-600 border border-gray-300 hover:border-gray-400'}"
           >
-            All {categoryData()[selectedMainCategory].name}
+            <span>Всички</span>
           </button>
-          {#each categoryData()[selectedMainCategory].subcategories as subcat}
+          {#each perfectUXHierarchy.level2[selectedLevel1] as level2Item}
             <button
-              onclick={() => {
-                selectedSubcategory = subcat.name;
+              onclick={async () => {
+                if (selectedLevel2 === level2Item.key) {
+                  selectedLevel2 = null;
+                  selectedLevel3 = null;
+                } else {
+                  selectedLevel2 = level2Item.key;
+                  selectedLevel3 = null;
+                  // Navigate with both level1 and level2 filters
+                  const url = new URL('/search', window.location.origin);
+                  if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+                  url.searchParams.set('category', selectedLevel1);
+                  url.searchParams.set('subcategory', level2Item.key);
+                  await goto(url.pathname + url.search);
+                }
               }}
-              class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all
-                {selectedSubcategory === subcat.name
+              class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
+                {selectedLevel2 === level2Item.key
                   ? 'bg-black text-white' 
                   : 'bg-white text-gray-600 border border-gray-300 hover:border-gray-400'}"
             >
-              {subcat.name}
+              <span class="text-sm">{level2Item.icon}</span>
+              <span>{level2Item.name}</span>
+            </button>
+          {/each}
+        </div>
+      {/if}
+      
+      <!-- Level 3: SPECIFIC ITEMS - Shows when Level 2 selected -->
+      {#if selectedLevel1 && selectedLevel2 && perfectUXHierarchy.level3[`${selectedLevel1}-${selectedLevel2}`]}
+        <div class="flex overflow-x-auto scrollbar-hide gap-2 mb-3">
+          <button
+            onclick={() => {
+              selectedLevel3 = null;
+            }}
+            class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
+              {selectedLevel3 === null 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-blue-100 text-blue-800 hover:bg-blue-200'}"
+          >
+            <span>Всички</span>
+          </button>
+          {#each perfectUXHierarchy.level3[`${selectedLevel1}-${selectedLevel2}`] as level3Item}
+            <button
+              onclick={async () => {
+                if (selectedLevel3 === level3Item.key) {
+                  selectedLevel3 = null;
+                } else {
+                  selectedLevel3 = level3Item.key;
+                  // Navigate with all 3 levels
+                  const url = new URL('/search', window.location.origin);
+                  if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+                  url.searchParams.set('category', selectedLevel1);
+                  url.searchParams.set('subcategory', selectedLevel2);
+                  url.searchParams.set('specific', level3Item.key);
+                  await goto(url.pathname + url.search);
+                }
+              }}
+              class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
+                {selectedLevel3 === level3Item.key
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-blue-100 text-blue-800 hover:bg-blue-200'}"
+            >
+              <span class="text-xs">{level3Item.icon}</span>
+              <span>{level3Item.name}</span>
             </button>
           {/each}
         </div>
@@ -758,7 +836,7 @@
             <div>
               <div class="block text-sm font-medium text-gray-700 mb-3">{i18n.search_size()}</div>
               <div class="grid grid-cols-4 gap-2">
-                {#each sizes() as size}
+                {#each sizes as size}
                   <button
                     onclick={() => selectedSize = selectedSize === size ? 'all' : size}
                     class="py-2.5 px-2 text-sm rounded-lg ring-1 transition-all duration-200 font-medium
@@ -781,7 +859,7 @@
                 >
                   {i18n.search_allBrands()}
                 </button>
-                {#each brands() as brand}
+                {#each brands as brand}
                   <button
                     onclick={() => selectedBrand = selectedBrand === brand ? 'all' : brand}
                     class="py-3 px-3 text-sm rounded-lg ring-1 transition-all duration-200 font-medium
@@ -859,7 +937,7 @@
     <div class="flex gap-6">
       <!-- Desktop Sidebar -->
       <CategorySidebar
-        categories={categoryData()}
+        categories={categoryData}
         selectedCategory={selectedMainCategory}
         selectedSubcategory={selectedSubcategory}
         appliedFilters={{
@@ -889,7 +967,7 @@
       <div class="flex-1">
         <div class="flex items-center justify-between mb-4">
       <p class="text-sm text-gray-600">
-        {data.total || displayProducts().length} {i18n.search_itemsFound()}
+        {data.total || displayProducts.length} {i18n.search_itemsFound()}
         {data.searchQuery && ` ${i18n.search_for()} "${data.searchQuery}"`}
       </p>
       
@@ -904,9 +982,9 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
           </svg>
           <span>{i18n.search_filters()}</span>
-          {#if activeFiltersCount() > 0}
+          {#if activeFiltersCount > 0}
             <div class="h-4 w-4 bg-black text-white text-xs rounded-full flex items-center justify-center">
-              {activeFiltersCount()}
+              {activeFiltersCount}
             </div>
           {/if}
         </button>
@@ -922,11 +1000,11 @@
     </div>
     
     <!-- Active Filters Pills -->
-    {#if activeFiltersCount() > 0}
+    {#if activeFiltersCount > 0}
       <div class="flex items-center space-x-2 mb-4 overflow-x-auto">
-        {#if selectedMainCategory && categoryData()[selectedMainCategory]}
+        {#if selectedMainCategory && categoryData[selectedMainCategory]}
           <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
-            {categoryData()[selectedMainCategory].name}
+            {categoryData[selectedMainCategory].name}
             <button onclick={() => selectedMainCategory = null} class="ml-2" aria-label="Remove category filter">
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -1003,9 +1081,9 @@
           <ProductCardSkeleton />
         {/each}
       </div>
-    {:else if displayProducts().length > 0}
+    {:else if displayProducts.length > 0}
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-        {#each displayProducts() as product}
+        {#each displayProducts as product}
           <ProductCard 
             {product}
             onclick={() => goto(`/product/${product.id}`)}

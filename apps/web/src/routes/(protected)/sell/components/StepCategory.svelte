@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as i18n from '@repo/i18n';
   import type { CategorySuggestion } from '$lib/utils/imageAnalysis';
+  import { translateCategory, getCategoryIcon } from '$lib/categories/mapping';
 
   interface Category {
     id: string;
@@ -47,31 +48,9 @@
       : []
   );
 
-  // Category emojis for visual feedback
-  const categoryEmoji: Record<string, string> = {
-    'Men': '👔',
-    'Women': '👗', 
-    'Kids': '👶',
-    'Unisex': '🔄',
-    'Clothing': '👕',
-    'Shoes': '👟',
-    'Accessories': '🎒',
-    'Bags': '👜',
-  };
-
-  // Helper function to translate category names
-  function translateCategory(name: string): string {
-    const translations: Record<string, () => string> = {
-      'Men': i18n.sell_men,
-      'Women': i18n.sell_women,
-      'Kids': i18n.sell_kids,
-      'Unisex': i18n.sell_unisex,
-      'Clothing': i18n.category_clothing,
-      'Shoes': i18n.category_shoes,
-      'Accessories': i18n.category_accessories,
-      'Bags': i18n.category_bags,
-    };
-    return translations[name]?.() || name;
+  // Category emoji helper - uses centralized getCategoryIcon
+  function getEmoji(name: string): string {
+    return getCategoryIcon(name);
   }
 
   function selectGender(id: string) {
@@ -211,7 +190,7 @@
           }"
           aria-pressed={formData.gender_category_id === category.id}
         >
-          <span class="text-base mb-0.5">{categoryEmoji[category.name] || '📦'}</span>
+          <span class="text-base mb-0.5">{getEmoji(category.name)}</span>
           <span class="text-[10px]">{translateCategory(category.name)}</span>
         </button>
       {/each}
@@ -237,9 +216,7 @@
             }"
             aria-pressed={formData.type_category_id === category.id}
           >
-            {#if categoryEmoji[category.name]}
-              <span class="text-sm">{categoryEmoji[category.name]}</span>
-            {/if}
+            <span class="text-sm">{getEmoji(category.name)}</span>
             <span class="flex-1">{translateCategory(category.name)}</span>
             {#if formData.type_category_id === category.id}
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">

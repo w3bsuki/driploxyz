@@ -96,6 +96,7 @@ export { default as SubscriptionStatus } from './SubscriptionStatus.svelte';
 export { default as ProductQuickView } from './ProductQuickView.svelte';
 export { default as HighlightQuickView } from './HighlightQuickView.svelte';
 export { default as AuthPopup } from './AuthPopup.svelte';
+export { default as BundleBuilder } from './BundleBuilder.svelte';
 export { default as HeaderLogo } from './HeaderLogo.svelte';
 export { default as HeaderUserMenu } from './HeaderUserMenu.svelte';
 export { default as HeaderNav } from './HeaderNav.svelte';

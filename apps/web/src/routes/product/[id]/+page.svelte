@@ -6,7 +6,8 @@
     ProductGallery,
     ProductDetailSkeleton,
     ProductCardSkeleton,
-    Breadcrumb
+    Breadcrumb,
+    BundleBuilder
   } from '@repo/ui';
   import SEOMetaTags from '$lib/components/SEOMetaTags.svelte';
   import type { PageData } from './$types';
@@ -14,6 +15,7 @@
   import { page } from '$app/stores';
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
+  import { createBrowserSupabaseClient } from '$lib/supabase/client';
   
   interface Props {
     data: PageData;
@@ -23,6 +25,10 @@
   
   let isFavorited = $state(data.isFavorited || false);
   let showFullDescription = $state(false);
+  let showBundleBuilder = $state(false);
+  
+  // Create Supabase client for bundle functionality
+  const supabase = createBrowserSupabaseClient();
   
   const productImages = $derived(
     data.product.images || []
@@ -163,28 +169,29 @@
       return;
     }
     
-    // Debug logging
-    console.log('handleBuyNow - data.product:', data.product);
-    console.log('handleBuyNow - data.product.id:', data.product.id);
-    console.log('handleBuyNow - typeof data.product.id:', typeof data.product.id);
+    // Show bundle builder modal
+    showBundleBuilder = true;
+  }
+  
+  async function handleBundleConfirm(items: any[]) {
+    // Close bundle builder
+    showBundleBuilder = false;
     
-    if (!data.product?.id) {
-      console.error('Product ID is missing!', data.product);
-      return;
+    // If only one item, go to regular checkout
+    if (items.length === 1) {
+      const productId = typeof items[0].id === 'string' 
+        ? items[0].id 
+        : String(items[0].id);
+      goto(`/checkout/${productId}`);
+    } else {
+      // Go to bundle checkout with items in state
+      const bundleData = encodeURIComponent(JSON.stringify(items));
+      goto(`/checkout/bundle?items=${bundleData}`);
     }
-    
-    // Ensure product ID is a string
-    const productId = typeof data.product.id === 'string' 
-      ? data.product.id 
-      : String(data.product.id);
-    
-    if (productId === '[object Object]' || productId === 'undefined' || productId === 'null') {
-      console.error('Invalid product ID:', productId, data.product);
-      return;
-    }
-    
-    console.log('Going to checkout with productId:', productId);
-    goto(`/checkout/${productId}`);
+  }
+  
+  function handleBundleCancel() {
+    showBundleBuilder = false;
   }
   
   async function handleMessage() {
@@ -509,3 +516,67 @@
     </div>
   </div>
 </div>
+
+<!-- Bundle Builder Modal -->
+{#if showBundleBuilder}
+  <BundleBuilder
+    sellerId={data.product.seller_id}
+    sellerUsername={data.product.seller?.username || data.product.seller_username || 'seller'}
+    sellerAvatar={data.product.seller_avatar}
+    sellerRating={data.product.seller_rating}
+    initialItem={{
+      id: data.product.id,
+      title: data.product.title,
+      description: data.product.description,
+      price: data.product.price,
+      currency: 'EUR',
+      images: data.product.images,
+      seller_id: data.product.seller_id,
+      category_id: data.product.category_id || '',
+      category_name: data.product.category_name,
+      brand: data.product.brand,
+      size: data.product.size,
+      condition: data.product.condition,
+      sold: data.product.is_sold,
+      created_at: data.product.created_at,
+      updated_at: data.product.created_at,
+      favorites_count: 0,
+      views_count: data.product.view_count || 0,
+      location: data.product.location,
+      seller_name: data.product.seller_name,
+      seller_avatar: data.product.seller_avatar,
+      seller_rating: data.product.seller_rating
+    }}
+    onConfirm={handleBundleConfirm}
+    onCancel={handleBundleCancel}
+    open={showBundleBuilder}
+    supabaseClient={supabase}
+    translations={{
+      bundle_title: i18n.bundle_title,
+      bundle_subtitle: i18n.bundle_subtitle,
+      bundle_shipTogether: i18n.bundle_shipTogether,
+      bundle_savePerItem: i18n.bundle_savePerItem,
+      bundle_yourBundle: i18n.bundle_yourBundle,
+      bundle_item: i18n.bundle_item,
+      bundle_items: i18n.bundle_items,
+      bundle_justThisItem: i18n.bundle_justThisItem,
+      bundle_addTwoItems: i18n.bundle_addTwoItems,
+      bundle_addThreeItems: i18n.bundle_addThreeItems,
+      bundle_addFiveItems: i18n.bundle_addFiveItems,
+      bundle_saveAmount: i18n.bundle_saveAmount,
+      bundle_addMoreFrom: i18n.bundle_addMoreFrom,
+      bundle_noOtherItems: i18n.bundle_noOtherItems,
+      bundle_showAll: i18n.bundle_showAll,
+      bundle_itemsTotal: i18n.bundle_itemsTotal,
+      bundle_shipping: i18n.bundle_shipping,
+      bundle_serviceFee: i18n.bundle_serviceFee,
+      bundle_youSave: i18n.bundle_youSave,
+      bundle_total: i18n.bundle_total,
+      bundle_continueToCheckout: i18n.bundle_continueToCheckout,
+      bundle_checkoutItems: i18n.bundle_checkoutItems,
+      bundle_quickOptions: i18n.bundle_quickOptions,
+      bundle_loading: i18n.bundle_loading,
+      bundle_saveOnShipping: i18n.bundle_saveOnShipping
+    }}
+  />
+{/if}

@@ -7,6 +7,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
   const query = url.searchParams.get('q') || '';
   const categorySlug = url.searchParams.get('category') || '';
   const subcategorySlug = url.searchParams.get('subcategory') || '';
+  
+  console.log('Search params:', { categorySlug, subcategorySlug, query });
   const minPrice = url.searchParams.get('min_price');
   const maxPrice = url.searchParams.get('max_price');
   const condition = url.searchParams.get('condition');
@@ -30,66 +32,72 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         'women': 'Women',
         'men': 'Men',
         'kids': 'Kids',
-        'unisex': 'Unisex',
-        'shoes': 'Shoes',
-        'bags': 'Bags',
-        'accessories': 'Accessories',
-        'home': 'Home',
-        'beauty': 'Beauty',
-        'pets': 'Pets'
+        'unisex': 'Unisex'
       };
 
       const categoryName = categoryMap[categorySlug] || categorySlug;
       
-      // Get main category ID (Level 1 - Men/Women/Kids/Unisex)
-      const { data: mainCat } = await locals.supabase
-        .from('categories')
-        .select('id, name')
-        .or(`slug.eq.${categorySlug},name.ilike.${categoryName}`)
-        .eq('level', 1)  // Only get level 1 categories
-        .single();
-      
-      if (mainCat) {
-        mainCategoryId = mainCat.id;
+      // Check if this is a special Level 2 category request (accessories, shoes, bags)
+      if (['accessories', 'shoes', 'bags'].includes(categorySlug.toLowerCase())) {
+        const categoryNameMap: Record<string, string> = {
+          'accessories': 'Accessories',
+          'shoes': 'Shoes', 
+          'bags': 'Bags'
+        };
         
-        // Get all Level 2 categories (Clothing, Shoes, etc) under this Level 1
+        const targetCategoryName = categoryNameMap[categorySlug.toLowerCase()];
+        
+        // Get all Level 2 categories with this name across all Level 1 parents
         const { data: level2Cats } = await locals.supabase
           .from('categories')
           .select('id')
-          .eq('parent_id', mainCategoryId)
+          .eq('name', targetCategoryName)
           .eq('level', 2);
         
-        if (level2Cats) {
-          // Get all Level 3 categories (actual product categories) under these Level 2
+        if (level2Cats && level2Cats.length > 0) {
+          // Get all Level 3 categories under these Level 2 categories
           const { data: level3Cats } = await locals.supabase
             .from('categories')
             .select('id')
             .in('parent_id', level2Cats.map(c => c.id))
             .eq('level', 3);
           
-          if (level3Cats) {
-            // Only include Level 3 category IDs for filtering products
+          if (level3Cats && level3Cats.length > 0) {
             categoryIds = level3Cats.map(c => c.id);
+            console.log(`Found ${categoryIds.length} Level 3 categories for ${targetCategoryName}:`, categoryIds);
           }
         }
       } else {
-        // Check if it's a Level 2 category (like "Shoes" or "Bags" across all genders)
-        const { data: level2Cat } = await locals.supabase
+        // Get main category ID (Level 1 - Men/Women/Kids/Unisex)
+        const { data: mainCat } = await locals.supabase
           .from('categories')
           .select('id, name')
           .or(`slug.eq.${categorySlug},name.ilike.${categoryName}`)
-          .eq('level', 2);
+          .eq('level', 1)  // Only get level 1 categories
+          .single();
         
-        if (level2Cat && level2Cat.length > 0) {
-          // Get all Level 3 categories under all matching Level 2 categories
-          const { data: level3Cats } = await locals.supabase
+        if (mainCat) {
+          mainCategoryId = mainCat.id;
+          
+          // Get all Level 2 categories (Clothing, Shoes, etc) under this Level 1
+          const { data: level2Cats } = await locals.supabase
             .from('categories')
             .select('id')
-            .in('parent_id', level2Cat.map(c => c.id))
-            .eq('level', 3);
+            .eq('parent_id', mainCategoryId)
+            .eq('level', 2);
           
-          if (level3Cats) {
-            categoryIds = level3Cats.map(c => c.id);
+          if (level2Cats) {
+            // Get all Level 3 categories (actual product categories) under these Level 2
+            const { data: level3Cats } = await locals.supabase
+              .from('categories')
+              .select('id')
+              .in('parent_id', level2Cats.map(c => c.id))
+              .eq('level', 3);
+            
+            if (level3Cats) {
+              // Only include Level 3 category IDs for filtering products
+              categoryIds = level3Cats.map(c => c.id);
+            }
           }
         }
       }
@@ -248,6 +256,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
     // Build category hierarchy for the sidebar/navigation
     const categoryHierarchy: any = {};
     
+    // Add Level 1 categories (Women, Men, Kids, Unisex)
     sortedLevel1.forEach(mainCat => {
       const level2cats = allCategories?.filter(c => c.parent_id === mainCat.id && c.level === 2) || [];
       categoryHierarchy[mainCat.slug || mainCat.name.toLowerCase()] = {
@@ -264,6 +273,31 @@ export const load: PageServerLoad = async ({ url, locals }) => {
           };
         })
       };
+    });
+    
+    // Add special Level 2 categories as separate main categories (Accessories, Shoes, Bags)
+    const specialLevel2Categories = ['Accessories', 'Shoes', 'Bags'];
+    specialLevel2Categories.forEach(categoryName => {
+      const level2cats = allCategories?.filter(c => c.name === categoryName && c.level === 2) || [];
+      if (level2cats.length > 0) {
+        // Combine all Level 3 subcategories from all genders
+        const allLevel3 = [];
+        for (const level2cat of level2cats) {
+          const level3 = allCategories?.filter(c => c.parent_id === level2cat.id && c.level === 3) || [];
+          allLevel3.push(...level3);
+        }
+        
+        categoryHierarchy[categoryName.toLowerCase()] = {
+          id: `level2-${categoryName.toLowerCase()}`, // Special ID for Level 2 categories
+          name: categoryName,
+          slug: categoryName.toLowerCase(),
+          subcategories: allLevel3.map(subcat => ({
+            id: subcat.id,
+            name: subcat.name,
+            slug: subcat.slug
+          }))
+        };
+      }
     });
 
     // Create a map for quick parent lookup

@@ -32,10 +32,6 @@
   
   function handleClick(item: NavItem) {
     clickedItem = item.href;
-    // Clear after navigation completes or timeout
-    setTimeout(() => {
-      clickedItem = null;
-    }, 3000);
   }
   
   interface NavItem {
@@ -120,40 +116,22 @@
         data-sveltekit-preload-code="hover"
       >
         {#if item.isSpecial}
-          <div class="bg-gray-900 text-white rounded-full p-2.5 shadow-lg transform {isActive(item) ? 'scale-105' : ''} {isLoading ? 'opacity-70' : ''} transition-all duration-200 hover:bg-gray-800 relative">
-            {#if isLoading}
-              <div class="absolute inset-0 rounded-full bg-white/20 animate-pulse"></div>
-              <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
-              </svg>
-            {:else}
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
-              </svg>
-            {/if}
+          <div class="bg-gray-900 text-white rounded-full p-2.5 shadow-lg transform {isActive(item) ? 'scale-105' : ''} transition-all duration-200 hover:bg-gray-800 relative">
+            <svg class="w-5 h-5 {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
+            </svg>
           </div>
         {:else}
           <div class="relative">
-            {#if isLoading}
-              <svg class="w-5 h-5 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
-              </svg>
-            {:else}
-              <svg class="w-5 h-5 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
-              </svg>
-            {/if}
+            <svg class="w-5 h-5 transition-all duration-200 {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
+            </svg>
             {#if item.showBadge && unreadMessageCount > 0}
-              <span class="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full animate-pulse"></span>
+              <span class="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
             {/if}
           </div>
           <span class="text-[10px] mt-0.5 font-medium transition-opacity duration-200 {isLoading ? 'opacity-50' : ''}">
-            {#if isLoading}
-              <span class="inline-block">{item.label}</span>
-              <span class="ml-0.5 inline-block animate-pulse">...</span>
-            {:else}
-              {item.label}
-            {/if}
+            {item.label}
           </span>
         {/if}
       </a>

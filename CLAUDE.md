@@ -139,10 +139,10 @@ let { product, variant = 'card' }: Props = $props();
 - Ready for cleanup and optimization
 
 ### Key Files
-- **PROJECT.md**: Complete project specification
-- **DEVELOPMENT.md**: Dev workflow and standards
-- **ROADMAP.md**: Priorities and technical debt
-- **OPERATIONS.md**: Deployment and monitoring
+- **WORK.md**: Daily tasks and active development
+- **VISION.md**: End goal and north star features
+- **reference/**: Deep documentation when needed
+- **.claude/commands/**: Reusable workflows
 
 ## ✅ **SUCCESS METRICS**
 

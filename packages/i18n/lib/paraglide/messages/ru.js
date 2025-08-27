@@ -8832,6 +8832,56 @@ export { listings_getStarted } from "./en.js"
 
 export { listings_createFirst } from "./en.js"
 
+export { bundle_title } from "./en.js"
+
+export { bundle_subtitle } from "./en.js"
+
+export { bundle_shipTogether } from "./en.js"
+
+export { bundle_savePerItem } from "./en.js"
+
+export { bundle_yourBundle } from "./en.js"
+
+export { bundle_item } from "./en.js"
+
+export { bundle_items } from "./en.js"
+
+export { bundle_justThisItem } from "./en.js"
+
+export { bundle_addTwoItems } from "./en.js"
+
+export { bundle_addThreeItems } from "./en.js"
+
+export { bundle_addFiveItems } from "./en.js"
+
+export { bundle_saveAmount } from "./en.js"
+
+export { bundle_addMoreFrom } from "./en.js"
+
+export { bundle_noOtherItems } from "./en.js"
+
+export { bundle_showAll } from "./en.js"
+
+export { bundle_itemsTotal } from "./en.js"
+
+export { bundle_shipping } from "./en.js"
+
+export { bundle_serviceFee } from "./en.js"
+
+export { bundle_youSave } from "./en.js"
+
+export { bundle_total } from "./en.js"
+
+export { bundle_continueToCheckout } from "./en.js"
+
+export { bundle_checkoutItems } from "./en.js"
+
+export { bundle_quickOptions } from "./en.js"
+
+export { bundle_loading } from "./en.js"
+
+export { bundle_saveOnShipping } from "./en.js"
+
 export { common_scroll } from "./en.js"
 
 export { category_women_title } from "./en.js"

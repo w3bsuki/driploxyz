@@ -7225,7 +7225,7 @@ export const category_watches = () => `Часовници`
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
-export const category_hatsAndCaps = () => `Шапки и Капачки`
+export const category_hatsAndCaps = () => `Шапки`
 
 
 /**
@@ -8986,6 +8986,206 @@ export const listings_getStarted = () => `Започнете да продава
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const listings_createFirst = () => `Създай първата обява`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_title = () => `Комплект и икономия на доставка`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_subtitle = () => `Купете повече артикули от`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_shipTogether = () => `Изпращане заедно`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_savePerItem = () => `Икономия €5 на допълнителен артикул`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_yourBundle = () => `Вашия комплект`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_item = () => `артикул`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_items = () => `артикула`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_justThisItem = () => `Само този артикул`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_addTwoItems = () => `+2 артикула (Икономия €10)`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_addThreeItems = () => `+3 артикула (Икономия €15)`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_addFiveItems = () => `+5 артикула (Икономия €25)`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_saveAmount = () => `Икономия €`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_addMoreFrom = () => `Добавете повече от @`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_noOtherItems = () => `Този продавач няма други налични артикули`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_showAll = () => `Покажи всички`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_itemsTotal = () => `Артикули`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_shipping = () => `Доставка (еднократно за всички)`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_serviceFee = () => `Такса за услуга`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_youSave = () => `Икономисвате от доставка`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_total = () => `Общо`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_continueToCheckout = () => `Продължете към плащане`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_checkoutItems = () => `Купете`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_quickOptions = () => `Бързи опции за комплект`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_loading = () => `Зареждане на продукти...`
+
+
+/**
+ * 
+ * @returns {string}
+ */
+/* @__NO_SIDE_EFFECTS__ */
+export const bundle_saveOnShipping = () => `от доставка`
 
 
 /**
