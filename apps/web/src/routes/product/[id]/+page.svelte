@@ -7,7 +7,8 @@
     ProductDetailSkeleton,
     ProductCardSkeleton,
     Breadcrumb,
-    BundleBuilder
+    BundleBuilder,
+    ConditionBadge
   } from '@repo/ui';
   import SEOMetaTags from '$lib/components/SEOMetaTags.svelte';
   import type { PageData } from './$types';
@@ -313,9 +314,17 @@
             {i18n.product_size()} {data.product.size}
           </span>
         {/if}
-        <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
-          {conditionLabel}
-        </span>
+        <ConditionBadge 
+          condition={data.product.condition}
+          translations={{
+            brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
+            newWithoutTags: i18n.sell_condition_newWithoutTags(),
+            likeNew: i18n.sell_condition_likeNew(),
+            good: i18n.sell_condition_good(),
+            worn: i18n.sell_condition_worn(),
+            fair: i18n.sell_condition_fair()
+          }}
+        />
         {#if data.product.color}
           <span class="px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
             {data.product.color}

@@ -31,16 +31,21 @@ export const load: PageLoad = async ({ params, fetch }) => {
 		title: 'TEST PRODUCT - $0.01',
 		description: 'Test product for payment testing - will charge $0.01',
 		price: 1, // $0.01 in cents for testing
+		currency: 'eur',
 		images: ['/placeholder-product.jpg'],
 		brand: 'Test Brand',
 		size: 'M',
 		condition: 'new',
-		sellerId: 'test-seller',
-		sellerName: 'test_user',
-		sellerRating: 5.0,
-		createdAt: new Date().toISOString(),
+		seller_id: 'test-seller',
+		category_id: 'test-category',
+		created_at: new Date().toISOString(),
+		updated_at: new Date().toISOString(),
+		sold: false,
+		favorites_count: 0,
+		views_count: 0,
 		location: 'Test Location',
-		tags: ['test', 'payment']
+		seller_name: 'test_user',
+		seller_rating: 5.0
 	};
 
 	return {

@@ -65,7 +65,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
       ...(sellerOrders || []).map(o => o.product_id)
     ].filter(Boolean);
     
-    let products = [];
+    let products: any[] = [];
     if (allProductIds.length > 0) {
       const { data: productData } = await supabase
         .from('products')
@@ -86,7 +86,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
     const buyerIds = (sellerOrders || []).map(o => o.buyer_id).filter(Boolean);
     const allProfileIds = [...sellerIds, ...buyerIds].filter(Boolean);
     
-    let profiles = [];
+    let profiles: any[] = [];
     if (allProfileIds.length > 0) {
       const { data: profileData } = await supabase
         .from('profiles')

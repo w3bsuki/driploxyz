@@ -41,9 +41,14 @@
   let searchTimeout: NodeJS.Timeout;
   let inputElement: HTMLInputElement;
   
-  // Popular search suggestions - brands and items
-  const popularSearches = [
-    'Nike', 'Adidas', 'Zara', 'H&M', 'Levi\'s'
+  // Popular search suggestions and quick filters
+  const quickSearches = [
+    { label: 'Under 20лв', value: '?max_price=20', icon: '💰' },
+    { label: 'New today', value: '?sort=newest', icon: '🆕' },
+    { label: 'Nike', value: '?brand=Nike', icon: '' },
+    { label: 'Zara', value: '?brand=Zara', icon: '' },
+    { label: 'Size M', value: '?size=M', icon: '📏' },
+    { label: 'Size L', value: '?size=L', icon: '📏' }
   ];
 
   async function performSearch(query: string) {
@@ -87,8 +92,9 @@
 
   function handleFocus() {
     if (!value.trim()) {
-      // Don't show suggestions on focus - let user type
-      showDropdown = false;
+      // Show quick searches on empty focus
+      showInitialSuggestions = true;
+      showDropdown = true;
     } else if (searchResults.length > 0 || categorySuggestions.length > 0) {
       showDropdown = true;
     }
@@ -106,6 +112,12 @@
   function handleSuggestionClick(suggestion: string) {
     value = suggestion;
     performSearch(suggestion);
+  }
+  
+  function handleQuickSearchClick(quickSearch: { label: string; value: string; icon: string }) {
+    showDropdown = false;
+    // Navigate to search with the quick filter
+    goto(`/search${quickSearch.value}`);
   }
 
   function handleCategoryClick(category: CategorySuggestion) {
@@ -226,7 +238,23 @@
 
   {#if showDropdown}
     <div class="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-96 overflow-y-auto">
-      {#if searchResults.length > 0}
+      {#if showInitialSuggestions && !value.trim()}
+        <!-- Quick searches when focused but no input -->
+        <div class="p-2">
+          <div class="text-xs font-medium text-gray-500 px-2 py-1 mb-2">Quick searches</div>
+          <div class="grid grid-cols-2 gap-2">
+            {#each quickSearches as quickSearch}
+              <button
+                onclick={() => handleQuickSearchClick(quickSearch)}
+                class="flex items-center gap-2 px-3 py-2 text-sm text-left hover:bg-gray-50 rounded-lg transition-colors"
+              >
+                <span class="text-base">{quickSearch.icon}</span>
+                <span class="text-gray-700">{quickSearch.label}</span>
+              </button>
+            {/each}
+          </div>
+        </div>
+      {:else if searchResults.length > 0}
         <!-- Search results -->
         {#each searchResults as result, index}
           <button

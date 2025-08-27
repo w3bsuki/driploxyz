@@ -23,7 +23,7 @@
 	});
 
 	function goToOrders() {
-		goto('/purchases');
+		goto('/orders');
 	}
 
 	function continueShopping() {
@@ -93,7 +93,7 @@
 					variant="primary"
 					class="w-full"
 				>
-					View My Purchases
+					VIEW ORDER
 				</Button>
 				
 				<Button

@@ -63,6 +63,7 @@ export { default as SearchDebounced } from './SearchDebounced.svelte';
 export { default as TrendingDropdown } from './TrendingDropdown.svelte';
 export { default as HeroSearchDropdown } from './HeroSearchDropdown.svelte';
 export { default as SmartStickySearch } from './SmartStickySearch.svelte';
+export { default as CompactFilterBar } from './CompactFilterBar.svelte';
 export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';
 export { default as LazySearchResults } from './LazySearchResults.svelte';
 export { ProductCardSkeleton, ProductDetailSkeleton, SellerCardSkeleton, CategoryCardSkeleton, ListItemSkeleton, TextSkeleton, ImageSkeleton } from './skeleton/index';

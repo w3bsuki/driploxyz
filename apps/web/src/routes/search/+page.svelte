@@ -31,6 +31,10 @@
   let isLoading = $state(false);
   let isSearching = $state(false);
   
+  // Compact filter bar states
+  let compactPriceRange = $state('all');
+  let compactCondition = $state('all');
+  
   // For backward compatibility with existing components
   let selectedMainCategory = $derived(selectedLevel1);
   let selectedSubcategory = $derived(selectedLevel2);
@@ -215,10 +219,8 @@
 
     // Main category filtering is handled by server
     // Only apply secondary client-side filters
-
-    if (selectedSubcategory) {
-      products = products.filter(p => p.subcategory_name === selectedSubcategory);
-    }
+    // Note: Category filtering (level1/level2/level3) is handled server-side
+    // Don't duplicate category filtering on client-side
 
     if (selectedSize !== 'all') {
       products = products.filter(p => p.size === selectedSize);
@@ -358,6 +360,42 @@
     // Toggle mobile filter drawer (size, brand, condition, price)
     showFilters = !showFilters;
   }
+  
+  // Compact filter bar handlers
+  function handleCompactSortChange(value: string) {
+    sortBy = value;
+  }
+  
+  function handleCompactPriceRangeChange(value: string) {
+    compactPriceRange = value;
+    // Convert to min/max price values
+    switch (value) {
+      case 'under-20':
+        priceMin = '';
+        priceMax = '20';
+        break;
+      case '20-50':
+        priceMin = '20';
+        priceMax = '50';
+        break;
+      case '50-100':
+        priceMin = '50';
+        priceMax = '100';
+        break;
+      case '100-plus':
+        priceMin = '100';
+        priceMax = '';
+        break;
+      default:
+        priceMin = '';
+        priceMax = '';
+    }
+  }
+  
+  function handleCompactConditionChange(value: string) {
+    compactCondition = value;
+    selectedCondition = value;
+  }
 
   // Quick filters for sticky search (most popular)
   const stickyQuickFilters = [
@@ -425,7 +463,7 @@
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
         >
           <span class="text-base">🌍</span>
-          <span>{i18n.search_allCategories()}</span>
+          <span>{i18n.search_all()}</span>
         </button>
         {#each categoryHierarchy.level1 as level1Item}
           <button
@@ -528,7 +566,7 @@
               bg-white text-gray-600 border border-gray-300 hover:border-gray-400"
           >
             <span class="text-sm">💍</span>
-            <span>Accessories</span>
+            <span>{i18n.category_accessoriesType()}</span>
           </button>
           <button
             onclick={async () => {
@@ -542,7 +580,7 @@
               bg-white text-gray-600 border border-gray-300 hover:border-gray-400"
           >
             <span class="text-sm">👔</span>
-            <span>Clothing</span>
+            <span>{i18n.category_clothing()}</span>
           </button>
           <button
             onclick={async () => {
@@ -556,7 +594,7 @@
               bg-white text-gray-600 border border-gray-300 hover:border-gray-400"
           >
             <span class="text-sm">👟</span>
-            <span>Shoes</span>
+            <span>{i18n.category_shoesType()}</span>
           </button>
           <button
             onclick={async () => {
@@ -570,7 +608,7 @@
               bg-white text-gray-600 border border-gray-300 hover:border-gray-400"
           >
             <span class="text-sm">👜</span>
-            <span>Bags</span>
+            <span>{i18n.category_bagsType()}</span>
           </button>
         </div>
       {/if}
@@ -617,132 +655,6 @@
         </div>
       {/if}
       
-      <!-- Quick Filters Row (Always visible) -->
-      <div class="flex overflow-x-auto scrollbar-hide gap-2 pb-2">
-        <button
-          onclick={() => {
-            if (priceMax === '20') {
-              priceMax = '';
-            } else {
-              priceMax = '20';
-            }
-          }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
-            {priceMax === '20' 
-              ? 'bg-green-600 text-white' 
-              : 'bg-green-100 text-green-800 hover:bg-green-200'}"
-        >
-          <span>💰</span>
-          <span>{i18n.filter_under20()}</span>
-        </button>
-        <button
-          onclick={() => {
-            if (sortBy === 'newest') {
-              sortBy = 'relevance';
-            } else {
-              sortBy = 'newest';
-            }
-          }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
-            {sortBy === 'newest' 
-              ? 'bg-blue-600 text-white' 
-              : 'bg-blue-100 text-blue-800 hover:bg-blue-200'}"
-        >
-          <span>🆕</span>
-          <span>{i18n.filter_newToday()}</span>
-        </button>
-        <button
-          onclick={() => {
-            if (selectedCondition === 'new') {
-              selectedCondition = 'all';
-            } else {
-              selectedCondition = 'new';
-            }
-          }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
-            {selectedCondition === 'new' 
-              ? 'bg-purple-600 text-white' 
-              : 'bg-purple-100 text-purple-800 hover:bg-purple-200'}"
-        >
-          <span>🏷️</span>
-          <span>{i18n.condition_newWithTags()}</span>
-        </button>
-        <button
-          onclick={() => {
-            if (selectedBrand === 'Nike') {
-              selectedBrand = 'all';
-            } else {
-              selectedBrand = 'Nike';
-            }
-          }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
-            {selectedBrand === 'Nike' 
-              ? 'bg-gray-800 text-white' 
-              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}"
-        >
-          Nike
-        </button>
-        <button
-          onclick={() => {
-            if (selectedBrand === 'Adidas') {
-              selectedBrand = 'all';
-            } else {
-              selectedBrand = 'Adidas';
-            }
-          }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
-            {selectedBrand === 'Adidas' 
-              ? 'bg-gray-800 text-white' 
-              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}"
-        >
-          Adidas
-        </button>
-        <button
-          onclick={() => {
-            if (selectedBrand === 'Zara') {
-              selectedBrand = 'all';
-            } else {
-              selectedBrand = 'Zara';
-            }
-          }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
-            {selectedBrand === 'Zara' 
-              ? 'bg-gray-800 text-white' 
-              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}"
-        >
-          Zara
-        </button>
-        <button
-          onclick={() => {
-            if (selectedSize === 'M') {
-              selectedSize = 'all';
-            } else {
-              selectedSize = 'M';
-            }
-          }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
-            {selectedSize === 'M' 
-              ? 'bg-gray-800 text-white' 
-              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}"
-        >
-          {i18n.product_size()} M
-        </button>
-        <button
-          onclick={() => {
-            if (selectedSize === 'L') {
-              selectedSize = 'all';
-            } else {
-              selectedSize = 'L';
-            }
-          }}
-          class="px-3 py-1 rounded-full text-xs font-medium shrink-0 transition-all
-            {selectedSize === 'L' 
-              ? 'bg-gray-800 text-white' 
-              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}"
-        >
-          {i18n.product_size()} L
-        </button>
-      </div>
     </div>
   </div>
 
@@ -758,11 +670,11 @@
       ></button>
       
       <!-- Drawer -->
-      <div class="fixed bottom-16 left-0 right-0 bg-white rounded-t-2xl h-[calc(90vh-4rem)] flex flex-col shadow-2xl border-t border-gray-100">
+      <div class="fixed bottom-16 left-0 right-0 bg-white rounded-t-2xl h-[70vh] flex flex-col shadow-2xl border-t border-gray-100">
         <!-- Fixed Header -->
-        <div class="flex justify-between items-center p-4 border-b border-gray-100 shrink-0">
-          <h2 class="text-lg font-semibold">{i18n.search_quickFilters()}</h2>
-          <button onclick={() => showFilters = false} class="p-1" aria-label="Close filters">
+        <div class="flex justify-between items-center px-4 py-3 border-b border-gray-100 shrink-0">
+          <h2 class="text-base font-semibold">{i18n.search_quickFilters()}</h2>
+          <button onclick={() => showFilters = false} class="p-2 -m-2 min-h-[44px] min-w-[44px] flex items-center justify-center" aria-label="Close filters">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -770,18 +682,18 @@
         </div>
         
         <!-- Scrollable Filter Options -->
-        <div class="flex-1 overflow-y-auto">
-          <div class="space-y-6 p-4">
+        <div class="flex-1 overflow-y-auto overscroll-contain">
+          <div class="space-y-4 p-4">
             
             <!-- Size -->
             <div>
-              <div class="block text-sm font-medium text-gray-700 mb-3">{i18n.search_size()}</div>
+              <div class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_size()}</div>
               <div class="grid grid-cols-4 gap-2">
                 {#each sizes as size}
                   <button
                     onclick={() => selectedSize = selectedSize === size ? 'all' : size}
-                    class="py-2.5 px-2 text-sm rounded-lg ring-1 transition-all duration-200 font-medium
-                      {selectedSize === size ? 'bg-black text-white ring-black shadow-sm transform scale-105' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
+                    class="min-h-[44px] px-2 text-sm rounded-lg ring-1 transition-all font-medium flex items-center justify-center
+                      {selectedSize === size ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                   >
                     {size}
                   </button>
@@ -791,20 +703,20 @@
             
             <!-- Brand -->
             <div>
-              <div class="block text-sm font-medium text-gray-700 mb-3">{i18n.search_brand()}</div>
+              <div class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_brand()}</div>
               <div class="grid grid-cols-2 gap-2">
                 <button
                   onclick={() => selectedBrand = 'all'}
-                  class="py-3 px-3 text-sm rounded-lg ring-1 transition-all duration-200 font-medium
-                    {selectedBrand === 'all' ? 'bg-black text-white ring-black shadow-sm' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
+                  class="min-h-[44px] px-3 text-sm rounded-lg ring-1 transition-all font-medium flex items-center justify-center
+                    {selectedBrand === 'all' ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                 >
                   {i18n.search_allBrands()}
                 </button>
                 {#each brands as brand}
                   <button
                     onclick={() => selectedBrand = selectedBrand === brand ? 'all' : brand}
-                    class="py-3 px-3 text-sm rounded-lg ring-1 transition-all duration-200 font-medium
-                      {selectedBrand === brand ? 'bg-black text-white ring-black shadow-sm' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
+                    class="min-h-[44px] px-3 text-sm rounded-lg ring-1 transition-all font-medium flex items-center justify-center
+                      {selectedBrand === brand ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                   >
                     {brand}
                   </button>
@@ -814,20 +726,20 @@
             
             <!-- Condition -->
             <div>
-              <div class="block text-sm font-medium text-gray-700 mb-3">{i18n.search_condition()}</div>
+              <div class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_condition()}</div>
               <div class="space-y-2">
                 <button
                   onclick={() => selectedCondition = 'all'}
-                  class="w-full py-3 px-3 text-sm rounded-lg ring-1 text-left transition-all duration-200 font-medium
-                    {selectedCondition === 'all' ? 'bg-black text-white ring-black shadow-sm' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
+                  class="w-full min-h-[44px] px-3 text-sm rounded-lg ring-1 text-left transition-all font-medium flex items-center
+                    {selectedCondition === 'all' ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                 >
                   {i18n.search_allConditions()}
                 </button>
                 {#each conditions as condition}
                   <button
                     onclick={() => selectedCondition = selectedCondition === condition ? 'all' : condition}
-                    class="w-full py-3 px-3 text-sm rounded-lg ring-1 text-left transition-all duration-200 font-medium
-                      {selectedCondition === condition ? 'bg-black text-white ring-black shadow-sm' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
+                    class="w-full min-h-[44px] px-3 text-sm rounded-lg ring-1 text-left transition-all font-medium flex items-center
+                      {selectedCondition === condition ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                   >
                     <span class="capitalize">{
                       condition === 'new' ? i18n.condition_new() :
@@ -865,8 +777,8 @@
         
         <!-- Fixed Actions -->
         <div class="flex space-x-3 p-4 border-t border-gray-100 shrink-0">
-          <Button onclick={clearFilters} variant="outline" class="flex-1 h-12">{i18n.search_clearAll()}</Button>
-          <Button onclick={() => showFilters = false} class="flex-1 h-12">{i18n.search_applyFilters()}</Button>
+          <Button onclick={clearFilters} variant="outline" class="flex-1 min-h-[44px]">{i18n.search_clearAll()}</Button>
+          <Button onclick={() => showFilters = false} class="flex-1 min-h-[44px]">{i18n.search_applyFilters()}</Button>
         </div>
       </div>
     </div>
@@ -1050,9 +962,12 @@
               unknownSeller: i18n.seller_unknown(),
               currency: i18n.common_currency(),
               addToFavorites: i18n.product_addToFavorites(),
+              brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
+              newWithoutTags: i18n.sell_condition_newWithoutTags(),
               new: i18n.condition_new(),
               likeNew: i18n.condition_likeNew(),
               good: i18n.condition_good(),
+              worn: i18n.sell_condition_worn(),
               fair: i18n.condition_fair(),
               formatPrice: (price: number) => formatPrice(price),
               categoryTranslation: (categoryName: string) => {

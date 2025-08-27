@@ -88,6 +88,7 @@ export { default as SearchDebounced } from './SearchDebounced.svelte';
 export { default as TrendingDropdown } from './TrendingDropdown.svelte';
 export { default as HeroSearchDropdown } from './HeroSearchDropdown.svelte';
 export { default as SmartStickySearch } from './SmartStickySearch.svelte';
+export { default as CompactFilterBar } from './CompactFilterBar.svelte';
 
 // Virtual scrolling and search components
 export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';

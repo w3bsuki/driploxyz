@@ -11,7 +11,7 @@
     "test": "turbo run test",
     "test:watch": "turbo run test:watch",
     "check": "turbo run check",
-    "db:types": "npx supabase gen types typescript --project-id koowfhsaqmarfdkwsfiz > packages/database/src/generated.ts",
+    "db:types": "npx supabase gen types typescript --project-id koowfhsaqmarfdkwsfiz --schema public > packages/database/src/generated.ts",
     "db:types:local": "npx supabase gen types typescript --local > packages/database/src/generated.ts"
   },
   "devDependencies": {

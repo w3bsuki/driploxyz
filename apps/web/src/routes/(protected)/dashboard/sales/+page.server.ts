@@ -49,7 +49,7 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
 
     // Get product details for orders
     const productIds = orders?.map(o => o.product_id).filter(Boolean) || [];
-    let orderProducts = [];
+    let orderProducts: any[] = [];
     if (productIds.length > 0) {
       const { data: products } = await supabase
         .from('products')

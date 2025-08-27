@@ -97,7 +97,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
     
     // Build category filter using proper 3-level hierarchy
     if (level1 && level1 !== 'all') {
-      // Find Level 1 category by slug
+      // First try to find Level 1 category by slug
       const { data: l1Cat } = await locals.supabase
         .from('categories')
         .select('*')
@@ -106,7 +106,28 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         .eq('is_active', true)
         .single();
       
-      if (l1Cat) {
+      // If not found as Level 1, check if it's a Level 2 category name (like 'accessories')
+      if (!l1Cat && (level1 === 'accessories' || level1 === 'clothing' || level1 === 'shoes' || level1 === 'bags')) {
+        // Cross-gender Level 2 search
+        const { data: l2Cats } = await locals.supabase
+          .from('categories')
+          .select('id')
+          .ilike('name', level1)
+          .eq('level', 2)
+          .eq('is_active', true);
+        
+        if (l2Cats && l2Cats.length > 0) {
+          // Get all descendants of all matching Level 2 categories
+          const allCatIds: string[] = [];
+          for (const cat of l2Cats) {
+            const descendants = await getCategoryWithDescendants(locals.supabase, cat.id);
+            allCatIds.push(...descendants);
+          }
+          categoryIds = [...new Set(allCatIds)]; // Remove duplicates
+        }
+      }
+      
+      else if (l1Cat) {
         if (level2 && level2 !== 'all') {
           // Find Level 2 under Level 1 by slug pattern
           const level2Slug = `${level1}-${level2}`;

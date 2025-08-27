@@ -52,7 +52,10 @@
       "Bash(tail:*)",
       "Bash(grep:*)",
       "mcp__playwright__browser_handle_dialog",
-      "Bash(pnpm --filter @repo/ui run check)"
+      "Bash(pnpm --filter @repo/ui run check)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm run:*)",
+      "Bash(timeout:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
