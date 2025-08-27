@@ -8,7 +8,7 @@
     id: string;
   }
   
-  const WEEK_MS = 604800000;
+  const DISMISS_DURATION = 43200000; // 12 hours (was 1 week)
   const ROTATE_DELAY = 5000;
   const FADE_DURATION = 300;
   
@@ -20,15 +20,15 @@
   const current = $derived(items[idx]);
   
   onMount(() => {
-    // Check if banner was dismissed recently (within a week)
+    // Check if banner was dismissed recently (within 12 hours)
     const stored = localStorage.getItem('banner-dismissed-time');
-    if (stored && Date.now() - +stored < WEEK_MS) {
+    if (stored && Date.now() - +stored < DISMISS_DURATION) {
       dismissed = true;
       return;
     }
     
-    // Reset dismissed state if it's been more than a week
-    if (stored && Date.now() - +stored >= WEEK_MS) {
+    // Reset dismissed state if it's been more than 12 hours
+    if (stored && Date.now() - +stored >= DISMISS_DURATION) {
       localStorage.removeItem('banner-dismissed-time');
     }
     
