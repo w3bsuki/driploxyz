@@ -7,8 +7,9 @@ export const load: PageServerLoad = async ({ url, locals }) => {
   const query = url.searchParams.get('q') || '';
   const categorySlug = url.searchParams.get('category') || '';
   const subcategorySlug = url.searchParams.get('subcategory') || '';
+  const specificSlug = url.searchParams.get('specific') || '';
   
-  console.log('Search params:', { categorySlug, subcategorySlug, query });
+  console.log('Search params:', { categorySlug, subcategorySlug, specificSlug, query });
   const minPrice = url.searchParams.get('min_price');
   const maxPrice = url.searchParams.get('max_price');
   const condition = url.searchParams.get('condition');
@@ -78,44 +79,99 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         
         if (mainCat) {
           mainCategoryId = mainCat.id;
+          console.log(`Found Level 1 category: ${mainCat.name} (${mainCat.id})`);
           
           // Get all Level 2 categories (Clothing, Shoes, etc) under this Level 1
           const { data: level2Cats } = await locals.supabase
             .from('categories')
-            .select('id')
+            .select('id, name')
             .eq('parent_id', mainCategoryId)
             .eq('level', 2);
           
-          if (level2Cats) {
+          if (level2Cats && level2Cats.length > 0) {
+            console.log(`Found ${level2Cats.length} Level 2 categories:`, level2Cats.map(c => c.name));
+            
             // Get all Level 3 categories (actual product categories) under these Level 2
             const { data: level3Cats } = await locals.supabase
               .from('categories')
-              .select('id')
+              .select('id, name')
               .in('parent_id', level2Cats.map(c => c.id))
               .eq('level', 3);
             
-            if (level3Cats) {
+            if (level3Cats && level3Cats.length > 0) {
               // Only include Level 3 category IDs for filtering products
               categoryIds = level3Cats.map(c => c.id);
+              console.log(`Found ${categoryIds.length} Level 3 categories for filtering:`, level3Cats.map(c => c.name));
+            } else {
+              console.log('No Level 3 categories found under Level 2 categories');
             }
+          } else {
+            console.log('No Level 2 categories found under Level 1 category');
           }
         }
       }
     }
 
+    // Handle Level 2 category selection (e.g., "accessories" under "women")
     if (subcategorySlug && mainCategoryId) {
-      // Get specific subcategory within the main category
-      const { data: subCat } = await locals.supabase
+      console.log(`Looking for subcategory: ${subcategorySlug} under main category ${mainCategoryId}`);
+      
+      // Map subcategory slugs to names
+      const subcategoryMap: Record<string, string> = {
+        'clothing': 'Clothing',
+        'shoes': 'Shoes',
+        'accessories': 'Accessories',
+        'bags': 'Bags'
+      };
+      
+      const subcategoryName = subcategoryMap[subcategorySlug] || subcategorySlug;
+      
+      // Find the Level 2 category under the selected Level 1
+      const { data: level2Cat } = await locals.supabase
         .from('categories')
-        .select('id')
-        .ilike('name', `%${subcategorySlug}%`)
-        .in('parent_id', categoryIds.length > 0 ? categoryIds : [mainCategoryId])
+        .select('id, name')
+        .eq('parent_id', mainCategoryId)
+        .ilike('name', subcategoryName)
+        .eq('level', 2)
         .single();
       
-      if (subCat) {
-        subcategoryId = subCat.id;
-        // For subcategory, only show products in that specific subcategory
-        categoryIds = [subCat.id];
+      if (level2Cat) {
+        console.log(`Found Level 2 category: ${level2Cat.name} (${level2Cat.id})`);
+        // Replace categoryIds with only Level 3 categories under this specific Level 2
+        const { data: level3Cats } = await locals.supabase
+          .from('categories')
+          .select('id, name')
+          .eq('parent_id', level2Cat.id)
+          .eq('level', 3);
+        
+        if (level3Cats && level3Cats.length > 0) {
+          // IMPORTANT: Replace the categoryIds to narrow down to this Level 2's children only
+          categoryIds = level3Cats.map(c => c.id);
+          console.log(`Narrowed to ${categoryIds.length} Level 3 categories under ${level2Cat.name}:`, level3Cats.map(c => c.name));
+        } else {
+          // No Level 3 categories found - clear the filter
+          categoryIds = [];
+          console.log(`No Level 3 categories found under ${level2Cat.name}`);
+        }
+      }
+    }
+    
+    // Handle specific Level 3 category selection
+    if (specificSlug && categoryIds.length > 0) {
+      console.log(`Looking for specific Level 3 category: ${specificSlug}`);
+      
+      // Find the specific Level 3 category from our already filtered categoryIds
+      const { data: specificCat } = await locals.supabase
+        .from('categories')
+        .select('id, name')
+        .ilike('name', `%${specificSlug}%`)
+        .in('id', categoryIds)
+        .eq('level', 3)
+        .single();
+      
+      if (specificCat) {
+        console.log(`Found specific Level 3 category: ${specificCat.name} (${specificCat.id})`);
+        categoryIds = [specificCat.id];
       }
     }
 
@@ -155,7 +211,10 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
     // Apply category filter if we have category IDs
     if (categoryIds.length > 0) {
+      console.log(`Filtering products by ${categoryIds.length} category IDs:`, categoryIds);
       productsQuery = productsQuery.in('category_id', categoryIds);
+    } else {
+      console.log('No category filter applied - showing all products');
     }
 
     // Apply search if query exists
@@ -209,6 +268,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
     productsQuery = productsQuery.limit(100);
 
     const { data: products, error: productsError } = await productsQuery;
+    
+    console.log(`Query returned ${products?.length || 0} products`);
 
     if (productsError) {
       console.error('Search error:', productsError);
@@ -222,6 +283,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         filters: {
           category: categorySlug,
           subcategory: subcategorySlug,
+          specific: specificSlug,
           minPrice,
           maxPrice,
           condition,
@@ -358,13 +420,14 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
     return {
       products: transformedProducts,
-      categories: sortedLevel1 || [],
+      categories: allCategories || [],  // Pass ALL categories so client can build full hierarchy
       categoryHierarchy,
       searchQuery: query,
       total: transformedProducts.length,
       filters: {
         category: categorySlug,
         subcategory: subcategorySlug,
+        specific: specificSlug,
         minPrice,
         maxPrice,
         condition,
@@ -386,6 +449,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       filters: {
         category: categorySlug,
         subcategory: subcategorySlug,
+        specific: specificSlug,
         minPrice,
         maxPrice,
         condition,

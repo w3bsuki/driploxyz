@@ -40,8 +40,20 @@
       searchQuery = data.searchQuery;
     }
     if (data.filters) {
-      if (data.filters.category) selectedMainCategory = data.filters.category;
-      if (data.filters.subcategory) selectedSubcategory = data.filters.subcategory;
+      if (data.filters.category) {
+        selectedMainCategory = data.filters.category;
+        // Sync with Level 1
+        selectedLevel1 = data.filters.category;
+      }
+      if (data.filters.subcategory) {
+        selectedSubcategory = data.filters.subcategory;
+        // This is Level 2
+        selectedLevel2 = data.filters.subcategory;
+      }
+      if (data.filters.specific) {
+        // This is Level 3
+        selectedLevel3 = data.filters.specific;
+      }
       if (data.filters.size) selectedSize = data.filters.size;
       if (data.filters.brand) selectedBrand = data.filters.brand;
       if (data.filters.condition) selectedCondition = data.filters.condition;

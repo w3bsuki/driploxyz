@@ -93,19 +93,18 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
         return error(400, { message: 'You cannot buy your own product' });
       }
 
-      // Calculate total amount for single product (convert price to cents)
+      // Calculate total amount for single product (NO SHIPPING - paid on delivery)
       const productPriceCents = Math.round(product.price * 100);
-      console.log('[Checkout API] Product price in cents:', productPriceCents);
-      
-      const calculation = services.stripe!.calculatePaymentAmounts(productPriceCents);
-      console.log('[Checkout API] Payment calculation:', calculation);
+      const serviceFee = Math.round(productPriceCents * 0.05) + 140; // 5% + 1.40 BGN
+      const totalAmount = productPriceCents + serviceFee;
+      console.log('[Checkout API] Product price in cents:', productPriceCents, 'Service fee:', serviceFee, 'Total:', totalAmount);
 
       // Create payment intent for single product
       console.log('[Checkout API] Creating payment intent for single product');
       
       const { paymentIntent, clientSecret, error: stripeError } = await services.stripe!.createPaymentIntent({
-        amount: calculation.totalAmount,
-        currency: 'eur',
+        amount: totalAmount,
+        currency: 'bgn',
         productId,
         sellerId: product.seller_id,
         buyerId: session.user.id,
@@ -143,10 +142,9 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
           selectedSize
         },
         amounts: {
-          productPrice: calculation.productPrice / 100,
-          serviceFee: calculation.serviceFee / 100,
-          shippingCost: calculation.shippingCost / 100,
-          totalAmount: calculation.totalAmount / 100
+          productPrice: productPriceCents / 100,
+          serviceFee: serviceFee / 100,
+          totalAmount: totalAmount / 100
         },
         isBundle: false
       });
@@ -154,11 +152,10 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       // Bundle checkout logic
       console.log('[Checkout API] Processing bundle checkout for', bundleItems.length, 'items');
       
-      // Calculate bundle total
+      // Calculate bundle total (NO SHIPPING - paid on delivery)
       const itemsTotal = bundleItems.reduce((sum: number, item: any) => sum + (item.price * 100), 0);
-      const shippingCost = 500; // €5 once for bundle
-      const serviceFee = Math.round(itemsTotal * 0.05) + 70; // 5% + €0.70
-      const totalAmount = itemsTotal + shippingCost + serviceFee;
+      const serviceFee = Math.round(itemsTotal * 0.05) + 140; // 5% + 1.40 BGN (in cents)
+      const totalAmount = itemsTotal + serviceFee;
       
       // Create bundle session
       const { data: bundleSession } = await supabase
@@ -175,7 +172,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       // Create payment intent for bundle
       const { paymentIntent, clientSecret, error: stripeError } = await services.stripe!.createPaymentIntent({
         amount: totalAmount,
-        currency: 'eur',
+        currency: 'bgn',
         productId: bundleItems[0].id, // Primary item
         sellerId: bundleItems[0].seller_id,
         buyerId: session.user.id,
@@ -202,7 +199,6 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
           items: bundleItems,
           sessionId: bundleSession?.id,
           itemsTotal: itemsTotal / 100,
-          shippingCost: shippingCost / 100,
           serviceFee: serviceFee / 100,
           totalAmount: totalAmount / 100
         },

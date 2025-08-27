@@ -64,10 +64,10 @@ export const categoryTranslations: Record<string, () => string> = {
   // Level 3 - Bags
   'Backpacks': i18n.category_backpacks,
   'Handbags': i18n.category_handbags,
-  'Totes': i18n.category_totes,
+  'Totes': i18n.subcategory_totes,
   'Clutches': i18n.category_clutches,
-  'Crossbody': i18n.category_crossbody,
-  'Travel': i18n.category_travel,
+  'Crossbody': i18n.subcategory_crossbody,
+  'Travel': i18n.subcategory_travel,
   'Laptop Bags': i18n.category_laptopBags,
   
   // Special subcategories
