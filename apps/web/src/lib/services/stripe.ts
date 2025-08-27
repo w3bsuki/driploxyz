@@ -790,7 +790,7 @@ export class StripeService {
 				return {
 					success: true,
 					order,
-					transaction
+					transaction: transaction || undefined
 				};
 				
 			} else {
@@ -848,7 +848,7 @@ export class StripeService {
 				return {
 					success: true,
 					order,
-					transaction
+					transaction: transaction || undefined
 				};
 			}
 

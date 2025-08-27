@@ -119,7 +119,7 @@ export async function searchProductsByCountry(
     query = query.lte('price', filters.max_price);
   }
   if (filters?.condition) {
-    query = query.eq('condition', filters.condition);
+    query = query.eq('condition', filters.condition as any);
   }
   if (filters?.brand) {
     query = query.eq('brand', filters.brand);

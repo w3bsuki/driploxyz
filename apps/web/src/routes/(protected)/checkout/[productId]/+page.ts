@@ -35,7 +35,6 @@ export const load: PageLoad = async ({ params, fetch }) => {
 		brand: 'Test Brand',
 		size: 'M',
 		condition: 'new',
-		category: 'test',
 		sellerId: 'test-seller',
 		sellerName: 'test_user',
 		sellerRating: 5.0,

@@ -1,29 +1,73 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { dev } from '$app/environment';
-import { buildCategoryHierarchy } from '$lib/categories/mapping';
+import type { Database } from '@repo/database';
+
+type Category = Database['public']['Tables']['categories']['Row'];
 
 /**
  * Get category and all its descendants using recursive CTE
  * This is much more efficient than building arrays manually
  */
-async function getCategoryWithDescendants(supabase: any, categoryId: string) {
+async function getCategoryWithDescendants(supabase: any, categoryId: string): Promise<string[]> {
   const { data, error } = await supabase
     .rpc('get_category_descendants', { root_category_id: categoryId });
   
-  if (error || !data) return [];
-  return data.map((d: any) => d.id);
+  if (error || !data) return [categoryId]; // Include the parent category itself
+  
+  // Include the parent and all descendants
+  const descendantIds = data.map((d: any) => d.id);
+  return [categoryId, ...descendantIds];
 }
 
 /**
- * Get categories by name across all genders (Level 2)
+ * Build a proper 3-level hierarchy from flat category list
  */
-async function getCategoriesAcrossGenders(supabase: any, categoryName: string) {
-  const { data, error } = await supabase
-    .rpc('get_products_by_category_name_across_genders', { category_name: categoryName });
+function buildCategoryHierarchy(categories: Category[]) {
+  const hierarchy: Record<string, any> = {};
   
-  if (error || !data) return [];
-  return data.map((d: any) => d.category_id);
+  // Get Level 1 categories (Gender)
+  const level1Cats = categories.filter(c => c.level === 1 && c.is_active);
+  
+  level1Cats.forEach(l1 => {
+    // Get Level 2 categories (Product Types) under this Level 1
+    const level2Cats = categories.filter(c => 
+      c.level === 2 && 
+      c.parent_id === l1.id && 
+      c.is_active
+    );
+    
+    hierarchy[l1.slug] = {
+      id: l1.id,
+      name: l1.name,
+      slug: l1.slug,
+      level2: {}
+    };
+    
+    level2Cats.forEach(l2 => {
+      // Get Level 3 categories (Specific Items) under this Level 2
+      const level3Cats = categories.filter(c => 
+        c.level === 3 && 
+        c.parent_id === l2.id && 
+        c.is_active
+      );
+      
+      hierarchy[l1.slug].level2[l2.slug] = {
+        id: l2.id,
+        name: l2.name,
+        slug: l2.slug,
+        parentId: l2.parent_id,
+        level3: level3Cats.map(l3 => ({
+          id: l3.id,
+          name: l3.name,
+          slug: l3.slug,
+          parentId: l3.parent_id
+        }))
+      };
+    });
+  });
+  
+  return hierarchy;
 }
 
 export const load: PageServerLoad = async ({ url, locals }) => {
@@ -32,12 +76,12 @@ export const load: PageServerLoad = async ({ url, locals }) => {
   // Parse all URL parameters
   const query = url.searchParams.get('q') || '';
   
-  // Category hierarchy parameters
+  // Category hierarchy parameters - support both old and new param names
   // Level 1: Gender (women/men/kids/unisex)
   const level1 = url.searchParams.get('category') || url.searchParams.get('level1') || '';
-  // Level 2: Type (clothing/shoes/bags/accessories)
+  // Level 2: Product Type (clothing/shoes/bags/accessories)
   const level2 = url.searchParams.get('subcategory') || url.searchParams.get('level2') || '';
-  // Level 3: Specific item (t-shirts/dresses/sneakers/etc)
+  // Level 3: Specific Item (t-shirts/dresses/sneakers/etc)
   const level3 = url.searchParams.get('specific') || url.searchParams.get('level3') || '';
   
   // Other filters
@@ -51,12 +95,12 @@ export const load: PageServerLoad = async ({ url, locals }) => {
   try {
     let categoryIds: string[] = [];
     
-    // Build category filter using database functions
+    // Build category filter using proper 3-level hierarchy
     if (level1 && level1 !== 'all') {
-      // Find Level 1 category
+      // Find Level 1 category by slug
       const { data: l1Cat } = await locals.supabase
         .from('categories')
-        .select('id, name, slug')
+        .select('*')
         .eq('slug', level1)
         .eq('level', 1)
         .eq('is_active', true)
@@ -64,14 +108,12 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       
       if (l1Cat) {
         if (level2 && level2 !== 'all') {
-          // Normalize Level 2 name
-          const level2Name = level2.charAt(0).toUpperCase() + level2.slice(1).toLowerCase();
-          
-          // Find Level 2 under Level 1
+          // Find Level 2 under Level 1 by slug pattern
+          const level2Slug = `${level1}-${level2}`;
           const { data: l2Cat } = await locals.supabase
             .from('categories')
-            .select('id, name, slug')
-            .eq('name', level2Name)
+            .select('*')
+            .or(`slug.eq.${level2Slug},slug.eq.${level1}-${level2}-new`)
             .eq('parent_id', l1Cat.id)
             .eq('level', 2)
             .eq('is_active', true)
@@ -79,12 +121,12 @@ export const load: PageServerLoad = async ({ url, locals }) => {
           
           if (l2Cat) {
             if (level3 && level3 !== 'all') {
-              // Find specific Level 3 categories
-              const searchTerm = level3.replace(/-/g, ' ');
+              // Find specific Level 3 category by slug
+              const level3Slug = `${level1}-${level3}`;
               const { data: l3Cats } = await locals.supabase
                 .from('categories')
                 .select('id')
-                .ilike('name', `%${searchTerm}%`)
+                .or(`slug.ilike.%${level3}%,name.ilike.%${level3.replace(/-/g, ' ')}%`)
                 .eq('parent_id', l2Cat.id)
                 .eq('level', 3)
                 .eq('is_active', true);
@@ -92,7 +134,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
               if (l3Cats && l3Cats.length > 0) {
                 categoryIds = l3Cats.map(c => c.id);
               } else {
-                // No Level 3 match, use Level 2 and all children
+                // No Level 3 match, use all children of Level 2
                 categoryIds = await getCategoryWithDescendants(locals.supabase, l2Cat.id);
               }
             } else {
@@ -100,8 +142,22 @@ export const load: PageServerLoad = async ({ url, locals }) => {
               categoryIds = await getCategoryWithDescendants(locals.supabase, l2Cat.id);
             }
           } else {
-            // Level 2 not found, use all of Level 1
-            categoryIds = await getCategoryWithDescendants(locals.supabase, l1Cat.id);
+            // Level 2 not found, try direct match by name under Level 1
+            const { data: l2CatByName } = await locals.supabase
+              .from('categories')
+              .select('*')
+              .ilike('name', level2.replace(/-/g, ' '))
+              .eq('parent_id', l1Cat.id)
+              .eq('level', 2)
+              .eq('is_active', true)
+              .single();
+              
+            if (l2CatByName) {
+              categoryIds = await getCategoryWithDescendants(locals.supabase, l2CatByName.id);
+            } else {
+              // Still no match, use all of Level 1
+              categoryIds = await getCategoryWithDescendants(locals.supabase, l1Cat.id);
+            }
           }
         } else {
           // No Level 2 specified, get all descendants of Level 1
@@ -110,31 +166,43 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       }
     } else if (level2 && level2 !== 'all') {
       // Cross-gender Level 2 search (e.g., all "Clothing" across all genders)
-      const level2Name = level2.charAt(0).toUpperCase() + level2.slice(1).toLowerCase();
-      categoryIds = await getCategoriesAcrossGenders(locals.supabase, level2Name);
+      const { data: l2Cats } = await locals.supabase
+        .from('categories')
+        .select('id')
+        .ilike('name', level2.replace(/-/g, ' '))
+        .eq('level', 2)
+        .eq('is_active', true);
       
-      // If Level 3 is specified, filter further
-      if (level3 && level3 !== 'all' && categoryIds.length > 0) {
-        const searchTerm = level3.replace(/-/g, ' ');
-        const { data: l3Cats } = await locals.supabase
-          .from('categories')
-          .select('id')
-          .ilike('name', `%${searchTerm}%`)
-          .in('id', categoryIds)
-          .eq('level', 3)
-          .eq('is_active', true);
+      if (l2Cats && l2Cats.length > 0) {
+        // Get all descendants of all matching Level 2 categories
+        const allCatIds: string[] = [];
+        for (const cat of l2Cats) {
+          const descendants = await getCategoryWithDescendants(locals.supabase, cat.id);
+          allCatIds.push(...descendants);
+        }
+        categoryIds = [...new Set(allCatIds)]; // Remove duplicates
         
-        if (l3Cats && l3Cats.length > 0) {
-          categoryIds = l3Cats.map(c => c.id);
+        // If Level 3 is specified, filter further
+        if (level3 && level3 !== 'all') {
+          const { data: l3Cats } = await locals.supabase
+            .from('categories')
+            .select('id')
+            .ilike('name', `%${level3.replace(/-/g, ' ')}%`)
+            .in('parent_id', l2Cats.map(c => c.id))
+            .eq('level', 3)
+            .eq('is_active', true);
+          
+          if (l3Cats && l3Cats.length > 0) {
+            categoryIds = l3Cats.map(c => c.id);
+          }
         }
       }
     } else if (level3 && level3 !== 'all') {
       // Direct Level 3 search across all categories
-      const searchTerm = level3.replace(/-/g, ' ');
       const { data: l3Cats } = await locals.supabase
         .from('categories')
         .select('id')
-        .ilike('name', `%${searchTerm}%`)
+        .ilike('name', `%${level3.replace(/-/g, ' ')}%`)
         .eq('level', 3)
         .eq('is_active', true);
       
@@ -257,16 +325,16 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       };
     }
 
-    // Fetch all categories for filters
+    // Fetch all categories for filters with proper typing
     const { data: allCategories } = await locals.supabase
       .from('categories')
-      .select('id, name, slug, parent_id, level')
+      .select('*')
       .eq('is_active', true)
       .order('level')
       .order('sort_order');
 
-    // Build hierarchy for UI
-    const categoryHierarchy = allCategories ? buildCategoryHierarchy(allCategories) : {};
+    // Build proper 3-level hierarchy for UI
+    const categoryHierarchy = allCategories ? buildCategoryHierarchy(allCategories as Category[]) : {};
 
     // Get Level 1 categories for pills
     const level1Categories = allCategories?.filter(c => c.level === 1) || [];

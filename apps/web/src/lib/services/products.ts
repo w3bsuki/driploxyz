@@ -72,8 +72,8 @@ export class ProductService {
         ...data,
         images: Array.isArray(data.product_images) ? data.product_images : [],
         category_name: (data.categories && typeof data.categories === 'object' && 'name' in data.categories) ? data.categories.name : undefined,
-        seller_name: (data.profiles && typeof data.profiles === 'object' && 'username' in data.profiles) ? data.profiles.username : undefined,
-        seller_username: (data.profiles && typeof data.profiles === 'object' && 'username' in data.profiles) ? data.profiles.username : undefined,
+        seller_name: (data.profiles && typeof data.profiles === 'object' && 'username' in data.profiles) ? (data.profiles.username ?? undefined) : undefined,
+        seller_username: (data.profiles && typeof data.profiles === 'object' && 'username' in data.profiles) ? (data.profiles.username ?? undefined) : undefined,
         seller_rating: (data.profiles && typeof data.profiles === 'object' && 'rating' in data.profiles) ? data.profiles.rating ?? undefined : undefined
       };
 
@@ -186,7 +186,7 @@ export class ProductService {
         ...item,
         images: Array.isArray(item.product_images) ? item.product_images : [],
         category_name: (item.categories && typeof item.categories === 'object' && 'name' in item.categories) ? item.categories.name : undefined,
-        seller_name: (item.profiles && typeof item.profiles === 'object' && 'username' in item.profiles) ? item.profiles.username : undefined,
+        seller_name: (item.profiles && typeof item.profiles === 'object' && 'username' in item.profiles) ? (item.profiles.username ?? undefined) : undefined,
         seller_rating: (item.profiles && typeof item.profiles === 'object' && 'rating' in item.profiles) ? item.profiles.rating : undefined
       }));
 
@@ -417,7 +417,7 @@ export class ProductService {
    */
   private async incrementViewCount(id: string): Promise<void> {
     try {
-      await this.supabase.rpc('increment_product_view', { product_id: id });
+      await this.supabase.rpc('increment_product_view', { product_id_param: id });
     } catch (error) {
     }
   }
@@ -449,7 +449,7 @@ export class ProductService {
       // Use the search function from the database
       const { data, error } = await this.supabase.rpc('search_products', {
         search_query: query,
-        limit_count: options.limit || 20,
+        p_limit: options.limit || 20,
         offset_count: options.offset || 0,
         sort_by: options.sort?.by || 'relevance',
         sort_direction: options.sort?.direction?.toUpperCase() || 'DESC'
