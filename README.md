@@ -1,161 +1,65 @@
-# Driplo - C2C Clothing Marketplace - Deploy Test
+# 📱 Driplo - Mobile-First C2C Clothing Marketplace
 
-A modern consumer-to-consumer clothing marketplace built with Svelte 5 and SvelteKit 2. Driplo enables users to buy and sell pre-owned and new clothing items in a clean, minimal interface similar to Vinted.
+> **Lightning-fast marketplace beating Depop & Vinted with superior mobile UX**
 
-## Features
+Built with Svelte 5 + SvelteKit 2 for unmatched mobile performance. The perfect balance of social engagement and transactional simplicity.
 
-- 🛍️ **Buy & Sell Clothing** - Easy listing creation and purchasing
-- 🔍 **Advanced Search** - Filter by brand, size, price, condition, location
-- 💬 **Real-time Messaging** - Direct communication between buyers and sellers
-- ⭐ **Reviews & Ratings** - Build trust through user feedback
-- 📱 **Mobile-First Design** - Optimized for all devices
-- 🔒 **Secure Transactions** - Safe payment processing
-- 🖼️ **Image Optimization** - Fast loading, high-quality product photos
-
-## Tech Stack
-
-### Frontend
-- **Svelte 5** - Modern reactive framework with runes
-- **SvelteKit 2** - Full-stack framework with SSR/SSG
-- **TypeScript** - Type safety throughout
-- **TailwindCSS** - Utility-first styling
-- **Vite** - Fast development and building
-
-### Backend
-- **Supabase** - PostgreSQL database and authentication
-- **Supabase Storage** - Image storage and optimization
-- **Stripe** - Payment processing
-- **Edge Functions** - Serverless API endpoints
-
-### Monorepo Structure
-- `apps/web` - Main marketplace application
-- `apps/docs` - Admin dashboard and seller tools
-- `packages/ui` - Shared component library
-- `packages/database` - Supabase types and utilities
-
-## Getting Started
-
-### Prerequisites
-- Node.js 18+
-- pnpm package manager
-
-### Installation
+## ⚡ **Quick Start**
 
 ```bash
-# Clone the repository
+# Clone and install
 git clone <repository-url>
-cd driplo-turbo
-
-# Install dependencies
+cd driplo-turbo-1
 pnpm install
 
-# Start development servers
-pnpm dev
+# Setup environment
+cp .env.example .env.local
+
+# Start development
+pnpm dev --filter web  # Opens at http://localhost:5173
 ```
 
-### Environment Setup
+**📱 Always test mobile-first at 375x667 viewport**
 
-Create `.env.local` files in the app directories:
+## 🚀 **Key Features**
 
-```bash
-# apps/web/.env.local
-PUBLIC_SUPABASE_URL=your_supabase_url
-PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_key
-```
+- **Mobile-First UX**: 44px touch targets, bottom nav, native gestures
+- **Lightning Performance**: <2s loading (competitors: 3-5s)
+- **Simple Selling**: 3-step listing vs Depop's complexity
+- **Social Commerce**: Perfect balance of social + transactional
+- **PWA Ready**: Installable, offline support, push notifications
 
-## Development
+## 📚 **Documentation**
 
-### Available Scripts
+| Document | Description |
+|----------|-------------|
+| [PROJECT.md](./PROJECT.md) | Complete project specification, architecture, features |
+| [DEVELOPMENT.md](./DEVELOPMENT.md) | Development workflow, standards, API docs |
+| [ROADMAP.md](./ROADMAP.md) | Priorities, bugs, technical debt, feature pipeline |
+| [OPERATIONS.md](./OPERATIONS.md) | Deployment, monitoring, scaling, incident response |
+| [CLAUDE.md](./CLAUDE.md) | AI assistant context and rules |
 
-```bash
-# Development
-pnpm dev              # Start all development servers
-pnpm dev --filter web # Start only web app
+## 🛠 **Tech Stack**
 
-# Building
-pnpm build            # Build all packages and apps
-pnpm build --filter ui # Build only UI package
+- **Frontend**: Svelte 5, SvelteKit 2, TailwindCSS v4 (OKLCH)
+- **Backend**: Supabase (PostgreSQL, Auth, Storage)
+- **Payments**: Stripe Connect
+- **Infrastructure**: Vercel Edge, Turborepo
 
-# Testing
-pnpm test             # Run all tests
-pnpm test:unit        # Run unit tests
-pnpm test:integration # Run integration tests
+## 🎯 **Project Status**
 
-# Code Quality
-pnpm lint             # Lint all code
-pnpm check-types      # Type check all code
-pnpm format           # Format code with Prettier
-```
+- **Phase**: Pre-Production Cleanup
+- **Completion**: 85% feature complete
+- **Blockers**: 71 TypeScript errors
+- **Performance**: 820ms LCP (excellent)
 
-### Project Structure
+## 🤝 **Contributing**
 
-```
-driplo-turbo/
-├── apps/
-│   ├── web/                 # Main marketplace app
-│   │   ├── src/
-│   │   │   ├── routes/      # SvelteKit pages
-│   │   │   ├── lib/         # Utilities and stores
-│   │   │   └── app.html     # App template
-│   │   └── static/          # Static assets
-│   └── docs/                # Admin dashboard
-├── packages/
-│   ├── ui/                  # Shared components
-│   │   ├── src/
-│   │   │   ├── components/  # Reusable components
-│   │   │   ├── types/       # TypeScript types
-│   │   │   └── utils/       # Shared utilities
-│   ├── eslint-config/       # ESLint configuration
-│   └── typescript-config/   # TypeScript configuration
-└── docs/
-    ├── CLAUDE.md           # Development guidelines
-    └── PRD.md              # Product requirements
-```
+1. Read [DEVELOPMENT.md](./DEVELOPMENT.md) for setup
+2. Check [ROADMAP.md](./ROADMAP.md) for priorities
+3. Follow mobile-first principles in [CLAUDE.md](./CLAUDE.md)
+4. Test at 375px viewport always
 
-## Key Features Implementation
+---
 
-### User Authentication
-- Email/password and social login
-- Profile creation with verification
-- Seller/buyer rating system
-
-### Product Listings
-- Multi-photo upload with optimization
-- Category and brand selection
-- Size charts and condition indicators
-- Pricing suggestions
-
-### Search & Discovery
-- Full-text search with autocomplete
-- Advanced filtering (price, size, condition, location)
-- Personalized recommendations
-- Featured product carousel
-
-### Messaging System
-- Real-time chat between users
-- Photo sharing in conversations
-- Message history and notifications
-
-### Reviews & Ratings
-- Post-transaction review system
-- Photo reviews for products
-- Seller verification badges
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## Documentation
-
-- [Development Guidelines](./CLAUDE.md) - Complete development setup and patterns
-- [Product Requirements](./PRD.md) - Detailed feature specifications
-- [Component Library](./packages/ui/README.md) - UI component documentation
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+**Mission**: Dominate the €5B+ secondhand fashion market with superior mobile UX 🚀

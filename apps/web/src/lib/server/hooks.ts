@@ -6,6 +6,7 @@ import { setupEnvironment } from './env.js';
 import { setupAuth } from './supabase-hooks.js';
 import { setupI18n, transformPageChunk } from './i18n.js';
 import { setupCountry } from './country.js';
+import { handleCountryRedirect } from './country-redirect.js';
 import { setupAuthGuard } from './auth-guard.js';
 import { setupSentry, isSentryAvailable } from './sentry.js';
 import { createErrorHandler } from './error-handler.js';
@@ -37,6 +38,15 @@ const languageHandler: Handle = async ({ event, resolve }) => {
 };
 
 /**
+ * Country redirect handler
+ * Must come after auth setup to access user data
+ */
+const countryRedirectHandler: Handle = async ({ event, resolve }) => {
+  await handleCountryRedirect(event);
+  return resolve(event);
+};
+
+/**
  * Authentication guard handler
  */
 const authGuardHandler: Handle = async ({ event, resolve }) => {
@@ -48,8 +58,8 @@ const authGuardHandler: Handle = async ({ event, resolve }) => {
  * Main handle sequence with optional Sentry integration
  */
 export const handle: Handle = isSentryAvailable() 
-  ? sequence(sentryHandle(), languageHandler, supabaseHandler, authGuardHandler)
-  : sequence(languageHandler, supabaseHandler, authGuardHandler);
+  ? sequence(sentryHandle(), languageHandler, supabaseHandler, countryRedirectHandler, authGuardHandler)
+  : sequence(languageHandler, supabaseHandler, countryRedirectHandler, authGuardHandler);
 
 /**
  * Error handler with optional Sentry integration

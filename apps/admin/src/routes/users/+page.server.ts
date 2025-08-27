@@ -1,20 +1,61 @@
 import type { PageServerLoad, Actions } from './$types';
-import { fail } from '@sveltejs/kit';
+import { fail, error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ locals }) => {
-	// Fetch all users with their profile info and stats
-	const { data: users, error } = await locals.supabase
+export const load: PageServerLoad = async ({ locals, url }) => {
+	try {
+	// Get search params
+	const searchQuery = url.searchParams.get('q');
+	const countryFilter = url.searchParams.get('country');
+	const statusFilter = url.searchParams.get('status');
+	const subscriptionFilter = url.searchParams.get('subscription');
+	
+	// Build query with admin override to see all countries
+	let query = locals.supabase
 		.from('profiles')
-		.select(`
-			*,
-			_count_products:products(count),
-			_count_orders_as_buyer:orders!orders_buyer_id_fkey(count),
-			_count_orders_as_seller:orders!orders_seller_id_fkey(count)
-		`)
-		.order('created_at', { ascending: false });
+		.select('*');
+	
+	// Apply filters
+	if (searchQuery) {
+		query = query.or(`username.ilike.%${searchQuery}%,email.ilike.%${searchQuery}%,full_name.ilike.%${searchQuery}%`);
+	}
+	
+	if (countryFilter && countryFilter !== 'all') {
+		// Convert UK to GB for database query
+		const dbCountry = countryFilter === 'UK' ? 'GB' : countryFilter;
+		query = query.eq('country', dbCountry);
+	}
+	
+	if (statusFilter && statusFilter !== 'all') {
+		// Handle activity-based filtering
+		const now = new Date();
+		switch (statusFilter) {
+			case 'active':
+				// Active in last 7 days
+				const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+				query = query.gte('last_active_at', sevenDaysAgo.toISOString());
+				break;
+			case 'recent':
+				// Active in last 30 days
+				const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+				query = query.gte('last_active_at', thirtyDaysAgo.toISOString());
+				break;
+			case 'inactive':
+				// Not active in last 30 days
+				const inactiveDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+				query = query.lt('last_active_at', inactiveDate.toISOString());
+				break;
+		}
+	}
+	
+	if (subscriptionFilter && subscriptionFilter !== 'all') {
+		query = query.eq('subscription_tier', subscriptionFilter);
+	}
+	
+	const { data: users, error: fetchError } = await query.order('created_at', { ascending: false });
 
-	if (error) {
-		console.error('Error fetching users:', error);
+	if (fetchError) {
+		console.error('Error fetching users:', fetchError);
+		throw error(500, 'Failed to fetch users');
 	}
 
 	// Get user statistics
@@ -52,6 +93,20 @@ export const load: PageServerLoad = async ({ locals }) => {
 		acc[user.country] = (acc[user.country] || 0) + 1;
 		return acc;
 	}, {}) || {};
+	
+	// Get current balance totals per country
+	const { data: balanceData } = await locals.supabase
+		.from('profiles')
+		.select('country, current_balance')
+		.gt('current_balance', 0);
+	
+	const pendingPayoutsByCountry = balanceData?.reduce((acc: any, user) => {
+		const country = user.country || 'UK';
+		if (!acc[country]) acc[country] = { count: 0, total: 0 };
+		acc[country].count++;
+		acc[country].total += user.current_balance || 0;
+		return acc;
+	}, {}) || {};
 
 	return {
 		users: users || [],
@@ -62,9 +117,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 			admins: adminUsers || 0,
 			banned: bannedUsers || 0,
 			ukUsers: geoStats['UK'] || geoStats['GB'] || 0,
-			bgUsers: geoStats['BG'] || 0
+			bgUsers: geoStats['BG'] || 0,
+			pendingPayoutsUK: pendingPayoutsByCountry['GB'] || pendingPayoutsByCountry['UK'] || { count: 0, total: 0 },
+			pendingPayoutsBG: pendingPayoutsByCountry['BG'] || { count: 0, total: 0 }
 		}
 	};
+	} catch (err) {
+		console.error('Error in users load function:', err);
+		throw error(500, {
+			message: 'Failed to load users data',
+			details: err instanceof Error ? err.message : 'Unknown error'
+		});
+	}
 };
 
 export const actions = {

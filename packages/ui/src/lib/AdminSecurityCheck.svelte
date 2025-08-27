@@ -3,9 +3,9 @@
 Requires additional verification for sensitive admin operations
 -->
 <script lang="ts">
-	import { Button } from './Button.svelte';
-	import { Input } from './Input.svelte';
-	import { Modal } from './Modal.svelte';
+	import Button from './Button.svelte';
+	import Input from './Input.svelte';
+	import Modal from './Modal.svelte';
 
 	interface Props {
 		isOpen: boolean;

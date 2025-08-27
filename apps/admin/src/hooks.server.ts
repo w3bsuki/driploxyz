@@ -131,21 +131,21 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	// Log admin access for audit trail
 	console.log(`✅ Admin access granted: ${user.email} from IP: ${event.locals.ipAddress}`);
 
-	// Optional: Record admin access in database
-	try {
-		await event.locals.supabase
-			.from('admin_audit_log')
-			.insert({
-				admin_id: user.id,
-				action: 'admin_panel_access',
-				ip_address: event.locals.ipAddress,
-				user_agent: event.request.headers.get('user-agent'),
-				target_resource: event.url.pathname
-			});
-	} catch (err) {
-		// Don't fail request if audit log fails
-		console.error('Failed to log admin access:', err);
-	}
+	// Optional: Record admin access in database (commented out until table exists)
+	// try {
+	// 	await event.locals.supabase
+	// 		.from('admin_audit_log')
+	// 		.insert({
+	// 			admin_id: user.id,
+	// 			action: 'admin_panel_access',
+	// 			ip_address: event.locals.ipAddress,
+	// 			user_agent: event.request.headers.get('user-agent'),
+	// 			target_resource: event.url.pathname
+	// 		});
+	// } catch (err) {
+	// 	// Don't fail request if audit log fails
+	// 	console.error('Failed to log admin access:', err);
+	// }
 
 	return resolve(event, {
 		filterSerializedResponseHeaders(name) {

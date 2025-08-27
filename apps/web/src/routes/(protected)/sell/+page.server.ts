@@ -2,6 +2,8 @@ import { redirect, fail } from '@sveltejs/kit';
 import { ProductSchema } from '$lib/validation/product';
 import type { PageServerLoad, Actions } from './$types';
 import { createServices } from '$lib/services';
+import { getUserCountry } from '$lib/country/detection';
+import * as i18n from '@repo/i18n';
 
 export const load: PageServerLoad = async ({ locals }) => {
   // Get the session from locals 
@@ -59,10 +61,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 };
 
 export const actions: Actions = {
-  create: async ({ request, locals: { supabase, session } }) => {
+  create: async (event) => {
+    const { request, locals: { supabase, session } } = event;
     if (!session) {
       return fail(401, { 
-        errors: { _form: 'Not authenticated' }
+        errors: { _form: i18n.error_notAuthenticated() }
       });
     }
 
@@ -131,18 +134,21 @@ export const actions: Actions = {
       // TODO: Re-enable photo validation after testing
       /*if (!photo_urls || photo_urls.length === 0) {
         return fail(400, {
-          errors: { photos: 'At least one photo is required' },
+          errors: { photos: i18n.error_atLeastOnePhoto() },
           values: {
             title, description, gender_category_id, type_category_id, category_id, brand, size, 
             condition, color, material, price, shipping_cost, tags, use_premium_boost
           }
         });
       }*/
+
+      // Get user's country for product listing
+      const userCountry = await getUserCountry(event);
       
       // CRITICAL: Ensure category is NEVER null
       if (!category_id) {
         return fail(400, {
-          errors: { category_id: 'Category is required. Please select a category for your item.' },
+          errors: { category_id: i18n.error_categoryRequired() },
           values: {
             title, description, gender_category_id, type_category_id, category_id, brand, size, 
             condition, color, material, price, shipping_cost, tags, use_premium_boost
@@ -150,7 +156,7 @@ export const actions: Actions = {
         });
       }
       
-      // Create product in database
+      // Create product in database with country code
       const { data: product, error: productError } = await supabase
         .from('products')
         .insert({
@@ -170,7 +176,8 @@ export const actions: Actions = {
           is_active: true,
           is_sold: false,
           view_count: 0,
-          favorite_count: 0
+          favorite_count: 0,
+          country_code: userCountry // Add country code for multi-tenancy
         })
         .select()
         .single();
@@ -247,7 +254,7 @@ export const actions: Actions = {
       }
       
       return fail(500, {
-        errors: { _form: error instanceof Error ? error.message : 'Failed to create product' },
+        errors: { _form: error instanceof Error ? error.message : i18n.error_failedToCreateProduct() },
         values: {
           title, description, gender_category_id, type_category_id, category_id, brand, size, 
           condition, color, material, price, shipping_cost, tags, use_premium_boost

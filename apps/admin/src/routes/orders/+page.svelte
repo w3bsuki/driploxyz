@@ -298,9 +298,9 @@
 				<form method="POST" action="?/resolveDispute" use:enhance>
 					<input type="hidden" name="orderId" value={selectedOrder.id} />
 					<div class="mb-4">
-						<label class="block text-sm font-medium text-gray-700 mb-2">
+						<div class="block text-sm font-medium text-gray-700 mb-2">
 							Resolution Decision
-						</label>
+						</div>
 						<div class="space-y-2">
 							<label class="flex items-center">
 								<input 

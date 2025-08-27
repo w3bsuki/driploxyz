@@ -405,6 +405,15 @@
 
 {#key currentLang}
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
+	<!-- Early Bird Live Banner -->
+	<div class="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-2 px-3 text-center">
+		<div class="flex items-center justify-center gap-2">
+			<div class="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+			<span class="text-sm font-semibold">LIVE NOW</span>
+			<span class="text-sm">Early Bird Special - Free shipping on your first order!</span>
+			<span class="text-xs opacity-90">Limited time only</span>
+		</div>
+	</div>
 
 	<main class="max-w-7xl mx-auto">
 		<!-- Hero Search -->

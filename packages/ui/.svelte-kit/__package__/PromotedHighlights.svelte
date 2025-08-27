@@ -124,35 +124,12 @@
   role="region"
 >
   <div class="px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3">
-    <!-- Clean header with just scroll indicator - no promoted badge -->
-    <header class="flex items-center justify-between mb-3">
-      <h2 class="flex items-center">
-        <!-- Clean section title - crowns on individual products show promotion -->
-        <span class="text-sm font-medium text-gray-900">
-          {translations.promoted_hotPicks || translations.trending_featured || 'Featured'}
-        </span>
-        {#if hasProducts}
-          <span class="sr-only">{promotedProducts.length} featured products available</span>
-        {:else if hasSellers}
-          <span class="sr-only">{sellers.length} premium sellers available</span>
-        {/if}
-      </h2>
-      <!-- Elegant scroll indicator -->
-      <div class="hidden sm:flex items-center gap-1.5 text-xs text-gray-500" role="status" aria-live="polite">
-        <span class="hidden lg:inline">{translations.ui_scroll || 'Scroll'}</span>
-        <div class="flex gap-0.5">
-          <span class="inline-block w-1 h-1 bg-gray-400 rounded-full animate-pulse"></span>
-          <span class="inline-block w-1 h-1 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.2s"></span>
-          <span class="inline-block w-1 h-1 bg-gray-400 rounded-full animate-pulse" style="animation-delay: 0.4s"></span>
-        </div>
-      </div>
-      <!-- Mobile scroll indicator - minimal dots -->
-      <div class="sm:hidden flex gap-0.5" aria-hidden="true">
-        <span class="inline-block w-1 h-1 bg-gray-300 rounded-full"></span>
-        <span class="inline-block w-1 h-1 bg-gray-300 rounded-full"></span>
-        <span class="inline-block w-1 h-1 bg-gray-400 rounded-full"></span>
-      </div>
-    </header>
+    <!-- Screen reader only announcements for accessibility -->
+    {#if hasProducts}
+      <span class="sr-only">{promotedProducts.length} featured products available</span>
+    {:else if hasSellers}
+      <span class="sr-only">{sellers.length} premium sellers available</span>
+    {/if}
     <nav 
       role="navigation"
       aria-label="Promoted products carousel"

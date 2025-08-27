@@ -169,7 +169,7 @@
   });
 </script>
 
-{#if !isAuthPage && !isSellPage && !isOnboardingPage}
+{#if !isAuthPage && !isOnboardingPage}
   <div class="sticky top-0 z-50">
     <EarlyBirdBanner />
     <Header user={data?.user} profile={data?.profile} />

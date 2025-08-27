@@ -50,7 +50,9 @@
       "WebFetch(domain:www.depop.com)",
       "mcp__supabase__generate_typescript_types",
       "Bash(tail:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "mcp__playwright__browser_handle_dialog",
+      "Bash(pnpm --filter @repo/ui run check)"
     ]
   },
   "enableAllProjectMcpServers": true,

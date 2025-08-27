@@ -20,6 +20,7 @@
   
   let selectedLocale = $state('en');
   let detectedCountry = $state<string | null>(null);
+  let detectedCountryName = $state<string | null>(null);
   
   const languages = [
     { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -31,6 +32,22 @@
     { code: 'ru', name: 'Русский', flag: '🇷🇺' },
     { code: 'ua', name: 'Українська', flag: '🇺🇦' }
   ];
+  
+  const countryNames: Record<string, string> = {
+    'GB': 'United Kingdom',
+    'UK': 'United Kingdom', 
+    'BG': 'Bulgaria',
+    'US': 'United States',
+    'ES': 'Spain',
+    'FR': 'France',
+    'DE': 'Germany',
+    'IT': 'Italy',
+    'RU': 'Russia',
+    'UA': 'Ukraine',
+    'RO': 'Romania',
+    'PL': 'Poland',
+    'NL': 'Netherlands'
+  };
   
   onMount(async () => {
     if (!browser) return;
@@ -101,8 +118,15 @@
       const data = await response.json();
       detectedCountry = data.country_code;
       
+      // Set the detected country name
+      detectedCountryName = countryNames[detectedCountry] || data.country_name || detectedCountry;
+      console.log('[LOCATION] Detected country:', detectedCountry, detectedCountryName);
+      
       // Map country to language
       const countryToLang: Record<string, string> = {
+        'GB': 'en', // UK uses English
+        'UK': 'en', // UK uses English
+        'US': 'en', // US uses English
         'BG': 'bg', 'ES': 'es', 'FR': 'fr', 'DE': 'de', 
         'IT': 'it', 'RU': 'ru', 'UA': 'ua'
       };
@@ -110,7 +134,29 @@
       if (countryToLang[detectedCountry]) {
         selectedLocale = countryToLang[detectedCountry];
       }
-    } catch {
+      
+      // Set country cookie if detected (for UK/Bulgaria separation)
+      if (detectedCountry === 'GB' || detectedCountry === 'UK') {
+        // Set country cookie to GB for UK visitors
+        document.cookie = `country=GB; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+        console.log('[LOCATION] Set country cookie to GB for UK visitor');
+      } else if (detectedCountry === 'BG') {
+        // Set country cookie to BG for Bulgarian visitors
+        document.cookie = `country=BG; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+        console.log('[LOCATION] Set country cookie to BG for Bulgarian visitor');
+      }
+      
+      // Also check for existing country cookie to sync region
+      const countryCookie = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('country='))
+        ?.split('=')[1];
+      
+      if (countryCookie && countryCookie !== detectedCountry) {
+        console.log('[LOCATION] Cookie country differs:', countryCookie, 'vs detected:', detectedCountry);
+      }
+    } catch (error) {
+      console.error('[LOCATION] Failed to detect location:', error);
       // Fallback to browser language
       const browserLang = navigator.language.split('-')[0].toLowerCase();
       if (languages.find(l => l.code === browserLang)) {
@@ -266,8 +312,18 @@
             <div class="text-center mb-4">
               <h3 class="text-lg font-bold text-gray-900">Welcome to Driplo! 🌍</h3>
               <p class="text-sm text-gray-600 mt-1">
-                {#if detectedCountry}
-                  We detected you're visiting from {detectedCountry}. Choose your preferred language:
+                {#if detectedCountryName}
+                  <span class="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-2">
+                    📍 We detected you're visiting from <strong>{detectedCountryName}</strong>
+                  </span>
+                  <br>
+                  Choose your preferred language:
+                {:else if detectedCountry}
+                  <span class="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-2">
+                    📍 We detected you're visiting from <strong>{detectedCountry}</strong>
+                  </span>
+                  <br>
+                  Choose your preferred language:
                 {:else}
                   Choose your preferred language:
                 {/if}
@@ -319,6 +375,17 @@
                       Learn more
                     </a>
                   </p>
+                  {#if detectedCountryName && (detectedCountry === 'GB' || detectedCountry === 'UK' || detectedCountry === 'BG')}
+                    <div class="mt-3 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <p class="text-xs text-yellow-800">
+                        💡 <strong>Tip:</strong> Shopping from {detectedCountryName}? 
+                        Visit <a href={detectedCountry === 'BG' ? 'https://bg.driplo.xyz' : 'https://uk.driplo.xyz'} 
+                              class="font-medium underline">
+                          {detectedCountry === 'BG' ? 'bg.driplo.xyz' : 'uk.driplo.xyz'}
+                        </a> to see local listings and prices in {detectedCountry === 'BG' ? 'BGN' : 'GBP'}.
+                      </p>
+                    </div>
+                  {/if}
                 </div>
               </div>
               

@@ -3,6 +3,7 @@ import { SignupSchema } from '$lib/validation/auth';
 import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
 import type { Actions, PageServerLoad } from './$types';
 import { detectLanguage } from '@repo/i18n';
+import { getUserCountry } from '$lib/country/detection';
 
 export const load: PageServerLoad = async (event) => {
   const { session } = await event.locals.safeGetSession();
@@ -69,6 +70,8 @@ export const actions: Actions = {
     const acceptLanguage = request.headers.get('accept-language') || '';
     const userLocale = localeCookie || detectLanguage(acceptLanguage);
 
+    // Get user's country for multi-tenancy
+    const userCountry = await getUserCountry(event);
     
     // Determine redirect URL with fallback
     const redirectOrigin = PUBLIC_SITE_URL || url.origin;
@@ -167,7 +170,8 @@ export const actions: Actions = {
         id: data.user.id,
         username: tempUsername,
         full_name: validatedFullName,
-        onboarding_completed: false
+        onboarding_completed: false,
+        country_code: userCountry // Set country code from detection
       });
 
     if (profileError) {

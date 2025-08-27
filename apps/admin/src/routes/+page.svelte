@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
+	import { AdminDashboard } from '@repo/ui';
+	import { goto } from '$app/navigation';
 
 	interface Props {
 		data: PageData;
@@ -12,24 +14,67 @@
 		totalUsers: 0,
 		activeListings: 0,
 		pendingPayouts: 0,
-		totalRevenue: 0
+		totalRevenue: 0,
+		unreadNotifications: 0,
+		newUsersToday: 0
 	});
+
+	let activeView = $state<'overview' | 'users' | 'payouts' | 'notifications' | 'analytics'>('overview');
 
 	onMount(async () => {
 		// Load dashboard stats
 		const response = await fetch('/api/stats');
 		if (response.ok) {
-			stats = await response.json();
+			const data = await response.json();
+			stats = {
+				...data,
+				unreadNotifications: 0,
+				newUsersToday: data.newUsersToday || 0
+			};
 		}
 	});
+
+	const handleViewChange = (view: string) => {
+		if (view === 'overview') {
+			activeView = view;
+		} else {
+			// Navigate to the specific page
+			goto(`/${view}`);
+		}
+	};
+
+	const handleLogout = () => {
+		// Handle logout
+		goto('/login');
+	};
 </script>
 
-<div class="min-h-screen bg-gray-50">
-	<div class="container mx-auto px-4 py-8">
-		<div class="mb-8">
-			<h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-			<p class="text-gray-600 mt-2">Welcome back, {data.user?.email}</p>
-		</div>
+<!-- Use the comprehensive AdminDashboard component -->
+{#if activeView === 'overview'}
+	<AdminDashboard
+		{activeView}
+		adminUser={{
+			username: data.user?.email?.split('@')[0] || 'admin',
+			role: 'super_admin',
+			permissions: ['manage_payouts', 'view_users', 'manage_listings', 'view_analytics'],
+			country_access: ['UK', 'BG']
+		}}
+		quickStats={{
+			pending_payouts: stats.pendingPayouts,
+			unread_notifications: stats.unreadNotifications,
+			new_users_today: stats.newUsersToday,
+			total_revenue_today: stats.totalRevenue
+		}}
+		onViewChange={handleViewChange}
+		onLogout={handleLogout}
+	/>
+{:else}
+	<div class="min-h-screen bg-gray-50">
+		<div class="container mx-auto px-4 py-8">
+			<div class="mb-8">
+				<h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+				<p class="text-gray-600 mt-2">Welcome back, {data.user?.email}</p>
+			</div>
 
 		<!-- Quick Stats -->
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -147,6 +192,7 @@
 					</div>
 				</div>
 			</div>
+			</div>
 		</div>
 	</div>
-</div>
+{/if}

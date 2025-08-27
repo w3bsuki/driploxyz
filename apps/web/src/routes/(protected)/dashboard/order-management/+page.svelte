@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, OrderStatus, Input, toasts } from '@repo/ui';
+  import { Button, OrderStatus, Input, toasts, RatingModal } from '@repo/ui';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   import { onMount } from 'svelte';
@@ -16,6 +16,8 @@
   let selectedOrder = $state<any>(null);
   let trackingNumber = $state('');
   let showTrackingModal = $state(false);
+  let showRatingModal = $state(false);
+  let ratingOrder = $state<any>(null);
   let loading = $state(false);
   
   // Filter orders based on tab and user role
@@ -130,10 +132,24 @@
     await updateOrderStatus(selectedOrder.id, 'shipped', trackingNumber);
   }
   
-  async function confirmDelivery(orderId: string) {
+  async function confirmDelivery(order: any) {
     if (confirm('Confirm that you have received this order?')) {
-      await updateOrderStatus(orderId, 'delivered');
+      await updateOrderStatus(order.id, 'delivered');
+      // Show rating modal after confirming delivery
+      ratingOrder = order;
+      showRatingModal = true;
     }
+  }
+  
+  function openRatingModal(order: any) {
+    ratingOrder = order;
+    showRatingModal = true;
+  }
+  
+  async function handleRatingSuccess() {
+    toasts.success('Thank you for your review!');
+    // Reload orders to update the buyer_rated status
+    location.reload();
   }
   
   function formatDate(date: string) {
@@ -480,7 +496,7 @@
                         </Button>
                       {:else if activeTab === 'incoming' && !isSeller && order.status === 'shipped'}
                         <Button
-                          onclick={() => confirmDelivery(order.id)}
+                          onclick={() => confirmDelivery(order)}
                           size="sm"
                           variant="primary"
                         >
@@ -492,6 +508,14 @@
                           variant="outline"
                         >
                           Message Seller
+                        </Button>
+                      {:else if activeTab === 'completed' && !isSeller && order.status === 'delivered' && !order.buyer_rated}
+                        <Button
+                          onclick={() => openRatingModal(order)}
+                          size="sm"
+                          variant="primary"
+                        >
+                          Leave Review
                         </Button>
                       {/if}
                       
@@ -581,4 +605,15 @@
       </div>
     </div>
   </div>
+{/if}
+
+<!-- Rating Modal -->
+{#if showRatingModal && ratingOrder}
+  <RatingModal
+    bind:open={showRatingModal}
+    orderId={ratingOrder.id}
+    sellerName={ratingOrder.seller?.username || 'Seller'}
+    productTitle={ratingOrder.product?.title || 'Product'}
+    on:success={handleRatingSuccess}
+  />
 {/if}

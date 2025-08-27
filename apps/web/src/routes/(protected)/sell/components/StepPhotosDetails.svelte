@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ImageUploaderSupabase, Input, Select } from '@repo/ui';
   import type { Category } from '$lib/types/product';
+  import * as i18n from '@repo/i18n';
   
   interface UploadedImage {
     url: string;
@@ -65,7 +66,7 @@
   <!-- Image Upload -->
   <div>
     <label class="block text-sm font-medium text-gray-700 mb-1.5">
-      Photos <span class="text-red-500">*</span>
+{i18n.sell_photosSection()} <span class="text-red-500">*</span>
     </label>
     <ImageUploaderSupabase
       maxImages={10}
@@ -84,8 +85,8 @@
   <div>
     <Input
       type="text"
-      label="Title"
-      placeholder="What are you selling?"
+      label="{i18n.sell_titleFieldLabel()}"
+      placeholder="{i18n.sell_whatAreYouSelling()}"
       bind:value={formData.title}
       error={showError('title') ? errors.title : ''}
       required
@@ -98,7 +99,7 @@
   <!-- Gender/Age Category -->
   <div>
     <Select
-      label="Who is this for?"
+      label="{i18n.sell_whoIsThisFor()}"
       bind:value={formData.gender_category_id}
       error={showError('gender_category_id') ? errors.gender_category_id : ''}
       required
@@ -109,7 +110,7 @@
       }}
       name="gender_category_id"
     >
-      <option value="">Select gender/age</option>
+      <option value="">{i18n.sell_selectGenderAge()}</option>
       {#each genderCategories as category}
         <option value={category.id}>{category.name}</option>
       {/each}
@@ -120,7 +121,7 @@
   {#if typeCategories.length > 0}
     <div>
       <Select
-        label="What type of product?"
+        label="{i18n.sell_whatTypeOfProduct()}"
         bind:value={formData.type_category_id}
         error={showError('type_category_id') ? errors.type_category_id : ''}
         required
@@ -130,7 +131,7 @@
         }}
         name="type_category_id"
       >
-        <option value="">Select product type</option>
+        <option value="">{i18n.sell_selectProductType()}</option>
         {#each typeCategories as category}
           <option value={category.id}>{category.name}</option>
         {/each}
@@ -142,14 +143,14 @@
   {#if specificCategories.length > 0}
     <div>
       <Select
-        label="Specific category"
+        label="{i18n.sell_specificCategoryLabel()}"
         bind:value={formData.category_id}
         error={showError('category_id') ? errors.category_id : ''}
         required
         onchange={() => onFieldChange('category_id', formData.category_id)}
         name="category_id"
       >
-        <option value="">What exactly is it?</option>
+        <option value="">{i18n.sell_whatExactlyIsIt()}</option>
         {#each specificCategories as category}
           <option value={category.id}>{category.name}</option>
         {/each}
@@ -160,13 +161,13 @@
   <!-- Description -->
   <div>
     <label for="description" class="block text-sm font-medium text-gray-700 mb-1">
-      Description (optional)
+{i18n.sell_descriptionOptional()}
     </label>
     <textarea
       id="description"
       name="description"
       bind:value={formData.description}
-      placeholder="Add details about condition, measurements, flaws..."
+      placeholder="{i18n.sell_addDetailsPlaceholder()}"
       rows="3"
       maxlength="500"
       class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
