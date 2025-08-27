@@ -405,18 +405,6 @@
 
 {#key currentLang}
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
-	<!-- Active Feed Banner -->
-	<div class="bg-black text-white py-1.5 px-3">
-		<div class="flex items-center justify-center gap-2 text-xs">
-			<div class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div>
-			<span class="font-medium">LIVE</span>
-			<span class="text-gray-300">•</span>
-			<span>23 people viewing</span>
-			<span class="text-gray-300">•</span>
-			<span>5 items sold in last hour</span>
-		</div>
-	</div>
-
 	<main class="max-w-7xl mx-auto">
 		<!-- Hero Search -->
 		<div class="bg-white border-b border-gray-100">
