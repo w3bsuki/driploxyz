@@ -17,7 +17,6 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
         title,
         price,
         sold_at,
-        sold_price,
         product_images (image_url)
       `)
       .eq('seller_id', user.id)
@@ -32,8 +31,8 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
         product_id,
         buyer_id,
         total_amount,
-        seller_earnings,
-        commission_amount,
+        seller_net_amount,
+        commission_rate,
         created_at,
         status
       `)
@@ -64,9 +63,9 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
     }
 
     // Calculate earnings summary
-    const totalEarnings = orders?.reduce((sum, order) => sum + (order.seller_earnings || 0), 0) || 0;
+    const totalEarnings = orders?.reduce((sum, order) => sum + (order.seller_net_amount || 0), 0) || 0;
     const pendingEarnings = orders?.filter(o => o.status === 'delivered')
-      .reduce((sum, order) => sum + (order.seller_earnings || 0), 0) || 0;
+      .reduce((sum, order) => sum + (order.seller_net_amount || 0), 0) || 0;
 
     return {
       soldProducts: soldProducts?.map(product => ({

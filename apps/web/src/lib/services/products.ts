@@ -51,7 +51,7 @@ export class ProductService {
         .from('products')
         .select(`
           *,
-          product_images!product_id (id, image_url, alt_text, sort_order, created_at, product_id),
+          product_images!product_id (id, image_url, alt_text, display_order, created_at, product_id, sort_order),
           categories!category_id (name),
           profiles!seller_id (username, rating, avatar_url)
         `)
@@ -101,7 +101,7 @@ export class ProductService {
           *,
           favorite_count,
           product_images!product_id (
-            id, image_url, alt_text, sort_order
+            id, image_url, alt_text, display_order, created_at, product_id, sort_order
           ),
           categories!category_id (name),
           profiles!seller_id (username, rating, avatar_url)
@@ -187,7 +187,7 @@ export class ProductService {
         images: Array.isArray(item.product_images) ? item.product_images : [],
         category_name: (item.categories && typeof item.categories === 'object' && 'name' in item.categories) ? item.categories.name : undefined,
         seller_name: (item.profiles && typeof item.profiles === 'object' && 'username' in item.profiles) ? (item.profiles.username ?? undefined) : undefined,
-        seller_rating: (item.profiles && typeof item.profiles === 'object' && 'rating' in item.profiles) ? item.profiles.rating : undefined
+        seller_rating: (item.profiles && typeof item.profiles === 'object' && 'rating' in item.profiles) ? (item.profiles.rating || undefined) : undefined
       }));
 
       return { data: products, error: null, total: count || 0 };
@@ -270,7 +270,7 @@ export class ProductService {
         .from('products')
         .select(`
           *,
-          product_images!product_id (id, image_url, alt_text, sort_order, created_at, product_id),
+          product_images!product_id (id, image_url, alt_text, display_order, created_at, product_id, sort_order),
           categories!category_id (name),
           profiles!seller_id (username, rating, avatar_url)
         `)
@@ -308,7 +308,7 @@ export class ProductService {
           .from('products')
           .select(`
             *,
-            product_images (id, image_url, alt_text, sort_order, created_at, product_id),
+            product_images (id, image_url, alt_text, display_order, created_at, product_id, sort_order),
             categories (name),
             profiles!seller_id (username, rating, avatar_url)
           `)
@@ -374,7 +374,7 @@ export class ProductService {
       const images = imageUrls.map((url, index) => ({
         product_id: productId,
         image_url: url,
-        sort_order: index
+        display_order: index
       }));
 
       const { error } = await this.supabase
@@ -449,10 +449,7 @@ export class ProductService {
       // Use the search function from the database
       const { data, error } = await this.supabase.rpc('search_products', {
         search_query: query,
-        p_limit: options.limit || 20,
-        offset_count: options.offset || 0,
-        sort_by: options.sort?.by || 'relevance',
-        sort_direction: options.sort?.direction?.toUpperCase() || 'DESC'
+        p_limit: options.limit || 20
       });
 
       if (error) {

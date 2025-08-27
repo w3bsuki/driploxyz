@@ -455,7 +455,7 @@ export class StripeService {
 		const { metadata } = paymentIntent;
 		
 		// Check if this is an account upgrade payment
-		if (metadata.payment_type === 'one_time_upgrade') {
+		if (metadata.payment_type === 'one_time_upgrade' && metadata.user_id) {
 			// Update user profile with new account type
 			await this.supabase
 				.from('profiles')
@@ -498,25 +498,29 @@ export class StripeService {
 			.eq('stripe_payment_intent_id', paymentIntent.id);
 
 		// Mark product as sold
-		await this.supabase
-			.from('products')
-			.update({
-				is_sold: true,
-				sold_at: new Date().toISOString()
-			})
-			.eq('id', metadata.product_id);
+		if (metadata.product_id) {
+			await this.supabase
+				.from('products')
+				.update({
+					is_sold: true,
+					sold_at: new Date().toISOString()
+				})
+				.eq('id', metadata.product_id as string);
+		}
 
 		// Create order record
-		await this.supabase
-			.from('orders')
-			.insert({
-				buyer_id: metadata.buyer_id,
-				seller_id: metadata.seller_id,
-				product_id: metadata.product_id,
-				transaction_id: paymentIntent.id,
-				status: 'pending_shipment',
-				total_amount: Number(metadata.product_price) + Number(metadata.shipping_cost)
-			});
+		if (metadata.buyer_id && metadata.seller_id && metadata.product_id) {
+			await this.supabase
+				.from('orders')
+				.insert({
+					buyer_id: metadata.buyer_id as string,
+					seller_id: metadata.seller_id as string,
+					product_id: metadata.product_id as string,
+					transaction_id: paymentIntent.id,
+					status: 'paid',
+					total_amount: Number(metadata.product_price) + Number(metadata.shipping_cost)
+				});
+		}
 	}
 
 	/**
@@ -582,7 +586,7 @@ export class StripeService {
 				account_type: 'personal',
 				subscription_tier: 'free'
 			})
-			.eq('id', subscription.metadata.supabase_user_id);
+			.eq('id', subscription.metadata.supabase_user_id as string);
 	}
 
 	/**
@@ -726,7 +730,7 @@ export class StripeService {
 						is_bundle: true,
 						items_count: itemCount
 					})
-					.eq('id', metadata.order_id)
+					.eq('id', metadata.order_id as string)
 					.select()
 					.single();
 
@@ -743,6 +747,10 @@ export class StripeService {
 							.select('price, title')
 							.eq('id', productId)
 							.single();
+						
+						if (!metadata.order_id) {
+							throw new Error(`Missing order_id in metadata for product ${productId}`);
+						}
 						
 						return {
 							order_id: metadata.order_id,
@@ -801,7 +809,7 @@ export class StripeService {
 						status: 'paid',
 						processed_at: new Date().toISOString()
 					})
-					.eq('id', metadata.order_id)
+					.eq('id', metadata.order_id as string)
 					.select()
 					.single();
 
@@ -811,6 +819,10 @@ export class StripeService {
 				}
 
 				// Create single order item
+				if (!metadata.order_id || !metadata.product_id) {
+					throw new Error('Missing order_id or product_id in metadata');
+				}
+				
 				await this.supabase
 					.from('order_items')
 					.insert({
@@ -843,7 +855,7 @@ export class StripeService {
 						is_sold: true,
 						sold_at: new Date().toISOString()
 					})
-					.eq('id', metadata.product_id);
+					.eq('id', metadata.product_id as string);
 
 				return {
 					success: true,

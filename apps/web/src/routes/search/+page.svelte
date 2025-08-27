@@ -7,6 +7,9 @@
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
   import { translateCategory, getCategoryIcon } from '$lib/categories/mapping';
+  import type { Database } from '@repo/database';
+  
+  type Category = Database['public']['Tables']['categories']['Row'];
   
   interface Props {
     data: PageData;
@@ -14,9 +17,9 @@
   
   // Search and filter states
   let searchQuery = $state('');
-  let selectedLevel1 = $state<string | null>(null); // WHO: women/men/kids/unisex
-  let selectedLevel2 = $state<string | null>(null); // WHAT TYPE: clothing/shoes/bags/accessories
-  let selectedLevel3 = $state<string | null>(null); // SPECIFIC: t-shirts/dresses/sneakers
+  let selectedLevel1 = $state<string | null>(null); // Level 1: Gender (women/men/kids/unisex)
+  let selectedLevel2 = $state<string | null>(null); // Level 2: Product Type (clothing/shoes/bags/accessories)
+  let selectedLevel3 = $state<string | null>(null); // Level 3: Specific Item (t-shirts/dresses/sneakers)
   let selectedSize = $state('all');
   let selectedBrand = $state('all');
   let selectedCondition = $state('all');
@@ -28,9 +31,9 @@
   let isLoading = $state(false);
   let isSearching = $state(false);
   
-  // Legacy compatibility
+  // For backward compatibility with existing components
   let selectedMainCategory = $derived(selectedLevel1);
-  let selectedSubcategory = $derived(selectedLevel3);
+  let selectedSubcategory = $derived(selectedLevel2);
   
   let { data }: Props = $props();
 
@@ -41,17 +44,12 @@
     }
     if (data.filters) {
       if (data.filters.category) {
-        selectedMainCategory = data.filters.category;
-        // Sync with Level 1
         selectedLevel1 = data.filters.category;
       }
       if (data.filters.subcategory) {
-        selectedSubcategory = data.filters.subcategory;
-        // This is Level 2
         selectedLevel2 = data.filters.subcategory;
       }
       if (data.filters.specific) {
-        // This is Level 3
         selectedLevel3 = data.filters.specific;
       }
       if (data.filters.size) selectedSize = data.filters.size;
@@ -63,234 +61,95 @@
     }
   });
   
-  // Use category data from server - properly reactive without function call
-  const categoryData = $derived<CategoryData>(data.categoryHierarchy && Object.keys(data.categoryHierarchy).length > 0 ? (() => {
-    const hierarchy: CategoryData = {};
-    
-    // Transform server data to match component format
-    Object.entries(data.categoryHierarchy).forEach(([slug, catData]: [string, any]) => {
-      hierarchy[slug] = {
-        name: catData.name,
-        icon: getCategoryIcon(catData.name),
-        subcategories: (catData.subcategories || []).map((sub: any) => ({
-          name: sub.name,
-          icon: getSubcategoryIcon(sub.name)
-        }))
-      };
-    });
-    
-    return hierarchy;
-  })() : {
-    women: {
-      name: i18n.category_women(),
-      icon: '👗',
-      subcategories: [
-        { name: i18n.subcategory_dresses(), icon: '👗' },
-        { name: i18n.subcategory_tops(), icon: '👚' },
-        { name: i18n.subcategory_jeans(), icon: '👖' },
-        { name: i18n.subcategory_skirts(), icon: '👠' },
-        { name: i18n.subcategory_jackets(), icon: '🧥' },
-        { name: i18n.category_shoes(), icon: '👠' },
-        { name: i18n.category_bags(), icon: '👜' },
-        { name: i18n.subcategory_accessories(), icon: '💍' }
-      ]
-    },
-    men: {
-      name: i18n.category_men(),
-      icon: '👔',
-      subcategories: [
-        { name: i18n.subcategory_tshirts(), icon: '👕' },
-        { name: i18n.subcategory_shirts(), icon: '👔' },
-        { name: i18n.subcategory_jeans(), icon: '👖' },
-        { name: i18n.subcategory_jackets(), icon: '🧥' },
-        { name: i18n.subcategory_suits(), icon: '🤵' },
-        { name: i18n.category_shoes(), icon: '👞' },
-        { name: i18n.subcategory_watches(), icon: '⌚' },
-        { name: i18n.subcategory_accessories(), icon: '🎩' }
-      ]
-    },
-    kids: {
-      name: i18n.category_kids(),
-      icon: '👶',
-      subcategories: [
-        { name: i18n.subcategory_baby(), icon: '👶' },
-        { name: i18n.subcategory_girls2to8(), icon: '👧' },
-        { name: i18n.subcategory_boys2to8(), icon: '👦' },
-        { name: i18n.subcategory_girls9to16(), icon: '🧒' },
-        { name: i18n.subcategory_boys9to16(), icon: '🧒' },
-        { name: i18n.category_shoes(), icon: '👟' },
-        { name: i18n.subcategory_school(), icon: '🎒' },
-        { name: i18n.subcategory_toys(), icon: '🧸' }
-      ]
-    },
-    pets: {
-      name: i18n.category_pets(),
-      icon: '🐕',
-      subcategories: [
-        { name: i18n.subcategory_dogApparel(), icon: '🐕' },
-        { name: i18n.subcategory_catAccessories(), icon: '🐱' },
-        { name: i18n.subcategory_petToys(), icon: '🦴' },
-        { name: i18n.subcategory_leashes(), icon: '🦮' },
-        { name: i18n.subcategory_beds(), icon: '🛏️' },
-        { name: i18n.subcategory_foodBowls(), icon: '🥣' },
-        { name: i18n.subcategory_carriers(), icon: '🎒' }
-      ]
-    },
-    shoes: {
-      name: i18n.category_shoes(),
-      icon: '👟',
-      subcategories: [
-        { name: i18n.subcategory_sneakers(), icon: '👟' },
-        { name: i18n.subcategory_boots(), icon: '🥾' },
-        { name: i18n.subcategory_heels(), icon: '👠' },
-        { name: i18n.subcategory_flats(), icon: '🩰' },
-        { name: i18n.subcategory_sandals(), icon: '👡' },
-        { name: i18n.subcategory_athletic(), icon: '⚽' },
-        { name: i18n.subcategory_dressShoes(), icon: '👞' }
-      ]
-    },
-    bags: {
-      name: i18n.category_bags(),
-      icon: '👜',
-      subcategories: [
-        { name: i18n.subcategory_handbags(), icon: '👜' },
-        { name: i18n.subcategory_backpacks(), icon: '🎒' },
-        { name: i18n.subcategory_totes(), icon: '👝' },
-        { name: i18n.subcategory_clutches(), icon: '💼' },
-        { name: i18n.subcategory_crossbody(), icon: '👜' },
-        { name: i18n.subcategory_travel(), icon: '🧳' },
-        { name: i18n.subcategory_laptopBags(), icon: '💻' }
-      ]
-    },
-    home: {
-      name: i18n.category_home(),
-      icon: '🏠',
-      subcategories: [
-        { name: i18n.subcategory_decor(), icon: '🖼️' },
-        { name: i18n.subcategory_bedding(), icon: '🛏️' },
-        { name: i18n.subcategory_kitchen(), icon: '🍽️' },
-        { name: i18n.subcategory_lighting(), icon: '💡' },
-        { name: i18n.subcategory_storage(), icon: '📦' },
-        { name: i18n.subcategory_garden(), icon: '🌱' },
-        { name: i18n.subcategory_art(), icon: '🎨' },
-        { name: i18n.subcategory_textiles(), icon: '🧶' }
-      ]
-    },
-    beauty: {
-      name: i18n.category_beauty(),
-      icon: '💄',
-      subcategories: [
-        { name: i18n.subcategory_makeup(), icon: '💄' },
-        { name: i18n.subcategory_skincare(), icon: '🧴' },
-        { name: i18n.subcategory_fragrance(), icon: '🌺' },
-        { name: i18n.subcategory_hairCare(), icon: '💇' },
-        { name: i18n.subcategory_tools(), icon: '🪞' },
-        { name: i18n.subcategory_nails(), icon: '💅' },
-        { name: i18n.subcategory_bathBody(), icon: '🛁' },
-        { name: i18n.subcategory_sets(), icon: '🎁' }
-      ]
-    },
-    unisex: {
-      name: 'Unisex',
-      icon: '👥',
-      subcategories: [
-        { name: 'Hoodies', icon: '🧥' },
-        { name: 'T-Shirts', icon: '👕' },
-        { name: 'Jeans', icon: '👖' },
-        { name: 'Sneakers', icon: '👟' },
-        { name: 'Watches', icon: '⌚' },
-        { name: 'Backpacks', icon: '🎒' },
-        { name: 'Hats', icon: '🧢' },
-        { name: 'Sunglasses', icon: '🕶️' }
-      ]
-    }
-  });
-  
-  // Helper function for subcategory icons (uses main mapping for consistency)
-  function getSubcategoryIcon(name: string): string {
-    return getCategoryIcon(name);
-  }
-  
-  // Build Perfect UX Hierarchy from database categories
-  const perfectUXHierarchy = $derived((() => {
-    if (!data.categories || data.categories.length === 0) {
-      // Fallback if no categories loaded
+  // Build category hierarchy from database categories
+  const categoryHierarchy = $derived((() => {
+    if (!data.categoryHierarchy || Object.keys(data.categoryHierarchy).length === 0) {
       return {
-        level1: [
-          { key: 'women', name: i18n.category_women(), icon: '👩' },
-          { key: 'men', name: i18n.category_men(), icon: '👨' },
-          { key: 'kids', name: i18n.category_kids(), icon: '👶' },
-          { key: 'unisex', name: i18n.category_unisex(), icon: '👥' }
-        ],
+        level1: [],
         level2: {},
         level3: {}
       };
     }
     
-    // Get Level 1 categories (Gender)
-    const level1Categories = data.categories
-      .filter((c: any) => c.level === 1)
-      .map((c: any) => ({
-        key: c.slug || c.name.toLowerCase(),
-        name: translateCategory(c.name),
-        icon: getCategoryIcon(c.name),
-        id: c.id
-      }));
+    const hierarchy = {
+      level1: [] as Array<{key: string, name: string, icon: string, id: string}>,
+      level2: {} as Record<string, Array<{key: string, name: string, icon: string, id: string}>>,
+      level3: {} as Record<string, Array<{key: string, name: string, icon: string, id: string}>>
+    };
     
-    // Build Level 2 categories (Product Types) for each Level 1
-    const level2Map: Record<string, any[]> = {};
-    const level3Map: Record<string, any[]> = {};
-    
-    level1Categories.forEach((l1: any) => {
-      // Get Level 2 children
-      const level2Children = data.categories
-        .filter((c: any) => c.parent_id === l1.id && c.level === 2)
-        .map((c: any) => ({
-          key: c.slug || c.name.toLowerCase(),
-          name: translateCategory(c.name),
-          icon: getCategoryIcon(c.name),
-          id: c.id
-        }));
-      
-      level2Map[l1.key] = level2Children;
-      
-      // Build Level 3 for each Level 2
-      level2Children.forEach((l2: any) => {
-        const level3Children = data.categories
-          .filter((c: any) => c.parent_id === l2.id && c.level === 3)
-          .map((c: any) => ({
-            key: c.slug || c.name.toLowerCase(),
-            name: translateCategory(c.name),
-            icon: getCategoryIcon(c.name),
-            id: c.id
-          }));
-        
-        level3Map[`${l1.key}-${l2.key}`] = level3Children;
+    // Process the hierarchy from server
+    Object.entries(data.categoryHierarchy).forEach(([slug, catData]: [string, any]) => {
+      // Add Level 1 category
+      hierarchy.level1.push({
+        key: slug,
+        name: translateCategory(catData.name),
+        icon: getCategoryIcon(catData.name),
+        id: catData.id
       });
+      
+      // Process Level 2 categories
+      if (catData.level2) {
+        hierarchy.level2[slug] = [];
+        
+        Object.entries(catData.level2).forEach(([l2Slug, l2Data]: [string, any]) => {
+          // Extract clean slug (remove gender prefix)
+          const cleanSlug = l2Slug.replace(`${slug}-`, '').replace('-new', '');
+          
+          hierarchy.level2[slug].push({
+            key: cleanSlug,
+            name: translateCategory(l2Data.name),
+            icon: getCategoryIcon(l2Data.name),
+            id: l2Data.id
+          });
+          
+          // Process Level 3 categories
+          if (l2Data.level3 && Array.isArray(l2Data.level3)) {
+            const level3Key = `${slug}-${cleanSlug}`;
+            hierarchy.level3[level3Key] = l2Data.level3.map((l3: any) => ({
+              key: l3.slug.replace(`${slug}-`, ''),
+              name: translateCategory(l3.name),
+              icon: getCategoryIcon(l3.name),
+              id: l3.id
+            }));
+          }
+        });
+      }
     });
     
-    return {
-      level1: level1Categories,
-      level2: level2Map,
-      level3: level3Map
-    };
-  })());
-  
-  
-  // Get ordered categories - Women, Men, Kids, Unisex in that order
-  function getOrderedCategories() {
-    const cats = Object.entries(categoryData);
-    // Sort categories in preferred order: Women, Men, Kids, Unisex
+    // Sort Level 1 in preferred order
     const order = ['women', 'men', 'kids', 'unisex'];
-    return cats.sort(([a], [b]) => {
-      const aIndex = order.indexOf(a);
-      const bIndex = order.indexOf(b);
+    hierarchy.level1.sort((a, b) => {
+      const aIndex = order.indexOf(a.key);
+      const bIndex = order.indexOf(b.key);
       if (aIndex === -1 && bIndex === -1) return 0;
       if (aIndex === -1) return 1;
       if (bIndex === -1) return -1;
       return aIndex - bIndex;
     });
-  }
+    
+    return hierarchy;
+  })());
+  
+  // Transform category hierarchy for CategorySidebar component
+  const categoryData = $derived<CategoryData>((() => {
+    const data: CategoryData = {};
+    
+    // Build CategoryData format from our hierarchy
+    categoryHierarchy.level1.forEach(l1 => {
+      const subcategories = categoryHierarchy.level2[l1.key] || [];
+      
+      data[l1.key] = {
+        name: l1.name,
+        icon: l1.icon,
+        subcategories: subcategories.map(l2 => ({
+          name: l2.name,
+          icon: l2.icon
+        }))
+      };
+    });
+    
+    return data;
+  })());
 
   // Smart filter data based on category
   const smartFilterData = {
@@ -548,7 +407,7 @@
           </div>
         {/if}
       </div>
-      <!-- Level 1: WHO (Gender/Age) - Always visible -->
+      <!-- Level 1: Gender Categories - Always visible -->
       <div class="flex overflow-x-auto scrollbar-hide gap-2 mb-3">
         <button
           onclick={async () => {
@@ -566,9 +425,9 @@
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
         >
           <span class="text-base">🌍</span>
-          <span>Всички</span>
+          <span>{i18n.search_allCategories()}</span>
         </button>
-        {#each perfectUXHierarchy.level1 as level1Item}
+        {#each categoryHierarchy.level1 as level1Item}
           <button
             onclick={async () => {
               if (selectedLevel1 === level1Item.key) {
@@ -602,8 +461,8 @@
         {/each}
       </div>
       
-      <!-- Level 2: WHAT TYPE (Product Categories) - Shows when Level 1 selected OR as quick access -->
-      {#if selectedLevel1 && perfectUXHierarchy.level2[selectedLevel1]}
+      <!-- Level 2: Product Type Categories - Shows when Level 1 selected -->
+      {#if selectedLevel1 && categoryHierarchy.level2[selectedLevel1]}
         <div class="flex overflow-x-auto scrollbar-hide gap-2 mb-3">
           <button
             onclick={async () => {
@@ -622,7 +481,7 @@
           >
             <span>Всички</span>
           </button>
-          {#each perfectUXHierarchy.level2[selectedLevel1] as level2Item}
+          {#each categoryHierarchy.level2[selectedLevel1] as level2Item}
             <button
               onclick={async () => {
                 if (selectedLevel2 === level2Item.key) {
@@ -716,8 +575,8 @@
         </div>
       {/if}
       
-      <!-- Level 3: SPECIFIC ITEMS - Shows when Level 2 selected -->
-      {#if selectedLevel1 && selectedLevel2 && perfectUXHierarchy.level3[`${selectedLevel1}-${selectedLevel2}`]}
+      <!-- Level 3: Specific Items - Shows when Level 2 selected -->
+      {#if selectedLevel1 && selectedLevel2 && categoryHierarchy.level3[`${selectedLevel1}-${selectedLevel2}`]}
         <div class="flex overflow-x-auto scrollbar-hide gap-2 mb-3">
           <button
             onclick={() => {
@@ -730,7 +589,7 @@
           >
             <span>Всички</span>
           </button>
-          {#each perfectUXHierarchy.level3[`${selectedLevel1}-${selectedLevel2}`] as level3Item}
+          {#each categoryHierarchy.level3[`${selectedLevel1}-${selectedLevel2}`] as level3Item}
             <button
               onclick={async () => {
                 if (selectedLevel3 === level3Item.key) {
@@ -1094,8 +953,8 @@
             </button>
           </span>
         {/if}
-        {#if selectedLevel2 && selectedLevel1 && perfectUXHierarchy.level2[selectedLevel1]}
-          {@const level2Item = perfectUXHierarchy.level2[selectedLevel1].find(item => item.key === selectedLevel2)}
+        {#if selectedLevel2 && selectedLevel1 && categoryHierarchy.level2[selectedLevel1]}
+          {@const level2Item = categoryHierarchy.level2[selectedLevel1].find(item => item.key === selectedLevel2)}
           {#if level2Item}
             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
               {level2Item.name}
@@ -1107,8 +966,8 @@
             </span>
           {/if}
         {/if}
-        {#if selectedLevel3 && selectedLevel1 && selectedLevel2 && perfectUXHierarchy.level3[`${selectedLevel1}-${selectedLevel2}`]}
-          {@const level3Item = perfectUXHierarchy.level3[`${selectedLevel1}-${selectedLevel2}`].find(item => item.key === selectedLevel3)}
+        {#if selectedLevel3 && selectedLevel1 && selectedLevel2 && categoryHierarchy.level3[`${selectedLevel1}-${selectedLevel2}`]}
+          {@const level3Item = categoryHierarchy.level3[`${selectedLevel1}-${selectedLevel2}`].find(item => item.key === selectedLevel3)}
           {#if level3Item}
             <span class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100">
               {level3Item.name}
