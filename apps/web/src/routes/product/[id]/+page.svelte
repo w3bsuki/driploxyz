@@ -17,6 +17,7 @@
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
+  import { getProductUrl } from '$lib/utils/seo-urls';
   
   interface Props {
     data: PageData;
@@ -431,7 +432,7 @@
                   sellerRating: product.seller_rating,
                   sellerAvatar: product.seller_avatar
                 }}
-                onclick={() => goto(`/product/${product.id}`)}
+                onclick={() => goto(getProductUrl(product))}
                 compact={true}
                 translations={{
                   size: i18n.product_size(),
@@ -472,7 +473,7 @@
                     sellerRating: product.seller_rating,
                     sellerAvatar: product.seller_avatar
                   }}
-                  onclick={() => goto(`/product/${product.id}`)}
+                  onclick={() => goto(getProductUrl(product))}
                   compact={true}
                   translations={{
                     size: i18n.product_size(),

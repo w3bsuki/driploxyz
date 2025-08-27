@@ -35,8 +35,13 @@
   let compactPriceRange = $state('all');
   let compactCondition = $state('all');
   
+  // Detect cross-gender category searches (accessories, clothing, shoes, bags across all genders)
+  let isCrossGenderSearch = $derived(
+    selectedLevel1 && ['accessories', 'clothing', 'shoes', 'bags'].includes(selectedLevel1)
+  );
+
   // For backward compatibility with existing components
-  let selectedMainCategory = $derived(selectedLevel1);
+  let selectedMainCategory = $derived(isCrossGenderSearch ? null : selectedLevel1);
   let selectedSubcategory = $derived(selectedLevel2);
   
   let { data }: Props = $props();
@@ -190,9 +195,9 @@
   const brands = $derived(currentFilters.brands);
   const conditions = ['new', 'like-new', 'good', 'fair'];
   
-  // Transform server products to component format with client-side filtering
+  // Transform server products to component format - no client-side filtering needed
   const displayProducts = $derived((() => {
-    let products = (data.products || []).map(product => ({
+    const products = (data.products || []).map(product => ({
       id: product.id,
       title: product.title,
       description: product.description,
@@ -217,54 +222,8 @@
       location: product.location || 'Unknown'
     }));
 
-    // Main category filtering is handled by server
-    // Only apply secondary client-side filters
-    // Note: Category filtering (level1/level2/level3) is handled server-side
-    // Don't duplicate category filtering on client-side
-
-    if (selectedSize !== 'all') {
-      products = products.filter(p => p.size === selectedSize);
-    }
-
-    if (selectedBrand !== 'all') {
-      products = products.filter(p => p.brand?.toLowerCase().includes(selectedBrand.toLowerCase()));
-    }
-
-    if (selectedCondition !== 'all') {
-      products = products.filter(p => p.condition === selectedCondition);
-    }
-
-    if (priceMin) {
-      const min = parseFloat(priceMin);
-      if (!isNaN(min)) {
-        products = products.filter(p => p.price >= min);
-      }
-    }
-
-    if (priceMax) {
-      const max = parseFloat(priceMax);
-      if (!isNaN(max)) {
-        products = products.filter(p => p.price <= max);
-      }
-    }
-
-    // Apply sorting
-    switch (sortBy) {
-      case 'price-low':
-        products.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        products.sort((a, b) => b.price - a.price);
-        break;
-      case 'newest':
-        products.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        break;
-      case 'relevance':
-      default:
-        // Keep original order for relevance
-        break;
-    }
-
+    // All filtering is handled server-side via navigation
+    // Return products as-is from server
     return products;
   })());
   
@@ -280,14 +239,22 @@
   })());
   
   
-  function clearFilters() {
-    selectedMainCategory = null;
-    selectedSubcategory = null;
+  async function clearFilters() {
+    selectedLevel1 = null;
+    selectedLevel2 = null;
+    selectedLevel3 = null;
     selectedSize = 'all';
     selectedBrand = 'all';
     selectedCondition = 'all';
     priceMin = '';
     priceMax = '';
+    
+    // Navigate to clear all filters on server
+    const url = new URL('/search', window.location.origin);
+    if (searchQuery.trim()) {
+      url.searchParams.set('q', searchQuery.trim());
+    }
+    await goto(url.pathname + url.search);
   }
   
   async function handleSearch(query: string) {
@@ -362,8 +329,23 @@
   }
   
   // Compact filter bar handlers
-  function handleCompactSortChange(value: string) {
+  async function handleCompactSortChange(value: string) {
     sortBy = value;
+    
+    // Navigate to apply sort on server
+    const url = new URL('/search', window.location.origin);
+    if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+    if (selectedLevel1) url.searchParams.set('category', selectedLevel1);
+    if (selectedLevel2) url.searchParams.set('subcategory', selectedLevel2);
+    if (selectedLevel3) url.searchParams.set('specific', selectedLevel3);
+    if (selectedSize !== 'all') url.searchParams.set('size', selectedSize);
+    if (selectedBrand !== 'all') url.searchParams.set('brand', selectedBrand);
+    if (selectedCondition !== 'all') url.searchParams.set('condition', selectedCondition);
+    if (priceMin) url.searchParams.set('min_price', priceMin);
+    if (priceMax) url.searchParams.set('max_price', priceMax);
+    if (value !== 'relevance') url.searchParams.set('sort', value);
+    
+    await goto(url.pathname + url.search);
   }
   
   function handleCompactPriceRangeChange(value: string) {
@@ -551,8 +533,8 @@
             </button>
           {/each}
         </div>
-      {:else if !selectedLevel1}
-        <!-- Quick access to major categories when no Level 1 is selected -->
+      {:else if !selectedLevel1 || isCrossGenderSearch}
+        <!-- Quick access to major categories when no Level 1 is selected OR during cross-gender search -->
         <div class="flex overflow-x-auto scrollbar-hide gap-2 mb-3">
           <button
             onclick={async () => {
@@ -563,7 +545,9 @@
               await goto(url.pathname + url.search);
             }}
             class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
-              bg-white text-gray-600 border border-gray-300 hover:border-gray-400"
+              {selectedLevel1 === 'accessories'
+                ? 'bg-black text-white' 
+                : 'bg-white text-gray-600 border border-gray-300 hover:border-gray-400'}"
           >
             <span class="text-sm">💍</span>
             <span>{i18n.category_accessoriesType()}</span>
@@ -577,7 +561,9 @@
               await goto(url.pathname + url.search);
             }}
             class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
-              bg-white text-gray-600 border border-gray-300 hover:border-gray-400"
+              {selectedLevel1 === 'clothing'
+                ? 'bg-black text-white' 
+                : 'bg-white text-gray-600 border border-gray-300 hover:border-gray-400'}"
           >
             <span class="text-sm">👔</span>
             <span>{i18n.category_clothing()}</span>
@@ -591,7 +577,9 @@
               await goto(url.pathname + url.search);
             }}
             class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
-              bg-white text-gray-600 border border-gray-300 hover:border-gray-400"
+              {selectedLevel1 === 'shoes'
+                ? 'bg-black text-white' 
+                : 'bg-white text-gray-600 border border-gray-300 hover:border-gray-400'}"
           >
             <span class="text-sm">👟</span>
             <span>{i18n.category_shoesType()}</span>
@@ -605,7 +593,9 @@
               await goto(url.pathname + url.search);
             }}
             class="px-3 py-1.5 rounded-full text-xs font-medium shrink-0 transition-all flex items-center gap-1
-              bg-white text-gray-600 border border-gray-300 hover:border-gray-400"
+              {selectedLevel1 === 'bags'
+                ? 'bg-black text-white' 
+                : 'bg-white text-gray-600 border border-gray-300 hover:border-gray-400'}"
           >
             <span class="text-sm">👜</span>
             <span>{i18n.category_bagsType()}</span>
@@ -691,7 +681,25 @@
               <div class="grid grid-cols-4 gap-2">
                 {#each sizes as size}
                   <button
-                    onclick={() => selectedSize = selectedSize === size ? 'all' : size}
+                    onclick={async () => {
+                      const newSize = selectedSize === size ? 'all' : size;
+                      selectedSize = newSize;
+                      
+                      // Navigate to apply filter on server
+                      const url = new URL('/search', window.location.origin);
+                      if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+                      if (selectedLevel1) url.searchParams.set('category', selectedLevel1);
+                      if (selectedLevel2) url.searchParams.set('subcategory', selectedLevel2);
+                      if (selectedLevel3) url.searchParams.set('specific', selectedLevel3);
+                      if (newSize !== 'all') url.searchParams.set('size', newSize);
+                      if (selectedBrand !== 'all') url.searchParams.set('brand', selectedBrand);
+                      if (selectedCondition !== 'all') url.searchParams.set('condition', selectedCondition);
+                      if (priceMin) url.searchParams.set('min_price', priceMin);
+                      if (priceMax) url.searchParams.set('max_price', priceMax);
+                      if (sortBy !== 'relevance') url.searchParams.set('sort', sortBy);
+                      
+                      await goto(url.pathname + url.search);
+                    }}
                     class="min-h-[44px] px-2 text-sm rounded-lg ring-1 transition-all font-medium flex items-center justify-center
                       {selectedSize === size ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                   >
@@ -706,7 +714,23 @@
               <div class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_brand()}</div>
               <div class="grid grid-cols-2 gap-2">
                 <button
-                  onclick={() => selectedBrand = 'all'}
+                  onclick={async () => {
+                    selectedBrand = 'all';
+                    
+                    // Navigate to apply filter on server
+                    const url = new URL('/search', window.location.origin);
+                    if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+                    if (selectedLevel1) url.searchParams.set('category', selectedLevel1);
+                    if (selectedLevel2) url.searchParams.set('subcategory', selectedLevel2);
+                    if (selectedLevel3) url.searchParams.set('specific', selectedLevel3);
+                    if (selectedSize !== 'all') url.searchParams.set('size', selectedSize);
+                    if (selectedCondition !== 'all') url.searchParams.set('condition', selectedCondition);
+                    if (priceMin) url.searchParams.set('min_price', priceMin);
+                    if (priceMax) url.searchParams.set('max_price', priceMax);
+                    if (sortBy !== 'relevance') url.searchParams.set('sort', sortBy);
+                    
+                    await goto(url.pathname + url.search);
+                  }}
                   class="min-h-[44px] px-3 text-sm rounded-lg ring-1 transition-all font-medium flex items-center justify-center
                     {selectedBrand === 'all' ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                 >
@@ -714,7 +738,25 @@
                 </button>
                 {#each brands as brand}
                   <button
-                    onclick={() => selectedBrand = selectedBrand === brand ? 'all' : brand}
+                    onclick={async () => {
+                      const newBrand = selectedBrand === brand ? 'all' : brand;
+                      selectedBrand = newBrand;
+                      
+                      // Navigate to apply filter on server
+                      const url = new URL('/search', window.location.origin);
+                      if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+                      if (selectedLevel1) url.searchParams.set('category', selectedLevel1);
+                      if (selectedLevel2) url.searchParams.set('subcategory', selectedLevel2);
+                      if (selectedLevel3) url.searchParams.set('specific', selectedLevel3);
+                      if (selectedSize !== 'all') url.searchParams.set('size', selectedSize);
+                      if (newBrand !== 'all') url.searchParams.set('brand', newBrand);
+                      if (selectedCondition !== 'all') url.searchParams.set('condition', selectedCondition);
+                      if (priceMin) url.searchParams.set('min_price', priceMin);
+                      if (priceMax) url.searchParams.set('max_price', priceMax);
+                      if (sortBy !== 'relevance') url.searchParams.set('sort', sortBy);
+                      
+                      await goto(url.pathname + url.search);
+                    }}
                     class="min-h-[44px] px-3 text-sm rounded-lg ring-1 transition-all font-medium flex items-center justify-center
                       {selectedBrand === brand ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                   >
@@ -729,7 +771,23 @@
               <div class="block text-sm font-medium text-gray-700 mb-2">{i18n.search_condition()}</div>
               <div class="space-y-2">
                 <button
-                  onclick={() => selectedCondition = 'all'}
+                  onclick={async () => {
+                    selectedCondition = 'all';
+                    
+                    // Navigate to apply filter on server
+                    const url = new URL('/search', window.location.origin);
+                    if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+                    if (selectedLevel1) url.searchParams.set('category', selectedLevel1);
+                    if (selectedLevel2) url.searchParams.set('subcategory', selectedLevel2);
+                    if (selectedLevel3) url.searchParams.set('specific', selectedLevel3);
+                    if (selectedSize !== 'all') url.searchParams.set('size', selectedSize);
+                    if (selectedBrand !== 'all') url.searchParams.set('brand', selectedBrand);
+                    if (priceMin) url.searchParams.set('min_price', priceMin);
+                    if (priceMax) url.searchParams.set('max_price', priceMax);
+                    if (sortBy !== 'relevance') url.searchParams.set('sort', sortBy);
+                    
+                    await goto(url.pathname + url.search);
+                  }}
                   class="w-full min-h-[44px] px-3 text-sm rounded-lg ring-1 text-left transition-all font-medium flex items-center
                     {selectedCondition === 'all' ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                 >
@@ -737,7 +795,25 @@
                 </button>
                 {#each conditions as condition}
                   <button
-                    onclick={() => selectedCondition = selectedCondition === condition ? 'all' : condition}
+                    onclick={async () => {
+                      const newCondition = selectedCondition === condition ? 'all' : condition;
+                      selectedCondition = newCondition;
+                      
+                      // Navigate to apply filter on server
+                      const url = new URL('/search', window.location.origin);
+                      if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+                      if (selectedLevel1) url.searchParams.set('category', selectedLevel1);
+                      if (selectedLevel2) url.searchParams.set('subcategory', selectedLevel2);
+                      if (selectedLevel3) url.searchParams.set('specific', selectedLevel3);
+                      if (selectedSize !== 'all') url.searchParams.set('size', selectedSize);
+                      if (selectedBrand !== 'all') url.searchParams.set('brand', selectedBrand);
+                      if (newCondition !== 'all') url.searchParams.set('condition', newCondition);
+                      if (priceMin) url.searchParams.set('min_price', priceMin);
+                      if (priceMax) url.searchParams.set('max_price', priceMax);
+                      if (sortBy !== 'relevance') url.searchParams.set('sort', sortBy);
+                      
+                      await goto(url.pathname + url.search);
+                    }}
                     class="w-full min-h-[44px] px-3 text-sm rounded-lg ring-1 text-left transition-all font-medium flex items-center
                       {selectedCondition === condition ? 'bg-black text-white ring-black' : 'bg-white text-gray-700 ring-gray-300 hover:ring-gray-400 hover:bg-gray-50'}"
                   >
@@ -762,6 +838,22 @@
                   bind:value={priceMin}
                   placeholder={i18n.search_min()}
                   class="flex-1 px-3 py-2 ring-1 ring-gray-300 rounded-lg text-base"
+                  onchange={async () => {
+                    // Navigate to apply price filter on server
+                    const url = new URL('/search', window.location.origin);
+                    if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+                    if (selectedLevel1) url.searchParams.set('category', selectedLevel1);
+                    if (selectedLevel2) url.searchParams.set('subcategory', selectedLevel2);
+                    if (selectedLevel3) url.searchParams.set('specific', selectedLevel3);
+                    if (selectedSize !== 'all') url.searchParams.set('size', selectedSize);
+                    if (selectedBrand !== 'all') url.searchParams.set('brand', selectedBrand);
+                    if (selectedCondition !== 'all') url.searchParams.set('condition', selectedCondition);
+                    if (priceMin) url.searchParams.set('min_price', priceMin);
+                    if (priceMax) url.searchParams.set('max_price', priceMax);
+                    if (sortBy !== 'relevance') url.searchParams.set('sort', sortBy);
+                    
+                    await goto(url.pathname + url.search);
+                  }}
                 />
                 <span class="self-center">-</span>
                 <input
@@ -769,6 +861,22 @@
                   bind:value={priceMax}
                   placeholder={i18n.search_max()}
                   class="flex-1 px-3 py-2 ring-1 ring-gray-300 rounded-lg text-base"
+                  onchange={async () => {
+                    // Navigate to apply price filter on server
+                    const url = new URL('/search', window.location.origin);
+                    if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+                    if (selectedLevel1) url.searchParams.set('category', selectedLevel1);
+                    if (selectedLevel2) url.searchParams.set('subcategory', selectedLevel2);
+                    if (selectedLevel3) url.searchParams.set('specific', selectedLevel3);
+                    if (selectedSize !== 'all') url.searchParams.set('size', selectedSize);
+                    if (selectedBrand !== 'all') url.searchParams.set('brand', selectedBrand);
+                    if (selectedCondition !== 'all') url.searchParams.set('condition', selectedCondition);
+                    if (priceMin) url.searchParams.set('min_price', priceMin);
+                    if (priceMax) url.searchParams.set('max_price', priceMax);
+                    if (sortBy !== 'relevance') url.searchParams.set('sort', sortBy);
+                    
+                    await goto(url.pathname + url.search);
+                  }}
                 />
               </div>
             </div>
@@ -778,7 +886,24 @@
         <!-- Fixed Actions -->
         <div class="flex space-x-3 p-4 border-t border-gray-100 shrink-0">
           <Button onclick={clearFilters} variant="outline" class="flex-1 min-h-[44px]">{i18n.search_clearAll()}</Button>
-          <Button onclick={() => showFilters = false} class="flex-1 min-h-[44px]">{i18n.search_applyFilters()}</Button>
+          <Button onclick={async () => {
+            showFilters = false;
+            
+            // Apply all current filters by navigating
+            const url = new URL('/search', window.location.origin);
+            if (searchQuery.trim()) url.searchParams.set('q', searchQuery.trim());
+            if (selectedLevel1) url.searchParams.set('category', selectedLevel1);
+            if (selectedLevel2) url.searchParams.set('subcategory', selectedLevel2);
+            if (selectedLevel3) url.searchParams.set('specific', selectedLevel3);
+            if (selectedSize !== 'all') url.searchParams.set('size', selectedSize);
+            if (selectedBrand !== 'all') url.searchParams.set('brand', selectedBrand);
+            if (selectedCondition !== 'all') url.searchParams.set('condition', selectedCondition);
+            if (priceMin) url.searchParams.set('min_price', priceMin);
+            if (priceMax) url.searchParams.set('max_price', priceMax);
+            if (sortBy !== 'relevance') url.searchParams.set('sort', sortBy);
+            
+            await goto(url.pathname + url.search);
+          }} class="flex-1 min-h-[44px]">{i18n.search_applyFilters()}</Button>
         </div>
       </div>
     </div>

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Button, Avatar, ProductCard, UserBadge, BottomNav } from '@repo/ui';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
+  import { getProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import { page, navigating } from '$app/stores';
@@ -295,7 +296,7 @@
         <div class="grid grid-cols-3 gap-1">
           {#each data.products as product}
             <a
-              href="/product/{product.id}"
+              href="{getProductUrl(product)}"
               class="aspect-square bg-gray-100 rounded-sm overflow-hidden block"
             >
               <img 
@@ -394,7 +395,7 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {#each data.favorites as favorite}
             <button 
-              onclick={() => goto(`/product/${favorite.id}`)}
+              onclick={() => goto(getProductUrl(favorite))}
               class="bg-white border rounded-lg overflow-hidden hover:shadow-md transition-shadow relative group"
             >
               {#if favorite.is_sold}

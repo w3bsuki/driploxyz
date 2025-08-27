@@ -156,7 +156,7 @@ export const actions: Actions = {
         });
       }
       
-      // Create product in database with country code
+      // Phase 1: Create product in database with country code (without slug for speed)
       const { data: product, error: productError } = await supabase
         .from('products')
         .insert({
@@ -177,13 +177,22 @@ export const actions: Actions = {
           is_sold: false,
           view_count: 0,
           favorite_count: 0,
-          country_code: userCountry // Add country code for multi-tenancy
+          country_code: userCountry, // Add country code for multi-tenancy
+          slug: null // Will be generated in background
         })
         .select()
         .single();
 
       if (productError) {
         throw new Error(`Failed to create product: ${productError.message}`);
+      }
+
+      // Phase 2: Queue slug generation for background processing
+      try {
+        await supabase.rpc('queue_slug_generation', { p_product_id: product.id });
+      } catch (slugError) {
+        // Slug generation failure should not block product creation
+        console.warn('Failed to queue slug generation:', slugError);
       }
 
       // Add product images with error handling

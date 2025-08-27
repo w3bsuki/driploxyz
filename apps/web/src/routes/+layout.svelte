@@ -141,15 +141,16 @@
         session.set(newSession);
         // Subscribe to order notifications for newly signed in user
         await orderNotificationActions.subscribeToNotifications(supabase, newSession.user.id);
-        // TEMP FIX: Skip invalidation to prevent hanging
-        // await invalidate('supabase:auth'); // Only invalidate on real sign in
+        await invalidate('supabase:auth'); // Invalidate to get fresh profile data
       } else if (event === 'SIGNED_OUT') {
+        // CRITICAL: Clear all auth stores immediately for instant UI feedback  
         user.set(null);
         session.set(null);
         profile.set(null);
+        authLoading.set(false);
         // Unsubscribe from notifications on sign out
         await orderNotificationActions.unsubscribe(supabase);
-        await invalidate('supabase:auth'); // Only invalidate on real sign out
+        await invalidate('supabase:auth'); // Invalidate to ensure server state is cleared
       }
     });
 

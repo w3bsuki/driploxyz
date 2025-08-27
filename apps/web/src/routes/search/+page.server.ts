@@ -6,19 +6,35 @@ import type { Database } from '@repo/database';
 type Category = Database['public']['Tables']['categories']['Row'];
 
 /**
- * Get category and all its descendants using recursive CTE
- * This is much more efficient than building arrays manually
+ * Get category and all its descendants using direct SQL (more reliable than the buggy RPC function)
  */
 async function getCategoryWithDescendants(supabase: any, categoryId: string): Promise<string[]> {
+  // Get direct descendants (children and grandchildren)
   const { data, error } = await supabase
-    .rpc('get_category_descendants', { root_category_id: categoryId });
+    .from('categories')
+    .select('id')
+    .or(`parent_id.eq.${categoryId},id.eq.${categoryId}`)
+    .eq('is_active', true);
+    
+  if (error) {
+    console.error('Error getting category descendants:', error);
+    return [categoryId]; // Include at least the parent category
+  }
   
-  if (error || !data) return [categoryId]; // Include the parent category itself
+  const level1Ids = data?.map(d => d.id) || [categoryId];
   
-  // Include the parent and all descendants
-  const descendantIds = data.map((d: any) => d.id);
-  return [categoryId, ...descendantIds];
+  // Get grandchildren (level 3) if any level 2 categories were found
+  const { data: grandchildren } = await supabase
+    .from('categories')
+    .select('id')
+    .in('parent_id', level1Ids)
+    .eq('is_active', true);
+    
+  const grandchildrenIds = grandchildren?.map(d => d.id) || [];
+  
+  return [...level1Ids, ...grandchildrenIds];
 }
+
 
 /**
  * Build a proper 3-level hierarchy from flat category list
@@ -93,12 +109,20 @@ export const load: PageServerLoad = async ({ url, locals }) => {
   const sortBy = url.searchParams.get('sort') || 'relevance';
 
   try {
+    // Fetch all categories first for hierarchy resolution
+    const { data: allCategories } = await locals.supabase
+      .from('categories')
+      .select('*')
+      .eq('is_active', true)
+      .order('level')
+      .order('sort_order');
+
     let categoryIds: string[] = [];
     
-    // Build category filter using proper 3-level hierarchy
+    // Build category filter using proper 3-level hierarchy with bulletproof error handling
     if (level1 && level1 !== 'all') {
       // First try to find Level 1 category by slug
-      const { data: l1Cat } = await locals.supabase
+      const { data: l1Cat, error: l1Error } = await locals.supabase
         .from('categories')
         .select('*')
         .eq('slug', level1)
@@ -107,12 +131,13 @@ export const load: PageServerLoad = async ({ url, locals }) => {
         .single();
       
       // If not found as Level 1, check if it's a Level 2 category name (like 'accessories')
-      if (!l1Cat && (level1 === 'accessories' || level1 === 'clothing' || level1 === 'shoes' || level1 === 'bags')) {
-        // Cross-gender Level 2 search
+      if (!l1Cat && !l1Error && (level1 === 'accessories' || level1 === 'clothing' || level1 === 'shoes' || level1 === 'bags')) {
+        // Cross-gender Level 2 search - capitalize first letter to match database
+        const capitalizedLevel1 = level1.charAt(0).toUpperCase() + level1.slice(1);
         const { data: l2Cats } = await locals.supabase
           .from('categories')
           .select('id')
-          .ilike('name', level1)
+          .eq('name', capitalizedLevel1)
           .eq('level', 2)
           .eq('is_active', true);
         
@@ -147,7 +172,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
               const { data: l3Cats } = await locals.supabase
                 .from('categories')
                 .select('id')
-                .or(`slug.ilike.%${level3}%,name.ilike.%${level3.replace(/-/g, ' ')}%`)
+                .or(`slug.ilike.%${level3}%,name.ilike.%${level3.replace(/-/g, ' ')}%,name.eq.${level3.replace(/-/g, ' ').charAt(0).toUpperCase() + level3.replace(/-/g, ' ').slice(1)}`)
                 .eq('parent_id', l2Cat.id)
                 .eq('level', 3)
                 .eq('is_active', true);
@@ -164,10 +189,11 @@ export const load: PageServerLoad = async ({ url, locals }) => {
             }
           } else {
             // Level 2 not found, try direct match by name under Level 1
+            const capitalizedLevel2Name = level2.replace(/-/g, ' ').charAt(0).toUpperCase() + level2.replace(/-/g, ' ').slice(1);
             const { data: l2CatByName } = await locals.supabase
               .from('categories')
               .select('*')
-              .ilike('name', level2.replace(/-/g, ' '))
+              .eq('name', capitalizedLevel2Name)
               .eq('parent_id', l1Cat.id)
               .eq('level', 2)
               .eq('is_active', true)
@@ -187,10 +213,11 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       }
     } else if (level2 && level2 !== 'all') {
       // Cross-gender Level 2 search (e.g., all "Clothing" across all genders)
+      const capitalizedLevel2 = level2.replace(/-/g, ' ').charAt(0).toUpperCase() + level2.replace(/-/g, ' ').slice(1);
       const { data: l2Cats } = await locals.supabase
         .from('categories')
         .select('id')
-        .ilike('name', level2.replace(/-/g, ' '))
+        .eq('name', capitalizedLevel2)
         .eq('level', 2)
         .eq('is_active', true);
       
@@ -208,7 +235,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
           const { data: l3Cats } = await locals.supabase
             .from('categories')
             .select('id')
-            .ilike('name', `%${level3.replace(/-/g, ' ')}%`)
+            .or(`name.ilike.%${level3.replace(/-/g, ' ')}%,name.eq.${level3.replace(/-/g, ' ').charAt(0).toUpperCase() + level3.replace(/-/g, ' ').slice(1)}`)
             .in('parent_id', l2Cats.map(c => c.id))
             .eq('level', 3)
             .eq('is_active', true);
@@ -223,7 +250,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       const { data: l3Cats } = await locals.supabase
         .from('categories')
         .select('id')
-        .ilike('name', `%${level3.replace(/-/g, ' ')}%`)
+        .or(`name.ilike.%${level3.replace(/-/g, ' ')}%,name.eq.${level3.replace(/-/g, ' ').charAt(0).toUpperCase() + level3.replace(/-/g, ' ').slice(1)}`)
         .eq('level', 3)
         .eq('is_active', true);
       
@@ -232,7 +259,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       }
     }
 
-    // Build the products query
+    // Build the products query with proper category hierarchy
     let productsQuery = locals.supabase
       .from('products')
       .select(`
@@ -255,7 +282,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
           avatar_url,
           account_type
         ),
-        categories (
+        categories!inner (
           id,
           name,
           slug,
@@ -346,14 +373,6 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       };
     }
 
-    // Fetch all categories for filters with proper typing
-    const { data: allCategories } = await locals.supabase
-      .from('categories')
-      .select('*')
-      .eq('is_active', true)
-      .order('level')
-      .order('sort_order');
-
     // Build proper 3-level hierarchy for UI
     const categoryHierarchy = allCategories ? buildCategoryHierarchy(allCategories as Category[]) : {};
 
@@ -371,18 +390,48 @@ export const load: PageServerLoad = async ({ url, locals }) => {
       return aIndex - bIndex;
     });
 
-    // Transform products for UI
-    const transformedProducts = products?.map(product => ({
-      ...product,
-      images: product.product_images?.map((img: any) => img.image_url) || [],
-      seller: product.profiles ? {
-        id: product.seller_id,
-        username: product.profiles.username,
-        avatar_url: product.profiles.avatar_url,
-        account_type: product.profiles.account_type
-      } : null,
-      category: product.categories || null
-    })) || [];
+    // Transform products for UI with proper category hierarchy using the database function
+    const transformedProducts = await Promise.all((products || []).map(async product => {
+      // Use the database function to get hierarchy efficiently with error handling
+      const { data: hierarchy, error: hierarchyError } = await locals.supabase
+        .rpc('get_category_hierarchy', { category_uuid: product.category_id })
+        .single();
+      
+      // Fallback for category names if database function fails
+      let mainCategoryName = hierarchy?.level_1_name;
+      let subcategoryName = hierarchy?.level_2_name;
+      let specificCategoryName = hierarchy?.level_3_name;
+      
+      if (hierarchyError || !hierarchy) {
+        // Fallback: use the direct category name from the join
+        if (product.categories) {
+          if (product.categories.level === 1) {
+            mainCategoryName = product.categories.name;
+          } else if (product.categories.level === 2) {
+            subcategoryName = product.categories.name;
+          } else if (product.categories.level === 3) {
+            specificCategoryName = product.categories.name;
+          }
+        }
+      }
+
+      return {
+        ...product,
+        images: product.product_images?.map((img: any) => img.image_url) || [],
+        seller: product.profiles ? {
+          id: product.seller_id,
+          username: product.profiles.username,
+          avatar_url: product.profiles.avatar_url,
+          account_type: product.profiles.account_type
+        } : null,
+        category: product.categories || null,
+        // Add the level 1 category info for product cards
+        main_category_name: mainCategoryName || null,
+        category_name: mainCategoryName || null, // For backward compatibility
+        subcategory_name: subcategoryName || null,
+        specific_category_name: specificCategoryName || null
+      };
+    }));
 
     return {
       products: transformedProducts,
