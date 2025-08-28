@@ -292,17 +292,27 @@
     const cleanupPromises = [];
     
     if (messageChannel) {
-      cleanupPromises.push(supabase.removeChannel(messageChannel));
-      messageChannel = null;
+      const channelToCleanup = messageChannel;
+      messageChannel = null; // Clear reference before cleanup
+      
+      cleanupPromises.push(
+        supabase.removeChannel(channelToCleanup).catch((error) => {
+          logError('Message channel cleanup error:', error);
+        })
+      );
     }
     
     if (presenceChannel) {
+      const channelToCleanup = presenceChannel;
+      presenceChannel = null; // Clear reference before cleanup
+      
       cleanupPromises.push(
-        presenceChannel.untrack().then(() => 
-          supabase.removeChannel(presenceChannel)
-        )
+        channelToCleanup.untrack().then(() => 
+          supabase.removeChannel(channelToCleanup)
+        ).catch((error) => {
+          logError('Presence channel cleanup error:', error);
+        })
       );
-      presenceChannel = null;
     }
     
     try {
