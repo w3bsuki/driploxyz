@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import { goto, invalidateAll } from '$app/navigation';
+import { goto, invalidate } from '$app/navigation';
 import * as i18n from '@repo/i18n';
 
 const LANGUAGE_COOKIE_NAME = 'locale';
@@ -89,8 +89,8 @@ export async function switchLanguage(lang: string) {
   i18n.setLanguageTag(lang as any);
   document.documentElement.lang = lang;
   
-  // Force page reload to sync server-side - just invalidate, let SvelteKit handle navigation
-  await invalidateAll();
+  // Force page reload to sync server-side - only invalidate auth to sync language
+  await invalidate('supabase:auth');
   
   return true;
 }

@@ -14,11 +14,8 @@ const REDIRECT_PATHS_TO_SKIP = [
 
 export const load: LayoutServerLoad = async (event) => {
   const { url, cookies, depends, locals, fetch } = event;
+  // CRITICAL: Only depend on auth - other deps cause unnecessary reloads
   depends('supabase:auth');
-  depends('app:homepage');
-  depends('app:products');
-  depends('app:categories');
-  depends('app:profiles');
   
   // CRITICAL: Always get fresh session data on each request
   // This ensures auth state is current after login/logout

@@ -360,36 +360,7 @@
 		goto(url.pathname + url.search);
 	}
 
-	// Initialize favorites from server data
-	$effect(() => {
-		if (data.user && browser && data.userFavorites) {
-			// Initialize the favorites store with server data
-			favoritesStore.update(state => ({
-				...state,
-				favorites: {
-					...state.favorites,
-					...data.userFavorites
-				}
-			}));
-			
-			// Also initialize favorite counts from products
-			const favCounts: Record<string, number> = {};
-			[...(data.promotedProducts || []), ...(data.featuredProducts || [])]
-				.forEach(p => {
-					if (p.favorite_count !== undefined) {
-						favCounts[p.id] = p.favorite_count;
-					}
-				});
-			
-			favoritesStore.update(state => ({
-				...state,
-				favoriteCounts: {
-					...state.favoriteCounts,
-					...favCounts
-				}
-			}));
-		}
-	});
+	// Removed duplicate favorites initialization - keeping only the first one
 
 	// Scroll detection removed for cleaner UX
 </script>

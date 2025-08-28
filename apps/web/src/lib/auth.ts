@@ -201,10 +201,11 @@ export async function signOut(supabase: SupabaseClient<Database>) {
   // Small delay to show the toast and let auth state propagate
   await new Promise(resolve => setTimeout(resolve, 300));
   
-  // Use proper SvelteKit navigation instead of window.location.href
+  // Use proper SvelteKit navigation with targeted invalidation
   if (typeof window !== 'undefined') {
-    const { goto } = await import('$app/navigation');
-    await goto('/', { replaceState: true, invalidateAll: true });
+    const { goto, invalidate } = await import('$app/navigation');
+    await invalidate('supabase:auth'); // Only invalidate auth, not everything
+    await goto('/', { replaceState: true });
   }
 }
 

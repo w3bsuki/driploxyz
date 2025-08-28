@@ -1,4 +1,4 @@
-import { invalidateAll } from '$app/navigation';
+import { invalidate } from '$app/navigation';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 /**
@@ -32,13 +32,27 @@ export const cacheTags = {
 } as const;
 
 /**
- * Invalidate cache based on data changes
+ * Invalidate cache based on data changes - targeted invalidation only
  */
 export async function invalidateCache(tags: string[]) {
   console.log('[CACHE] Invalidating cache for tags:', tags);
   
-  // Use SvelteKit's invalidation system
-  await invalidateAll();
+  // Use targeted invalidation based on tags instead of invalidateAll
+  const invalidationMap: Record<string, string> = {
+    'products': 'app:products',
+    'categories': 'app:categories',
+    'profiles': 'app:profiles',
+    'orders': 'app:orders',
+    'homepage': 'app:homepage'
+  };
+  
+  // Invalidate only relevant dependencies
+  for (const tag of tags) {
+    const dependency = invalidationMap[tag];
+    if (dependency) {
+      await invalidate(dependency);
+    }
+  }
 }
 
 /**
