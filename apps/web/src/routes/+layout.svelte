@@ -107,7 +107,10 @@
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event) => {
       // Only invalidate on actual sign in/out events
       if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
-        await invalidate('supabase:auth');
+        // Small delay to let server-side redirects complete first
+        setTimeout(() => {
+          invalidate('supabase:auth');
+        }, 100);
       }
     });
 
