@@ -114,40 +114,23 @@
 
   // Set up auth state listener for session changes  
   $effect(() => {
-    if (!supabase) return;
+    if (!supabase || !browser) return;
     
     // Set up auth state listener for session changes
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       
-      // CRITICAL FIX: Don't invalidate on INITIAL_SESSION or TOKEN_REFRESHED
-      // These happen during language switches and cause the page to reload
+      // Skip initial session and token refresh - these are normal operations
       if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
-        // Just update stores, don't invalidate
-        if (newSession) {
-          user.set(newSession.user);
-          session.set(newSession);
-          // Subscribe to order notifications for logged in user
-          await orderNotificationActions.subscribeToNotifications(supabase, newSession.user.id);
-        }
-        return; // STOP HERE - no invalidation
+        return;
       }
       
-      // Update stores immediately for instant UI feedback
+      // Only handle actual auth state changes
       if (event === 'SIGNED_IN' && newSession) {
-        user.set(newSession.user);
-        session.set(newSession);
-        // Subscribe to order notifications for newly signed in user
-        await orderNotificationActions.subscribeToNotifications(supabase, newSession.user.id);
-        await invalidate('supabase:auth'); // Invalidate to get fresh profile data
+        // For sign in, invalidate to get fresh profile data from server
+        await invalidate('supabase:auth');
       } else if (event === 'SIGNED_OUT') {
-        // CRITICAL: Clear all auth stores immediately for instant UI feedback  
-        user.set(null);
-        session.set(null);
-        profile.set(null);
-        authLoading.set(false);
-        // Unsubscribe from notifications on sign out
-        await orderNotificationActions.unsubscribe(supabase);
-        await invalidate('supabase:auth'); // Invalidate to ensure server state is cleared
+        // For sign out, invalidate to clear server state
+        await invalidate('supabase:auth');
       }
     });
 

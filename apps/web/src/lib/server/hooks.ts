@@ -56,10 +56,11 @@ const authGuardHandler: Handle = async ({ event, resolve }) => {
 
 /**
  * Main handle sequence with optional Sentry integration
+ * CRITICAL: supabaseHandler MUST run first to set up auth before other handlers
  */
 export const handle: Handle = isSentryAvailable() 
-  ? sequence(sentryHandle(), languageHandler, supabaseHandler, countryRedirectHandler, authGuardHandler)
-  : sequence(languageHandler, supabaseHandler, countryRedirectHandler, authGuardHandler);
+  ? sequence(sentryHandle(), supabaseHandler, languageHandler, countryRedirectHandler, authGuardHandler)
+  : sequence(supabaseHandler, languageHandler, countryRedirectHandler, authGuardHandler);
 
 /**
  * Error handler with optional Sentry integration

@@ -156,56 +156,16 @@ export async function updateUserProfile(
 }
 
 /**
- * Signs out user and redirects - bulletproof auth state management
+ * Signs out user and redirects
  */
 export async function signOut(supabase: SupabaseClient<Database>) {
-  // Show toast notification
+  // Sign out from Supabase
+  await supabase.auth.signOut();
+  
+  // Navigate to logout endpoint to handle server-side cleanup
   if (typeof window !== 'undefined') {
-    const { toasts } = await import('@repo/ui');
-    toasts.info('Signing you out...');
-  }
-  
-  try {
-    // CRITICAL: Call Supabase auth.signOut() directly to trigger auth state listeners
-    // This will automatically clear cookies and trigger the SIGNED_OUT event in layout.svelte
-    await supabase.auth.signOut();
-    
-    // Clear client-side auth stores immediately for instant UI feedback
-    const { clearAuth } = await import('$lib/stores/auth');
-    clearAuth();
-    
-  } catch (error) {
-    console.error('Sign out error:', error);
-    
-    // Fallback: Force clear everything if Supabase signOut fails
-    try {
-      const { clearAuth } = await import('$lib/stores/auth');
-      clearAuth();
-      
-      // Clear all Supabase cookies manually as fallback
-      if (typeof document !== 'undefined') {
-        const cookies = document.cookie.split(';');
-        cookies.forEach(cookie => {
-          const name = cookie.split('=')[0].trim();
-          if (name.startsWith('sb-') || name.includes('supabase')) {
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname};`;
-            document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
-          }
-        });
-      }
-    } catch (fallbackError) {
-      console.error('Fallback sign out error:', fallbackError);
-    }
-  }
-  
-  // Small delay to show the toast and let auth state propagate
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  // Use proper SvelteKit navigation with targeted invalidation
-  if (typeof window !== 'undefined') {
-    const { goto, invalidate } = await import('$app/navigation');
-    await invalidate('supabase:auth'); // Only invalidate auth, not everything
-    await goto('/', { replaceState: true });
+    const { goto } = await import('$app/navigation');
+    await goto('/logout', { replaceState: true });
   }
 }
 

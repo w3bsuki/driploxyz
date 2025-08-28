@@ -103,16 +103,8 @@ export const actions: Actions = {
     // Reset rate limit on successful login
     rateLimiter.reset(rateLimitKey);
     
-    // Check if user has completed onboarding
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('onboarding_completed')
-      .eq('id', data.user.id)
-      .single();
-    
-    if (!profile || !profile.onboarding_completed) {
-      throw redirect(303, '/onboarding');
-    }
+    // CRITICAL: Don't check profile here - let +layout.server.ts handle onboarding redirect
+    // This prevents race conditions with auth state propagation
     
     // Redirect to homepage after successful login
     throw redirect(303, '/');
