@@ -13,7 +13,7 @@
   } from '@repo/ui';
   import type { User, Profile } from '@repo/ui/types';
   import * as i18n from '@repo/i18n';
-  import { authState } from '$lib/stores/auth';
+  // Auth stores removed - using props directly
   import { signOut, canSell } from '$lib/auth';
   import { 
     notifications, 
@@ -33,6 +33,7 @@
     initialLanguage?: string;
     user?: User;
     profile?: Profile;
+    supabase?: any; // SupabaseClient
   }
   
   let { 
@@ -40,7 +41,8 @@
     minimal = false, 
     initialLanguage, 
     user: propsUser, 
-    profile: propsProfile 
+    profile: propsProfile,
+    supabase
   }: Props = $props();
   
   let mobileMenuOpen = $state(false);
@@ -50,9 +52,9 @@
   let NotificationPanel: any = null;
   let notificationPanelLoaded = $state(false);
   
-  // Use props data if available (SSR), otherwise fall back to stores (client)
-  const currentUser = $derived(propsUser || $authState.user);
-  const currentProfile = $derived(propsProfile || $authState.profile);
+  // Use props data directly
+  const currentUser = $derived(propsUser);
+  const currentProfile = $derived(propsProfile);
   const isLoggedIn = $derived(!!currentUser);
   const userCanSell = $derived(canSell(currentProfile));
   const userDisplayName = $derived(
@@ -88,8 +90,8 @@
   async function handleSignOut() {
     signingOut = true;
     try {
-      if ($authState.supabase) {
-        await signOut($authState.supabase);
+      if (supabase) {
+        await signOut(supabase);
       }
       // The signOut function handles the redirect
     } catch (error) {
@@ -105,20 +107,18 @@
 
   // Initialize notification service when user logs in
   $effect(() => {
-    const unsubscribe = authState.subscribe(state => {
-      if (state.user && state.supabase && !notificationService) {
-        notificationService = new RealtimeNotificationService(state.supabase, state.user.id);
-        notificationService.initialize();
-      } else if (!state.user && notificationService) {
-        notificationService.destroy();
-        notificationService = null;
-      }
-    });
+    if (currentUser && supabase && !notificationService) {
+      notificationService = new RealtimeNotificationService(supabase, currentUser.id);
+      notificationService.initialize();
+    } else if (!currentUser && notificationService) {
+      notificationService.destroy();
+      notificationService = null;
+    }
 
     return () => {
-      unsubscribe();
       if (notificationService) {
         notificationService.destroy();
+        notificationService = null;
       }
     };
   });

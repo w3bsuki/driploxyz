@@ -7,7 +7,7 @@
   import '$lib/styles/cyrillic-typography.css';
   import { invalidate } from '$app/navigation';
   import { browser, dev } from '$app/environment';
-  import { user, session, profile, authLoading, setSupabaseClient } from '$lib/stores/auth';
+  // Auth stores removed - we use server data directly
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications';
@@ -100,59 +100,25 @@
     }
   });
 
-  // SSR-friendly auth initialization - sync server data to stores
+  // Simple auth state listener - only for real auth changes
   $effect(() => {
-    if (!data) return;
+    if (!browser || !supabase) return;
     
-    // Always sync server data to stores
-    user.set(data.user || null);
-    session.set(data.session || null);  
-    profile.set(data.profile || null);
-    if (data.supabase) setSupabaseClient(data.supabase);
-    authLoading.set(false);
-  });
-
-  // Set up auth state listener for session changes  
-  $effect(() => {
-    if (!supabase || !browser) return;
-    
-    // Set up auth state listener for session changes
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      
-      // Skip initial session and token refresh - these are normal operations
-      if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
-        return;
-      }
-      
-      // Only handle actual auth state changes
-      if (event === 'SIGNED_IN' && newSession) {
-        // For sign in, invalidate to get fresh profile data from server
-        await invalidate('supabase:auth');
-      } else if (event === 'SIGNED_OUT') {
-        // For sign out, invalidate to clear server state
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event) => {
+      // Only invalidate on actual sign in/out events
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
         await invalidate('supabase:auth');
       }
     });
 
-    // Subscribe to notifications if already logged in
-    if (data?.user?.id) {
-      orderNotificationActions.subscribeToNotifications(supabase, data.user.id);
-    }
-
-    // Cleanup function for $effect
-    return () => {
-      authListener.subscription.unsubscribe();
-      if (data?.user?.id) {
-        orderNotificationActions.unsubscribe(supabase);
-      }
-    };
+    return () => authListener.subscription.unsubscribe();
   });
 </script>
 
 {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
   <div class="sticky top-0 z-50">
     <EarlyBirdBanner />
-    <Header user={data?.user} profile={data?.profile} />
+    <Header user={data?.user} profile={data?.profile} supabase={supabase} />
   </div>
 {/if}
 <div>

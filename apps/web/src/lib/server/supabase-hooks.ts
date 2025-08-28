@@ -48,33 +48,16 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   );
 
   /**
-   * Secure session validation with proper authentication
-   * Uses getUser() to verify the session is valid
+   * Simple session getter - following Supabase best practices
    */
   event.locals.safeGetSession = async () => {
-    try {
-      // Get session from cookies first
-      const {
-        data: { session },
-      } = await event.locals.supabase.auth.getSession();
-
-      if (!session) {
-        return { session: null, user: null };
-      }
-
-      // Validate the session with the server
-      const { data: { user }, error } = await event.locals.supabase.auth.getUser();
-      
-      if (error || !user) {
-        // Session is invalid, clear it
-        return { session: null, user: null };
-      }
-
-      // Return validated session and user
-      return { session, user };
-    } catch (error) {
-      // Silent fail - don't log errors to avoid spam
+    // Just get the session - Supabase handles validation
+    const { data: { session }, error } = await event.locals.supabase.auth.getSession();
+    
+    if (error || !session) {
       return { session: null, user: null };
     }
+    
+    return { session, user: session.user };
   };
 }
