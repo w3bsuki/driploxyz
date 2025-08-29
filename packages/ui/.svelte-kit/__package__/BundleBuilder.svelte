@@ -357,7 +357,7 @@
         variant="primary"
         fullWidth
         size="lg"
-        class="min-h-[44px]"
+        class="min-h-11"
         disabled={selectedItems.length === 0}
       >
         {#if selectedItems.length === 1}

@@ -51,17 +51,10 @@ export { default as OnboardingSuccessModal } from './OnboardingSuccessModal.svel
 export { default as BrandBadge } from './BrandBadge.svelte';
 export { default as UserBadge } from './UserBadge.svelte';
 export { default as ConditionBadge } from './ConditionBadge.svelte';
-export { default as AdminBadge } from './AdminBadge.svelte';
 export { default as NewSellerBadge } from './NewSellerBadge.svelte';
 export { default as PremiumBadge } from './PremiumBadge.svelte';
 
-// Admin Management Components
-export { default as AdminSecurityCheck } from './AdminSecurityCheck.svelte';
-export { default as AdminUserBrowser } from './AdminUserBrowser.svelte';
-export { default as AdminPayoutDashboard } from './AdminPayoutDashboard.svelte';
-export { default as AdminNotificationCenter } from './AdminNotificationCenter.svelte';
-export { default as AdminAnalyticsPanel } from './AdminAnalyticsPanel.svelte';
-export { default as AdminDashboard } from './AdminDashboard.svelte';
+// Admin Management Components (moved to respective apps)
 export { default as BrandPaymentModal } from './BrandPaymentModal.svelte';
 export { default as WelcomeTutorialFlow } from './WelcomeTutorialFlow.svelte';
 
@@ -143,9 +136,6 @@ export { default as Accordion } from './Accordion.svelte';
 
 // Seller components
 export { default as SellerQuickView } from './SellerQuickView.svelte';
-export { default as SellerBalance } from './SellerBalance.svelte';
-export { default as SalesHistory } from './SalesHistory.svelte';
-export { default as SubscriptionStatus } from './SubscriptionStatus.svelte';
 
 // Product quick view components
 export { default as ProductQuickView } from './ProductQuickView.svelte';

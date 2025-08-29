@@ -112,14 +112,14 @@
   
   <!-- Content -->
   <div class="px-2 pt-1.5 pb-1.5">
-    <div class="flex items-center gap-1.5 min-h-[14px]">
+    <div class="flex items-center gap-1.5 min-h-3.5">
       {#if product.main_category_name || product.category_name}
-        <p class="text-[11px] font-medium text-gray-600 uppercase tracking-wider leading-none flex-1 truncate">
+        <p class="text-xs font-medium text-gray-600 uppercase tracking-wider leading-none flex-1 truncate">
           {translations.categoryTranslation ? translations.categoryTranslation(product.main_category_name || product.category_name || '') : (product.main_category_name || product.category_name)}
         </p>
       {/if}
       {#if product.is_promoted}
-        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-yellow-50 border border-yellow-200/60">
+        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-50 border border-yellow-200/60">
           <span class="text-yellow-600 font-bold">PRO</span>
         </span>
       {/if}

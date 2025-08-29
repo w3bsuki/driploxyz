@@ -206,7 +206,7 @@
               }"
             >
               <span class="block text-base mb-0.5">{categoryEmoji[category.name] || '📦'}</span>
-              <span class="block text-[10px]">{translateCategory(category.name)}</span>
+              <span class="block text-xs">{translateCategory(category.name)}</span>
             </button>
           {/each}
         </div>
@@ -243,7 +243,7 @@
           </div>
 
           {#if type && typeCategories.find(c => c.id === type)?.name === 'Accessories'}
-            <p class="mt-1.5 text-[10px] text-gray-600 bg-yellow-50 border border-yellow-200 rounded-md p-1.5">
+            <p class="mt-1.5 text-xs text-gray-600 bg-yellow-50 border border-yellow-200 rounded-md p-1.5">
               <strong>{includesText}</strong> {accessoriesListText}
             </p>
           {/if}
@@ -290,7 +290,7 @@
               }}
               class="w-full px-2.5 py-2 text-xs rounded-md border border-gray-200 bg-white text-gray-700 placeholder-gray-400 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none"
             />
-            <p class="mt-0.5 text-[10px] text-gray-500">Press Enter to confirm custom category</p>
+            <p class="mt-0.5 text-xs text-gray-500">Press Enter to confirm custom category</p>
           </div>
         </div>
       {/if}

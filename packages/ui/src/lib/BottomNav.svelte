@@ -83,11 +83,11 @@
   
   function getItemClasses(item: NavItem): string {
     if (item.isSpecial) {
-      return 'flex items-center justify-center py-1.5 min-h-[48px]';
+      return 'flex items-center justify-center py-1.5 min-h-12';
     }
     const active = isActive(item);
     const isLoading = clickedItem === item.href || (isNavigating && navigatingTo === item.href);
-    return `flex flex-col items-center py-2 px-1 min-h-[48px] transition-all duration-200 ${
+    return `flex flex-col items-center py-2 px-1 min-h-12 transition-all duration-200 ${
       active ? 'text-gray-900' : isLoading ? 'text-gray-700 opacity-70' : 'text-gray-500 hover:text-gray-700'
     }`;
   }
@@ -130,7 +130,7 @@
               <span class="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
             {/if}
           </div>
-          <span class="text-[10px] mt-0.5 font-medium transition-opacity duration-200 {isLoading ? 'opacity-50' : ''}">
+          <span class="text-xs mt-0.5 font-medium transition-opacity duration-200 {isLoading ? 'opacity-50' : ''}">
             {item.label}
           </span>
         {/if}

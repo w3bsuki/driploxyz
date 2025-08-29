@@ -70,7 +70,7 @@
       <!-- PRO Badge - Outside frame, top center -->
       {#if product.is_promoted}
         <div class="absolute -top-1.5 left-1/2 -translate-x-1/2 z-10">
-          <div class="bg-black text-white text-[9px] font-bold px-2.5 py-1 rounded-full shadow-lg border border-white/20">
+          <div class="bg-black text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg border border-white/20">
             PRO
           </div>
         </div>

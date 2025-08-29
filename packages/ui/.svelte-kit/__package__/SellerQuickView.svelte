@@ -198,7 +198,7 @@
       
       <!-- Footer -->
       <div class="border-t px-4 py-2 bg-gray-50 shrink-0">
-        <p class="text-[10px] sm:text-xs text-center text-gray-500">
+        <p class="text-xs sm:text-xs text-center text-gray-500">
           {#if seller.totalSales && seller.totalSales > 5}
             <span class="inline-flex items-center">
               <span class="text-yellow-500 mr-1">👑</span>

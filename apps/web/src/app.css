@@ -427,6 +427,555 @@
   -webkit-line-clamp: 2;
 }
 
+@utility py-12 {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+@utility py-8 {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+@utility py-6 {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+@utility py-4 {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+@utility py-3 {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+}
+
+@utility py-2 {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+@utility py-1 {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+@utility px-6 {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+@utility px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@utility px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+@utility px-2 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+@utility space-y-6 {
+  & > * + * {
+    margin-top: 1.5rem;
+  }
+}
+
+@utility space-y-4 {
+  & > * + * {
+    margin-top: 1rem;
+  }
+}
+
+@utility space-y-3 {
+  & > * + * {
+    margin-top: 0.75rem;
+  }
+}
+
+@utility space-y-2 {
+  & > * + * {
+    margin-top: 0.5rem;
+  }
+}
+
+@utility bg-white {
+  background-color: white;
+}
+
+@utility rounded-lg {
+  border-radius: 0.5rem;
+}
+
+@utility border {
+  border-width: 1px;
+}
+
+@utility p-6 {
+  padding: 1.5rem;
+}
+
+@utility p-4 {
+  padding: 1rem;
+}
+
+
+@utility text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+@utility font-semibold {
+  font-weight: 600;
+}
+
+@utility text-gray-700 {
+  color: #374151;
+}
+
+@utility font-medium {
+  font-weight: 500;
+}
+
+@utility mt-2 {
+  margin-top: 0.5rem;
+}
+
+@utility mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+@utility mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+@utility animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+@utility bg-gray-300 {
+  background-color: #d1d5db;
+}
+
+@utility rounded {
+  border-radius: 0.25rem;
+}
+
+@utility bg-gray-50 {
+  background-color: oklch(0.98 0.005 270);
+}
+
+@utility bg-gray-100 {
+  background-color: oklch(0.96 0.005 270);
+}
+
+@utility bg-blue-50 {
+  background-color: oklch(0.97 0.02 240);
+}
+
+@utility bg-blue-600 {
+  background-color: oklch(0.48 0.16 240);
+}
+
+@utility border-gray-200 {
+  border-color: oklch(0.95 0.005 270);
+}
+
+@utility border-blue-200 {
+  border-color: oklch(0.88 0.06 240);
+}
+
+@utility text-gray-500 {
+  color: oklch(0.62 0.02 270);
+}
+
+@utility text-gray-700 {
+  color: oklch(0.38 0.025 270);
+}
+
+@utility text-blue-600 {
+  color: oklch(0.48 0.16 240);
+}
+
+/* Essential flex utilities */
+@utility flex {
+  display: flex;
+}
+
+@utility flex-col {
+  flex-direction: column;
+}
+
+@utility flex-1 {
+  flex: 1 1 0%;
+}
+
+@utility items-center {
+  align-items: center;
+}
+
+@utility items-start {
+  align-items: flex-start;
+}
+
+@utility justify-between {
+  justify-content: space-between;
+}
+
+@utility justify-center {
+  justify-content: center;
+}
+
+@utility justify-end {
+  justify-content: flex-end;
+}
+
+/* Grid utilities */
+@utility grid {
+  display: grid;
+}
+
+@utility grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@utility grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@utility grid-cols-12 {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+/* Position utilities */
+@utility relative {
+  position: relative;
+}
+
+@utility absolute {
+  position: absolute;
+}
+
+@utility sticky {
+  position: sticky;
+}
+
+/* Text utilities */
+@utility text-center {
+  text-align: center;
+}
+
+@utility text-left {
+  text-align: left;
+}
+
+@utility text-right {
+  text-align: right;
+}
+
+@utility text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+@utility text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+@utility text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+@utility text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+@utility text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+@utility font-medium {
+  font-weight: 500;
+}
+
+@utility font-semibold {
+  font-weight: 600;
+}
+
+@utility font-bold {
+  font-weight: 700;
+}
+
+/* Border utilities */
+@utility border {
+  border-width: 1px;
+}
+
+@utility border-b {
+  border-bottom-width: 1px;
+}
+
+@utility border-l-4 {
+  border-left-width: 4px;
+}
+
+@utility border-gray-300 {
+  border-color: oklch(0.87 0.01 270);
+}
+
+@utility rounded-lg {
+  border-radius: 0.5rem;
+}
+
+@utility rounded-md {
+  border-radius: 0.375rem;
+}
+
+@utility rounded-full {
+  border-radius: 9999px;
+}
+
+/* Background utilities */
+@utility bg-gray-200 {
+  background-color: oklch(0.95 0.005 270);
+}
+
+@utility bg-gray-300 {
+  background-color: oklch(0.87 0.01 270);
+}
+
+@utility bg-green-50 {
+  background-color: oklch(0.97 0.02 145);
+}
+
+@utility bg-green-100 {
+  background-color: oklch(0.94 0.04 145);
+}
+
+@utility bg-blue-100 {
+  background-color: oklch(0.94 0.04 240);
+}
+
+@utility bg-red-50 {
+  background-color: oklch(0.97 0.02 0);
+}
+
+@utility bg-red-100 {
+  background-color: oklch(0.94 0.04 0);
+}
+
+@utility bg-yellow-50 {
+  background-color: oklch(0.97 0.02 85);
+}
+
+@utility bg-yellow-100 {
+  background-color: oklch(0.94 0.04 85);
+}
+
+/* Text color utilities */
+@utility text-gray-600 {
+  color: oklch(0.5 0.025 270);
+}
+
+@utility text-gray-800 {
+  color: oklch(0.26 0.02 270);
+}
+
+@utility text-gray-900 {
+  color: oklch(0.15 0.015 270);
+}
+
+@utility text-green-600 {
+  color: oklch(0.48 0.16 145);
+}
+
+@utility text-green-800 {
+  color: oklch(0.28 0.12 145);
+}
+
+@utility text-blue-800 {
+  color: oklch(0.28 0.12 240);
+}
+
+@utility text-red-600 {
+  color: oklch(0.48 0.16 0);
+}
+
+@utility text-red-900 {
+  color: oklch(0.18 0.08 0);
+}
+
+@utility text-yellow-600 {
+  color: oklch(0.8 0.12 85);
+}
+
+/* Padding utilities - more sizes */
+@utility p-4 {
+  padding: 1rem;
+}
+
+@utility p-6 {
+  padding: 1.5rem;
+}
+
+/* Gap utilities */
+@utility gap-2 {
+  gap: 0.5rem;
+}
+
+@utility gap-3 {
+  gap: 0.75rem;
+}
+
+@utility gap-4 {
+  gap: 1rem;
+}
+
+/* Z-index utilities */
+@utility z-30 {
+  z-index: 30;
+}
+
+@utility z-40 {
+  z-index: 40;
+}
+
+/* Transition utilities */
+@utility transition-colors {
+  transition-property: color, background-color, border-color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Display utilities */
+@utility block {
+  display: block;
+}
+
+@utility inline-flex {
+  display: inline-flex;
+}
+
+/* Width/Height utilities */
+@utility min-w-0 {
+  min-width: 0;
+}
+
+@utility w-2 {
+  width: 0.5rem;
+}
+
+@utility h-2 {
+  height: 0.5rem;
+}
+
+@utility w-3 {
+  width: 0.75rem;
+}
+
+@utility h-3 {
+  height: 0.75rem;
+}
+
+/* Margin utilities */
+@utility mb-2 {
+  margin-bottom: 0.5rem;
+}
+
+@utility mb-4 {
+  margin-bottom: 1rem;
+}
+
+@utility mt-1 {
+  margin-top: 0.25rem;
+}
+
+@utility mt-3 {
+  margin-top: 0.75rem;
+}
+
+@utility mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Other utilities */
+@utility divide-y {
+  & > :not([hidden]) ~ :not([hidden]) {
+    border-top-width: 1px;
+    border-bottom-width: 0;
+  }
+}
+
+@utility divide-gray-200 {
+  & > :not([hidden]) ~ :not([hidden]) {
+    border-color: oklch(0.95 0.005 270);
+  }
+}
+
+@utility overflow-auto {
+  overflow: auto;
+}
+
+@utility whitespace-nowrap {
+  white-space: nowrap;
+}
+
+@utility cursor-pointer {
+  cursor: pointer;
+}
+
+@utility flex-shrink-0 {
+  flex-shrink: 0;
+}
+
+@utility flex-wrap {
+  flex-wrap: wrap;
+}
+
+@utility animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* These utilities are handled by default Tailwind classes */
+
+@utility border-t {
+  border-top-width: 1px;
+}
+
+@utility pt-4 {
+  padding-top: 1rem;
+}
+
+@utility justify-end {
+  justify-content: flex-end;
+}
+
 /* Enhanced touch targets for mobile */
 @utility touch-manipulation {
   touch-action: manipulation;
@@ -449,7 +998,7 @@
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15), 0 4px 10px rgba(0, 0, 0, 0.1);
   }
   
-  /* Fix for missing bg-white utility in TailwindCSS v4 */
+  /* Legacy support for some older classes */
   .bg-white {
     background-color: white;
   }

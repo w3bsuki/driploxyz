@@ -78,7 +78,7 @@
 
   function getButtonClasses(condition: ConditionValue) {
     const isSelected = value === condition;
-    const base = 'relative flex items-center justify-center px-4 py-2 rounded-full border-2 min-w-[80px] whitespace-nowrap text-sm font-medium transition-all duration-200 sm:flex-col sm:items-start sm:p-3 sm:rounded-lg sm:min-h-[60px] sm:w-full sm:text-left sm:min-w-0 sm:whitespace-normal';
+    const base = 'relative flex items-center justify-center px-4 py-2 rounded-full border-2 min-w-20 whitespace-nowrap text-sm font-medium transition-all duration-200 sm:flex-col sm:items-start sm:p-3 sm:rounded-lg sm:min-h-15 sm:w-full sm:text-left sm:min-w-0 sm:whitespace-normal';
     
     if (disabled) {
       return `${base} opacity-50 cursor-not-allowed border-gray-200 bg-gray-50`;

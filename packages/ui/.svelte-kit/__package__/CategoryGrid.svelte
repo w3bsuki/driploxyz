@@ -40,7 +40,7 @@
   {#each categories as category}
     <a
       href="/category/{category.key}"
-      class="{colorClasses[category.color]} rounded-lg p-2 transition-colors min-h-[44px] flex flex-col items-center justify-center border"
+      class="{colorClasses[category.color]} rounded-lg p-2 transition-colors min-h-11 flex flex-col items-center justify-center border"
       onclick={() => onCategoryClick(category.key)}
     >
       <span class="text-lg mb-0.5">{category.emoji}</span>

@@ -346,7 +346,7 @@
 		<div 
 			bind:this={cardContainer}
 			class="p-4 border border-gray-300 dark:border-gray-600 rounded-lg 
-			       bg-white dark:bg-gray-700 min-h-[120px]
+			       bg-white dark:bg-gray-700 min-h-30
 			       transition-colors duration-200
 			       {validationErrors.card ? 'border-red-500 dark:border-red-400' : ''}"
 		>

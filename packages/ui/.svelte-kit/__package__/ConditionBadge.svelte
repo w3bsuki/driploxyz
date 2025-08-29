@@ -44,6 +44,6 @@
   };
 </script>
 
-<div class="absolute top-2 left-2 px-1.5 py-0.5 {conditionColors[condition]} text-[10px] font-medium rounded uppercase tracking-wider">
+<div class="absolute top-2 left-2 px-1.5 py-0.5 {conditionColors[condition]} text-xs font-medium rounded uppercase tracking-wider">
   {conditionLabels[condition]}
 </div>
