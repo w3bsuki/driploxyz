@@ -1,6 +1,7 @@
 import Stripe from 'stripe';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
+import { paymentLogger } from '$lib/utils/log';
 
 type Transaction = Database['public']['Tables']['transactions']['Row'];
 type Product = Database['public']['Tables']['products']['Row'];
@@ -162,7 +163,11 @@ export class StripeService {
 				.single();
 
 			if (orderError) {
-				console.error('Order creation error:', orderError);
+				paymentLogger.error('Order creation error', orderError, {
+					productId,
+					buyerId,
+					sellerId
+				});
 				return { error: new Error(`Failed to create order: ${orderError.message}`) };
 			}
 
@@ -202,7 +207,10 @@ export class StripeService {
 				});
 
 			if (transactionError) {
-				console.error('Failed to create transaction record:', transactionError);
+				paymentLogger.error('Failed to create transaction record', transactionError, {
+					orderId: order.id,
+					paymentIntentId: paymentIntent.id
+				});
 			}
 
 			return {
@@ -210,7 +218,11 @@ export class StripeService {
 				clientSecret: paymentIntent.client_secret || undefined
 			};
 		} catch (error) {
-			console.error('Error creating payment intent:', error);
+			paymentLogger.error('Error creating payment intent', error, {
+				productId: params.productId,
+				buyerId: params.buyerId,
+				sellerId: params.sellerId
+			});
 			return { error: error as Error };
 		}
 	}
@@ -245,7 +257,10 @@ export class StripeService {
 
 			return customer;
 		} catch (error) {
-			console.error('Error creating customer:', error);
+			paymentLogger.error('Error creating customer', error, {
+				userId,
+				userEmail
+			});
 			return null;
 		}
 	}
@@ -266,7 +281,10 @@ export class StripeService {
 			const { data: { user: currentUser } } = await this.supabase.auth.getUser();
 			
 			if (!currentUser?.email) {
-				console.error('[Stripe] No authenticated user found');
+				paymentLogger.error('No authenticated user found for subscription creation', new Error('User not authenticated'), {
+					userId,
+					planId
+				});
 				throw new Error('Please sign in to continue');
 			}
 
@@ -326,7 +344,10 @@ export class StripeService {
 			};
 
 		} catch (error) {
-			console.error('Error creating account upgrade payment:', error);
+			paymentLogger.error('Error creating account upgrade payment', error, {
+				userId: params.userId,
+				planId: params.planId
+			});
 			return { error: error as Error };
 		}
 	}
@@ -353,7 +374,10 @@ export class StripeService {
 
 			return { success: true };
 		} catch (error) {
-			console.error('Error canceling subscription:', error);
+			paymentLogger.error('Error canceling subscription', error, {
+				userId,
+				subscriptionId
+			});
 			return { success: false, error: error as Error };
 		}
 	}
@@ -415,7 +439,11 @@ export class StripeService {
 
 			return { subscription: updatedSubscription };
 		} catch (error) {
-			console.error('Error updating subscription:', error);
+			paymentLogger.error('Error updating subscription', error, {
+				userId: params.userId,
+				subscriptionId: params.subscriptionId,
+				newPlanId: params.newPlanId
+			});
 			return { error: error as Error };
 		}
 	}
@@ -735,7 +763,11 @@ export class StripeService {
 					}
 				});
 		} catch (error) {
-			console.error('Error creating order notifications:', error);
+			paymentLogger.warn('Error creating order notifications', {
+				orderId: order.id,
+				orderType,
+				error: error instanceof Error ? error.message : String(error)
+			});
 			// Don't throw - notifications are not critical
 		}
 	}
@@ -793,7 +825,11 @@ export class StripeService {
 					.single();
 
 				if (orderError) {
-					console.error('Error updating order:', orderError);
+					paymentLogger.error('Error updating bundle order', orderError, {
+						orderId: metadata.order_id,
+						paymentIntentId: params.paymentIntentId,
+						bundleOrder: 'true'
+					});
 					return { success: false, error: new Error('Failed to update order') };
 				}
 
@@ -875,7 +911,11 @@ export class StripeService {
 					.single();
 
 				if (orderError) {
-					console.error('Error updating order:', orderError);
+					paymentLogger.error('Error updating single order', orderError, {
+						orderId: metadata.order_id,
+						paymentIntentId: params.paymentIntentId,
+						bundleOrder: 'false'
+					});
 					return { success: false, error: new Error('Failed to update order') };
 				}
 
@@ -906,7 +946,10 @@ export class StripeService {
 					.single();
 
 				if (transactionError) {
-					console.error('Error updating transaction:', transactionError);
+					paymentLogger.error('Error updating transaction', transactionError, {
+						paymentIntentId: params.paymentIntentId,
+						orderId: metadata.order_id
+					});
 				}
 
 				// Mark product as sold
@@ -929,7 +972,10 @@ export class StripeService {
 			}
 
 		} catch (error) {
-			console.error('Error confirming payment intent:', error);
+			paymentLogger.error('Error confirming payment intent', error, {
+				paymentIntentId: params.paymentIntentId,
+				buyerId: params.buyerId
+			});
 			return { success: false, error: error as Error };
 		}
 	}

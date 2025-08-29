@@ -10,6 +10,7 @@
   import ChatWindow from '$lib/components/modular/ChatWindow.svelte';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
+  import { messagingLogger } from '$lib/utils/log';
 
   interface Props {
     data: PageData;
@@ -82,7 +83,9 @@
         messageNotificationActions.setUnreadCount(data.unreadCount);
       }
     } catch (error) {
-      console.error('Error initializing conversations:', error);
+      messagingLogger.error('Error initializing conversations', error, {
+        userId: data.user?.id
+      });
       isInitializing = false;
     }
   });
@@ -153,14 +156,20 @@
 
   async function handleSendMessage(content: string) {
     if (!activeConversation || !conversationService) {
-      console.error('Cannot send message: no active conversation or service');
+      messagingLogger.error('Cannot send message: missing dependencies', {
+        hasActiveConversation: !!activeConversation,
+        hasConversationService: !!conversationService,
+        userId: data.user?.id
+      });
       return;
     }
     
     const success = await conversationService.sendMessage(activeConversation.id, content);
     if (!success) {
-      // Show error message
-      console.error('Failed to send message');
+      messagingLogger.error('Failed to send message', {
+        conversationId: activeConversation.id,
+        userId: data.user?.id
+      });
       alert('Failed to send message. Please try again.');
     }
   }

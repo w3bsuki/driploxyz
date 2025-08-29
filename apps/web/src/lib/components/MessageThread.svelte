@@ -101,7 +101,7 @@
     <div class="flex items-center justify-between">
       <div class="flex items-center space-x-3">
         <button
-          onclick={onBackToList}
+          onclick={() => onBackToList()}
           class="sm:hidden -ml-2"
           aria-label="Back to conversations"
         >
@@ -173,7 +173,7 @@
   <div 
     bind:this={messagesContainer} 
     class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50"
-    onscroll={onScroll}
+    onscroll={() => onScroll?.()}
   >
     <!-- Loading Indicator for Older Messages -->
     {#if isLoadingOlder}

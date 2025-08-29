@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { RequestEvent } from '@sveltejs/kit';
+import { authLogger } from '$lib/utils/log';
 
 // Debug flag for controlled logging
 const isDebug = dev;
@@ -53,12 +54,18 @@ export async function setupAuthGuard(event: RequestEvent): Promise<void> {
       
       // Log slow auth validation on public routes
       if (isDebug && session === null && user === null) {
-        console.log(`⚡ Public route ${pathname}: Auth timeout after 800ms, continuing without session`);
+        authLogger.debug('Public route auth timeout, continuing without session', { 
+          pathname, 
+          timeout: 800 
+        });
       }
       
     } catch (error) {
       // If auth fails on public routes, continue without blocking
-      if (isDebug) console.warn(`🚨 Auth error on public route ${pathname}:`, error);
+      if (isDebug) authLogger.warn('Auth error on public route', { 
+        pathname, 
+        error: error instanceof Error ? error.message : String(error) 
+      });
       event.locals.session = null;
       event.locals.user = null;
     }
@@ -74,12 +81,18 @@ export async function setupAuthGuard(event: RequestEvent): Promise<void> {
   // Performance monitoring for auth-critical paths
   const authDuration = performance.now() - authStartTime;
   if (authDuration > 500 && isDebug) {
-    console.warn(`🐌 Auth validation took ${authDuration.toFixed(2)}ms for ${pathname}`);
+    authLogger.warn('Slow auth validation', { 
+      pathname, 
+      duration: parseFloat(authDuration.toFixed(2))
+    });
   }
 
   // Redirect unauthenticated users from protected routes
   if (!session && needsAuth) {
-    if (isDebug) console.log(`🔒 Redirecting unauthenticated user from ${pathname} to /login`);
+    if (isDebug) authLogger.info('Redirecting unauthenticated user to login', { 
+      from: pathname, 
+      to: '/login' 
+    });
     throw redirect(303, '/login');
   }
 
@@ -89,9 +102,15 @@ export async function setupAuthGuard(event: RequestEvent): Promise<void> {
     const timeUntilExpiry = sessionExpiresAt - Date.now();
     
     if (timeUntilExpiry <= 0) {
-      console.warn('⚠️ Session appears expired but validation passed - potential issue');
+      authLogger.warn('Session appears expired but validation passed - potential issue', {
+        sessionId: session.access_token?.substring(0, 8),
+        expiresAt: session.expires_at
+      });
     } else if (timeUntilExpiry < 5 * 60 * 1000) { // Less than 5 minutes
-      console.log(`⏰ Session expiring soon: ${Math.floor(timeUntilExpiry / 1000 / 60)} minutes`);
+      authLogger.info('Session expiring soon', {
+        minutesUntilExpiry: Math.floor(timeUntilExpiry / 1000 / 60),
+        sessionId: session.access_token?.substring(0, 8)
+      });
     }
   }
 }

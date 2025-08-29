@@ -182,7 +182,7 @@
 							</div>
 						{/if}
 
-						<form onsubmit={handleSubmit} class="space-y-6">
+						<form onsubmit={(e) => { e.preventDefault(); handleSubmit(e); }} class="space-y-6">
 							<div id="payment-element" class="p-4 border border-gray-200 rounded-lg">
 								<!-- Stripe Elements will be mounted here -->
 							</div>

@@ -633,6 +633,6 @@
     orderId={ratingOrder.id}
     sellerName={ratingOrder.seller?.username || 'Seller'}
     productTitle={ratingOrder.product?.title || 'Product'}
-    on:success={handleRatingSuccess}
+    onsuccess={handleRatingSuccess}
   />
 {/if}

@@ -1,39 +1,156 @@
 import { dev } from '$app/environment';
+import { authLogger } from '$lib/utils/log';
 
-// CSRF token generation and validation
+/**
+ * Production-grade CSRF Protection using HMAC-SHA256 signatures
+ * 
+ * Security Features:
+ * - HMAC-SHA256 signed tokens prevent tampering
+ * - Cryptographically secure random nonces
+ * - Timing-safe token comparison
+ * - Environment-based secret management
+ * - Proper token expiration and rotation
+ */
 export class CSRFProtection {
-	private static SECRET = 'fallback-dev-secret-change-in-prod';
-	
-	// Generate a CSRF token using crypto
-	static generateToken(sessionId: string): string {
-		const timestamp = Date.now();
-		const randomPart = crypto.randomUUID().replace(/-/g, '');
-		const token = `${timestamp}:${sessionId}:${randomPart}`;
+	// Server-only HMAC secret - must be set in production
+	private static getSecret(): string {
+		const secret = process.env.CSRF_SECRET || process.env.RATE_LIMIT_SECRET;
 		
-		// Token includes timestamp for expiration checking
-		return btoa(token);
+		if (!secret && !dev) {
+			throw new Error('CSRF_SECRET environment variable must be set in production');
+		}
+		
+		// Fallback only in development - never use in production
+		return secret || 'dev-csrf-secret-change-in-production';
 	}
-	
-	// Validate a CSRF token
-	static validateToken(token: string, sessionId: string, maxAge = 3600000): boolean {
+
+	/**
+	 * Generate a cryptographically secure CSRF token
+	 * Token format: timestamp.nonce.signature
+	 * Signature = HMAC-SHA256(secret, timestamp:sessionId:nonce)
+	 */
+	static async generateToken(sessionId: string): Promise<string> {
+		const timestamp = Date.now();
+		const nonce = crypto.randomUUID();
+		const payload = `${timestamp}:${sessionId}:${nonce}`;
+		
 		try {
-			const decoded = atob(token);
-			const [timestampStr, tokenSessionId] = decoded.split(':');
-			const timestamp = parseInt(timestampStr || '0', 10);
+			// Create HMAC signature using Web Crypto API
+			const secret = this.getSecret();
+			const encoder = new TextEncoder();
+			const key = await crypto.subtle.importKey(
+				'raw',
+				encoder.encode(secret),
+				{ name: 'HMAC', hash: 'SHA-256' },
+				false,
+				['sign']
+			);
+
+			const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
+			const signatureHex = Array.from(new Uint8Array(signature))
+				.map(b => b.toString(16).padStart(2, '0'))
+				.join('');
+
+			// Return token in format: timestamp.nonce.signature
+			const token = `${timestamp}.${nonce}.${signatureHex}`;
 			
-			// Check if token has expired (default 1 hour)
-			if (Date.now() - timestamp > maxAge) {
-				return false;
-			}
+			authLogger.debug('Generated CSRF token', { 
+				sessionId: sessionId.slice(0, 8) + '...', // Log partial for debugging 
+				timestamp,
+				tokenLength: token.length
+			});
 			
-			// Simple validation for now
-			return tokenSessionId === sessionId;
+			return token;
 		} catch (error) {
-			return false;
+			authLogger.error('Failed to generate CSRF token', error, { sessionId: sessionId.slice(0, 8) + '...' });
+			throw new Error('CSRF token generation failed');
 		}
 	}
 	
-	// Get or create CSRF token for a request
+	/**
+	 * Validate CSRF token with timing-safe comparison
+	 */
+	static async validateToken(token: string, sessionId: string, maxAge = 3600000): Promise<boolean> {
+		try {
+			const parts = token.split('.');
+			if (parts.length !== 3) {
+				authLogger.warn('Invalid CSRF token format', { tokenParts: parts.length });
+				return false;
+			}
+
+			const [timestampStr, nonce, providedSignature] = parts;
+			const timestamp = parseInt(timestampStr, 10);
+
+			// Check token expiration (default 1 hour)
+			if (Date.now() - timestamp > maxAge) {
+				authLogger.warn('CSRF token expired', { 
+					age: Date.now() - timestamp, 
+					maxAge,
+					sessionId: sessionId.slice(0, 8) + '...'
+				});
+				return false;
+			}
+
+			// Recreate the expected signature
+			const payload = `${timestamp}:${sessionId}:${nonce}`;
+			const secret = this.getSecret();
+			const encoder = new TextEncoder();
+			
+			const key = await crypto.subtle.importKey(
+				'raw',
+				encoder.encode(secret),
+				{ name: 'HMAC', hash: 'SHA-256' },
+				false,
+				['sign']
+			);
+
+			const expectedSignature = await crypto.subtle.sign('HMAC', key, encoder.encode(payload));
+			const expectedSignatureHex = Array.from(new Uint8Array(expectedSignature))
+				.map(b => b.toString(16).padStart(2, '0'))
+				.join('');
+
+			// Timing-safe comparison to prevent timing attacks
+			const isValid = this.timingSafeEqual(providedSignature, expectedSignatureHex);
+			
+			if (isValid) {
+				authLogger.debug('CSRF token validated successfully', { 
+					sessionId: sessionId.slice(0, 8) + '...',
+					tokenAge: Date.now() - timestamp
+				});
+			} else {
+				authLogger.warn('CSRF token signature mismatch', { 
+					sessionId: sessionId.slice(0, 8) + '...'
+				});
+			}
+
+			return isValid;
+		} catch (error) {
+			authLogger.error('CSRF token validation failed', error, { 
+				sessionId: sessionId.slice(0, 8) + '...'
+			});
+			return false;
+		}
+	}
+
+	/**
+	 * Timing-safe string comparison to prevent timing attacks
+	 */
+	private static timingSafeEqual(a: string, b: string): boolean {
+		if (a.length !== b.length) {
+			return false;
+		}
+
+		let result = 0;
+		for (let i = 0; i < a.length; i++) {
+			result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+		}
+		
+		return result === 0;
+	}
+	
+	/**
+	 * Get or create CSRF token for a request with proper validation
+	 */
 	static async getToken(event: any): Promise<string> {
 		const session = await event.locals.safeGetSession();
 		const sessionId = session?.session?.access_token || event.clientAddress;
@@ -41,30 +158,57 @@ export class CSRFProtection {
 		// Check if token exists in cookies
 		let token = event.cookies.get('csrf_token');
 		
-		// Validate existing token
-		if (token && this.validateToken(token, sessionId)) {
+		// Validate existing token asynchronously
+		if (token && (await this.validateToken(token, sessionId))) {
 			return token;
 		}
 		
-		// Generate new token
-		token = this.generateToken(sessionId);
+		// Generate new token asynchronously
+		token = await this.generateToken(sessionId);
 		
-		// Set cookie with security options
+		// Set cookie with enhanced security options
 		event.cookies.set('csrf_token', token, {
 			path: '/',
 			httpOnly: true,
 			secure: !dev,
 			sameSite: 'strict',
-			maxAge: 60 * 60 // 1 hour
+			maxAge: 60 * 60, // 1 hour
+			...(dev ? {} : { 
+				// Additional production security
+				domain: event.url.hostname 
+			})
+		});
+		
+		authLogger.debug('Set new CSRF token cookie', { 
+			sessionId: sessionId.slice(0, 8) + '...',
+			secure: !dev,
+			domain: event.url.hostname
 		});
 		
 		return token;
 	}
 	
-	// Middleware to check CSRF token
+	/**
+	 * Middleware to check CSRF token - production-grade validation
+	 */
 	static async check(event: any, providedToken?: string): Promise<boolean> {
-		// Skip CSRF check for GET requests and API routes
-		if (event.request.method === 'GET' || event.url.pathname.startsWith('/api/')) {
+		const method = event.request.method;
+		const pathname = event.url.pathname;
+
+		// Enhanced safe methods check
+		const safeMethods = ['GET', 'HEAD', 'OPTIONS'];
+		if (safeMethods.includes(method)) {
+			return true;
+		}
+
+		// Skip CSRF for specific API endpoints (be careful with this)
+		const exemptPaths = [
+			'/api/webhooks/', // Webhook endpoints use other auth
+			'/api/health',    // Health check endpoint
+		];
+		
+		if (exemptPaths.some(path => pathname.startsWith(path))) {
+			authLogger.debug('CSRF check skipped for exempt path', { pathname, method });
 			return true;
 		}
 		
@@ -74,13 +218,31 @@ export class CSRFProtection {
 		// Get token from provided value, headers, or cookies
 		const token = providedToken ||
 			event.request.headers.get('x-csrf-token') ||
+			event.request.headers.get('csrf-token') ||
 			event.cookies.get('csrf_token');
 		
 		if (!token) {
-			// Always reject missing tokens for security
+			authLogger.warn('CSRF token missing', { 
+				method, 
+				pathname,
+				sessionId: sessionId.slice(0, 8) + '...',
+				hasProvidedToken: Boolean(providedToken),
+				hasHeaderToken: Boolean(event.request.headers.get('x-csrf-token')),
+				hasCookieToken: Boolean(event.cookies.get('csrf_token'))
+			});
 			return false;
 		}
 		
-		return this.validateToken(token, sessionId);
+		const isValid = await this.validateToken(token, sessionId);
+		
+		if (!isValid) {
+			authLogger.warn('CSRF token validation failed', { 
+				method, 
+				pathname,
+				sessionId: sessionId.slice(0, 8) + '...'
+			});
+		}
+		
+		return isValid;
 	}
 }

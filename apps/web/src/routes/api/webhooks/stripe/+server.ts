@@ -5,6 +5,7 @@ import type { RequestHandler } from './$types.js';
 import { createServerClient } from '@supabase/ssr';
 import { TransactionService } from '$lib/services/transactions.js';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { paymentLogger } from '$lib/utils/log';
 
 const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -21,16 +22,16 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	try {
 		if (!STRIPE_WEBHOOK_SECRET) {
-			console.warn('STRIPE_WEBHOOK_SECRET not configured - skipping signature verification');
+			paymentLogger.warn('STRIPE_WEBHOOK_SECRET not configured - skipping signature verification');
 			event = JSON.parse(body);
 		} else if (!stripe) {
-			console.error('Stripe not initialized');
+			paymentLogger.error('Stripe not initialized', new Error('Stripe instance is null'));
 			return json({ error: 'Stripe not available' }, { status: 500 });
 		} else {
 			event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
 		}
 	} catch (err) {
-		console.error('Webhook signature verification failed:', err);
+		paymentLogger.error('Webhook signature verification failed', err, { hasSignature: signature ? 'true' : 'false' });
 		return json({ error: 'Invalid signature' }, { status: 400 });
 	}
 
@@ -46,26 +47,30 @@ export const POST: RequestHandler = async ({ request }) => {
 				await handlePaymentCanceled(event.data.object);
 				break;
 			default:
-				console.log(`Unhandled event type: ${event.type}`);
+				paymentLogger.info('Unhandled event type', { eventType: event.type });
 		}
 
 		return json({ received: true });
 	} catch (error) {
-		console.error('Error processing webhook:', error);
+		paymentLogger.error('Error processing webhook', error, { eventType: event?.type });
 		return json({ error: 'Webhook processing failed' }, { status: 500 });
 	}
 };
 
 async function handlePaymentSuccess(paymentIntent: any) {
-	console.log('🎉 Payment succeeded:', paymentIntent.id);
-	console.log('📦 Metadata:', paymentIntent.metadata);
+	paymentLogger.info('Payment succeeded', {
+		paymentIntentId: paymentIntent.id,
+		metadata: paymentIntent.metadata
+	});
 	
 	const { product_id: productId, seller_id: sellerId, buyer_id: buyerId, order_id: orderId } = paymentIntent.metadata;
 	
 	if (productId && sellerId && buyerId && orderId) {
 		try {
 			if (!SUPABASE_SERVICE_ROLE_KEY) {
-				console.error('SUPABASE_SERVICE_ROLE_KEY not available');
+				paymentLogger.error('SUPABASE_SERVICE_ROLE_KEY not available in payment success handler', new Error('Service role key missing'), {
+					paymentIntentId: paymentIntent.id
+				});
 				return;
 			}
 			
@@ -89,7 +94,10 @@ async function handlePaymentSuccess(paymentIntent: any) {
 				.single();
 
 			if (orderError || !order) {
-				console.error('Failed to get order details:', orderError);
+				paymentLogger.error('Failed to get order details', orderError, {
+					orderId,
+					paymentIntentId: paymentIntent.id
+				});
 				return;
 			}
 
@@ -107,7 +115,13 @@ async function handlePaymentSuccess(paymentIntent: any) {
 			});
 
 			if (error) {
-				console.error('Error creating transaction:', error);
+				paymentLogger.error('Error creating transaction', error, {
+					orderId,
+					paymentIntentId: paymentIntent.id,
+					productId,
+					sellerId,
+					buyerId
+				});
 				return;
 			}
 
@@ -164,27 +178,40 @@ async function handlePaymentSuccess(paymentIntent: any) {
 					}
 				});
 
-			console.log(`✅ Transaction created successfully: ${transaction?.id}`);
-			console.log(`💰 Commission: ${transaction?.commission_amount} BGN, Seller gets: ${transaction?.seller_earnings} BGN`);
-			console.log(`📋 Order ${orderId} updated to 'paid' status`);
-			console.log(`🏷️ Product ${productId} marked as sold`);
-			console.log(`📬 Sale and purchase notifications sent`);
+			paymentLogger.info('Payment processing completed successfully', {
+				transactionId: transaction?.id,
+				commissionAmount: transaction?.commission_amount,
+				sellerEarnings: transaction?.seller_earnings,
+				orderId,
+				productId,
+				notificationsSent: 'true'
+			});
 			
 		} catch (error) {
-			console.error('Error processing payment success:', error);
+			paymentLogger.error('Error processing payment success', error, {
+				paymentIntentId: paymentIntent.id,
+				productId,
+				buyerId,
+				sellerId
+			});
 		}
 	}
 }
 
 async function handlePaymentFailed(paymentIntent: any) {
-	console.log('Payment failed:', paymentIntent.id);
+	paymentLogger.warn('Payment failed', {
+		paymentIntentId: paymentIntent.id,
+		metadata: paymentIntent.metadata
+	});
 	
 	const { product_id: productId, seller_id: sellerId, buyer_id: buyerId, order_id: orderId } = paymentIntent.metadata;
 	
 	if (productId && sellerId && buyerId && orderId) {
 		try {
 			if (!SUPABASE_SERVICE_ROLE_KEY) {
-				console.error('SUPABASE_SERVICE_ROLE_KEY not available');
+				paymentLogger.error('SUPABASE_SERVICE_ROLE_KEY not available in payment failed handler', new Error('Service role key missing'), {
+					paymentIntentId: paymentIntent.id
+				});
 				return;
 			}
 			
@@ -233,22 +260,36 @@ async function handlePaymentFailed(paymentIntent: any) {
 					}
 				});
 
-			console.log('Successfully processed payment failure for:', paymentIntent.id);
+			paymentLogger.info('Successfully processed payment failure', {
+				paymentIntentId: paymentIntent.id,
+				orderId,
+				productId
+			});
 		} catch (error) {
-			console.error('Error processing payment failure:', error);
+			paymentLogger.error('Error processing payment failure', error, {
+				paymentIntentId: paymentIntent.id,
+				productId,
+				buyerId,
+				sellerId
+			});
 		}
 	}
 }
 
 async function handlePaymentCanceled(paymentIntent: any) {
-	console.log('Payment canceled:', paymentIntent.id);
+	paymentLogger.info('Payment canceled', {
+		paymentIntentId: paymentIntent.id,
+		metadata: paymentIntent.metadata
+	});
 	
 	const { product_id: productId, seller_id: sellerId, buyer_id: buyerId, order_id: orderId } = paymentIntent.metadata;
 	
 	if (productId && sellerId && buyerId && orderId) {
 		try {
 			if (!SUPABASE_SERVICE_ROLE_KEY) {
-				console.error('SUPABASE_SERVICE_ROLE_KEY not available');
+				paymentLogger.error('SUPABASE_SERVICE_ROLE_KEY not available in payment canceled handler', new Error('Service role key missing'), {
+					paymentIntentId: paymentIntent.id
+				});
 				return;
 			}
 			
@@ -299,9 +340,18 @@ async function handlePaymentCanceled(paymentIntent: any) {
 					}
 				});
 
-			console.log('Successfully processed payment cancellation for:', paymentIntent.id);
+			paymentLogger.info('Successfully processed payment cancellation', {
+				paymentIntentId: paymentIntent.id,
+				orderId,
+				productId
+			});
 		} catch (error) {
-			console.error('Error processing payment cancellation:', error);
+			paymentLogger.error('Error processing payment cancellation', error, {
+				paymentIntentId: paymentIntent.id,
+				productId,
+				buyerId,
+				sellerId
+			});
 		}
 	}
 }

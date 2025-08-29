@@ -2,10 +2,11 @@ import { building, dev } from '$app/environment';
 import type { RequestEvent } from '@sveltejs/kit';
 
 // Environment variable validation - critical for production
+// Only require public Supabase vars for the web app runtime.
+// Service role is not required (and should not be used) in the web app.
 const requiredEnvVars = [
   'PUBLIC_SUPABASE_URL',
-  'PUBLIC_SUPABASE_ANON_KEY',
-  'SUPABASE_SERVICE_ROLE_KEY'
+  'PUBLIC_SUPABASE_ANON_KEY'
 ] as const;
 
 /**
@@ -20,6 +21,10 @@ export function validateEnvironment(): void {
         throw new Error(`Missing required environment variable: ${envVar}`);
       }
     });
+    // Optional server-only variables (warn if missing in production)
+    if (!process.env['SUPABASE_SERVICE_ROLE_KEY']) {
+      console.warn('ℹ️ SUPABASE_SERVICE_ROLE_KEY is not set for web app (OK unless needed server-side).');
+    }
     console.log('✅ All required environment variables are present');
   }
 }

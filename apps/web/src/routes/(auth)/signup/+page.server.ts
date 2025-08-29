@@ -5,6 +5,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { detectLanguage } from '@repo/i18n';
 import { getUserCountry } from '$lib/country/detection';
 import { env } from '$env/dynamic/public';
+import { authLogger } from '$lib/utils/log';
 
 export const load: PageServerLoad = async (event) => {
   const { session } = await event.locals.safeGetSession();
@@ -96,7 +97,10 @@ export const actions: Actions = {
       
 
     if (error) {
-      console.error('Signup error:', error);
+      authLogger.error('Signup error', error, { 
+        email: normalizedEmail, 
+        errorCode: error.code 
+      });
       
       // Handle specific Supabase auth errors
       if (error.message.includes('User already registered') || 

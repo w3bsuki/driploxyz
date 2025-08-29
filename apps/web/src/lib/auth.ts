@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { SupabaseClient, User, Session } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
+import { authLogger } from '$lib/utils/log';
 
 export interface AuthState {
   user: User | null;
@@ -125,7 +126,7 @@ export async function getUserProfile(
 
     return data;
   } catch (error) {
-    console.error('Error fetching user profile:', error);
+    authLogger.error('Error fetching user profile', error, { userId });
     return null;
   }
 }
@@ -150,7 +151,7 @@ export async function updateUserProfile(
 
     return { success: true };
   } catch (error) {
-    console.error('Error updating user profile:', error);
+    authLogger.error('Error updating user profile', error, { userId });
     return { success: false, error: 'Failed to update profile' };
   }
 }

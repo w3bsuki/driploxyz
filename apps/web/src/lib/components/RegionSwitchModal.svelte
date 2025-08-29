@@ -79,7 +79,7 @@
     <!-- Backdrop -->
     <div 
       class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
-      onclick={onClose}
+      onclick={() => onClose()}
     />
     
     <!-- Modal -->
@@ -87,7 +87,7 @@
       <div class="relative bg-white rounded-xl shadow-xl max-w-md w-full p-6">
         <!-- Close button -->
         <button
-          onclick={onClose}
+          onclick={() => onClose()}
           class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -144,14 +144,14 @@
             <Button
               variant="ghost"
               class="flex-1"
-              onclick={onClose}
+              onclick={() => onClose()}
             >
               Stay on {currentRegion} version
             </Button>
             <Button
               variant="primary"
               class="flex-1"
-              onclick={handleSwitch}
+              onclick={() => handleSwitch()}
             >
               Switch to {detectedRegion} {detected.flag}
             </Button>

@@ -2,23 +2,24 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServices } from '$lib/services';
 import { stripe } from '$lib/stripe/server.js';
+import { paymentLogger } from '$lib/utils/log';
 
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession, country } }) => {
-  console.log('[Checkout API] Starting checkout process');
+  paymentLogger.info('Starting checkout process');
   
   const { session } = await safeGetSession();
   
   if (!session?.user) {
-    console.log('[Checkout API] No session found');
+    paymentLogger.warn('No session found - authentication required');
     return json({ error: 'Authentication required' }, { status: 401 });
   }
   
   try {
 
-    console.log('[Checkout API] User authenticated:', session.user.id);
+    paymentLogger.info('User authenticated', { userId: session.user.id });
 
     const { productId, selectedSize, bundleItems } = await request.json();
-    console.log('[Checkout API] Request data:', { productId, selectedSize, bundleItemsCount: bundleItems?.length });
+    paymentLogger.info('Checkout request received', { productId, selectedSize, bundleItemsCount: bundleItems?.length });
 
     // Handle bundle checkout
     if (bundleItems && bundleItems.length > 0) {
@@ -52,20 +53,20 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
     // Check if Stripe is configured
     if (!stripe) {
-      console.log('[Checkout API] Stripe not configured');
+      paymentLogger.error('Stripe not configured', new Error('Stripe instance not available'));
       return error(500, { message: 'Payment service not configured' });
     }
 
-    console.log('[Checkout API] Creating services...');
+    paymentLogger.debug('Creating services');
     // Create services with Stripe instance
     const services = createServices(supabase, stripe);
 
     if (!services.stripe) {
-      console.log('[Checkout API] Services.stripe not available');
+      paymentLogger.error('Services.stripe not available', new Error('Stripe service not initialized'));
       return error(500, { message: 'Payment service not available' });
     }
 
-    console.log('[Checkout API] Services created successfully');
+    paymentLogger.debug('Services created successfully');
 
     // Single product logic (backward compatible)
     if (!bundleItems) {
@@ -104,10 +105,15 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       const productPriceCents = Math.round(product.price * 100);
       const serviceFee = Math.round(productPriceCents * 0.05) + 140; // 5% + 1.40 BGN
       const totalAmount = productPriceCents + serviceFee;
-      console.log('[Checkout API] Product price in cents:', productPriceCents, 'Service fee:', serviceFee, 'Total:', totalAmount);
+      paymentLogger.info('Product pricing calculated', {
+        productId,
+        productPriceCents,
+        serviceFee,
+        totalAmount
+      });
 
       // Create payment intent for single product
-      console.log('[Checkout API] Creating payment intent for single product');
+      paymentLogger.info('Creating payment intent for single product', { productId });
       
       const { paymentIntent, clientSecret, error: stripeError } = await services.stripe!.createPaymentIntent({
         amount: totalAmount,
@@ -124,14 +130,18 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
         }
       });
     
-      console.log('[Checkout API] Payment intent result:', { 
-        paymentIntentId: paymentIntent?.id, 
-        clientSecretExists: !!clientSecret, 
-        error: stripeError?.message 
+      paymentLogger.info('Payment intent created', {
+        productId,
+        paymentIntentId: paymentIntent?.id,
+        clientSecretExists: clientSecret ? 'true' : 'false',
+        hasError: stripeError ? 'true' : 'false'
       });
 
       if (stripeError || !paymentIntent || !clientSecret) {
-        console.error('Stripe error:', stripeError);
+        paymentLogger.error('Stripe error during single product payment intent creation', stripeError, {
+          productId,
+          userId: session.user.id
+        });
         return error(500, { message: 'Failed to create payment intent' });
       }
 
@@ -157,7 +167,11 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       });
     } else {
       // Bundle checkout logic
-      console.log('[Checkout API] Processing bundle checkout for', bundleItems.length, 'items');
+      paymentLogger.info('Processing bundle checkout', {
+        itemCount: bundleItems.length,
+        sellerId: bundleItems[0]?.seller_id,
+        userId: session.user.id
+      });
       
       // Calculate bundle total (NO SHIPPING - paid on delivery)
       const itemsTotal = bundleItems.reduce((sum: number, item: any) => sum + (item.price * 100), 0);
@@ -193,7 +207,10 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       });
       
       if (stripeError || !paymentIntent || !clientSecret) {
-        console.error('Stripe error:', stripeError);
+        paymentLogger.error('Stripe error during bundle payment intent creation', stripeError, {
+          itemCount: bundleItems.length,
+          userId: session.user.id
+        });
         return error(500, { message: 'Failed to create payment intent' });
       }
       
@@ -214,7 +231,9 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
     }
 
   } catch (err) {
-    console.error('Checkout API error:', err);
+    paymentLogger.error('Checkout API error', err, {
+      userId: session?.user?.id
+    });
     return error(500, { message: 'Internal server error' });
   }
 };

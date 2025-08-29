@@ -1,4 +1,5 @@
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
+import { messagingLogger } from '$lib/utils/log';
 
 export interface Message {
   id: string;
@@ -259,7 +260,10 @@ export class ConversationService {
       }, this.handleRealtimeMessage.bind(this))
       .subscribe((status, error) => {
         if (error) {
-          console.error('Realtime subscription error:', error);
+          messagingLogger.error('Realtime subscription error', error, {
+            userId: this.userId,
+            reconnectAttempts: this.reconnectAttempts
+          });
           this.handleReconnection();
         } else if (status === 'SUBSCRIBED') {
           this.reconnectAttempts = 0;
@@ -296,7 +300,10 @@ export class ConversationService {
         }
       }
     } catch (error) {
-      console.error('Error handling realtime message:', error);
+      messagingLogger.error('Error handling realtime message', error, {
+        userId: this.userId,
+        messageId: payload?.new?.id
+      });
     }
   }
 
@@ -342,7 +349,9 @@ export class ConversationService {
       this.reconnectAttempts = 0;
       this.lastUpdateTime = 0;
     } catch (error) {
-      console.error('Error during cleanup:', error);
+      messagingLogger.error('Error during cleanup', error, {
+        userId: this.userId
+      });
     }
   }
 }

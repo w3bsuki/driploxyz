@@ -1,9 +1,10 @@
 import { createServerClient } from '@supabase/ssr';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { env as publicEnv } from '$env/dynamic/public';
 import { building } from '$app/environment';
 import { error } from '@sveltejs/kit';
 import type { Database } from '@repo/database';
 import type { RequestEvent } from '@sveltejs/kit';
+import { authLogger } from '$lib/utils/log';
 
 /**
  * Setup Supabase client with auth handling for hooks
@@ -16,6 +17,9 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   }
   
   // Check for required configuration
+  const PUBLIC_SUPABASE_URL = publicEnv.PUBLIC_SUPABASE_URL;
+  const PUBLIC_SUPABASE_ANON_KEY = publicEnv.PUBLIC_SUPABASE_ANON_KEY;
+
   if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
     throw error(500, 'Server configuration error. Please contact support.');
   }
@@ -83,7 +87,9 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
       
     } catch (error) {
       // Any unexpected error should result in no session
-      console.warn('Session validation error:', error);
+      authLogger.warn('Session validation error', { 
+        error: error instanceof Error ? error.message : String(error) 
+      });
       result = { session: null, user: null };
     }
 

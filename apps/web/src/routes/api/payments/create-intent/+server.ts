@@ -3,6 +3,7 @@ import { createStripeService } from '$lib/services/stripe.js';
 import { stripe } from '$lib/stripe/server.js';
 import type { RequestHandler } from './$types.js';
 import type { PaymentIntentCreateParams } from '$lib/stripe/types.js';
+import { paymentLogger } from '$lib/utils/log';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -35,7 +36,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const result = await stripeService.createPaymentIntent(params);
 
 		if (result.error) {
-			console.error('Error creating payment intent:', result.error);
+			paymentLogger.error('Error creating payment intent', result.error, {
+				productId: params.productId,
+				buyerId: params.buyerId,
+				sellerId: params.sellerId,
+				amount: params.amount
+			});
 			return json({ error: result.error.message }, { status: 500 });
 		}
 
@@ -44,7 +50,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			id: result.paymentIntent?.id
 		});
 	} catch (error) {
-		console.error('Error creating payment intent:', error);
+		paymentLogger.error('Error creating payment intent', error, {
+			userId: locals.session?.user?.id
+		});
 		return json({ error: 'Failed to create payment intent' }, { status: 500 });
 	}
 };

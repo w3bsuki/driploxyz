@@ -70,7 +70,7 @@
   <!-- Backdrop -->
   <div 
     class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4 pb-24 sm:pb-4"
-    onclick={handleBackdropClick}
+    onclick={(e) => handleBackdropClick(e)}
     onkeydown={(e) => e.key === 'Escape' && onclose()}
     role="dialog"
     aria-modal="true"
@@ -85,7 +85,7 @@
         
         <!-- Close Button -->
         <button
-          onclick={onclose}
+          onclick={() => onclose()}
           class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full"
           aria-label="Close"
         >
@@ -131,7 +131,7 @@
           
           <!-- Action Buttons -->
           <div class="flex space-x-2 mt-3">
-            <button onclick={viewProfile} class="flex-1 py-1.5 bg-black text-white text-sm rounded-lg">
+            <button onclick={() => viewProfile()} class="flex-1 py-1.5 bg-black text-white text-sm rounded-lg">
               View Profile
             </button>
             <button class="flex-1 py-1.5 border border-gray-300 text-sm rounded-lg">
@@ -184,7 +184,7 @@
         <!-- View All Link -->
         <div class="mt-3 text-center">
           <button 
-            onclick={viewProfile}
+            onclick={() => viewProfile()}
             class="text-xs sm:text-sm text-gray-600 font-medium"
           >
             View all {seller.itemCount || 20}+ items →

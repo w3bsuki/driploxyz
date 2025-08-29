@@ -92,7 +92,7 @@
           </p>
           <div class="flex gap-2">
             <Button
-              onclick={switchToSuggestedLocale}
+              onclick={() => switchToSuggestedLocale()}
               variant="primary"
               size="sm"
               class="bg-white text-blue-600 hover:bg-gray-100"
@@ -104,7 +104,7 @@
               {/if}
             </Button>
             <Button
-              onclick={dismissBanner}
+              onclick={() => dismissBanner()}
               variant="ghost"
               size="sm"
               class="text-white/80 hover:text-white"
@@ -114,7 +114,7 @@
           </div>
         </div>
         <button
-          onclick={dismissBanner}
+          onclick={() => dismissBanner()}
           class="text-white/60 hover:text-white transition-colors"
           aria-label="Close"
         >

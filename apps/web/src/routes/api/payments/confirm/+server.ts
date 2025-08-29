@@ -5,6 +5,7 @@ import type { RequestHandler } from './$types.js';
 import type { Database } from '@repo/database';
 import { sendEmail, emailTemplates } from '$lib/email/resend';
 import type { PaymentIntentConfirmParams } from '$lib/stripe/types.js';
+import { paymentLogger } from '$lib/utils/log';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
@@ -34,7 +35,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const result = await stripeService.confirmPaymentIntent(params);
 
 		if (!result.success) {
-			console.error('Error confirming payment:', result.error);
+			paymentLogger.error('Error confirming payment', result.error, {
+				paymentIntentId,
+				buyerId: params.buyerId
+			});
 			return json({ error: result.error?.message || 'Failed to confirm payment' }, { status: 500 });
 		}
 
@@ -79,7 +83,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					}));
 				}
 			} catch (emailError) {
-				console.error('Error sending confirmation emails:', emailError);
+				paymentLogger.warn('Error sending confirmation emails', {
+					orderId: result.order?.id,
+					error: emailError instanceof Error ? emailError.message : String(emailError)
+				});
 				// Don't fail the payment confirmation for email errors
 			}
 		}
@@ -90,7 +97,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			transactionId: result.transaction?.id
 		});
 	} catch (error) {
-		console.error('Error confirming payment:', error);
+		paymentLogger.error('Error confirming payment', error, {
+			userId: locals.session?.user?.id
+		});
 		return json({ error: 'Failed to confirm payment' }, { status: 500 });
 	}
 };
