@@ -281,7 +281,7 @@
 
 {#if showBanner}
   <!-- Semi-transparent backdrop -->
-  <div class="fixed inset-0 bg-black/30 backdrop-blur-sm z-[9998]" aria-hidden="true"></div>
+  <div class="fixed inset-0 bg-black/40 md:backdrop-blur-sm md:bg-black/30 z-[9998]" aria-hidden="true"></div>
   
   <!-- Main Banner Container -->
   <div class="fixed inset-x-0 bottom-0 z-[9999]">

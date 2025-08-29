@@ -351,152 +351,11 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             
-            <!-- Filter Button (Inside Search Bar) -->
-            <div class="absolute right-2 top-2 flex items-center">
-              <button
-                onclick={() => showFilterDrawer = !showFilterDrawer}
-                class="h-8 px-3 rounded-lg flex items-center gap-1.5 text-xs font-medium transition-colors
-                  {activeFilterCount > 0 
-                    ? 'bg-black text-white' 
-                    : 'bg-black text-white hover:bg-gray-800'}"
-              >
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-                <span class="hidden sm:inline">Filter</span>
-                {#if activeFilterCount > 0}
-                  <span class="bg-white text-black text-xs px-1.5 py-0.5 rounded-full font-semibold">{activeFilterCount}</span>
-                {/if}
-              </button>
-              
-              <!-- Filter Dropdown -->
-              {#if showFilterDrawer}
-                <div class="absolute top-full right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-xl border border-gray-100 z-50">
-                  <div class="p-4 space-y-3">
-                    
-                    <!-- Size -->
-                    <div>
-                      <h3 class="text-sm font-semibold text-gray-900 mb-2">Size</h3>
-                      <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-                        <button
-                          onclick={() => filterStore.updateFilter('size', 'all')}
-                          class="shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-all
-                            {filters.size === 'all' 
-                              ? 'bg-black text-white' 
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-                        >
-                          All Sizes
-                        </button>
-                        {#each currentSizes as size}
-                          <button
-                            onclick={() => filterStore.updateFilter('size', filters.size === size ? 'all' : size)}
-                            class="shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-all
-                              {filters.size === size 
-                                ? 'bg-black text-white' 
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-                          >
-                            {size}
-                          </button>
-                        {/each}
-                      </div>
-                    </div>
-                    
-                    <!-- Condition -->
-                    <div>
-                      <h3 class="text-sm font-semibold text-gray-900 mb-2">Condition</h3>
-                      <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-                        <button
-                          onclick={() => filterStore.updateFilter('condition', 'all')}
-                          class="shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-all
-                            {filters.condition === 'all' 
-                              ? 'bg-black text-white' 
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-                        >
-                          All Conditions
-                        </button>
-                        {#each conditions as condition}
-                          <button
-                            onclick={() => filterStore.updateFilter('condition', filters.condition === condition.key ? 'all' : condition.key)}
-                            class="shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-all
-                              {filters.condition === condition.key 
-                                ? 'bg-black text-white' 
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-                          >
-                            {condition.emoji} {condition.label}
-                          </button>
-                        {/each}
-                      </div>
-                    </div>
-                    
-                    <!-- Brand -->
-                    <div>
-                      <h3 class="text-sm font-semibold text-gray-900 mb-2">Brand</h3>
-                      <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-                        <button
-                          onclick={() => filterStore.updateFilter('brand', 'all')}
-                          class="shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-all
-                            {filters.brand === 'all' 
-                              ? 'bg-black text-white' 
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-                        >
-                          All Brands
-                        </button>
-                        {#each currentBrands as brand}
-                          <button
-                            onclick={() => filterStore.updateFilter('brand', filters.brand === brand ? 'all' : brand)}
-                            class="shrink-0 px-3 py-1.5 rounded-lg text-sm font-medium transition-all
-                              {filters.brand === brand 
-                                ? 'bg-black text-white' 
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-                          >
-                            {brand}
-                          </button>
-                        {/each}
-                      </div>
-                    </div>
-                    
-                    <!-- Price Range -->
-                    <div>
-                      <div class="flex items-center justify-between mb-2">
-                        <h3 class="text-sm font-semibold text-gray-900">Price Range</h3>
-                        <button
-                          onclick={clearFilters}
-                          class="text-xs text-gray-500 hover:text-gray-700 font-medium"
-                        >
-                          Clear All
-                        </button>
-                      </div>
-                      <div class="flex gap-2">
-                        <div class="flex-1">
-                          <input
-                            type="number"
-                            placeholder="Min price"
-                            value={filters.minPrice}
-                            oninput={(e) => filterStore.updateFilter('minPrice', e.target.value)}
-                            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent"
-                          />
-                        </div>
-                        <div class="flex items-center text-gray-400">to</div>
-                        <div class="flex-1">
-                          <input
-                            type="number"
-                            placeholder="Max price"
-                            value={filters.maxPrice}
-                            oninput={(e) => filterStore.updateFilter('maxPrice', e.target.value)}
-                            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              {/if}
-            </div>
           </div>
           
           <!-- Category Dropdown Menu -->
           {#if showCategoryDropdown}
-            <div class="absolute top-full left-0 mt-1 w-72 sm:w-80 bg-white rounded-xl shadow-lg border border-gray-100 z-40 max-h-96 overflow-y-auto">
+            <div class="absolute top-full left-0 mt-1 w-72 sm:w-80 bg-white rounded-xl shadow md:shadow-lg border border-gray-100 z-40 max-h-96 overflow-y-auto">
                 
                 <!-- Level 1: Gender Categories -->
                 {#if categoryLevel === 1}
@@ -652,7 +511,7 @@
         <!-- Main Category Pills -->
         <button
           onclick={() => handleCategorySelect(null)}
-          class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all min-h-[36px]
+          class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors min-h-[36px]
             {filters.level1 === null 
               ? 'bg-black text-white' 
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
@@ -663,7 +522,7 @@
         {#each mainCategories as cat}
           <button
             onclick={() => handleCategorySelect(cat.key)}
-            class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 min-h-[36px]
+            class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5 min-h-[36px]
               {filters.level1 === cat.key 
                 ? 'bg-black text-white' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
@@ -679,7 +538,7 @@
         {#each quickPriceFilters as price}
           <button
             onclick={() => handleQuickPrice(price.min, price.max)}
-            class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all min-h-[36px]
+            class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors min-h-[36px]
               {filters.minPrice === price.min && filters.maxPrice === price.max
                 ? 'bg-blue-600 text-white' 
                 : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}"
@@ -705,11 +564,26 @@
   <div class="bg-white border-b border-gray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
       
-      <!-- Mobile Layout - Just Results Count -->
-      <div class="sm:hidden mb-3">
+      <!-- Mobile Layout - Results Count + Filter Button -->
+      <div class="sm:hidden mb-3 flex items-center justify-between">
         <span class="text-sm font-medium text-gray-900">
           {displayProducts.length} items
         </span>
+        <button
+          onclick={() => showFilterDrawer = !showFilterDrawer}
+          class="h-8 px-3 rounded-lg flex items-center gap-1.5 text-xs font-medium transition-colors
+            {activeFilterCount > 0 
+              ? 'bg-black text-white' 
+              : 'bg-black text-white hover:bg-gray-800'}"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          <span>Filter</span>
+          {#if activeFilterCount > 0}
+            <span class="bg-white text-black text-xs px-1.5 py-0.5 rounded-full font-semibold">{activeFilterCount}</span>
+          {/if}
+        </button>
       </div>
       
       <!-- Desktop Layout -->
@@ -867,6 +741,149 @@
   </div>
 </div>
 
+<!-- Mobile Filter Drawer -->
+{#if showFilterDrawer}
+  <div class="fixed inset-0 z-50 sm:hidden">
+    <!-- Backdrop -->
+    <div 
+      class="fixed inset-0 bg-black bg-opacity-50"
+      onclick={() => showFilterDrawer = false}
+    ></div>
+    
+    <!-- Drawer Content -->
+    <div class="fixed inset-x-0 bottom-0 bg-white rounded-t-2xl max-h-[80vh] overflow-y-auto">
+      <div class="sticky top-0 bg-white border-b border-gray-100 p-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold">Filters</h2>
+          <button
+            onclick={() => showFilterDrawer = false}
+            class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="p-4 space-y-4">
+        <!-- Size -->
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900 mb-2">Size</h3>
+          <div class="flex flex-wrap gap-2">
+            <button
+              onclick={() => filterStore.updateFilter('size', 'all')}
+              class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors
+                {filters.size === 'all' 
+                  ? 'bg-black text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+            >
+              All Sizes
+            </button>
+            {#each currentSizes as size}
+              <button
+                onclick={() => filterStore.updateFilter('size', filters.size === size ? 'all' : size)}
+                class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors
+                  {filters.size === size 
+                    ? 'bg-black text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+              >
+                {size}
+              </button>
+            {/each}
+          </div>
+        </div>
+        
+        <!-- Condition -->
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900 mb-2">Condition</h3>
+          <div class="space-y-2">
+            {#each conditions as condition}
+              <button
+                onclick={() => filterStore.updateFilter('condition', filters.condition === condition.key ? 'all' : condition.key)}
+                class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors
+                  {filters.condition === condition.key 
+                    ? 'bg-black text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+              >
+                <span>{condition.label}</span>
+              </button>
+            {/each}
+          </div>
+        </div>
+        
+        <!-- Brand -->
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900 mb-2">Brand</h3>
+          <div class="flex flex-wrap gap-2">
+            <button
+              onclick={() => filterStore.updateFilter('brand', 'all')}
+              class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors
+                {filters.brand === 'all' 
+                  ? 'bg-black text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+            >
+              All Brands
+            </button>
+            {#each currentBrands as brand}
+              <button
+                onclick={() => filterStore.updateFilter('brand', filters.brand === brand ? 'all' : brand)}
+                class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors
+                  {filters.brand === brand 
+                    ? 'bg-black text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+              >
+                {brand}
+              </button>
+            {/each}
+          </div>
+        </div>
+        
+        <!-- Price Range -->
+        <div>
+          <h3 class="text-sm font-semibold text-gray-900 mb-2">Price Range</h3>
+          <div class="flex gap-2">
+            <div class="flex-1">
+              <input
+                type="number"
+                placeholder="Min"
+                value={filters.minPrice}
+                oninput={(e) => filterStore.updateFilter('minPrice', e.target.value)}
+                class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent"
+              />
+            </div>
+            <div class="flex items-center text-gray-400">-</div>
+            <div class="flex-1">
+              <input
+                type="number"
+                placeholder="Max"
+                value={filters.maxPrice}
+                oninput={(e) => filterStore.updateFilter('maxPrice', e.target.value)}
+                class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent"
+              />
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex gap-2 pt-4">
+          <button
+            onclick={clearAllFilters}
+            class="flex-1 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            Clear All
+          </button>
+          <button
+            onclick={() => showFilterDrawer = false}
+            class="flex-1 px-4 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+          >
+            Show Results
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <BottomNav 
   currentPath={$page.url.pathname}

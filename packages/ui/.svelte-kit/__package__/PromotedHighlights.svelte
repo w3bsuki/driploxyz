@@ -119,7 +119,7 @@
 
 <!-- Promoted Listings / Highlights -->
 <section 
-  class="bg-gradient-to-br from-gray-50/90 to-white/95 border-y border-gray-200/60 backdrop-blur-sm relative overflow-hidden"
+  class="bg-gradient-to-br from-gray-50/90 to-white/95 border-y border-gray-200/60 relative overflow-hidden"
   aria-label={translations.trending_promoted}
   role="region"
 >

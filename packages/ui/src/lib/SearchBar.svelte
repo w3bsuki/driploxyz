@@ -36,9 +36,10 @@
   }
 </script>
 
-<search 
+<form 
   role="search"
   class="bg-white rounded-full border border-gray-200 p-1 shadow-sm hover:shadow-md focus-within:border-gray-400 focus-within:ring-2 focus-within:ring-gray-400/20 transition-all {className}"
+  onsubmit={(e) => { e.preventDefault(); if (value.trim()) onSearch?.(value.trim()); }}
 >
   <div class="bg-gray-50 relative rounded-full overflow-hidden min-h-[44px] sm:min-h-[46px]">
     <div class="relative flex items-center min-h-[44px] sm:min-h-[46px]">
@@ -101,4 +102,4 @@
       </div>
     </div>
   </div>
-</search>
+</form>

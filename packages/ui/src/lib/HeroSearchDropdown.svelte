@@ -192,7 +192,7 @@
 
 <div class="hero-search-container relative {className}">
   <!-- Hero Search Bar with Nested Design -->
-  <search 
+  <form 
     role="search"
     class="bg-white rounded-full border border-gray-200 p-1 shadow-sm hover:shadow-md focus-within:border-gray-400 focus-within:ring-2 focus-within:ring-gray-400/20 transition-all"
   >
@@ -260,7 +260,7 @@
         </div>
       </div>
     </div>
-  </search>
+  </form>
 
   {#if showDropdown}
     <div class="absolute z-50 w-full mt-2">

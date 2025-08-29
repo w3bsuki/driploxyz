@@ -218,12 +218,19 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
       }
     }
 
+    // Return critical data immediately, stream non-critical data
     return {
-      featuredProducts,
+      // Critical data for initial render
       categories,
-      topSellers,
-      userFavorites,
-      country: country || 'BG', // Pass country to frontend
+      country: country || 'BG',
+      
+      // Stream featured products (below the fold)
+      featuredProducts: Promise.resolve(featuredProducts),
+      
+      // Stream non-critical data
+      topSellers: Promise.resolve(topSellers),
+      userFavorites: Promise.resolve(userFavorites),
+      
       errors: {
         products: featuredResult.status === 'rejected' ? 'Failed to load' : null,
         categories: categoriesResult.status === 'rejected' ? 'Failed to load' : null,

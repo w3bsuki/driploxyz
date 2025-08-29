@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { SearchBar, HeroSearchDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, PromotedHighlights, FeaturedProducts, LoadingSpinner } from '@repo/ui';
+	import { SearchBar, HeroSearchDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner } from '@repo/ui';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
@@ -25,6 +25,10 @@
 	let loadingCategory = $state<string | null>(null);
 	let QuickViewDialog = $state<any>(null);
 	let selectedPillIndex = $state(-1);
+	
+	// Lazy loaded components
+	let PromotedHighlights = $state<any>(null);
+	let highlightsInView = $state(false);
 
 	// Language state - already initialized in +layout.svelte
 	let currentLang = $state(i18n.languageTag());
@@ -42,13 +46,13 @@
 	
 	// Initialize favorites from server data on mount
 	$effect(() => {
-		if (browser && data.user && data.userFavorites) {
+		if (browser && data.user && userFavoritesData) {
 			// Initialize favorites state from server
 			favoritesStore.update(state => ({
 				...state,
 				favorites: {
 					...state.favorites,
-					...data.userFavorites
+					...userFavoritesData
 				}
 			}));
 			
@@ -74,8 +78,26 @@
 	
 	// Lazy load heavy components
 	$effect(() => {
-		if (browser) {
-			// Load heavy homepage components after critical content
+		if (browser && !PromotedHighlights) {
+			// Set up intersection observer for PromotedHighlights
+			const observer = new IntersectionObserver(
+				async ([entry]) => {
+					if (entry.isIntersecting && !PromotedHighlights) {
+						highlightsInView = true;
+						const module = await import('@repo/ui');
+						PromotedHighlights = module.PromotedHighlights;
+						observer.disconnect();
+					}
+				},
+				{ rootMargin: '100px' } // Start loading 100px before visible
+			);
+			
+			const trigger = document.querySelector('#highlights-trigger');
+			if (trigger) {
+				observer.observe(trigger);
+			}
+			
+			return () => observer.disconnect();
 		}
 	});
 
@@ -116,20 +138,46 @@
 		};
 	}
 
+	// Handle streamed data
+	let featuredProductsData = $state<any[]>([]);
+	let topSellersData = $state<any[]>([]);
+	let userFavoritesData = $state<Record<string, boolean>>({});
+	
+	// Resolve streamed promises
+	$effect(() => {
+		if (data.featuredProducts instanceof Promise) {
+			data.featuredProducts.then(products => featuredProductsData = products || []);
+		} else {
+			featuredProductsData = data.featuredProducts || [];
+		}
+		
+		if (data.topSellers instanceof Promise) {
+			data.topSellers.then(sellers => topSellersData = sellers || []);
+		} else {
+			topSellersData = data.topSellers || [];
+		}
+		
+		if (data.userFavorites instanceof Promise) {
+			data.userFavorites.then(favorites => userFavoritesData = favorites || {});
+		} else {
+			userFavoritesData = data.userFavorites || {};
+		}
+	});
+
 	// Transform promoted products for highlights
 	const promotedProducts = $derived<Product[]>(
-		(data.promotedProducts?.length ? data.promotedProducts : data.featuredProducts?.slice(0, 8) || [])
+		(data.promotedProducts?.length ? data.promotedProducts : featuredProductsData?.slice(0, 8) || [])
 			.map(transformProduct)
 	);
 
 	// Transform products to match Product interface
 	const products = $derived<Product[]>(
-		(data.featuredProducts || []).map(transformProduct)
+		(featuredProductsData || []).map(transformProduct)
 	);
 
 	// Transform sellers for display
 	const sellers = $derived<Seller[]>(
-		(data.topSellers || []).map(seller => ({
+		(topSellersData || []).map(seller => ({
 			id: seller.id,
 			name: seller.username || seller.full_name,
 			username: seller.username,
@@ -373,7 +421,7 @@
 	
 	/* Optimize category pills scrolling */
 	.category-nav-pill {
-		transition: all 0.2s ease;
+		transition: transform 0.15s ease, box-shadow 0.15s ease;
 	}
 </style>
 
@@ -410,7 +458,7 @@
 				<nav 
 					role="navigation"
 					aria-label="Browse categories"
-					class="flex items-center justify-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide"
+					class="flex items-center justify-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
 				>
 					<button 
 						onclick={() => navigateToAllSearch()}
@@ -419,7 +467,7 @@
 						aria-label="View all categories"
 						aria-busy={loadingCategory === 'all'}
 						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
-						class="category-nav-pill shrink-0 px-4 sm:px-5 py-2.5 bg-gradient-to-r from-gray-900 to-black text-white rounded-xl text-[13px] sm:text-sm font-medium hover:shadow-lg disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[80px] min-h-[44px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black relative"
+						class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-900 to-black text-white rounded-xl text-[12px] sm:text-sm font-medium md:hover:shadow-lg disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[64px] min-h-[36px] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black relative snap-start"
 					>
 						{#if loadingCategory === 'all'}
 							<LoadingSpinner size="sm" color="white" />
@@ -438,7 +486,7 @@
 							disabled={loadingCategory === category.slug}
 							aria-label="Browse Women category"
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-4 sm:px-5 py-2.5 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 rounded-xl text-[13px] sm:text-sm font-medium text-pink-900 hover:from-pink-100 hover:to-pink-200 hover:border-pink-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[80px] min-h-[44px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400 relative"
+							class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 rounded-xl text-[12px] sm:text-sm font-medium text-pink-900 hover:from-pink-100 hover:to-pink-200 hover:border-pink-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[64px] min-h-[36px] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400 relative snap-start"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
@@ -459,7 +507,7 @@
 							disabled={loadingCategory === category.slug}
 							aria-label="Browse Men category"
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-4 sm:px-5 py-2.5 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl text-[13px] sm:text-sm font-medium text-blue-900 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[80px] min-h-[44px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 relative"
+							class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl text-[12px] sm:text-sm font-medium text-blue-900 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[64px] min-h-[36px] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 relative snap-start"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
@@ -480,7 +528,7 @@
 							disabled={loadingCategory === category.slug}
 							aria-label="Browse Kids category"
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-4 sm:px-5 py-2.5 bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl text-[13px] sm:text-sm font-medium text-green-900 hover:from-green-100 hover:to-green-200 hover:border-green-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[80px] min-h-[44px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 relative"
+							class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl text-[12px] sm:text-sm font-medium text-green-900 hover:from-green-100 hover:to-green-200 hover:border-green-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[64px] min-h-[36px] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 relative snap-start"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
@@ -496,44 +544,46 @@
 		</div>
 
 		<!-- Lazy load PromotedHighlights with skeleton -->
-		{#if PromotedHighlights}
-			<svelte:component
-				this={PromotedHighlights}
-				promotedProducts={promotedProducts.map(product => ({
-					...product,
-					sizes: product.size ? [product.size] : ['S', 'M', 'L']
-				}))}
-				{sellers}
-				onSellerSelect={(seller) => selectedSeller = seller}
-				onSellerClick={handleSellerClick}
-				onProductClick={handleProductClick}
-				onProductBuy={handlePurchase}
-				onToggleFavorite={handleFavorite}
-				favoritesState={$favoritesStore}
-				{formatPrice}
-				translations={{
-					seller_premiumSeller: i18n.seller_premiumSeller(),
-					seller_premiumSellerDescription: i18n.seller_premiumSellerDescription(),
-					trending_promoted: i18n.trending_promoted(),
-					trending_featured: i18n.trending_featured(),
-					common_currency: i18n.common_currency(),
-					ui_scroll: i18n.ui_scroll(),
-					promoted_hotPicks: i18n.promoted_hotPicks(),
-					promoted_premiumSellers: i18n.promoted_premiumSellers()
-				}}
-			/>
-		{:else}
-			<!-- Loading skeleton for promoted highlights -->
-			<div class="w-full bg-white border-b border-gray-200">
-				<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-					<div class="flex gap-4 overflow-x-auto scrollbar-hide">
-						{#each Array(4) as _}
-							<div class="flex-shrink-0 w-64 bg-gray-100 rounded-lg h-40 animate-pulse"></div>
-						{/each}
+		<div id="highlights-trigger">
+			{#if PromotedHighlights}
+				<svelte:component
+					this={PromotedHighlights}
+					promotedProducts={promotedProducts.map(product => ({
+						...product,
+						sizes: product.size ? [product.size] : ['S', 'M', 'L']
+					}))}
+					{sellers}
+					onSellerSelect={(seller) => selectedSeller = seller}
+					onSellerClick={handleSellerClick}
+					onProductClick={handleProductClick}
+					onProductBuy={handlePurchase}
+					onToggleFavorite={handleFavorite}
+					favoritesState={$favoritesStore}
+					{formatPrice}
+					translations={{
+						seller_premiumSeller: i18n.seller_premiumSeller(),
+						seller_premiumSellerDescription: i18n.seller_premiumSellerDescription(),
+						trending_promoted: i18n.trending_promoted(),
+						trending_featured: i18n.trending_featured(),
+						common_currency: i18n.common_currency(),
+						ui_scroll: i18n.ui_scroll(),
+						promoted_hotPicks: i18n.promoted_hotPicks(),
+						promoted_premiumSellers: i18n.promoted_premiumSellers()
+					}}
+				/>
+			{:else if highlightsInView}
+				<!-- Loading skeleton for promoted highlights when in view -->
+				<div class="w-full bg-gradient-to-br from-gray-50/90 to-white/95 border-y border-gray-200/60">
+					<div class="px-4 sm:px-5 lg:px-6 py-3 sm:py-3.5">
+						<div class="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide">
+							{#each Array(4) as _}
+								<div class="flex-shrink-0 w-40 sm:w-44 bg-gray-100 rounded-lg h-48 sm:h-52 animate-pulse"></div>
+							{/each}
+						</div>
 					</div>
 				</div>
-			</div>
-		{/if}
+			{/if}
+		</div>
 
 		<!-- FeaturedProducts -->
 		{#if products.length > 0}

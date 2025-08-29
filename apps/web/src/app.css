@@ -238,7 +238,7 @@
     transition: all 0.2s ease;
     -webkit-tap-highlight-color: rgba(0,0,0,0.1);
   }
-
+  
   @media (min-width: 640px) {
     .category-nav-pill {
       max-width: 150px; /* Slightly wider on desktop */
