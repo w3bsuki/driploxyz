@@ -102,8 +102,9 @@ export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, 
 };
 
 export const actions: Actions = {
-  sendMessage: async ({ request, locals: { supabase }, parent }) => {
-    const { user } = await parent();
+  sendMessage: async ({ request, locals: { supabase, safeGetSession } }) => {
+    const { session } = await safeGetSession();
+    const user = session?.user;
     
     if (!user) {
       return fail(401, { error: 'Unauthorized' });
@@ -128,7 +129,7 @@ export const actions: Actions = {
       .insert({
         sender_id: user.id,
         receiver_id: receiverId,
-        message: message.trim(),
+        content: message.trim(),
         product_id: productId || null
       });
 

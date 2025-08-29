@@ -132,9 +132,6 @@
     // IMPORTANT: Force reactivity by creating a new Map
     conversations = new Map(convMap);
     conversationVersion++; // Increment version to force all derived values to recalculate
-    logDebug('🏗️ Conversations initialized:', convMap.size, 'version:', conversationVersion);
-    console.log('🗂️ Conversation keys:', Array.from(convMap.keys()));
-    console.log('🗂️ First conversation:', convMap.values().next().value);
     
     // Force scroll to bottom after state update
     setTimeout(() => scrollToBottom(), 100);
@@ -155,12 +152,9 @@
   }
   
   // Get selected conversation from URL
-  const selectedConversation = $derived(() => {
+  let selectedConversation = $derived(() => {
     const convParam = $page.url.searchParams.get('conversation');
-    const result = convParam || data.conversationParam || null;
-    console.log('🎯 Selected conversation computed:', result, 'from URL param:', convParam, 'from server:', data.conversationParam);
-    console.log('🗺️ Conversations has key?', result ? conversations.has(result) : 'no result');
-    return result;
+    return convParam || data.conversationParam || null;
   });
   
   // Filtered conversations based on active tab
@@ -190,13 +184,12 @@
   });
   
   // Selected conversation messages - force reactivity with version
-  const selectedMessages = $derived.by(() => {
-    const selected = selectedConversation();
+  let selectedMessages = $derived.by(() => {
+    const selected = selectedConversation;
     const version = conversationVersion; // Access version to create dependency
     if (selected && conversations.has(selected)) {
       const conv = conversations.get(selected);
       if (conv?.messages) {
-        logDebug('📬 Updating selected messages, version:', version, 'count:', conv.messages.length);
         return [...conv.messages].sort((a: any, b: any) => 
           new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
         );
@@ -226,12 +219,20 @@
     }
   }
   
-  // Real-time message handling - SIMPLE AND WORKING
+  // Real-time message handling - OPTIMIZED TO PREVENT LOOPS
   function handleMessagesChange(newMessages: any[]) {
     logDebug('📨 Real-time messages received:', newMessages.length);
     
-    // Just reinitialize conversations - don't update data.messages to avoid loops
-    initializeConversations(newMessages);
+    // Only reinitialize if we have new messages that aren't already in our state
+    const hasNewMessages = newMessages.some(msg => 
+      !Array.from(conversations.values()).some(conv => 
+        conv.messages.some((existingMsg: any) => existingMsg.id === msg.id)
+      )
+    );
+    
+    if (hasNewMessages) {
+      initializeConversations(newMessages);
+    }
   }
   
   function handleConnectionStatusChange(status: 'connected' | 'connecting' | 'disconnected') {
@@ -252,8 +253,6 @@
   }
   
   function handleConversationSelect(conversationId: string) {
-    console.log('🔍 Selecting conversation:', conversationId);
-    console.log('🗺️ Available conversations:', Array.from(conversations.keys()));
     goto(`/messages?conversation=${conversationId}`);
   }
   
@@ -343,10 +342,10 @@
       newConversations.set(convKey, updatedConv);
       conversations = newConversations;
       
-      logDebug('💬 Added optimistic message to conversation with', conv.messages.length, 'existing messages');
+      logDebug('💬 Added optimistic message to conversation');
     }
     
-    logDebug('📝 Optimistic message added:', optimisticMessage.id);
+    logDebug('📝 Optimistic message added');
     
     // Scroll to bottom
     requestAnimationFrame(() => scrollToBottom());
@@ -368,7 +367,7 @@
         throw error;
       }
 
-      logDebug('✅ Message sent successfully', insertedMessage);
+      logDebug('✅ Message sent successfully');
       
       // Mark optimistic message as sent, real-time will replace it
       const conv = conversations.get(convKey);

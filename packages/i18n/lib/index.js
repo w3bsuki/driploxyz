@@ -6,8 +6,8 @@ export const languageNames = {
     en: 'English',
     bg: 'Български'
 };
-// Compatibility functions for migration from Paraglide 1.x
-export { isLocale as isAvailableLanguageTag, getLocale as languageTag, getLocale, setLocale } from '../lib/paraglide/runtime.js';
+// Re-export and alias paraglide runtime functions
+export { getLocale, setLocale, isLocale, isLocale as isAvailableLanguageTag, getLocale as languageTag } from '../lib/paraglide/runtime.js';
 // Simple language detection (for later use)
 export function detectLanguage(acceptLanguage) {
     if (!acceptLanguage)
