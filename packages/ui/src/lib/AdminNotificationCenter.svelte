@@ -359,8 +359,10 @@ Shows payout requests, user activity, system alerts with webhook integration
 </div>
 
 <style>
+	@reference theme();
+
 	.admin-notification-center {
-		@apply space-y-6;
+		@apply flex flex-col gap-6;
 	}
 
 	.notification-header {
@@ -404,11 +406,11 @@ Shows payout requests, user activity, system alerts with webhook integration
 	}
 
 	.stats-grid {
-		@apply space-y-3;
+		@apply flex flex-col gap-3;
 	}
 
 	.stat-item {
-		@apply space-y-2;
+		@apply flex flex-col gap-2;
 	}
 
 	.stat-label {

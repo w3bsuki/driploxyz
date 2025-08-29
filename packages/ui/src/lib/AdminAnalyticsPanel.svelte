@@ -457,8 +457,10 @@ Shows revenue, user growth, transaction volumes across UK/BG markets
 </div>
 
 <style>
+	@reference theme();
+
 	.admin-analytics-panel {
-		@apply space-y-6;
+		@apply flex flex-col gap-6;
 	}
 
 	.analytics-header {
@@ -498,7 +500,7 @@ Shows revenue, user growth, transaction volumes across UK/BG markets
 	}
 
 	.platform-summary {
-		@apply bg-white rounded-lg border p-6 space-y-4;
+		@apply bg-white rounded-lg border p-6 flex flex-col gap-4;
 	}
 
 	.platform-summary h3 {
@@ -533,7 +535,7 @@ Shows revenue, user growth, transaction volumes across UK/BG markets
 	}
 
 	.country-metrics {
-		@apply bg-white rounded-lg border p-6 space-y-4;
+		@apply bg-white rounded-lg border p-6 flex flex-col gap-4;
 	}
 
 	.country-metrics h3 {
@@ -545,7 +547,7 @@ Shows revenue, user growth, transaction volumes across UK/BG markets
 	}
 
 	.country-card {
-		@apply border rounded-lg p-6 space-y-6;
+		@apply border rounded-lg p-6 flex flex-col gap-6;
 	}
 
 	.country-header {
@@ -569,11 +571,11 @@ Shows revenue, user growth, transaction volumes across UK/BG markets
 	}
 
 	.country-stats {
-		@apply space-y-4;
+		@apply flex flex-col gap-4;
 	}
 
 	.stat-section {
-		@apply space-y-3;
+		@apply flex flex-col gap-3;
 	}
 
 	.stat-section-title {
@@ -609,7 +611,7 @@ Shows revenue, user growth, transaction volumes across UK/BG markets
 	}
 
 	.country-comparison {
-		@apply bg-white rounded-lg border p-6 space-y-4;
+		@apply bg-white rounded-lg border p-6 flex flex-col gap-4;
 	}
 
 	.country-comparison h3 {
@@ -621,7 +623,7 @@ Shows revenue, user growth, transaction volumes across UK/BG markets
 	}
 
 	.comparison-card {
-		@apply border rounded-lg p-4 space-y-3;
+		@apply border rounded-lg p-4 flex flex-col gap-3;
 	}
 
 	.comparison-header {
@@ -633,7 +635,7 @@ Shows revenue, user growth, transaction volumes across UK/BG markets
 	}
 
 	.comparison-details {
-		@apply space-y-2;
+		@apply flex flex-col gap-2;
 	}
 
 	.comparison-item {

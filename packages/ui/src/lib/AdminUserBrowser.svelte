@@ -353,12 +353,14 @@ View users by country, search, filter, and manage accounts
 />
 
 <style>
+	@reference theme();
+	
 	.admin-user-browser {
-		@apply space-y-6;
+		@apply flex flex-col gap-6;
 	}
 
 	.search-section {
-		@apply bg-white rounded-lg border p-6 space-y-4;
+		@apply bg-white rounded-lg border p-6 flex flex-col gap-4;
 	}
 
 	.search-header {
@@ -370,7 +372,7 @@ View users by country, search, filter, and manage accounts
 	}
 
 	.search-controls {
-		@apply space-y-4;
+		@apply flex flex-col gap-4;
 	}
 
 	.search-input {
@@ -413,7 +415,7 @@ View users by country, search, filter, and manage accounts
 	.col-actions { @apply col-span-2; }
 
 	.user-info {
-		@apply space-y-1;
+		@apply flex flex-col gap-1;
 	}
 
 	.user-primary {
@@ -429,7 +431,7 @@ View users by country, search, filter, and manage accounts
 	}
 
 	.user-secondary {
-		@apply space-y-1;
+		@apply flex flex-col gap-1;
 	}
 
 	.full-name {
@@ -449,7 +451,7 @@ View users by country, search, filter, and manage accounts
 	}
 
 	.activity-info {
-		@apply space-y-1;
+		@apply flex flex-col gap-1;
 	}
 
 	.activity-item {
@@ -465,7 +467,7 @@ View users by country, search, filter, and manage accounts
 	}
 
 	.sales-info {
-		@apply space-y-2;
+		@apply flex flex-col gap-2;
 	}
 
 	.sales-stats {
@@ -489,7 +491,7 @@ View users by country, search, filter, and manage accounts
 	}
 
 	.balance-info {
-		@apply space-y-1;
+		@apply flex flex-col gap-1;
 	}
 
 	.balance-amount {

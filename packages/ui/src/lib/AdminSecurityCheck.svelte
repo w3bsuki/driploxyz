@@ -109,8 +109,12 @@ Requires additional verification for sensitive admin operations
 </Modal>
 
 <style>
-	.security-check > * + * {
-		margin-top: 1.5rem;
+	@reference theme();
+
+	.security-check {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
 	}
 
 	.warning-notice {
@@ -137,12 +141,16 @@ Requires additional verification for sensitive admin operations
 		color: oklch(0.28 0.12 0);
 	}
 
-	.verification-form > * + * {
-		margin-top: 1rem;
+	.verification-form {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
 	}
 
-	.form-group > * + * {
-		margin-top: 0.5rem;
+	.form-group {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
 	}
 
 	.form-group label {
@@ -170,8 +178,10 @@ Requires additional verification for sensitive admin operations
 		margin-bottom: 0.5rem;
 	}
 
-	.security-list > * + * {
-		margin-top: 0.25rem;
+	.security-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
 	}
 
 	.security-list li {

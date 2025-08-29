@@ -298,6 +298,8 @@ Complete admin panel with user management, payouts, analytics and notifications
 </div>
 
 <style>
+	@reference theme();
+
 	.admin-dashboard {
 		@apply min-h-screen bg-gray-50;
 	}
@@ -403,7 +405,7 @@ Complete admin panel with user management, payouts, analytics and notifications
 	}
 
 	.overview-content {
-		@apply space-y-8;
+		@apply flex flex-col gap-8;
 	}
 
 	.overview-header {

@@ -560,8 +560,10 @@ View, approve, reject, and manage seller payouts across countries
 {/if}
 
 <style>
+	@reference theme();
+	
 	.admin-payout-dashboard {
-		@apply space-y-6;
+		@apply flex flex-col gap-6;
 	}
 
 	.stats-grid {
@@ -589,7 +591,7 @@ View, approve, reject, and manage seller payouts across countries
 	}
 
 	.country-stats {
-		@apply bg-white rounded-lg border p-6 space-y-4;
+		@apply bg-white rounded-lg border p-6 flex flex-col gap-4;
 	}
 
 	.country-stats h3 {
@@ -601,7 +603,7 @@ View, approve, reject, and manage seller payouts across countries
 	}
 
 	.country-card {
-		@apply border rounded-lg p-4 space-y-3;
+		@apply border rounded-lg p-4 flex flex-col gap-3;
 	}
 
 	.country-header {
@@ -633,7 +635,7 @@ View, approve, reject, and manage seller payouts across countries
 	}
 
 	.controls-section {
-		@apply bg-white rounded-lg border p-6 space-y-4;
+		@apply bg-white rounded-lg border p-6 flex flex-col gap-4;
 	}
 
 	.controls-header {
