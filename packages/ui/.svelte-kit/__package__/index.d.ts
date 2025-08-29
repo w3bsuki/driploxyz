@@ -38,6 +38,7 @@ export { default as UserBadge } from './UserBadge.svelte';
 export { default as ConditionBadge } from './ConditionBadge.svelte';
 export { default as NewSellerBadge } from './NewSellerBadge.svelte';
 export { default as PremiumBadge } from './PremiumBadge.svelte';
+export { default as AdminBadge } from './AdminBadge.svelte';
 export { default as BrandPaymentModal } from './BrandPaymentModal.svelte';
 export { default as WelcomeTutorialFlow } from './WelcomeTutorialFlow.svelte';
 export { default as CountrySwitcher } from './CountrySwitcher.svelte';

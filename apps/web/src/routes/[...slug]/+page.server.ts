@@ -22,6 +22,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
   if (!slug || 
       slug.startsWith('api/') || 
       slug.startsWith('_app/') ||
+      slug.startsWith('profile/') ||
       slug.startsWith('favicon') ||
       slug.endsWith('.css') ||
       slug.endsWith('.js') ||
