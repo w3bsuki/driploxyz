@@ -62,10 +62,44 @@ export const actions: Actions = {
     
     console.log('[ONBOARDING COMPLETE] Starting completion for user:', user.email, { accountType, brandPaid });
     
-    // SERVER-SIDE VALIDATION: Absolutely no brand/premium without payment
-    if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
-      console.error('[ONBOARDING COMPLETE] Payment required but not completed:', { accountType, brandPaid });
-      return fail(403, { error: 'Payment is required for ' + accountType + ' accounts. Please complete payment before continuing.' });
+    // SERVER-SIDE VALIDATION: Verify payment for brand/premium accounts
+    if (accountType === 'brand' || accountType === 'premium') {
+      // First check the client flag
+      if (!brandPaid) {
+        console.error('[ONBOARDING COMPLETE] Payment required but not completed:', { accountType, brandPaid });
+        return fail(403, { error: 'Payment is required for ' + accountType + ' accounts. Please complete payment before continuing.' });
+      }
+      
+      // Verify payment in database (within last 30 minutes to allow for webhook processing)
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000).toISOString();
+      const { data: recentPayment, error: paymentError } = await supabase
+        .from('user_payments')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'completed')
+        .in('plan_type', ['brand', 'premium'])
+        .gte('created_at', thirtyMinutesAgo)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      
+      if (paymentError) {
+        console.error('[ONBOARDING COMPLETE] Error checking payment:', paymentError);
+        return fail(500, { error: 'Failed to verify payment. Please try again.' });
+      }
+      
+      if (!recentPayment) {
+        console.error('[ONBOARDING COMPLETE] No valid payment found for:', { accountType, userId: user.id });
+        return fail(403, { 
+          error: 'Payment verification failed. Please ensure your payment was processed successfully before continuing.' 
+        });
+      }
+      
+      console.log('[ONBOARDING COMPLETE] Payment verified:', { 
+        paymentId: recentPayment.id, 
+        planType: recentPayment.plan_type,
+        amount: recentPayment.amount 
+      });
     }
 
     if (!username || username.trim().length < 3) {

@@ -7,6 +7,7 @@ import { setupAuth } from './supabase-hooks.js';
 import { setupI18n, transformPageChunk } from './i18n.js';
 import { setupCountry } from './country.js';
 import { handleCountryRedirect } from './country-redirect.js';
+import { handleUnknownLocales } from './locale-redirect.js';
 import { setupAuthGuard } from './auth-guard.js';
 import { setupSentry, isSentryAvailable } from './sentry.js';
 import { createErrorHandler } from './error-handler.js';
@@ -47,6 +48,15 @@ const countryRedirectHandler: Handle = async ({ event, resolve }) => {
 };
 
 /**
+ * Unknown locale redirect handler
+ * Handles paths with unknown locale prefixes and redirects to default
+ */
+const localeRedirectHandler: Handle = async ({ event, resolve }) => {
+  await handleUnknownLocales(event);
+  return resolve(event);
+};
+
+/**
  * Authentication guard handler
  */
 const authGuardHandler: Handle = async ({ event, resolve }) => {
@@ -57,10 +67,11 @@ const authGuardHandler: Handle = async ({ event, resolve }) => {
 /**
  * Main handle sequence with optional Sentry integration
  * CRITICAL: supabaseHandler MUST run first to set up auth before other handlers
+ * localeRedirectHandler runs early to handle unknown locale prefixes
  */
 export const handle: Handle = isSentryAvailable() 
-  ? sequence(sentryHandle(), supabaseHandler, languageHandler, countryRedirectHandler, authGuardHandler)
-  : sequence(supabaseHandler, languageHandler, countryRedirectHandler, authGuardHandler);
+  ? sequence(sentryHandle(), localeRedirectHandler, supabaseHandler, languageHandler, countryRedirectHandler, authGuardHandler)
+  : sequence(localeRedirectHandler, supabaseHandler, languageHandler, countryRedirectHandler, authGuardHandler);
 
 /**
  * Error handler with optional Sentry integration

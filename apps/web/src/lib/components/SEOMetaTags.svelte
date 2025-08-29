@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Product, Profile } from '@repo/ui/types';
+	import * as i18n from '@repo/i18n';
 	
 	interface Props {
 		title: string;
@@ -27,8 +28,29 @@
 		canonical
 	}: Props = $props();
 	
-	// Generate full URL
-	const fullUrl = $derived(url ? `https://driplo.xyz${url}` : 'https://driplo.xyz');
+	// Get current locale
+	const currentLocale = i18n.getLocale();
+	
+	// Generate locale-aware URLs for hreflang
+	const getLocaleUrl = (locale: string, path: string = url) => {
+		// For Bulgarian (default), no prefix
+		if (locale === 'bg') {
+			return `https://driplo.xyz${path}`;
+		}
+		// For English, use /uk prefix
+		if (locale === 'en') {
+			return `https://driplo.xyz/uk${path}`;
+		}
+		return `https://driplo.xyz${path}`;
+	};
+	
+	// Generate full URL with locale prefix if needed
+	const fullUrl = $derived(() => {
+		if (url) {
+			return getLocaleUrl(currentLocale, url);
+		}
+		return getLocaleUrl(currentLocale, '');
+	});
 	const fullImageUrl = $derived(
 		image && typeof image === 'string' && image.startsWith('http') 
 			? image 
@@ -145,8 +167,13 @@
 	{#if canonical}
 		<link rel="canonical" href={canonical} />
 	{:else if url}
-		<link rel="canonical" href={fullUrl} />
+		<link rel="canonical" href={fullUrl()} />
 	{/if}
+	
+	<!-- Hreflang Links for SEO -->
+	<link rel="alternate" hreflang="bg-BG" href={getLocaleUrl('bg', url)} />
+	<link rel="alternate" hreflang="en-GB" href={getLocaleUrl('en', url)} />
+	<link rel="alternate" hreflang="x-default" href={getLocaleUrl('bg', url)} />
 	
 	<!-- Robots -->
 	{#if noindex}
@@ -157,12 +184,13 @@
 	
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content={type} />
-	<meta property="og:url" content={fullUrl} />
+	<meta property="og:url" content={fullUrl()} />
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
 	<meta property="og:image" content={fullImageUrl} />
 	<meta property="og:site_name" content="Driplo" />
-	<meta property="og:locale" content="en_US" />
+	<meta property="og:locale" content={currentLocale === 'bg' ? 'bg_BG' : 'en_GB'} />
+	<meta property="og:locale:alternate" content={currentLocale === 'bg' ? 'en_GB' : 'bg_BG'} />
 	
 	<!-- Product-specific Open Graph -->
 	{#if product}
@@ -180,7 +208,7 @@
 	
 	<!-- Twitter -->
 	<meta property="twitter:card" content="summary_large_image" />
-	<meta property="twitter:url" content={fullUrl} />
+	<meta property="twitter:url" content={fullUrl()} />
 	<meta property="twitter:title" content={title} />
 	<meta property="twitter:description" content={description} />
 	<meta property="twitter:image" content={fullImageUrl} />

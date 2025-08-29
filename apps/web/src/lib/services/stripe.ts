@@ -688,16 +688,27 @@ export class StripeService {
 	private async createOrderNotifications(order: Order, orderType: 'single' | 'bundle'): Promise<void> {
 		try {
 			const orderTypeText = orderType === 'bundle' ? 'bundle order' : 'order';
+			const itemsText = orderType === 'bundle' && order.items_count ? ` (${order.items_count} items)` : '';
 			
 			// Notification for buyer
 			await this.supabase
 				.from('notifications')
 				.insert({
 					user_id: order.buyer_id,
-					type: 'order_placed',
-					title: 'Order Confirmed',
-					message: `Your ${orderTypeText} has been confirmed! The seller will ship within 2-3 business days.`,
-					metadata: { order_id: order.id }
+					type: 'purchase',
+					title: 'Order Confirmed 🎉',
+					message: `Your ${orderTypeText}${itemsText} has been confirmed! The seller will ship within 3 days.`,
+					order_id: order.id,
+					category: 'purchases',
+					priority: 'high',
+					action_url: '/dashboard/order-management',
+					data: {
+						order_id: order.id,
+						total_amount: order.total_amount,
+						currency: order.currency || 'BGN',
+						is_bundle: orderType === 'bundle',
+						items_count: order.items_count || 1
+					}
 				});
 
 			// Notification for seller
@@ -705,13 +716,27 @@ export class StripeService {
 				.from('notifications')
 				.insert({
 					user_id: order.seller_id,
-					type: 'new_sale',
-					title: 'New Sale!',
-					message: `You have a new ${orderTypeText}! Please ship within 2-3 business days to maintain your seller rating.`,
-					metadata: { order_id: order.id }
+					type: 'sale',
+					title: 'New Sale! 💰',
+					message: `You have a new ${orderTypeText}${itemsText}! Ship within 3 days to maintain your rating.`,
+					order_id: order.id,
+					category: 'sales',
+					priority: 'urgent',
+					action_required: true,
+					action_url: '/dashboard/order-management',
+					data: {
+						order_id: order.id,
+						total_amount: order.total_amount,
+						seller_earnings: order.seller_net_amount || (order.total_amount * 0.9),
+						currency: order.currency || 'BGN',
+						is_bundle: orderType === 'bundle',
+						items_count: order.items_count || 1,
+						shipping_deadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+					}
 				});
 		} catch (error) {
 			console.error('Error creating order notifications:', error);
+			// Don't throw - notifications are not critical
 		}
 	}
 
