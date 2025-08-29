@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  '@inlang/paraglide-js-adapter-sveltekit>svelte': ^5.36.12
-
 importers:
 
   .:
