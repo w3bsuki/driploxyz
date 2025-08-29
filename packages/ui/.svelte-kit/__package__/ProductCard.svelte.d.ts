@@ -9,6 +9,9 @@ interface Props {
     priority?: boolean;
     index?: number;
     totalCount?: number;
+    favoritesState?: {
+        favoriteCounts: Record<string, number>;
+    };
     translations?: {
         size?: string;
         currency?: string;

@@ -21,27 +21,8 @@
     showOnMobile 
   }: Props = $props();
 
-  // Filter conversations based on active tab
-  const filteredConversations = $derived(() => {
-    switch (activeTab) {
-      case 'unread':
-        return conversations.filter(conv => conv.unread);
-      case 'buying':
-        return conversations.filter(conv => 
-          conv.messages.some(msg => msg.receiver_id === conv.userId) // We received messages
-        );
-      case 'selling':
-        return conversations.filter(conv => 
-          conv.messages.some(msg => msg.sender_id === conv.userId) && 
-          conv.isProductConversation
-        );
-      case 'offers':
-        return conversations.filter(conv => conv.isProductConversation);
-      case 'all':
-      default:
-        return conversations;
-    }
-  });
+  // Force show all conversations - bypass filtering entirely
+  let filteredConversations = $derived(conversations || []);
 
   const timeAgo = (dateStr: string) => {
     const date = new Date(dateStr);

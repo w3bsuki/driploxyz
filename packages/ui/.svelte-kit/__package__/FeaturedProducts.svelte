@@ -98,6 +98,7 @@
             onclick={() => onProductClick(product)}
             onFavorite={() => onFavorite(product.id)}
             favorited={favoritesState?.favorites[product.id] || false}
+            {favoritesState}
             priority={index < 6}
             {index}
             totalCount={products.length}

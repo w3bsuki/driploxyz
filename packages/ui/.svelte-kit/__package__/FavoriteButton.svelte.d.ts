@@ -6,6 +6,9 @@ interface Props {
     addToFavoritesText?: string;
     removeFromFavoritesText?: string;
     showCount?: boolean;
+    favoritesState?: {
+        favoriteCounts: Record<string, number>;
+    };
 }
 declare const FavoriteButton: import("svelte").Component<Props, {}, "">;
 type FavoriteButton = ReturnType<typeof FavoriteButton>;

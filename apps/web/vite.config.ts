@@ -32,12 +32,19 @@ export default defineConfig(
 			output: {
 				// Split i18n messages into separate chunks per language
 				manualChunks(id) {
-					// Split each language into its own chunk
-					if (id.includes('paraglide/messages/en.js')) return 'i18n-en';
-					if (id.includes('paraglide/messages/bg.js')) return 'i18n-bg';
+					// Split individual message files by language
+					if (id.includes('paraglide/messages/') && id.endsWith('/en.js')) return 'i18n-en';
+					if (id.includes('paraglide/messages/') && id.endsWith('/bg.js')) return 'i18n-bg';
 					
-					// Split the main messages file
+					// Split the core i18n runtime
+					if (id.includes('paraglide/runtime.js')) return 'i18n-runtime';
 					if (id.includes('paraglide/messages.js')) return 'i18n-core';
+					
+					// Split individual message modules
+					if (id.includes('paraglide/messages/') && id.endsWith('.js')) {
+						// This allows tree-shaking of individual message functions
+						return 'i18n-messages';
+					}
 				}
 			}
 		}
