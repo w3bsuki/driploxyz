@@ -1,0 +1,5 @@
+# Ignore admin app - not for production
+apps/admin
+
+# Also ignore any admin-specific files
+**/admin/**
