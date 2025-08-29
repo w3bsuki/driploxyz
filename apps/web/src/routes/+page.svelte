@@ -456,7 +456,7 @@
 						aria-label="View all categories"
 						aria-busy={loadingCategory === 'all'}
 						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
-						class="category-nav-pill shrink-0 px-4 sm:px-5 py-2 bg-gradient-to-r from-gray-900 to-black text-white rounded-xl text-xs sm:text-sm font-medium md:hover:shadow-lg disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center w-24 sm:w-28 h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black relative snap-start"
+						class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-gradient-to-r from-gray-900 to-black text-white rounded-xl text-xs sm:text-sm font-medium md:hover:shadow-lg disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black relative snap-start"
 					>
 						{#if loadingCategory === 'all'}
 							<LoadingSpinner size="sm" color="white" />
@@ -474,13 +474,13 @@
 							disabled={loadingCategory === category.slug}
 							aria-label="Browse Women category"
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-4 sm:px-5 py-2 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 rounded-xl text-xs sm:text-sm font-medium text-pink-900 hover:from-pink-100 hover:to-pink-200 hover:border-pink-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 w-24 sm:w-28 h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400 relative snap-start"
+							class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 rounded-xl text-xs sm:text-sm font-medium text-pink-900 hover:from-pink-100 hover:to-pink-200 hover:border-pink-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400 relative snap-start"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
 								<LoadingSpinner size="sm" color="pink" />
 							{:else}
-								<span class="text-base">👗</span>
+								<span class="text-sm sm:text-base">👗</span>
 								<span>{i18n.category_women()}</span>
 							{/if}
 						</button>
@@ -495,13 +495,13 @@
 							disabled={loadingCategory === category.slug}
 							aria-label="Browse Men category"
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-4 sm:px-5 py-2 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl text-xs sm:text-sm font-medium text-blue-900 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 w-24 sm:w-28 h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 relative snap-start"
+							class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl text-xs sm:text-sm font-medium text-blue-900 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 relative snap-start"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
 								<LoadingSpinner size="sm" color="blue" />
 							{:else}
-								<span class="text-base">👔</span>
+								<span class="text-sm sm:text-base">👔</span>
 								<span>{i18n.category_men()}</span>
 							{/if}
 						</button>
@@ -516,13 +516,13 @@
 							disabled={loadingCategory === category.slug}
 							aria-label="Browse Kids category"
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-4 sm:px-5 py-2 bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl text-xs sm:text-sm font-medium text-green-900 hover:from-green-100 hover:to-green-200 hover:border-green-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 w-24 sm:w-28 h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 relative snap-start"
+							class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl text-xs sm:text-sm font-medium text-green-900 hover:from-green-100 hover:to-green-200 hover:border-green-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 relative snap-start"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
 								<LoadingSpinner size="sm" color="green" />
 							{:else}
-								<span class="text-base">👶</span>
+								<span class="text-sm sm:text-base">👶</span>
 								<span>{i18n.category_kids()}</span>
 							{/if}
 						</button>
