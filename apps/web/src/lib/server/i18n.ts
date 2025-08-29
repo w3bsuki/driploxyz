@@ -24,40 +24,23 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
     event.cookies.delete(COOKIES.LOCALE, { path: '/' });
   }
   
-  // HIGHEST PRIORITY: Detect language from domain
-  const hostname = event.url.hostname;
-  let locale = 'en'; // Default to English instead of null
+  // HIGHEST PRIORITY: Detect language from URL path
+  const pathname = event.url.pathname;
+  let locale = 'en'; // Default to English
   
-  // Domain to language mapping
-  const domainLanguageMap: Record<string, string> = {
-    'bg.driplo.com': 'bg',
-    'bg.driplo.xyz': 'bg',
-    'uk.driplo.com': 'en',  // UK uses English
-    'uk.driplo.xyz': 'en',
-    // Disabled for V1 - uncomment when adding ru/ua support
-    // 'ru.driplo.com': 'ru',
-    // 'ru.driplo.xyz': 'ru',
-    // 'ua.driplo.com': 'ua',
-    // 'ua.driplo.xyz': 'ua',
-    'driplo.com': 'en',      // Main domain defaults to English
-    'driplo.xyz': 'en',
-    'localhost': 'en',       // Default to English on localhost
-  };
-  
-  // Check if hostname matches any domain mapping
-  for (const [domain, lang] of Object.entries(domainLanguageMap)) {
-    if (hostname.includes(domain) && lang) {
-      locale = lang;
-      if (isDebug) console.log(`🌍 Domain-based language detected: ${domain} → ${lang}`);
-      break;
+  // Check if path starts with a locale (e.g., /bg/, /en/)
+  const pathMatch = pathname.match(/^\/([a-z]{2})(\/|$)/);
+  if (pathMatch) {
+    const pathLocale = pathMatch[1];
+    if (i18n.isAvailableLanguageTag(pathLocale)) {
+      locale = pathLocale;
+      if (isDebug) console.log(`🌍 Path-based language detected: /${pathLocale}/`);
     }
   }
   
-  // If no domain match, check URL parameter (second priority)
-  if (locale === 'en') { // Only check URL param if we're on default
+  // SECOND PRIORITY: Check URL parameter
+  if (locale === 'en') {
     const urlLocale = event.url.searchParams.get('locale');
-    
-    // Validate URL locale parameter
     if (urlLocale && i18n.isAvailableLanguageTag(urlLocale)) {
       locale = urlLocale;
     }

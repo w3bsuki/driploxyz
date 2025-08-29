@@ -683,6 +683,39 @@ export class StripeService {
 	}
 
 	/**
+	 * Create notifications for order events
+	 */
+	private async createOrderNotifications(order: Order, orderType: 'single' | 'bundle'): Promise<void> {
+		try {
+			const orderTypeText = orderType === 'bundle' ? 'bundle order' : 'order';
+			
+			// Notification for buyer
+			await this.supabase
+				.from('notifications')
+				.insert({
+					user_id: order.buyer_id,
+					type: 'order_placed',
+					title: 'Order Confirmed',
+					message: `Your ${orderTypeText} has been confirmed! The seller will ship within 2-3 business days.`,
+					metadata: { order_id: order.id }
+				});
+
+			// Notification for seller
+			await this.supabase
+				.from('notifications')
+				.insert({
+					user_id: order.seller_id,
+					type: 'new_sale',
+					title: 'New Sale!',
+					message: `You have a new ${orderTypeText}! Please ship within 2-3 business days to maintain your seller rating.`,
+					metadata: { order_id: order.id }
+				});
+		} catch (error) {
+			console.error('Error creating order notifications:', error);
+		}
+	}
+
+	/**
 	 * Confirm payment intent and process order
 	 */
 	async confirmPaymentIntent(params: {
@@ -795,6 +828,9 @@ export class StripeService {
 					.select()
 					.single();
 
+				// Create notifications for both buyer and seller
+				await this.createOrderNotifications(order, 'bundle');
+
 				return {
 					success: true,
 					order,
@@ -856,6 +892,9 @@ export class StripeService {
 						sold_at: new Date().toISOString()
 					})
 					.eq('id', metadata.product_id as string);
+
+				// Create notifications for both buyer and seller
+				await this.createOrderNotifications(order, 'single');
 
 				return {
 					success: true,

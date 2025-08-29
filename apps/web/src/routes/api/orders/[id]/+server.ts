@@ -74,7 +74,11 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
   const validTransitions: Record<string, { roles: ('seller' | 'buyer')[], nextStatuses: string[] }> = {
     'pending': {
       roles: ['seller'],
-      nextStatuses: ['processing', 'cancelled']
+      nextStatuses: ['paid', 'processing', 'cancelled']
+    },
+    'paid': {
+      roles: ['seller'],
+      nextStatuses: ['processing', 'shipped', 'cancelled']
     },
     'processing': {
       roles: ['seller'],

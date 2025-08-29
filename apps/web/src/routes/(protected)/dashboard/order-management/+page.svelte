@@ -32,7 +32,7 @@
         // Items seller needs to ship
         return data.orders?.filter(o => 
           o.seller_id === userId && 
-          ['pending_shipment', 'processing'].includes(o.status)
+          ['paid', 'processing', 'pending_shipment'].includes(o.status)
         ) || [];
         
       case 'shipped':
@@ -46,7 +46,7 @@
         // Orders buyer is waiting for
         return data.orders?.filter(o => 
           o.buyer_id === userId && 
-          ['pending_shipment', 'processing', 'shipped', 'in_transit'].includes(o.status)
+          ['paid', 'processing', 'pending_shipment', 'shipped', 'in_transit'].includes(o.status)
         ) || [];
         
       case 'completed':
@@ -69,11 +69,11 @@
     return {
       toShip: orders.filter(o => 
         o.seller_id === userId && 
-        ['pending_shipment', 'processing'].includes(o.status)
+        ['paid', 'processing', 'pending_shipment'].includes(o.status)
       ).length,
       incoming: orders.filter(o => 
         o.buyer_id === userId && 
-        ['pending_shipment', 'processing', 'shipped', 'in_transit'].includes(o.status)
+        ['paid', 'processing', 'pending_shipment', 'shipped', 'in_transit'].includes(o.status)
       ).length
     };
   });

@@ -90,24 +90,29 @@
 	}
 
 	async function handlePaymentSuccess(paymentIntent: PaymentIntent) {
-		// Confirm payment on server using our new API
-		const response = await fetch('/api/checkout/confirm', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({
-				paymentIntentId: paymentIntent.id
-			})
-		});
+		try {
+			// Confirm payment on server using our new API
+			const response = await fetch('/api/checkout/confirm', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					paymentIntentId: paymentIntent.id
+				})
+			});
 
-		const result = await response.json();
-		
-		if (result.success && result.order) {
-			// Redirect to success page with order ID
-			await goto(`/payment/success?orderId=${result.order.id}`);
-		} else {
-			error = result.message || i18n.checkout_paymentFailed();
+			const result = await response.json();
+			
+			if (result.success && result.order) {
+				// Redirect to success page with order ID and payment intent
+				await goto(`/payment/success?orderId=${result.order.id}&payment_intent=${paymentIntent.id}`);
+			} else {
+				error = result.message || i18n.checkout_paymentFailed();
+			}
+		} catch (err) {
+			console.error('Error confirming payment:', err);
+			error = i18n.checkout_paymentFailed();
 		}
 	}
 

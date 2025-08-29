@@ -15,3 +15,6 @@
 
 // Export the modular handles and error handler
 export { handle, handleError } from '$lib/server/hooks';
+
+// Export the reroute hook for path-based i18n
+export { reroute } from './hooks.reroute';

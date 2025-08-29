@@ -23,7 +23,7 @@
 	});
 
 	function goToOrders() {
-		goto('/orders');
+		goto('/dashboard/order-management');
 	}
 
 	function continueShopping() {
@@ -67,6 +67,51 @@
 					</p>
 				</div>
 			{/if}
+
+			{#if orderDetails && !loading}
+				<div class="bg-white border border-gray-200 rounded-lg p-4 mb-6">
+					<div class="flex items-center gap-4">
+						{#if orderDetails.is_bundle}
+							<div class="relative w-16 h-16">
+								<div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-blue-100 rounded-lg flex items-center justify-center">
+									<span class="text-2xl">📦</span>
+								</div>
+								<span class="absolute -top-2 -right-2 bg-primary-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+									{orderDetails.items_count || 1}
+								</span>
+							</div>
+						{:else if orderDetails.product?.images?.[0]}
+							<img
+								src={orderDetails.product.images[0]}
+								alt={orderDetails.product?.title}
+								class="w-16 h-16 object-cover rounded-lg"
+							/>
+						{:else}
+							<div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+								<svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+								</svg>
+							</div>
+						{/if}
+						
+						<div class="flex-1">
+							<h3 class="font-semibold text-gray-900">
+								{#if orderDetails.is_bundle}
+									Bundle Order ({orderDetails.items_count} items)
+								{:else}
+									{orderDetails.product?.title || 'Order'}
+								{/if}
+							</h3>
+							<p class="text-sm text-gray-600">
+								From: <span class="font-medium">@{orderDetails.seller?.username}</span>
+							</p>
+							<p class="text-lg font-bold text-green-600 mt-1">
+								€{orderDetails.total_amount?.toFixed(2)}
+							</p>
+						</div>
+					</div>
+				</div>
+			{/if}
 			
 			<!-- What happens next section -->
 			<div class="bg-blue-50 rounded-lg p-4 mb-6 text-left">
@@ -93,7 +138,7 @@
 					variant="primary"
 					class="w-full"
 				>
-					VIEW ORDER
+					TRACK YOUR ORDER
 				</Button>
 				
 				<Button
