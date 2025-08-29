@@ -55,7 +55,8 @@
       "Bash(pnpm --filter @repo/ui run check)",
       "Bash(pnpm install:*)",
       "Bash(pnpm run:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "mcp__supabase__list_migrations"
     ]
   },
   "enableAllProjectMcpServers": true,

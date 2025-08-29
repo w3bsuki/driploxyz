@@ -196,7 +196,18 @@
                       {/if}
                       <div class="flex-1">
                         <h4 class="font-medium text-gray-900">{order.product?.title || 'Unknown Product'}</h4>
-                        <p class="text-sm text-gray-500">{formatDate(order.created_at)}</p>
+                        <p class="text-sm text-gray-500">
+                          {formatDate(order.created_at)}
+                          {#if order.buyer_id}
+                            <span class="mx-1">•</span>
+                            <a 
+                              href="/messages?conversation={order.buyer_id}__{order.product_id}"
+                              class="text-blue-600 hover:text-blue-700"
+                            >
+                              {i18n.orders_messageBuyer()}
+                            </a>
+                          {/if}
+                        </p>
                       </div>
                       <div class="text-right">
                         <p class="font-medium text-gray-900">{formatPrice(order.seller_earnings || 0)}</p>

@@ -99,50 +99,58 @@ export const orderNotificationActions = {
   },
 
   // Initialize real-time subscription
-  subscribeToNotifications: async (supabase: SupabaseClient, userId: string) => {
-    if (!browser || !userId) return;
+  subscribeToNotifications: (supabase: SupabaseClient, userId: string) => {
+    if (!browser || !userId) return () => {};
 
-    // Clean up existing subscription
-    if (realtimeChannel) {
-      await supabase.removeChannel(realtimeChannel);
-    }
+    // Setup subscription asynchronously
+    (async () => {
+      // Clean up existing subscription
+      if (realtimeChannel) {
+        await supabase.removeChannel(realtimeChannel);
+      }
 
-    // Load initial notifications
-    const { data: notifications } = await supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .in('type', ['sale', 'purchase'])
-      .order('created_at', { ascending: false })
-      .limit(20);
+      // Load initial notifications
+      const { data: notifications } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', userId)
+        .in('type', ['sale', 'purchase'])
+        .order('created_at', { ascending: false })
+        .limit(20);
 
-    if (notifications) {
-      const unreadCount = notifications.filter(n => !n.read).length;
-      orderNotifications.set({
-        notifications,
-        unreadCount
-      });
-    }
+      if (notifications) {
+        const unreadCount = notifications.filter(n => !n.read).length;
+        orderNotifications.set({
+          notifications,
+          unreadCount
+        });
+      }
 
-    // Subscribe to new notifications
-    realtimeChannel = supabase
-      .channel(`notifications:${userId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${userId}`
-        },
-        (payload) => {
-          const notification = payload.new as OrderNotification;
-          if (notification.type === 'sale' || notification.type === 'purchase') {
-            orderNotificationActions.addNotification(notification);
+      // Subscribe to new notifications
+      realtimeChannel = supabase
+        .channel(`notifications:${userId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${userId}`
+          },
+          (payload) => {
+            const notification = payload.new as OrderNotification;
+            if (notification.type === 'sale' || notification.type === 'purchase') {
+              orderNotificationActions.addNotification(notification);
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
+    })();
+    
+    // Return cleanup function
+    return () => {
+      orderNotificationActions.unsubscribe(supabase);
+    };
   },
 
   unsubscribe: async (supabase: SupabaseClient) => {

@@ -1,5 +1,5 @@
-import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import { redirect, fail } from '@sveltejs/kit';
+import type { PageServerLoad, Actions } from './$types';
 
 export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, depends }) => {
   depends('messages:all');
@@ -99,4 +99,44 @@ export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, 
     conversationParam,
     unreadCount: unreadCount || 0
   };
+};
+
+export const actions: Actions = {
+  sendMessage: async ({ request, locals: { supabase }, parent }) => {
+    const { user } = await parent();
+    
+    if (!user) {
+      return fail(401, { error: 'Unauthorized' });
+    }
+
+    const formData = await request.formData();
+    const message = formData.get('message') as string;
+    const receiverId = formData.get('receiverId') as string;
+    const productId = formData.get('productId') as string;
+
+    if (!message?.trim()) {
+      return fail(400, { error: 'Message cannot be empty' });
+    }
+
+    if (!receiverId) {
+      return fail(400, { error: 'Receiver ID is required' });
+    }
+
+    // Insert the message
+    const { error } = await supabase
+      .from('messages')
+      .insert({
+        sender_id: user.id,
+        receiver_id: receiverId,
+        message: message.trim(),
+        product_id: productId || null
+      });
+
+    if (error) {
+      console.error('Error sending message:', error);
+      return fail(500, { error: 'Failed to send message' });
+    }
+
+    return { success: true };
+  }
 };

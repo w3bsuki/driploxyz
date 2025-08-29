@@ -81,13 +81,14 @@
   {/if}
   
   {#each conversations as conv}
-    <div
+    <button
+      type="button"
       class="w-full px-4 py-4 hover:bg-gray-50 border-b border-gray-200 transition-colors text-left min-h-[68px] cursor-pointer
         {selectedConversationId === conv.id ? 'bg-gray-50' : ''}"
-      onclick={() => onConversationSelect(conv.id)}
-      role="button"
-      tabindex="0"
-      onkeydown={(e) => e.key === 'Enter' && onConversationSelect(conv.id)}
+      onclick={() => {
+        console.log('🖱️ Conversation clicked:', conv.id, conv.userName);
+        onConversationSelect(conv.id);
+      }}
     >
       <div class="flex items-start space-x-3">
         <div class="relative shrink-0">
@@ -129,6 +130,6 @@
           </p>
         </div>
       </div>
-    </div>
+    </button>
   {/each}
 </div>

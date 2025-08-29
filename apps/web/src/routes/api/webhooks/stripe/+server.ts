@@ -121,19 +121,54 @@ async function handlePaymentSuccess(paymentIntent: any) {
 				.eq('id', orderId);
 
 			// Mark product as sold
-			await supabase
+			const { data: product } = await supabase
 				.from('products')
 				.update({ 
 					is_sold: true, 
 					sold_at: new Date().toISOString(),
 					status: 'sold'
 				})
-				.eq('id', productId);
+				.eq('id', productId)
+				.select('title')
+				.single();
+
+			// Insert sale notification for seller
+			await supabase
+				.from('notifications')
+				.insert({
+					user_id: sellerId,
+					type: 'sale',
+					title: 'New sale! 🎉',
+					message: `Your listing "${product?.title || 'Item'}" was purchased`,
+					order_id: orderId,
+					metadata: {
+						product_id: productId,
+						buyer_id: buyerId,
+						amount: transaction?.seller_earnings
+					}
+				});
+
+			// Insert purchase confirmation for buyer
+			await supabase
+				.from('notifications')
+				.insert({
+					user_id: buyerId,
+					type: 'purchase',
+					title: 'Purchase confirmed ✅',
+					message: `You bought "${product?.title || 'Item'}"`,
+					order_id: orderId,
+					metadata: {
+						product_id: productId,
+						seller_id: sellerId,
+						amount: order.total_amount
+					}
+				});
 
 			console.log(`✅ Transaction created successfully: ${transaction?.id}`);
 			console.log(`💰 Commission: ${transaction?.commission_amount} BGN, Seller gets: ${transaction?.seller_earnings} BGN`);
 			console.log(`📋 Order ${orderId} updated to 'paid' status`);
 			console.log(`🏷️ Product ${productId} marked as sold`);
+			console.log(`📬 Sale and purchase notifications sent`);
 			
 		} catch (error) {
 			console.error('Error processing payment success:', error);

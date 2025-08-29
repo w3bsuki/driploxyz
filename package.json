@@ -26,10 +26,5 @@
   },
   "dependencies": {
     "@stripe/stripe-js": "^7.8.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "@inlang/paraglide-js-adapter-sveltekit>svelte": "^5.36.12"
-    }
   }
 }

@@ -507,11 +507,11 @@
                           {i18n.orders_markAsShipped()}
                         </Button>
                         <Button
-                          href="/messages/{order.buyer?.username}"
+                          href="/messages?conversation={order.buyer_id}__{order.product_id}"
                           size="sm"
                           variant="outline"
                         >
-                          Message Buyer
+                          {i18n.orders_messageBuyer()}
                         </Button>
                       {:else if activeTab === 'incoming' && !isSeller && order.status === 'shipped'}
                         <Button
@@ -522,11 +522,11 @@
                           Confirm Receipt
                         </Button>
                         <Button
-                          href="/messages/{order.seller?.username}"
+                          href="/messages?conversation={order.seller_id}__{order.product_id}"
                           size="sm"
                           variant="outline"
                         >
-                          Message Seller
+                          {i18n.orders_messageSeller()}
                         </Button>
                       {:else if activeTab === 'completed' && !isSeller && order.status === 'delivered' && !order.buyer_rated}
                         <Button

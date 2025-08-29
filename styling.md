@@ -997,6 +997,117 @@ pnpm run style:size      # Verify bundle size
 
 ## 📚 Developer Guidelines
 
+---
+
+## Tailwind v4 UI/UX Audit (Addendum)
+
+Summary: Tailwind v4 is configured correctly via `@tailwindcss/vite`, `@theme`, `@plugin`, and `@source`. The design-token foundation is strong. The remaining inconsistencies are mostly usage-level: color tokens vs raw colors, text sizes, spacing, radii, and shadows. Below are concrete findings and fixes.
+
+What’s Good
+- Tokens: `packages/ui/src/styles/tokens.css` and `apps/web/src/app.css` expose a full OKLCH palette, spacing, typography, effects.
+- v4 Setup: Using `@import 'tailwindcss'`, `@plugin '@tailwindcss/forms'`, `@plugin '@tailwindcss/typography'`, and `@theme` maps.
+- Accessibility: Base font-size 16px; focus rings; reduced motion.
+- Components: Consistent patterns in many places (e.g., `rounded-lg`, `shadow-xs`, `bg-white`).
+
+Inconsistencies Observed
+- Colors
+  - Mixed usage of token-based colors and raw utility colors: `text-black`, `text-gray-900`, `text-gray-600`, `bg-white`, `border-gray-200` appear alongside semantic intentions like “surface”, “text-primary”.
+  - Recommendation: Prefer semantic utility aliases bound to tokens, not raw values.
+
+- Typography
+  - Variance between `text-sm`, `text-xs`, and occasional bespoke sizes. Some secondary text uses `text-gray-500` (borderline contrast on white).
+  - Recommendation: Standardize text roles: title, body, meta; use `text-base` for default body; reserve `text-xs` for metadata. Ensure contrast ≥ AA.
+
+- Spacing
+  - Mixed `px-3` vs `px-4`, `py-2` vs `py-3` across similar components (lists, cards, pills).
+  - Recommendation: Adopt a canonical spacing set per component type (e.g., cards: `p-4`, list rows: `px-4 py-3`, pills: `px-3 py-2`).
+
+- Radius
+  - `rounded`, `rounded-lg`, `rounded-xl` used interchangeably for similar surfaces.
+  - Recommendation: Define a surface radius scale: cards/dialogs `rounded-lg`, input/buttons `rounded-md`, chips `rounded-full`.
+
+- Shadows
+  - Both `shadow-xs` and heavier shadows used on mobile and dense lists.
+  - Recommendation: Mobile default `shadow-xs` or none; escalate to `md:shadow-lg` on larger screens.
+
+Standardization Additions
+- Add semantic alias utilities in `apps/web/src/app.css` (keeps Tailwind DX while enforcing tokens):
+
+```css
+@layer utilities {
+  /* Text */
+  .text-primary { color: var(--text-primary); }
+  .text-secondary { color: var(--text-secondary); }
+  .text-tertiary { color: var(--text-tertiary); }
+  .text-muted { color: var(--text-muted); }
+
+  /* Surfaces */
+  .bg-surface { background-color: var(--surface-base); }
+  .bg-surface-subtle { background-color: var(--surface-subtle); }
+  .bg-surface-muted { background-color: var(--surface-muted); }
+  .border-subtle { border-color: var(--border-subtle); }
+  .border-default { border-color: var(--border-default); }
+
+  /* Brand */
+  .text-brand { color: var(--brand-primary); }
+  .bg-brand { background-color: var(--brand-primary); }
+}
+```
+
+Typography Roles
+- Title: `text-lg font-semibold text-primary`
+- Body: `text-base text-primary leading-relaxed`
+- Meta: `text-xs text-secondary`
+- Links: `text-brand hover:underline`
+
+Component Defaults
+- Card: `bg-surface rounded-lg border border-subtle shadow-xs p-4`
+- Row: `bg-white border-b border-default px-4 py-3`
+- Input: `h-9 rounded-md border-default focus:ring-2`
+- Button primary: `min-h-11 rounded-md bg-brand text-white hover:opacity-90`
+
+Tailwind v4 Usage Tips
+- Prefer tokens via semantic utilities; avoid arbitrary values (`text-[13px]`, `min-h-[37px]`).
+- Keep transitions specific (`transition-colors`, `transition-transform`), avoid `transition-all`.
+- Use `@source` to include only necessary files for scanning; keep it in sync with paths in monorepo.
+- Dark mode: add a `.dark` variant or media query mapping tokens (e.g., override surface/text variables).
+
+Quick Fix Checklist
+- Replace raw color utilities with semantic aliases in new code.
+- Normalize paddings:
+  - Cards: `p-4`
+  - Rows: `px-4 py-3`
+  - Pills: `px-3 py-2`
+- Normalize radii:
+  - Cards/Dialogs: `rounded-lg`
+  - Inputs/Buttons: `rounded-md`
+  - Chips: `rounded-full`
+- Normalize typography roles per above.
+
+Repo-wide Audits (scripts)
+```bash
+# Arbitrary values to eliminate
+rg -n "\[.*px\]" --glob '!node_modules'
+
+# transition-all occurrences
+rg -n "transition-all" --glob '!node_modules'
+
+# Raw color shortcuts to review
+rg -n "\b(text|bg|border)-(black|white|gray-[0-9]{2,3})\b" --glob '!node_modules'
+
+# Inconsistent paddings for rows/cards
+rg -n "(px-3|px-4).*py-(2|3)" --glob '!node_modules'
+```
+
+Adoption Plan
+- Phase A (1–2 hrs): Add semantic utilities in `app.css`, run the audits above, and fix low-hanging inconsistencies in messages, product, and profile pages.
+- Phase B (2–3 hrs): Align shared components in `packages/ui` to semantic utilities, update docs/examples.
+- Phase C (ongoing): Enforce via PR checklist (no arbitrary values, use roles, use semantic utilities).
+
+Result
+- Consistent text, color, spacing, radii, and shadows across the app, with Tailwind v4 ergonomics intact and design tokens as the source of truth.
+
+
 ### When to Use What
 - **Tokens**: Always for colors, spacing, typography
 - **Utilities**: For single-purpose modifications

@@ -108,6 +108,18 @@
 
     return () => authListener.subscription.unsubscribe();
   });
+
+  // Initialize order notifications subscription for logged-in users
+  $effect(() => {
+    if (!browser || !supabase || !data?.user?.id) return;
+    
+    // Subscribe to order notifications (sales, purchases, status updates)
+    const unsubscribe = orderNotificationActions.subscribeToNotifications(supabase, data.user.id);
+    
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  });
 </script>
 
 {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}

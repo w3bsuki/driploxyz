@@ -133,6 +133,8 @@
     conversations = new Map(convMap);
     conversationVersion++; // Increment version to force all derived values to recalculate
     logDebug('🏗️ Conversations initialized:', convMap.size, 'version:', conversationVersion);
+    console.log('🗂️ Conversation keys:', Array.from(convMap.keys()));
+    console.log('🗂️ First conversation:', convMap.values().next().value);
     
     // Force scroll to bottom after state update
     setTimeout(() => scrollToBottom(), 100);
@@ -155,7 +157,10 @@
   // Get selected conversation from URL
   const selectedConversation = $derived(() => {
     const convParam = $page.url.searchParams.get('conversation');
-    return convParam || data.conversationParam || null;
+    const result = convParam || data.conversationParam || null;
+    console.log('🎯 Selected conversation computed:', result, 'from URL param:', convParam, 'from server:', data.conversationParam);
+    console.log('🗺️ Conversations has key?', result ? conversations.has(result) : 'no result');
+    return result;
   });
   
   // Filtered conversations based on active tab
@@ -247,6 +252,8 @@
   }
   
   function handleConversationSelect(conversationId: string) {
+    console.log('🔍 Selecting conversation:', conversationId);
+    console.log('🗺️ Available conversations:', Array.from(conversations.keys()));
     goto(`/messages?conversation=${conversationId}`);
   }
   
@@ -344,35 +351,37 @@
     // Scroll to bottom
     requestAnimationFrame(() => scrollToBottom());
     
-    const formData = new FormData();
-    formData.append('content', text);
-    formData.append('receiver_id', recipientId);
-    formData.append('product_id', productId || 'general');
-    
     try {
-      const response = await fetch('/messages?/sendMessage', {
-        method: 'POST',
-        body: formData
-      });
-      
-      if (response.ok) {
-        logDebug('✅ Message sent successfully');
-        
-        // Mark optimistic message as sent, real-time will replace it
-        const conv = conversations.get(convKey);
-        if (conv) {
-          conv.messages = conv.messages.map((msg: any) => 
-            msg.id === optimisticMessage.id ? { ...msg, status: 'sent' } : msg
-          );
-          conversations.set(convKey, { ...conv });
-          conversations = new Map(conversations);
-        }
-        
-        // The real message will come through real-time subscription
-        // and replace this optimistic message
-      } else {
-        throw new Error('Failed to send message');
+      // Direct Supabase insert - no server action needed
+      const { data: insertedMessage, error } = await supabase
+        .from('messages')
+        .insert({
+          sender_id: data.user?.id,
+          receiver_id: recipientId,
+          product_id: productId === 'general' ? null : productId,
+          content: text
+        })
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
       }
+
+      logDebug('✅ Message sent successfully', insertedMessage);
+      
+      // Mark optimistic message as sent, real-time will replace it
+      const conv = conversations.get(convKey);
+      if (conv) {
+        conv.messages = conv.messages.map((msg: any) => 
+          msg.id === optimisticMessage.id ? { ...msg, status: 'sent' } : msg
+        );
+        conversations.set(convKey, { ...conv });
+        conversations = new Map(conversations);
+      }
+      
+      // The real message will come through real-time subscription
+      // and replace this optimistic message
     } catch (error) {
       logDebug('❌ Error sending message:', error);
       

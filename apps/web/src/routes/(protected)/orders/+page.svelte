@@ -212,7 +212,7 @@
               {/if}
 
               <!-- Order Actions -->
-              <div class="flex gap-2">
+              <div class="flex gap-2 flex-wrap">
                 {#if isPurchase}
                   {#if order.status === 'delivered'}
                     <Button onclick={() => openReviewModal(order)} variant="secondary">
@@ -224,11 +224,25 @@
                       {i18n.orders_cancelOrder()}
                     </Button>
                   {/if}
+                  <!-- Message Seller button for buyers -->
+                  <Button 
+                    href={`/messages?conversation=${order.seller_id}__${order.product_id}`} 
+                    variant="secondary"
+                  >
+                    {i18n.orders_messageSeller()}
+                  </Button>
                 {:else}
                   <OrderActions
                     order={order}
                     onStatusChange={handleOrderStatusChange}
                   />
+                  <!-- Message Buyer button for sellers -->
+                  <Button 
+                    href={`/messages?conversation=${order.buyer_id}__${order.product_id}`}
+                    variant="secondary"
+                  >
+                    {i18n.orders_messageBuyer()}
+                  </Button>
                 {/if}
                 
                 <Button href={`/product/${order.product?.id}`} variant="secondary">

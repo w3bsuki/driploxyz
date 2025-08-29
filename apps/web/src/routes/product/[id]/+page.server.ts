@@ -5,6 +5,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
   const { session } = await safeGetSession();
 
   // Get main product with optimized query including full seller info
+  // IMPORTANT: Filter by country_code to ensure region-specific viewing
   const { data: product, error: productError } = await supabase
     .from('products')
     .select(`
@@ -24,6 +25,8 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
       view_count,
       seller_id,
       category_id,
+      country_code,
+      region,
       product_images (
         id,
         image_url,

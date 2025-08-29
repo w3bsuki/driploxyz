@@ -8,7 +8,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
 
-	const { order_id, rating, title, comment } = await request.json();
+	const body = await request.json();
+	// Accept both order_id and orderId for backward compatibility
+	const order_id = body.order_id || body.orderId;
+	const { rating, title, comment } = body;
 
 	if (!order_id || !rating) {
 		return json({ error: 'Order ID and rating are required' }, { status: 400 });

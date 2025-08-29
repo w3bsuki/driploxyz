@@ -26,6 +26,7 @@
   let showFilterDropdown = $state(false);
   let showCategoryDropdown = $state(false);
   let isSearching = $state(false);
+  let isFilterLoading = $state(false);
   let searchInput = $state('');
   let categoryLevel = $state(1); // 1=gender, 2=type, 3=specific
   
@@ -218,6 +219,7 @@
   }
   
   function handleCategorySelect(category: string | null) {
+    isFilterLoading = true;
     if (filters.level1 === category) {
       // Deselect if same
       filterStore.updateMultipleFilters({
@@ -233,9 +235,12 @@
         level3: null
       });
     }
+    // Reset loading state after a brief delay
+    setTimeout(() => { isFilterLoading = false; }, 300);
   }
   
   function handleQuickPrice(min: string, max: string) {
+    isFilterLoading = true;
     // Toggle off if already selected
     if (filters.minPrice === min && filters.maxPrice === max) {
       filterStore.updateMultipleFilters({
@@ -248,6 +253,8 @@
         maxPrice: max
       });
     }
+    // Reset loading state after a brief delay
+    setTimeout(() => { isFilterLoading = false; }, 300);
   }
   
   function clearAllFilters() {

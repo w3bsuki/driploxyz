@@ -1034,6 +1034,8 @@
   "orders_leaveReview": "Leave Review",
   "orders_cancelOrder": "Cancel Order",
   "orders_viewProduct": "View Product",
+  "orders_messageBuyer": "Message Buyer",
+  "orders_messageSeller": "Message Seller",
   "orders_noImage": "No image",
   "orders_unknownProduct": "Unknown Product",
   "sales_overview": "Sales Overview",
