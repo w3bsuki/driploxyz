@@ -1,15 +1,17 @@
+
 /* eslint-disable */
 /** 
- * This file contains language specific message functions for tree-shaking. 
- * 
- *! WARNING: Only import messages from this file if you want to manually
- *! optimize your bundle. Else, import from the `messages.js` file. 
- * 
- * Your bundler will (in the future) automatically replace the index function 
- * with a language specific message function in the build step. 
- */
+* This file contains language specific message functions for tree-shaking. 
+* 
+*! WARNING: Only import messages from this file if you want to manually
+*! optimize your bundle. Else, import from the `messages.js` file. 
+* 
+* Your bundler will (in the future) automatically replace the index function 
+* with a language specific message function in the build step. 
+*/
 
 
+	
 /**
  * 
  * @returns {string}
@@ -18,6 +20,9 @@
 export const hello = () => `Здравей`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -26,6 +31,9 @@ export const hello = () => `Здравей`
 export const welcome = () => `Добре дошли в Driplo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -34,6 +42,9 @@ export const welcome = () => `Добре дошли в Driplo`
 export const loading = () => `Зареждане...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -42,6 +53,9 @@ export const loading = () => `Зареждане...`
 export const price = () => `Цена`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -50,6 +64,9 @@ export const price = () => `Цена`
 export const test = () => `Българският работи!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -58,6 +75,9 @@ export const test = () => `Българският работи!`
 export const nav_home = () => `Начало`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -66,6 +86,9 @@ export const nav_home = () => `Начало`
 export const nav_search = () => `Търсене`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -74,6 +97,9 @@ export const nav_search = () => `Търсене`
 export const nav_sell = () => `Продай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -82,6 +108,9 @@ export const nav_sell = () => `Продай`
 export const nav_messages = () => `Съобщения`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -90,6 +119,9 @@ export const nav_messages = () => `Съобщения`
 export const nav_profile = () => `Профил`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -98,6 +130,9 @@ export const nav_profile = () => `Профил`
 export const nav_favorites = () => `Любими`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -106,6 +141,9 @@ export const nav_favorites = () => `Любими`
 export const nav_orders = () => `Поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -114,6 +152,9 @@ export const nav_orders = () => `Поръчки`
 export const nav_settings = () => `Настройки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -122,6 +163,9 @@ export const nav_settings = () => `Настройки`
 export const nav_logout = () => `Изход`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -130,6 +174,9 @@ export const nav_logout = () => `Изход`
 export const nav_login = () => `Вход`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -138,6 +185,9 @@ export const nav_login = () => `Вход`
 export const nav_signup = () => `Регистрация`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -146,6 +196,9 @@ export const nav_signup = () => `Регистрация`
 export const nav_startSelling = () => `Започни да продаваш`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -154,6 +207,9 @@ export const nav_startSelling = () => `Започни да продаваш`
 export const nav_browseCategories = () => `Разгледай категориите`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -162,6 +218,9 @@ export const nav_browseCategories = () => `Разгледай категории
 export const search_placeholder = () => `Търсете артикули, марки...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -170,6 +229,9 @@ export const search_placeholder = () => `Търсете артикули, мар
 export const search_filter = () => `Филтър`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -178,6 +240,9 @@ export const search_filter = () => `Филтър`
 export const search_sort = () => `Сортиране`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -186,6 +251,9 @@ export const search_sort = () => `Сортиране`
 export const search_results = () => `Резултати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -194,6 +262,9 @@ export const search_results = () => `Резултати`
 export const search_noResults = () => `Няма намерени резултати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -202,6 +273,9 @@ export const search_noResults = () => `Няма намерени резулта�
 export const search_categories = () => `Категории`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -210,6 +284,9 @@ export const search_categories = () => `Категории`
 export const search_all = () => `Всички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -218,6 +295,9 @@ export const search_all = () => `Всички`
 export const product_addToCart = () => `Добави в количката`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -226,6 +306,9 @@ export const product_addToCart = () => `Добави в количката`
 export const product_buyNow = () => `Купи сега`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -234,6 +317,9 @@ export const product_buyNow = () => `Купи сега`
 export const product_favorite = () => `Любими`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -242,6 +328,9 @@ export const product_favorite = () => `Любими`
 export const product_share = () => `Сподели`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -250,6 +339,9 @@ export const product_share = () => `Сподели`
 export const product_size = () => `Размер`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -258,6 +350,9 @@ export const product_size = () => `Размер`
 export const product_condition = () => `Състояние`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -266,6 +361,9 @@ export const product_condition = () => `Състояние`
 export const product_brand = () => `Марка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -274,6 +372,9 @@ export const product_brand = () => `Марка`
 export const product_description = () => `Описание`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -282,6 +383,9 @@ export const product_description = () => `Описание`
 export const product_seller = () => `Продавач`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -290,6 +394,9 @@ export const product_seller = () => `Продавач`
 export const product_reviews = () => `Отзиви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -298,6 +405,9 @@ export const product_reviews = () => `Отзиви`
 export const product_similar = () => `Подобни артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -306,6 +416,9 @@ export const product_similar = () => `Подобни артикули`
 export const product_sold = () => `Продадено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -314,6 +427,9 @@ export const product_sold = () => `Продадено`
 export const product_available = () => `Налично`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -322,6 +438,9 @@ export const product_available = () => `Налично`
 export const common_cancel = () => `Отказ`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -330,6 +449,9 @@ export const common_cancel = () => `Отказ`
 export const common_save = () => `Запази`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -338,6 +460,9 @@ export const common_save = () => `Запази`
 export const common_delete = () => `Изтрий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -346,6 +471,9 @@ export const common_delete = () => `Изтрий`
 export const common_edit = () => `Редактирай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -354,6 +482,9 @@ export const common_edit = () => `Редактирай`
 export const common_close = () => `Затвори`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -362,6 +493,9 @@ export const common_close = () => `Затвори`
 export const common_confirm = () => `Потвърди`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -370,6 +504,9 @@ export const common_confirm = () => `Потвърди`
 export const common_yes = () => `Да`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -378,6 +515,9 @@ export const common_yes = () => `Да`
 export const common_no = () => `Не`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -386,6 +526,9 @@ export const common_no = () => `Не`
 export const common_ok = () => `ОК`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -394,6 +537,9 @@ export const common_ok = () => `ОК`
 export const common_back = () => `Назад`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -402,6 +548,9 @@ export const common_back = () => `Назад`
 export const common_next = () => `Напред`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -410,6 +559,9 @@ export const common_next = () => `Напред`
 export const common_previous = () => `Предишен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -418,6 +570,9 @@ export const common_previous = () => `Предишен`
 export const common_submit = () => `Изпрати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -426,6 +581,9 @@ export const common_submit = () => `Изпрати`
 export const common_currency = () => `лв`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -434,6 +592,9 @@ export const common_currency = () => `лв`
 export const trending_title = () => `Актуално сега`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -442,6 +603,9 @@ export const trending_title = () => `Актуално сега`
 export const trending_topSellers = () => `Топ продавачи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -450,6 +614,9 @@ export const trending_topSellers = () => `Топ продавачи`
 export const trending_featured = () => `Препоръчани продукти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -458,6 +625,9 @@ export const trending_featured = () => `Препоръчани продукти`
 export const trending_promoted = () => `Промотирани`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -466,6 +636,9 @@ export const trending_promoted = () => `Промотирани`
 export const trending_newSeller = () => `Нов продавач`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -474,6 +647,9 @@ export const trending_newSeller = () => `Нов продавач`
 export const category_women = () => `Жени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -482,6 +658,9 @@ export const category_women = () => `Жени`
 export const category_men = () => `Мъже`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -490,6 +669,9 @@ export const category_men = () => `Мъже`
 export const category_kids = () => `Деца`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -498,6 +680,9 @@ export const category_kids = () => `Деца`
 export const category_pets = () => `Животни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -506,6 +691,9 @@ export const category_pets = () => `Животни`
 export const category_shoes = () => `Обувки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -514,6 +702,9 @@ export const category_shoes = () => `Обувки`
 export const category_bags = () => `Чанти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -522,6 +713,9 @@ export const category_bags = () => `Чанти`
 export const category_home = () => `Начало`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -530,6 +724,9 @@ export const category_home = () => `Начало`
 export const category_beauty = () => `Красота`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -538,6 +735,9 @@ export const category_beauty = () => `Красота`
 export const seller_profile = () => `Виж профил`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -546,6 +746,9 @@ export const seller_profile = () => `Виж профил`
 export const seller_items = () => `артикула`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -554,6 +757,9 @@ export const seller_items = () => `артикула`
 export const seller_followers = () => `последователи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -562,6 +768,9 @@ export const seller_followers = () => `последователи`
 export const seller_rating = () => `рейтинг`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -570,6 +779,9 @@ export const seller_rating = () => `рейтинг`
 export const seller_premium = () => `Премиум продавач`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -578,6 +790,9 @@ export const seller_premium = () => `Премиум продавач`
 export const seller_verified = () => `Потвърден`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -586,6 +801,9 @@ export const seller_verified = () => `Потвърден`
 export const product_new = () => `Нов`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -594,6 +812,9 @@ export const product_new = () => `Нов`
 export const product_likeNew = () => `Като нов`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -602,6 +823,9 @@ export const product_likeNew = () => `Като нов`
 export const product_good = () => `Добър`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -610,6 +834,9 @@ export const product_good = () => `Добър`
 export const product_fair = () => `Добър`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -618,6 +845,9 @@ export const product_fair = () => `Добър`
 export const product_location = () => `Местоположение`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -626,6 +856,9 @@ export const product_location = () => `Местоположение`
 export const auth_signIn = () => `Вход`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -634,6 +867,9 @@ export const auth_signIn = () => `Вход`
 export const auth_signUp = () => `Регистрация`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -642,6 +878,9 @@ export const auth_signUp = () => `Регистрация`
 export const auth_signOut = () => `Изход`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -650,6 +889,9 @@ export const auth_signOut = () => `Изход`
 export const profile_orders = () => `Поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -658,6 +900,9 @@ export const profile_orders = () => `Поръчки`
 export const profile_favorites = () => `Любими`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -666,6 +911,9 @@ export const profile_favorites = () => `Любими`
 export const profile_startSelling = () => `Продавай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -674,6 +922,9 @@ export const profile_startSelling = () => `Продавай`
 export const profile_dashboard = () => `Акаунт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -682,6 +933,9 @@ export const profile_dashboard = () => `Акаунт`
 export const profile_settings = () => `Настройки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -690,6 +944,9 @@ export const profile_settings = () => `Настройки`
 export const profile_myProfile = () => `Моят профил`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -698,6 +955,9 @@ export const profile_myProfile = () => `Моят профил`
 export const menu_browse = () => `Разгледай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -706,6 +966,9 @@ export const menu_browse = () => `Разгледай`
 export const menu_sellItems = () => `Продавай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -714,6 +977,9 @@ export const menu_sellItems = () => `Продавай`
 export const footer_about = () => `За нас`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -722,6 +988,9 @@ export const footer_about = () => `За нас`
 export const footer_help = () => `Помощ`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -730,6 +999,9 @@ export const footer_help = () => `Помощ`
 export const footer_privacy = () => `Поверителност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -738,6 +1010,9 @@ export const footer_privacy = () => `Поверителност`
 export const footer_terms = () => `Условия`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -746,6 +1021,9 @@ export const footer_terms = () => `Условия`
 export const footer_contact = () => `Контакт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -754,6 +1032,9 @@ export const footer_contact = () => `Контакт`
 export const seller_unknown = () => `Неизвестен продавач`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -762,6 +1043,9 @@ export const seller_unknown = () => `Неизвестен продавач`
 export const seller_soldBy = () => `Продавач`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -770,6 +1054,9 @@ export const seller_soldBy = () => `Продавач`
 export const seller_message = () => `Съобщение`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -778,6 +1065,9 @@ export const seller_message = () => `Съобщение`
 export const seller_follow = () => `Последвай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -786,6 +1076,9 @@ export const seller_follow = () => `Последвай`
 export const seller_following = () => `Следвате`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -794,6 +1087,9 @@ export const seller_following = () => `Следвате`
 export const seller_viewFullProfile = () => `Виж профил`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -802,6 +1098,9 @@ export const seller_viewFullProfile = () => `Виж профил`
 export const seller_memberFor = () => `Член от`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -810,6 +1109,9 @@ export const seller_memberFor = () => `Член от`
 export const seller_newMember = () => `Нов член`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -818,6 +1120,9 @@ export const seller_newMember = () => `Нов член`
 export const seller_sales = () => `продажби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -826,6 +1131,9 @@ export const seller_sales = () => `продажби`
 export const seller_respondsWithin = () => `Обикновено отговаря до`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -834,6 +1142,9 @@ export const seller_respondsWithin = () => `Обикновено отговар�
 export const seller_hour = () => `час`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -842,6 +1153,9 @@ export const seller_hour = () => `час`
 export const seller_hours = () => `часа`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -850,6 +1164,9 @@ export const seller_hours = () => `часа`
 export const seller_day = () => `ден`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -858,6 +1175,9 @@ export const seller_day = () => `ден`
 export const seller_days = () => `дни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -866,6 +1186,9 @@ export const seller_days = () => `дни`
 export const seller_activeNow = () => `Активен сега`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -874,6 +1197,9 @@ export const seller_activeNow = () => `Активен сега`
 export const seller_activeAgo = () => `Активен преди`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -882,6 +1208,9 @@ export const seller_activeAgo = () => `Активен преди`
 export const seller_trustedSeller = () => `Доверен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -890,6 +1219,9 @@ export const seller_trustedSeller = () => `Доверен`
 export const seller_superstarSeller = () => `Топ продавач`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -898,6 +1230,9 @@ export const seller_superstarSeller = () => `Топ продавач`
 export const seller_positiveReviews = () => `Положителни отзиви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -906,6 +1241,9 @@ export const seller_positiveReviews = () => `Положителни отзиви
 export const seller_avgShipping = () => `Ср. доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -914,6 +1252,9 @@ export const seller_avgShipping = () => `Ср. доставка`
 export const seller_recentActivity = () => `Скорошна активност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -922,6 +1263,9 @@ export const seller_recentActivity = () => `Скорошна активност`
 export const seller_soldThisWeek = () => `Продадени артикули тази седмица`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -930,6 +1274,9 @@ export const seller_soldThisWeek = () => `Продадени артикули т
 export const seller_shippedOnTime = () => `от поръчките изпратени навреме`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -938,6 +1285,9 @@ export const seller_shippedOnTime = () => `от поръчките изпрат�
 export const seller_respondsIn = () => `Отговаря на съобщения за`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -946,6 +1296,9 @@ export const seller_respondsIn = () => `Отговаря на съобщения
 export const product_makeOffer = () => `Оферта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -954,6 +1307,9 @@ export const product_makeOffer = () => `Оферта`
 export const product_askQuestion = () => `Задай въпрос`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -962,6 +1318,9 @@ export const product_askQuestion = () => `Задай въпрос`
 export const product_reportItem = () => `Докладвай артикул`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -970,6 +1329,9 @@ export const product_reportItem = () => `Докладвай артикул`
 export const product_shipping = () => `Доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -978,6 +1340,9 @@ export const product_shipping = () => `Доставка`
 export const product_returns = () => `Връщане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -986,6 +1351,9 @@ export const product_returns = () => `Връщане`
 export const product_payment = () => `Плащане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -994,6 +1362,9 @@ export const product_payment = () => `Плащане`
 export const product_protection = () => `Защита`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1002,6 +1373,9 @@ export const product_protection = () => `Защита`
 export const product_freeShipping = () => `Безплатно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1010,6 +1384,9 @@ export const product_freeShipping = () => `Безплатно`
 export const product_fastDelivery = () => `Бърза доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1018,6 +1395,9 @@ export const product_fastDelivery = () => `Бърза доставка`
 export const product_inStock = () => `В наличност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1026,6 +1406,9 @@ export const product_inStock = () => `В наличност`
 export const product_outOfStock = () => `Изчерпан`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1034,6 +1417,9 @@ export const product_outOfStock = () => `Изчерпан`
 export const product_lastOne = () => `Последен!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1042,6 +1428,9 @@ export const product_lastOne = () => `Последен!`
 export const product_limitedStock = () => `Остават само в наличност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1050,6 +1439,9 @@ export const product_limitedStock = () => `Остават само в налич
 export const product_viewedTimes = () => `Прегледан пъти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1058,6 +1450,9 @@ export const product_viewedTimes = () => `Прегледан пъти`
 export const product_peopleViewing = () => `души гледат`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1066,6 +1461,9 @@ export const product_peopleViewing = () => `души гледат`
 export const auth_email = () => `Имейл`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1074,6 +1472,9 @@ export const auth_email = () => `Имейл`
 export const auth_password = () => `Парола`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1082,6 +1483,9 @@ export const auth_password = () => `Парола`
 export const auth_confirmPassword = () => `Потвърди парола`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1090,6 +1494,9 @@ export const auth_confirmPassword = () => `Потвърди парола`
 export const auth_firstName = () => `Име`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1098,6 +1505,9 @@ export const auth_firstName = () => `Име`
 export const auth_lastName = () => `Фамилия`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1106,6 +1516,9 @@ export const auth_lastName = () => `Фамилия`
 export const auth_username = () => `Потребителско име`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1114,6 +1527,9 @@ export const auth_username = () => `Потребителско име`
 export const auth_forgotPassword = () => `Забравена парола?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1122,6 +1538,9 @@ export const auth_forgotPassword = () => `Забравена парола?`
 export const auth_rememberMe = () => `Запомни ме`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1130,6 +1549,9 @@ export const auth_rememberMe = () => `Запомни ме`
 export const auth_createAccount = () => `Създай акаунт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1138,6 +1560,9 @@ export const auth_createAccount = () => `Създай акаунт`
 export const auth_alreadyHaveAccount = () => `Вече имате акаунт?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1146,6 +1571,9 @@ export const auth_alreadyHaveAccount = () => `Вече имате акаунт?`
 export const auth_dontHaveAccount = () => `Нямате акаунт?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1154,6 +1582,9 @@ export const auth_dontHaveAccount = () => `Нямате акаунт?`
 export const auth_orContinueWith = () => `Или продължи с`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1162,6 +1593,9 @@ export const auth_orContinueWith = () => `Или продължи с`
 export const auth_termsAgreement = () => `Със записването се съгласявате с нашите`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1170,6 +1604,9 @@ export const auth_termsAgreement = () => `Със записването се с�
 export const auth_termsOfService = () => `Условия за ползване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1178,6 +1615,9 @@ export const auth_termsOfService = () => `Условия за ползване`
 export const auth_and = () => `и`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1186,6 +1626,9 @@ export const auth_and = () => `и`
 export const auth_privacyPolicy = () => `Политика за поверителност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1194,6 +1637,9 @@ export const auth_privacyPolicy = () => `Политика за поверите�
 export const onboarding_welcome = () => `Добре дошли в Driplo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1202,6 +1648,9 @@ export const onboarding_welcome = () => `Добре дошли в Driplo`
 export const onboarding_step = () => `Стъпка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1210,6 +1659,9 @@ export const onboarding_step = () => `Стъпка`
 export const onboarding_of = () => `от`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1218,6 +1670,9 @@ export const onboarding_of = () => `от`
 export const onboarding_completeProfile = () => `Завършете профила си`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1226,6 +1681,9 @@ export const onboarding_completeProfile = () => `Завършете профил
 export const onboarding_verifyEmail = () => `Потвърдете имейла си`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1234,6 +1692,9 @@ export const onboarding_verifyEmail = () => `Потвърдете имейла �
 export const onboarding_addPayment = () => `Добавете метод за плащане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1242,6 +1703,9 @@ export const onboarding_addPayment = () => `Добавете метод за п�
 export const onboarding_startSelling = () => `Започнете да продавате`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1250,6 +1714,9 @@ export const onboarding_startSelling = () => `Започнете да прода
 export const onboarding_skip = () => `Прескочи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1258,6 +1725,9 @@ export const onboarding_skip = () => `Прескочи`
 export const onboarding_continue = () => `Продължи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1266,6 +1736,9 @@ export const onboarding_continue = () => `Продължи`
 export const onboarding_finish = () => `Завърши`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1274,6 +1747,9 @@ export const onboarding_finish = () => `Завърши`
 export const onboarding_setupComplete = () => `Настройката е завършена!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1282,6 +1758,9 @@ export const onboarding_setupComplete = () => `Настройката е зав�
 export const message_newMessage = () => `Ново съобщение`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1290,6 +1769,9 @@ export const message_newMessage = () => `Ново съобщение`
 export const message_typing = () => `пише...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1298,6 +1780,9 @@ export const message_typing = () => `пише...`
 export const message_sendMessage = () => `Изпрати съобщение`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1306,6 +1791,9 @@ export const message_sendMessage = () => `Изпрати съобщение`
 export const message_typeMessage = () => `Напишете съобщение...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1314,6 +1802,9 @@ export const message_typeMessage = () => `Напишете съобщение...
 export const message_noMessages = () => `Няма съобщения още`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1322,6 +1813,9 @@ export const message_noMessages = () => `Няма съобщения още`
 export const message_startConversation = () => `Започнете разговор`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1330,6 +1824,9 @@ export const message_startConversation = () => `Започнете разгов�
 export const message_delivered = () => `Доставено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1338,6 +1835,9 @@ export const message_delivered = () => `Доставено`
 export const message_read = () => `Прочетено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1346,6 +1846,9 @@ export const message_read = () => `Прочетено`
 export const message_unread = () => `Непрочетено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1354,6 +1857,9 @@ export const message_unread = () => `Непрочетено`
 export const message_markAsRead = () => `Маркирай като прочетено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1362,6 +1868,9 @@ export const message_markAsRead = () => `Маркирай като прочет�
 export const message_delete = () => `Изтрий разговор`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1370,6 +1879,9 @@ export const message_delete = () => `Изтрий разговор`
 export const message_block = () => `Блокирай потребител`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1378,6 +1890,9 @@ export const message_block = () => `Блокирай потребител`
 export const message_report = () => `Докладвай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1386,6 +1901,9 @@ export const message_report = () => `Докладвай`
 export const notification_newFollower = () => `започна да ви следва`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1394,6 +1912,9 @@ export const notification_newFollower = () => `започна да ви след
 export const notification_itemSold = () => `Вашият артикул беше продаден!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1402,6 +1923,9 @@ export const notification_itemSold = () => `Вашият артикул беше
 export const notification_offerReceived = () => `Получихте оферта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1410,6 +1934,9 @@ export const notification_offerReceived = () => `Получихте оферта
 export const notification_priceDropped = () => `Цената падна на`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1418,6 +1945,9 @@ export const notification_priceDropped = () => `Цената падна на`
 export const notification_itemLiked = () => `хареса вашия артикул`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1426,6 +1956,9 @@ export const notification_itemLiked = () => `хареса вашия артик�
 export const notification_reviewReceived = () => `ви остави отзив`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1434,6 +1967,9 @@ export const notification_reviewReceived = () => `ви остави отзив`
 export const notification_clearAll = () => `Изчисти всички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1442,6 +1978,9 @@ export const notification_clearAll = () => `Изчисти всички`
 export const notification_markAllRead = () => `Маркирай всички като прочетени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1450,6 +1989,9 @@ export const notification_markAllRead = () => `Маркирай всички к�
 export const notification_settings = () => `Настройки за известия`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1458,6 +2000,9 @@ export const notification_settings = () => `Настройки за извест
 export const checkout_summary = () => `Обобщение на поръчката`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1466,6 +2011,9 @@ export const checkout_summary = () => `Обобщение на поръчкат�
 export const checkout_subtotal = () => `Междинна сума`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1474,6 +2022,9 @@ export const checkout_subtotal = () => `Междинна сума`
 export const checkout_shipping = () => `Доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1482,6 +2033,9 @@ export const checkout_shipping = () => `Доставка`
 export const checkout_tax = () => `Данък`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1490,6 +2044,9 @@ export const checkout_tax = () => `Данък`
 export const checkout_total = () => `Общо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1498,6 +2055,9 @@ export const checkout_total = () => `Общо`
 export const checkout_proceedToPayment = () => `Продължи към плащане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1506,6 +2066,9 @@ export const checkout_proceedToPayment = () => `Продължи към плащ
 export const checkout_placeOrder = () => `Поръчай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1514,6 +2077,9 @@ export const checkout_placeOrder = () => `Поръчай`
 export const checkout_orderPlaced = () => `Поръчката е направена успешно!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1522,6 +2088,9 @@ export const checkout_orderPlaced = () => `Поръчката е направе�
 export const checkout_paymentMethod = () => `Метод на плащане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1530,6 +2099,9 @@ export const checkout_paymentMethod = () => `Метод на плащане`
 export const checkout_shippingAddress = () => `Адрес за доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1538,6 +2110,9 @@ export const checkout_shippingAddress = () => `Адрес за доставка`
 export const checkout_billingAddress = () => `Адрес за фактуриране`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1546,6 +2121,9 @@ export const checkout_billingAddress = () => `Адрес за фактурира
 export const checkout_sameAsShipping = () => `Същият като адреса за доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1554,6 +2132,9 @@ export const checkout_sameAsShipping = () => `Същият като адреса
 export const checkout_addAddress = () => `Добави адрес`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1562,6 +2143,9 @@ export const checkout_addAddress = () => `Добави адрес`
 export const checkout_addCard = () => `Добави карта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1570,6 +2154,9 @@ export const checkout_addCard = () => `Добави карта`
 export const settings_account = () => `Акаунт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1578,6 +2165,9 @@ export const settings_account = () => `Акаунт`
 export const settings_notifications = () => `Известия`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1586,6 +2176,9 @@ export const settings_notifications = () => `Известия`
 export const settings_privacy = () => `Поверителност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1594,6 +2187,9 @@ export const settings_privacy = () => `Поверителност`
 export const settings_security = () => `Сигурност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1602,6 +2198,9 @@ export const settings_security = () => `Сигурност`
 export const settings_payments = () => `Плащания`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1610,6 +2209,9 @@ export const settings_payments = () => `Плащания`
 export const settings_shipping = () => `Доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1618,6 +2220,9 @@ export const settings_shipping = () => `Доставка`
 export const settings_language = () => `Език`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1626,6 +2231,9 @@ export const settings_language = () => `Език`
 export const settings_currency = () => `Валута`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1634,6 +2242,9 @@ export const settings_currency = () => `Валута`
 export const settings_theme = () => `Тема`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1642,6 +2253,9 @@ export const settings_theme = () => `Тема`
 export const settings_darkMode = () => `Тъмен режим`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1650,6 +2264,9 @@ export const settings_darkMode = () => `Тъмен режим`
 export const settings_emailNotifications = () => `Имейл известия`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1658,6 +2275,9 @@ export const settings_emailNotifications = () => `Имейл известия`
 export const settings_pushNotifications = () => `Push известия`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1666,6 +2286,9 @@ export const settings_pushNotifications = () => `Push известия`
 export const settings_changePassword = () => `Промени парола`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1674,6 +2297,9 @@ export const settings_changePassword = () => `Промени парола`
 export const settings_twoFactor = () => `Двуфакторна автентикация`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1682,6 +2308,9 @@ export const settings_twoFactor = () => `Двуфакторна автентик
 export const settings_deleteAccount = () => `Изтрий акаунт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1690,6 +2319,9 @@ export const settings_deleteAccount = () => `Изтрий акаунт`
 export const settings_downloadData = () => `Изтегли данните си`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1698,6 +2330,9 @@ export const settings_downloadData = () => `Изтегли данните си`
 export const banner_freeShipping = () => `Безплатна доставка при поръчки над`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1706,6 +2341,9 @@ export const banner_freeShipping = () => `Безплатна доставка п
 export const banner_newArrivals = () => `Нови артикули всеки ден`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1714,6 +2352,9 @@ export const banner_newArrivals = () => `Нови артикули всеки д
 export const banner_sale = () => `Разпродажба`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1722,6 +2363,9 @@ export const banner_sale = () => `Разпродажба`
 export const banner_percentOff = () => `намаление`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1730,6 +2374,9 @@ export const banner_percentOff = () => `намаление`
 export const banner_shopNow = () => `Пазарувай сега`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1738,6 +2385,9 @@ export const banner_shopNow = () => `Пазарувай сега`
 export const banner_limitedTime = () => `Ограничена оферта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1746,6 +2396,9 @@ export const banner_limitedTime = () => `Ограничена оферта`
 export const banner_endsSoon = () => `Изтича скоро`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1754,6 +2407,9 @@ export const banner_endsSoon = () => `Изтича скоро`
 export const error_generic = () => `Нещо се обърка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1762,6 +2418,9 @@ export const error_generic = () => `Нещо се обърка`
 export const error_network = () => `Мрежова грешка. Опитайте отново.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1770,6 +2429,9 @@ export const error_network = () => `Мрежова грешка. Опитайт�
 export const error_notFound = () => `Страницата не е намерена`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1778,6 +2440,9 @@ export const error_notFound = () => `Страницата не е намерен
 export const error_unauthorized = () => `Неоторизиран достъп`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1786,6 +2451,9 @@ export const error_unauthorized = () => `Неоторизиран достъп`
 export const error_validation = () => `Моля проверете въведената информация`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1794,6 +2462,9 @@ export const error_validation = () => `Моля проверете въведе�
 export const error_tryAgain = () => `Опитай отново`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1802,6 +2473,9 @@ export const error_tryAgain = () => `Опитай отново`
 export const success_saved = () => `Запазено успешно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1810,6 +2484,9 @@ export const success_saved = () => `Запазено успешно`
 export const success_updated = () => `Обновено успешно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1818,6 +2495,9 @@ export const success_updated = () => `Обновено успешно`
 export const success_deleted = () => `Изтрито успешно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1826,6 +2506,9 @@ export const success_deleted = () => `Изтрито успешно`
 export const success_copied = () => `Копирано в клипборда`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1834,6 +2517,9 @@ export const success_copied = () => `Копирано в клипборда`
 export const empty_noProducts = () => `Няма продукти още`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1842,6 +2528,9 @@ export const empty_noProducts = () => `Няма продукти още`
 export const empty_noFavorites = () => `Няма любими още`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1850,6 +2539,9 @@ export const empty_noFavorites = () => `Няма любими още`
 export const empty_noOrders = () => `Няма поръчки още`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1858,6 +2550,9 @@ export const empty_noOrders = () => `Няма поръчки още`
 export const empty_noMessages = () => `Няма съобщения още`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1866,6 +2561,9 @@ export const empty_noMessages = () => `Няма съобщения още`
 export const empty_startBrowsing = () => `Започни да разглеждаш`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1874,6 +2572,9 @@ export const empty_startBrowsing = () => `Започни да разглежда
 export const empty_exploreItems = () => `Разгледай артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1882,6 +2583,9 @@ export const empty_exploreItems = () => `Разгледай артикули`
 export const pagination_showing = () => `Показване на`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1890,6 +2594,9 @@ export const pagination_showing = () => `Показване на`
 export const pagination_of = () => `от`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1898,6 +2605,9 @@ export const pagination_of = () => `от`
 export const pagination_results = () => `резултати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1906,6 +2616,9 @@ export const pagination_results = () => `резултати`
 export const pagination_page = () => `Страница`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1914,6 +2627,9 @@ export const pagination_page = () => `Страница`
 export const pagination_goToPage = () => `Отиди на страница`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1922,6 +2638,9 @@ export const pagination_goToPage = () => `Отиди на страница`
 export const filter_sortBy = () => `Сортирай по`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1930,6 +2649,9 @@ export const filter_sortBy = () => `Сортирай по`
 export const filter_priceLowToHigh = () => `Цена ↑`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1938,6 +2660,9 @@ export const filter_priceLowToHigh = () => `Цена ↑`
 export const filter_priceHighToLow = () => `Цена ↓`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1946,6 +2671,9 @@ export const filter_priceHighToLow = () => `Цена ↓`
 export const filter_newest = () => `Най-нови`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1954,6 +2682,9 @@ export const filter_newest = () => `Най-нови`
 export const filter_mostPopular = () => `Най-популярни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1962,6 +2693,9 @@ export const filter_mostPopular = () => `Най-популярни`
 export const filter_bestRated = () => `Най-високо оценени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1970,6 +2704,9 @@ export const filter_bestRated = () => `Най-високо оценени`
 export const filter_priceRange = () => `Ценови диапазон`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1978,6 +2715,9 @@ export const filter_priceRange = () => `Ценови диапазон`
 export const filter_condition = () => `Състояние`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1986,6 +2726,9 @@ export const filter_condition = () => `Състояние`
 export const filter_size = () => `Размер`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1994,6 +2737,9 @@ export const filter_size = () => `Размер`
 export const filter_color = () => `Цвят`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2002,6 +2748,9 @@ export const filter_color = () => `Цвят`
 export const filter_brand = () => `Марка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2010,6 +2759,9 @@ export const filter_brand = () => `Марка`
 export const filter_apply = () => `Приложи филтри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2018,6 +2770,9 @@ export const filter_apply = () => `Приложи филтри`
 export const filter_reset = () => `Нулирай филтри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2026,6 +2781,9 @@ export const filter_reset = () => `Нулирай филтри`
 export const filter_onSale = () => `В намаление`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2034,6 +2792,9 @@ export const filter_onSale = () => `В намаление`
 export const filter_newItems = () => `Нови артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2042,6 +2803,9 @@ export const filter_newItems = () => `Нови артикули`
 export const filter_trending = () => `Популярни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2050,6 +2814,9 @@ export const filter_trending = () => `Популярни`
 export const filter_showMore = () => `Покажи още`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2058,6 +2825,9 @@ export const filter_showMore = () => `Покажи още`
 export const filter_showLess = () => `Покажи по-малко`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2066,6 +2836,9 @@ export const filter_showLess = () => `Покажи по-малко`
 export const product_newWithTags = () => `Нов с етикет`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2074,6 +2847,9 @@ export const product_newWithTags = () => `Нов с етикет`
 export const product_likeNewCondition = () => `Като нов`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2082,6 +2858,9 @@ export const product_likeNewCondition = () => `Като нов`
 export const product_goodCondition = () => `Добро`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2090,6 +2869,9 @@ export const product_goodCondition = () => `Добро`
 export const product_fairCondition = () => `Добро`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2098,6 +2880,9 @@ export const product_fairCondition = () => `Добро`
 export const product_addToFavorites = () => `В любими`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2106,6 +2891,9 @@ export const product_addToFavorites = () => `В любими`
 export const product_itemDetails = () => `Детайли за артикула`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2114,6 +2902,9 @@ export const product_itemDetails = () => `Детайли за артикула`
 export const product_postedTime = () => `Публикувано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2122,6 +2913,9 @@ export const product_postedTime = () => `Публикувано`
 export const product_freeShippingLower = () => `Безплатно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2130,6 +2924,9 @@ export const product_freeShippingLower = () => `Безплатно`
 export const product_youMightLike = () => `Може да ви харесат`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2138,6 +2935,9 @@ export const product_youMightLike = () => `Може да ви харесат`
 export const product_moreFromSeller = () => `Още от`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2146,6 +2946,9 @@ export const product_moreFromSeller = () => `Още от`
 export const messages_inbox = () => `Входящи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2154,6 +2957,9 @@ export const messages_inbox = () => `Входящи`
 export const messages_newMessage = () => `Ново съобщение`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2162,6 +2968,9 @@ export const messages_newMessage = () => `Ново съобщение`
 export const messages_reply = () => `Отговор`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2170,6 +2979,9 @@ export const messages_reply = () => `Отговор`
 export const messages_dismiss = () => `Отхвърли`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2178,6 +2990,9 @@ export const messages_dismiss = () => `Отхвърли`
 export const messages_messageInput = () => `Съобщение...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2186,6 +3001,9 @@ export const messages_messageInput = () => `Съобщение...`
 export const messages_today = () => `Днес`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2194,6 +3012,9 @@ export const messages_today = () => `Днес`
 export const messages_now = () => `сега`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2202,6 +3023,9 @@ export const messages_now = () => `сега`
 export const messages_sent = () => `Изпратено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2210,6 +3034,9 @@ export const messages_sent = () => `Изпратено`
 export const messages_read = () => `Прочетено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2218,6 +3045,9 @@ export const messages_read = () => `Прочетено`
 export const messages_activeNow = () => `Активен сега`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2226,6 +3056,9 @@ export const messages_activeNow = () => `Активен сега`
 export const messages_makeOffer = () => `Направи оферта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2234,6 +3067,9 @@ export const messages_makeOffer = () => `Направи оферта`
 export const messages_bundle = () => `Пакет`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2242,6 +3078,9 @@ export const messages_bundle = () => `Пакет`
 export const messages_location = () => `Местоположение`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2250,6 +3089,9 @@ export const messages_location = () => `Местоположение`
 export const messages_photo = () => `Снимка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2258,6 +3100,9 @@ export const messages_photo = () => `Снимка`
 export const messages_selectConversation = () => `Избери разговор`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2266,6 +3111,9 @@ export const messages_selectConversation = () => `Избери разговор`
 export const messages_chooseMessage = () => `Избери съобщение от списъка за да започнеш чат`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2274,6 +3122,9 @@ export const messages_chooseMessage = () => `Избери съобщение о�
 export const messages_noProducts = () => `Няма продукти - Обща беседа`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2282,6 +3133,9 @@ export const messages_noProducts = () => `Няма продукти - Обща �
 export const messages_all = () => `Всички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2290,6 +3144,9 @@ export const messages_all = () => `Всички`
 export const messages_unread = () => `Непрочетени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2298,6 +3155,9 @@ export const messages_unread = () => `Непрочетени`
 export const messages_buying = () => `Купуване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2306,6 +3166,9 @@ export const messages_buying = () => `Купуване`
 export const messages_selling = () => `Продаване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2314,6 +3177,9 @@ export const messages_selling = () => `Продаване`
 export const messages_offers = () => `Оферти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2322,6 +3188,9 @@ export const messages_offers = () => `Оферти`
 export const messages_bundleOffer = () => `Пакет`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2330,6 +3199,9 @@ export const messages_bundleOffer = () => `Пакет`
 export const messages_acceptOffer = () => `Приеми`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2338,6 +3210,9 @@ export const messages_acceptOffer = () => `Приеми`
 export const messages_declineOffer = () => `Откажи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2346,6 +3221,9 @@ export const messages_declineOffer = () => `Откажи`
 export const messages_counterOffer = () => `Контра-оферта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2354,6 +3232,9 @@ export const messages_counterOffer = () => `Контра-оферта`
 export const messages_save = () => `Запази`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2362,6 +3243,9 @@ export const messages_save = () => `Запази`
 export const notifications_title = () => `Известия`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2370,6 +3254,9 @@ export const notifications_title = () => `Известия`
 export const notifications_unread = () => `непрочетени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2378,6 +3265,9 @@ export const notifications_unread = () => `непрочетени`
 export const notifications_markAllRead = () => `Прочети всички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2386,6 +3276,9 @@ export const notifications_markAllRead = () => `Прочети всички`
 export const notifications_noNotifications = () => `Няма известия`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2394,6 +3287,9 @@ export const notifications_noNotifications = () => `Няма известия`
 export const notifications_notifyWhenSomethingHappens = () => `Ще ти съобщим когато се случи нещо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2402,6 +3298,9 @@ export const notifications_notifyWhenSomethingHappens = () => `Ще ти съо�
 export const notifications_viewAll = () => `Виж всички известия`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2410,6 +3309,9 @@ export const notifications_viewAll = () => `Виж всички известия
 export const product_viewAll = () => `Вижте всички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2418,6 +3320,9 @@ export const product_viewAll = () => `Вижте всички`
 export const product_today = () => `днес`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2426,6 +3331,9 @@ export const product_today = () => `днес`
 export const product_yesterday = () => `вчера`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2434,6 +3342,9 @@ export const product_yesterday = () => `вчера`
 export const product_daysAgo = () => `д преди`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2442,6 +3353,9 @@ export const product_daysAgo = () => `д преди`
 export const product_weeksAgo = () => `с преди`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2450,6 +3364,9 @@ export const product_weeksAgo = () => `с преди`
 export const product_monthsAgo = () => `м преди`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2458,6 +3375,9 @@ export const product_monthsAgo = () => `м преди`
 export const profile_editProfile = () => `Редактирай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2466,6 +3386,9 @@ export const profile_editProfile = () => `Редактирай`
 export const profile_posts = () => `Публикации`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2474,6 +3397,9 @@ export const profile_posts = () => `Публикации`
 export const profile_sold = () => `Продадени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2482,6 +3408,9 @@ export const profile_sold = () => `Продадени`
 export const profile_sales = () => `Продажби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2490,6 +3419,9 @@ export const profile_sales = () => `Продажби`
 export const profile_following = () => `Следвам`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2498,6 +3430,9 @@ export const profile_following = () => `Следвам`
 export const profile_follow = () => `Последвай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2506,6 +3441,9 @@ export const profile_follow = () => `Последвай`
 export const profile_message = () => `Съобщение`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2514,6 +3452,9 @@ export const profile_message = () => `Съобщение`
 export const profile_joined = () => `Присъединил се`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2522,6 +3463,9 @@ export const profile_joined = () => `Присъединил се`
 export const profile_premium = () => `Премиум`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2530,6 +3474,9 @@ export const profile_premium = () => `Премиум`
 export const profile_noListingsYet = () => `Все още няма обяви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2538,6 +3485,9 @@ export const profile_noListingsYet = () => `Все още няма обяви`
 export const profile_reviews = () => `Отзиви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2546,6 +3496,9 @@ export const profile_reviews = () => `Отзиви`
 export const profile_noReviewsYet = () => `Все още няма отзиви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2554,6 +3507,9 @@ export const profile_noReviewsYet = () => `Все още няма отзиви`
 export const profile_about = () => `За мен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2562,6 +3518,9 @@ export const profile_about = () => `За мен`
 export const profile_sellerStats = () => `Статистика на продавача`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2570,6 +3529,9 @@ export const profile_sellerStats = () => `Статистика на продав
 export const profile_itemsSold = () => `Продадени артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2578,6 +3540,9 @@ export const profile_itemsSold = () => `Продадени артикули`
 export const profile_rating = () => `Рейтинг`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2586,6 +3551,9 @@ export const profile_rating = () => `Рейтинг`
 export const profile_noRatingsYet = () => `Все още няма оценки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2594,6 +3562,9 @@ export const profile_noRatingsYet = () => `Все още няма оценки`
 export const profile_memberSince = () => `Член от`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2602,6 +3573,9 @@ export const profile_memberSince = () => `Член от`
 export const profile_policies = () => `Политики`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2610,6 +3584,9 @@ export const profile_policies = () => `Политики`
 export const profile_returnPolicy = () => `14-дневна политика за връщане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2618,6 +3595,9 @@ export const profile_returnPolicy = () => `14-дневна политика за
 export const profile_shipsWithin = () => `Изпраща в рамките на 1-2 работни дни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2626,6 +3606,9 @@ export const profile_shipsWithin = () => `Изпраща в рамките на 
 export const profile_securePayments = () => `Сигурни плащания чрез Driplo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2634,6 +3617,9 @@ export const profile_securePayments = () => `Сигурни плащания ч�
 export const profile_responseTime = () => `Време за отговор: Обикновено в рамките на 1 час`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2642,6 +3628,9 @@ export const profile_responseTime = () => `Време за отговор: Об�
 export const profile_anonymous = () => `Анонимен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2650,6 +3639,9 @@ export const profile_anonymous = () => `Анонимен`
 export const profile_cancel = () => `Отказ`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2658,6 +3650,9 @@ export const profile_cancel = () => `Отказ`
 export const profile_avatar = () => `Аватар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2666,6 +3661,9 @@ export const profile_avatar = () => `Аватар`
 export const profile_username = () => `Потребителско име`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2674,6 +3672,9 @@ export const profile_username = () => `Потребителско име`
 export const profile_fullName = () => `Пълно име`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2682,6 +3683,9 @@ export const profile_fullName = () => `Пълно име`
 export const profile_bio = () => `Биография`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2690,6 +3694,9 @@ export const profile_bio = () => `Биография`
 export const profile_tellPeopleAboutYourself = () => `Разкажете на хората за себе си...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2698,6 +3705,9 @@ export const profile_tellPeopleAboutYourself = () => `Разкажете на х
 export const profile_location = () => `Местоположение`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2706,6 +3716,9 @@ export const profile_location = () => `Местоположение`
 export const profile_socialLinks = () => `Социални връзки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2714,6 +3727,9 @@ export const profile_socialLinks = () => `Социални връзки`
 export const profile_addLink = () => `Добави връзка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2722,6 +3738,9 @@ export const profile_addLink = () => `Добави връзка`
 export const profile_instagram = () => `Instagram`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2730,6 +3749,9 @@ export const profile_instagram = () => `Instagram`
 export const profile_tiktok = () => `TikTok`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2738,6 +3760,9 @@ export const profile_tiktok = () => `TikTok`
 export const profile_website = () => `Уебсайт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2746,6 +3771,9 @@ export const profile_website = () => `Уебсайт`
 export const profile_url = () => `URL`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2754,6 +3782,9 @@ export const profile_url = () => `URL`
 export const profile_saveProfile = () => `Запази профил`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2762,6 +3793,9 @@ export const profile_saveProfile = () => `Запази профил`
 export const profile_saving = () => `Запазване...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2770,6 +3804,9 @@ export const profile_saving = () => `Запазване...`
 export const profile_yourUsername = () => `Вашето потребителско име`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2778,6 +3815,9 @@ export const profile_yourUsername = () => `Вашето потребителск
 export const profile_yourFullName = () => `Вашето пълно име`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2786,6 +3826,9 @@ export const profile_yourFullName = () => `Вашето пълно име`
 export const profile_yourLocation = () => `Вашето местоположение`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2794,6 +3837,9 @@ export const profile_yourLocation = () => `Вашето местоположен
 export const profile_yourAvatar = () => `Вашият аватар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2802,6 +3848,9 @@ export const profile_yourAvatar = () => `Вашият аватар`
 export const onboarding_welcomeBrand = () => `Добре дошли в Driplo Business! 🏢`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2810,6 +3859,9 @@ export const onboarding_welcomeBrand = () => `Добре дошли в Driplo Bu
 export const onboarding_welcomePersonal = () => `Добре дошли в Driplo! 🎉`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2818,6 +3870,9 @@ export const onboarding_welcomePersonal = () => `Добре дошли в Driplo
 export const onboarding_profileComplete = () => `Вашият профил е завършен и потвърден. Готови сте да започнете да купувате и продавате невероятни модни артикули!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2826,6 +3881,9 @@ export const onboarding_profileComplete = () => `Вашият профил е з
 export const onboarding_brandProfileComplete = () => `Вашият брандов профил е настроен! За да активирате пълните брандови функции и значката за потвърждение, трябва да се абонирате за нашия Brand план от вашия dashboard.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2834,6 +3892,9 @@ export const onboarding_brandProfileComplete = () => `Вашият брандо�
 export const onboarding_brandProfileSetup = () => `Brand Profile Setup`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2842,6 +3903,9 @@ export const onboarding_brandProfileSetup = () => `Brand Profile Setup`
 export const onboarding_popular = () => `Популярен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2850,6 +3914,9 @@ export const onboarding_popular = () => `Популярен`
 export const onboarding_personalAccount = () => `Личен акаунт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2858,6 +3925,9 @@ export const onboarding_personalAccount = () => `Личен акаунт`
 export const onboarding_personalAccountDesc = () => `Перфектен за хора, които продават от личния си гардероб`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2866,6 +3936,9 @@ export const onboarding_personalAccountDesc = () => `Перфектен за х�
 export const onboarding_personalFeature1 = () => `Публикувай неограничен брой артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2874,6 +3947,9 @@ export const onboarding_personalFeature1 = () => `Публикувай неог�
 export const onboarding_personalFeature2 = () => `Основни инструменти за продавачи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2882,6 +3958,9 @@ export const onboarding_personalFeature2 = () => `Основни инструм�
 export const onboarding_personalFeature3 = () => `Достъп до общността`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2890,6 +3969,9 @@ export const onboarding_personalFeature3 = () => `Достъп до общнос
 export const onboarding_personalFeature4 = () => `Сигурни плащания`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2898,6 +3980,9 @@ export const onboarding_personalFeature4 = () => `Сигурни плащани�
 export const onboarding_brandAccount = () => `Бранд акаунт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2906,6 +3991,9 @@ export const onboarding_brandAccount = () => `Бранд акаунт`
 export const onboarding_brandAccountDesc = () => `Създаден за бизнеси и професионални продавачи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2914,6 +4002,9 @@ export const onboarding_brandAccountDesc = () => `Създаден за бизн
 export const onboarding_brandFeature1 = () => `Напреднала аналитика`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2922,6 +4013,9 @@ export const onboarding_brandFeature1 = () => `Напреднала аналит
 export const onboarding_brandFeature2 = () => `Инструменти за масово качване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2930,6 +4024,9 @@ export const onboarding_brandFeature2 = () => `Инструменти за ма�
 export const onboarding_brandFeature3 = () => `Приоритетна поддръжка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2938,6 +4035,9 @@ export const onboarding_brandFeature3 = () => `Приоритетна поддр
 export const onboarding_brandFeature4 = () => `Персонализиран брандинг`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2946,6 +4046,9 @@ export const onboarding_brandFeature4 = () => `Персонализиран бр
 export const onboarding_free = () => `Безплатно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2954,6 +4057,9 @@ export const onboarding_free = () => `Безплатно`
 export const onboarding_perMonth = () => `/ месец`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2962,6 +4068,9 @@ export const onboarding_perMonth = () => `/ месец`
 export const onboarding_selected = () => `Избран`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2970,6 +4079,9 @@ export const onboarding_selected = () => `Избран`
 export const onboarding_select = () => `Избери`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2978,6 +4090,9 @@ export const onboarding_select = () => `Избери`
 export const onboarding_profileCreated = () => `Профилът е създаден`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2986,6 +4101,9 @@ export const onboarding_profileCreated = () => `Профилът е създад
 export const onboarding_profileVerified = () => `Профилът е потвърден`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2994,6 +4112,9 @@ export const onboarding_profileVerified = () => `Профилът е потвъ�
 export const onboarding_brandPending = () => `Брандът е в изчакване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3002,6 +4123,9 @@ export const onboarding_brandPending = () => `Брандът е в изчакв�
 export const onboarding_paymentReady = () => `Плащането е готово`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3010,6 +4134,9 @@ export const onboarding_paymentReady = () => `Плащането е готово
 export const onboarding_startExploring = () => `Започнете да изследвате`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3018,6 +4145,9 @@ export const onboarding_startExploring = () => `Започнете да изсл
 export const onboarding_goToDashboard = () => `Идете в Dashboard & Абонирайте се`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3026,6 +4156,9 @@ export const onboarding_goToDashboard = () => `Идете в Dashboard & Або�
 export const onboarding_brandSetupComplete = () => `Вашият бранд профил е настроен! За да активирате пълните функции за марки и значка за верификация, трябва да се абонирате за нашия план за марки от вашето табло.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3034,6 +4167,9 @@ export const onboarding_brandSetupComplete = () => `Вашият бранд пр
 export const onboarding_discover = () => `Открийте качествена мода`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3042,6 +4178,9 @@ export const onboarding_discover = () => `Открийте качествена 
 export const onboarding_discoverDesc = () => `Разгледайте курирани артикули от потвърдени продавачи. Намерете автентични части, дизайнерски марки и уникални винтидж артикули.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3050,6 +4189,9 @@ export const onboarding_discoverDesc = () => `Разгледайте курир�
 export const onboarding_sell = () => `Продавайте с увереност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3058,6 +4200,9 @@ export const onboarding_sell = () => `Продавайте с увереност
 export const onboarding_sellDesc = () => `Листвайте вашите артикули бързо с нашите прости инструменти. Сигурни плащания, защита на купувача и прозрачни такси.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3066,6 +4211,9 @@ export const onboarding_sellDesc = () => `Листвайте вашите арт
 export const onboarding_ready = () => `Готови за започване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3074,6 +4222,9 @@ export const onboarding_ready = () => `Готови за започване`
 export const onboarding_readyDesc = () => `Завършете настройката на вашия профил, за да започнете да купувате и продавате. Вашето сигурно пазарно изживяване започва сега.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3082,6 +4233,9 @@ export const onboarding_readyDesc = () => `Завършете настройка
 export const onboarding_back = () => `Назад`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3090,6 +4244,9 @@ export const onboarding_back = () => `Назад`
 export const onboarding_next = () => `Напред`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3098,6 +4255,9 @@ export const onboarding_next = () => `Напред`
 export const onboarding_getStarted = () => `Започнете`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3106,6 +4266,9 @@ export const onboarding_getStarted = () => `Започнете`
 export const onboarding_designer = () => `Дизайнерски`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3114,6 +4277,9 @@ export const onboarding_designer = () => `Дизайнерски`
 export const onboarding_vintage = () => `Винтидж`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3122,6 +4288,9 @@ export const onboarding_vintage = () => `Винтидж`
 export const onboarding_trending = () => `В тенденция`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3130,6 +4299,9 @@ export const onboarding_trending = () => `В тенденция`
 export const onboarding_totalSales = () => `Общи продажби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3138,6 +4310,9 @@ export const onboarding_totalSales = () => `Общи продажби`
 export const onboarding_happySellers = () => `Щастливи продавачи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3146,6 +4321,9 @@ export const onboarding_happySellers = () => `Щастливи продавач�
 export const onboarding_trustedMarketplace = () => `Довереният пазар за купуване и продажба на втора употреба мода. Присъединете се към хиляди потребители, търгуващи качествено облекло.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3154,6 +4332,9 @@ export const onboarding_trustedMarketplace = () => `Довереният паз�
 export const onboarding_chooseAccountType = () => `Изберете типа на вашия акаунт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3162,6 +4343,9 @@ export const onboarding_chooseAccountType = () => `Изберете типа н�
 export const onboarding_selectPerfectPlan = () => `Изберете перфектния план за вашето пътуване на продавач`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3170,6 +4354,9 @@ export const onboarding_selectPerfectPlan = () => `Изберете перфек
 export const onboarding_createProfile = () => `Създайте вашия профил`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3178,6 +4365,9 @@ export const onboarding_createProfile = () => `Създайте вашия пр�
 export const onboarding_tellAboutYourself = () => `Разкажете ни малко за себе си`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3186,6 +4376,9 @@ export const onboarding_tellAboutYourself = () => `Разкажете ни ма�
 export const onboarding_chooseAvatar = () => `Изберете вашия аватар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3194,6 +4387,9 @@ export const onboarding_chooseAvatar = () => `Изберете вашия ава
 export const onboarding_pickProfilePicture = () => `Изберете профилна снимка, която ви представя`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3202,6 +4398,9 @@ export const onboarding_pickProfilePicture = () => `Изберете профи�
 export const onboarding_setupPayouts = () => `Настройте плащанията`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3210,6 +4409,9 @@ export const onboarding_setupPayouts = () => `Настройте плащани�
 export const onboarding_choosePaymentMethod = () => `Изберете как ще получавате плащания от продажби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3218,6 +4420,9 @@ export const onboarding_choosePaymentMethod = () => `Изберете как щ�
 export const onboarding_connectSocials = () => `Свържете вашите социални мрежи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3226,6 +4431,9 @@ export const onboarding_connectSocials = () => `Свържете вашите с
 export const onboarding_helpBuyersDiscover = () => `Помогнете на купувачите да открият вашия стил (по избор)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3234,6 +4442,9 @@ export const onboarding_helpBuyersDiscover = () => `Помогнете на ку
 export const onboarding_chooseUniqueUsername = () => `Изберете уникално потребителско име`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3242,6 +4453,9 @@ export const onboarding_chooseUniqueUsername = () => `Изберете уник�
 export const onboarding_fullNameOptional = () => `Вашето пълно име (по избор)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3250,6 +4464,9 @@ export const onboarding_fullNameOptional = () => `Вашето пълно име
 export const onboarding_usernameMinLength = () => `Потребителското име трябва да е поне 3 символа`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3258,6 +4475,9 @@ export const onboarding_usernameMinLength = () => `Потребителскот�
 export const onboarding_settingUp = () => `Настройване...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3266,6 +4486,9 @@ export const onboarding_settingUp = () => `Настройване...`
 export const onboarding_completeSetup = () => `Завършете настройката`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3274,6 +4497,9 @@ export const onboarding_completeSetup = () => `Завършете настрой
 export const onboarding_accountTypePersonal = () => `Личен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3282,6 +4508,9 @@ export const onboarding_accountTypePersonal = () => `Личен`
 export const onboarding_accountTypeBrand = () => `Бранд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3290,6 +4519,9 @@ export const onboarding_accountTypeBrand = () => `Бранд`
 export const sales_activity = () => `Продажна активност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3298,6 +4530,9 @@ export const sales_activity = () => `Продажна активност`
 export const sales_newSales = () => `нови`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3306,6 +4541,9 @@ export const sales_newSales = () => `нови`
 export const sales_earned = () => `спечелени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3314,6 +4552,9 @@ export const sales_earned = () => `спечелени`
 export const sales_noSalesYet = () => `Няма продажби още`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3322,6 +4563,9 @@ export const sales_noSalesYet = () => `Няма продажби още`
 export const sales_notifyWhenItemsSell = () => `Ще ви уведомим когато артикули се продадат`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3330,6 +4574,9 @@ export const sales_notifyWhenItemsSell = () => `Ще ви уведомим ко�
 export const sales_itemSold = () => `Артикул продаден!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3338,6 +4585,9 @@ export const sales_itemSold = () => `Артикул продаден!`
 export const sales_soldTo = () => `Продаден на`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3346,6 +4596,9 @@ export const sales_soldTo = () => `Продаден на`
 export const sales_viewOrderDetails = () => `Вижте детайли за поръчката`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3354,6 +4607,9 @@ export const sales_viewOrderDetails = () => `Вижте детайли за по
 export const sales_totalSales = () => `обща продажба`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3362,6 +4618,9 @@ export const sales_totalSales = () => `обща продажба`
 export const sales_totalSalesPlural = () => `общи продажби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3370,6 +4629,9 @@ export const sales_totalSalesPlural = () => `общи продажби`
 export const sales_viewAllSales = () => `Вижте всички продажби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3378,6 +4640,9 @@ export const sales_viewAllSales = () => `Вижте всички продажб�
 export const banner_earlyBird = () => `Ранна птица`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3386,6 +4651,9 @@ export const banner_earlyBird = () => `Ранна птица`
 export const banner_firstMonth = () => `Първи месец`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3394,6 +4662,9 @@ export const banner_firstMonth = () => `Първи месец`
 export const banner_off = () => `НАМАЛЕНИЕ`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3402,6 +4673,9 @@ export const banner_off = () => `НАМАЛЕНИЕ`
 export const banner_mostPopular = () => `Най-популярен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3410,6 +4684,9 @@ export const banner_mostPopular = () => `Най-популярен`
 export const banner_business = () => `Бизнес`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3418,6 +4695,9 @@ export const banner_business = () => `Бизнес`
 export const banner_currentlyActive = () => `В момента активен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3426,6 +4706,9 @@ export const banner_currentlyActive = () => `В момента активен`
 export const banner_offApplied = () => `НАМАЛЕНИЕ Приложено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3434,6 +4717,9 @@ export const banner_offApplied = () => `НАМАЛЕНИЕ Приложено`
 export const banner_spotsLeft = () => `места остават`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3442,6 +4728,9 @@ export const banner_spotsLeft = () => `места остават`
 export const banner_v1Launch = () => `V1 Стартова оферта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3450,6 +4739,9 @@ export const banner_v1Launch = () => `V1 Стартова оферта`
 export const banner_freeBoostEarly = () => `Безплатно ускоряване за ранни потребители`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3458,6 +4750,9 @@ export const banner_freeBoostEarly = () => `Безплатно ускорява�
 export const banner_priorityPlacement = () => `Получете приоритетно позициониране и препоръчани обяви при стартиране • Само за ограничено време`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3466,6 +4761,9 @@ export const banner_priorityPlacement = () => `Получете приорите
 export const banner_startSelling = () => `Продай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3474,6 +4772,9 @@ export const banner_startSelling = () => `Продай`
 export const banner_startSellingFree = () => `Продай безплатно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3482,6 +4783,9 @@ export const banner_startSellingFree = () => `Продай безплатно`
 export const banner_welcomeToDriplo = () => `DRIPLO`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3490,6 +4794,9 @@ export const banner_welcomeToDriplo = () => `DRIPLO`
 export const banner_joinCommunity = () => `Присъедини се към нашата общност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3498,6 +4805,9 @@ export const banner_joinCommunity = () => `Присъедини се към на
 export const banner_sellBuySecond = () => `Продавай и купувай дрехи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3506,6 +4816,9 @@ export const banner_sellBuySecond = () => `Продавай и купувай д
 export const banner_register = () => `Регистрирай се`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3514,6 +4827,9 @@ export const banner_register = () => `Регистрирай се`
 export const banner_recentListings = () => `Скорошни обяви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3522,6 +4838,9 @@ export const banner_recentListings = () => `Скорошни обяви`
 export const banner_live = () => `На живо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3530,6 +4849,9 @@ export const banner_live = () => `На живо`
 export const banner_justAdded = () => `току-що добави`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3538,6 +4860,9 @@ export const banner_justAdded = () => `току-що добави`
 export const banner_viewProduct = () => `Виж`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3546,6 +4871,9 @@ export const banner_viewProduct = () => `Виж`
 export const banner_by = () => `от`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3554,6 +4882,9 @@ export const banner_by = () => `от`
 export const banner_close = () => `Затвори банера`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3562,6 +4893,9 @@ export const banner_close = () => `Затвори банера`
 export const promoted_hotPicks = () => `Горещи предложения`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3570,6 +4904,9 @@ export const promoted_hotPicks = () => `Горещи предложения`
 export const promoted_premiumSellers = () => `Премиум продавачи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3578,6 +4915,9 @@ export const promoted_premiumSellers = () => `Премиум продавачи`
 export const checkout_checkout = () => `Плащане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3586,6 +4926,9 @@ export const checkout_checkout = () => `Плащане`
 export const checkout_completePurchase = () => `Завършете покупката си сигурно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3594,6 +4937,9 @@ export const checkout_completePurchase = () => `Завършете покупк�
 export const checkout_paymentDetails = () => `Детайли за плащане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3602,6 +4948,9 @@ export const checkout_paymentDetails = () => `Детайли за плащане
 export const checkout_initializingPayment = () => `Инициализиране на плащането...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3610,6 +4959,9 @@ export const checkout_initializingPayment = () => `Инициализиране 
 export const checkout_processing = () => `Обработка...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3618,6 +4970,9 @@ export const checkout_processing = () => `Обработка...`
 export const checkout_completePurchaseButton = () => `Завърши покупката`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3626,6 +4981,9 @@ export const checkout_completePurchaseButton = () => `Завърши покуп�
 export const checkout_orderSummary = () => `Обобщение на поръчката`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3634,6 +4992,9 @@ export const checkout_orderSummary = () => `Обобщение на поръчк
 export const checkout_serviceFee = () => `Такса за услуга`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3642,6 +5003,9 @@ export const checkout_serviceFee = () => `Такса за услуга`
 export const checkout_pay = () => `Плати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3650,6 +5014,9 @@ export const checkout_pay = () => `Плати`
 export const checkout_paymentSystemNotInitialized = () => `Системата за плащане не е инициализирана`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3658,6 +5025,9 @@ export const checkout_paymentSystemNotInitialized = () => `Системата з
 export const checkout_paymentFailed = () => `Плащането неуспешно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3666,6 +5036,9 @@ export const checkout_paymentFailed = () => `Плащането неуспешн
 export const checkout_paymentSuccessful = () => `Плащането е успешно!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3674,6 +5047,9 @@ export const checkout_paymentSuccessful = () => `Плащането е успе�
 export const checkout_paymentSuccessfulDesc = () => `Благодарим ви за покупката. Вашата поръчка е потвърдена и продавачът е уведомен.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3682,6 +5058,9 @@ export const checkout_paymentSuccessfulDesc = () => `Благодарим ви �
 export const checkout_paymentReference = () => `Референция на плащането`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3690,6 +5069,9 @@ export const checkout_paymentReference = () => `Референция на пла
 export const checkout_viewYourOrders = () => `Вижте вашите поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3698,6 +5080,9 @@ export const checkout_viewYourOrders = () => `Вижте вашите поръч
 export const checkout_continueShopping = () => `Продължете пазаруването`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3706,6 +5091,9 @@ export const checkout_continueShopping = () => `Продължете пазар�
 export const checkout_emailConfirmation = () => `Ще получите имейл потвърждение скоро с детайли за вашата поръчка.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3714,6 +5102,9 @@ export const checkout_emailConfirmation = () => `Ще получите имей�
 export const search_itemsFound = () => `артикула намерени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3722,6 +5113,9 @@ export const search_itemsFound = () => `артикула намерени`
 export const search_for = () => `за`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3730,6 +5124,9 @@ export const search_for = () => `за`
 export const search_filters = () => `Филтри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3738,6 +5135,9 @@ export const search_filters = () => `Филтри`
 export const search_quickFilters = () => `Бързи филтри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3746,6 +5146,9 @@ export const search_quickFilters = () => `Бързи филтри`
 export const search_size = () => `Размер`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3754,6 +5157,9 @@ export const search_size = () => `Размер`
 export const search_brand = () => `Марка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3762,6 +5168,9 @@ export const search_brand = () => `Марка`
 export const search_condition = () => `Състояние`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3770,6 +5179,9 @@ export const search_condition = () => `Състояние`
 export const search_priceRange = () => `Ценови диапазон`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3778,6 +5190,9 @@ export const search_priceRange = () => `Ценови диапазон`
 export const search_allBrands = () => `Всички марки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3786,6 +5201,9 @@ export const search_allBrands = () => `Всички марки`
 export const search_allConditions = () => `Всички състояния`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3794,6 +5212,9 @@ export const search_allConditions = () => `Всички състояния`
 export const search_clearAll = () => `Изчисти всички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3802,6 +5223,9 @@ export const search_clearAll = () => `Изчисти всички`
 export const search_applyFilters = () => `Приложи филтри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3810,6 +5234,9 @@ export const search_applyFilters = () => `Приложи филтри`
 export const search_back = () => `Назад`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3818,6 +5245,9 @@ export const search_back = () => `Назад`
 export const search_noItemsFound = () => `Няма намерени артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3826,6 +5256,9 @@ export const search_noItemsFound = () => `Няма намерени артику
 export const search_adjustFilters = () => `Опитайте да настроите вашите филтри или условия за търсене`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3834,6 +5267,9 @@ export const search_adjustFilters = () => `Опитайте да настрои�
 export const search_clearAllFilters = () => `Изчисти всички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3842,6 +5278,9 @@ export const search_clearAllFilters = () => `Изчисти всички`
 export const search_min = () => `Мин`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3850,6 +5289,9 @@ export const search_min = () => `Мин`
 export const search_max = () => `Макс`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3858,6 +5300,9 @@ export const search_max = () => `Макс`
 export const search_relevance = () => `Релевантност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3866,6 +5311,9 @@ export const search_relevance = () => `Релевантност`
 export const search_newestFirst = () => `Най-нови първо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3874,6 +5322,9 @@ export const search_newestFirst = () => `Най-нови първо`
 export const search_priceLowToHigh = () => `Цена ↑`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3882,6 +5333,9 @@ export const search_priceLowToHigh = () => `Цена ↑`
 export const search_priceHighToLow = () => `Цена ↓`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3890,6 +5344,9 @@ export const search_priceHighToLow = () => `Цена ↓`
 export const sell_includes = () => `включва`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3898,6 +5355,9 @@ export const sell_includes = () => `включва`
 export const sell_selected = () => `избрано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3906,6 +5366,9 @@ export const sell_selected = () => `избрано`
 export const sell_accessoriesList = () => `списък с аксесоари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3914,6 +5377,9 @@ export const sell_accessoriesList = () => `списък с аксесоари`
 export const sell_categoryTitle = () => `Избери категория`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3922,6 +5388,9 @@ export const sell_categoryTitle = () => `Избери категория`
 export const sell_categoryDescription = () => `Избери категорията, която най-добре описва твоя артикул`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3930,6 +5399,9 @@ export const sell_categoryDescription = () => `Избери категорият
 export const sell_beMoreSpecific = () => `Бъди по-конкретен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3938,6 +5410,9 @@ export const sell_beMoreSpecific = () => `Бъди по-конкретен`
 export const sell_optional = () => `(опционално)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3946,6 +5421,9 @@ export const sell_optional = () => `(опционално)`
 export const sell_typeCategoryPlaceholder = () => `Въведи категория...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3954,6 +5432,9 @@ export const sell_typeCategoryPlaceholder = () => `Въведи категори
 export const sell_moreTag = () => `още`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3962,6 +5443,9 @@ export const sell_moreTag = () => `още`
 export const filter_under20 = () => `Под 20лв`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3970,6 +5454,9 @@ export const filter_under20 = () => `Под 20лв`
 export const filter_newToday = () => `Нови днес`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3978,6 +5465,9 @@ export const filter_newToday = () => `Нови днес`
 export const filter_freeShipping = () => `Безплатна доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3986,6 +5476,9 @@ export const filter_freeShipping = () => `Безплатна доставка`
 export const condition_new = () => `Нов`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3994,6 +5487,9 @@ export const condition_new = () => `Нов`
 export const condition_likeNew = () => `Като нов`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4002,6 +5498,9 @@ export const condition_likeNew = () => `Като нов`
 export const condition_good = () => `Добър`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4010,6 +5509,9 @@ export const condition_good = () => `Добър`
 export const condition_fair = () => `Задоволителен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4018,6 +5520,9 @@ export const condition_fair = () => `Задоволителен`
 export const condition_newWithTags = () => `Нов с етикети`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4026,6 +5531,9 @@ export const condition_newWithTags = () => `Нов с етикети`
 export const subcategory_dresses = () => `Рокли`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4034,6 +5542,9 @@ export const subcategory_dresses = () => `Рокли`
 export const subcategory_tops = () => `Топове`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4042,6 +5553,9 @@ export const subcategory_tops = () => `Топове`
 export const subcategory_jeans = () => `Дънки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4050,6 +5564,9 @@ export const subcategory_jeans = () => `Дънки`
 export const subcategory_skirts = () => `Поли`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4058,6 +5575,9 @@ export const subcategory_skirts = () => `Поли`
 export const subcategory_jackets = () => `Якета`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4066,6 +5586,9 @@ export const subcategory_jackets = () => `Якета`
 export const subcategory_accessories = () => `Аксесоари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4074,6 +5597,9 @@ export const subcategory_accessories = () => `Аксесоари`
 export const subcategory_tshirts = () => `Тениски`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4082,6 +5608,9 @@ export const subcategory_tshirts = () => `Тениски`
 export const subcategory_shirts = () => `Ризи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4090,6 +5619,9 @@ export const subcategory_shirts = () => `Ризи`
 export const subcategory_suits = () => `Костюми`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4098,6 +5630,9 @@ export const subcategory_suits = () => `Костюми`
 export const subcategory_watches = () => `Часовници`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4106,6 +5641,9 @@ export const subcategory_watches = () => `Часовници`
 export const subcategory_baby = () => `Бебе (0-2)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4114,6 +5652,9 @@ export const subcategory_baby = () => `Бебе (0-2)`
 export const subcategory_girls2to8 = () => `Момичета (2-8)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4122,6 +5663,9 @@ export const subcategory_girls2to8 = () => `Момичета (2-8)`
 export const subcategory_boys2to8 = () => `Момчета (2-8)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4130,6 +5674,9 @@ export const subcategory_boys2to8 = () => `Момчета (2-8)`
 export const subcategory_girls9to16 = () => `Момичета (9-16)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4138,6 +5685,9 @@ export const subcategory_girls9to16 = () => `Момичета (9-16)`
 export const subcategory_boys9to16 = () => `Момчета (9-16)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4146,6 +5696,9 @@ export const subcategory_boys9to16 = () => `Момчета (9-16)`
 export const subcategory_school = () => `Училище`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4154,6 +5707,9 @@ export const subcategory_school = () => `Училище`
 export const subcategory_toys = () => `Играчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4162,6 +5718,9 @@ export const subcategory_toys = () => `Играчки`
 export const subcategory_dogApparel = () => `Дрехи за кучета`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4170,6 +5729,9 @@ export const subcategory_dogApparel = () => `Дрехи за кучета`
 export const subcategory_catAccessories = () => `Аксесоари за котки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4178,6 +5740,9 @@ export const subcategory_catAccessories = () => `Аксесоари за кот�
 export const subcategory_petToys = () => `Играчки за животни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4186,6 +5751,9 @@ export const subcategory_petToys = () => `Играчки за животни`
 export const subcategory_leashes = () => `Каишки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4194,6 +5762,9 @@ export const subcategory_leashes = () => `Каишки`
 export const subcategory_beds = () => `Легла`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4202,6 +5773,9 @@ export const subcategory_beds = () => `Легла`
 export const subcategory_foodBowls = () => `Купи за храна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4210,6 +5784,9 @@ export const subcategory_foodBowls = () => `Купи за храна`
 export const subcategory_carriers = () => `Преносими`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4218,6 +5795,9 @@ export const subcategory_carriers = () => `Преносими`
 export const subcategory_sneakers = () => `Кецове`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4226,6 +5806,9 @@ export const subcategory_sneakers = () => `Кецове`
 export const subcategory_boots = () => `Ботуши`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4234,6 +5817,9 @@ export const subcategory_boots = () => `Ботуши`
 export const subcategory_heels = () => `Токчета`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4242,6 +5828,9 @@ export const subcategory_heels = () => `Токчета`
 export const subcategory_flats = () => `Равни обувки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4250,6 +5839,9 @@ export const subcategory_flats = () => `Равни обувки`
 export const subcategory_sandals = () => `Сандали`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4258,6 +5850,9 @@ export const subcategory_sandals = () => `Сандали`
 export const subcategory_athletic = () => `Спортни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4266,6 +5861,9 @@ export const subcategory_athletic = () => `Спортни`
 export const subcategory_dressShoes = () => `Елегантни обувки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4274,6 +5872,9 @@ export const subcategory_dressShoes = () => `Елегантни обувки`
 export const subcategory_handbags = () => `Дамски чанти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4282,6 +5883,9 @@ export const subcategory_handbags = () => `Дамски чанти`
 export const subcategory_backpacks = () => `Раници`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4290,6 +5894,9 @@ export const subcategory_backpacks = () => `Раници`
 export const subcategory_totes = () => `Тотални чанти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4298,6 +5905,9 @@ export const subcategory_totes = () => `Тотални чанти`
 export const subcategory_clutches = () => `Клъч чанти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4306,6 +5916,9 @@ export const subcategory_clutches = () => `Клъч чанти`
 export const subcategory_crossbody = () => `Презрамни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4314,6 +5927,9 @@ export const subcategory_crossbody = () => `Презрамни`
 export const subcategory_travel = () => `Пътуване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4322,6 +5938,9 @@ export const subcategory_travel = () => `Пътуване`
 export const subcategory_laptopBags = () => `Чанти за лаптоп`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4330,6 +5949,9 @@ export const subcategory_laptopBags = () => `Чанти за лаптоп`
 export const subcategory_decor = () => `Декор`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4338,6 +5960,9 @@ export const subcategory_decor = () => `Декор`
 export const subcategory_bedding = () => `Спално бельо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4346,6 +5971,9 @@ export const subcategory_bedding = () => `Спално бельо`
 export const subcategory_kitchen = () => `Кухня`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4354,6 +5982,9 @@ export const subcategory_kitchen = () => `Кухня`
 export const subcategory_lighting = () => `Осветление`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4362,6 +5993,9 @@ export const subcategory_lighting = () => `Осветление`
 export const subcategory_storage = () => `Съхранение`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4370,6 +6004,9 @@ export const subcategory_storage = () => `Съхранение`
 export const subcategory_garden = () => `Градина`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4378,6 +6015,9 @@ export const subcategory_garden = () => `Градина`
 export const subcategory_art = () => `Изкуство`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4386,6 +6026,9 @@ export const subcategory_art = () => `Изкуство`
 export const subcategory_textiles = () => `Текстил`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4394,6 +6037,9 @@ export const subcategory_textiles = () => `Текстил`
 export const subcategory_makeup = () => `Грим`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4402,6 +6048,9 @@ export const subcategory_makeup = () => `Грим`
 export const subcategory_skincare = () => `Грижа за кожа`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4410,6 +6059,9 @@ export const subcategory_skincare = () => `Грижа за кожа`
 export const subcategory_fragrance = () => `Парфюми`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4418,6 +6070,9 @@ export const subcategory_fragrance = () => `Парфюми`
 export const subcategory_hairCare = () => `Грижа за коса`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4426,6 +6081,9 @@ export const subcategory_hairCare = () => `Грижа за коса`
 export const subcategory_tools = () => `Инструменти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4434,6 +6092,9 @@ export const subcategory_tools = () => `Инструменти`
 export const subcategory_nails = () => `Нокти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4442,6 +6103,9 @@ export const subcategory_nails = () => `Нокти`
 export const subcategory_bathBody = () => `Баня и тяло`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4450,6 +6114,9 @@ export const subcategory_bathBody = () => `Баня и тяло`
 export const subcategory_sets = () => `Комплекти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4458,6 +6125,9 @@ export const subcategory_sets = () => `Комплекти`
 export const home_searchSuggestions_vintageJackets = () => `Винтидж якета`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4466,6 +6136,9 @@ export const home_searchSuggestions_vintageJackets = () => `Винтидж як�
 export const home_searchSuggestions_designerBags = () => `Дизайнерски чанти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4474,6 +6147,9 @@ export const home_searchSuggestions_designerBags = () => `Дизайнерски
 export const home_searchSuggestions_summerDresses = () => `Летни рокли`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4482,6 +6158,9 @@ export const home_searchSuggestions_summerDresses = () => `Летни рокли
 export const home_searchSuggestions_sneakers = () => `Кецове`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4490,6 +6169,9 @@ export const home_searchSuggestions_sneakers = () => `Кецове`
 export const home_trending_vintageJackets = () => `Винтидж якета`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4498,6 +6180,9 @@ export const home_trending_vintageJackets = () => `Винтидж якета`
 export const home_trending_y2kJeans = () => `Y2K дънки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4506,6 +6191,9 @@ export const home_trending_y2kJeans = () => `Y2K дънки`
 export const home_trending_designerBagsUnder100 = () => `Дизайнерски чанти под 100лв`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4514,6 +6202,9 @@ export const home_trending_designerBagsUnder100 = () => `Дизайнерски 
 export const home_browseAll = () => `Разгледай всички артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4522,6 +6213,9 @@ export const home_browseAll = () => `Разгледай всички артик�
 export const seller_premiumSeller = () => `Премиум`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4530,6 +6224,9 @@ export const seller_premiumSeller = () => `Премиум`
 export const seller_premiumSellerDescription = () => `Премиум продавач с ексклузивни артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4538,6 +6235,9 @@ export const seller_premiumSellerDescription = () => `Премиум прода�
 export const sell_listItem = () => `Публикувай артикул`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4546,6 +6246,9 @@ export const sell_listItem = () => `Публикувай артикул`
 export const sell_saveDraft = () => `Запази чернова`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4554,6 +6257,9 @@ export const sell_saveDraft = () => `Запази чернова`
 export const sell_photosAndDetails = () => `Снимки и детайли`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4562,6 +6268,9 @@ export const sell_photosAndDetails = () => `Снимки и детайли`
 export const sell_productInfo = () => `Информация за продукта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4570,6 +6279,9 @@ export const sell_productInfo = () => `Информация за продукт�
 export const sell_priceAndPublish = () => `Цена и публикуване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4578,6 +6290,9 @@ export const sell_priceAndPublish = () => `Цена и публикуване`
 export const sell_photos = () => `Снимки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4586,6 +6301,9 @@ export const sell_photos = () => `Снимки`
 export const sell_add = () => `Добави`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4594,6 +6312,9 @@ export const sell_add = () => `Добави`
 export const sell_cover = () => `Корица`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4602,6 +6323,9 @@ export const sell_cover = () => `Корица`
 export const sell_title = () => `Заглавие`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4610,6 +6334,9 @@ export const sell_title = () => `Заглавие`
 export const sell_titlePlaceholder = () => `напр. Винтидж дънково яке Levi's`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4618,6 +6345,9 @@ export const sell_titlePlaceholder = () => `напр. Винтидж дънко�
 export const sell_description = () => `Описание`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4626,6 +6356,9 @@ export const sell_description = () => `Описание`
 export const sell_descriptionPlaceholder = () => `Опишете вашия артикул...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4634,6 +6367,9 @@ export const sell_descriptionPlaceholder = () => `Опишете вашия ар
 export const sell_category = () => `Категория`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4642,6 +6378,9 @@ export const sell_category = () => `Категория`
 export const sell_selectCategory = () => `Изберете категория`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4650,6 +6389,9 @@ export const sell_selectCategory = () => `Изберете категория`
 export const sell_subcategory = () => `Подкатегория`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4658,6 +6400,9 @@ export const sell_subcategory = () => `Подкатегория`
 export const sell_selectSubcategory = () => `Изберете подкатегория`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4666,6 +6411,9 @@ export const sell_selectSubcategory = () => `Изберете подкатего
 export const sell_brand = () => `Марка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4674,6 +6422,9 @@ export const sell_brand = () => `Марка`
 export const sell_enterBrandName = () => `Въведете име на марка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4682,6 +6433,9 @@ export const sell_enterBrandName = () => `Въведете име на марк�
 export const sell_size = () => `Размер`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4690,6 +6444,9 @@ export const sell_size = () => `Размер`
 export const sell_selectSize = () => `Изберете размер`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4698,6 +6455,9 @@ export const sell_selectSize = () => `Изберете размер`
 export const sell_condition = () => `Състояние`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4706,6 +6466,9 @@ export const sell_condition = () => `Състояние`
 export const sell_selectCondition = () => `Изберете състояние`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4714,6 +6477,9 @@ export const sell_selectCondition = () => `Изберете състояние`
 export const sell_color = () => `Цвят`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4722,6 +6488,9 @@ export const sell_color = () => `Цвят`
 export const sell_selectColor = () => `Изберете цвят`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4730,6 +6499,9 @@ export const sell_selectColor = () => `Изберете цвят`
 export const sell_material = () => `Материал`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4738,6 +6510,9 @@ export const sell_material = () => `Материал`
 export const sell_selectMaterial = () => `Изберете материал`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4746,6 +6521,9 @@ export const sell_selectMaterial = () => `Изберете материал`
 export const sell_price = () => `Цена`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4754,6 +6532,9 @@ export const sell_price = () => `Цена`
 export const sell_shippingPrice = () => `Цена на доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4762,6 +6543,9 @@ export const sell_shippingPrice = () => `Цена на доставка`
 export const sell_tags = () => `Етикети`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4770,6 +6554,9 @@ export const sell_tags = () => `Етикети`
 export const sell_addTag = () => `Добави етикет`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4778,6 +6565,9 @@ export const sell_addTag = () => `Добави етикет`
 export const sell_premiumBoost = () => `Премиум промоция`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4786,6 +6576,9 @@ export const sell_premiumBoost = () => `Премиум промоция`
 export const sell_boostYourListing = () => `Промотирайте вашата обява`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4794,6 +6587,9 @@ export const sell_boostYourListing = () => `Промотирайте вашат�
 export const sell_boostDescription = () => `Получете 3 пъти повече видимост за 7 дни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4802,6 +6598,9 @@ export const sell_boostDescription = () => `Получете 3 пъти пове
 export const sell_publish = () => `Публикувай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4810,6 +6609,9 @@ export const sell_publish = () => `Публикувай`
 export const sell_publishing = () => `Публикуване...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4818,6 +6620,9 @@ export const sell_publishing = () => `Публикуване...`
 export const sell_brandSubscriptionRequired = () => `Необходим е абонамент за бранд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4826,6 +6631,9 @@ export const sell_brandSubscriptionRequired = () => `Необходим е аб�
 export const sell_brandSubscriptionDescription = () => `За да публикувате продукти като бизнес акаунт, имате нужда от активен Brand абонамент.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4834,6 +6642,9 @@ export const sell_brandSubscriptionDescription = () => `За да публику
 export const sell_brandPlanFeatures = () => `Характеристики на Brand план:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4842,6 +6653,9 @@ export const sell_brandPlanFeatures = () => `Характеристики на B
 export const sell_listUnlimitedProducts = () => `Публикувайте неограничени продукти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4850,6 +6664,9 @@ export const sell_listUnlimitedProducts = () => `Публикувайте нео
 export const sell_brandVerificationBadge = () => `Значка за верификация на бранд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4858,6 +6675,9 @@ export const sell_brandVerificationBadge = () => `Значка за верифи
 export const sell_businessAccountFeatures = () => `Функции за бизнес акаунт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4866,6 +6686,9 @@ export const sell_businessAccountFeatures = () => `Функции за бизн�
 export const sell_prioritySupport = () => `Приоритетна поддръжка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4874,6 +6697,9 @@ export const sell_prioritySupport = () => `Приоритетна поддръж
 export const sell_subscribeToBrandPlan = () => `Абонирай се за Brand план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4882,6 +6708,9 @@ export const sell_subscribeToBrandPlan = () => `Абонирай се за Brand
 export const sell_switchToPersonalAccount = () => `Превключи към личен акаунт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4890,6 +6719,9 @@ export const sell_switchToPersonalAccount = () => `Превключи към л�
 export const sell_uploadError = () => `Неуспешно качване на продукт. Моля, опитайте отново.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4898,6 +6730,9 @@ export const sell_uploadError = () => `Неуспешно качване на п
 export const sell_atLeastOnePhoto = () => `Моля, добавете поне една снимка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4906,6 +6741,9 @@ export const sell_atLeastOnePhoto = () => `Моля, добавете поне �
 export const sell_month = () => `месец`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4914,6 +6752,9 @@ export const sell_month = () => `месец`
 export const sell_next = () => `Напред`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4922,6 +6763,9 @@ export const sell_next = () => `Напред`
 export const sell_previous = () => `Назад`
 
 
+
+
+	
 /**
  * @param {{ username: NonNullable<unknown> }} params
  * @returns {string}
@@ -4930,6 +6774,9 @@ export const sell_previous = () => `Назад`
 export const dashboard_welcomeBack = (params) => `Добре дошъл, ${params.username}!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4938,6 +6785,9 @@ export const dashboard_welcomeBack = (params) => `Добре дошъл, ${param
 export const dashboard_shopStatus = () => `Ето какво се случва с твоя магазин днес.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4946,6 +6796,9 @@ export const dashboard_shopStatus = () => `Ето какво се случва �
 export const dashboard_newListing = () => `Нова обява`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4954,6 +6807,9 @@ export const dashboard_newListing = () => `Нова обява`
 export const dashboard_soldItems = () => `Продадени артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4962,6 +6818,9 @@ export const dashboard_soldItems = () => `Продадени артикули`
 export const dashboard_earnings = () => `Печалби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4970,6 +6829,9 @@ export const dashboard_earnings = () => `Печалби`
 export const dashboard_upgrade = () => `Надгради`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4978,6 +6840,9 @@ export const dashboard_upgrade = () => `Надгради`
 export const dashboard_adminPanel = () => `Админ панел`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4986,6 +6851,9 @@ export const dashboard_adminPanel = () => `Админ панел`
 export const dashboard_analytics = () => `Аналитики`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4994,6 +6862,9 @@ export const dashboard_analytics = () => `Аналитики`
 export const dashboard_settings = () => `Настройки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5002,6 +6873,9 @@ export const dashboard_settings = () => `Настройки`
 export const dashboard_availableBalance = () => `Наличен баланс`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5010,6 +6884,9 @@ export const dashboard_availableBalance = () => `Наличен баланс`
 export const dashboard_totalEarned = () => `Общо спечелено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5018,6 +6895,9 @@ export const dashboard_totalEarned = () => `Общо спечелено`
 export const dashboard_monthSales = () => `Продажби този месец`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5026,6 +6906,9 @@ export const dashboard_monthSales = () => `Продажби този месец`
 export const dashboard_lastMonthIncrease = () => `+12% от миналия месец`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5034,6 +6917,9 @@ export const dashboard_lastMonthIncrease = () => `+12% от миналия ме�
 export const dashboard_overview = () => `Преглед`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5042,6 +6928,9 @@ export const dashboard_overview = () => `Преглед`
 export const dashboard_listings = () => `Обяви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5050,6 +6939,9 @@ export const dashboard_listings = () => `Обяви`
 export const dashboard_orders = () => `Поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5058,6 +6950,9 @@ export const dashboard_orders = () => `Поръчки`
 export const dashboard_sales = () => `Продажби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5066,6 +6961,9 @@ export const dashboard_sales = () => `Продажби`
 export const dashboard_totalRevenue = () => `Обща печалба`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5074,6 +6972,9 @@ export const dashboard_totalRevenue = () => `Обща печалба`
 export const dashboard_allTime = () => `Общо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5082,6 +6983,9 @@ export const dashboard_allTime = () => `Общо`
 export const dashboard_activeListings = () => `Активни обяви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5090,6 +6994,9 @@ export const dashboard_activeListings = () => `Активни обяви`
 export const dashboard_currentlyLive = () => `Моментно активни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5098,6 +7005,9 @@ export const dashboard_currentlyLive = () => `Моментно активни`
 export const dashboard_totalViews = () => `Общо прегледи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5106,6 +7016,9 @@ export const dashboard_totalViews = () => `Общо прегледи`
 export const dashboard_thisMonth = () => `Този месец`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5114,6 +7027,9 @@ export const dashboard_thisMonth = () => `Този месец`
 export const dashboard_conversionRate = () => `Конверсия`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5122,6 +7038,9 @@ export const dashboard_conversionRate = () => `Конверсия`
 export const dashboard_viewsToSales = () => `Прегледи към продажби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5130,6 +7049,9 @@ export const dashboard_viewsToSales = () => `Прегледи към прода�
 export const dashboard_recentOrders = () => `Последни поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5138,6 +7060,9 @@ export const dashboard_recentOrders = () => `Последни поръчки`
 export const dashboard_viewAll = () => `Виж всички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5146,6 +7071,9 @@ export const dashboard_viewAll = () => `Виж всички`
 export const dashboard_product = () => `Продукт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5154,6 +7082,9 @@ export const dashboard_product = () => `Продукт`
 export const dashboard_buyer = () => `Купувач`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5162,6 +7093,9 @@ export const dashboard_buyer = () => `Купувач`
 export const dashboard_price = () => `Цена`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5170,6 +7104,9 @@ export const dashboard_price = () => `Цена`
 export const dashboard_status = () => `Статус`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5178,6 +7115,9 @@ export const dashboard_status = () => `Статус`
 export const dashboard_time = () => `Време`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5186,6 +7126,9 @@ export const dashboard_time = () => `Време`
 export const dashboard_action = () => `Действие`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5194,6 +7137,9 @@ export const dashboard_action = () => `Действие`
 export const dashboard_view = () => `Виж`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5202,6 +7148,9 @@ export const dashboard_view = () => `Виж`
 export const dashboard_activeListingsTitle = () => `Твоите активни обяви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5210,6 +7159,9 @@ export const dashboard_activeListingsTitle = () => `Твоите активни 
 export const dashboard_manageListings = () => `Управление на обяви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5218,6 +7170,9 @@ export const dashboard_manageListings = () => `Управление на обя�
 export const dashboard_searchListings = () => `Търси обяви...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5226,6 +7181,9 @@ export const dashboard_searchListings = () => `Търси обяви...`
 export const dashboard_filter = () => `Филтър`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5234,6 +7192,9 @@ export const dashboard_filter = () => `Филтър`
 export const dashboard_edit = () => `Редактирай продукт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5242,6 +7203,9 @@ export const dashboard_edit = () => `Редактирай продукт`
 export const dashboard_orderManagement = () => `Управление на поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5250,6 +7214,9 @@ export const dashboard_orderManagement = () => `Управление на пор
 export const dashboard_allOrders = () => `Всички поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5258,6 +7225,9 @@ export const dashboard_allOrders = () => `Всички поръчки`
 export const dashboard_pendingShipment = () => `Очаква изпращане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5266,6 +7236,9 @@ export const dashboard_pendingShipment = () => `Очаква изпращане`
 export const dashboard_shipped = () => `Изпратено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5274,6 +7247,9 @@ export const dashboard_shipped = () => `Изпратено`
 export const dashboard_delivered = () => `Доставено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5282,6 +7258,9 @@ export const dashboard_delivered = () => `Доставено`
 export const dashboard_cancelled = () => `Отказано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5290,6 +7269,9 @@ export const dashboard_cancelled = () => `Отказано`
 export const dashboard_export = () => `Експорт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5298,6 +7280,9 @@ export const dashboard_export = () => `Експорт`
 export const dashboard_orderId = () => `ID на поръчка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5306,6 +7291,9 @@ export const dashboard_orderId = () => `ID на поръчка`
 export const dashboard_total = () => `Общо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5314,6 +7302,9 @@ export const dashboard_total = () => `Общо`
 export const dashboard_date = () => `Дата`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5322,6 +7313,9 @@ export const dashboard_date = () => `Дата`
 export const dashboard_actions = () => `Действия`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5330,6 +7324,9 @@ export const dashboard_actions = () => `Действия`
 export const dashboard_ship = () => `Изпрати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5338,6 +7335,9 @@ export const dashboard_ship = () => `Изпрати`
 export const dashboard_performanceOverview = () => `Преглед на производителността`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5346,6 +7346,9 @@ export const dashboard_performanceOverview = () => `Преглед на прои
 export const dashboard_chartImplemented = () => `Графиката ще бъде реализирана с библиотека за диаграми`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5354,6 +7357,9 @@ export const dashboard_chartImplemented = () => `Графиката ще бъд�
 export const dashboard_topPerformingProducts = () => `Най-добри продукти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5362,6 +7368,9 @@ export const dashboard_topPerformingProducts = () => `Най-добри прод
 export const dashboard_views = () => `прегледи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5370,6 +7379,9 @@ export const dashboard_views = () => `прегледи`
 export const dashboard_trafficSources = () => `Източници на трафик`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5378,6 +7390,9 @@ export const dashboard_trafficSources = () => `Източници на траф�
 export const dashboard_search = () => `Търсене`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5386,6 +7401,9 @@ export const dashboard_search = () => `Търсене`
 export const dashboard_direct = () => `Директно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5394,6 +7412,9 @@ export const dashboard_direct = () => `Директно`
 export const dashboard_social = () => `Социални`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5402,6 +7423,9 @@ export const dashboard_social = () => `Социални`
 export const dashboard_customerDemographics = () => `Демография на клиентите`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5410,6 +7434,9 @@ export const dashboard_customerDemographics = () => `Демография на �
 export const dashboard_age18to24 = () => `Възраст 18-24`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5418,6 +7445,9 @@ export const dashboard_age18to24 = () => `Възраст 18-24`
 export const dashboard_age25to34 = () => `Възраст 25-34`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5426,6 +7456,9 @@ export const dashboard_age25to34 = () => `Възраст 25-34`
 export const dashboard_age35to44 = () => `Възраст 35-44`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5434,6 +7467,9 @@ export const dashboard_age35to44 = () => `Възраст 35-44`
 export const dashboard_age45plus = () => `Възраст 45+`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5442,6 +7478,9 @@ export const dashboard_age45plus = () => `Възраст 45+`
 export const dashboard_shopSettings = () => `Настройки на магазина`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5450,6 +7489,9 @@ export const dashboard_shopSettings = () => `Настройки на магаз�
 export const dashboard_shopName = () => `Име на магазин`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5458,6 +7500,9 @@ export const dashboard_shopName = () => `Име на магазин`
 export const dashboard_shopDescription = () => `Описание на магазин`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5466,6 +7511,9 @@ export const dashboard_shopDescription = () => `Описание на магаз
 export const dashboard_shopDescriptionPlaceholder = () => `Разкажете на купувачите за вашия магазин...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5474,6 +7522,9 @@ export const dashboard_shopDescriptionPlaceholder = () => `Разкажете н
 export const dashboard_vacationMode = () => `Ваканционен режим`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5482,6 +7533,9 @@ export const dashboard_vacationMode = () => `Ваканционен режим`
 export const dashboard_shopCurrentlyActive = () => `Вашият магазин в момента е активен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5490,6 +7544,9 @@ export const dashboard_shopCurrentlyActive = () => `Вашият магазин 
 export const dashboard_shippingSettings = () => `Настройки за доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5498,6 +7555,9 @@ export const dashboard_shippingSettings = () => `Настройки за дос�
 export const dashboard_processingTime = () => `Време за обработка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5506,6 +7566,9 @@ export const dashboard_processingTime = () => `Време за обработк�
 export const dashboard_processingTime1to2Days = () => `1-2 работни дни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5514,6 +7577,9 @@ export const dashboard_processingTime1to2Days = () => `1-2 работни дни
 export const dashboard_processingTime3to5Days = () => `3-5 работни дни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5522,6 +7588,9 @@ export const dashboard_processingTime3to5Days = () => `3-5 работни дни
 export const dashboard_processingTime1Week = () => `1 седмица`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5530,6 +7599,9 @@ export const dashboard_processingTime1Week = () => `1 седмица`
 export const dashboard_defaultShippingPrice = () => `Стандартна цена за доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5538,6 +7610,9 @@ export const dashboard_defaultShippingPrice = () => `Стандартна цен
 export const dashboard_paymentSettings = () => `Настройки за плащане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5546,6 +7621,9 @@ export const dashboard_paymentSettings = () => `Настройки за плащ
 export const dashboard_bankAccount = () => `Банкова сметка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5554,6 +7632,9 @@ export const dashboard_bankAccount = () => `Банкова сметка`
 export const dashboard_change = () => `Промени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5562,6 +7643,9 @@ export const dashboard_change = () => `Промени`
 export const dashboard_payoutSchedule = () => `График за изплащания`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5570,6 +7654,9 @@ export const dashboard_payoutSchedule = () => `График за изплаща�
 export const dashboard_daily = () => `Ежедневно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5578,6 +7665,9 @@ export const dashboard_daily = () => `Ежедневно`
 export const dashboard_weekly = () => `Седмично`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5586,6 +7676,9 @@ export const dashboard_weekly = () => `Седмично`
 export const dashboard_monthly = () => `Месечно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5594,6 +7687,9 @@ export const dashboard_monthly = () => `Месечно`
 export const dashboard_saveSettings = () => `Запази настройки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5602,6 +7698,9 @@ export const dashboard_saveSettings = () => `Запази настройки`
 export const dashboard_justNow = () => `току-що`
 
 
+
+
+	
 /**
  * @param {{ minutes: NonNullable<unknown> }} params
  * @returns {string}
@@ -5610,6 +7709,9 @@ export const dashboard_justNow = () => `току-що`
 export const dashboard_minutesAgo = (params) => `преди ${params.minutes} мин`
 
 
+
+
+	
 /**
  * @param {{ hours: NonNullable<unknown> }} params
  * @returns {string}
@@ -5618,6 +7720,9 @@ export const dashboard_minutesAgo = (params) => `преди ${params.minutes} м
 export const dashboard_hoursAgo = (params) => `преди ${params.hours} ч`
 
 
+
+
+	
 /**
  * @param {{ days: NonNullable<unknown> }} params
  * @returns {string}
@@ -5626,6 +7731,9 @@ export const dashboard_hoursAgo = (params) => `преди ${params.hours} ч`
 export const dashboard_daysAgo = (params) => `преди ${params.days} дн`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5634,6 +7742,9 @@ export const dashboard_daysAgo = (params) => `преди ${params.days} дн`
 export const admin_dashboard = () => `Преглед на таблото`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5642,6 +7753,9 @@ export const admin_dashboard = () => `Преглед на таблото`
 export const admin_monitorMetrics = () => `Наблюдавайте ключовите показатели и активност на платформата`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5650,6 +7764,9 @@ export const admin_monitorMetrics = () => `Наблюдавайте ключов
 export const admin_totalUsers = () => `Общо потребители`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5658,6 +7775,9 @@ export const admin_totalUsers = () => `Общо потребители`
 export const admin_totalProducts = () => `Общо продукти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5666,6 +7786,9 @@ export const admin_totalProducts = () => `Общо продукти`
 export const admin_totalOrders = () => `Общо поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5674,6 +7797,9 @@ export const admin_totalOrders = () => `Общо поръчки`
 export const admin_totalRevenue = () => `Общи приходи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5682,6 +7808,9 @@ export const admin_totalRevenue = () => `Общи приходи`
 export const admin_recentOrders = () => `Последни поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5690,6 +7819,9 @@ export const admin_recentOrders = () => `Последни поръчки`
 export const admin_orderId = () => `ID на поръчка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5698,6 +7830,9 @@ export const admin_orderId = () => `ID на поръчка`
 export const admin_buyer = () => `Купувач`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5706,6 +7841,9 @@ export const admin_buyer = () => `Купувач`
 export const admin_seller = () => `Продавач`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5714,6 +7852,9 @@ export const admin_seller = () => `Продавач`
 export const admin_amount = () => `Сума`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5722,6 +7863,9 @@ export const admin_amount = () => `Сума`
 export const admin_status = () => `Статус`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5730,6 +7874,9 @@ export const admin_status = () => `Статус`
 export const admin_date = () => `Дата`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5738,6 +7885,9 @@ export const admin_date = () => `Дата`
 export const admin_noOrders = () => `Все още няма поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5746,6 +7896,9 @@ export const admin_noOrders = () => `Все още няма поръчки`
 export const admin_managePayouts = () => `Управление на изплащания`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5754,6 +7907,9 @@ export const admin_managePayouts = () => `Управление на изплащ
 export const admin_viewMainSite = () => `Виж основния сайт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5762,6 +7918,9 @@ export const admin_viewMainSite = () => `Виж основния сайт`
 export const admin_driploAdmin = () => `Админ Driplo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5770,6 +7929,9 @@ export const admin_driploAdmin = () => `Админ Driplo`
 export const admin_backToSite = () => `Назад към сайта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5778,6 +7940,9 @@ export const admin_backToSite = () => `Назад към сайта`
 export const admin_back = () => `Назад`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5786,6 +7951,9 @@ export const admin_back = () => `Назад`
 export const admin_payoutManagement = () => `Управление на изплащания`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5794,6 +7962,9 @@ export const admin_payoutManagement = () => `Управление на изпл�
 export const admin_trackProcessPayouts = () => `Проследяване и обработка на изплащания към продавачи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5802,6 +7973,9 @@ export const admin_trackProcessPayouts = () => `Проследяване и об
 export const admin_refresh = () => `Обнови`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5810,6 +7984,9 @@ export const admin_refresh = () => `Обнови`
 export const admin_loading = () => `Зарежда...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5818,6 +7995,9 @@ export const admin_loading = () => `Зарежда...`
 export const admin_pendingPayouts = () => `Изплащания в очакване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5826,6 +8006,9 @@ export const admin_pendingPayouts = () => `Изплащания в очаква�
 export const admin_processing = () => `Обработва се`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5834,6 +8017,9 @@ export const admin_processing = () => `Обработва се`
 export const admin_totalPendingAmount = () => `Обща сума в очакване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5842,6 +8028,9 @@ export const admin_totalPendingAmount = () => `Обща сума в очаква
 export const admin_platformCommission = () => `Комисия на платформата`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5850,6 +8039,9 @@ export const admin_platformCommission = () => `Комисия на платфо�
 export const admin_pending = () => `В очакване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5858,6 +8050,9 @@ export const admin_pending = () => `В очакване`
 export const admin_noPendingPayouts = () => `Няма изплащания в очакване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5866,6 +8061,9 @@ export const admin_noPendingPayouts = () => `Няма изплащания в о
 export const admin_noProcessingPayouts = () => `Няма изплащания в обработка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5874,6 +8072,9 @@ export const admin_noProcessingPayouts = () => `Няма изплащания в
 export const admin_payoutsAppearHere = () => `Изплащанията ще се появят тук, когато са готови за обработка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5882,6 +8083,9 @@ export const admin_payoutsAppearHere = () => `Изплащанията ще се
 export const admin_commission = () => `Комисия`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5890,6 +8094,9 @@ export const admin_commission = () => `Комисия`
 export const admin_delivered = () => `Доставено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5898,6 +8105,9 @@ export const admin_delivered = () => `Доставено`
 export const admin_created = () => `Създадено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5906,6 +8116,9 @@ export const admin_created = () => `Създадено`
 export const admin_startProcessing = () => `Започни обработка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5914,6 +8127,9 @@ export const admin_startProcessing = () => `Започни обработка`
 export const admin_markCompleted = () => `Отбележи като завършено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5922,6 +8138,9 @@ export const admin_markCompleted = () => `Отбележи като завърш
 export const admin_markFailed = () => `Отбележи като неуспешно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5930,6 +8149,9 @@ export const admin_markFailed = () => `Отбележи като неуспеш�
 export const admin_ref = () => `Реф`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5938,6 +8160,9 @@ export const admin_ref = () => `Реф`
 export const category_all = () => `Всички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5946,6 +8171,9 @@ export const category_all = () => `Всички`
 export const category_itemsCount = () => `артикула`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5954,6 +8182,9 @@ export const category_itemsCount = () => `артикула`
 export const category_loadMore = () => `Покажи още артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5962,6 +8193,9 @@ export const category_loadMore = () => `Покажи още артикули`
 export const category_searchPlaceholder = () => `Търси в категорията...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5970,6 +8204,9 @@ export const category_searchPlaceholder = () => `Търси в категори�
 export const category_clearAll = () => `Изчисти всички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5978,6 +8215,9 @@ export const category_clearAll = () => `Изчисти всички`
 export const category_filters = () => `Филтри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5986,6 +8226,9 @@ export const category_filters = () => `Филтри`
 export const category_categories = () => `Категории`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5994,6 +8237,9 @@ export const category_categories = () => `Категории`
 export const ui_scroll = () => `Скролвай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6002,6 +8248,9 @@ export const ui_scroll = () => `Скролвай`
 export const onboarding_tutorial_welcomeTitle = () => `Добре дошли в Driplo! 👋`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6010,6 +8259,9 @@ export const onboarding_tutorial_welcomeTitle = () => `Добре дошли в 
 export const onboarding_tutorial_welcomeContent = () => `Всичко е готово! Нека ви покажем как да се възползвате максимално от нашия пазар.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6018,6 +8270,9 @@ export const onboarding_tutorial_welcomeContent = () => `Всичко е гот�
 export const onboarding_tutorial_discoverTitle = () => `Открийте невероятни артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6026,6 +8281,9 @@ export const onboarding_tutorial_discoverTitle = () => `Открийте нев�
 export const onboarding_tutorial_discoverContent = () => `Използвайте лентата за търсене или разгледайте категориите, за да откриете уникални дрехи.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6034,6 +8292,9 @@ export const onboarding_tutorial_discoverContent = () => `Използвайте
 export const onboarding_tutorial_listItemTitle = () => `Качете първия си артикул`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6042,6 +8303,9 @@ export const onboarding_tutorial_listItemTitle = () => `Качете първи�
 export const onboarding_tutorial_listItemContentBrand = () => `Като бранд акаунт имате достъп до инструменти за масово качване и разширена аналитика.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6050,6 +8314,9 @@ export const onboarding_tutorial_listItemContentBrand = () => `Като бран
 export const onboarding_tutorial_listItemContentPersonal = () => `Готови за продажба? Кликнете бутона '+' за да качите първия си артикул. Добавете качествени снимки и честни описания.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6058,6 +8325,9 @@ export const onboarding_tutorial_listItemContentPersonal = () => `Готови �
 export const onboarding_tutorial_stayConnectedTitle = () => `Останете свързани`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6066,6 +8336,9 @@ export const onboarding_tutorial_stayConnectedTitle = () => `Останете с
 export const onboarding_tutorial_stayConnectedContent = () => `Използвайте нашата система за съобщения за чат с купувачи/продавачи. Получавайте известия за нови съобщения и оферти.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6074,12 +8347,16 @@ export const onboarding_tutorial_stayConnectedContent = () => `Използва�
 export const onboarding_tutorial_readyTitle = () => `Готови сте!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const onboarding_tutorial_readyContent = () => `Проверете таблото си за вашите обяви, съобщения и настройки на акаунта. Приятна търговия!`
+
 
 
 export { close } from "./en.js"
@@ -6100,6 +8377,8 @@ export { add_to_favorites } from "./en.js"
 
 export { remove_from_favorites } from "./en.js"
 
+
+	
 /**
  * 
  * @returns {string}
@@ -6108,6 +8387,9 @@ export { remove_from_favorites } from "./en.js"
 export const sell_step1 = () => `Снимки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6116,6 +8398,9 @@ export const sell_step1 = () => `Снимки`
 export const sell_step2 = () => `Информация`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6124,6 +8409,9 @@ export const sell_step2 = () => `Информация`
 export const sell_step3 = () => `Цена`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6132,6 +8420,9 @@ export const sell_step3 = () => `Цена`
 export const sell_step4 = () => `Преглед`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6140,6 +8431,9 @@ export const sell_step4 = () => `Преглед`
 export const sell_uploadPhotos = () => `Качи снимки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6148,6 +8442,9 @@ export const sell_uploadPhotos = () => `Качи снимки`
 export const sell_dragDropPhotos = () => `Плъзнете снимки тук или кликнете за избор`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6156,6 +8453,9 @@ export const sell_dragDropPhotos = () => `Плъзнете снимки тук �
 export const sell_uploadingPhoto = () => `Качване на снимка...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6164,6 +8464,9 @@ export const sell_uploadingPhoto = () => `Качване на снимка...`
 export const sell_uploadPhotos_description = () => `Добавете до 10 снимки (JPG, PNG, WEBP)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6172,6 +8475,9 @@ export const sell_uploadPhotos_description = () => `Добавете до 10 с�
 export const sell_setCoverPhoto = () => `Задай като основна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6180,6 +8486,9 @@ export const sell_setCoverPhoto = () => `Задай като основна`
 export const sell_removePhoto = () => `Премахни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6188,6 +8497,9 @@ export const sell_removePhoto = () => `Премахни`
 export const sell_titleRequired = () => `Заглавието е задължително`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6196,6 +8508,9 @@ export const sell_titleRequired = () => `Заглавието е задължи�
 export const sell_descriptionRequired = () => `Описанието е задължително`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6204,6 +8519,9 @@ export const sell_descriptionRequired = () => `Описанието е задъ�
 export const sell_categoryRequired = () => `Категорията е задължителна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6212,6 +8530,9 @@ export const sell_categoryRequired = () => `Категорията е задъл
 export const sell_subcategoryRequired = () => `Подкатегорията е задължителна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6220,6 +8541,9 @@ export const sell_subcategoryRequired = () => `Подкатегорията е �
 export const sell_conditionRequired = () => `Моля изберете състояние`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6228,6 +8552,9 @@ export const sell_conditionRequired = () => `Моля изберете съст�
 export const sell_brandRequired = () => `Моля изберете или въведете марка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6236,6 +8563,9 @@ export const sell_brandRequired = () => `Моля изберете или във
 export const sell_sizeRequired = () => `Моля изберете размер`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6244,6 +8574,9 @@ export const sell_sizeRequired = () => `Моля изберете размер`
 export const sell_priceRequired = () => `Цената е задължителна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6252,6 +8585,9 @@ export const sell_priceRequired = () => `Цената е задължителн�
 export const sell_shippingRequired = () => `Цената за доставка е задължителна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6260,6 +8596,9 @@ export const sell_shippingRequired = () => `Цената за доставка �
 export const sell_minPhotosRequired = () => `Необходима е поне 1 снимка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6268,6 +8607,9 @@ export const sell_minPhotosRequired = () => `Необходима е поне 1 
 export const sell_maxPhotosReached = () => `Максимум 10 снимки са позволени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6276,6 +8618,9 @@ export const sell_maxPhotosReached = () => `Максимум 10 снимки с�
 export const sell_condition_brandNewWithTags = () => `Ново с етикети`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6284,6 +8629,9 @@ export const sell_condition_brandNewWithTags = () => `Ново с етикети
 export const sell_condition_newWithoutTags = () => `Ново без етикети`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6292,6 +8640,9 @@ export const sell_condition_newWithoutTags = () => `Ново без етикет
 export const sell_condition_likeNew = () => `Като ново`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6300,6 +8651,9 @@ export const sell_condition_likeNew = () => `Като ново`
 export const sell_condition_good = () => `Добро`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6308,6 +8662,9 @@ export const sell_condition_good = () => `Добро`
 export const sell_condition_worn = () => `Носено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6316,6 +8673,9 @@ export const sell_condition_worn = () => `Носено`
 export const sell_condition_fair = () => `Задоволително`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6324,6 +8684,9 @@ export const sell_condition_fair = () => `Задоволително`
 export const sell_condition_brandNewWithTags_desc = () => `Никога не е носено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6332,6 +8695,9 @@ export const sell_condition_brandNewWithTags_desc = () => `Никога не е 
 export const sell_condition_newWithoutTags_desc = () => `Никога не е носено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6340,6 +8706,9 @@ export const sell_condition_newWithoutTags_desc = () => `Никога не е н
 export const sell_condition_likeNew_desc = () => `Носено 1-2 пъти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6348,6 +8717,9 @@ export const sell_condition_likeNew_desc = () => `Носено 1-2 пъти`
 export const sell_condition_good_desc = () => `Леки следи от носене`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6356,6 +8728,9 @@ export const sell_condition_good_desc = () => `Леки следи от носе
 export const sell_condition_worn_desc = () => `Видими следи от носене`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6364,6 +8739,9 @@ export const sell_condition_worn_desc = () => `Видими следи от но
 export const sell_condition_fair_desc = () => `Силни следи от носене`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6372,6 +8750,9 @@ export const sell_condition_fair_desc = () => `Силни следи от нос
 export const sell_brandOther = () => `Друга`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6380,6 +8761,9 @@ export const sell_brandOther = () => `Друга`
 export const sell_brandCustomPlaceholder = () => `Въведете марка...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6388,6 +8772,9 @@ export const sell_brandCustomPlaceholder = () => `Въведете марка...
 export const sell_colorOptional = () => `(по избор)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6396,6 +8783,9 @@ export const sell_colorOptional = () => `(по избор)`
 export const sell_materialOptional = () => `(по избор)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6404,6 +8794,9 @@ export const sell_materialOptional = () => `(по избор)`
 export const sell_colorCustomPlaceholder = () => `Или въведете цвят...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6412,6 +8805,9 @@ export const sell_colorCustomPlaceholder = () => `Или въведете цвя
 export const sell_materialCustomPlaceholder = () => `Или въведете материал...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6420,6 +8816,9 @@ export const sell_materialCustomPlaceholder = () => `Или въведете м�
 export const sell_summary = () => `Обобщение:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6428,6 +8827,9 @@ export const sell_summary = () => `Обобщение:`
 export const sell_estimatedEarnings = () => `Очаквани приходи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6436,6 +8838,9 @@ export const sell_estimatedEarnings = () => `Очаквани приходи`
 export const sell_listingPrice = () => `Цена на обявата`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6444,6 +8849,9 @@ export const sell_listingPrice = () => `Цена на обявата`
 export const sell_shippingCost = () => `Цена за доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6452,6 +8860,9 @@ export const sell_shippingCost = () => `Цена за доставка`
 export const sell_totalBuyerPays = () => `Общо плаща купувачът`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6460,6 +8871,9 @@ export const sell_totalBuyerPays = () => `Общо плаща купувачът
 export const sell_driploFee = () => `Такса Driplo (10%)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6468,6 +8882,9 @@ export const sell_driploFee = () => `Такса Driplo (10%)`
 export const sell_paymentFee = () => `Такса за обработка (3%)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6476,6 +8893,9 @@ export const sell_paymentFee = () => `Такса за обработка (3%)`
 export const sell_yourEarnings = () => `Вашите приходи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6484,6 +8904,9 @@ export const sell_yourEarnings = () => `Вашите приходи`
 export const sell_reviewListing = () => `Прегледайте обявата`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6492,6 +8915,9 @@ export const sell_reviewListing = () => `Прегледайте обявата`
 export const sell_editDetails = () => `Редактирай детайлите`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6500,6 +8926,9 @@ export const sell_editDetails = () => `Редактирай детайлите`
 export const sell_confirmPublish = () => `Потвърди и публикувай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6508,6 +8937,9 @@ export const sell_confirmPublish = () => `Потвърди и публикува
 export const sell_listingSuccess = () => `Вашият артикул е публикуван!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6516,6 +8948,9 @@ export const sell_listingSuccess = () => `Вашият артикул е пуб�
 export const sell_viewListing = () => `Виж обявата`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6524,6 +8959,9 @@ export const sell_viewListing = () => `Виж обявата`
 export const sell_listAnother = () => `Добави друг артикул`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6532,6 +8970,9 @@ export const sell_listAnother = () => `Добави друг артикул`
 export const sell_goToDashboard = () => `Към таблото`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6540,6 +8981,9 @@ export const sell_goToDashboard = () => `Към таблото`
 export const sell_processingUpload = () => `Обработване на обявата...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6548,6 +8992,9 @@ export const sell_processingUpload = () => `Обработване на обяв
 export const sell_validationError = () => `Моля попълнете всички задължителни полета`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6556,6 +9003,9 @@ export const sell_validationError = () => `Моля попълнете всич�
 export const sell_setPricing = () => `Задай цена`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6564,6 +9014,9 @@ export const sell_setPricing = () => `Задай цена`
 export const sell_reviewPublish = () => `Преглед и публикуване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6572,6 +9025,9 @@ export const sell_reviewPublish = () => `Преглед и публикуван�
 export const sell_back = () => `Назад`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6580,6 +9036,9 @@ export const sell_back = () => `Назад`
 export const sell_condition_brandNewWithoutTags = () => `Ново без етикети`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6588,6 +9047,9 @@ export const sell_condition_brandNewWithoutTags = () => `Ново без ети�
 export const sell_condition_veryGood = () => `Много добро`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6596,6 +9058,9 @@ export const sell_condition_veryGood = () => `Много добро`
 export const sell_condition_satisfactory = () => `Задоволително`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6604,6 +9069,9 @@ export const sell_condition_satisfactory = () => `Задоволително`
 export const sell_brandPlaceholder = () => `Избери или търси марка...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6612,6 +9080,9 @@ export const sell_brandPlaceholder = () => `Избери или търси ма�
 export const sell_other = () => `Друго`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6620,6 +9091,9 @@ export const sell_other = () => `Друго`
 export const sell_sizePlaceholder = () => `Избери размер...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6628,6 +9102,9 @@ export const sell_sizePlaceholder = () => `Избери размер...`
 export const sell_listingError = () => `Неуспешна публикация. Моля, опитайте отново.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6636,6 +9113,9 @@ export const sell_listingError = () => `Неуспешна публикация.
 export const sell_photosHint = () => `Естествена светлина • Всички ъгли`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6644,6 +9124,9 @@ export const sell_photosHint = () => `Естествена светлина • 
 export const sell_minCharacters = () => `Мин. 3 символа`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6652,6 +9135,9 @@ export const sell_minCharacters = () => `Мин. 3 символа`
 export const sell_addBrandSize = () => `Добави марка/размер`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6660,6 +9146,9 @@ export const sell_addBrandSize = () => `Добави марка/размер`
 export const sell_good = () => `Добро`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6668,6 +9157,9 @@ export const sell_good = () => `Добро`
 export const sell_whoIsItFor = () => `За кого е?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6676,6 +9168,9 @@ export const sell_whoIsItFor = () => `За кого е?`
 export const sell_men = () => `Мъже`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6684,6 +9179,9 @@ export const sell_men = () => `Мъже`
 export const sell_women = () => `Жени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6692,6 +9190,9 @@ export const sell_women = () => `Жени`
 export const sell_kids = () => `Деца`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6700,6 +9201,9 @@ export const sell_kids = () => `Деца`
 export const sell_unisex = () => `Унисекс`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6708,6 +9212,9 @@ export const sell_unisex = () => `Унисекс`
 export const sell_sizeGroupXSXL = () => `XS-XL`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6716,6 +9223,9 @@ export const sell_sizeGroupXSXL = () => `XS-XL`
 export const sell_sizeGroupNumbers = () => `Числа`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6724,6 +9234,9 @@ export const sell_sizeGroupNumbers = () => `Числа`
 export const sell_sizeGroupUKEU = () => `UK/EU`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6732,6 +9245,9 @@ export const sell_sizeGroupUKEU = () => `UK/EU`
 export const sell_sizeGroupOther = () => `Други`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6740,6 +9256,9 @@ export const sell_sizeGroupOther = () => `Други`
 export const sell_uploadingImages = () => `Качване на снимки...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6748,6 +9267,9 @@ export const sell_uploadingImages = () => `Качване на снимки...`
 export const sell_imagesOptimized = () => `Снимките ще бъдат автоматично оптимизирани на нашите сървъри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6756,6 +9278,9 @@ export const sell_imagesOptimized = () => `Снимките ще бъдат ав
 export const sell_dropHere = () => `Пускай тук`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6764,6 +9289,9 @@ export const sell_dropHere = () => `Пускай тук`
 export const sell_addPhoto = () => `Добави снимка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6772,6 +9300,9 @@ export const sell_addPhoto = () => `Добави снимка`
 export const sell_removeImage = () => `Премахни снимка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6780,6 +9311,9 @@ export const sell_removeImage = () => `Премахни снимка`
 export const sell_uploadJPGPNG = () => `Качи JPG/PNG снимки (автоматично оптимизирани)`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown> }} params
  * @returns {string}
@@ -6788,6 +9322,9 @@ export const sell_uploadJPGPNG = () => `Качи JPG/PNG снимки (авто�
 export const sell_photoCount = (params) => `${params.count} снимка`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown> }} params
  * @returns {string}
@@ -6796,6 +9333,9 @@ export const sell_photoCount = (params) => `${params.count} снимка`
 export const sell_photosCount = (params) => `${params.count} снимки`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown>, s: NonNullable<unknown> }} params
  * @returns {string}
@@ -6804,6 +9344,9 @@ export const sell_photosCount = (params) => `${params.count} снимки`
 export const sell_photosUploaded = (params) => `${params.count} снимк${params.s} качени`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown> }} params
  * @returns {string}
@@ -6812,6 +9355,9 @@ export const sell_photosUploaded = (params) => `${params.count} снимк${para
 export const sell_moreAllowed = (params) => `още ${params.count} позволени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6820,6 +9366,9 @@ export const sell_moreAllowed = (params) => `още ${params.count} позвол
 export const sell_optimizedForWeb = () => `Оптимизирано за уеб`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6828,6 +9377,9 @@ export const sell_optimizedForWeb = () => `Оптимизирано за уеб`
 export const sell_tagsPlaceholder = () => `Добави тагове като 'vintage', 'y2k', 'streetwear'...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6836,6 +9388,9 @@ export const sell_tagsPlaceholder = () => `Добави тагове като 'v
 export const sell_tagsHelp = () => `Таговете помагат на купувачите да намерят вашия артикул`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6844,6 +9399,9 @@ export const sell_tagsHelp = () => `Таговете помагат на куп�
 export const sell_freeShippingAttractsBuyers = () => `Безплатната доставка привлича повече купувачи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6852,6 +9410,9 @@ export const sell_freeShippingAttractsBuyers = () => `Безплатната д�
 export const sell_free = () => `БЕЗПЛАТНА`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6860,6 +9421,9 @@ export const sell_free = () => `БЕЗПЛАТНА`
 export const sell_colorBlack = () => `Черно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6868,6 +9432,9 @@ export const sell_colorBlack = () => `Черно`
 export const sell_colorWhite = () => `Бяло`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6876,6 +9443,9 @@ export const sell_colorWhite = () => `Бяло`
 export const sell_colorGray = () => `Сиво`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6884,6 +9454,9 @@ export const sell_colorGray = () => `Сиво`
 export const sell_colorNavy = () => `Тъмносиньо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6892,6 +9465,9 @@ export const sell_colorNavy = () => `Тъмносиньо`
 export const sell_colorBrown = () => `Кафяво`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6900,6 +9476,9 @@ export const sell_colorBrown = () => `Кафяво`
 export const sell_colorBeige = () => `Бежово`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6908,6 +9487,9 @@ export const sell_colorBeige = () => `Бежово`
 export const sell_colorRed = () => `Червено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6916,6 +9498,9 @@ export const sell_colorRed = () => `Червено`
 export const sell_colorBlue = () => `Синьо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6924,6 +9509,9 @@ export const sell_colorBlue = () => `Синьо`
 export const sell_colorGreen = () => `Зелено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6932,6 +9520,9 @@ export const sell_colorGreen = () => `Зелено`
 export const sell_colorPink = () => `Розово`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6940,6 +9531,9 @@ export const sell_colorPink = () => `Розово`
 export const sell_colorPurple = () => `Лилаво`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6948,6 +9542,9 @@ export const sell_colorPurple = () => `Лилаво`
 export const sell_colorMulti = () => `Многоцветно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6956,6 +9553,9 @@ export const sell_colorMulti = () => `Многоцветно`
 export const sell_materialCotton = () => `Памук`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6964,6 +9564,9 @@ export const sell_materialCotton = () => `Памук`
 export const sell_materialPolyester = () => `Полиестер`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6972,6 +9575,9 @@ export const sell_materialPolyester = () => `Полиестер`
 export const sell_materialLeather = () => `Кожа`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6980,6 +9586,9 @@ export const sell_materialLeather = () => `Кожа`
 export const sell_materialDenim = () => `Деним`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6988,6 +9597,9 @@ export const sell_materialDenim = () => `Деним`
 export const sell_materialWool = () => `Вълна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6996,6 +9608,9 @@ export const sell_materialWool = () => `Вълна`
 export const sell_materialSilk = () => `Коприна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7004,6 +9619,9 @@ export const sell_materialSilk = () => `Коприна`
 export const category_unisex = () => `Унисекс`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7012,6 +9630,9 @@ export const category_unisex = () => `Унисекс`
 export const category_accessories = () => `Аксесоари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7020,6 +9641,9 @@ export const category_accessories = () => `Аксесоари`
 export const category_activewear = () => `Спортно облекло`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7028,6 +9652,9 @@ export const category_activewear = () => `Спортно облекло`
 export const category_boots = () => `Ботуши`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7036,6 +9663,9 @@ export const category_boots = () => `Ботуши`
 export const category_dresses = () => `Рокли`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7044,6 +9674,9 @@ export const category_dresses = () => `Рокли`
 export const category_flats = () => `Равни обувки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7052,6 +9685,9 @@ export const category_flats = () => `Равни обувки`
 export const category_formalShoes = () => `Официални обувки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7060,6 +9696,9 @@ export const category_formalShoes = () => `Официални обувки`
 export const category_heels = () => `Обувки с ток`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7068,6 +9707,9 @@ export const category_heels = () => `Обувки с ток`
 export const category_hoodies = () => `Суитшърти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7076,6 +9718,9 @@ export const category_hoodies = () => `Суитшърти`
 export const category_jackets = () => `Якета`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7084,6 +9729,9 @@ export const category_jackets = () => `Якета`
 export const category_jacketsCoats = () => `Якета и палта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7092,6 +9740,9 @@ export const category_jacketsCoats = () => `Якета и палта`
 export const category_jeans = () => `Дънки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7100,6 +9751,9 @@ export const category_jeans = () => `Дънки`
 export const category_jewelry = () => `Бижутерия`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7108,6 +9762,9 @@ export const category_jewelry = () => `Бижутерия`
 export const category_lingerie = () => `Бельо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7116,6 +9773,9 @@ export const category_lingerie = () => `Бельо`
 export const category_pantsJeans = () => `Панталони и дънки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7124,6 +9784,9 @@ export const category_pantsJeans = () => `Панталони и дънки`
 export const category_pantsTrousers = () => `Панталони`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7132,6 +9795,9 @@ export const category_pantsTrousers = () => `Панталони`
 export const category_sandals = () => `Сандали`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7140,6 +9806,9 @@ export const category_sandals = () => `Сандали`
 export const category_sandalsSlides = () => `Сандали и чехли`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7148,6 +9817,9 @@ export const category_sandalsSlides = () => `Сандали и чехли`
 export const category_shirts = () => `Ризи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7156,6 +9828,9 @@ export const category_shirts = () => `Ризи`
 export const category_shirtsBlouses = () => `Ризи и блузи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7164,6 +9839,9 @@ export const category_shirtsBlouses = () => `Ризи и блузи`
 export const category_shorts = () => `Шорти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7172,6 +9850,9 @@ export const category_shorts = () => `Шорти`
 export const category_skirts = () => `Поли`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7180,6 +9861,9 @@ export const category_skirts = () => `Поли`
 export const category_sneakers = () => `Кецове`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7188,6 +9872,9 @@ export const category_sneakers = () => `Кецове`
 export const category_suitsBlazers = () => `Костюми и сака`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7196,6 +9883,9 @@ export const category_suitsBlazers = () => `Костюми и сака`
 export const category_sweatersHoodies = () => `Пуловери и суитшърти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7204,6 +9894,9 @@ export const category_sweatersHoodies = () => `Пуловери и суитшъ�
 export const category_swimwear = () => `Бански костюми`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7212,6 +9905,9 @@ export const category_swimwear = () => `Бански костюми`
 export const category_tshirts = () => `Тениски`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7220,6 +9916,9 @@ export const category_tshirts = () => `Тениски`
 export const category_topsTshirts = () => `Блузи и тениски`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7228,6 +9927,9 @@ export const category_topsTshirts = () => `Блузи и тениски`
 export const category_underwear = () => `Долно бельо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7236,6 +9938,9 @@ export const category_underwear = () => `Долно бельо`
 export const category_watches = () => `Часовници`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7244,6 +9949,9 @@ export const category_watches = () => `Часовници`
 export const category_hatsAndCaps = () => `Шапки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7252,6 +9960,9 @@ export const category_hatsAndCaps = () => `Шапки`
 export const category_belts = () => `Колани`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7260,6 +9971,9 @@ export const category_belts = () => `Колани`
 export const category_scarves = () => `Шалове`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7268,6 +9982,9 @@ export const category_scarves = () => `Шалове`
 export const category_sunglasses = () => `Слънчеви Очила`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7276,6 +9993,9 @@ export const category_sunglasses = () => `Слънчеви Очила`
 export const category_wallets = () => `Портфейли`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7284,6 +10004,9 @@ export const category_wallets = () => `Портфейли`
 export const category_hairAccessories = () => `Аксесоари за Коса`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7292,6 +10015,9 @@ export const category_hairAccessories = () => `Аксесоари за Коса`
 export const category_ties = () => `Вратовръзки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7300,6 +10026,9 @@ export const category_ties = () => `Вратовръзки`
 export const category_cufflinks = () => `Ръкавели`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7308,6 +10037,9 @@ export const category_cufflinks = () => `Ръкавели`
 export const category_backpacks = () => `Раници`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7316,6 +10048,9 @@ export const category_backpacks = () => `Раници`
 export const sell_priceLabel = () => `Цена`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7324,6 +10059,9 @@ export const sell_priceLabel = () => `Цена`
 export const sell_shippingCostLabel = () => `Цена за доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7332,6 +10070,9 @@ export const sell_shippingCostLabel = () => `Цена за доставка`
 export const sell_tagsOptional = () => `Тагове (по избор)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7340,6 +10081,9 @@ export const sell_tagsOptional = () => `Тагове (по избор)`
 export const sell_suggested = () => `Препоръчано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7348,6 +10092,9 @@ export const sell_suggested = () => `Препоръчано`
 export const sell_similarItems = () => `Подобни артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7356,6 +10103,9 @@ export const sell_similarItems = () => `Подобни артикули`
 export const sell_confidence = () => `Увереност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7364,6 +10114,9 @@ export const sell_confidence = () => `Увереност`
 export const sell_getVisibility = () => `Получете 3 пъти повече видимост за 7 дни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7372,6 +10125,9 @@ export const sell_getVisibility = () => `Получете 3 пъти повеч�
 export const sell_premiumLeft = () => `остават`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7380,6 +10136,9 @@ export const sell_premiumLeft = () => `остават`
 export const sell_featuredSearch = () => `Представен в резултатите от търсене`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7388,6 +10147,9 @@ export const sell_featuredSearch = () => `Представен в резулта
 export const sell_homepageSpotlight = () => `Акцент на началната страница`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7396,6 +10158,9 @@ export const sell_homepageSpotlight = () => `Акцент на началнат�
 export const sell_pushNotifications = () => `Push известия към последователи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7404,6 +10169,9 @@ export const sell_pushNotifications = () => `Push известия към пос
 export const sell_reviewYourListing = () => `Прегледай обявата си`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7412,6 +10180,9 @@ export const sell_reviewYourListing = () => `Прегледай обявата �
 export const sell_photosSection = () => `Снимки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7420,6 +10191,9 @@ export const sell_photosSection = () => `Снимки`
 export const sell_productAlt = () => `Продукт`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown> }} params
  * @returns {string}
@@ -7428,6 +10202,9 @@ export const sell_productAlt = () => `Продукт`
 export const sell_morePhotos = (params) => `+${params.count} още`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7436,6 +10213,9 @@ export const sell_morePhotos = (params) => `+${params.count} още`
 export const sell_titleLabel = () => `Заглавие`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7444,6 +10224,9 @@ export const sell_titleLabel = () => `Заглавие`
 export const sell_categoryLabel = () => `Категория`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7452,6 +10235,9 @@ export const sell_categoryLabel = () => `Категория`
 export const sell_brandLabel = () => `Марка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7460,6 +10246,9 @@ export const sell_brandLabel = () => `Марка`
 export const sell_sizeLabel = () => `Размер`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7468,6 +10257,9 @@ export const sell_sizeLabel = () => `Размер`
 export const sell_conditionLabel = () => `Състояние`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7476,6 +10268,9 @@ export const sell_conditionLabel = () => `Състояние`
 export const sell_priceLabel2 = () => `Цена`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7484,6 +10279,9 @@ export const sell_priceLabel2 = () => `Цена`
 export const sell_shippingLabel = () => `Доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7492,6 +10290,9 @@ export const sell_shippingLabel = () => `Доставка`
 export const sell_premiumBoostActive = () => `Активна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7500,6 +10301,9 @@ export const sell_premiumBoostActive = () => `Активна`
 export const sell_notAvailable = () => `Няма информация`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7508,6 +10312,9 @@ export const sell_notAvailable = () => `Няма информация`
 export const sell_titleFieldLabel = () => `Заглавие`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7516,6 +10323,9 @@ export const sell_titleFieldLabel = () => `Заглавие`
 export const sell_whatAreYouSelling = () => `Какво продавате?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7524,6 +10334,9 @@ export const sell_whatAreYouSelling = () => `Какво продавате?`
 export const sell_whoIsThisFor = () => `За кого е?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7532,6 +10345,9 @@ export const sell_whoIsThisFor = () => `За кого е?`
 export const sell_selectGenderAge = () => `Изберете пол/възраст`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7540,6 +10356,9 @@ export const sell_selectGenderAge = () => `Изберете пол/възрас�
 export const sell_whatTypeOfProduct = () => `Какъв тип продукт?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7548,6 +10367,9 @@ export const sell_whatTypeOfProduct = () => `Какъв тип продукт?`
 export const sell_selectProductType = () => `Изберете тип продукт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7556,6 +10378,9 @@ export const sell_selectProductType = () => `Изберете тип проду�
 export const sell_specificCategoryLabel = () => `Конкретна категория`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7564,6 +10389,9 @@ export const sell_specificCategoryLabel = () => `Конкретна катего
 export const sell_whatExactlyIsIt = () => `Какво точно е?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7572,6 +10400,9 @@ export const sell_whatExactlyIsIt = () => `Какво точно е?`
 export const sell_descriptionOptional = () => `Описание (опционално)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7580,6 +10411,9 @@ export const sell_descriptionOptional = () => `Описание (опциона�
 export const sell_addDetailsPlaceholder = () => `Добавете детайли за състоянието, размери, дефекти...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7588,6 +10422,9 @@ export const sell_addDetailsPlaceholder = () => `Добавете детайли
 export const sell_customBrandAriaLabel = () => `Персонализирано име на марка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7596,6 +10433,9 @@ export const sell_customBrandAriaLabel = () => `Персонализирано �
 export const sell_dismissSuggestions = () => `Отхвърли предложенията`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7604,6 +10444,9 @@ export const sell_dismissSuggestions = () => `Отхвърли предложе�
 export const sell_smartCategorySuggestions = () => `Интелигентни предложения за категория`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7612,6 +10455,9 @@ export const sell_smartCategorySuggestions = () => `Интелигентни п�
 export const sell_highConfidence = () => `Висока увереност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7620,6 +10466,9 @@ export const sell_highConfidence = () => `Висока увереност`
 export const sell_mediumConfidence = () => `Средна увереност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7628,6 +10477,9 @@ export const sell_mediumConfidence = () => `Средна увереност`
 export const sell_lowConfidence = () => `Ниска увереност`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7636,6 +10488,9 @@ export const sell_lowConfidence = () => `Ниска увереност`
 export const sell_basedOnImage = () => `На база на вашата снимка, предлагаме:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7644,6 +10499,9 @@ export const sell_basedOnImage = () => `На база на вашата сним
 export const sell_analysis = () => `Анализ:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7652,6 +10510,9 @@ export const sell_analysis = () => `Анализ:`
 export const sell_applySuggestions = () => `Приложи предложенията`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7660,6 +10521,9 @@ export const sell_applySuggestions = () => `Приложи предложени�
 export const sell_chooseManually = () => `Избери ръчно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7668,6 +10532,9 @@ export const sell_chooseManually = () => `Избери ръчно`
 export const error_notAuthenticated = () => `Не сте удостоверени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7676,6 +10543,9 @@ export const error_notAuthenticated = () => `Не сте удостоверен�
 export const error_atLeastOnePhoto = () => `Необходима е поне една снимка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7684,6 +10554,9 @@ export const error_atLeastOnePhoto = () => `Необходима е поне е�
 export const error_categoryRequired = () => `Категорията е задължителна. Моля изберете категория за вашия артикул.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7692,6 +10565,9 @@ export const error_categoryRequired = () => `Категорията е задъ�
 export const error_failedToCreateProduct = () => `Неуспешно създаване на продукт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7700,6 +10576,9 @@ export const error_failedToCreateProduct = () => `Неуспешно създа�
 export const currency_symbol = () => `лв.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7708,6 +10587,9 @@ export const currency_symbol = () => `лв.`
 export const category_includes = () => `Включва:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7716,6 +10598,9 @@ export const category_includes = () => `Включва:`
 export const category_selected = () => `Избрано:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7724,6 +10609,9 @@ export const category_selected = () => `Избрано:`
 export const category_accessoriesList = () => `Шапки, Каскети, Колани, Шалове, Слънчеви очила, Чанти, Портфейли`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7732,6 +10620,9 @@ export const category_accessoriesList = () => `Шапки, Каскети, Ко�
 export const category_clothing = () => `Облекло`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7740,6 +10631,9 @@ export const category_clothing = () => `Облекло`
 export const category_shoesType = () => `Обувки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7748,6 +10642,9 @@ export const category_shoesType = () => `Обувки`
 export const category_accessoriesType = () => `Аксесоари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7756,6 +10653,9 @@ export const category_accessoriesType = () => `Аксесоари`
 export const category_bagsType = () => `Чанти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7764,6 +10664,9 @@ export const category_bagsType = () => `Чанти`
 export const category_walletsAndPurses = () => `Портфейли и Портмонета`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7772,6 +10675,9 @@ export const category_walletsAndPurses = () => `Портфейли и Портм
 export const category_gloves = () => `Ръкавици`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7780,6 +10686,9 @@ export const category_gloves = () => `Ръкавици`
 export const category_glovesAndMittens = () => `Ръкавици`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7788,6 +10697,9 @@ export const category_glovesAndMittens = () => `Ръкавици`
 export const category_shawls = () => `Шалове`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7796,6 +10708,9 @@ export const category_shawls = () => `Шалове`
 export const category_bandanas = () => `Бандани`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7804,6 +10719,9 @@ export const category_bandanas = () => `Бандани`
 export const category_bibs = () => `Лигавници`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7812,6 +10730,9 @@ export const category_bibs = () => `Лигавници`
 export const category_suspenders = () => `Тиранти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7820,6 +10741,9 @@ export const category_suspenders = () => `Тиранти`
 export const category_keychains = () => `Ключодържатели`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7828,6 +10752,9 @@ export const category_keychains = () => `Ключодържатели`
 export const category_phoneCases = () => `Калъфи за телефон`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7836,6 +10763,9 @@ export const category_phoneCases = () => `Калъфи за телефон`
 export const category_handbags = () => `Дамски чанти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7844,6 +10774,9 @@ export const category_handbags = () => `Дамски чанти`
 export const category_shoulderBags = () => `Чанти за рамо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7852,6 +10785,9 @@ export const category_shoulderBags = () => `Чанти за рамо`
 export const category_crossbodyBags = () => `Чанти през рамо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7860,6 +10796,9 @@ export const category_crossbodyBags = () => `Чанти през рамо`
 export const category_clutches = () => `Клъчове`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7868,6 +10807,9 @@ export const category_clutches = () => `Клъчове`
 export const category_toteBags = () => `Чанти за пазаруване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7876,6 +10818,9 @@ export const category_toteBags = () => `Чанти за пазаруване`
 export const category_makeupBags = () => `Несесери`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7884,6 +10829,9 @@ export const category_makeupBags = () => `Несесери`
 export const category_travelBags = () => `Пътни чанти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7892,6 +10840,9 @@ export const category_travelBags = () => `Пътни чанти`
 export const category_briefcases = () => `Дипломати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7900,6 +10851,9 @@ export const category_briefcases = () => `Дипломати`
 export const category_messengerBags = () => `Чанти за документи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7908,6 +10862,9 @@ export const category_messengerBags = () => `Чанти за документи`
 export const category_gymBags = () => `Спортни чанти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7916,6 +10873,9 @@ export const category_gymBags = () => `Спортни чанти`
 export const category_duffelBags = () => `Сакове`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7924,6 +10884,9 @@ export const category_duffelBags = () => `Сакове`
 export const category_laptopBags = () => `Чанти за лаптоп`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7932,6 +10895,9 @@ export const category_laptopBags = () => `Чанти за лаптоп`
 export const category_schoolBags = () => `Училищни чанти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7940,6 +10906,9 @@ export const category_schoolBags = () => `Училищни чанти`
 export const category_lunchBags = () => `Чанти за храна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7948,6 +10917,9 @@ export const category_lunchBags = () => `Чанти за храна`
 export const category_miniBags = () => `Мини чанти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7956,6 +10928,9 @@ export const category_miniBags = () => `Мини чанти`
 export const category_pocketSquares = () => `Джобни кърпички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7964,6 +10939,9 @@ export const category_pocketSquares = () => `Джобни кърпички`
 export const orders_title = () => `Моите поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7972,6 +10950,9 @@ export const orders_title = () => `Моите поръчки`
 export const orders_subtitle = () => `Следете своите покупки и продажби на едно място`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7980,6 +10961,9 @@ export const orders_subtitle = () => `Следете своите покупки
 export const orders_allOrders = () => `Всички поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7988,6 +10972,9 @@ export const orders_allOrders = () => `Всички поръчки`
 export const orders_purchases = () => `Покупки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7996,6 +10983,9 @@ export const orders_purchases = () => `Покупки`
 export const orders_sales = () => `Продажби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8004,6 +10994,9 @@ export const orders_sales = () => `Продажби`
 export const orders_toReview = () => `За преглед`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8012,6 +11005,9 @@ export const orders_toReview = () => `За преглед`
 export const orders_issues = () => `Проблеми`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8020,6 +11016,9 @@ export const orders_issues = () => `Проблеми`
 export const orders_noOrdersFound = () => `Няма намерени поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8028,6 +11027,9 @@ export const orders_noOrdersFound = () => `Няма намерени поръч�
 export const orders_startShopping = () => `Започни пазаруване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8036,6 +11038,9 @@ export const orders_startShopping = () => `Започни пазаруване`
 export const orders_seller = () => `Продавач`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8044,6 +11049,9 @@ export const orders_seller = () => `Продавач`
 export const orders_buyer = () => `Купувач`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8052,6 +11060,9 @@ export const orders_buyer = () => `Купувач`
 export const orders_trackingNumber = () => `Номер за проследяване`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8060,6 +11071,9 @@ export const orders_trackingNumber = () => `Номер за проследява
 export const orders_leaveReview = () => `Остави отзив`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8068,6 +11082,9 @@ export const orders_leaveReview = () => `Остави отзив`
 export const orders_cancelOrder = () => `Откажи поръчката`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8076,6 +11093,9 @@ export const orders_cancelOrder = () => `Откажи поръчката`
 export const orders_viewProduct = () => `Виж продукта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8084,6 +11104,9 @@ export const orders_viewProduct = () => `Виж продукта`
 export const orders_noImage = () => `Няма снимка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8092,6 +11115,9 @@ export const orders_noImage = () => `Няма снимка`
 export const orders_unknownProduct = () => `Неизвестен продукт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8100,6 +11126,9 @@ export const orders_unknownProduct = () => `Неизвестен продукт`
 export const sales_overview = () => `Преглед на продажбите`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8108,6 +11137,9 @@ export const sales_overview = () => `Преглед на продажбите`
 export const sales_manageSoldItems = () => `Управлявайте продадените си артикули и печалби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8116,6 +11148,9 @@ export const sales_manageSoldItems = () => `Управлявайте прода�
 export const sales_totalEarnings = () => `Общи печалби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8124,6 +11159,9 @@ export const sales_totalEarnings = () => `Общи печалби`
 export const sales_available = () => `Налични`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8132,6 +11170,9 @@ export const sales_available = () => `Налични`
 export const sales_itemsSold = () => `Продадени артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8140,6 +11181,9 @@ export const sales_itemsSold = () => `Продадени артикули`
 export const sales_thisMonth = () => `Този месец`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8148,6 +11192,9 @@ export const sales_thisMonth = () => `Този месец`
 export const sales_soldItems = () => `Продадени артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8156,6 +11203,9 @@ export const sales_soldItems = () => `Продадени артикули`
 export const sales_analytics = () => `Аналитика`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8164,6 +11214,9 @@ export const sales_analytics = () => `Аналитика`
 export const sales_noItemsSoldYet = () => `Няма продадени артикули още`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8172,6 +11225,9 @@ export const sales_noItemsSoldYet = () => `Няма продадени арти�
 export const sales_startSelling = () => `Започнете да продавате, за да видите продадените си артикули тук`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8180,6 +11236,9 @@ export const sales_startSelling = () => `Започнете да продава�
 export const sales_createFirstListing = () => `Създайте първата си обява`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8188,6 +11247,9 @@ export const sales_createFirstListing = () => `Създайте първата �
 export const sales_totalEarned = () => `Общо спечелено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8196,6 +11258,9 @@ export const sales_totalEarned = () => `Общо спечелено`
 export const sales_availableBalance = () => `Наличен баланс`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8204,6 +11269,9 @@ export const sales_availableBalance = () => `Наличен баланс`
 export const sales_requestPayout = () => `Заявка за изплащане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8212,6 +11280,9 @@ export const sales_requestPayout = () => `Заявка за изплащане`
 export const sales_paidOut = () => `Изплатено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8220,6 +11291,9 @@ export const sales_paidOut = () => `Изплатено`
 export const sales_recentOrders = () => `Последни поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8228,6 +11302,9 @@ export const sales_recentOrders = () => `Последни поръчки`
 export const sales_noOrdersYet = () => `Няма поръчки още`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8236,6 +11313,9 @@ export const sales_noOrdersYet = () => `Няма поръчки още`
 export const sales_thisMonthSales = () => `Продажби този месец`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8244,6 +11324,9 @@ export const sales_thisMonthSales = () => `Продажби този месец`
 export const sales_thisMonthEarnings = () => `Печалби този месец`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8252,6 +11335,9 @@ export const sales_thisMonthEarnings = () => `Печалби този месец
 export const sales_averageOrder = () => `Средна поръчка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8260,6 +11346,9 @@ export const sales_averageOrder = () => `Средна поръчка`
 export const sales_perSale = () => `За продажба`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8268,6 +11357,9 @@ export const sales_perSale = () => `За продажба`
 export const sales_totalOrders = () => `Общо поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8276,6 +11368,9 @@ export const sales_totalOrders = () => `Общо поръчки`
 export const sales_allTime = () => `За цялото време`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8284,6 +11379,9 @@ export const sales_allTime = () => `За цялото време`
 export const sales_salesPerformance = () => `Производителност на продажбите`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8292,6 +11390,9 @@ export const sales_salesPerformance = () => `Производителност н
 export const sales_chartComingSoon = () => `Графиката идва скоро - Данни за продажбите във времето`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8300,6 +11401,9 @@ export const sales_chartComingSoon = () => `Графиката идва скор
 export const sales_noChange = () => `Няма промяна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8308,6 +11412,9 @@ export const sales_noChange = () => `Няма промяна`
 export const upgrade_title = () => `Надградете акаунта си`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8316,6 +11423,9 @@ export const upgrade_title = () => `Надградете акаунта си`
 export const upgrade_subtitle = () => `Отключете премиум функции и развийте бизнеса си`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8324,6 +11434,9 @@ export const upgrade_subtitle = () => `Отключете премиум фун�
 export const upgrade_currentPlan = () => `Текущ план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8332,6 +11445,9 @@ export const upgrade_currentPlan = () => `Текущ план`
 export const upgrade_choosePlan = () => `Изберете план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8340,6 +11456,9 @@ export const upgrade_choosePlan = () => `Изберете план`
 export const upgrade_features = () => `Функции`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8348,6 +11467,9 @@ export const upgrade_features = () => `Функции`
 export const upgrade_subscribe = () => `Абонирайте се`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8356,6 +11478,9 @@ export const upgrade_subscribe = () => `Абонирайте се`
 export const upgrade_popular = () => `Популярен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8364,6 +11489,9 @@ export const upgrade_popular = () => `Популярен`
 export const upgrade_recommended = () => `Препоръчителен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8372,6 +11500,9 @@ export const upgrade_recommended = () => `Препоръчителен`
 export const breadcrumb_dashboard = () => `Табло`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8380,6 +11511,9 @@ export const breadcrumb_dashboard = () => `Табло`
 export const breadcrumb_sales = () => `Продажби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8388,6 +11522,9 @@ export const breadcrumb_sales = () => `Продажби`
 export const breadcrumb_orders = () => `Поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8396,6 +11533,9 @@ export const breadcrumb_orders = () => `Поръчки`
 export const breadcrumb_settings = () => `Настройки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8404,6 +11544,9 @@ export const breadcrumb_settings = () => `Настройки`
 export const breadcrumb_upgrade = () => `Надграждане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8412,6 +11555,9 @@ export const breadcrumb_upgrade = () => `Надграждане`
 export const upgrade_freePlan = () => `Безплатен план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8420,6 +11566,9 @@ export const upgrade_freePlan = () => `Безплатен план`
 export const upgrade_premiumPlan = () => `Премиум план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8428,6 +11577,9 @@ export const upgrade_premiumPlan = () => `Премиум план`
 export const upgrade_brandPlan = () => `Бранд план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8436,6 +11588,9 @@ export const upgrade_brandPlan = () => `Бранд план`
 export const upgrade_mostPopular = () => `Най-популярен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8444,6 +11599,9 @@ export const upgrade_mostPopular = () => `Най-популярен`
 export const upgrade_activePlan = () => `Активен`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8452,6 +11610,9 @@ export const upgrade_activePlan = () => `Активен`
 export const upgrade_current = () => `Текущ`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8460,6 +11621,9 @@ export const upgrade_current = () => `Текущ`
 export const upgrade_month = () => `месец`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8468,6 +11632,9 @@ export const upgrade_month = () => `месец`
 export const upgrade_perMonth = () => `/ месец`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8476,6 +11643,9 @@ export const upgrade_perMonth = () => `/ месец`
 export const upgrade_getPremium = () => `Вземи Премиум`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8484,6 +11654,9 @@ export const upgrade_getPremium = () => `Вземи Премиум`
 export const upgrade_getBrand = () => `Вземи Бранд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8492,6 +11665,9 @@ export const upgrade_getBrand = () => `Вземи Бранд`
 export const upgrade_cancelPlan = () => `Откажи план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8500,6 +11676,9 @@ export const upgrade_cancelPlan = () => `Откажи план`
 export const upgrade_processing = () => `Обработва се...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8508,6 +11687,9 @@ export const upgrade_processing = () => `Обработва се...`
 export const upgrade_canceling = () => `Отказва се...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8516,6 +11698,9 @@ export const upgrade_canceling = () => `Отказва се...`
 export const upgrade_freeFeature1 = () => `До 20 продукта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8524,6 +11709,9 @@ export const upgrade_freeFeature1 = () => `До 20 продукта`
 export const upgrade_freeFeature2 = () => `Основна поддръжка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8532,6 +11720,9 @@ export const upgrade_freeFeature2 = () => `Основна поддръжка`
 export const upgrade_freeFeature3 = () => `Стандартни обяви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8540,6 +11731,9 @@ export const upgrade_freeFeature3 = () => `Стандартни обяви`
 export const upgrade_premiumFeature1 = () => `10 повишени обяви/месец`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8548,6 +11742,9 @@ export const upgrade_premiumFeature1 = () => `10 повишени обяви/м�
 export const upgrade_premiumFeature2 = () => `Приоритетна поддръжка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8556,6 +11753,9 @@ export const upgrade_premiumFeature2 = () => `Приоритетна поддр�
 export const upgrade_premiumFeature3 = () => `Разширена аналитика`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8564,6 +11764,9 @@ export const upgrade_premiumFeature3 = () => `Разширена аналити�
 export const upgrade_brandFeature1 = () => `Неограничени продукти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8572,6 +11775,9 @@ export const upgrade_brandFeature1 = () => `Неограничени проду�
 export const upgrade_brandFeature2 = () => `Верификация на бранд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8580,6 +11786,9 @@ export const upgrade_brandFeature2 = () => `Верификация на бран
 export const upgrade_brandFeature3 = () => `Инструменти за групова работа`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8588,6 +11797,9 @@ export const upgrade_brandFeature3 = () => `Инструменти за груп
 export const upgrade_discountFirstMonth = () => `50% ОТСТЪПКА първия месец!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8596,6 +11808,9 @@ export const upgrade_discountFirstMonth = () => `50% ОТСТЪПКА първи
 export const upgrade_faqTitle = () => `Имате въпроси?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8604,6 +11819,9 @@ export const upgrade_faqTitle = () => `Имате въпроси?`
 export const upgrade_faqSubtitle = () => `Всичко, което трябва да знаете за нашите планове`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8612,6 +11830,9 @@ export const upgrade_faqSubtitle = () => `Всичко, което трябва 
 export const upgrade_faqChangePlans = () => `Мога ли да сменям планове по всяко време?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8620,6 +11841,9 @@ export const upgrade_faqChangePlans = () => `Мога ли да сменям п�
 export const upgrade_faqChangePlansAnswer = () => `Абсолютно! Надграждайте, понижавайте или отказвайте абонамента си по всяко време. Промените влизат в сила при следващия ви цикъл на фактуриране.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8628,6 +11852,9 @@ export const upgrade_faqChangePlansAnswer = () => `Абсолютно! Надг�
 export const upgrade_faqRemainingBoosts = () => `Какво става с останалите ми повишения?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8636,6 +11863,9 @@ export const upgrade_faqRemainingBoosts = () => `Какво става с ост
 export const upgrade_faqRemainingBoostsAnswer = () => `Активните ви повишени обяви продължават до изтичането им, но не можете да създавате нови след отказване на Премиум.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8644,6 +11874,9 @@ export const upgrade_faqRemainingBoostsAnswer = () => `Активните ви �
 export const upgrade_faqBusinessRequirements = () => `Изисквания за бизнес продажби?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8652,6 +11885,9 @@ export const upgrade_faqBusinessRequirements = () => `Изисквания за 
 export const upgrade_faqBusinessRequirementsAnswer = () => `Да, бизнес профилите изискват активен Бранд абонамент за съответствие с правилата на пазара и верификацията.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8660,6 +11896,9 @@ export const upgrade_faqBusinessRequirementsAnswer = () => `Да, бизнес �
 export const upgrade_faqEarlyBirdRecurring = () => `Повтаря ли се отстъпката за ранни последователи?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8668,6 +11907,9 @@ export const upgrade_faqEarlyBirdRecurring = () => `Повтаря ли се о�
 export const upgrade_faqEarlyBirdRecurringAnswer = () => `Отстъпката за ранни последователи е еднократно специално предложение за първия месец. Редовните цени се прилагат от втория месец нататък.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8676,6 +11918,9 @@ export const upgrade_faqEarlyBirdRecurringAnswer = () => `Отстъпката �
 export const upgrade_supportTitle = () => `Все още имате въпроси?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8684,6 +11929,9 @@ export const upgrade_supportTitle = () => `Все още имате въпрос
 export const upgrade_supportSubtitle = () => `Нашият екип за поддръжка е тук, за да ви помогне да изберете перфектния план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8692,6 +11940,9 @@ export const upgrade_supportSubtitle = () => `Нашият екип за под�
 export const upgrade_contactSupport = () => `Свържете се с поддръжката`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8700,6 +11951,9 @@ export const upgrade_contactSupport = () => `Свържете се с поддр
 export const upgrade_cancelConfirm = () => `Сигурни ли сте, че искате да откажете абонамента си? Той ще остане активен до края на периода ви на фактуриране.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8708,6 +11962,9 @@ export const upgrade_cancelConfirm = () => `Сигурни ли сте, че и�
 export const upgrade_cancelSuccess = () => `Абонаментът е отказан успешно. Ще остане активен до края на периода ви на фактуриране.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8716,6 +11973,9 @@ export const upgrade_cancelSuccess = () => `Абонаментът е отказ
 export const upgrade_paymentFailed = () => `Плащането неуспешно:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8724,6 +11984,9 @@ export const upgrade_paymentFailed = () => `Плащането неуспешн�
 export const upgrade_subscriptionFailed = () => `Неуспешно обработване на абонамент`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8732,6 +11995,9 @@ export const upgrade_subscriptionFailed = () => `Неуспешно обрабо
 export const upgrade_createSubscriptionFailed = () => `Неуспешно създаване на абонамент:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8740,6 +12006,9 @@ export const upgrade_createSubscriptionFailed = () => `Неуспешно съз
 export const upgrade_paymentSetupFailed = () => `Настройката на плащането неуспешна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8748,6 +12017,9 @@ export const upgrade_paymentSetupFailed = () => `Настройката на п�
 export const upgrade_cancelSubscriptionFailed = () => `Неуспешно отказване на абонамент:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8756,6 +12028,9 @@ export const upgrade_cancelSubscriptionFailed = () => `Неуспешно отк
 export const dashboard_pleaseLogin = () => `Моля, влезте, за да получите достъп до вашата табло`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8764,6 +12039,9 @@ export const dashboard_pleaseLogin = () => `Моля, влезте, за да п
 export const dashboard_logIn = () => `Влизане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8772,6 +12050,9 @@ export const dashboard_logIn = () => `Влизане`
 export const dashboard_completeProfile = () => `Завършете настройката на профила`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8780,6 +12061,9 @@ export const dashboard_completeProfile = () => `Завършете настро�
 export const dashboard_completeProfileDesc = () => `Трябва да завършите настройката на профила си, преди да получите достъп до таблото.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8788,6 +12072,9 @@ export const dashboard_completeProfileDesc = () => `Трябва да завър
 export const dashboard_completeSetup = () => `Завърши настройката`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8796,6 +12083,9 @@ export const dashboard_completeSetup = () => `Завърши настройка�
 export const dashboard_noRecentOrders = () => `Няма последни поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8804,6 +12094,9 @@ export const dashboard_noRecentOrders = () => `Няма последни пор�
 export const dashboard_yourActiveListings = () => `Вашите активни обяви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8812,6 +12105,9 @@ export const dashboard_yourActiveListings = () => `Вашите активни �
 export const dashboard_noActiveListings = () => `Няма активни обяви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8820,6 +12116,9 @@ export const dashboard_noActiveListings = () => `Няма активни обя�
 export const dashboard_createFirstListing = () => `Създайте първата си обява, за да започнете продажби`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8828,6 +12127,9 @@ export const dashboard_createFirstListing = () => `Създайте първат
 export const dashboard_createListing = () => `Създай обява`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8836,6 +12138,9 @@ export const dashboard_createListing = () => `Създай обява`
 export const orders_itemsToShip = () => `Артикули за изпращане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8844,6 +12149,9 @@ export const orders_itemsToShip = () => `Артикули за изпращан�
 export const orders_totalOrders = () => `Общо поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8852,6 +12160,9 @@ export const orders_totalOrders = () => `Общо поръчки`
 export const orders_ship = () => `Изпрати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8860,6 +12171,9 @@ export const orders_ship = () => `Изпрати`
 export const orders_shipped = () => `Изпратено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8868,6 +12182,9 @@ export const orders_shipped = () => `Изпратено`
 export const orders_myOrders = () => `Поръчки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8876,6 +12193,9 @@ export const orders_myOrders = () => `Поръчки`
 export const orders_completed = () => `Завършени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8884,6 +12204,9 @@ export const orders_completed = () => `Завършени`
 export const orders_noOrdersYet = () => `Поръчките ще се появят тук след обработка.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8892,6 +12215,9 @@ export const orders_noOrdersYet = () => `Поръчките ще се появя
 export const orders_markAsShipped = () => `Маркирай като изпратено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8900,6 +12226,9 @@ export const orders_markAsShipped = () => `Маркирай като изпра�
 export const orders_shipTo = () => `Изпрати до`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8908,6 +12237,9 @@ export const orders_shipTo = () => `Изпрати до`
 export const orders_updating = () => `Обновяване...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8916,6 +12248,9 @@ export const orders_updating = () => `Обновяване...`
 export const listings_pageTitle = () => `Моите обяви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8924,6 +12259,9 @@ export const listings_pageTitle = () => `Моите обяви`
 export const listings_myListings = () => `Моите обяви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8932,6 +12270,9 @@ export const listings_myListings = () => `Моите обяви`
 export const listings_manageProducts = () => `Управлявайте продуктите си`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8940,6 +12281,9 @@ export const listings_manageProducts = () => `Управлявайте прод�
 export const listings_newListing = () => `Нова обява`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8948,6 +12292,9 @@ export const listings_newListing = () => `Нова обява`
 export const listings_total = () => `Общо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8956,6 +12303,9 @@ export const listings_total = () => `Общо`
 export const listings_active = () => `Активни`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8964,6 +12314,9 @@ export const listings_active = () => `Активни`
 export const listings_sold = () => `Продадени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8972,6 +12325,9 @@ export const listings_sold = () => `Продадени`
 export const listings_draft = () => `Чернови`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8980,6 +12336,9 @@ export const listings_draft = () => `Чернови`
 export const listings_all = () => `Всички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8988,6 +12347,9 @@ export const listings_all = () => `Всички`
 export const listings_noListings = () => `Няма обяви`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8996,6 +12358,9 @@ export const listings_noListings = () => `Няма обяви`
 export const listings_getStarted = () => `Започнете да продавате днес!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9004,6 +12369,9 @@ export const listings_getStarted = () => `Започнете да продава
 export const listings_createFirst = () => `Създай първата обява`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9012,6 +12380,9 @@ export const listings_createFirst = () => `Създай първата обяв�
 export const bundle_title = () => `Комплект и икономия на доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9020,6 +12391,9 @@ export const bundle_title = () => `Комплект и икономия на д�
 export const bundle_subtitle = () => `Купете повече артикули от`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9028,6 +12402,9 @@ export const bundle_subtitle = () => `Купете повече артикули
 export const bundle_shipTogether = () => `Изпращане заедно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9036,6 +12413,9 @@ export const bundle_shipTogether = () => `Изпращане заедно`
 export const bundle_savePerItem = () => `Икономия €5 на допълнителен артикул`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9044,6 +12424,9 @@ export const bundle_savePerItem = () => `Икономия €5 на допълн
 export const bundle_yourBundle = () => `Вашия комплект`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9052,6 +12435,9 @@ export const bundle_yourBundle = () => `Вашия комплект`
 export const bundle_item = () => `артикул`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9060,6 +12446,9 @@ export const bundle_item = () => `артикул`
 export const bundle_items = () => `артикула`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9068,6 +12457,9 @@ export const bundle_items = () => `артикула`
 export const bundle_justThisItem = () => `Само този артикул`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9076,6 +12468,9 @@ export const bundle_justThisItem = () => `Само този артикул`
 export const bundle_addTwoItems = () => `+2 артикула (Икономия €10)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9084,6 +12479,9 @@ export const bundle_addTwoItems = () => `+2 артикула (Икономия �
 export const bundle_addThreeItems = () => `+3 артикула (Икономия €15)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9092,6 +12490,9 @@ export const bundle_addThreeItems = () => `+3 артикула (Икономия
 export const bundle_addFiveItems = () => `+5 артикула (Икономия €25)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9100,6 +12501,9 @@ export const bundle_addFiveItems = () => `+5 артикула (Икономия 
 export const bundle_saveAmount = () => `Икономия €`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9108,6 +12512,9 @@ export const bundle_saveAmount = () => `Икономия €`
 export const bundle_addMoreFrom = () => `Добавете повече от @`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9116,6 +12523,9 @@ export const bundle_addMoreFrom = () => `Добавете повече от @`
 export const bundle_noOtherItems = () => `Този продавач няма други налични артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9124,6 +12534,9 @@ export const bundle_noOtherItems = () => `Този продавач няма д�
 export const bundle_showAll = () => `Покажи всички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9132,6 +12545,9 @@ export const bundle_showAll = () => `Покажи всички`
 export const bundle_itemsTotal = () => `Артикули`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9140,6 +12556,9 @@ export const bundle_itemsTotal = () => `Артикули`
 export const bundle_shipping = () => `Доставка (еднократно за всички)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9148,6 +12567,9 @@ export const bundle_shipping = () => `Доставка (еднократно з�
 export const bundle_serviceFee = () => `Такса за услуга`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9156,6 +12578,9 @@ export const bundle_serviceFee = () => `Такса за услуга`
 export const bundle_youSave = () => `Икономисвате от доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9164,6 +12589,9 @@ export const bundle_youSave = () => `Икономисвате от достав�
 export const bundle_total = () => `Общо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9172,6 +12600,9 @@ export const bundle_total = () => `Общо`
 export const bundle_continueToCheckout = () => `Продължете към плащане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9180,6 +12611,9 @@ export const bundle_continueToCheckout = () => `Продължете към пл
 export const bundle_checkoutItems = () => `Купете`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9188,6 +12622,9 @@ export const bundle_checkoutItems = () => `Купете`
 export const bundle_quickOptions = () => `Бързи опции за комплект`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9196,6 +12633,9 @@ export const bundle_quickOptions = () => `Бързи опции за компл�
 export const bundle_loading = () => `Зареждане на продукти...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9204,6 +12644,9 @@ export const bundle_loading = () => `Зареждане на продукти...
 export const bundle_saveOnShipping = () => `от доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9212,6 +12655,9 @@ export const bundle_saveOnShipping = () => `от доставка`
 export const common_scroll = () => `Скролвай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9220,6 +12666,9 @@ export const common_scroll = () => `Скролвай`
 export const category_women_title = () => `Жени`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9228,6 +12677,9 @@ export const category_women_title = () => `Жени`
 export const category_men_title = () => `Мъже`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9236,6 +12688,9 @@ export const category_men_title = () => `Мъже`
 export const category_kids_title = () => `Деца`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9244,6 +12699,9 @@ export const category_kids_title = () => `Деца`
 export const subcategory_shirtsBBousesr = () => `Ризи и блузи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9252,6 +12710,9 @@ export const subcategory_shirtsBBousesr = () => `Ризи и блузи`
 export const subcategory_sweatersHoodies = () => `Пуловери и суичъри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9260,6 +12721,9 @@ export const subcategory_sweatersHoodies = () => `Пуловери и суичъ
 export const subcategory_jacketsCoats = () => `Якета и палта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9268,6 +12732,9 @@ export const subcategory_jacketsCoats = () => `Якета и палта`
 export const subcategory_pantsTraousers = () => `Панталони`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9276,6 +12743,9 @@ export const subcategory_pantsTraousers = () => `Панталони`
 export const subcategory_lingerieUnderwear = () => `Бельо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9284,6 +12754,9 @@ export const subcategory_lingerieUnderwear = () => `Бельо`
 export const subcategory_bagssPurses = () => `Чанти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9292,6 +12765,9 @@ export const subcategory_bagssPurses = () => `Чанти`
 export const subcategory_jewelry = () => `Бижута`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9300,6 +12776,9 @@ export const subcategory_jewelry = () => `Бижута`
 export const subcategory_tShirts = () => `Тениски`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9308,6 +12787,9 @@ export const subcategory_tShirts = () => `Тениски`
 export const subcategory_formalShoes = () => `Елегантни обувки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9316,6 +12798,9 @@ export const subcategory_formalShoes = () => `Елегантни обувки`
 export const subcategory_sandalsSlides = () => `Сандали`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9324,6 +12809,9 @@ export const subcategory_sandalsSlides = () => `Сандали`
 export const subcategory_underwear = () => `Бельо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9332,6 +12820,9 @@ export const subcategory_underwear = () => `Бельо`
 export const subcategory_bags = () => `Чанти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9340,6 +12831,9 @@ export const subcategory_bags = () => `Чанти`
 export const subcategory_activewear = () => `Спортно облекло`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9348,6 +12842,9 @@ export const subcategory_activewear = () => `Спортно облекло`
 export const subcategory_swimwear = () => `Бански костюми`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9356,6 +12853,9 @@ export const subcategory_swimwear = () => `Бански костюми`
 export const subcategory_suiBbazers = () => `Костюми`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9364,6 +12864,9 @@ export const subcategory_suiBbazers = () => `Костюми`
 export const subcategory_shorts = () => `Къси панталони`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9372,9 +12875,13 @@ export const subcategory_shorts = () => `Къси панталони`
 export const subcategory_topsShirts = () => `Топове и тениски`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_pantsJeans = () => `Панталони и дънки`
+

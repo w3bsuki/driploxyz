@@ -26,6 +26,7 @@
   import { RealtimeNotificationService } from '$lib/services/realtime-notifications';
   import { switchLanguage, languages } from '$lib/utils/language-switcher';
   import { browser } from '$app/environment';
+  import { createBrowserSupabaseClient } from '$lib/supabase/client';
   
   interface Props {
     showSearch?: boolean;
@@ -33,7 +34,6 @@
     initialLanguage?: string;
     user?: User;
     profile?: Profile;
-    supabase?: any; // SupabaseClient
   }
   
   let { 
@@ -41,9 +41,11 @@
     minimal = false, 
     initialLanguage, 
     user: propsUser, 
-    profile: propsProfile,
-    supabase
+    profile: propsProfile
   }: Props = $props();
+  
+  // Create supabase client when needed (browser only)
+  const supabase = browser ? createBrowserSupabaseClient() : null;
   
   let mobileMenuOpen = $state(false);
   let userMenuOpen = $state(false);

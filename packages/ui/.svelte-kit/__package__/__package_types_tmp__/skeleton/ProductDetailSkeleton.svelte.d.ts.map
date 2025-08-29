@@ -1,0 +1,1 @@
+{"version":3,"file":"ProductDetailSkeleton.svelte.d.ts","sourceRoot":"","sources":["../../../../src/lib/skeleton/ProductDetailSkeleton.svelte.ts"],"names":[],"mappings":"AAGE,UAAU,KAAK;IACb,KAAK,CAAC,EAAE,MAAM,CAAC;CAChB;AAuGH,QAAA,MAAM,qBAAqB,2CAAwC,CAAC;AACpE,KAAK,qBAAqB,GAAG,UAAU,CAAC,OAAO,qBAAqB,CAAC,CAAC;AACtE,eAAe,qBAAqB,CAAC"}

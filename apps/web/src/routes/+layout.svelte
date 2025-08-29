@@ -50,8 +50,9 @@
     }
   });
 
-  // Use $derived for reactive destructuring in Svelte 5 with safety checks
-  const supabase = $derived(data && data.supabase ? data.supabase : null);
+  // Create browser client locally - not passed from load
+  import { createBrowserSupabaseClient } from '$lib/supabase/client';
+  const supabase = browser ? createBrowserSupabaseClient() : null;
   const isAuthPage = $derived($page.route.id?.includes('(auth)'));
   const isSellPage = $derived($page.route.id?.includes('/sell'));
   const isOnboardingPage = $derived($page.route.id?.includes('/onboarding'));
@@ -121,7 +122,7 @@
 {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
   <div class="sticky top-0 z-50">
     <EarlyBirdBanner />
-    <Header user={data?.user} profile={data?.profile} supabase={supabase} />
+    <Header user={data?.user} profile={data?.profile} />
   </div>
 {/if}
 <div>

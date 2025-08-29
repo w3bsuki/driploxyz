@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Button, OrderStatus, Input, toasts, RatingModal } from '@repo/ui';
+  import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   import { onMount } from 'svelte';
@@ -11,6 +12,8 @@
   }
   
   let { data }: Props = $props();
+  
+  const supabase = createBrowserSupabaseClient();
   
   let activeTab = $state<'to_ship' | 'shipped' | 'incoming' | 'completed'>('to_ship');
   let selectedOrder = $state<any>(null);
@@ -181,7 +184,6 @@
     }
     
     // Subscribe to order updates
-    const supabase = $page.data.supabase;
     if (supabase && data.user?.id) {
       unsubscribe = subscribeToOrderUpdates(supabase, data.user.id);
       

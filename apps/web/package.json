@@ -31,6 +31,7 @@
 		"zod": "^3"
 	},
 	"devDependencies": {
+		"@inlang/paraglide-js-adapter-sveltekit": "^0.6.7",
 		"@repo/eslint-config": "workspace:*",
 		"@repo/typescript-config": "workspace:*",
 		"@sentry/vite-plugin": "^4.1.1",

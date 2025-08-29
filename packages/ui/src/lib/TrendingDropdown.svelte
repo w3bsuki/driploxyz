@@ -65,20 +65,59 @@
   }
 </script>
 
-<div class="w-full bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden">
+<div class="w-full bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/60 overflow-hidden max-w-4xl mx-auto">
+  <!-- Header with Close -->
+  <div class="flex items-center justify-between p-4 border-b border-gray-100">
+    <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+      <span class="text-xl">🛍️</span>
+      Discover Amazing Finds
+    </h2>
+  </div>
+
+  <!-- Quick Actions Row -->
+  <div class="p-4 bg-gradient-to-r from-gray-50 to-blue-50 border-b border-gray-100">
+    <div class="flex items-center gap-3 overflow-x-auto scrollbar-hide">
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+        <span>🔥</span>
+        <span>Hot Deals</span>
+      </button>
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+        <span>✨</span>
+        <span>New Today</span>
+      </button>
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+        <span>💎</span>
+        <span>Designer</span>
+      </button>
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+        <span>💰</span>
+        <span>Under $25</span>
+      </button>
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+        <span>🚚</span>
+        <span>Free Ship</span>
+      </button>
+    </div>
+  </div>
+
   <!-- Trending Products -->
   <div class="p-4 border-b border-gray-100">
-    <div class="flex items-center gap-2 mb-3">
-      <span class="text-lg">🔥</span>
-      <h3 class="font-semibold text-sm text-gray-900">{translations.trendingNow}</h3>
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-2">
+        <span class="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+        {translations.trendingNow}
+      </h3>
+      <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+        {trendingProducts.length}
+      </span>
     </div>
-    <div class="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
-      {#each trendingProducts.slice(0, 8) as product}
+    <div class="grid grid-cols-3 gap-3">
+      {#each trendingProducts.slice(0, 3) as product}
         <button
           onclick={() => onProductClick(product)}
-          class="flex flex-col group shrink-0 w-24"
+          class="text-left group"
         >
-          <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2 group-hover:shadow-md transition-shadow relative">
+          <div class="relative aspect-square rounded-lg overflow-hidden bg-gray-100 mb-2">
             {#if product.images?.[0]}
               <img 
                 src={product.images[0]} 
@@ -98,55 +137,56 @@
               <div class="absolute top-1 right-1 bg-yellow-400 rounded-full p-0.5 shadow-sm border border-yellow-500">
                 <span class="text-[10px] leading-none">👑</span>
               </div>
+            {:else}
+              <div class="absolute top-1 right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full font-medium">
+                🔥
+              </div>
             {/if}
           </div>
-          <p class="text-xs truncate text-gray-700 group-hover:text-gray-900 mb-1 w-full">{product.title}</p>
-          <p class="text-sm font-bold text-gray-900">{formatPrice(product.price)}</p>
+          <p class="text-xs font-medium text-gray-900 truncate mb-1">{product.title}</p>
+          <p class="text-xs font-semibold text-black">{formatPrice(product.price)}</p>
         </button>
       {/each}
     </div>
   </div>
   
-  <!-- Quick Filters -->
-  <div class="p-4 border-b border-gray-100">
-    <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-      {#each quickFilters as filter}
-        <button
-          onclick={() => onFilterClick(filter.value)}
-          class="{getFilterButtonClasses(filter.style)} shrink-0"
-        >
-          {filter.label}
-        </button>
-      {/each}
-    </div>
-  </div>
   
   <!-- Top Sellers -->
   {#if topSellers.length > 0}
     <div class="p-4">
-      <div class="flex items-center gap-2 mb-3">
-        <span class="text-lg">⭐</span>
-        <h3 class="font-semibold text-sm text-gray-900">{translations.topSellers}</h3>
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-2">
+          <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+          {translations.topSellers}
+        </h3>
+        <span class="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+          {topSellers.length}
+        </span>
       </div>
-      <div class="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
-        {#each topSellers.slice(0, 8) as seller}
+      
+      <div class="grid grid-cols-3 gap-3">
+        {#each topSellers.slice(0, 3) as seller}
           <button
             onclick={() => onSellerClick(seller)}
-            class="flex flex-col items-center gap-2 p-2 hover:bg-gray-50 rounded-lg transition-colors group shrink-0 w-20"
+            class="text-center group"
           >
-            <div class="w-12 h-12 rounded-full bg-gray-200 overflow-hidden flex-shrink-0">
+            <div class="w-12 h-12 rounded-full bg-gray-100 mx-auto mb-2 overflow-hidden">
               {#if seller.avatar}
-                <img src={seller.avatar} alt={seller.name} class="w-full h-full object-cover" />
+                <img 
+                  src={seller.avatar} 
+                  alt={seller.name || seller.username}
+                  class="w-full h-full object-cover"
+                />
               {:else}
-                <div class="w-full h-full flex items-center justify-center text-sm font-bold text-gray-600">
-                  {(seller.name || seller.username || 'U')?.[0]?.toUpperCase()}
+                <div class="w-full h-full flex items-center justify-center text-gray-600 font-semibold">
+                  {(seller.name || seller.username || '?')[0].toUpperCase()}
                 </div>
               {/if}
             </div>
-            <div class="text-center w-full">
-              <p class="text-xs font-medium truncate text-gray-900 group-hover:text-black w-full">{seller.name || seller.username}</p>
-              <p class="text-[10px] text-gray-500">{seller.itemCount || 0}</p>
-            </div>
+            <p class="text-xs font-medium text-gray-900 truncate">
+              {seller.name || seller.username}
+            </p>
+            <p class="text-xs text-gray-600">{seller.itemCount || 0} {translations.items}</p>
           </button>
         {/each}
       </div>

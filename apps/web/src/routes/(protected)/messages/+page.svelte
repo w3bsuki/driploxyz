@@ -5,6 +5,7 @@
   import MessageThread from '$lib/components/MessageThread.svelte';
   import MessageInput from '$lib/components/MessageInput.svelte';
   import RealtimeManager from '$lib/components/RealtimeManager.svelte';
+  import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   import { page, navigating } from '$app/stores';
@@ -16,6 +17,8 @@
   }
   
   let { data }: Props = $props();
+  
+  const supabase = createBrowserSupabaseClient();
   
   // Core state management
   let messageText = $state('');
@@ -257,7 +260,7 @@
   
   // Typing indicator with debouncing
   async function handleTyping() {
-    if (!selectedConversation() || !data.user || !data.supabase) return;
+    if (!selectedConversation() || !data.user || !supabase) return;
     
     if (typingTimeout) {
       clearTimeout(typingTimeout);
@@ -266,7 +269,7 @@
     if (!isTyping) {
       isTyping = true;
       try {
-        await data.supabase.rpc('update_user_presence', {
+        await supabase.rpc('update_user_presence', {
           p_status: 'online',
           p_typing_in: selectedConversation()
         });
@@ -277,9 +280,9 @@
     
     typingTimeout = setTimeout(async () => {
       isTyping = false;
-      if (data.supabase) {
+      if (supabase) {
         try {
-          await data.supabase.rpc('update_user_presence', {
+          await supabase.rpc('update_user_presence', {
             p_status: 'online',
             p_typing_in: null
           });
@@ -396,7 +399,7 @@
 
 <!-- RealtimeManager handles all real-time subscriptions -->
 <RealtimeManager 
-  supabase={data.supabase}
+  supabase={supabase}
   user={data.user}
   messages={data.messages || []}
   onMessageChange={handleMessagesChange}

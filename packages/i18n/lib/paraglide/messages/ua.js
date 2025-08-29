@@ -1,15 +1,17 @@
+
 /* eslint-disable */
 /** 
- * This file contains language specific message functions for tree-shaking. 
- * 
- *! WARNING: Only import messages from this file if you want to manually
- *! optimize your bundle. Else, import from the `messages.js` file. 
- * 
- * Your bundler will (in the future) automatically replace the index function 
- * with a language specific message function in the build step. 
- */
+* This file contains language specific message functions for tree-shaking. 
+* 
+*! WARNING: Only import messages from this file if you want to manually
+*! optimize your bundle. Else, import from the `messages.js` file. 
+* 
+* Your bundler will (in the future) automatically replace the index function 
+* with a language specific message function in the build step. 
+*/
 
 
+	
 /**
  * 
  * @returns {string}
@@ -18,6 +20,9 @@
 export const hello = () => `Привіт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -26,6 +31,9 @@ export const hello = () => `Привіт`
 export const welcome = () => `Ласкаво просимо до Driplo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -34,6 +42,9 @@ export const welcome = () => `Ласкаво просимо до Driplo`
 export const loading = () => `Завантаження...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -42,6 +53,9 @@ export const loading = () => `Завантаження...`
 export const price = () => `Ціна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -50,6 +64,9 @@ export const price = () => `Ціна`
 export const test = () => `Українська працює!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -58,6 +75,9 @@ export const test = () => `Українська працює!`
 export const nav_home = () => `Головна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -66,6 +86,9 @@ export const nav_home = () => `Головна`
 export const nav_search = () => `Пошук`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -74,6 +97,9 @@ export const nav_search = () => `Пошук`
 export const nav_sell = () => `Продати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -82,6 +108,9 @@ export const nav_sell = () => `Продати`
 export const nav_messages = () => `Повідомлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -90,6 +119,9 @@ export const nav_messages = () => `Повідомлення`
 export const nav_profile = () => `Профіль`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -98,6 +130,9 @@ export const nav_profile = () => `Профіль`
 export const nav_favorites = () => `Обране`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -106,6 +141,9 @@ export const nav_favorites = () => `Обране`
 export const nav_orders = () => `Замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -114,6 +152,9 @@ export const nav_orders = () => `Замовлення`
 export const nav_settings = () => `Налаштування`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -122,6 +163,9 @@ export const nav_settings = () => `Налаштування`
 export const nav_logout = () => `Вихід`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -130,6 +174,9 @@ export const nav_logout = () => `Вихід`
 export const nav_login = () => `Вхід`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -138,6 +185,9 @@ export const nav_login = () => `Вхід`
 export const nav_signup = () => `Реєстрація`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -146,6 +196,9 @@ export const nav_signup = () => `Реєстрація`
 export const nav_startSelling = () => `Почати продавати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -154,6 +207,9 @@ export const nav_startSelling = () => `Почати продавати`
 export const nav_browseCategories = () => `Переглянути категорії`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -162,6 +218,9 @@ export const nav_browseCategories = () => `Переглянути категор
 export const search_placeholder = () => `Шукати товари, бренди...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -170,6 +229,9 @@ export const search_placeholder = () => `Шукати товари, бренди
 export const search_filter = () => `Фільтр`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -178,6 +240,9 @@ export const search_filter = () => `Фільтр`
 export const search_sort = () => `Сортування`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -186,6 +251,9 @@ export const search_sort = () => `Сортування`
 export const search_results = () => `Результати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -194,6 +262,9 @@ export const search_results = () => `Результати`
 export const search_noResults = () => `Результатів не знайдено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -202,6 +273,9 @@ export const search_noResults = () => `Результатів не знайде�
 export const search_categories = () => `Категорії`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -210,6 +284,9 @@ export const search_categories = () => `Категорії`
 export const search_all = () => `Всі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -218,6 +295,9 @@ export const search_all = () => `Всі`
 export const product_addToCart = () => `До кошика`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -226,6 +306,9 @@ export const product_addToCart = () => `До кошика`
 export const product_buyNow = () => `Купити зараз`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -234,6 +317,9 @@ export const product_buyNow = () => `Купити зараз`
 export const product_favorite = () => `В обране`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -242,6 +328,9 @@ export const product_favorite = () => `В обране`
 export const product_share = () => `Поділитися`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -250,6 +339,9 @@ export const product_share = () => `Поділитися`
 export const product_size = () => `Розмір`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -258,6 +350,9 @@ export const product_size = () => `Розмір`
 export const product_condition = () => `Стан`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -266,6 +361,9 @@ export const product_condition = () => `Стан`
 export const product_brand = () => `Бренд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -274,6 +372,9 @@ export const product_brand = () => `Бренд`
 export const product_description = () => `Опис`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -282,6 +383,9 @@ export const product_description = () => `Опис`
 export const product_seller = () => `Продавець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -290,6 +394,9 @@ export const product_seller = () => `Продавець`
 export const product_reviews = () => `Відгуки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -298,6 +405,9 @@ export const product_reviews = () => `Відгуки`
 export const product_similar = () => `Схожі товари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -306,6 +416,9 @@ export const product_similar = () => `Схожі товари`
 export const product_sold = () => `Продано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -314,6 +427,9 @@ export const product_sold = () => `Продано`
 export const product_available = () => `Доступно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -322,6 +438,9 @@ export const product_available = () => `Доступно`
 export const common_cancel = () => `Скасувати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -330,6 +449,9 @@ export const common_cancel = () => `Скасувати`
 export const common_save = () => `Зберегти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -338,6 +460,9 @@ export const common_save = () => `Зберегти`
 export const common_delete = () => `Видалити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -346,6 +471,9 @@ export const common_delete = () => `Видалити`
 export const common_edit = () => `Редагувати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -354,6 +482,9 @@ export const common_edit = () => `Редагувати`
 export const common_close = () => `Закрити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -362,6 +493,9 @@ export const common_close = () => `Закрити`
 export const common_confirm = () => `Підтвердити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -370,6 +504,9 @@ export const common_confirm = () => `Підтвердити`
 export const common_yes = () => `Так`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -378,6 +515,9 @@ export const common_yes = () => `Так`
 export const common_no = () => `Ні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -386,6 +526,9 @@ export const common_no = () => `Ні`
 export const common_ok = () => `ОК`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -394,6 +537,9 @@ export const common_ok = () => `ОК`
 export const common_back = () => `Назад`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -402,6 +548,9 @@ export const common_back = () => `Назад`
 export const common_next = () => `Далі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -410,6 +559,9 @@ export const common_next = () => `Далі`
 export const common_previous = () => `Попередній`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -418,6 +570,9 @@ export const common_previous = () => `Попередній`
 export const common_submit = () => `Відправити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -426,6 +581,9 @@ export const common_submit = () => `Відправити`
 export const common_currency = () => `₴`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -434,6 +592,9 @@ export const common_currency = () => `₴`
 export const trending_title = () => `Актуально зараз`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -442,6 +603,9 @@ export const trending_title = () => `Актуально зараз`
 export const trending_topSellers = () => `Топ продавці`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -450,6 +614,9 @@ export const trending_topSellers = () => `Топ продавці`
 export const trending_featured = () => `Рекомендовані товари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -458,6 +625,9 @@ export const trending_featured = () => `Рекомендовані товари`
 export const trending_promoted = () => `Просувані`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -466,6 +636,9 @@ export const trending_promoted = () => `Просувані`
 export const trending_newSeller = () => `Новий продавець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -474,6 +647,9 @@ export const trending_newSeller = () => `Новий продавець`
 export const category_women = () => `Жінки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -482,6 +658,9 @@ export const category_women = () => `Жінки`
 export const category_men = () => `Чоловіки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -490,6 +669,9 @@ export const category_men = () => `Чоловіки`
 export const category_kids = () => `Діти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -498,6 +680,9 @@ export const category_kids = () => `Діти`
 export const category_pets = () => `Домашні тварини`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -506,6 +691,9 @@ export const category_pets = () => `Домашні тварини`
 export const category_shoes = () => `Взуття`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -514,6 +702,9 @@ export const category_shoes = () => `Взуття`
 export const category_bags = () => `Сумки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -522,6 +713,9 @@ export const category_bags = () => `Сумки`
 export const category_home = () => `Дім`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -530,6 +724,9 @@ export const category_home = () => `Дім`
 export const category_beauty = () => `Краса`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -538,6 +735,9 @@ export const category_beauty = () => `Краса`
 export const seller_profile = () => `Профіль`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -546,6 +746,9 @@ export const seller_profile = () => `Профіль`
 export const seller_items = () => `товарів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -554,6 +757,9 @@ export const seller_items = () => `товарів`
 export const seller_followers = () => `підписників`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -562,6 +768,9 @@ export const seller_followers = () => `підписників`
 export const seller_rating = () => `рейтинг`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -570,6 +779,9 @@ export const seller_rating = () => `рейтинг`
 export const seller_premium = () => `Преміум продавець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -578,6 +790,9 @@ export const seller_premium = () => `Преміум продавець`
 export const seller_verified = () => `Підтверджений`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -586,6 +801,9 @@ export const seller_verified = () => `Підтверджений`
 export const product_new = () => `Новий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -594,6 +812,9 @@ export const product_new = () => `Новий`
 export const product_likeNew = () => `Як новий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -602,6 +823,9 @@ export const product_likeNew = () => `Як новий`
 export const product_good = () => `Хороший`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -610,6 +834,9 @@ export const product_good = () => `Хороший`
 export const product_fair = () => `Нормальний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -618,6 +845,9 @@ export const product_fair = () => `Нормальний`
 export const product_location = () => `Місцезнаходження`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -626,6 +856,9 @@ export const product_location = () => `Місцезнаходження`
 export const auth_signIn = () => `Увійти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -634,6 +867,9 @@ export const auth_signIn = () => `Увійти`
 export const auth_signUp = () => `Реєстрація`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -642,6 +878,9 @@ export const auth_signUp = () => `Реєстрація`
 export const auth_signOut = () => `Вийти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -650,6 +889,9 @@ export const auth_signOut = () => `Вийти`
 export const profile_orders = () => `Замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -658,6 +900,9 @@ export const profile_orders = () => `Замовлення`
 export const profile_favorites = () => `Обране`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -666,6 +911,9 @@ export const profile_favorites = () => `Обране`
 export const profile_startSelling = () => `Почати продавати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -674,6 +922,9 @@ export const profile_startSelling = () => `Почати продавати`
 export const profile_dashboard = () => `Панель`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -682,6 +933,9 @@ export const profile_dashboard = () => `Панель`
 export const profile_settings = () => `Налаштування`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -690,6 +944,9 @@ export const profile_settings = () => `Налаштування`
 export const profile_myProfile = () => `Мій профіль`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -698,6 +955,9 @@ export const profile_myProfile = () => `Мій профіль`
 export const menu_browse = () => `Переглянути`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -706,6 +966,9 @@ export const menu_browse = () => `Переглянути`
 export const menu_sellItems = () => `Продавати товари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -714,6 +977,9 @@ export const menu_sellItems = () => `Продавати товари`
 export const footer_about = () => `Про нас`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -722,6 +988,9 @@ export const footer_about = () => `Про нас`
 export const footer_help = () => `Допомога`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -730,6 +999,9 @@ export const footer_help = () => `Допомога`
 export const footer_privacy = () => `Конфіденційність`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -738,6 +1010,9 @@ export const footer_privacy = () => `Конфіденційність`
 export const footer_terms = () => `Умови`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -746,6 +1021,9 @@ export const footer_terms = () => `Умови`
 export const footer_contact = () => `Контакти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -754,6 +1032,9 @@ export const footer_contact = () => `Контакти`
 export const seller_unknown = () => `Невідомий продавець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -762,6 +1043,9 @@ export const seller_unknown = () => `Невідомий продавець`
 export const seller_soldBy = () => `Продавець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -770,6 +1054,9 @@ export const seller_soldBy = () => `Продавець`
 export const seller_message = () => `Повідомлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -778,6 +1065,9 @@ export const seller_message = () => `Повідомлення`
 export const seller_follow = () => `Підписатися`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -786,6 +1076,9 @@ export const seller_follow = () => `Підписатися`
 export const seller_following = () => `Підписаний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -794,6 +1087,9 @@ export const seller_following = () => `Підписаний`
 export const seller_viewFullProfile = () => `Переглянути повний профіль`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -802,6 +1098,9 @@ export const seller_viewFullProfile = () => `Переглянути повний
 export const seller_memberFor = () => `Учасник вже`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -810,6 +1109,9 @@ export const seller_memberFor = () => `Учасник вже`
 export const seller_newMember = () => `Новий учасник`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -818,6 +1120,9 @@ export const seller_newMember = () => `Новий учасник`
 export const seller_sales = () => `продажів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -826,6 +1131,9 @@ export const seller_sales = () => `продажів`
 export const seller_respondsWithin = () => `Зазвичай відповідає протягом`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -834,6 +1142,9 @@ export const seller_respondsWithin = () => `Зазвичай відповіда�
 export const seller_hour = () => `година`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -842,6 +1153,9 @@ export const seller_hour = () => `година`
 export const seller_hours = () => `годин`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -850,6 +1164,9 @@ export const seller_hours = () => `годин`
 export const seller_day = () => `день`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -858,6 +1175,9 @@ export const seller_day = () => `день`
 export const seller_days = () => `днів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -866,6 +1186,9 @@ export const seller_days = () => `днів`
 export const seller_activeNow = () => `Зараз активний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -874,6 +1197,9 @@ export const seller_activeNow = () => `Зараз активний`
 export const seller_activeAgo = () => `Був активний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -882,6 +1208,9 @@ export const seller_activeAgo = () => `Був активний`
 export const seller_trustedSeller = () => `Перевірений продавець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -890,6 +1219,9 @@ export const seller_trustedSeller = () => `Перевірений продаве
 export const seller_superstarSeller = () => `Суперпродавець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -898,6 +1230,9 @@ export const seller_superstarSeller = () => `Суперпродавець`
 export const seller_positiveReviews = () => `Позитивні відгуки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -906,6 +1241,9 @@ export const seller_positiveReviews = () => `Позитивні відгуки`
 export const seller_avgShipping = () => `Середня доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -914,6 +1252,9 @@ export const seller_avgShipping = () => `Середня доставка`
 export const seller_recentActivity = () => `Недавня активність`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -922,6 +1263,9 @@ export const seller_recentActivity = () => `Недавня активність`
 export const seller_soldThisWeek = () => `Продано товарів цього тижня`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -930,6 +1274,9 @@ export const seller_soldThisWeek = () => `Продано товарів цьог
 export const seller_shippedOnTime = () => `замовлень відправлено вчасно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -938,6 +1285,9 @@ export const seller_shippedOnTime = () => `замовлень відправле
 export const seller_respondsIn = () => `Відповідає на повідомлення за`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -946,6 +1296,9 @@ export const seller_respondsIn = () => `Відповідає на повідом
 export const product_makeOffer = () => `Зробити пропозицію`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -954,6 +1307,9 @@ export const product_makeOffer = () => `Зробити пропозицію`
 export const product_askQuestion = () => `Поставити питання`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -962,6 +1318,9 @@ export const product_askQuestion = () => `Поставити питання`
 export const product_reportItem = () => `Поскаржитися на товар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -970,6 +1329,9 @@ export const product_reportItem = () => `Поскаржитися на това�
 export const product_shipping = () => `Доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -978,6 +1340,9 @@ export const product_shipping = () => `Доставка`
 export const product_returns = () => `Повернення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -986,6 +1351,9 @@ export const product_returns = () => `Повернення`
 export const product_payment = () => `Оплата`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -994,6 +1362,9 @@ export const product_payment = () => `Оплата`
 export const product_protection = () => `Захист покупця`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1002,6 +1373,9 @@ export const product_protection = () => `Захист покупця`
 export const product_freeShipping = () => `Безкоштовна доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1010,6 +1384,9 @@ export const product_freeShipping = () => `Безкоштовна доставк
 export const product_fastDelivery = () => `Швидка доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1018,6 +1395,9 @@ export const product_fastDelivery = () => `Швидка доставка`
 export const product_inStock = () => `В наявності`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1026,6 +1406,9 @@ export const product_inStock = () => `В наявності`
 export const product_outOfStock = () => `Немає в наявності`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1034,6 +1417,9 @@ export const product_outOfStock = () => `Немає в наявності`
 export const product_lastOne = () => `Останній!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1042,6 +1428,9 @@ export const product_lastOne = () => `Останній!`
 export const product_limitedStock = () => `Залишилося на складі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1050,6 +1439,9 @@ export const product_limitedStock = () => `Залишилося на склад�
 export const product_viewedTimes = () => `Переглядів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1058,6 +1450,9 @@ export const product_viewedTimes = () => `Переглядів`
 export const product_peopleViewing = () => `людей дивляться`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1066,6 +1461,9 @@ export const product_peopleViewing = () => `людей дивляться`
 export const auth_email = () => `Email`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1074,6 +1472,9 @@ export const auth_email = () => `Email`
 export const auth_password = () => `Пароль`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1082,6 +1483,9 @@ export const auth_password = () => `Пароль`
 export const auth_confirmPassword = () => `Підтвердіть пароль`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1090,6 +1494,9 @@ export const auth_confirmPassword = () => `Підтвердіть пароль`
 export const auth_firstName = () => `Ім'я`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1098,6 +1505,9 @@ export const auth_firstName = () => `Ім'я`
 export const auth_lastName = () => `Прізвище`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1106,6 +1516,9 @@ export const auth_lastName = () => `Прізвище`
 export const auth_username = () => `Ім'я користувача`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1114,6 +1527,9 @@ export const auth_username = () => `Ім'я користувача`
 export const auth_forgotPassword = () => `Забули пароль?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1122,6 +1538,9 @@ export const auth_forgotPassword = () => `Забули пароль?`
 export const auth_rememberMe = () => `Запам'ятати мене`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1130,6 +1549,9 @@ export const auth_rememberMe = () => `Запам'ятати мене`
 export const auth_createAccount = () => `Створити обліковий запис`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1138,6 +1560,9 @@ export const auth_createAccount = () => `Створити обліковий з�
 export const auth_alreadyHaveAccount = () => `Вже є обліковий запис?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1146,6 +1571,9 @@ export const auth_alreadyHaveAccount = () => `Вже є обліковий за�
 export const auth_dontHaveAccount = () => `Немає облікового запису?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1154,6 +1582,9 @@ export const auth_dontHaveAccount = () => `Немає облікового за�
 export const auth_orContinueWith = () => `Або продовжити з`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1162,6 +1593,9 @@ export const auth_orContinueWith = () => `Або продовжити з`
 export const auth_termsAgreement = () => `Реєструючись, ви погоджуєтеся з нашими`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1170,6 +1604,9 @@ export const auth_termsAgreement = () => `Реєструючись, ви пог�
 export const auth_termsOfService = () => `Умовами використання`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1178,6 +1615,9 @@ export const auth_termsOfService = () => `Умовами використанн�
 export const auth_and = () => `та`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1186,6 +1626,9 @@ export const auth_and = () => `та`
 export const auth_privacyPolicy = () => `Політикою конфіденційності`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1194,6 +1637,9 @@ export const auth_privacyPolicy = () => `Політикою конфіденці
 export const onboarding_welcome = () => `Ласкаво просимо до Driplo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1202,6 +1648,9 @@ export const onboarding_welcome = () => `Ласкаво просимо до Drip
 export const onboarding_step = () => `Крок`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1210,6 +1659,9 @@ export const onboarding_step = () => `Крок`
 export const onboarding_of = () => `з`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1218,6 +1670,9 @@ export const onboarding_of = () => `з`
 export const onboarding_completeProfile = () => `Заповніть профіль`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1226,6 +1681,9 @@ export const onboarding_completeProfile = () => `Заповніть профіл
 export const onboarding_verifyEmail = () => `Підтвердіть email`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1234,6 +1692,9 @@ export const onboarding_verifyEmail = () => `Підтвердіть email`
 export const onboarding_addPayment = () => `Додайте спосіб оплати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1242,6 +1703,9 @@ export const onboarding_addPayment = () => `Додайте спосіб опла
 export const onboarding_startSelling = () => `Почніть продавати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1250,6 +1714,9 @@ export const onboarding_startSelling = () => `Почніть продавати`
 export const onboarding_skip = () => `Пропустити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1258,6 +1725,9 @@ export const onboarding_skip = () => `Пропустити`
 export const onboarding_continue = () => `Продовжити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1266,6 +1736,9 @@ export const onboarding_continue = () => `Продовжити`
 export const onboarding_finish = () => `Завершити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1274,6 +1747,9 @@ export const onboarding_finish = () => `Завершити`
 export const onboarding_setupComplete = () => `Налаштування завершено!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1282,6 +1758,9 @@ export const onboarding_setupComplete = () => `Налаштування заве
 export const message_newMessage = () => `Нове повідомлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1290,6 +1769,9 @@ export const message_newMessage = () => `Нове повідомлення`
 export const message_typing = () => `друкує...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1298,6 +1780,9 @@ export const message_typing = () => `друкує...`
 export const message_sendMessage = () => `Відправити повідомлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1306,6 +1791,9 @@ export const message_sendMessage = () => `Відправити повідомл�
 export const message_typeMessage = () => `Введіть повідомлення...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1314,6 +1802,9 @@ export const message_typeMessage = () => `Введіть повідомленн�
 export const message_noMessages = () => `Поки немає повідомлень`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1322,6 +1813,9 @@ export const message_noMessages = () => `Поки немає повідомле�
 export const message_startConversation = () => `Почати розмову`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1330,6 +1824,9 @@ export const message_startConversation = () => `Почати розмову`
 export const message_delivered = () => `Доставлено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1338,6 +1835,9 @@ export const message_delivered = () => `Доставлено`
 export const message_read = () => `Прочитано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1346,6 +1846,9 @@ export const message_read = () => `Прочитано`
 export const message_unread = () => `Не прочитано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1354,6 +1857,9 @@ export const message_unread = () => `Не прочитано`
 export const message_markAsRead = () => `Позначити як прочитане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1362,6 +1868,9 @@ export const message_markAsRead = () => `Позначити як прочита�
 export const message_delete = () => `Видалити розмову`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1370,6 +1879,9 @@ export const message_delete = () => `Видалити розмову`
 export const message_block = () => `Заблокувати користувача`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1378,6 +1890,9 @@ export const message_block = () => `Заблокувати користувач�
 export const message_report = () => `Поскаржитися`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1386,6 +1901,9 @@ export const message_report = () => `Поскаржитися`
 export const notification_newFollower = () => `підписався на вас`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1394,6 +1912,9 @@ export const notification_newFollower = () => `підписався на вас`
 export const notification_itemSold = () => `Ваш товар був проданий!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1402,6 +1923,9 @@ export const notification_itemSold = () => `Ваш товар був прода�
 export const notification_offerReceived = () => `Ви отримали пропозицію`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1410,6 +1934,9 @@ export const notification_offerReceived = () => `Ви отримали проп�
 export const notification_priceDropped = () => `Ціна знижена на`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1418,6 +1945,9 @@ export const notification_priceDropped = () => `Ціна знижена на`
 export const notification_itemLiked = () => `сподобався ваш товар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1426,6 +1956,9 @@ export const notification_itemLiked = () => `сподобався ваш тов�
 export const notification_reviewReceived = () => `залишив вам відгук`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1434,6 +1967,9 @@ export const notification_reviewReceived = () => `залишив вам відг
 export const notification_clearAll = () => `Очистити все`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1442,6 +1978,9 @@ export const notification_clearAll = () => `Очистити все`
 export const notification_markAllRead = () => `Позначити все як прочитане`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1450,6 +1989,9 @@ export const notification_markAllRead = () => `Позначити все як п
 export const notification_settings = () => `Налаштування сповіщень`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1458,6 +2000,9 @@ export const notification_settings = () => `Налаштування спові�
 export const checkout_summary = () => `Зведення замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1466,6 +2011,9 @@ export const checkout_summary = () => `Зведення замовлення`
 export const checkout_subtotal = () => `Підсумок`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1474,6 +2022,9 @@ export const checkout_subtotal = () => `Підсумок`
 export const checkout_shipping = () => `Доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1482,6 +2033,9 @@ export const checkout_shipping = () => `Доставка`
 export const checkout_tax = () => `Податок`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1490,6 +2044,9 @@ export const checkout_tax = () => `Податок`
 export const checkout_total = () => `Разом`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1498,6 +2055,9 @@ export const checkout_total = () => `Разом`
 export const checkout_proceedToPayment = () => `Перейти до оплати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1506,6 +2066,9 @@ export const checkout_proceedToPayment = () => `Перейти до оплати
 export const checkout_placeOrder = () => `Оформити замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1514,6 +2077,9 @@ export const checkout_placeOrder = () => `Оформити замовлення`
 export const checkout_orderPlaced = () => `Замовлення успішно оформлено!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1522,6 +2088,9 @@ export const checkout_orderPlaced = () => `Замовлення успішно �
 export const checkout_paymentMethod = () => `Спосіб оплати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1530,6 +2099,9 @@ export const checkout_paymentMethod = () => `Спосіб оплати`
 export const checkout_shippingAddress = () => `Адреса доставки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1538,6 +2110,9 @@ export const checkout_shippingAddress = () => `Адреса доставки`
 export const checkout_billingAddress = () => `Адреса для виставлення рахунку`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1546,6 +2121,9 @@ export const checkout_billingAddress = () => `Адреса для виставл
 export const checkout_sameAsShipping = () => `Така ж як адреса доставки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1554,6 +2132,9 @@ export const checkout_sameAsShipping = () => `Така ж як адреса до
 export const checkout_addAddress = () => `Додати адресу`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1562,6 +2143,9 @@ export const checkout_addAddress = () => `Додати адресу`
 export const checkout_addCard = () => `Додати картку`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1570,6 +2154,9 @@ export const checkout_addCard = () => `Додати картку`
 export const settings_account = () => `Обліковий запис`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1578,6 +2165,9 @@ export const settings_account = () => `Обліковий запис`
 export const settings_notifications = () => `Сповіщення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1586,6 +2176,9 @@ export const settings_notifications = () => `Сповіщення`
 export const settings_privacy = () => `Конфіденційність`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1594,6 +2187,9 @@ export const settings_privacy = () => `Конфіденційність`
 export const settings_security = () => `Безпека`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1602,6 +2198,9 @@ export const settings_security = () => `Безпека`
 export const settings_payments = () => `Платежі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1610,6 +2209,9 @@ export const settings_payments = () => `Платежі`
 export const settings_shipping = () => `Доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1618,6 +2220,9 @@ export const settings_shipping = () => `Доставка`
 export const settings_language = () => `Мова`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1626,6 +2231,9 @@ export const settings_language = () => `Мова`
 export const settings_currency = () => `Валюта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1634,6 +2242,9 @@ export const settings_currency = () => `Валюта`
 export const settings_theme = () => `Тема`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1642,6 +2253,9 @@ export const settings_theme = () => `Тема`
 export const settings_darkMode = () => `Темний режим`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1650,6 +2264,9 @@ export const settings_darkMode = () => `Темний режим`
 export const settings_emailNotifications = () => `Сповіщення по email`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1658,6 +2275,9 @@ export const settings_emailNotifications = () => `Сповіщення по emai
 export const settings_pushNotifications = () => `Push-сповіщення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1666,6 +2286,9 @@ export const settings_pushNotifications = () => `Push-сповіщення`
 export const settings_changePassword = () => `Змінити пароль`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1674,6 +2297,9 @@ export const settings_changePassword = () => `Змінити пароль`
 export const settings_twoFactor = () => `Двофакторна автентифікація`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1682,6 +2308,9 @@ export const settings_twoFactor = () => `Двофакторна автентиф
 export const settings_deleteAccount = () => `Видалити обліковий запис`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1690,6 +2319,9 @@ export const settings_deleteAccount = () => `Видалити обліковий
 export const settings_downloadData = () => `Завантажити ваші дані`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1698,6 +2330,9 @@ export const settings_downloadData = () => `Завантажити ваші да
 export const banner_freeShipping = () => `Безкоштовна доставка при замовленні від`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1706,6 +2341,9 @@ export const banner_freeShipping = () => `Безкоштовна доставк�
 export const banner_newArrivals = () => `Нові надходження щодня`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1714,6 +2352,9 @@ export const banner_newArrivals = () => `Нові надходження щод�
 export const banner_sale = () => `Розпродаж`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1722,6 +2363,9 @@ export const banner_sale = () => `Розпродаж`
 export const banner_percentOff = () => `знижка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1730,6 +2374,9 @@ export const banner_percentOff = () => `знижка`
 export const banner_shopNow = () => `Купувати зараз`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1738,6 +2385,9 @@ export const banner_shopNow = () => `Купувати зараз`
 export const banner_limitedTime = () => `Обмежена за часом пропозиція`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1746,6 +2396,9 @@ export const banner_limitedTime = () => `Обмежена за часом про
 export const banner_endsSoon = () => `Скоро закінчується`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1754,6 +2407,9 @@ export const banner_endsSoon = () => `Скоро закінчується`
 export const error_generic = () => `Щось пішло не так`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1762,6 +2418,9 @@ export const error_generic = () => `Щось пішло не так`
 export const error_network = () => `Помилка мережі. Спробуйте ще раз.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1770,6 +2429,9 @@ export const error_network = () => `Помилка мережі. Спробуй�
 export const error_notFound = () => `Сторінка не знайдена`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1778,6 +2440,9 @@ export const error_notFound = () => `Сторінка не знайдена`
 export const error_unauthorized = () => `Несанкціонований доступ`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1786,6 +2451,9 @@ export const error_unauthorized = () => `Несанкціонований дос
 export const error_validation = () => `Будь ласка, перевірте ваше введення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1794,6 +2462,9 @@ export const error_validation = () => `Будь ласка, перевірте �
 export const error_tryAgain = () => `Спробувати ще раз`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1802,6 +2473,9 @@ export const error_tryAgain = () => `Спробувати ще раз`
 export const success_saved = () => `Успішно збережено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1810,6 +2484,9 @@ export const success_saved = () => `Успішно збережено`
 export const success_updated = () => `Успішно оновлено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1818,6 +2495,9 @@ export const success_updated = () => `Успішно оновлено`
 export const success_deleted = () => `Успішно видалено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1826,6 +2506,9 @@ export const success_deleted = () => `Успішно видалено`
 export const success_copied = () => `Скопійовано до буфера обміну`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1834,6 +2517,9 @@ export const success_copied = () => `Скопійовано до буфера о
 export const empty_noProducts = () => `Поки немає товарів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1842,6 +2528,9 @@ export const empty_noProducts = () => `Поки немає товарів`
 export const empty_noFavorites = () => `Поки немає обраних`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1850,6 +2539,9 @@ export const empty_noFavorites = () => `Поки немає обраних`
 export const empty_noOrders = () => `Поки немає замовлень`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1858,6 +2550,9 @@ export const empty_noOrders = () => `Поки немає замовлень`
 export const empty_noMessages = () => `Поки немає повідомлень`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1866,6 +2561,9 @@ export const empty_noMessages = () => `Поки немає повідомлен�
 export const empty_startBrowsing = () => `Почати перегляд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1874,6 +2572,9 @@ export const empty_startBrowsing = () => `Почати перегляд`
 export const empty_exploreItems = () => `Досліджувати товари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1882,6 +2583,9 @@ export const empty_exploreItems = () => `Досліджувати товари`
 export const pagination_showing = () => `Показано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1890,6 +2594,9 @@ export const pagination_showing = () => `Показано`
 export const pagination_of = () => `з`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1898,6 +2605,9 @@ export const pagination_of = () => `з`
 export const pagination_results = () => `результатів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1906,6 +2616,9 @@ export const pagination_results = () => `результатів`
 export const pagination_page = () => `Сторінка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1914,6 +2627,9 @@ export const pagination_page = () => `Сторінка`
 export const pagination_goToPage = () => `Перейти на сторінку`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1922,6 +2638,9 @@ export const pagination_goToPage = () => `Перейти на сторінку`
 export const filter_sortBy = () => `Сортувати за`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1930,6 +2649,9 @@ export const filter_sortBy = () => `Сортувати за`
 export const filter_priceLowToHigh = () => `Ціна: за зростанням`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1938,6 +2660,9 @@ export const filter_priceLowToHigh = () => `Ціна: за зростанням`
 export const filter_priceHighToLow = () => `Ціна: за спаданням`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1946,6 +2671,9 @@ export const filter_priceHighToLow = () => `Ціна: за спаданням`
 export const filter_newest = () => `Нові`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1954,6 +2682,9 @@ export const filter_newest = () => `Нові`
 export const filter_mostPopular = () => `Найпопулярніші`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1962,6 +2693,9 @@ export const filter_mostPopular = () => `Найпопулярніші`
 export const filter_bestRated = () => `Найкращі за рейтингом`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1970,6 +2704,9 @@ export const filter_bestRated = () => `Найкращі за рейтингом`
 export const filter_priceRange = () => `Діапазон цін`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1978,6 +2715,9 @@ export const filter_priceRange = () => `Діапазон цін`
 export const filter_condition = () => `Стан`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1986,6 +2726,9 @@ export const filter_condition = () => `Стан`
 export const filter_size = () => `Розмір`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1994,6 +2737,9 @@ export const filter_size = () => `Розмір`
 export const filter_color = () => `Колір`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2002,6 +2748,9 @@ export const filter_color = () => `Колір`
 export const filter_brand = () => `Бренд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2010,6 +2759,9 @@ export const filter_brand = () => `Бренд`
 export const filter_apply = () => `Застосувати фільтри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2018,6 +2770,9 @@ export const filter_apply = () => `Застосувати фільтри`
 export const filter_reset = () => `Скинути фільтри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2026,6 +2781,9 @@ export const filter_reset = () => `Скинути фільтри`
 export const filter_onSale = () => `Розпродаж`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2034,6 +2792,9 @@ export const filter_onSale = () => `Розпродаж`
 export const filter_newItems = () => `Новинки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2042,6 +2803,9 @@ export const filter_newItems = () => `Новинки`
 export const filter_trending = () => `Популярне`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2050,6 +2814,9 @@ export const filter_trending = () => `Популярне`
 export const filter_showMore = () => `Показати більше`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2058,6 +2825,9 @@ export const filter_showMore = () => `Показати більше`
 export const filter_showLess = () => `Показати менше`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2066,6 +2836,9 @@ export const filter_showLess = () => `Показати менше`
 export const product_newWithTags = () => `Новий з етикетками`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2074,6 +2847,9 @@ export const product_newWithTags = () => `Новий з етикетками`
 export const product_likeNewCondition = () => `Як новий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2082,6 +2858,9 @@ export const product_likeNewCondition = () => `Як новий`
 export const product_goodCondition = () => `Хороший`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2090,6 +2869,9 @@ export const product_goodCondition = () => `Хороший`
 export const product_fairCondition = () => `Нормальний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2098,6 +2880,9 @@ export const product_fairCondition = () => `Нормальний`
 export const product_addToFavorites = () => `Додати в обране`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2106,6 +2891,9 @@ export const product_addToFavorites = () => `Додати в обране`
 export const product_itemDetails = () => `Деталі товару`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2114,6 +2902,9 @@ export const product_itemDetails = () => `Деталі товару`
 export const product_postedTime = () => `Опубліковано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2122,6 +2913,9 @@ export const product_postedTime = () => `Опубліковано`
 export const product_freeShippingLower = () => `Безкоштовно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2130,6 +2924,9 @@ export const product_freeShippingLower = () => `Безкоштовно`
 export const product_youMightLike = () => `Вам може сподобатися`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2138,6 +2935,9 @@ export const product_youMightLike = () => `Вам може сподобатис�
 export const product_moreFromSeller = () => `Ще від`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2146,6 +2946,9 @@ export const product_moreFromSeller = () => `Ще від`
 export const messages_inbox = () => `Вхідні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2154,6 +2957,9 @@ export const messages_inbox = () => `Вхідні`
 export const messages_newMessage = () => `Нове повідомлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2162,6 +2968,9 @@ export const messages_newMessage = () => `Нове повідомлення`
 export const messages_reply = () => `Відповісти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2170,6 +2979,9 @@ export const messages_reply = () => `Відповісти`
 export const messages_dismiss = () => `Приховати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2178,6 +2990,9 @@ export const messages_dismiss = () => `Приховати`
 export const messages_messageInput = () => `Повідомлення...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2186,6 +3001,9 @@ export const messages_messageInput = () => `Повідомлення...`
 export const messages_today = () => `Сьогодні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2194,6 +3012,9 @@ export const messages_today = () => `Сьогодні`
 export const messages_now = () => `зараз`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2202,6 +3023,9 @@ export const messages_now = () => `зараз`
 export const messages_sent = () => `Надіслано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2210,6 +3034,9 @@ export const messages_sent = () => `Надіслано`
 export const messages_read = () => `Прочитано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2218,6 +3045,9 @@ export const messages_read = () => `Прочитано`
 export const messages_activeNow = () => `Активний зараз`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2226,6 +3056,9 @@ export const messages_activeNow = () => `Активний зараз`
 export const messages_makeOffer = () => `Зробити пропозицію`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2234,6 +3067,9 @@ export const messages_makeOffer = () => `Зробити пропозицію`
 export const messages_bundle = () => `Комплект`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2242,6 +3078,9 @@ export const messages_bundle = () => `Комплект`
 export const messages_location = () => `Місцезнаходження`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2250,6 +3089,9 @@ export const messages_location = () => `Місцезнаходження`
 export const messages_photo = () => `Фото`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2258,6 +3100,9 @@ export const messages_photo = () => `Фото`
 export const messages_selectConversation = () => `Оберіть розмову`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2266,6 +3111,9 @@ export const messages_selectConversation = () => `Оберіть розмову`
 export const messages_chooseMessage = () => `Оберіть повідомлення зі списку, щоб почати чат`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2274,6 +3122,9 @@ export const messages_chooseMessage = () => `Оберіть повідомлен
 export const messages_noProducts = () => `Немає товарів - Загальна розмова`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2282,6 +3133,9 @@ export const messages_noProducts = () => `Немає товарів - Загал
 export const messages_all = () => `Всі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2290,6 +3144,9 @@ export const messages_all = () => `Всі`
 export const messages_unread = () => `Непрочитані`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2298,6 +3155,9 @@ export const messages_unread = () => `Непрочитані`
 export const messages_buying = () => `Покупка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2306,6 +3166,9 @@ export const messages_buying = () => `Покупка`
 export const messages_selling = () => `Продаж`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2314,6 +3177,9 @@ export const messages_selling = () => `Продаж`
 export const messages_offers = () => `Пропозиції`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2322,6 +3188,9 @@ export const messages_offers = () => `Пропозиції`
 export const messages_bundleOffer = () => `Комплектна пропозиція`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2330,6 +3199,9 @@ export const messages_bundleOffer = () => `Комплектна пропозиц
 export const messages_acceptOffer = () => `Прийняти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2338,6 +3210,9 @@ export const messages_acceptOffer = () => `Прийняти`
 export const messages_declineOffer = () => `Відхилити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2346,6 +3221,9 @@ export const messages_declineOffer = () => `Відхилити`
 export const messages_counterOffer = () => `Контр-пропозиція`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2354,6 +3232,9 @@ export const messages_counterOffer = () => `Контр-пропозиція`
 export const messages_save = () => `Зберегти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2362,6 +3243,9 @@ export const messages_save = () => `Зберегти`
 export const notifications_title = () => `Сповіщення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2370,6 +3254,9 @@ export const notifications_title = () => `Сповіщення`
 export const notifications_unread = () => `непрочитані`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2378,6 +3265,9 @@ export const notifications_unread = () => `непрочитані`
 export const notifications_markAllRead = () => `Позначити всі як прочитані`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2386,6 +3276,9 @@ export const notifications_markAllRead = () => `Позначити всі як �
 export const notifications_noNotifications = () => `Немає сповіщень`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2394,6 +3287,9 @@ export const notifications_noNotifications = () => `Немає сповіщен�
 export const notifications_notifyWhenSomethingHappens = () => `Ми повідомимо вас, коли щось станеться`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2402,6 +3298,9 @@ export const notifications_notifyWhenSomethingHappens = () => `Ми повідо
 export const notifications_viewAll = () => `Переглянути всі сповіщення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2410,6 +3309,9 @@ export const notifications_viewAll = () => `Переглянути всі спо
 export const product_viewAll = () => `Переглянути все`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2418,6 +3320,9 @@ export const product_viewAll = () => `Переглянути все`
 export const product_today = () => `сьогодні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2426,6 +3331,9 @@ export const product_today = () => `сьогодні`
 export const product_yesterday = () => `вчора`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2434,6 +3342,9 @@ export const product_yesterday = () => `вчора`
 export const product_daysAgo = () => `д тому`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2442,6 +3353,9 @@ export const product_daysAgo = () => `д тому`
 export const product_weeksAgo = () => `т тому`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2450,6 +3364,9 @@ export const product_weeksAgo = () => `т тому`
 export const product_monthsAgo = () => `м тому`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2458,6 +3375,9 @@ export const product_monthsAgo = () => `м тому`
 export const profile_editProfile = () => `Редагувати профіль`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2466,6 +3386,9 @@ export const profile_editProfile = () => `Редагувати профіль`
 export const profile_posts = () => `Пости`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2474,6 +3397,9 @@ export const profile_posts = () => `Пости`
 export const profile_sold = () => `Продано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2482,6 +3408,9 @@ export const profile_sold = () => `Продано`
 export const profile_sales = () => `Продажі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2490,6 +3419,9 @@ export const profile_sales = () => `Продажі`
 export const profile_following = () => `Підписки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2498,6 +3430,9 @@ export const profile_following = () => `Підписки`
 export const profile_follow = () => `Підписатися`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2506,6 +3441,9 @@ export const profile_follow = () => `Підписатися`
 export const profile_message = () => `Повідомлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2514,6 +3452,9 @@ export const profile_message = () => `Повідомлення`
 export const profile_joined = () => `Приєднався`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2522,6 +3463,9 @@ export const profile_joined = () => `Приєднався`
 export const profile_premium = () => `Преміум`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2530,6 +3474,9 @@ export const profile_premium = () => `Преміум`
 export const profile_noListingsYet = () => `Поки немає оголошень`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2538,6 +3485,9 @@ export const profile_noListingsYet = () => `Поки немає оголошен
 export const profile_reviews = () => `Відгуки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2546,6 +3496,9 @@ export const profile_reviews = () => `Відгуки`
 export const profile_noReviewsYet = () => `Поки немає відгуків`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2554,6 +3507,9 @@ export const profile_noReviewsYet = () => `Поки немає відгуків`
 export const profile_about = () => `Про себе`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2562,6 +3518,9 @@ export const profile_about = () => `Про себе`
 export const profile_sellerStats = () => `Статистика продавця`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2570,6 +3529,9 @@ export const profile_sellerStats = () => `Статистика продавця`
 export const profile_itemsSold = () => `Продано товарів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2578,6 +3540,9 @@ export const profile_itemsSold = () => `Продано товарів`
 export const profile_rating = () => `Рейтинг`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2586,6 +3551,9 @@ export const profile_rating = () => `Рейтинг`
 export const profile_noRatingsYet = () => `Поки немає оцінок`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2594,6 +3562,9 @@ export const profile_noRatingsYet = () => `Поки немає оцінок`
 export const profile_memberSince = () => `Учасник з`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2602,6 +3573,9 @@ export const profile_memberSince = () => `Учасник з`
 export const profile_policies = () => `Політики`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2610,6 +3584,9 @@ export const profile_policies = () => `Політики`
 export const profile_returnPolicy = () => `14-денна політика повернення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2618,6 +3595,9 @@ export const profile_returnPolicy = () => `14-денна політика пов
 export const profile_shipsWithin = () => `Відправляє протягом 1-2 робочих днів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2626,6 +3606,9 @@ export const profile_shipsWithin = () => `Відправляє протягом 
 export const profile_securePayments = () => `Безпечні платежі через Driplo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2634,6 +3617,9 @@ export const profile_securePayments = () => `Безпечні платежі ч�
 export const profile_responseTime = () => `Час відповіді: Зазвичай протягом 1 години`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2642,6 +3628,9 @@ export const profile_responseTime = () => `Час відповіді: Зазви
 export const profile_anonymous = () => `Анонімний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2650,6 +3639,9 @@ export const profile_anonymous = () => `Анонімний`
 export const profile_cancel = () => `Скасувати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2658,6 +3650,9 @@ export const profile_cancel = () => `Скасувати`
 export const profile_avatar = () => `Аватар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2666,6 +3661,9 @@ export const profile_avatar = () => `Аватар`
 export const profile_username = () => `Ім'я користувача`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2674,6 +3672,9 @@ export const profile_username = () => `Ім'я користувача`
 export const profile_fullName = () => `Повне ім'я`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2682,6 +3683,9 @@ export const profile_fullName = () => `Повне ім'я`
 export const profile_bio = () => `Біографія`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2690,6 +3694,9 @@ export const profile_bio = () => `Біографія`
 export const profile_tellPeopleAboutYourself = () => `Розкажіть людям про себе...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2698,6 +3705,9 @@ export const profile_tellPeopleAboutYourself = () => `Розкажіть люд�
 export const profile_location = () => `Місцезнаходження`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2706,6 +3716,9 @@ export const profile_location = () => `Місцезнаходження`
 export const profile_socialLinks = () => `Соціальні посилання`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2714,6 +3727,9 @@ export const profile_socialLinks = () => `Соціальні посилання`
 export const profile_addLink = () => `Додати посилання`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2722,6 +3738,9 @@ export const profile_addLink = () => `Додати посилання`
 export const profile_instagram = () => `Instagram`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2730,6 +3749,9 @@ export const profile_instagram = () => `Instagram`
 export const profile_tiktok = () => `TikTok`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2738,6 +3760,9 @@ export const profile_tiktok = () => `TikTok`
 export const profile_website = () => `Веб-сайт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2746,6 +3771,9 @@ export const profile_website = () => `Веб-сайт`
 export const profile_url = () => `URL`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2754,6 +3782,9 @@ export const profile_url = () => `URL`
 export const profile_saveProfile = () => `Зберегти профіль`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2762,6 +3793,9 @@ export const profile_saveProfile = () => `Зберегти профіль`
 export const profile_saving = () => `Збереження...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2770,6 +3804,9 @@ export const profile_saving = () => `Збереження...`
 export const profile_yourUsername = () => `Ваше ім'я користувача`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2778,6 +3815,9 @@ export const profile_yourUsername = () => `Ваше ім'я користувач
 export const profile_yourFullName = () => `Ваше повне ім'я`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2786,6 +3826,9 @@ export const profile_yourFullName = () => `Ваше повне ім'я`
 export const profile_yourLocation = () => `Ваше місцезнаходження`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2794,6 +3837,9 @@ export const profile_yourLocation = () => `Ваше місцезнаходжен
 export const profile_yourAvatar = () => `Ваш аватар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2802,6 +3848,9 @@ export const profile_yourAvatar = () => `Ваш аватар`
 export const onboarding_welcomeBrand = () => `Ласкаво просимо до Driplo Business! 🏢`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2810,6 +3859,9 @@ export const onboarding_welcomeBrand = () => `Ласкаво просимо до
 export const onboarding_welcomePersonal = () => `Ласкаво просимо до Driplo! 🎉`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2818,6 +3870,9 @@ export const onboarding_welcomePersonal = () => `Ласкаво просимо �
 export const onboarding_profileComplete = () => `Ваш профіль завершено та підтверджено. Ви готові почати купувати та продавати дивовижні модні речі!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2826,6 +3881,9 @@ export const onboarding_profileComplete = () => `Ваш профіль заве�
 export const onboarding_brandProfileComplete = () => `Ваш профіль бренду налаштований! Щоб активувати повні функції бренду та значок верифікації, вам потрібно підписатися на наш план Brand з вашої панелі управління.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2834,6 +3892,9 @@ export const onboarding_brandProfileComplete = () => `Ваш профіль бр
 export const onboarding_brandProfileSetup = () => `Brand Profile Setup`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2842,6 +3903,9 @@ export const onboarding_brandProfileSetup = () => `Brand Profile Setup`
 export const onboarding_popular = () => `Popular`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2850,6 +3914,9 @@ export const onboarding_popular = () => `Popular`
 export const onboarding_personalAccount = () => `Personal Account`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2858,6 +3925,9 @@ export const onboarding_personalAccount = () => `Personal Account`
 export const onboarding_personalAccountDesc = () => `Perfect for individual sellers and casual users`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2866,6 +3936,9 @@ export const onboarding_personalAccountDesc = () => `Perfect for individual sell
 export const onboarding_personalFeature1 = () => `List up to 50 items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2874,6 +3947,9 @@ export const onboarding_personalFeature1 = () => `List up to 50 items`
 export const onboarding_personalFeature2 = () => `Basic seller tools`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2882,6 +3958,9 @@ export const onboarding_personalFeature2 = () => `Basic seller tools`
 export const onboarding_personalFeature3 = () => `Standard support`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2890,6 +3969,9 @@ export const onboarding_personalFeature3 = () => `Standard support`
 export const onboarding_personalFeature4 = () => `Community access`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2898,6 +3980,9 @@ export const onboarding_personalFeature4 = () => `Community access`
 export const onboarding_brandAccount = () => `Brand Account`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2906,6 +3991,9 @@ export const onboarding_brandAccount = () => `Brand Account`
 export const onboarding_brandAccountDesc = () => `Ideal for businesses and professional sellers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2914,6 +4002,9 @@ export const onboarding_brandAccountDesc = () => `Ideal for businesses and profe
 export const onboarding_brandFeature1 = () => `Unlimited listings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2922,6 +4013,9 @@ export const onboarding_brandFeature1 = () => `Unlimited listings`
 export const onboarding_brandFeature2 = () => `Advanced analytics`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2930,6 +4024,9 @@ export const onboarding_brandFeature2 = () => `Advanced analytics`
 export const onboarding_brandFeature3 = () => `Priority support`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2938,6 +4035,9 @@ export const onboarding_brandFeature3 = () => `Priority support`
 export const onboarding_brandFeature4 = () => `Verification badge`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2946,6 +4046,9 @@ export const onboarding_brandFeature4 = () => `Verification badge`
 export const onboarding_free = () => `Free`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2954,6 +4057,9 @@ export const onboarding_free = () => `Free`
 export const onboarding_perMonth = () => `per month`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2962,6 +4068,9 @@ export const onboarding_perMonth = () => `per month`
 export const onboarding_selected = () => `Обрано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2970,6 +4079,9 @@ export const onboarding_selected = () => `Обрано`
 export const onboarding_select = () => `Обрати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2978,6 +4090,9 @@ export const onboarding_select = () => `Обрати`
 export const onboarding_profileCreated = () => `Профіль створено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2986,6 +4101,9 @@ export const onboarding_profileCreated = () => `Профіль створено`
 export const onboarding_profileVerified = () => `Профіль підтверджено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2994,6 +4112,9 @@ export const onboarding_profileVerified = () => `Профіль підтверд
 export const onboarding_brandPending = () => `Бренд в очікуванні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3002,6 +4123,9 @@ export const onboarding_brandPending = () => `Бренд в очікуванні
 export const onboarding_paymentReady = () => `Платіж готовий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3010,6 +4134,9 @@ export const onboarding_paymentReady = () => `Платіж готовий`
 export const onboarding_startExploring = () => `Почати досліджувати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3018,6 +4145,9 @@ export const onboarding_startExploring = () => `Почати досліджув�
 export const onboarding_goToDashboard = () => `Перейти до панелі та підписатися`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3026,6 +4156,9 @@ export const onboarding_goToDashboard = () => `Перейти до панелі 
 export const onboarding_brandSetupComplete = () => `Ваш бренд-профіль налаштовано! Щоб активувати повні функції бренду та значок верифікації, вам потрібно підписатися на наш план для брендів з вашої панелі керування.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3034,6 +4167,9 @@ export const onboarding_brandSetupComplete = () => `Ваш бренд-профі
 export const onboarding_discover = () => `Відкрийте якісну моду`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3042,6 +4178,9 @@ export const onboarding_discover = () => `Відкрийте якісну мод
 export const onboarding_discoverDesc = () => `Переглядайте куровані товари від верифікованих продавців. Знайдіть автентичні речі, дизайнерські бренди та унікальні вінтажні товари.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3050,6 +4189,9 @@ export const onboarding_discoverDesc = () => `Переглядайте куро�
 export const onboarding_sell = () => `Продавайте з упевненістю`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3058,6 +4200,9 @@ export const onboarding_sell = () => `Продавайте з упевненіс
 export const onboarding_sellDesc = () => `Розміщуйте ваші товари швидко з нашими простими інструментами. Безпечні платежі, захист покупця та прозорі комісії.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3066,6 +4211,9 @@ export const onboarding_sellDesc = () => `Розміщуйте ваші това
 export const onboarding_ready = () => `Готові почати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3074,6 +4222,9 @@ export const onboarding_ready = () => `Готові почати`
 export const onboarding_readyDesc = () => `Завершіть налаштування вашого профілю, щоб почати купувати та продавати. Ваш безпечний торговий досвід починається зараз.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3082,6 +4233,9 @@ export const onboarding_readyDesc = () => `Завершіть налаштува
 export const onboarding_back = () => `Назад`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3090,6 +4244,9 @@ export const onboarding_back = () => `Назад`
 export const onboarding_next = () => `Далі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3098,6 +4255,9 @@ export const onboarding_next = () => `Далі`
 export const onboarding_getStarted = () => `Почати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3106,6 +4266,9 @@ export const onboarding_getStarted = () => `Почати`
 export const onboarding_designer = () => `Дизайнерські`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3114,6 +4277,9 @@ export const onboarding_designer = () => `Дизайнерські`
 export const onboarding_vintage = () => `Вінтаж`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3122,6 +4288,9 @@ export const onboarding_vintage = () => `Вінтаж`
 export const onboarding_trending = () => `У тренді`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3130,6 +4299,9 @@ export const onboarding_trending = () => `У тренді`
 export const onboarding_totalSales = () => `Загальні продажі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3138,6 +4310,9 @@ export const onboarding_totalSales = () => `Загальні продажі`
 export const onboarding_happySellers = () => `Щасливі продавці`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3146,6 +4321,9 @@ export const onboarding_happySellers = () => `Щасливі продавці`
 export const onboarding_trustedMarketplace = () => `Надійна торгова площадка для купівлі та продажу вживаної моди. Приєднуйтеся до тисяч користувачів, що торгують якісним одягом.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3154,6 +4332,9 @@ export const onboarding_trustedMarketplace = () => `Надійна торгов�
 export const onboarding_chooseAccountType = () => `Оберіть тип вашого облікового запису`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3162,6 +4343,9 @@ export const onboarding_chooseAccountType = () => `Оберіть тип ваш�
 export const onboarding_selectPerfectPlan = () => `Оберіть ідеальний план для вашого шляху продавця`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3170,6 +4354,9 @@ export const onboarding_selectPerfectPlan = () => `Оберіть ідеальн
 export const onboarding_createProfile = () => `Створіть ваш профіль`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3178,6 +4365,9 @@ export const onboarding_createProfile = () => `Створіть ваш проф�
 export const onboarding_tellAboutYourself = () => `Розкажіть нам трохи про себе`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3186,6 +4376,9 @@ export const onboarding_tellAboutYourself = () => `Розкажіть нам т�
 export const onboarding_chooseAvatar = () => `Оберіть ваш аватар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3194,6 +4387,9 @@ export const onboarding_chooseAvatar = () => `Оберіть ваш аватар
 export const onboarding_pickProfilePicture = () => `Оберіть фото профілю, яке вас представляє`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3202,6 +4398,9 @@ export const onboarding_pickProfilePicture = () => `Оберіть фото пр
 export const onboarding_setupPayouts = () => `Налаштуйте виплати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3210,6 +4409,9 @@ export const onboarding_setupPayouts = () => `Налаштуйте виплат�
 export const onboarding_choosePaymentMethod = () => `Оберіть, як ви будете отримувати платежі від продажів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3218,6 +4420,9 @@ export const onboarding_choosePaymentMethod = () => `Оберіть, як ви �
 export const onboarding_connectSocials = () => `Підключіть ваші соціальні мережі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3226,6 +4431,9 @@ export const onboarding_connectSocials = () => `Підключіть ваші с
 export const onboarding_helpBuyersDiscover = () => `Допоможіть покупцям відкрити ваш стиль (необов'язково)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3234,6 +4442,9 @@ export const onboarding_helpBuyersDiscover = () => `Допоможіть пок�
 export const onboarding_chooseUniqueUsername = () => `Оберіть унікальне ім'я користувача`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3242,6 +4453,9 @@ export const onboarding_chooseUniqueUsername = () => `Оберіть уніка�
 export const onboarding_fullNameOptional = () => `Ваше повне ім'я (необов'язково)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3250,6 +4464,9 @@ export const onboarding_fullNameOptional = () => `Ваше повне ім'я (�
 export const onboarding_usernameMinLength = () => `Ім'я користувача має бути не менше 3 символів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3258,6 +4475,9 @@ export const onboarding_usernameMinLength = () => `Ім'я користувач�
 export const onboarding_settingUp = () => `Налаштування...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3266,6 +4486,9 @@ export const onboarding_settingUp = () => `Налаштування...`
 export const onboarding_completeSetup = () => `Завершити налаштування`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3274,6 +4497,9 @@ export const onboarding_completeSetup = () => `Завершити налашту
 export const onboarding_accountTypePersonal = () => `Особистий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3282,6 +4508,9 @@ export const onboarding_accountTypePersonal = () => `Особистий`
 export const onboarding_accountTypeBrand = () => `Бренд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3290,6 +4519,9 @@ export const onboarding_accountTypeBrand = () => `Бренд`
 export const sales_activity = () => `Продажна активність`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3298,6 +4530,9 @@ export const sales_activity = () => `Продажна активність`
 export const sales_newSales = () => `нові`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3306,6 +4541,9 @@ export const sales_newSales = () => `нові`
 export const sales_earned = () => `зароблено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3314,6 +4552,9 @@ export const sales_earned = () => `зароблено`
 export const sales_noSalesYet = () => `Поки немає продажів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3322,6 +4563,9 @@ export const sales_noSalesYet = () => `Поки немає продажів`
 export const sales_notifyWhenItemsSell = () => `Ми повідомимо вас, коли товари продадуться`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3330,6 +4574,9 @@ export const sales_notifyWhenItemsSell = () => `Ми повідомимо вас
 export const sales_itemSold = () => `Товар продано!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3338,6 +4585,9 @@ export const sales_itemSold = () => `Товар продано!`
 export const sales_soldTo = () => `Продано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3346,6 +4596,9 @@ export const sales_soldTo = () => `Продано`
 export const sales_viewOrderDetails = () => `Переглянути деталі замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3354,6 +4607,9 @@ export const sales_viewOrderDetails = () => `Переглянути деталі
 export const sales_totalSales = () => `загальний продаж`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3362,6 +4618,9 @@ export const sales_totalSales = () => `загальний продаж`
 export const sales_totalSalesPlural = () => `загальні продажі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3370,6 +4629,9 @@ export const sales_totalSalesPlural = () => `загальні продажі`
 export const sales_viewAllSales = () => `Переглянути всі продажі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3378,6 +4640,9 @@ export const sales_viewAllSales = () => `Переглянути всі прод�
 export const banner_earlyBird = () => `Рання пташка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3386,6 +4651,9 @@ export const banner_earlyBird = () => `Рання пташка`
 export const banner_firstMonth = () => `Перший місяць`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3394,6 +4662,9 @@ export const banner_firstMonth = () => `Перший місяць`
 export const banner_off = () => `ЗНИЖКА`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3402,6 +4673,9 @@ export const banner_off = () => `ЗНИЖКА`
 export const banner_mostPopular = () => `Найпопулярніший`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3410,6 +4684,9 @@ export const banner_mostPopular = () => `Найпопулярніший`
 export const banner_business = () => `Бізнес`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3418,6 +4695,9 @@ export const banner_business = () => `Бізнес`
 export const banner_currentlyActive = () => `Наразі активний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3426,6 +4706,9 @@ export const banner_currentlyActive = () => `Наразі активний`
 export const banner_offApplied = () => `ЗНИЖКА Застосовано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3434,6 +4717,9 @@ export const banner_offApplied = () => `ЗНИЖКА Застосовано`
 export const banner_spotsLeft = () => `місць залишилося`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3442,6 +4728,9 @@ export const banner_spotsLeft = () => `місць залишилося`
 export const banner_v1Launch = () => `V1 Спеціальна пропозиція`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3450,6 +4739,9 @@ export const banner_v1Launch = () => `V1 Спеціальна пропозиці
 export const banner_freeBoostEarly = () => `Безкоштовне просування для ранніх користувачів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3458,6 +4750,9 @@ export const banner_freeBoostEarly = () => `Безкоштовне просув�
 export const banner_priorityPlacement = () => `Отримайте пріоритетне розміщення і рекомендовані оголошення при запуску • Обмежений час`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3466,6 +4761,9 @@ export const banner_priorityPlacement = () => `Отримайте пріорит
 export const banner_startSelling = () => `Продай`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3474,6 +4772,9 @@ export const banner_startSelling = () => `Продай`
 export const banner_startSellingFree = () => `Продай безкоштовно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3482,6 +4783,9 @@ export const banner_startSellingFree = () => `Продай безкоштовн�
 export const banner_welcomeToDriplo = () => `DRIPLO`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3490,6 +4794,9 @@ export const banner_welcomeToDriplo = () => `DRIPLO`
 export const banner_joinCommunity = () => `Приєднуйся до нашої спільноти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3498,6 +4805,9 @@ export const banner_joinCommunity = () => `Приєднуйся до нашої 
 export const banner_sellBuySecond = () => `Продавай і купуй секонд-хенд моду`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3506,6 +4816,9 @@ export const banner_sellBuySecond = () => `Продавай і купуй сек
 export const banner_register = () => `Реєстрація`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3514,6 +4827,9 @@ export const banner_register = () => `Реєстрація`
 export const banner_recentListings = () => `Останні оголошення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3522,6 +4838,9 @@ export const banner_recentListings = () => `Останні оголошення`
 export const banner_live = () => `Наживо`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3530,6 +4849,9 @@ export const banner_live = () => `Наживо`
 export const banner_justAdded = () => `щойно додав`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3538,6 +4860,9 @@ export const banner_justAdded = () => `щойно додав`
 export const banner_viewProduct = () => `Переглянути`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3546,6 +4871,9 @@ export const banner_viewProduct = () => `Переглянути`
 export const banner_by = () => `від`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3554,6 +4882,9 @@ export const banner_by = () => `від`
 export const banner_close = () => `Закрити банер`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3562,6 +4893,9 @@ export const banner_close = () => `Закрити банер`
 export const promoted_hotPicks = () => `Гарячі пропозиції`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3570,6 +4904,9 @@ export const promoted_hotPicks = () => `Гарячі пропозиції`
 export const promoted_premiumSellers = () => `Преміум продавці`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3578,6 +4915,9 @@ export const promoted_premiumSellers = () => `Преміум продавці`
 export const checkout_checkout = () => `Оформлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3586,6 +4926,9 @@ export const checkout_checkout = () => `Оформлення`
 export const checkout_completePurchase = () => `Завершіть покупку безпечно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3594,6 +4937,9 @@ export const checkout_completePurchase = () => `Завершіть покупк�
 export const checkout_paymentDetails = () => `Деталі платежу`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3602,6 +4948,9 @@ export const checkout_paymentDetails = () => `Деталі платежу`
 export const checkout_initializingPayment = () => `Ініціалізація платежу...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3610,6 +4959,9 @@ export const checkout_initializingPayment = () => `Ініціалізація п
 export const checkout_processing = () => `Обробка...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3618,6 +4970,9 @@ export const checkout_processing = () => `Обробка...`
 export const checkout_completePurchaseButton = () => `Завершити покупку`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3626,6 +4981,9 @@ export const checkout_completePurchaseButton = () => `Завершити пок�
 export const checkout_orderSummary = () => `Зведення замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3634,6 +4992,9 @@ export const checkout_orderSummary = () => `Зведення замовленн�
 export const checkout_serviceFee = () => `Комісія за послуги`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3642,6 +5003,9 @@ export const checkout_serviceFee = () => `Комісія за послуги`
 export const checkout_pay = () => `Заплатити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3650,6 +5014,9 @@ export const checkout_pay = () => `Заплатити`
 export const checkout_paymentSystemNotInitialized = () => `Система платежів не ініціалізована`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3658,6 +5025,9 @@ export const checkout_paymentSystemNotInitialized = () => `Система пла
 export const checkout_paymentFailed = () => `Платіж не вдався`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3666,6 +5036,9 @@ export const checkout_paymentFailed = () => `Платіж не вдався`
 export const checkout_paymentSuccessful = () => `Платіж успішний!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3674,6 +5047,9 @@ export const checkout_paymentSuccessful = () => `Платіж успішний!`
 export const checkout_paymentSuccessfulDesc = () => `Дякуємо за покупку. Ваше замовлення підтверджено і продавця сповіщено.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3682,6 +5058,9 @@ export const checkout_paymentSuccessfulDesc = () => `Дякуємо за пок�
 export const checkout_paymentReference = () => `Референс платежу`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3690,6 +5069,9 @@ export const checkout_paymentReference = () => `Референс платежу`
 export const checkout_viewYourOrders = () => `Переглянути ваші замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3698,6 +5080,9 @@ export const checkout_viewYourOrders = () => `Переглянути ваші з
 export const checkout_continueShopping = () => `Продовжити покупки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3706,6 +5091,9 @@ export const checkout_continueShopping = () => `Продовжити покуп�
 export const checkout_emailConfirmation = () => `Ви незабаром отримаєте підтвердження електронною поштою з деталями вашого замовлення.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3714,6 +5102,9 @@ export const checkout_emailConfirmation = () => `Ви незабаром отр�
 export const search_itemsFound = () => `товарів знайдено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3722,6 +5113,9 @@ export const search_itemsFound = () => `товарів знайдено`
 export const search_for = () => `для`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3730,6 +5124,9 @@ export const search_for = () => `для`
 export const search_filters = () => `Фільтри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3738,6 +5135,9 @@ export const search_filters = () => `Фільтри`
 export const search_quickFilters = () => `Швидкі фільтри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3746,6 +5146,9 @@ export const search_quickFilters = () => `Швидкі фільтри`
 export const search_size = () => `Розмір`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3754,6 +5157,9 @@ export const search_size = () => `Розмір`
 export const search_brand = () => `Бренд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3762,6 +5168,9 @@ export const search_brand = () => `Бренд`
 export const search_condition = () => `Стан`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3770,6 +5179,9 @@ export const search_condition = () => `Стан`
 export const search_priceRange = () => `Діапазон цін`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3778,6 +5190,9 @@ export const search_priceRange = () => `Діапазон цін`
 export const search_allBrands = () => `Всі бренди`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3786,6 +5201,9 @@ export const search_allBrands = () => `Всі бренди`
 export const search_allConditions = () => `Всі стани`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3794,6 +5212,9 @@ export const search_allConditions = () => `Всі стани`
 export const search_clearAll = () => `Очистити все`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3802,6 +5223,9 @@ export const search_clearAll = () => `Очистити все`
 export const search_applyFilters = () => `Застосувати фільтри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3810,6 +5234,9 @@ export const search_applyFilters = () => `Застосувати фільтри`
 export const search_back = () => `Назад`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3818,6 +5245,9 @@ export const search_back = () => `Назад`
 export const search_noItemsFound = () => `Товари не знайдені`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3826,6 +5256,9 @@ export const search_noItemsFound = () => `Товари не знайдені`
 export const search_adjustFilters = () => `Спробуйте налаштувати ваші фільтри або умови пошуку`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3834,6 +5267,9 @@ export const search_adjustFilters = () => `Спробуйте налаштува
 export const search_clearAllFilters = () => `Очистити все`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3842,6 +5278,9 @@ export const search_clearAllFilters = () => `Очистити все`
 export const search_min = () => `Мін`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3850,6 +5289,9 @@ export const search_min = () => `Мін`
 export const search_max = () => `Макс`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3858,6 +5300,9 @@ export const search_max = () => `Макс`
 export const search_relevance = () => `Релевантність`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3866,6 +5311,9 @@ export const search_relevance = () => `Релевантність`
 export const search_newestFirst = () => `Спочатку нові`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3874,6 +5322,9 @@ export const search_newestFirst = () => `Спочатку нові`
 export const search_priceLowToHigh = () => `Ціна: за зростанням`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3882,6 +5333,9 @@ export const search_priceLowToHigh = () => `Ціна: за зростанням`
 export const search_priceHighToLow = () => `Ціна: за спаданням`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3890,6 +5344,9 @@ export const search_priceHighToLow = () => `Ціна: за спаданням`
 export const sell_includes = () => `включає`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3898,6 +5355,9 @@ export const sell_includes = () => `включає`
 export const sell_selected = () => `вибрано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3906,6 +5366,9 @@ export const sell_selected = () => `вибрано`
 export const sell_accessoriesList = () => `список аксесуарів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3914,6 +5377,9 @@ export const sell_accessoriesList = () => `список аксесуарів`
 export const sell_categoryTitle = () => `Обрати категорію`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3922,6 +5388,9 @@ export const sell_categoryTitle = () => `Обрати категорію`
 export const sell_categoryDescription = () => `Оберіть категорію, яка найкраще описує ваш товар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3930,6 +5399,9 @@ export const sell_categoryDescription = () => `Оберіть категорію
 export const sell_beMoreSpecific = () => `Будьте точнішими`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3938,6 +5410,9 @@ export const sell_beMoreSpecific = () => `Будьте точнішими`
 export const sell_optional = () => `(необов'язково)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3946,6 +5421,9 @@ export const sell_optional = () => `(необов'язково)`
 export const sell_typeCategoryPlaceholder = () => `Введіть категорію...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3954,12 +5432,15 @@ export const sell_typeCategoryPlaceholder = () => `Введіть категор
 export const sell_moreTag = () => `ще`
 
 
+
 export { filter_under20 } from "./en.js"
 
 export { filter_newToday } from "./en.js"
 
 export { filter_freeShipping } from "./en.js"
 
+
+	
 /**
  * 
  * @returns {string}
@@ -3968,6 +5449,9 @@ export { filter_freeShipping } from "./en.js"
 export const condition_new = () => `Новий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3976,6 +5460,9 @@ export const condition_new = () => `Новий`
 export const condition_likeNew = () => `Як новий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3984,6 +5471,9 @@ export const condition_likeNew = () => `Як новий`
 export const condition_good = () => `Хороший`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3992,6 +5482,9 @@ export const condition_good = () => `Хороший`
 export const condition_fair = () => `Нормальний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4000,6 +5493,9 @@ export const condition_fair = () => `Нормальний`
 export const condition_newWithTags = () => `Новий з етикетками`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4008,6 +5504,9 @@ export const condition_newWithTags = () => `Новий з етикетками`
 export const subcategory_dresses = () => `Сукні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4016,6 +5515,9 @@ export const subcategory_dresses = () => `Сукні`
 export const subcategory_tops = () => `Топи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4024,6 +5526,9 @@ export const subcategory_tops = () => `Топи`
 export const subcategory_jeans = () => `Джинси`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4032,6 +5537,9 @@ export const subcategory_jeans = () => `Джинси`
 export const subcategory_skirts = () => `Спідниці`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4040,6 +5548,9 @@ export const subcategory_skirts = () => `Спідниці`
 export const subcategory_jackets = () => `Куртки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4048,6 +5559,9 @@ export const subcategory_jackets = () => `Куртки`
 export const subcategory_accessories = () => `Аксесуари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4056,6 +5570,9 @@ export const subcategory_accessories = () => `Аксесуари`
 export const subcategory_tshirts = () => `Футболки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4064,6 +5581,9 @@ export const subcategory_tshirts = () => `Футболки`
 export const subcategory_shirts = () => `Сорочки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4072,6 +5592,9 @@ export const subcategory_shirts = () => `Сорочки`
 export const subcategory_suits = () => `Костюми`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4080,6 +5603,9 @@ export const subcategory_suits = () => `Костюми`
 export const subcategory_watches = () => `Годинники`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4088,6 +5614,9 @@ export const subcategory_watches = () => `Годинники`
 export const subcategory_baby = () => `Малюки (0-2)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4096,6 +5625,9 @@ export const subcategory_baby = () => `Малюки (0-2)`
 export const subcategory_girls2to8 = () => `Дівчатка (2-8)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4104,6 +5636,9 @@ export const subcategory_girls2to8 = () => `Дівчатка (2-8)`
 export const subcategory_boys2to8 = () => `Хлопчики (2-8)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4112,6 +5647,9 @@ export const subcategory_boys2to8 = () => `Хлопчики (2-8)`
 export const subcategory_girls9to16 = () => `Дівчатка (9-16)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4120,6 +5658,9 @@ export const subcategory_girls9to16 = () => `Дівчатка (9-16)`
 export const subcategory_boys9to16 = () => `Хлопчики (9-16)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4128,6 +5669,9 @@ export const subcategory_boys9to16 = () => `Хлопчики (9-16)`
 export const subcategory_school = () => `Школа`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4136,6 +5680,9 @@ export const subcategory_school = () => `Школа`
 export const subcategory_toys = () => `Іграшки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4144,6 +5691,9 @@ export const subcategory_toys = () => `Іграшки`
 export const subcategory_dogApparel = () => `Одяг для собак`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4152,6 +5702,9 @@ export const subcategory_dogApparel = () => `Одяг для собак`
 export const subcategory_catAccessories = () => `Аксесуари для котів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4160,6 +5713,9 @@ export const subcategory_catAccessories = () => `Аксесуари для ко�
 export const subcategory_petToys = () => `Іграшки для тварин`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4168,6 +5724,9 @@ export const subcategory_petToys = () => `Іграшки для тварин`
 export const subcategory_leashes = () => `Повідці`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4176,6 +5735,9 @@ export const subcategory_leashes = () => `Повідці`
 export const subcategory_beds = () => `Ліжка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4184,6 +5746,9 @@ export const subcategory_beds = () => `Ліжка`
 export const subcategory_foodBowls = () => `Миски для їжі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4192,6 +5757,9 @@ export const subcategory_foodBowls = () => `Миски для їжі`
 export const subcategory_carriers = () => `Переноски`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4200,6 +5768,9 @@ export const subcategory_carriers = () => `Переноски`
 export const subcategory_sneakers = () => `Кросівки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4208,6 +5779,9 @@ export const subcategory_sneakers = () => `Кросівки`
 export const subcategory_boots = () => `Черевики`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4216,6 +5790,9 @@ export const subcategory_boots = () => `Черевики`
 export const subcategory_heels = () => `Підбори`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4224,6 +5801,9 @@ export const subcategory_heels = () => `Підбори`
 export const subcategory_flats = () => `Балетки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4232,6 +5812,9 @@ export const subcategory_flats = () => `Балетки`
 export const subcategory_sandals = () => `Сандалі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4240,6 +5823,9 @@ export const subcategory_sandals = () => `Сандалі`
 export const subcategory_athletic = () => `Спортивні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4248,6 +5834,9 @@ export const subcategory_athletic = () => `Спортивні`
 export const subcategory_dressShoes = () => `Класичне взуття`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4256,6 +5845,9 @@ export const subcategory_dressShoes = () => `Класичне взуття`
 export const subcategory_handbags = () => `Дамські сумочки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4264,6 +5856,9 @@ export const subcategory_handbags = () => `Дамські сумочки`
 export const subcategory_backpacks = () => `Рюкзаки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4272,6 +5867,9 @@ export const subcategory_backpacks = () => `Рюкзаки`
 export const subcategory_totes = () => `Господарські сумки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4280,6 +5878,9 @@ export const subcategory_totes = () => `Господарські сумки`
 export const subcategory_clutches = () => `Клатчі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4288,6 +5889,9 @@ export const subcategory_clutches = () => `Клатчі`
 export const subcategory_crossbody = () => `Через плече`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4296,6 +5900,9 @@ export const subcategory_crossbody = () => `Через плече`
 export const subcategory_travel = () => `Подорожі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4304,6 +5911,9 @@ export const subcategory_travel = () => `Подорожі`
 export const subcategory_laptopBags = () => `Сумки для ноутбука`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4312,6 +5922,9 @@ export const subcategory_laptopBags = () => `Сумки для ноутбука`
 export const subcategory_decor = () => `Декор`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4320,6 +5933,9 @@ export const subcategory_decor = () => `Декор`
 export const subcategory_bedding = () => `Постільна білизна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4328,6 +5944,9 @@ export const subcategory_bedding = () => `Постільна білизна`
 export const subcategory_kitchen = () => `Кухня`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4336,6 +5955,9 @@ export const subcategory_kitchen = () => `Кухня`
 export const subcategory_lighting = () => `Освітлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4344,6 +5966,9 @@ export const subcategory_lighting = () => `Освітлення`
 export const subcategory_storage = () => `Зберігання`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4352,6 +5977,9 @@ export const subcategory_storage = () => `Зберігання`
 export const subcategory_garden = () => `Сад`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4360,6 +5988,9 @@ export const subcategory_garden = () => `Сад`
 export const subcategory_art = () => `Мистецтво`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4368,6 +5999,9 @@ export const subcategory_art = () => `Мистецтво`
 export const subcategory_textiles = () => `Текстиль`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4376,6 +6010,9 @@ export const subcategory_textiles = () => `Текстиль`
 export const subcategory_makeup = () => `Макіяж`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4384,6 +6021,9 @@ export const subcategory_makeup = () => `Макіяж`
 export const subcategory_skincare = () => `Догляд за шкірою`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4392,6 +6032,9 @@ export const subcategory_skincare = () => `Догляд за шкірою`
 export const subcategory_fragrance = () => `Парфуми`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4400,6 +6043,9 @@ export const subcategory_fragrance = () => `Парфуми`
 export const subcategory_hairCare = () => `Догляд за волоссям`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4408,6 +6054,9 @@ export const subcategory_hairCare = () => `Догляд за волоссям`
 export const subcategory_tools = () => `Інструменти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4416,6 +6065,9 @@ export const subcategory_tools = () => `Інструменти`
 export const subcategory_nails = () => `Нігті`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4424,6 +6076,9 @@ export const subcategory_nails = () => `Нігті`
 export const subcategory_bathBody = () => `Ванна і тіло`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4432,6 +6087,9 @@ export const subcategory_bathBody = () => `Ванна і тіло`
 export const subcategory_sets = () => `Набори`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4440,6 +6098,9 @@ export const subcategory_sets = () => `Набори`
 export const home_searchSuggestions_vintageJackets = () => `Вінтажні куртки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4448,6 +6109,9 @@ export const home_searchSuggestions_vintageJackets = () => `Вінтажні к�
 export const home_searchSuggestions_designerBags = () => `Дизайнерські сумки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4456,6 +6120,9 @@ export const home_searchSuggestions_designerBags = () => `Дизайнерськ
 export const home_searchSuggestions_summerDresses = () => `Літні сукні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4464,6 +6131,9 @@ export const home_searchSuggestions_summerDresses = () => `Літні сукні
 export const home_searchSuggestions_sneakers = () => `Кросівки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4472,6 +6142,9 @@ export const home_searchSuggestions_sneakers = () => `Кросівки`
 export const home_trending_vintageJackets = () => `Вінтажні куртки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4480,6 +6153,9 @@ export const home_trending_vintageJackets = () => `Вінтажні куртки
 export const home_trending_y2kJeans = () => `Y2K джинси`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4488,6 +6164,9 @@ export const home_trending_y2kJeans = () => `Y2K джинси`
 export const home_trending_designerBagsUnder100 = () => `Дизайнерські сумки менше $100`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4496,6 +6175,9 @@ export const home_trending_designerBagsUnder100 = () => `Дизайнерськ�
 export const home_browseAll = () => `Переглянути всі товари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4504,6 +6186,9 @@ export const home_browseAll = () => `Переглянути всі товари`
 export const seller_premiumSeller = () => `Преміум продавець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4512,6 +6197,9 @@ export const seller_premiumSeller = () => `Преміум продавець`
 export const seller_premiumSellerDescription = () => `Преміум продавець з ексклюзивними товарами`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4520,6 +6208,9 @@ export const seller_premiumSellerDescription = () => `Преміум прода�
 export const sell_listItem = () => `Розмістити товар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4528,6 +6219,9 @@ export const sell_listItem = () => `Розмістити товар`
 export const sell_saveDraft = () => `Зберегти чернетку`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4536,6 +6230,9 @@ export const sell_saveDraft = () => `Зберегти чернетку`
 export const sell_photosAndDetails = () => `Фото та деталі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4544,6 +6241,9 @@ export const sell_photosAndDetails = () => `Фото та деталі`
 export const sell_productInfo = () => `Інформація про товар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4552,6 +6252,9 @@ export const sell_productInfo = () => `Інформація про товар`
 export const sell_priceAndPublish = () => `Ціна та публікація`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4560,6 +6263,9 @@ export const sell_priceAndPublish = () => `Ціна та публікація`
 export const sell_photos = () => `Фотографії`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4568,6 +6274,9 @@ export const sell_photos = () => `Фотографії`
 export const sell_add = () => `Додати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4576,6 +6285,9 @@ export const sell_add = () => `Додати`
 export const sell_cover = () => `Обкладинка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4584,6 +6296,9 @@ export const sell_cover = () => `Обкладинка`
 export const sell_title = () => `Назва`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4592,6 +6307,9 @@ export const sell_title = () => `Назва`
 export const sell_titlePlaceholder = () => `наприклад, Вінтажна джинсова куртка Levi's`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4600,6 +6318,9 @@ export const sell_titlePlaceholder = () => `наприклад, Вінтажна
 export const sell_description = () => `Опис`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4608,6 +6329,9 @@ export const sell_description = () => `Опис`
 export const sell_descriptionPlaceholder = () => `Опишіть ваш товар...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4616,6 +6340,9 @@ export const sell_descriptionPlaceholder = () => `Опишіть ваш това
 export const sell_category = () => `Категорія`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4624,6 +6351,9 @@ export const sell_category = () => `Категорія`
 export const sell_selectCategory = () => `Оберіть категорію`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4632,6 +6362,9 @@ export const sell_selectCategory = () => `Оберіть категорію`
 export const sell_subcategory = () => `Підкатегорія`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4640,6 +6373,9 @@ export const sell_subcategory = () => `Підкатегорія`
 export const sell_selectSubcategory = () => `Оберіть підкатегорію`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4648,6 +6384,9 @@ export const sell_selectSubcategory = () => `Оберіть підкатегор
 export const sell_brand = () => `Бренд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4656,6 +6395,9 @@ export const sell_brand = () => `Бренд`
 export const sell_enterBrandName = () => `Введіть назву бренду`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4664,6 +6406,9 @@ export const sell_enterBrandName = () => `Введіть назву бренду
 export const sell_size = () => `Розмір`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4672,6 +6417,9 @@ export const sell_size = () => `Розмір`
 export const sell_selectSize = () => `Оберіть розмір`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4680,6 +6428,9 @@ export const sell_selectSize = () => `Оберіть розмір`
 export const sell_condition = () => `Стан`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4688,6 +6439,9 @@ export const sell_condition = () => `Стан`
 export const sell_selectCondition = () => `Виберіть стан`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4696,6 +6450,9 @@ export const sell_selectCondition = () => `Виберіть стан`
 export const sell_color = () => `Колір`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4704,6 +6461,9 @@ export const sell_color = () => `Колір`
 export const sell_selectColor = () => `Оберіть колір`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4712,6 +6472,9 @@ export const sell_selectColor = () => `Оберіть колір`
 export const sell_material = () => `Матеріал`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4720,6 +6483,9 @@ export const sell_material = () => `Матеріал`
 export const sell_selectMaterial = () => `Оберіть матеріал`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4728,6 +6494,9 @@ export const sell_selectMaterial = () => `Оберіть матеріал`
 export const sell_price = () => `Ціна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4736,6 +6505,9 @@ export const sell_price = () => `Ціна`
 export const sell_shippingPrice = () => `Ціна доставки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4744,6 +6516,9 @@ export const sell_shippingPrice = () => `Ціна доставки`
 export const sell_tags = () => `Теги`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4752,6 +6527,9 @@ export const sell_tags = () => `Теги`
 export const sell_addTag = () => `Додати тег`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4760,6 +6538,9 @@ export const sell_addTag = () => `Додати тег`
 export const sell_premiumBoost = () => `Преміум просування`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4768,6 +6549,9 @@ export const sell_premiumBoost = () => `Преміум просування`
 export const sell_boostYourListing = () => `Просунути ваше оголошення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4776,6 +6560,9 @@ export const sell_boostYourListing = () => `Просунути ваше огол
 export const sell_boostDescription = () => `Отримайте в 3 рази більше видимості на 7 днів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4784,6 +6571,9 @@ export const sell_boostDescription = () => `Отримайте в 3 рази б�
 export const sell_publish = () => `Опублікувати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4792,6 +6582,9 @@ export const sell_publish = () => `Опублікувати`
 export const sell_publishing = () => `Публікуємо...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4800,6 +6593,9 @@ export const sell_publishing = () => `Публікуємо...`
 export const sell_brandSubscriptionRequired = () => `Потрібна підписка Brand`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4808,6 +6604,9 @@ export const sell_brandSubscriptionRequired = () => `Потрібна підпи
 export const sell_brandSubscriptionDescription = () => `Для розміщення товарів як бізнес-акаунт, вам потрібна активна підписка Brand.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4816,6 +6615,9 @@ export const sell_brandSubscriptionDescription = () => `Для розміщен�
 export const sell_brandPlanFeatures = () => `Функції Brand плану:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4824,6 +6626,9 @@ export const sell_brandPlanFeatures = () => `Функції Brand плану:`
 export const sell_listUnlimitedProducts = () => `Розміщувати необмежені товари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4832,6 +6637,9 @@ export const sell_listUnlimitedProducts = () => `Розміщувати необ
 export const sell_brandVerificationBadge = () => `Значок верифікації бренду`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4840,6 +6648,9 @@ export const sell_brandVerificationBadge = () => `Значок верифіка�
 export const sell_businessAccountFeatures = () => `Функції бізнес-акаунту`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4848,6 +6659,9 @@ export const sell_businessAccountFeatures = () => `Функції бізнес-�
 export const sell_prioritySupport = () => `Пріоритетна підтримка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4856,6 +6670,9 @@ export const sell_prioritySupport = () => `Пріоритетна підтрим
 export const sell_subscribeToBrandPlan = () => `Підписатися на Brand план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4864,6 +6681,9 @@ export const sell_subscribeToBrandPlan = () => `Підписатися на Bran
 export const sell_switchToPersonalAccount = () => `Переключитися на особистий акаунт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4872,6 +6692,9 @@ export const sell_switchToPersonalAccount = () => `Переключитися н
 export const sell_uploadError = () => `Не вдалося завантажити товар. Будь ласка, спробуйте ще раз.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4880,6 +6703,9 @@ export const sell_uploadError = () => `Не вдалося завантажит�
 export const sell_atLeastOnePhoto = () => `Будь ласка, додайте хоча б одне фото`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4888,6 +6714,9 @@ export const sell_atLeastOnePhoto = () => `Будь ласка, додайте �
 export const sell_month = () => `місяць`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4896,6 +6725,9 @@ export const sell_month = () => `місяць`
 export const sell_next = () => `Далі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4904,6 +6736,9 @@ export const sell_next = () => `Далі`
 export const sell_previous = () => `Назад`
 
 
+
+
+	
 /**
  * @param {{ username: NonNullable<unknown> }} params
  * @returns {string}
@@ -4912,6 +6747,9 @@ export const sell_previous = () => `Назад`
 export const dashboard_welcomeBack = (params) => `З поверненням, ${params.username}!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4920,6 +6758,9 @@ export const dashboard_welcomeBack = (params) => `З поверненням, ${p
 export const dashboard_shopStatus = () => `Ось що відбувається з вашим магазином сьогодні.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4928,6 +6769,9 @@ export const dashboard_shopStatus = () => `Ось що відбувається 
 export const dashboard_newListing = () => `Нове оголошення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4936,6 +6780,9 @@ export const dashboard_newListing = () => `Нове оголошення`
 export const dashboard_soldItems = () => `Продані товари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4944,6 +6791,9 @@ export const dashboard_soldItems = () => `Продані товари`
 export const dashboard_earnings = () => `Заробітки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4952,6 +6802,9 @@ export const dashboard_earnings = () => `Заробітки`
 export const dashboard_upgrade = () => `Покращити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4960,6 +6813,9 @@ export const dashboard_upgrade = () => `Покращити`
 export const dashboard_adminPanel = () => `Адмін панель`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4968,6 +6824,9 @@ export const dashboard_adminPanel = () => `Адмін панель`
 export const dashboard_analytics = () => `Аналітика`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4976,6 +6835,9 @@ export const dashboard_analytics = () => `Аналітика`
 export const dashboard_settings = () => `Налаштування`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4984,6 +6846,9 @@ export const dashboard_settings = () => `Налаштування`
 export const dashboard_availableBalance = () => `Доступний баланс`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4992,6 +6857,9 @@ export const dashboard_availableBalance = () => `Доступний баланс
 export const dashboard_totalEarned = () => `Загалом зароблено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5000,6 +6868,9 @@ export const dashboard_totalEarned = () => `Загалом зароблено`
 export const dashboard_monthSales = () => `Продажі цього місяця`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5008,6 +6879,9 @@ export const dashboard_monthSales = () => `Продажі цього місяц�
 export const dashboard_lastMonthIncrease = () => `+12% від минулого місяця`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5016,6 +6890,9 @@ export const dashboard_lastMonthIncrease = () => `+12% від минулого �
 export const dashboard_overview = () => `Огляд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5024,6 +6901,9 @@ export const dashboard_overview = () => `Огляд`
 export const dashboard_listings = () => `Оголошення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5032,8 +6912,11 @@ export const dashboard_listings = () => `Оголошення`
 export const dashboard_orders = () => `Замовлення`
 
 
+
 export { dashboard_sales } from "./en.js"
 
+
+	
 /**
  * 
  * @returns {string}
@@ -5042,6 +6925,9 @@ export { dashboard_sales } from "./en.js"
 export const dashboard_totalRevenue = () => `Загальний дохід`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5050,6 +6936,9 @@ export const dashboard_totalRevenue = () => `Загальний дохід`
 export const dashboard_allTime = () => `За весь час`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5058,6 +6947,9 @@ export const dashboard_allTime = () => `За весь час`
 export const dashboard_activeListings = () => `Активні оголошення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5066,6 +6958,9 @@ export const dashboard_activeListings = () => `Активні оголошенн
 export const dashboard_currentlyLive = () => `Активні зараз`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5074,6 +6969,9 @@ export const dashboard_currentlyLive = () => `Активні зараз`
 export const dashboard_totalViews = () => `Загальні перегляди`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5082,6 +6980,9 @@ export const dashboard_totalViews = () => `Загальні перегляди`
 export const dashboard_thisMonth = () => `Цього місяця`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5090,6 +6991,9 @@ export const dashboard_thisMonth = () => `Цього місяця`
 export const dashboard_conversionRate = () => `Конверсія`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5098,6 +7002,9 @@ export const dashboard_conversionRate = () => `Конверсія`
 export const dashboard_viewsToSales = () => `Перегляди у продажі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5106,6 +7013,9 @@ export const dashboard_viewsToSales = () => `Перегляди у продаж�
 export const dashboard_recentOrders = () => `Недавні замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5114,6 +7024,9 @@ export const dashboard_recentOrders = () => `Недавні замовлення
 export const dashboard_viewAll = () => `Переглянути всі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5122,6 +7035,9 @@ export const dashboard_viewAll = () => `Переглянути всі`
 export const dashboard_product = () => `Товар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5130,6 +7046,9 @@ export const dashboard_product = () => `Товар`
 export const dashboard_buyer = () => `Покупець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5138,6 +7057,9 @@ export const dashboard_buyer = () => `Покупець`
 export const dashboard_price = () => `Ціна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5146,6 +7068,9 @@ export const dashboard_price = () => `Ціна`
 export const dashboard_status = () => `Статус`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5154,6 +7079,9 @@ export const dashboard_status = () => `Статус`
 export const dashboard_time = () => `Час`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5162,6 +7090,9 @@ export const dashboard_time = () => `Час`
 export const dashboard_action = () => `Дія`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5170,6 +7101,9 @@ export const dashboard_action = () => `Дія`
 export const dashboard_view = () => `Переглянути`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5178,6 +7112,9 @@ export const dashboard_view = () => `Переглянути`
 export const dashboard_activeListingsTitle = () => `Ваші активні оголошення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5186,6 +7123,9 @@ export const dashboard_activeListingsTitle = () => `Ваші активні ог
 export const dashboard_manageListings = () => `Керування оголошеннями`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5194,6 +7134,9 @@ export const dashboard_manageListings = () => `Керування оголоше
 export const dashboard_searchListings = () => `Шукати оголошення...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5202,6 +7145,9 @@ export const dashboard_searchListings = () => `Шукати оголошення
 export const dashboard_filter = () => `Фільтр`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5210,6 +7156,9 @@ export const dashboard_filter = () => `Фільтр`
 export const dashboard_edit = () => `Редагувати товар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5218,6 +7167,9 @@ export const dashboard_edit = () => `Редагувати товар`
 export const dashboard_orderManagement = () => `Керування замовленнями`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5226,6 +7178,9 @@ export const dashboard_orderManagement = () => `Керування замовл�
 export const dashboard_allOrders = () => `Всі замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5234,6 +7189,9 @@ export const dashboard_allOrders = () => `Всі замовлення`
 export const dashboard_pendingShipment = () => `Очікує відправки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5242,6 +7200,9 @@ export const dashboard_pendingShipment = () => `Очікує відправки`
 export const dashboard_shipped = () => `Відправлено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5250,6 +7211,9 @@ export const dashboard_shipped = () => `Відправлено`
 export const dashboard_delivered = () => `Доставлено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5258,6 +7222,9 @@ export const dashboard_delivered = () => `Доставлено`
 export const dashboard_cancelled = () => `Скасовано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5266,6 +7233,9 @@ export const dashboard_cancelled = () => `Скасовано`
 export const dashboard_export = () => `Експорт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5274,6 +7244,9 @@ export const dashboard_export = () => `Експорт`
 export const dashboard_orderId = () => `ID замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5282,6 +7255,9 @@ export const dashboard_orderId = () => `ID замовлення`
 export const dashboard_total = () => `Загалом`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5290,6 +7266,9 @@ export const dashboard_total = () => `Загалом`
 export const dashboard_date = () => `Дата`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5298,6 +7277,9 @@ export const dashboard_date = () => `Дата`
 export const dashboard_actions = () => `Дії`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5306,6 +7288,9 @@ export const dashboard_actions = () => `Дії`
 export const dashboard_ship = () => `Відправити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5314,6 +7299,9 @@ export const dashboard_ship = () => `Відправити`
 export const dashboard_performanceOverview = () => `Огляд ефективності`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5322,6 +7310,9 @@ export const dashboard_performanceOverview = () => `Огляд ефективн�
 export const dashboard_chartImplemented = () => `Графік буде реалізований з бібліотекою діаграм`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5330,6 +7321,9 @@ export const dashboard_chartImplemented = () => `Графік буде реал�
 export const dashboard_topPerformingProducts = () => `Найкращі товари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5338,6 +7332,9 @@ export const dashboard_topPerformingProducts = () => `Найкращі това�
 export const dashboard_views = () => `переглядів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5346,6 +7343,9 @@ export const dashboard_views = () => `переглядів`
 export const dashboard_trafficSources = () => `Джерела трафіку`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5354,6 +7354,9 @@ export const dashboard_trafficSources = () => `Джерела трафіку`
 export const dashboard_search = () => `Пошук`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5362,6 +7365,9 @@ export const dashboard_search = () => `Пошук`
 export const dashboard_direct = () => `Прямий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5370,6 +7376,9 @@ export const dashboard_direct = () => `Прямий`
 export const dashboard_social = () => `Соціальні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5378,6 +7387,9 @@ export const dashboard_social = () => `Соціальні`
 export const dashboard_customerDemographics = () => `Демографія клієнтів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5386,6 +7398,9 @@ export const dashboard_customerDemographics = () => `Демографія клі
 export const dashboard_age18to24 = () => `Вік 18-24`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5394,6 +7409,9 @@ export const dashboard_age18to24 = () => `Вік 18-24`
 export const dashboard_age25to34 = () => `Вік 25-34`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5402,6 +7420,9 @@ export const dashboard_age25to34 = () => `Вік 25-34`
 export const dashboard_age35to44 = () => `Вік 35-44`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5410,6 +7431,9 @@ export const dashboard_age35to44 = () => `Вік 35-44`
 export const dashboard_age45plus = () => `Вік 45+`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5418,6 +7442,9 @@ export const dashboard_age45plus = () => `Вік 45+`
 export const dashboard_shopSettings = () => `Налаштування магазину`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5426,6 +7453,9 @@ export const dashboard_shopSettings = () => `Налаштування магаз
 export const dashboard_shopName = () => `Назва магазину`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5434,6 +7464,9 @@ export const dashboard_shopName = () => `Назва магазину`
 export const dashboard_shopDescription = () => `Опис магазину`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5442,6 +7475,9 @@ export const dashboard_shopDescription = () => `Опис магазину`
 export const dashboard_shopDescriptionPlaceholder = () => `Розкажіть покупцям про ваш магазин...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5450,6 +7486,9 @@ export const dashboard_shopDescriptionPlaceholder = () => `Розкажіть п
 export const dashboard_vacationMode = () => `Режим відпустки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5458,6 +7497,9 @@ export const dashboard_vacationMode = () => `Режим відпустки`
 export const dashboard_shopCurrentlyActive = () => `Ваш магазин зараз активний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5466,6 +7508,9 @@ export const dashboard_shopCurrentlyActive = () => `Ваш магазин зар
 export const dashboard_shippingSettings = () => `Налаштування доставки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5474,6 +7519,9 @@ export const dashboard_shippingSettings = () => `Налаштування дос
 export const dashboard_processingTime = () => `Час обробки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5482,6 +7530,9 @@ export const dashboard_processingTime = () => `Час обробки`
 export const dashboard_processingTime1to2Days = () => `1-2 робочі дні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5490,6 +7541,9 @@ export const dashboard_processingTime1to2Days = () => `1-2 робочі дні`
 export const dashboard_processingTime3to5Days = () => `3-5 робочих днів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5498,6 +7552,9 @@ export const dashboard_processingTime3to5Days = () => `3-5 робочих дні
 export const dashboard_processingTime1Week = () => `1 тиждень`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5506,6 +7563,9 @@ export const dashboard_processingTime1Week = () => `1 тиждень`
 export const dashboard_defaultShippingPrice = () => `Стандартна ціна доставки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5514,6 +7574,9 @@ export const dashboard_defaultShippingPrice = () => `Стандартна цін
 export const dashboard_paymentSettings = () => `Налаштування платежів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5522,6 +7585,9 @@ export const dashboard_paymentSettings = () => `Налаштування пла�
 export const dashboard_bankAccount = () => `Банківський рахунок`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5530,6 +7596,9 @@ export const dashboard_bankAccount = () => `Банківський рахуно�
 export const dashboard_change = () => `Змінити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5538,6 +7607,9 @@ export const dashboard_change = () => `Змінити`
 export const dashboard_payoutSchedule = () => `Розклад виплат`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5546,6 +7618,9 @@ export const dashboard_payoutSchedule = () => `Розклад виплат`
 export const dashboard_daily = () => `Щоденно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5554,6 +7629,9 @@ export const dashboard_daily = () => `Щоденно`
 export const dashboard_weekly = () => `Щотижня`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5562,6 +7640,9 @@ export const dashboard_weekly = () => `Щотижня`
 export const dashboard_monthly = () => `Щомісяця`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5570,6 +7651,9 @@ export const dashboard_monthly = () => `Щомісяця`
 export const dashboard_saveSettings = () => `Зберегти налаштування`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5578,6 +7662,9 @@ export const dashboard_saveSettings = () => `Зберегти налаштува
 export const dashboard_justNow = () => `щойно`
 
 
+
+
+	
 /**
  * @param {{ minutes: NonNullable<unknown> }} params
  * @returns {string}
@@ -5586,6 +7673,9 @@ export const dashboard_justNow = () => `щойно`
 export const dashboard_minutesAgo = (params) => `${params.minutes} хв тому`
 
 
+
+
+	
 /**
  * @param {{ hours: NonNullable<unknown> }} params
  * @returns {string}
@@ -5594,6 +7684,9 @@ export const dashboard_minutesAgo = (params) => `${params.minutes} хв тому
 export const dashboard_hoursAgo = (params) => `${params.hours} год тому`
 
 
+
+
+	
 /**
  * @param {{ days: NonNullable<unknown> }} params
  * @returns {string}
@@ -5602,6 +7695,9 @@ export const dashboard_hoursAgo = (params) => `${params.hours} год тому`
 export const dashboard_daysAgo = (params) => `${params.days} дн тому`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5610,6 +7706,9 @@ export const dashboard_daysAgo = (params) => `${params.days} дн тому`
 export const admin_dashboard = () => `Огляд панелі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5618,6 +7717,9 @@ export const admin_dashboard = () => `Огляд панелі`
 export const admin_monitorMetrics = () => `Відслідковуйте ключові показники та активність платформи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5626,6 +7728,9 @@ export const admin_monitorMetrics = () => `Відслідковуйте ключ
 export const admin_totalUsers = () => `Загальна к-ть користувачів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5634,6 +7739,9 @@ export const admin_totalUsers = () => `Загальна к-ть користув
 export const admin_totalProducts = () => `Загальна к-ть товарів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5642,6 +7750,9 @@ export const admin_totalProducts = () => `Загальна к-ть товарі�
 export const admin_totalOrders = () => `Загальна к-ть замовлень`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5650,6 +7761,9 @@ export const admin_totalOrders = () => `Загальна к-ть замовле�
 export const admin_totalRevenue = () => `Загальний дохід`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5658,6 +7772,9 @@ export const admin_totalRevenue = () => `Загальний дохід`
 export const admin_recentOrders = () => `Останні замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5666,6 +7783,9 @@ export const admin_recentOrders = () => `Останні замовлення`
 export const admin_orderId = () => `ID замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5674,6 +7794,9 @@ export const admin_orderId = () => `ID замовлення`
 export const admin_buyer = () => `Покупець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5682,6 +7805,9 @@ export const admin_buyer = () => `Покупець`
 export const admin_seller = () => `Продавець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5690,6 +7816,9 @@ export const admin_seller = () => `Продавець`
 export const admin_amount = () => `Сума`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5698,6 +7827,9 @@ export const admin_amount = () => `Сума`
 export const admin_status = () => `Статус`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5706,6 +7838,9 @@ export const admin_status = () => `Статус`
 export const admin_date = () => `Дата`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5714,6 +7849,9 @@ export const admin_date = () => `Дата`
 export const admin_noOrders = () => `Замовлень поки немає`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5722,6 +7860,9 @@ export const admin_noOrders = () => `Замовлень поки немає`
 export const admin_managePayouts = () => `Керувати виплатами`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5730,6 +7871,9 @@ export const admin_managePayouts = () => `Керувати виплатами`
 export const admin_viewMainSite = () => `Переглянути основний сайт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5738,6 +7882,9 @@ export const admin_viewMainSite = () => `Переглянути основний
 export const admin_driploAdmin = () => `Адмін Driplo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5746,6 +7893,9 @@ export const admin_driploAdmin = () => `Адмін Driplo`
 export const admin_backToSite = () => `Назад на сайт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5754,6 +7904,9 @@ export const admin_backToSite = () => `Назад на сайт`
 export const admin_back = () => `Назад`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5762,6 +7915,9 @@ export const admin_back = () => `Назад`
 export const admin_payoutManagement = () => `Керування виплатами`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5770,6 +7926,9 @@ export const admin_payoutManagement = () => `Керування виплатам
 export const admin_trackProcessPayouts = () => `Відслідковування та обробка виплат продавцям`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5778,6 +7937,9 @@ export const admin_trackProcessPayouts = () => `Відслідковування
 export const admin_refresh = () => `Оновити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5786,6 +7948,9 @@ export const admin_refresh = () => `Оновити`
 export const admin_loading = () => `Завантаження...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5794,6 +7959,9 @@ export const admin_loading = () => `Завантаження...`
 export const admin_pendingPayouts = () => `Виплати в очікуванні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5802,6 +7970,9 @@ export const admin_pendingPayouts = () => `Виплати в очікуванн�
 export const admin_processing = () => `Обробка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5810,6 +7981,9 @@ export const admin_processing = () => `Обробка`
 export const admin_totalPendingAmount = () => `Загальна сума в очікуванні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5818,6 +7992,9 @@ export const admin_totalPendingAmount = () => `Загальна сума в оч
 export const admin_platformCommission = () => `Комісія платформи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5826,6 +8003,9 @@ export const admin_platformCommission = () => `Комісія платформи
 export const admin_pending = () => `В очікуванні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5834,6 +8014,9 @@ export const admin_pending = () => `В очікуванні`
 export const admin_noPendingPayouts = () => `Немає виплат в очікуванні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5842,6 +8025,9 @@ export const admin_noPendingPayouts = () => `Немає виплат в очік
 export const admin_noProcessingPayouts = () => `Немає виплат в обробці`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5850,6 +8036,9 @@ export const admin_noProcessingPayouts = () => `Немає виплат в об�
 export const admin_payoutsAppearHere = () => `Виплати з'являться тут, коли будуть готові до обробки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5858,6 +8047,9 @@ export const admin_payoutsAppearHere = () => `Виплати з'являться
 export const admin_commission = () => `Комісія`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5866,6 +8058,9 @@ export const admin_commission = () => `Комісія`
 export const admin_delivered = () => `Доставлено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5874,6 +8069,9 @@ export const admin_delivered = () => `Доставлено`
 export const admin_created = () => `Створено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5882,6 +8080,9 @@ export const admin_created = () => `Створено`
 export const admin_startProcessing = () => `Почати обробку`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5890,6 +8091,9 @@ export const admin_startProcessing = () => `Почати обробку`
 export const admin_markCompleted = () => `Позначити виконаним`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5898,6 +8102,9 @@ export const admin_markCompleted = () => `Позначити виконаним`
 export const admin_markFailed = () => `Позначити невдалим`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5906,6 +8113,9 @@ export const admin_markFailed = () => `Позначити невдалим`
 export const admin_ref = () => `Посилання`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5914,6 +8124,9 @@ export const admin_ref = () => `Посилання`
 export const category_all = () => `Всі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5922,6 +8135,9 @@ export const category_all = () => `Всі`
 export const category_itemsCount = () => `товарів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5930,6 +8146,9 @@ export const category_itemsCount = () => `товарів`
 export const category_loadMore = () => `Показати більше товарів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5938,6 +8157,9 @@ export const category_loadMore = () => `Показати більше товар
 export const category_searchPlaceholder = () => `Шукати в категорії...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5946,10 +8168,13 @@ export const category_searchPlaceholder = () => `Шукати в категор�
 export const category_clearAll = () => `Очистити все`
 
 
+
 export { category_filters } from "./en.js"
 
 export { category_categories } from "./en.js"
 
+
+	
 /**
  * 
  * @returns {string}
@@ -5958,6 +8183,9 @@ export { category_categories } from "./en.js"
 export const ui_scroll = () => `Прокрутка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5966,6 +8194,9 @@ export const ui_scroll = () => `Прокрутка`
 export const onboarding_tutorial_welcomeTitle = () => `Ласкаво просимо до Driplo! 👋`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5974,6 +8205,9 @@ export const onboarding_tutorial_welcomeTitle = () => `Ласкаво проси
 export const onboarding_tutorial_welcomeContent = () => `Все готово! Дозвольте показати, як максимально використовувати наш маркетплейс.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5982,6 +8216,9 @@ export const onboarding_tutorial_welcomeContent = () => `Все готово! Д
 export const onboarding_tutorial_discoverTitle = () => `Відкрийте неймовірні товари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5990,6 +8227,9 @@ export const onboarding_tutorial_discoverTitle = () => `Відкрийте не�
 export const onboarding_tutorial_discoverContent = () => `Використовуйте пошукову стрічку або переглядайте категорії, щоб знайти унікальний одяг.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5998,6 +8238,9 @@ export const onboarding_tutorial_discoverContent = () => `Використову
 export const onboarding_tutorial_listItemTitle = () => `Завантажте свій перший товар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6006,6 +8249,9 @@ export const onboarding_tutorial_listItemTitle = () => `Завантажте с�
 export const onboarding_tutorial_listItemContentBrand = () => `Як бренд-акаунт ви маєте доступ до інструментів масового завантаження та розширеної аналітики.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6014,6 +8260,9 @@ export const onboarding_tutorial_listItemContentBrand = () => `Як бренд-�
 export const onboarding_tutorial_listItemContentPersonal = () => `Готові до продажу? Натисніть кнопку '+', щоб завантажити свій перший товар. Додайте якісні фото та чесні описи.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6022,6 +8271,9 @@ export const onboarding_tutorial_listItemContentPersonal = () => `Готові �
 export const onboarding_tutorial_stayConnectedTitle = () => `Залишайтеся на зв'язку`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6030,6 +8282,9 @@ export const onboarding_tutorial_stayConnectedTitle = () => `Залишайте�
 export const onboarding_tutorial_stayConnectedContent = () => `Використовуйте нашу систему повідомлень для спілкування з покупцями/продавцями. Отримуйте сповіщення про нові повідомлення та пропозиції.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6038,12 +8293,16 @@ export const onboarding_tutorial_stayConnectedContent = () => `Використ�
 export const onboarding_tutorial_readyTitle = () => `Ви готові!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const onboarding_tutorial_readyContent = () => `Перевірте свою панель управління для ваших оголошень, повідомлень та налаштувань акаунту. Вдалої торгівлі!`
+
 
 
 export { close } from "./en.js"
@@ -6064,6 +8323,8 @@ export { add_to_favorites } from "./en.js"
 
 export { remove_from_favorites } from "./en.js"
 
+
+	
 /**
  * 
  * @returns {string}
@@ -6072,6 +8333,9 @@ export { remove_from_favorites } from "./en.js"
 export const sell_step1 = () => `Фото`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6080,6 +8344,9 @@ export const sell_step1 = () => `Фото`
 export const sell_step2 = () => `Інформація`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6088,6 +8355,9 @@ export const sell_step2 = () => `Інформація`
 export const sell_step3 = () => `Ціна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6096,6 +8366,9 @@ export const sell_step3 = () => `Ціна`
 export const sell_step4 = () => `Огляд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6104,6 +8377,9 @@ export const sell_step4 = () => `Огляд`
 export const sell_uploadPhotos = () => `Завантажити фото`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6112,6 +8388,9 @@ export const sell_uploadPhotos = () => `Завантажити фото`
 export const sell_dragDropPhotos = () => `Перетягніть фото сюди або натисніть для вибору`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6120,6 +8399,9 @@ export const sell_dragDropPhotos = () => `Перетягніть фото сюд
 export const sell_uploadingPhoto = () => `Завантаження фото...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6128,6 +8410,9 @@ export const sell_uploadingPhoto = () => `Завантаження фото...`
 export const sell_uploadPhotos_description = () => `Додайте до 10 фото (JPG, PNG, WEBP)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6136,6 +8421,9 @@ export const sell_uploadPhotos_description = () => `Додайте до 10 фо�
 export const sell_setCoverPhoto = () => `Зробити головною`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6144,6 +8432,9 @@ export const sell_setCoverPhoto = () => `Зробити головною`
 export const sell_removePhoto = () => `Видалити`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6152,6 +8443,9 @@ export const sell_removePhoto = () => `Видалити`
 export const sell_titleRequired = () => `Назва обов'язкова`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6160,6 +8454,9 @@ export const sell_titleRequired = () => `Назва обов'язкова`
 export const sell_descriptionRequired = () => `Опис обов'язковий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6168,6 +8465,9 @@ export const sell_descriptionRequired = () => `Опис обов'язковий`
 export const sell_categoryRequired = () => `Категорія обов'язкова`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6176,6 +8476,9 @@ export const sell_categoryRequired = () => `Категорія обов'язко
 export const sell_subcategoryRequired = () => `Підкатегорія обов'язкова`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6184,6 +8487,9 @@ export const sell_subcategoryRequired = () => `Підкатегорія обов
 export const sell_conditionRequired = () => `Будь ласка виберіть стан`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6192,6 +8498,9 @@ export const sell_conditionRequired = () => `Будь ласка виберіт�
 export const sell_brandRequired = () => `Будь ласка виберіть або введіть бренд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6200,6 +8509,9 @@ export const sell_brandRequired = () => `Будь ласка виберіть а
 export const sell_sizeRequired = () => `Будь ласка виберіть розмір`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6208,6 +8520,9 @@ export const sell_sizeRequired = () => `Будь ласка виберіть р�
 export const sell_priceRequired = () => `Ціна обов'язкова`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6216,6 +8531,9 @@ export const sell_priceRequired = () => `Ціна обов'язкова`
 export const sell_shippingRequired = () => `Вартість доставки обов'язкова`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6224,6 +8542,9 @@ export const sell_shippingRequired = () => `Вартість доставки о
 export const sell_minPhotosRequired = () => `Необхідно мінімум 1 фото`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6232,6 +8553,9 @@ export const sell_minPhotosRequired = () => `Необхідно мінімум 1
 export const sell_maxPhotosReached = () => `Максимум 10 фото`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6240,6 +8564,9 @@ export const sell_maxPhotosReached = () => `Максимум 10 фото`
 export const sell_condition_brandNewWithTags = () => `Нове з бірками`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6248,6 +8575,9 @@ export const sell_condition_brandNewWithTags = () => `Нове з бірками
 export const sell_condition_newWithoutTags = () => `Нове без бірок`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6256,6 +8586,9 @@ export const sell_condition_newWithoutTags = () => `Нове без бірок`
 export const sell_condition_likeNew = () => `Як нове`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6264,6 +8597,9 @@ export const sell_condition_likeNew = () => `Як нове`
 export const sell_condition_good = () => `Гарний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6272,6 +8608,9 @@ export const sell_condition_good = () => `Гарний`
 export const sell_condition_worn = () => `Ношений`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6280,6 +8619,9 @@ export const sell_condition_worn = () => `Ношений`
 export const sell_condition_fair = () => `Задовільний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6288,6 +8630,9 @@ export const sell_condition_fair = () => `Задовільний`
 export const sell_condition_brandNewWithTags_desc = () => `Ніколи не носилося`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6296,6 +8641,9 @@ export const sell_condition_brandNewWithTags_desc = () => `Ніколи не н�
 export const sell_condition_newWithoutTags_desc = () => `Ніколи не носилося`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6304,6 +8652,9 @@ export const sell_condition_newWithoutTags_desc = () => `Ніколи не но�
 export const sell_condition_likeNew_desc = () => `Носилося 1-2 рази`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6312,6 +8663,9 @@ export const sell_condition_likeNew_desc = () => `Носилося 1-2 рази`
 export const sell_condition_good_desc = () => `Незначні сліди носіння`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6320,6 +8674,9 @@ export const sell_condition_good_desc = () => `Незначні сліди но�
 export const sell_condition_worn_desc = () => `Помітні сліди носіння`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6328,6 +8685,9 @@ export const sell_condition_worn_desc = () => `Помітні сліди нос�
 export const sell_condition_fair_desc = () => `Сильні сліди носіння`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6336,6 +8696,9 @@ export const sell_condition_fair_desc = () => `Сильні сліди носі�
 export const sell_brandOther = () => `Інший`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6344,6 +8707,9 @@ export const sell_brandOther = () => `Інший`
 export const sell_brandCustomPlaceholder = () => `Введіть бренд...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6352,6 +8718,9 @@ export const sell_brandCustomPlaceholder = () => `Введіть бренд...`
 export const sell_colorOptional = () => `(необов'язково)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6360,6 +8729,9 @@ export const sell_colorOptional = () => `(необов'язково)`
 export const sell_materialOptional = () => `(необов'язково)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6368,6 +8740,9 @@ export const sell_materialOptional = () => `(необов'язково)`
 export const sell_colorCustomPlaceholder = () => `Або введіть колір...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6376,6 +8751,9 @@ export const sell_colorCustomPlaceholder = () => `Або введіть колі
 export const sell_materialCustomPlaceholder = () => `Або введіть матеріал...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6384,6 +8762,9 @@ export const sell_materialCustomPlaceholder = () => `Або введіть ма�
 export const sell_summary = () => `Підсумок:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6392,6 +8773,9 @@ export const sell_summary = () => `Підсумок:`
 export const sell_estimatedEarnings = () => `Очікуваний дохід`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6400,6 +8784,9 @@ export const sell_estimatedEarnings = () => `Очікуваний дохід`
 export const sell_listingPrice = () => `Ціна оголошення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6408,6 +8795,9 @@ export const sell_listingPrice = () => `Ціна оголошення`
 export const sell_shippingCost = () => `Вартість доставки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6416,6 +8806,9 @@ export const sell_shippingCost = () => `Вартість доставки`
 export const sell_totalBuyerPays = () => `Всього платить покупець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6424,6 +8817,9 @@ export const sell_totalBuyerPays = () => `Всього платить покуп
 export const sell_driploFee = () => `Комісія Driplo (10%)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6432,6 +8828,9 @@ export const sell_driploFee = () => `Комісія Driplo (10%)`
 export const sell_paymentFee = () => `Комісія за обробку (3%)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6440,6 +8839,9 @@ export const sell_paymentFee = () => `Комісія за обробку (3%)`
 export const sell_yourEarnings = () => `Ваш дохід`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6448,6 +8850,9 @@ export const sell_yourEarnings = () => `Ваш дохід`
 export const sell_reviewListing = () => `Переглянути оголошення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6456,6 +8861,9 @@ export const sell_reviewListing = () => `Переглянути оголошен
 export const sell_editDetails = () => `Редагувати деталі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6464,6 +8872,9 @@ export const sell_editDetails = () => `Редагувати деталі`
 export const sell_confirmPublish = () => `Підтвердити і опублікувати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6472,6 +8883,9 @@ export const sell_confirmPublish = () => `Підтвердити і опублі
 export const sell_listingSuccess = () => `Ваш товар опубліковано!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6480,6 +8894,9 @@ export const sell_listingSuccess = () => `Ваш товар опублікова
 export const sell_viewListing = () => `Переглянути оголошення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6488,6 +8905,9 @@ export const sell_viewListing = () => `Переглянути оголошенн
 export const sell_listAnother = () => `Додати ще товар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6496,6 +8916,9 @@ export const sell_listAnother = () => `Додати ще товар`
 export const sell_goToDashboard = () => `Перейти до панелі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6504,6 +8927,9 @@ export const sell_goToDashboard = () => `Перейти до панелі`
 export const sell_processingUpload = () => `Обробка оголошення...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6512,6 +8938,9 @@ export const sell_processingUpload = () => `Обробка оголошення.
 export const sell_validationError = () => `Будь ласка заповніть всі обов'язкові поля`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6520,6 +8949,9 @@ export const sell_validationError = () => `Будь ласка заповніт�
 export const sell_setPricing = () => `Встановити ціну`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6528,6 +8960,9 @@ export const sell_setPricing = () => `Встановити ціну`
 export const sell_reviewPublish = () => `Перегляд і публікація`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6536,6 +8971,9 @@ export const sell_reviewPublish = () => `Перегляд і публікаці�
 export const sell_back = () => `Назад`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6544,6 +8982,9 @@ export const sell_back = () => `Назад`
 export const sell_condition_brandNewWithoutTags = () => `Нове без бірок`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6552,6 +8993,9 @@ export const sell_condition_brandNewWithoutTags = () => `Нове без бір�
 export const sell_condition_veryGood = () => `Дуже добре`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6560,6 +9004,9 @@ export const sell_condition_veryGood = () => `Дуже добре`
 export const sell_condition_satisfactory = () => `Задовільне`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6568,6 +9015,9 @@ export const sell_condition_satisfactory = () => `Задовільне`
 export const sell_brandPlaceholder = () => `Виберіть або знайдіть бренд...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6576,6 +9026,9 @@ export const sell_brandPlaceholder = () => `Виберіть або знайді
 export const sell_other = () => `Інше`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6584,6 +9037,9 @@ export const sell_other = () => `Інше`
 export const sell_sizePlaceholder = () => `Виберіть розмір...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6592,6 +9048,9 @@ export const sell_sizePlaceholder = () => `Виберіть розмір...`
 export const sell_listingError = () => `Не вдалося опублікувати. Спробуйте ще раз.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6600,6 +9059,9 @@ export const sell_listingError = () => `Не вдалося опублікува
 export const sell_photosHint = () => `Природне світло • Всі ракурси`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6608,6 +9070,9 @@ export const sell_photosHint = () => `Природне світло • Всі �
 export const sell_minCharacters = () => `Мін. 3 символи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6616,6 +9081,9 @@ export const sell_minCharacters = () => `Мін. 3 символи`
 export const sell_addBrandSize = () => `Додайте бренд/розмір`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6624,6 +9092,9 @@ export const sell_addBrandSize = () => `Додайте бренд/розмір`
 export const sell_good = () => `Добре`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6632,6 +9103,9 @@ export const sell_good = () => `Добре`
 export const sell_whoIsItFor = () => `Для кого?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6640,6 +9114,9 @@ export const sell_whoIsItFor = () => `Для кого?`
 export const sell_men = () => `Чоловіки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6648,6 +9125,9 @@ export const sell_men = () => `Чоловіки`
 export const sell_women = () => `Жінки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6656,6 +9136,9 @@ export const sell_women = () => `Жінки`
 export const sell_kids = () => `Діти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6664,6 +9147,9 @@ export const sell_kids = () => `Діти`
 export const sell_unisex = () => `Унісекс`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6672,6 +9158,9 @@ export const sell_unisex = () => `Унісекс`
 export const sell_sizeGroupXSXL = () => `XS-XL`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6680,6 +9169,9 @@ export const sell_sizeGroupXSXL = () => `XS-XL`
 export const sell_sizeGroupNumbers = () => `Числа`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6688,6 +9180,9 @@ export const sell_sizeGroupNumbers = () => `Числа`
 export const sell_sizeGroupUKEU = () => `UK/EU`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6696,6 +9191,9 @@ export const sell_sizeGroupUKEU = () => `UK/EU`
 export const sell_sizeGroupOther = () => `Інше`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6704,6 +9202,9 @@ export const sell_sizeGroupOther = () => `Інше`
 export const sell_uploadingImages = () => `Завантаження зображень...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6712,6 +9213,9 @@ export const sell_uploadingImages = () => `Завантаження зображ
 export const sell_imagesOptimized = () => `Зображення будуть автоматично оптимізовані на наших серверах`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6720,6 +9224,9 @@ export const sell_imagesOptimized = () => `Зображення будуть а�
 export const sell_dropHere = () => `Перетягніть сюди`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6728,6 +9235,9 @@ export const sell_dropHere = () => `Перетягніть сюди`
 export const sell_addPhoto = () => `Додати фото`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6736,6 +9246,9 @@ export const sell_addPhoto = () => `Додати фото`
 export const sell_removeImage = () => `Видалити зображення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6744,6 +9257,9 @@ export const sell_removeImage = () => `Видалити зображення`
 export const sell_uploadJPGPNG = () => `Завантажити JPG/PNG зображення (автоматично оптимізовані)`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown> }} params
  * @returns {string}
@@ -6752,6 +9268,9 @@ export const sell_uploadJPGPNG = () => `Завантажити JPG/PNG зобр�
 export const sell_photoCount = (params) => `${params.count} фото`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown> }} params
  * @returns {string}
@@ -6760,6 +9279,9 @@ export const sell_photoCount = (params) => `${params.count} фото`
 export const sell_photosCount = (params) => `${params.count} фото`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown>, s: NonNullable<unknown> }} params
  * @returns {string}
@@ -6768,6 +9290,9 @@ export const sell_photosCount = (params) => `${params.count} фото`
 export const sell_photosUploaded = (params) => `${params.count} фото завантажено`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown> }} params
  * @returns {string}
@@ -6776,6 +9301,9 @@ export const sell_photosUploaded = (params) => `${params.count} фото зав�
 export const sell_moreAllowed = (params) => `ще ${params.count} дозволено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6784,6 +9312,9 @@ export const sell_moreAllowed = (params) => `ще ${params.count} дозволе
 export const sell_optimizedForWeb = () => `Оптимізовано для веб`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6792,6 +9323,9 @@ export const sell_optimizedForWeb = () => `Оптимізовано для ве�
 export const sell_tagsPlaceholder = () => `Додайте теги, такі як 'vintage', 'y2k', 'streetwear'...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6800,6 +9334,9 @@ export const sell_tagsPlaceholder = () => `Додайте теги, такі я�
 export const sell_tagsHelp = () => `Теги допомагають покупцям знайти ваш товар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6808,6 +9345,9 @@ export const sell_tagsHelp = () => `Теги допомагають покупц
 export const sell_freeShippingAttractsBuyers = () => `Безкоштовна доставка приваблює більше покупців`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6816,6 +9356,9 @@ export const sell_freeShippingAttractsBuyers = () => `Безкоштовна д�
 export const sell_free = () => `БЕЗКОШТОВНО`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6824,6 +9367,9 @@ export const sell_free = () => `БЕЗКОШТОВНО`
 export const sell_colorBlack = () => `Чорний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6832,6 +9378,9 @@ export const sell_colorBlack = () => `Чорний`
 export const sell_colorWhite = () => `Білий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6840,6 +9389,9 @@ export const sell_colorWhite = () => `Білий`
 export const sell_colorGray = () => `Сірий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6848,6 +9400,9 @@ export const sell_colorGray = () => `Сірий`
 export const sell_colorNavy = () => `Темно-синій`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6856,6 +9411,9 @@ export const sell_colorNavy = () => `Темно-синій`
 export const sell_colorBrown = () => `Коричневий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6864,6 +9422,9 @@ export const sell_colorBrown = () => `Коричневий`
 export const sell_colorBeige = () => `Бежевий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6872,6 +9433,9 @@ export const sell_colorBeige = () => `Бежевий`
 export const sell_colorRed = () => `Червоний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6880,6 +9444,9 @@ export const sell_colorRed = () => `Червоний`
 export const sell_colorBlue = () => `Синій`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6888,6 +9455,9 @@ export const sell_colorBlue = () => `Синій`
 export const sell_colorGreen = () => `Зелений`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6896,6 +9466,9 @@ export const sell_colorGreen = () => `Зелений`
 export const sell_colorPink = () => `Рожевий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6904,6 +9477,9 @@ export const sell_colorPink = () => `Рожевий`
 export const sell_colorPurple = () => `Фіолетовий`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6912,6 +9488,9 @@ export const sell_colorPurple = () => `Фіолетовий`
 export const sell_colorMulti = () => `Багатобарвний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6920,6 +9499,9 @@ export const sell_colorMulti = () => `Багатобарвний`
 export const sell_materialCotton = () => `Бавовна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6928,6 +9510,9 @@ export const sell_materialCotton = () => `Бавовна`
 export const sell_materialPolyester = () => `Поліестер`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6936,6 +9521,9 @@ export const sell_materialPolyester = () => `Поліестер`
 export const sell_materialLeather = () => `Шкіра`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6944,6 +9532,9 @@ export const sell_materialLeather = () => `Шкіра`
 export const sell_materialDenim = () => `Денім`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6952,6 +9543,9 @@ export const sell_materialDenim = () => `Денім`
 export const sell_materialWool = () => `Вовна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6960,6 +9554,9 @@ export const sell_materialWool = () => `Вовна`
 export const sell_materialSilk = () => `Шовк`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6968,6 +9565,9 @@ export const sell_materialSilk = () => `Шовк`
 export const category_unisex = () => `Унісекс`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6976,6 +9576,9 @@ export const category_unisex = () => `Унісекс`
 export const category_accessories = () => `Аксесуари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6984,6 +9587,9 @@ export const category_accessories = () => `Аксесуари`
 export const category_activewear = () => `Спортивний одяг`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6992,6 +9598,9 @@ export const category_activewear = () => `Спортивний одяг`
 export const category_boots = () => `Черевики`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7000,6 +9609,9 @@ export const category_boots = () => `Черевики`
 export const category_dresses = () => `Сукні`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7008,6 +9620,9 @@ export const category_dresses = () => `Сукні`
 export const category_flats = () => `Балетки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7016,6 +9631,9 @@ export const category_flats = () => `Балетки`
 export const category_formalShoes = () => `Класичні туфлі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7024,6 +9642,9 @@ export const category_formalShoes = () => `Класичні туфлі`
 export const category_heels = () => `Туфлі на підборах`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7032,6 +9653,9 @@ export const category_heels = () => `Туфлі на підборах`
 export const category_hoodies = () => `Худі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7040,6 +9664,9 @@ export const category_hoodies = () => `Худі`
 export const category_jackets = () => `Куртки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7048,6 +9675,9 @@ export const category_jackets = () => `Куртки`
 export const category_jacketsCoats = () => `Куртки та пальта`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7056,6 +9686,9 @@ export const category_jacketsCoats = () => `Куртки та пальта`
 export const category_jeans = () => `Джинси`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7064,6 +9697,9 @@ export const category_jeans = () => `Джинси`
 export const category_jewelry = () => `Прикраси`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7072,6 +9708,9 @@ export const category_jewelry = () => `Прикраси`
 export const category_lingerie = () => `Спідня білизна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7080,6 +9719,9 @@ export const category_lingerie = () => `Спідня білизна`
 export const category_pantsJeans = () => `Штани і джинси`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7088,6 +9730,9 @@ export const category_pantsJeans = () => `Штани і джинси`
 export const category_pantsTrousers = () => `Штани`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7096,6 +9741,9 @@ export const category_pantsTrousers = () => `Штани`
 export const category_sandals = () => `Сандалі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7104,6 +9752,9 @@ export const category_sandals = () => `Сандалі`
 export const category_sandalsSlides = () => `Сандалі та тапочки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7112,6 +9763,9 @@ export const category_sandalsSlides = () => `Сандалі та тапочки`
 export const category_shirts = () => `Сорочки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7120,6 +9774,9 @@ export const category_shirts = () => `Сорочки`
 export const category_shirtsBlouses = () => `Сорочки та блузки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7128,6 +9785,9 @@ export const category_shirtsBlouses = () => `Сорочки та блузки`
 export const category_shorts = () => `Шорти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7136,6 +9796,9 @@ export const category_shorts = () => `Шорти`
 export const category_skirts = () => `Спідниці`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7144,6 +9807,9 @@ export const category_skirts = () => `Спідниці`
 export const category_sneakers = () => `Кросівки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7152,6 +9818,9 @@ export const category_sneakers = () => `Кросівки`
 export const category_suitsBlazers = () => `Костюми та піджаки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7160,6 +9829,9 @@ export const category_suitsBlazers = () => `Костюми та піджаки`
 export const category_sweatersHoodies = () => `Светри і худі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7168,6 +9840,9 @@ export const category_sweatersHoodies = () => `Светри і худі`
 export const category_swimwear = () => `Купальники`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7176,6 +9851,9 @@ export const category_swimwear = () => `Купальники`
 export const category_tshirts = () => `Футболки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7184,6 +9862,9 @@ export const category_tshirts = () => `Футболки`
 export const category_topsTshirts = () => `Топи і футболки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7192,6 +9873,9 @@ export const category_topsTshirts = () => `Топи і футболки`
 export const category_underwear = () => `Спідня білизна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7200,6 +9884,9 @@ export const category_underwear = () => `Спідня білизна`
 export const category_watches = () => `Годинники`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7208,6 +9895,9 @@ export const category_watches = () => `Годинники`
 export const category_hatsAndCaps = () => `Капелюхи і Кепки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7216,6 +9906,9 @@ export const category_hatsAndCaps = () => `Капелюхи і Кепки`
 export const category_belts = () => `Ремені`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7224,6 +9917,9 @@ export const category_belts = () => `Ремені`
 export const category_scarves = () => `Шарфи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7232,6 +9928,9 @@ export const category_scarves = () => `Шарфи`
 export const category_sunglasses = () => `Сонцезахисні окуляри`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7240,6 +9939,9 @@ export const category_sunglasses = () => `Сонцезахисні окуляр�
 export const category_wallets = () => `Гаманці`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7248,6 +9950,9 @@ export const category_wallets = () => `Гаманці`
 export const category_hairAccessories = () => `Аксесуари для волосся`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7256,6 +9961,9 @@ export const category_hairAccessories = () => `Аксесуари для вол�
 export const category_ties = () => `Краватки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7264,6 +9972,9 @@ export const category_ties = () => `Краватки`
 export const category_cufflinks = () => `Запонки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7272,6 +9983,9 @@ export const category_cufflinks = () => `Запонки`
 export const category_backpacks = () => `Рюкзаки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7280,6 +9994,9 @@ export const category_backpacks = () => `Рюкзаки`
 export const sell_priceLabel = () => `Ціна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7288,6 +10005,9 @@ export const sell_priceLabel = () => `Ціна`
 export const sell_shippingCostLabel = () => `Вартість доставки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7296,6 +10016,9 @@ export const sell_shippingCostLabel = () => `Вартість доставки`
 export const sell_tagsOptional = () => `Теги (за бажанням)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7304,6 +10027,9 @@ export const sell_tagsOptional = () => `Теги (за бажанням)`
 export const sell_suggested = () => `Рекомендована`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7312,6 +10038,9 @@ export const sell_suggested = () => `Рекомендована`
 export const sell_similarItems = () => `Схожі товари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7320,6 +10049,9 @@ export const sell_similarItems = () => `Схожі товари`
 export const sell_confidence = () => `Упевненість`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7328,6 +10060,9 @@ export const sell_confidence = () => `Упевненість`
 export const sell_getVisibility = () => `Отримайте в 3 рази більше показів на 7 днів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7336,6 +10071,9 @@ export const sell_getVisibility = () => `Отримайте в 3 рази біл
 export const sell_premiumLeft = () => `залишилося`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7344,6 +10082,9 @@ export const sell_premiumLeft = () => `залишилося`
 export const sell_featuredSearch = () => `Показ у результатах пошуку`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7352,6 +10093,9 @@ export const sell_featuredSearch = () => `Показ у результатах �
 export const sell_homepageSpotlight = () => `Spotlight на головній сторінці`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7360,6 +10104,9 @@ export const sell_homepageSpotlight = () => `Spotlight на головній с�
 export const sell_pushNotifications = () => `Push сповіщення підписникам`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7368,6 +10115,9 @@ export const sell_pushNotifications = () => `Push сповіщення підп�
 export const sell_reviewYourListing = () => `Переглянути ваше оголошення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7376,6 +10126,9 @@ export const sell_reviewYourListing = () => `Переглянути ваше о�
 export const sell_photosSection = () => `Фотографії`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7384,6 +10137,9 @@ export const sell_photosSection = () => `Фотографії`
 export const sell_productAlt = () => `Товар`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown> }} params
  * @returns {string}
@@ -7392,6 +10148,9 @@ export const sell_productAlt = () => `Товар`
 export const sell_morePhotos = (params) => `+${params.count} ще`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7400,6 +10159,9 @@ export const sell_morePhotos = (params) => `+${params.count} ще`
 export const sell_titleLabel = () => `Назва`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7408,6 +10170,9 @@ export const sell_titleLabel = () => `Назва`
 export const sell_categoryLabel = () => `Категорія`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7416,6 +10181,9 @@ export const sell_categoryLabel = () => `Категорія`
 export const sell_brandLabel = () => `Бренд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7424,6 +10192,9 @@ export const sell_brandLabel = () => `Бренд`
 export const sell_sizeLabel = () => `Розмір`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7432,6 +10203,9 @@ export const sell_sizeLabel = () => `Розмір`
 export const sell_conditionLabel = () => `Стан`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7440,6 +10214,9 @@ export const sell_conditionLabel = () => `Стан`
 export const sell_priceLabel2 = () => `Ціна`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7448,6 +10225,9 @@ export const sell_priceLabel2 = () => `Ціна`
 export const sell_shippingLabel = () => `Доставка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7456,6 +10236,9 @@ export const sell_shippingLabel = () => `Доставка`
 export const sell_premiumBoostActive = () => `Активно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7464,6 +10247,9 @@ export const sell_premiumBoostActive = () => `Активно`
 export const sell_notAvailable = () => `Недоступно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7472,6 +10258,9 @@ export const sell_notAvailable = () => `Недоступно`
 export const sell_titleFieldLabel = () => `Назва`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7480,6 +10269,9 @@ export const sell_titleFieldLabel = () => `Назва`
 export const sell_whatAreYouSelling = () => `Що ви продаєте?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7488,6 +10280,9 @@ export const sell_whatAreYouSelling = () => `Що ви продаєте?`
 export const sell_whoIsThisFor = () => `Для кого це?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7496,6 +10291,9 @@ export const sell_whoIsThisFor = () => `Для кого це?`
 export const sell_selectGenderAge = () => `Оберіть стать/вік`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7504,6 +10302,9 @@ export const sell_selectGenderAge = () => `Оберіть стать/вік`
 export const sell_whatTypeOfProduct = () => `Який тип товару?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7512,6 +10313,9 @@ export const sell_whatTypeOfProduct = () => `Який тип товару?`
 export const sell_selectProductType = () => `Оберіть тип товару`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7520,6 +10324,9 @@ export const sell_selectProductType = () => `Оберіть тип товару`
 export const sell_specificCategoryLabel = () => `Конкретна категорія`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7528,6 +10335,9 @@ export const sell_specificCategoryLabel = () => `Конкретна катего
 export const sell_whatExactlyIsIt = () => `Що саме це?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7536,6 +10346,9 @@ export const sell_whatExactlyIsIt = () => `Що саме це?`
 export const sell_descriptionOptional = () => `Опис (необов'язково)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7544,6 +10357,9 @@ export const sell_descriptionOptional = () => `Опис (необов'язков
 export const sell_addDetailsPlaceholder = () => `Додайте деталі про стан, розміри, дефекти...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7552,6 +10368,9 @@ export const sell_addDetailsPlaceholder = () => `Додайте деталі п�
 export const sell_customBrandAriaLabel = () => `Назва бренду`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7560,6 +10379,9 @@ export const sell_customBrandAriaLabel = () => `Назва бренду`
 export const sell_dismissSuggestions = () => `Відхилити пропозиції`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7568,6 +10390,9 @@ export const sell_dismissSuggestions = () => `Відхилити пропози�
 export const sell_smartCategorySuggestions = () => `Розумні пропозиції категорій`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7576,6 +10401,9 @@ export const sell_smartCategorySuggestions = () => `Розумні пропоз�
 export const sell_highConfidence = () => `Висока впевненість`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7584,6 +10412,9 @@ export const sell_highConfidence = () => `Висока впевненість`
 export const sell_mediumConfidence = () => `Середня впевненість`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7592,6 +10423,9 @@ export const sell_mediumConfidence = () => `Середня впевненіст�
 export const sell_lowConfidence = () => `Низька впевненість`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7600,6 +10434,9 @@ export const sell_lowConfidence = () => `Низька впевненість`
 export const sell_basedOnImage = () => `На основі вашого зображення пропонуємо:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7608,6 +10445,9 @@ export const sell_basedOnImage = () => `На основі вашого зобр�
 export const sell_analysis = () => `Аналіз:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7616,6 +10456,9 @@ export const sell_analysis = () => `Аналіз:`
 export const sell_applySuggestions = () => `Застосувати пропозиції`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7624,6 +10467,9 @@ export const sell_applySuggestions = () => `Застосувати пропоз�
 export const sell_chooseManually = () => `Обрати вручну`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7632,6 +10478,9 @@ export const sell_chooseManually = () => `Обрати вручну`
 export const error_notAuthenticated = () => `Не автентифіковано`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7640,6 +10489,9 @@ export const error_notAuthenticated = () => `Не автентифіковано
 export const error_atLeastOnePhoto = () => `Потрібна принаймні одна фотографія`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7648,6 +10500,9 @@ export const error_atLeastOnePhoto = () => `Потрібна принаймні 
 export const error_categoryRequired = () => `Категорія обов'язкова. Будь ласка, оберіть категорію для вашого товару.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7656,6 +10511,9 @@ export const error_categoryRequired = () => `Категорія обов'язк�
 export const error_failedToCreateProduct = () => `Не вдалося створити товар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7664,6 +10522,9 @@ export const error_failedToCreateProduct = () => `Не вдалося створ
 export const currency_symbol = () => `₴`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7672,6 +10533,9 @@ export const currency_symbol = () => `₴`
 export const category_includes = () => `Включає:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7680,6 +10544,9 @@ export const category_includes = () => `Включає:`
 export const category_selected = () => `Обрано:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7688,6 +10555,9 @@ export const category_selected = () => `Обрано:`
 export const category_accessoriesList = () => `Капелюхи, Кепки, Ремені, Шарфи, Сонцезахисні окуляри, Сумки, Гаманці`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7696,6 +10566,9 @@ export const category_accessoriesList = () => `Капелюхи, Кепки, Р�
 export const category_clothing = () => `Одяг`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7704,6 +10577,9 @@ export const category_clothing = () => `Одяг`
 export const category_shoesType = () => `Взуття`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7712,6 +10588,9 @@ export const category_shoesType = () => `Взуття`
 export const category_accessoriesType = () => `Аксесуари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7720,6 +10599,9 @@ export const category_accessoriesType = () => `Аксесуари`
 export const category_bagsType = () => `Сумки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7728,6 +10610,9 @@ export const category_bagsType = () => `Сумки`
 export const category_walletsAndPurses = () => `Гаманці та Сумочки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7736,6 +10621,9 @@ export const category_walletsAndPurses = () => `Гаманці та Сумочк
 export const category_gloves = () => `Рукавички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7744,6 +10632,9 @@ export const category_gloves = () => `Рукавички`
 export const category_glovesAndMittens = () => `Рукавички та Рукавиці`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7752,6 +10643,9 @@ export const category_glovesAndMittens = () => `Рукавички та Рука
 export const category_shawls = () => `Шалі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7760,6 +10654,9 @@ export const category_shawls = () => `Шалі`
 export const category_bandanas = () => `Бандани`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7768,6 +10665,9 @@ export const category_bandanas = () => `Бандани`
 export const category_bibs = () => `Слинявчики`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7776,6 +10676,9 @@ export const category_bibs = () => `Слинявчики`
 export const category_suspenders = () => `Підтяжки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7784,6 +10687,9 @@ export const category_suspenders = () => `Підтяжки`
 export const category_keychains = () => `Брелоки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7792,6 +10698,9 @@ export const category_keychains = () => `Брелоки`
 export const category_phoneCases = () => `Чохли для телефонів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7800,6 +10709,9 @@ export const category_phoneCases = () => `Чохли для телефонів`
 export const category_handbags = () => `Сумочки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7808,6 +10720,9 @@ export const category_handbags = () => `Сумочки`
 export const category_shoulderBags = () => `Сумки на плече`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7816,6 +10731,9 @@ export const category_shoulderBags = () => `Сумки на плече`
 export const category_crossbodyBags = () => `Сумки через плече`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7824,6 +10742,9 @@ export const category_crossbodyBags = () => `Сумки через плече`
 export const category_clutches = () => `Клатчі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7832,6 +10753,9 @@ export const category_clutches = () => `Клатчі`
 export const category_toteBags = () => `Сумки-тоти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7840,6 +10764,9 @@ export const category_toteBags = () => `Сумки-тоти`
 export const category_makeupBags = () => `Косметички`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7848,6 +10775,9 @@ export const category_makeupBags = () => `Косметички`
 export const category_travelBags = () => `Дорожні сумки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7856,6 +10786,9 @@ export const category_travelBags = () => `Дорожні сумки`
 export const category_briefcases = () => `Портфелі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7864,6 +10797,9 @@ export const category_briefcases = () => `Портфелі`
 export const category_messengerBags = () => `Сумки-месенджери`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7872,6 +10808,9 @@ export const category_messengerBags = () => `Сумки-месенджери`
 export const category_gymBags = () => `Спортивні сумки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7880,6 +10819,9 @@ export const category_gymBags = () => `Спортивні сумки`
 export const category_duffelBags = () => `Спортивні сумки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7888,6 +10830,9 @@ export const category_duffelBags = () => `Спортивні сумки`
 export const category_laptopBags = () => `Сумки для ноутбука`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7896,6 +10841,9 @@ export const category_laptopBags = () => `Сумки для ноутбука`
 export const category_schoolBags = () => `Шкільні сумки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7904,6 +10852,9 @@ export const category_schoolBags = () => `Шкільні сумки`
 export const category_lunchBags = () => `Сумки для обіду`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7912,6 +10863,9 @@ export const category_lunchBags = () => `Сумки для обіду`
 export const category_miniBags = () => `Міні-сумки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7920,6 +10874,9 @@ export const category_miniBags = () => `Міні-сумки`
 export const category_pocketSquares = () => `Нагрудні хустки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7928,6 +10885,9 @@ export const category_pocketSquares = () => `Нагрудні хустки`
 export const orders_title = () => `Мої замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7936,6 +10896,9 @@ export const orders_title = () => `Мої замовлення`
 export const orders_subtitle = () => `Відстежуйте свої покупки та продажі в одному місці`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7944,6 +10907,9 @@ export const orders_subtitle = () => `Відстежуйте свої покуп
 export const orders_allOrders = () => `Всі замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7952,6 +10918,9 @@ export const orders_allOrders = () => `Всі замовлення`
 export const orders_purchases = () => `Покупки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7960,6 +10929,9 @@ export const orders_purchases = () => `Покупки`
 export const orders_sales = () => `Продажі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7968,6 +10940,9 @@ export const orders_sales = () => `Продажі`
 export const orders_toReview = () => `До розгляду`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7976,6 +10951,9 @@ export const orders_toReview = () => `До розгляду`
 export const orders_issues = () => `Проблеми`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7984,6 +10962,9 @@ export const orders_issues = () => `Проблеми`
 export const orders_noOrdersFound = () => `Замовлень не знайдено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7992,6 +10973,9 @@ export const orders_noOrdersFound = () => `Замовлень не знайде�
 export const orders_startShopping = () => `Почати покупки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8000,6 +10984,9 @@ export const orders_startShopping = () => `Почати покупки`
 export const orders_seller = () => `Продавець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8008,6 +10995,9 @@ export const orders_seller = () => `Продавець`
 export const orders_buyer = () => `Покупець`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8016,6 +11006,9 @@ export const orders_buyer = () => `Покупець`
 export const orders_trackingNumber = () => `Номер відстеження`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8024,6 +11017,9 @@ export const orders_trackingNumber = () => `Номер відстеження`
 export const orders_leaveReview = () => `Залишити відгук`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8032,6 +11028,9 @@ export const orders_leaveReview = () => `Залишити відгук`
 export const orders_cancelOrder = () => `Скасувати замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8040,6 +11039,9 @@ export const orders_cancelOrder = () => `Скасувати замовлення
 export const orders_viewProduct = () => `Переглянути товар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8048,6 +11050,9 @@ export const orders_viewProduct = () => `Переглянути товар`
 export const orders_noImage = () => `Немає зображення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8056,6 +11061,9 @@ export const orders_noImage = () => `Немає зображення`
 export const orders_unknownProduct = () => `Невідомий товар`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8064,6 +11072,9 @@ export const orders_unknownProduct = () => `Невідомий товар`
 export const sales_overview = () => `Огляд продажів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8072,6 +11083,9 @@ export const sales_overview = () => `Огляд продажів`
 export const sales_manageSoldItems = () => `Керуйте проданими товарами та доходами`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8080,6 +11094,9 @@ export const sales_manageSoldItems = () => `Керуйте проданими т
 export const sales_totalEarnings = () => `Загальні доходи`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8088,6 +11105,9 @@ export const sales_totalEarnings = () => `Загальні доходи`
 export const sales_available = () => `Доступно`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8096,6 +11116,9 @@ export const sales_available = () => `Доступно`
 export const sales_itemsSold = () => `Продані товари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8104,6 +11127,9 @@ export const sales_itemsSold = () => `Продані товари`
 export const sales_thisMonth = () => `Цього місяця`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8112,6 +11138,9 @@ export const sales_thisMonth = () => `Цього місяця`
 export const sales_soldItems = () => `Продані товари`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8120,6 +11149,9 @@ export const sales_soldItems = () => `Продані товари`
 export const sales_analytics = () => `Аналітика`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8128,6 +11160,9 @@ export const sales_analytics = () => `Аналітика`
 export const sales_noItemsSoldYet = () => `Товари ще не продані`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8136,6 +11171,9 @@ export const sales_noItemsSoldYet = () => `Товари ще не продані
 export const sales_startSelling = () => `Почніть продавати, щоб побачити свої продані товари тут`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8144,6 +11182,9 @@ export const sales_startSelling = () => `Почніть продавати, що
 export const sales_createFirstListing = () => `Створити перше оголошення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8152,6 +11193,9 @@ export const sales_createFirstListing = () => `Створити перше ог�
 export const sales_totalEarned = () => `Всього заробили`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8160,6 +11204,9 @@ export const sales_totalEarned = () => `Всього заробили`
 export const sales_availableBalance = () => `Доступний баланс`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8168,6 +11215,9 @@ export const sales_availableBalance = () => `Доступний баланс`
 export const sales_requestPayout = () => `Запит виплати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8176,6 +11226,9 @@ export const sales_requestPayout = () => `Запит виплати`
 export const sales_paidOut = () => `Виплачено`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8184,6 +11237,9 @@ export const sales_paidOut = () => `Виплачено`
 export const sales_recentOrders = () => `Останні замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8192,6 +11248,9 @@ export const sales_recentOrders = () => `Останні замовлення`
 export const sales_noOrdersYet = () => `Замовлень поки немає`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8200,6 +11259,9 @@ export const sales_noOrdersYet = () => `Замовлень поки немає`
 export const sales_thisMonthSales = () => `Продажі цього місяця`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8208,6 +11270,9 @@ export const sales_thisMonthSales = () => `Продажі цього місяц�
 export const sales_thisMonthEarnings = () => `Доходи цього місяця`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8216,6 +11281,9 @@ export const sales_thisMonthEarnings = () => `Доходи цього місяц
 export const sales_averageOrder = () => `Середнє замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8224,6 +11292,9 @@ export const sales_averageOrder = () => `Середнє замовлення`
 export const sales_perSale = () => `За продаж`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8232,6 +11303,9 @@ export const sales_perSale = () => `За продаж`
 export const sales_totalOrders = () => `Всього замовлень`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8240,6 +11314,9 @@ export const sales_totalOrders = () => `Всього замовлень`
 export const sales_allTime = () => `За весь час`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8248,6 +11325,9 @@ export const sales_allTime = () => `За весь час`
 export const sales_salesPerformance = () => `Ефективність продажів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8256,6 +11336,9 @@ export const sales_salesPerformance = () => `Ефективність прода
 export const sales_chartComingSoon = () => `Графік скоро з'явиться - Дані про продажі в часі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8264,6 +11347,9 @@ export const sales_chartComingSoon = () => `Графік скоро з'явит�
 export const sales_noChange = () => `Без змін`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8272,6 +11358,9 @@ export const sales_noChange = () => `Без змін`
 export const upgrade_title = () => `Оновити акаунт`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8280,6 +11369,9 @@ export const upgrade_title = () => `Оновити акаунт`
 export const upgrade_subtitle = () => `Розблокувати преміум функції та розвинути бізнес`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8288,6 +11380,9 @@ export const upgrade_subtitle = () => `Розблокувати преміум �
 export const upgrade_currentPlan = () => `Поточний план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8296,6 +11391,9 @@ export const upgrade_currentPlan = () => `Поточний план`
 export const upgrade_choosePlan = () => `Обрати план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8304,6 +11402,9 @@ export const upgrade_choosePlan = () => `Обрати план`
 export const upgrade_features = () => `Функції`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8312,6 +11413,9 @@ export const upgrade_features = () => `Функції`
 export const upgrade_subscribe = () => `Підписатися`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8320,6 +11424,9 @@ export const upgrade_subscribe = () => `Підписатися`
 export const upgrade_popular = () => `Популярний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8328,6 +11435,9 @@ export const upgrade_popular = () => `Популярний`
 export const upgrade_recommended = () => `Рекомендований`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8336,6 +11446,9 @@ export const upgrade_recommended = () => `Рекомендований`
 export const breadcrumb_dashboard = () => `Панель`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8344,6 +11457,9 @@ export const breadcrumb_dashboard = () => `Панель`
 export const breadcrumb_sales = () => `Продажі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8352,6 +11468,9 @@ export const breadcrumb_sales = () => `Продажі`
 export const breadcrumb_orders = () => `Замовлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8360,6 +11479,9 @@ export const breadcrumb_orders = () => `Замовлення`
 export const breadcrumb_settings = () => `Налаштування`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8368,6 +11490,9 @@ export const breadcrumb_settings = () => `Налаштування`
 export const breadcrumb_upgrade = () => `Оновлення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8376,6 +11501,9 @@ export const breadcrumb_upgrade = () => `Оновлення`
 export const upgrade_freePlan = () => `Безкоштовний план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8384,6 +11512,9 @@ export const upgrade_freePlan = () => `Безкоштовний план`
 export const upgrade_premiumPlan = () => `Преміум план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8392,6 +11523,9 @@ export const upgrade_premiumPlan = () => `Преміум план`
 export const upgrade_brandPlan = () => `Бренд план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8400,6 +11534,9 @@ export const upgrade_brandPlan = () => `Бренд план`
 export const upgrade_mostPopular = () => `Найпопулярніший`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8408,6 +11545,9 @@ export const upgrade_mostPopular = () => `Найпопулярніший`
 export const upgrade_activePlan = () => `Активний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8416,6 +11556,9 @@ export const upgrade_activePlan = () => `Активний`
 export const upgrade_current = () => `Поточний`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8424,6 +11567,9 @@ export const upgrade_current = () => `Поточний`
 export const upgrade_month = () => `місяць`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8432,6 +11578,9 @@ export const upgrade_month = () => `місяць`
 export const upgrade_perMonth = () => `/ місяць`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8440,6 +11589,9 @@ export const upgrade_perMonth = () => `/ місяць`
 export const upgrade_getPremium = () => `Отримати Преміум`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8448,6 +11600,9 @@ export const upgrade_getPremium = () => `Отримати Преміум`
 export const upgrade_getBrand = () => `Отримати Бренд`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8456,6 +11611,9 @@ export const upgrade_getBrand = () => `Отримати Бренд`
 export const upgrade_cancelPlan = () => `Скасувати план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8464,6 +11622,9 @@ export const upgrade_cancelPlan = () => `Скасувати план`
 export const upgrade_processing = () => `Обробка...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8472,6 +11633,9 @@ export const upgrade_processing = () => `Обробка...`
 export const upgrade_canceling = () => `Скасування...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8480,6 +11644,9 @@ export const upgrade_canceling = () => `Скасування...`
 export const upgrade_freeFeature1 = () => `До 20 продуктів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8488,6 +11655,9 @@ export const upgrade_freeFeature1 = () => `До 20 продуктів`
 export const upgrade_freeFeature2 = () => `Базова підтримка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8496,6 +11666,9 @@ export const upgrade_freeFeature2 = () => `Базова підтримка`
 export const upgrade_freeFeature3 = () => `Стандартні оголошення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8504,6 +11677,9 @@ export const upgrade_freeFeature3 = () => `Стандартні оголошен
 export const upgrade_premiumFeature1 = () => `10 просуваних оголошень/місяць`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8512,6 +11688,9 @@ export const upgrade_premiumFeature1 = () => `10 просуваних оголо
 export const upgrade_premiumFeature2 = () => `Пріоритетна підтримка`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8520,6 +11699,9 @@ export const upgrade_premiumFeature2 = () => `Пріоритетна підтр�
 export const upgrade_premiumFeature3 = () => `Розширена аналітика`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8528,6 +11710,9 @@ export const upgrade_premiumFeature3 = () => `Розширена аналіти�
 export const upgrade_brandFeature1 = () => `Необмежена кількість продуктів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8536,6 +11721,9 @@ export const upgrade_brandFeature1 = () => `Необмежена кількіс�
 export const upgrade_brandFeature2 = () => `Верифікація бренду`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8544,6 +11732,9 @@ export const upgrade_brandFeature2 = () => `Верифікація бренду`
 export const upgrade_brandFeature3 = () => `Масові інструменти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8552,6 +11743,9 @@ export const upgrade_brandFeature3 = () => `Масові інструменти`
 export const upgrade_discountFirstMonth = () => `50% ЗНИЖКИ перший місяць!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8560,6 +11754,9 @@ export const upgrade_discountFirstMonth = () => `50% ЗНИЖКИ перший �
 export const upgrade_faqTitle = () => `Є питання?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8568,6 +11765,9 @@ export const upgrade_faqTitle = () => `Є питання?`
 export const upgrade_faqSubtitle = () => `Все, що вам потрібно знати про наші плани`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8576,6 +11776,9 @@ export const upgrade_faqSubtitle = () => `Все, що вам потрібно �
 export const upgrade_faqChangePlans = () => `Чи можу я змінювати плани у будь-який час?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8584,6 +11787,9 @@ export const upgrade_faqChangePlans = () => `Чи можу я змінювати
 export const upgrade_faqChangePlansAnswer = () => `Абсолютно! Поліпшуйте, понижуйте або скасовуйте вашу підписку у будь-який час. Зміни набувають чинності на наступному циклі оплати.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8592,6 +11798,9 @@ export const upgrade_faqChangePlansAnswer = () => `Абсолютно! Полі�
 export const upgrade_faqRemainingBoosts = () => `Що стається з моїми залишковими просуваннями?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8600,6 +11809,9 @@ export const upgrade_faqRemainingBoosts = () => `Що стається з мої
 export const upgrade_faqRemainingBoostsAnswer = () => `Ваші активні просувані оголошення продовжують діяти до закінчення, але ви не зможете створювати нові після скасування Преміум.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8608,6 +11820,9 @@ export const upgrade_faqRemainingBoostsAnswer = () => `Ваші активні �
 export const upgrade_faqBusinessRequirements = () => `Вимоги до бізнес-продажів?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8616,6 +11831,9 @@ export const upgrade_faqBusinessRequirements = () => `Вимоги до бізн
 export const upgrade_faqBusinessRequirementsAnswer = () => `Так, бізнес-акаунти потребують активної підписки на Бренд для відповідності правилам маркетплейсу та верифікації.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8624,6 +11842,9 @@ export const upgrade_faqBusinessRequirementsAnswer = () => `Так, бізнес
 export const upgrade_faqEarlyBirdRecurring = () => `Чи повторюється знижка для ранніх користувачів?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8632,6 +11853,9 @@ export const upgrade_faqEarlyBirdRecurring = () => `Чи повторюєтьс�
 export const upgrade_faqEarlyBirdRecurringAnswer = () => `Знижка для ранніх користувачів – це одноразова спеціальна пропозиція на перший місяць. З другого місяця діють звичайні ціни.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8640,6 +11864,9 @@ export const upgrade_faqEarlyBirdRecurringAnswer = () => `Знижка для р
 export const upgrade_supportTitle = () => `Ще є питання?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8648,6 +11875,9 @@ export const upgrade_supportTitle = () => `Ще є питання?`
 export const upgrade_supportSubtitle = () => `Наша команда підтримки завжди готова допомогти вам вибрати ідеальний план`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8656,6 +11886,9 @@ export const upgrade_supportSubtitle = () => `Наша команда підтр
 export const upgrade_contactSupport = () => `Зв'язатися з підтримкою`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8664,6 +11897,9 @@ export const upgrade_contactSupport = () => `Зв'язатися з підтри
 export const upgrade_cancelConfirm = () => `Ви впевнені, що хочете скасувати свою підписку? Вона залишиться активною до кінця вашого платіжного періоду.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8672,6 +11908,9 @@ export const upgrade_cancelConfirm = () => `Ви впевнені, що хоче
 export const upgrade_cancelSuccess = () => `Підписку успішно скасовано. Вона залишиться активною до кінця вашого платіжного періоду.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8680,6 +11919,9 @@ export const upgrade_cancelSuccess = () => `Підписку успішно ск
 export const upgrade_paymentFailed = () => `Помилка платежу:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8688,6 +11930,9 @@ export const upgrade_paymentFailed = () => `Помилка платежу:`
 export const upgrade_subscriptionFailed = () => `Помилка обробки підписки`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8696,6 +11941,9 @@ export const upgrade_subscriptionFailed = () => `Помилка обробки �
 export const upgrade_createSubscriptionFailed = () => `Помилка створення підписки:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8704,6 +11952,9 @@ export const upgrade_createSubscriptionFailed = () => `Помилка створ
 export const upgrade_paymentSetupFailed = () => `Помилка налаштування платежів`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8712,6 +11963,9 @@ export const upgrade_paymentSetupFailed = () => `Помилка налаштув
 export const upgrade_cancelSubscriptionFailed = () => `Помилка скасування підписки:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8720,6 +11974,9 @@ export const upgrade_cancelSubscriptionFailed = () => `Помилка скасу
 export const dashboard_pleaseLogin = () => `Будь ласка, увійдіть, щоб отримати доступ до вашої панелі`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8728,6 +11985,9 @@ export const dashboard_pleaseLogin = () => `Будь ласка, увійдіт�
 export const dashboard_logIn = () => `Увійти`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8736,6 +11996,9 @@ export const dashboard_logIn = () => `Увійти`
 export const dashboard_completeProfile = () => `Завершіть налаштування профілю`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8744,6 +12007,9 @@ export const dashboard_completeProfile = () => `Завершіть налашт�
 export const dashboard_completeProfileDesc = () => `Вам потрібно завершити налаштування профілю перед доступом до панелі.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8752,6 +12018,9 @@ export const dashboard_completeProfileDesc = () => `Вам потрібно за
 export const dashboard_completeSetup = () => `Завершити налаштування`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8760,6 +12029,9 @@ export const dashboard_completeSetup = () => `Завершити налашту�
 export const dashboard_noRecentOrders = () => `Немає недавніх замовлень`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8768,6 +12040,9 @@ export const dashboard_noRecentOrders = () => `Немає недавніх за�
 export const dashboard_yourActiveListings = () => `Ваші активні оголошення`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8776,6 +12051,9 @@ export const dashboard_yourActiveListings = () => `Ваші активні ог�
 export const dashboard_noActiveListings = () => `Немає активних оголошень`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8784,12 +12062,16 @@ export const dashboard_noActiveListings = () => `Немає активних о�
 export const dashboard_createFirstListing = () => `Створіть своє перше оголошення, щоб почати продавати`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
  */
 /* @__NO_SIDE_EFFECTS__ */
 export const dashboard_createListing = () => `Створити оголошення`
+
 
 
 export { orders_itemsToShip } from "./en.js"
@@ -8886,46 +12168,199 @@ export { bundle_loading } from "./en.js"
 
 export { bundle_saveOnShipping } from "./en.js"
 
-export { common_scroll } from "./en.js"
+/**
+* Failed to resolve message common_scroll for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const common_scroll = () => "common_scroll"
 
-export { category_women_title } from "./en.js"
 
-export { category_men_title } from "./en.js"
 
-export { category_kids_title } from "./en.js"
+/**
+* Failed to resolve message category_women_title for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const category_women_title = () => "category_women_title"
 
-export { subcategory_shirtsBBousesr } from "./en.js"
 
-export { subcategory_sweatersHoodies } from "./en.js"
 
-export { subcategory_jacketsCoats } from "./en.js"
+/**
+* Failed to resolve message category_men_title for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const category_men_title = () => "category_men_title"
 
-export { subcategory_pantsTraousers } from "./en.js"
 
-export { subcategory_lingerieUnderwear } from "./en.js"
 
-export { subcategory_bagssPurses } from "./en.js"
+/**
+* Failed to resolve message category_kids_title for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const category_kids_title = () => "category_kids_title"
 
-export { subcategory_jewelry } from "./en.js"
 
-export { subcategory_tShirts } from "./en.js"
 
-export { subcategory_formalShoes } from "./en.js"
+/**
+* Failed to resolve message subcategory_shirtsBBousesr for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_shirtsBBousesr = () => "subcategory_shirtsBBousesr"
 
-export { subcategory_sandalsSlides } from "./en.js"
 
-export { subcategory_underwear } from "./en.js"
 
-export { subcategory_bags } from "./en.js"
+/**
+* Failed to resolve message subcategory_sweatersHoodies for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sweatersHoodies = () => "subcategory_sweatersHoodies"
 
-export { subcategory_activewear } from "./en.js"
 
-export { subcategory_swimwear } from "./en.js"
 
-export { subcategory_suiBbazers } from "./en.js"
+/**
+* Failed to resolve message subcategory_jacketsCoats for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_jacketsCoats = () => "subcategory_jacketsCoats"
 
-export { subcategory_shorts } from "./en.js"
 
-export { subcategory_topsShirts } from "./en.js"
 
-export { subcategory_pantsJeans } from "./en.js"
+/**
+* Failed to resolve message subcategory_pantsTraousers for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_pantsTraousers = () => "subcategory_pantsTraousers"
+
+
+
+/**
+* Failed to resolve message subcategory_lingerieUnderwear for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_lingerieUnderwear = () => "subcategory_lingerieUnderwear"
+
+
+
+/**
+* Failed to resolve message subcategory_bagssPurses for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_bagssPurses = () => "subcategory_bagssPurses"
+
+
+
+/**
+* Failed to resolve message subcategory_jewelry for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_jewelry = () => "subcategory_jewelry"
+
+
+
+/**
+* Failed to resolve message subcategory_tShirts for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_tShirts = () => "subcategory_tShirts"
+
+
+
+/**
+* Failed to resolve message subcategory_formalShoes for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_formalShoes = () => "subcategory_formalShoes"
+
+
+
+/**
+* Failed to resolve message subcategory_sandalsSlides for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_sandalsSlides = () => "subcategory_sandalsSlides"
+
+
+
+/**
+* Failed to resolve message subcategory_underwear for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_underwear = () => "subcategory_underwear"
+
+
+
+/**
+* Failed to resolve message subcategory_bags for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_bags = () => "subcategory_bags"
+
+
+
+/**
+* Failed to resolve message subcategory_activewear for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_activewear = () => "subcategory_activewear"
+
+
+
+/**
+* Failed to resolve message subcategory_swimwear for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_swimwear = () => "subcategory_swimwear"
+
+
+
+/**
+* Failed to resolve message subcategory_suiBbazers for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_suiBbazers = () => "subcategory_suiBbazers"
+
+
+
+/**
+* Failed to resolve message subcategory_shorts for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_shorts = () => "subcategory_shorts"
+
+
+
+/**
+* Failed to resolve message subcategory_topsShirts for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_topsShirts = () => "subcategory_topsShirts"
+
+
+
+/**
+* Failed to resolve message subcategory_pantsJeans for languageTag "ua". 
+* @returns {string}
+*/
+/* @__NO_SIDE_EFFECTS__ */
+export const subcategory_pantsJeans = () => "subcategory_pantsJeans"
+

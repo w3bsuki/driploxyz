@@ -8,7 +8,7 @@ const isDebug = false; // Disabled to reduce console spam
 
 /**
  * Setup internationalization for the request event
- * Handles locale detection from URL, cookies, and headers
+ * Handles locale detection from domain, URL, cookies, and headers
  */
 export async function setupI18n(event: RequestEvent): Promise<void> {
   // Clean up legacy cookies
@@ -18,15 +18,46 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
     }
   });
   
-  // Get locale from URL parameter first (highest priority)
-  let locale = event.url.searchParams.get('locale');
+  // HIGHEST PRIORITY: Detect language from domain
+  const hostname = event.url.hostname;
+  let locale: string | null = null;
   
-  // Validate URL locale parameter
-  if (locale && !i18n.isAvailableLanguageTag(locale)) {
-    locale = null;
+  // Domain to language mapping
+  const domainLanguageMap: Record<string, string> = {
+    'bg.driplo.com': 'bg',
+    'bg.driplo.xyz': 'bg',
+    'uk.driplo.com': 'en',  // UK uses English
+    'uk.driplo.xyz': 'en',
+    // Disabled for V1 - uncomment when adding ru/ua support
+    // 'ru.driplo.com': 'ru',
+    // 'ru.driplo.xyz': 'ru',
+    // 'ua.driplo.com': 'ua',
+    // 'ua.driplo.xyz': 'ua',
+    'driplo.com': 'en',      // Main domain defaults to English
+    'driplo.xyz': 'en',
+    'localhost': null,       // Don't force language on localhost
+  };
+  
+  // Check if hostname matches any domain mapping
+  for (const [domain, lang] of Object.entries(domainLanguageMap)) {
+    if (hostname.includes(domain) && lang) {
+      locale = lang;
+      if (isDebug) console.log(`🌍 Domain-based language detected: ${domain} → ${lang}`);
+      break;
+    }
   }
   
-  // Fallback to cookie if no valid URL locale
+  // If no domain match or on localhost, check URL parameter (second priority)
+  if (!locale) {
+    locale = event.url.searchParams.get('locale');
+    
+    // Validate URL locale parameter
+    if (locale && !i18n.isAvailableLanguageTag(locale)) {
+      locale = null;
+    }
+  }
+  
+  // Fallback to cookie if no domain or URL locale (third priority)
   // ALWAYS try to get locale from cookie, regardless of consent
   if (!locale) {
     // Try both cookie names (production and fallback)
@@ -36,7 +67,7 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   // Check functional consent status
   const hasFunctionalConsent = checkServerConsent(event.cookies, 'functional');
   
-  // Detect from headers if no cookie or URL param
+  // Detect from headers if no domain, cookie or URL param (fourth priority)
   if (!locale) {
     const acceptLang = event.request.headers.get('accept-language');
     if (acceptLang) {

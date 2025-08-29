@@ -1,4 +1,5 @@
 import type { PageLoad } from './$types';
+import { createBrowserSupabaseClient } from '$lib/supabase/client';
 
 /**
  * Dashboard Page Load Function
@@ -7,7 +8,8 @@ import type { PageLoad } from './$types';
  * Uses profile from parent layout to avoid re-fetching.
  */
 export const load: PageLoad = async ({ parent }) => {
-  const { supabase, user, profile } = await parent();
+  const { user, profile } = await parent();
+  const supabase = createBrowserSupabaseClient();
 
   console.log('[DASHBOARD] Loading dashboard for user:', user?.email);
   console.log('[DASHBOARD] Profile status:', {
@@ -54,7 +56,8 @@ export const load: PageLoad = async ({ parent }) => {
       )
     `)
     .eq('seller_id', user.id)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50); // Reasonable limit for dashboard view
 
   // Fetch user's orders as seller
   const { data: orders, error: ordersError } = await supabase
@@ -72,7 +75,8 @@ export const load: PageLoad = async ({ parent }) => {
       )
     `)
     .eq('seller_id', user.id)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .limit(50); // Reasonable limit for dashboard view
 
   if (productsError) {
     console.error('[DASHBOARD] Error fetching products:', productsError);

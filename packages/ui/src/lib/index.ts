@@ -6,7 +6,6 @@ export { default as Card } from './Card.svelte';
 export { default as Modal } from './Modal.svelte';
 export { default as ProductCard } from './ProductCard.svelte';
 export { default as SearchBar } from './SearchBar.svelte';
-export { default as SearchDropdown } from './SearchDropdown.svelte';
 export { default as CategoryDropdown } from './CategoryDropdown.svelte';
 export { default as Avatar } from './Avatar.svelte';
 export { default as Breadcrumb } from './Breadcrumb.svelte';
@@ -79,16 +78,13 @@ export { default as SoldNotificationToast } from './SoldNotificationToast.svelte
 export { default as ProductSoldManager } from './ProductSoldManager.svelte';
 export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte';
 
-// Image upload components
-export { default as OptimizedImage } from './OptimizedImage.svelte';
+// Image components
 export { default as ImageOptimized } from './ImageOptimized.svelte';
 
 // Search components
-export { default as SearchDebounced } from './SearchDebounced.svelte';
 export { default as TrendingDropdown } from './TrendingDropdown.svelte';
 export { default as HeroSearchDropdown } from './HeroSearchDropdown.svelte';
 export { default as SmartStickySearch } from './SmartStickySearch.svelte';
-export { default as CompactFilterBar } from './CompactFilterBar.svelte';
 
 // Virtual scrolling and search components
 export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';
@@ -126,7 +122,6 @@ export { default as ConditionSelector } from './ConditionSelector.svelte';
 export { default as BrandSelector } from './BrandSelector.svelte';
 export { default as CategorySelector } from './CategorySelector.svelte';
 export { default as CollapsibleCategorySelector } from './CollapsibleCategorySelector.svelte';
-export { default as CompactStickySearch } from './CompactStickySearch.svelte';
 export { default as ImageUploader } from './ImageUploader.svelte';
 export { default as ImageUploaderSupabase } from './ImageUploaderSupabase.svelte';
 export { default as PriceInput } from './PriceInput.svelte';
@@ -189,8 +184,6 @@ export type { Metric, MetricCallback } from './utils/web-vitals.js';
 // Variant system utilities
 export * from './utils/variants.js';
 
-// Lazy loading image component
-export { default as LazyImage } from './LazyImage.svelte';
 
 // Type definitions
 export * from './types/index.js';

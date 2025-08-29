@@ -477,3 +477,50 @@ Remember: **Working code > Perfect code**
 
 *Last Updated: August 2025*
 *Based on: Svelte 5, SvelteKit 2, Supabase SSR official documentation*
+
+---
+
+## Monorepo Orchestration & Claude Prompts
+
+This section coordinates repo-wide alignment and Supabase actions. Execute in small PRs with hard gates.
+
+Baseline & Gates
+- Record current TypeScript error counts per package/app.
+- Ensure CI runs `check-types`, `lint`, `build`, and tests for all apps.
+- Add performance budgets (Lighthouse CI) for web.
+
+Decision: Tailwind v4 Standardization
+- `apps/web` and `apps/docs` already on v4; upgrade `apps/admin` to v4 and remove legacy `content` configuration. Use `@tailwindcss/vite`.
+
+Prompt A — Align Versions (Repo)
+"""
+Align `svelte` and `@sveltejs/kit` versions across `apps/web`, `apps/admin`, `apps/docs`. Standardize Tailwind on v4; upgrade `apps/admin` accordingly. Point all `tsconfig.json` to `packages/typescript-config/svelte.json`. Open PR: "chore(alignment): svelte/kit + tailwind v4 + tsconfig".
+"""
+
+Prompt B — Type Zero (Repo)
+"""
+Drive TypeScript errors to zero starting with `packages/ui`. Do not widen to `any`; fix real types. Update `packages/ui` builds and consumers. Attach a summary of errors fixed and remaining debt.
+"""
+
+Prompt C — Supabase SSR/Auth (Repo + Supabase)
+"""
+Implement the `@supabase/ssr` pattern in `hooks.server.ts` with cookie `path: '/'`. Ensure `+layout.server.ts` returns only serializable data and `+layout.svelte` creates one browser client and one auth listener. Remove `invalidateAll()` and add `depends('supabase:auth')` where needed. Verify project cookie/session config in Supabase for deployed domains.
+"""
+
+Prompt D — Data Loading Hygiene (Repo)
+"""
+Convert sequential loads to `Promise.all`, add `.limit()` to queries, and select minimal columns. Replace `$env/dynamic` usage in client with `$env/static/*`. Provide diffs per route.
+"""
+
+Prompt E — Policies Audit (Supabase MCP)
+"""
+List RLS and policies for products, categories, users, orders, order_items, profiles, favorites. Confirm least privilege read/write. Provide SQL to fix gaps (as separate blocks). Await human approval before applying.
+"""
+
+Gates Checklist
+- [ ] Same `svelte`/`kit`/Tailwind versions across apps
+- [ ] 0 TS errors monorepo-wide
+- [ ] Auth/session stable; no loops
+- [ ] Loads parallelized; all queries limited
+- [ ] CSS < 50KB; initial JS < 200KB
+- [ ] Smokes and budgets green in CI

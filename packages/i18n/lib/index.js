@@ -6,9 +6,7 @@ export * from '../lib/paraglide/runtime.js';
 // Helper constants
 export const languageNames = {
     en: 'English',
-    bg: 'Български',
-    ru: 'Русский',
-    ua: 'Українська'
+    bg: 'Български'
 };
 // Simple language detection (for later use)
 export function detectLanguage(acceptLanguage) {
@@ -17,9 +15,5 @@ export function detectLanguage(acceptLanguage) {
     const langs = acceptLanguage.toLowerCase();
     if (langs.includes('bg'))
         return 'bg';
-    if (langs.includes('ru'))
-        return 'ru';
-    if (langs.includes('uk') || langs.includes('ua'))
-        return 'ua';
     return 'en';
 }

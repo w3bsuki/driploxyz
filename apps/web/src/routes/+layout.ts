@@ -1,45 +1,11 @@
-import { createBrowserClient, createServerClient, isBrowser } from '@supabase/ssr';
-import { env } from '$env/dynamic/public';
 import type { LayoutLoad } from './$types';
-import type { Database } from '@repo/database';
 
-export const load: LayoutLoad = async ({ fetch, data, depends }) => {
+export const load: LayoutLoad = async ({ data, depends }) => {
   depends('supabase:auth');
 
-  // Create the appropriate client based on the environment
-  const supabase = isBrowser()
-    ? createBrowserClient<Database>(
-        env.PUBLIC_SUPABASE_URL,
-        env.PUBLIC_SUPABASE_ANON_KEY,
-        {
-          global: { fetch },
-          auth: {
-            flowType: 'pkce', // Use PKCE for better security
-            detectSessionInUrl: true // Properly detect session in callback URL
-          }
-        }
-      )
-    : createServerClient<Database>(
-        env.PUBLIC_SUPABASE_URL,
-        env.PUBLIC_SUPABASE_ANON_KEY,
-        {
-          global: { fetch },
-          cookies: {
-            getAll() {
-              return data.cookies;
-            }
-          },
-          auth: {
-            flowType: 'pkce' // Use PKCE for better security
-          }
-        }
-      );
-
-  // Session is already set by SSR, no need to manually set it
-  // This was causing auth issues on Vercel
-
+  // Don't pass the client - components will create their own when needed
+  // This fixes the SSR/Client separation violation
   return {
-    supabase,
     session: data?.session || null,
     user: data?.user || null,
     profile: data?.profile || null,

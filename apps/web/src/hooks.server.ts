@@ -14,4 +14,4 @@
  */
 
 // Export the modular handles and error handler
-export { handle, handleError } from '$lib/server/hooks.js';
+export { handle, handleError } from '$lib/server/hooks';

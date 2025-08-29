@@ -4,7 +4,7 @@
   import Button from './Button.svelte';
   import Modal from './Modal.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
-  import LazyImage from './LazyImage.svelte';
+  import ImageOptimized from './ImageOptimized.svelte';
   import Badge from './Badge.svelte';
   import Avatar from './Avatar.svelte';
   // Cache to prevent repeated fetches
@@ -252,7 +252,7 @@
             <div class="flex items-center gap-3 p-2 bg-white rounded-lg border border-[oklch(90%_0.02_250)]" 
                  class:border-[oklch(60%_0.2_250)]={item.id === initialItem.id}
                  style:background-color={item.id === initialItem.id ? 'oklch(60% 0.2 250 / 0.05)' : undefined}>
-              <LazyImage
+              <ImageOptimized
                 src={item.images?.[0] || item.first_image || '/placeholder-product.svg'} 
                 alt={item.title}
                 class="w-12 h-12 object-cover rounded-md flex-shrink-0"
@@ -312,7 +312,7 @@
                   </div>
                 {/if}
                 
-                <LazyImage
+                <ImageOptimized
                   src={product.images?.[0] || product.first_image || '/placeholder-product.svg'}
                   alt={product.title}
                   class="w-full aspect-square object-cover"

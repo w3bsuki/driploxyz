@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Button, Input, Avatar } from '@repo/ui';
   import { goto } from '$app/navigation';
+  import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
 
@@ -9,6 +10,8 @@
   }
 
   let { data }: Props = $props();
+
+  const supabase = createBrowserSupabaseClient();
 
   let username = $state(data.profile?.username || '');
   let fullName = $state(data.profile?.full_name || '');
@@ -46,7 +49,7 @@
     
     saving = true;
     
-    const { error } = await data.supabase
+    const { error } = await supabase
       .from('profiles')
       .update({
         username,

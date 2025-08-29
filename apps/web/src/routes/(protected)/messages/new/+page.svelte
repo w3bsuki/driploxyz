@@ -2,6 +2,7 @@
   import { Avatar, Button } from '@repo/ui';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   
   interface Props {
@@ -9,6 +10,8 @@
   }
   
   let { data }: Props = $props();
+  
+  const supabase = createBrowserSupabaseClient();
   
   let messageText = $state('');
   let sending = $state(false);
@@ -26,7 +29,7 @@
     sending = true;
     
     try {
-      const { error } = await data.supabase
+      const { error } = await supabase
         .from('messages')
         .insert({
           sender_id: data.user.id,

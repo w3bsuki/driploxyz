@@ -1,0 +1,160 @@
+
+> with-svelte@ check-types K:\driplo-turbo-1
+> turbo run check-types
+
+turbo 2.5.4
+
+• Packages in scope: @repo/admin, @repo/database, @repo/eslint-config, @repo/i18n, @repo/typescript-config, @repo/ui, docs, web
+• Running check-types in 8 packages
+• Remote caching disabled
+docs:check-types: cache hit, replaying logs 992154abdea86cd3
+web:check-types: cache miss, executing 51648ff1d545d8ca
+docs:check-types: 
+docs:check-types: > docs@0.0.1 check-types K:\driplo-turbo-1\apps\docs
+docs:check-types: > tsc --noEmit
+docs:check-types: 
+web:check-types: 
+web:check-types: > web@1.0.2 check-types K:\driplo-turbo-1\apps\web
+web:check-types: > tsc --noEmit
+web:check-types: 
+web:check-types: src/lib/server/i18n.ts(38,5): error TS2322: Type 'null' is not assignable to type 'string'.
+web:check-types: src/lib/stores/categories-cache.svelte.ts(96,11): error TS2532: Object is possibly 'undefined'.
+web:check-types: src/lib/stores/categories-cache.svelte.ts(97,9): error TS2532: Object is possibly 'undefined'.
+web:check-types: src/lib/stores/categories-cache.svelte.ts(97,9): error TS2532: Object is possibly 'undefined'.
+web:check-types: src/lib/utils/seo-urls.ts(133,36): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+web:check-types:   Type 'undefined' is not assignable to type 'string'.
+web:check-types: src/routes/(protected)/dashboard/upgrade/+page.server.ts(57,9): error TS7034: Variable 'userSubscriptions' implicitly has type 'any[]' in some locations where its type cannot be determined.
+web:check-types: src/routes/(protected)/dashboard/upgrade/+page.server.ts(109,26): error TS7005: Variable 'userSubscriptions' implicitly has an 'any[]' type.
+web:check-types: src/routes/(protected)/dashboard/upgrade/+page.server.ts(117,16): error TS2339: Property 'status' does not exist on type '{}'.
+web:check-types: src/routes/(protected)/sell/+page.server.ts(122,18): error TS2538: Type 'undefined' cannot be used as an index type.
+web:check-types: src/routes/(protected)/sell/+page.server.ts(195,28): error TS2345: Argument of type '"queue_slug_generation"' is not assignable to parameter of type '"activate_brand_subscription" | "admin_adjust_balance" | "admin_approve_payout" | "admin_batch_approve_payouts" | "admin_complete_payout" | "admin_get_dashboard_summary" | ... 54 more ... | "validate_discount_code"'.
+web:check-types: src/routes/(protected)/sell/+page.server.ts(235,24): error TS18047: 'profile.premium_boosts_remaining' is possibly 'null'.
+web:check-types: src/routes/(protected)/sell/+page.server.ts(250,41): error TS18047: 'profile.premium_boosts_remaining' is possibly 'null'.
+web:check-types: src/routes/+layout.server.ts(80,31): error TS2339: Property 'region' does not exist on type '{ id: string; username: string | null; full_name: string | null; avatar_url: string | null; onboarding_completed: boolean | null; account_type: string | null; subscription_tier: string | null; }'.
+web:check-types: src/routes/+layout.server.ts(85,15): error TS2339: Property 'region' does not exist on type '{ id: string; username: string | null; full_name: string | null; avatar_url: string | null; onboarding_completed: boolean | null; account_type: string | null; subscription_tier: string | null; }'.
+web:check-types: src/routes/+page.server.ts(8,7): error TS7034: Variable 'MANUALLY_PROMOTED_IDS' implicitly has type 'any[]' in some locations where its type cannot be determined.
+web:check-types: src/routes/+page.server.ts(114,9): error TS7034: Variable 'featuredProducts' implicitly has type 'any[]' in some locations where its type cannot be determined.
+web:check-types: src/routes/+page.server.ts(121,31): error TS2339: Property 'categories' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(121,61): error TS2339: Property 'categories' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(146,27): error TS2345: Argument of type '(string | null)[]' is not assignable to parameter of type 'readonly string[]'.
+web:check-types:   Type 'string | null' is not assignable to type 'string'.
+web:check-types:     Type 'null' is not assignable to type 'string'.
+web:check-types: src/routes/+page.server.ts(169,43): error TS7005: Variable 'MANUALLY_PROMOTED_IDS' implicitly has an 'any[]' type.
+web:check-types: src/routes/+page.server.ts(169,79): error TS2339: Property 'id' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(172,22): error TS2339: Property 'id' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(173,25): error TS2339: Property 'title' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(174,25): error TS2339: Property 'price' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(175,29): error TS2339: Property 'condition' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(176,24): error TS2339: Property 'size' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(177,28): error TS2339: Property 'location' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(178,30): error TS2339: Property 'created_at' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(179,29): error TS2339: Property 'seller_id' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(183,34): error TS2339: Property 'favorite_count' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(185,26): error TS2339: Property 'product_images' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(186,34): error TS2339: Property 'product_images' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(188,38): error TS2339: Property 'categories' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(189,40): error TS2339: Property 'categories' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(190,23): error TS2339: Property 'categories' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(190,63): error TS2339: Property 'categories' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(190,116): error TS2339: Property 'categories' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(191,33): error TS2339: Property 'categories' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(192,36): error TS2339: Property 'categories' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(192,65): error TS2339: Property 'categories' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(194,31): error TS2339: Property 'profiles' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(195,33): error TS2339: Property 'profiles' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(196,37): error TS2339: Property 'profiles' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(197,36): error TS2339: Property 'profiles' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(197,77): error TS2339: Property 'profiles' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/+page.server.ts(207,26): error TS7005: Variable 'featuredProducts' implicitly has an 'any[]' type.
+web:check-types: src/routes/+page.server.ts(222,7): error TS7005: Variable 'featuredProducts' implicitly has an 'any[]' type.
+web:check-types: src/routes/[...slug]/+page.server.ts(51,24): error TS2339: Property 'slug' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/[...slug]/+page.server.ts(52,45): error TS2339: Property 'slug' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/[...slug]/+page.server.ts(69,22): error TS2339: Property 'slug' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/[...slug]/+page.server.ts(71,43): error TS2339: Property 'slug' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/[...slug]/+page.server.ts(231,43): error TS7006: Parameter 'img' implicitly has an 'any' type.
+web:check-types: src/routes/[...slug]/+page.server.ts(241,42): error TS7006: Parameter 'p' implicitly has an 'any' type.
+web:check-types: src/routes/[...slug]/+page.server.ts(243,37): error TS7006: Parameter 'img' implicitly has an 'any' type.
+web:check-types: src/routes/[...slug]/+page.server.ts(245,40): error TS7006: Parameter 'p' implicitly has an 'any' type.
+web:check-types: src/routes/[...slug]/+page.server.ts(247,37): error TS7006: Parameter 'img' implicitly has an 'any' type.
+web:check-types: src/routes/api/checkout/+server.ts(140,26): error TS2339: Property 'product_images' does not exist on type '{ archived_at: string | null; auto_archive_after_days: number | null; boost_type: string | null; boosted_until: string | null; brand: string | null; category_id: string; color: string | null; ... 27 more ...; profiles: { ...; }; }'.
+web:check-types: src/routes/api/favorites/status/+server.ts(7,49): error TS2345: Argument of type '{ cookies: Cookies; }' is not assignable to parameter of type 'RequestEvent<{ productId?: string | undefined; id?: string | undefined; sellerId?: string | undefined; slug?: string | undefined; }, "/(protected)" | "/(auth)" | "/(admin)" | "/" | "/(admin)/admin" | ... 114 more ... | null>'.
+web:check-types:   Type '{ cookies: Cookies; }' is missing the following properties from type 'RequestEvent<{ productId?: string | undefined; id?: string | undefined; sellerId?: string | undefined; slug?: string | undefined; }, "/(protected)" | "/(auth)" | "/(admin)" | "/" | "/(admin)/admin" | ... 114 more ... | null>': fetch, getClientAddress, locals, params, and 9 more.
+web:check-types: src/routes/api/health/+server.ts(58,5): error TS2769: No overload matches this call.
+web:check-types:   Overload 1 of 2, '(status: number, body: Error): never', gave the following error.
+web:check-types:     Object literal may only specify known properties, and 'details' does not exist in type 'Error'.
+web:check-types:   Overload 2 of 2, '(status: number, body?: string | Error | undefined): never', gave the following error.
+web:check-types:     Object literal may only specify known properties, and 'details' does not exist in type 'Error'.
+web:check-types: src/routes/api/health/+server.ts(92,4): error TS2769: No overload matches this call.
+web:check-types:   Overload 1 of 2, '(status: number, body: Error): never', gave the following error.
+web:check-types:     Object literal may only specify known properties, and 'details' does not exist in type 'Error'.
+web:check-types:   Overload 2 of 2, '(status: number, body?: string | Error | undefined): never', gave the following error.
+web:check-types:     Object literal may only specify known properties, and 'details' does not exist in type 'Error'.
+web:check-types: src/routes/api/onboarding/complete/+server.ts(4,75): error TS2339: Property 'getSession' does not exist on type 'Locals'.
+web:check-types: src/routes/api/orders/[id]/+server.ts(97,46): error TS2538: Type 'null' cannot be used as an index type.
+web:check-types: src/routes/api/payments/confirm/+server.ts(48,35): error TS2339: Property 'product_id' does not exist on type '{ amount_total: number; buyer_id: string; commission_amount: number; country_code: string | null; created_at: string | null; currency: string; id: string; metadata: Json; order_id: string; ... 11 more ...; updated_at: string | null; }'.
+web:check-types: src/routes/api/payments/confirm/+server.ts(61,16): error TS2339: Property 'email' does not exist on type '{ user: User; } | { user: null; }'.
+web:check-types:   Property 'email' does not exist on type '{ user: User; }'.
+web:check-types: src/routes/api/payments/confirm/+server.ts(63,28): error TS2339: Property 'email' does not exist on type '{ user: User; } | { user: null; }'.
+web:check-types:   Property 'email' does not exist on type '{ user: User; }'.
+web:check-types: src/routes/api/payments/confirm/+server.ts(73,21): error TS2339: Property 'email' does not exist on type '{ user: User; } | { user: null; }'.
+web:check-types:   Property 'email' does not exist on type '{ user: User; }'.
+web:check-types: src/routes/api/payments/confirm/+server.ts(74,33): error TS2339: Property 'email' does not exist on type '{ user: User; } | { user: null; }'.
+web:check-types:   Property 'email' does not exist on type '{ user: User; }'.
+web:check-types: src/routes/api/payments/confirm/+server.ts(78,38): error TS2339: Property 'seller_amount' does not exist on type '{ amount_total: number; buyer_id: string; commission_amount: number; country_code: string | null; created_at: string | null; currency: string; id: string; metadata: Json; order_id: string; ... 11 more ...; updated_at: string | null; }'.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(58,19): error TS2339: Property 'id' does not exist on type 'SelectQueryError<"column 'brand_id' does not exist on 'products'.">'.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(59,22): error TS2339: Property 'title' does not exist on type 'SelectQueryError<"column 'brand_id' does not exist on 'products'.">'.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(60,28): error TS2339: Property 'description' does not exist on type 'SelectQueryError<"column 'brand_id' does not exist on 'products'.">'.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(61,22): error TS2339: Property 'price' does not exist on type 'SelectQueryError<"column 'brand_id' does not exist on 'products'.">'.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(62,26): error TS2339: Property 'seller_id' does not exist on type 'SelectQueryError<"column 'brand_id' does not exist on 'products'.">'.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(63,25): error TS2339: Property 'categories' does not exist on type 'SelectQueryError<"column 'brand_id' does not exist on 'products'.">'.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(64,22): error TS2339: Property 'brands' does not exist on type 'SelectQueryError<"column 'brand_id' does not exist on 'products'.">'.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(65,21): error TS2339: Property 'size' does not exist on type 'SelectQueryError<"column 'brand_id' does not exist on 'products'.">'.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(66,26): error TS2339: Property 'condition' does not exist on type 'SelectQueryError<"column 'brand_id' does not exist on 'products'.">'.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(67,24): error TS2339: Property 'is_sold' does not exist on type 'SelectQueryError<"column 'brand_id' does not exist on 'products'.">'.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(68,27): error TS2339: Property 'created_at' does not exist on type 'SelectQueryError<"column 'brand_id' does not exist on 'products'.">'.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(69,23): error TS2339: Property 'product_images' does not exist on type 'SelectQueryError<"column 'brand_id' does not exist on 'products'.">'.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(70,17): error TS7006: Parameter 'a' implicitly has an 'any' type.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(70,20): error TS7006: Parameter 'b' implicitly has an 'any' type.
+web:check-types: src/routes/api/sellers/[sellerId]/products/+server.ts(71,15): error TS7006: Parameter 'img' implicitly has an 'any' type.
+web:check-types: src/routes/api/test-seo/+server.ts(21,56): error TS2339: Property 'slug' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/api/test-seo/+server.ts(44,17): error TS2339: Property 'id' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/api/test-seo/+server.ts(45,20): error TS2339: Property 'title' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/api/test-seo/+server.ts(46,25): error TS2339: Property 'slug' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/api/test-seo/+server.ts(47,36): error TS2339: Property 'id' does not exist on type 'SelectQueryError<"column 'slug' does not exist on 'products'.">'.
+web:check-types: src/routes/api/test-seo/+server.ts(58,17): error TS2769: No overload matches this call.
+web:check-types:   Overload 1 of 2, '(relation: "followers" | "profiles" | "categories" | "products" | "orders" | "subscription_plans" | "admin_actions" | "admin_notifications" | "badges" | "balance_history" | "brands" | ... 14 more ... | "user_subscriptions"): PostgrestQueryBuilder<...>', gave the following error.
+web:check-types:     Argument of type '"slug_processing_queue"' is not assignable to parameter of type '"followers" | "profiles" | "categories" | "products" | "orders" | "subscription_plans" | "admin_actions" | "admin_notifications" | "badges" | "balance_history" | "brands" | ... 14 more ... | "user_subscriptions"'.
+web:check-types:   Overload 2 of 2, '(relation: "admin_user_subscriptions" | "admin_users_view" | "seller_performance_metrics" | "admin_financial_overview" | "admin_payout_dashboard" | "admin_payout_requests_view" | "admin_stats_view" | "admin_transactions_view"): PostgrestQueryBuilder<...>', gave the following error.
+web:check-types:     Argument of type '"slug_processing_queue"' is not assignable to parameter of type '"admin_user_subscriptions" | "admin_users_view" | "seller_performance_metrics" | "admin_financial_overview" | "admin_payout_dashboard" | "admin_payout_requests_view" | "admin_stats_view" | "admin_transactions_view"'.
+web:check-types: src/routes/api/test-seo/+server.ts(62,20): error TS2339: Property 'status' does not exist on type 'SelectQueryError<"column 'status' does not exist on 'followers'."> | SelectQueryError<"column 'status' does not exist on 'profiles'."> | ... 23 more ... | SelectQueryError<...>'.
+web:check-types:   Property 'status' does not exist on type 'SelectQueryError<"column 'status' does not exist on 'followers'.">'.
+web:check-types: src/routes/api/test-seo/+server.ts(62,40): error TS2339: Property 'status' does not exist on type 'SelectQueryError<"column 'status' does not exist on 'followers'."> | SelectQueryError<"column 'status' does not exist on 'profiles'."> | ... 23 more ... | SelectQueryError<...>'.
+web:check-types:   Property 'status' does not exist on type 'SelectQueryError<"column 'status' does not exist on 'followers'.">'.
+web:check-types: src/routes/auth/confirm/+server.ts(73,17): error TS18047: 'data.user' is possibly 'null'.
+web:check-types: src/routes/auth/confirm/+server.ts(84,81): error TS18047: 'data.user' is possibly 'null'.
+web:check-types: src/routes/auth/confirm/+server.ts(88,21): error TS18047: 'profile' is possibly 'null'.
+web:check-types: src/routes/profile/[id]/+page.server.ts(55,7): error TS7034: Variable 'favorites' implicitly has type 'any[]' in some locations where its type cannot be determined.
+web:check-types: src/routes/profile/[id]/+page.server.ts(153,5): error TS7005: Variable 'favorites' implicitly has an 'any[]' type.
+web:check-types: src/routes/search/+page.server.ts(24,31): error TS7006: Parameter 'd' implicitly has an 'any' type.
+web:check-types: src/routes/search/+page.server.ts(33,47): error TS7006: Parameter 'd' implicitly has an 'any' type.
+web:check-types: src/routes/search/+page.server.ts(331,53): error TS2345: Argument of type 'string' is not assignable to parameter of type 'NonNullable<"brand_new_with_tags" | "new_without_tags" | "like_new" | "good" | "worn" | "fair">'.
+web:check-types: src/routes/search/+page.server.ts(406,14): error TS2345: Argument of type '"get_category_hierarchy"' is not assignable to parameter of type '"activate_brand_subscription" | "admin_adjust_balance" | "admin_approve_payout" | "admin_batch_approve_payouts" | "admin_complete_payout" | "admin_get_dashboard_summary" | ... 54 more ... | "validate_discount_code"'.
+web:check-types: src/routes/search/+page.server.ts(410,41): error TS2339: Property 'level_1_name' does not exist on type 'never'.
+web:check-types: src/routes/search/+page.server.ts(411,40): error TS2339: Property 'level_2_name' does not exist on type 'never'.
+web:check-types: src/routes/search/+page.server.ts(412,45): error TS2339: Property 'level_3_name' does not exist on type 'never'.
+web:check-types: src/routes/sitemap.xml/+server.ts(55,3): error TS2322: Type '{ updated_at: string; username: string | null; }[]' is not assignable to type '{ username: string; updated_at: string; }[]'.
+web:check-types:   Type '{ updated_at: string; username: string | null; }' is not assignable to type '{ username: string; updated_at: string; }'.
+web:check-types:     Types of property 'username' are incompatible.
+web:check-types:       Type 'string | null' is not assignable to type 'string'.
+web:check-types:         Type 'null' is not assignable to type 'string'.
+web:check-types:  ELIFECYCLE  Command failed with exit code 2.
+web:check-types: ERROR: command finished with error: command (K:\driplo-turbo-1\apps\web) C:\Users\radev\AppData\Local\pnpm\pnpm.exe run check-types exited (2)
+web#check-types: command (K:\driplo-turbo-1\apps\web) C:\Users\radev\AppData\Local\pnpm\pnpm.exe run check-types exited (2)
+
+ Tasks:    1 successful, 2 total
+Cached:    1 cached, 2 total
+  Time:    24.251s 
+Failed:    web#check-types
+
+ ERROR  run failed: command  exited (2)
+ ELIFECYCLE  Command failed with exit code 2.

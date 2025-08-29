@@ -25,8 +25,10 @@
   let payoutAmount = $state('');
   let requesting = $state(false);
 
-  const payoutService = new PayoutService(data.supabase);
-  const transactionService = new TransactionService(data.supabase);
+  import { createBrowserSupabaseClient } from '$lib/supabase/client';
+  const supabase = createBrowserSupabaseClient();
+  const payoutService = new PayoutService(supabase);
+  const transactionService = new TransactionService(supabase);
 
   onMount(async () => {
     await Promise.all([

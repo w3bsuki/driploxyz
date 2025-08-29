@@ -1,15 +1,17 @@
+
 /* eslint-disable */
 /** 
- * This file contains language specific message functions for tree-shaking. 
- * 
- *! WARNING: Only import messages from this file if you want to manually
- *! optimize your bundle. Else, import from the `messages.js` file. 
- * 
- * Your bundler will (in the future) automatically replace the index function 
- * with a language specific message function in the build step. 
- */
+* This file contains language specific message functions for tree-shaking. 
+* 
+*! WARNING: Only import messages from this file if you want to manually
+*! optimize your bundle. Else, import from the `messages.js` file. 
+* 
+* Your bundler will (in the future) automatically replace the index function 
+* with a language specific message function in the build step. 
+*/
 
 
+	
 /**
  * 
  * @returns {string}
@@ -18,6 +20,9 @@
 export const hello = () => `Hello`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -26,6 +31,9 @@ export const hello = () => `Hello`
 export const welcome = () => `Welcome to Driplo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -34,6 +42,9 @@ export const welcome = () => `Welcome to Driplo`
 export const loading = () => `Loading...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -42,6 +53,9 @@ export const loading = () => `Loading...`
 export const price = () => `Price`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -50,6 +64,9 @@ export const price = () => `Price`
 export const test = () => `English works!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -58,6 +75,9 @@ export const test = () => `English works!`
 export const nav_home = () => `Home`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -66,6 +86,9 @@ export const nav_home = () => `Home`
 export const nav_search = () => `Search`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -74,6 +97,9 @@ export const nav_search = () => `Search`
 export const nav_sell = () => `Sell`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -82,6 +108,9 @@ export const nav_sell = () => `Sell`
 export const nav_messages = () => `Messages`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -90,6 +119,9 @@ export const nav_messages = () => `Messages`
 export const nav_profile = () => `Profile`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -98,6 +130,9 @@ export const nav_profile = () => `Profile`
 export const nav_favorites = () => `Favorites`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -106,6 +141,9 @@ export const nav_favorites = () => `Favorites`
 export const nav_orders = () => `Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -114,6 +152,9 @@ export const nav_orders = () => `Orders`
 export const nav_settings = () => `Settings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -122,6 +163,9 @@ export const nav_settings = () => `Settings`
 export const nav_logout = () => `Logout`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -130,6 +174,9 @@ export const nav_logout = () => `Logout`
 export const nav_login = () => `Login`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -138,6 +185,9 @@ export const nav_login = () => `Login`
 export const nav_signup = () => `Sign up`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -146,6 +196,9 @@ export const nav_signup = () => `Sign up`
 export const nav_startSelling = () => `Start Selling`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -154,6 +207,9 @@ export const nav_startSelling = () => `Start Selling`
 export const nav_browseCategories = () => `Browse Categories`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -162,6 +218,9 @@ export const nav_browseCategories = () => `Browse Categories`
 export const search_placeholder = () => `Search for items, brands...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -170,6 +229,9 @@ export const search_placeholder = () => `Search for items, brands...`
 export const search_filter = () => `Filter`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -178,6 +240,9 @@ export const search_filter = () => `Filter`
 export const search_sort = () => `Sort`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -186,6 +251,9 @@ export const search_sort = () => `Sort`
 export const search_results = () => `Results`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -194,6 +262,9 @@ export const search_results = () => `Results`
 export const search_noResults = () => `No results found`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -202,6 +273,9 @@ export const search_noResults = () => `No results found`
 export const search_categories = () => `Categories`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -210,6 +284,9 @@ export const search_categories = () => `Categories`
 export const search_all = () => `All`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -218,6 +295,9 @@ export const search_all = () => `All`
 export const product_addToCart = () => `Add to cart`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -226,6 +306,9 @@ export const product_addToCart = () => `Add to cart`
 export const product_buyNow = () => `Buy now`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -234,6 +317,9 @@ export const product_buyNow = () => `Buy now`
 export const product_favorite = () => `Favorite`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -242,6 +328,9 @@ export const product_favorite = () => `Favorite`
 export const product_share = () => `Share`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -250,6 +339,9 @@ export const product_share = () => `Share`
 export const product_size = () => `Size`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -258,6 +350,9 @@ export const product_size = () => `Size`
 export const product_condition = () => `Condition`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -266,6 +361,9 @@ export const product_condition = () => `Condition`
 export const product_brand = () => `Brand`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -274,6 +372,9 @@ export const product_brand = () => `Brand`
 export const product_description = () => `Description`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -282,6 +383,9 @@ export const product_description = () => `Description`
 export const product_seller = () => `Seller`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -290,6 +394,9 @@ export const product_seller = () => `Seller`
 export const product_reviews = () => `Reviews`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -298,6 +405,9 @@ export const product_reviews = () => `Reviews`
 export const product_similar = () => `Similar items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -306,6 +416,9 @@ export const product_similar = () => `Similar items`
 export const product_sold = () => `Sold`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -314,6 +427,9 @@ export const product_sold = () => `Sold`
 export const product_available = () => `Available`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -322,6 +438,9 @@ export const product_available = () => `Available`
 export const common_cancel = () => `Cancel`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -330,6 +449,9 @@ export const common_cancel = () => `Cancel`
 export const common_save = () => `Save`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -338,6 +460,9 @@ export const common_save = () => `Save`
 export const common_delete = () => `Delete`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -346,6 +471,9 @@ export const common_delete = () => `Delete`
 export const common_edit = () => `Edit`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -354,6 +482,9 @@ export const common_edit = () => `Edit`
 export const common_close = () => `Close`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -362,6 +493,9 @@ export const common_close = () => `Close`
 export const common_confirm = () => `Confirm`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -370,6 +504,9 @@ export const common_confirm = () => `Confirm`
 export const common_yes = () => `Yes`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -378,6 +515,9 @@ export const common_yes = () => `Yes`
 export const common_no = () => `No`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -386,6 +526,9 @@ export const common_no = () => `No`
 export const common_ok = () => `OK`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -394,6 +537,9 @@ export const common_ok = () => `OK`
 export const common_back = () => `Back`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -402,6 +548,9 @@ export const common_back = () => `Back`
 export const common_next = () => `Next`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -410,6 +559,9 @@ export const common_next = () => `Next`
 export const common_previous = () => `Previous`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -418,6 +570,9 @@ export const common_previous = () => `Previous`
 export const common_submit = () => `Submit`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -426,6 +581,9 @@ export const common_submit = () => `Submit`
 export const common_currency = () => `$`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -434,6 +592,9 @@ export const common_currency = () => `$`
 export const trending_title = () => `Trending Now`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -442,6 +603,9 @@ export const trending_title = () => `Trending Now`
 export const trending_topSellers = () => `Top Sellers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -450,6 +614,9 @@ export const trending_topSellers = () => `Top Sellers`
 export const trending_featured = () => `Featured Products`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -458,6 +625,9 @@ export const trending_featured = () => `Featured Products`
 export const trending_promoted = () => `Promoted`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -466,6 +636,9 @@ export const trending_promoted = () => `Promoted`
 export const trending_newSeller = () => `New Seller`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -474,6 +647,9 @@ export const trending_newSeller = () => `New Seller`
 export const category_women = () => `Women`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -482,6 +658,9 @@ export const category_women = () => `Women`
 export const category_men = () => `Men`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -490,6 +669,9 @@ export const category_men = () => `Men`
 export const category_kids = () => `Kids`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -498,6 +680,9 @@ export const category_kids = () => `Kids`
 export const category_pets = () => `Pets`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -506,6 +691,9 @@ export const category_pets = () => `Pets`
 export const category_shoes = () => `Shoes`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -514,6 +702,9 @@ export const category_shoes = () => `Shoes`
 export const category_bags = () => `Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -522,6 +713,9 @@ export const category_bags = () => `Bags`
 export const category_home = () => `Home`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -530,6 +724,9 @@ export const category_home = () => `Home`
 export const category_beauty = () => `Beauty`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -538,6 +735,9 @@ export const category_beauty = () => `Beauty`
 export const seller_profile = () => `View Profile`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -546,6 +746,9 @@ export const seller_profile = () => `View Profile`
 export const seller_items = () => `items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -554,6 +757,9 @@ export const seller_items = () => `items`
 export const seller_followers = () => `followers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -562,6 +768,9 @@ export const seller_followers = () => `followers`
 export const seller_rating = () => `rating`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -570,6 +779,9 @@ export const seller_rating = () => `rating`
 export const seller_premium = () => `Premium Seller`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -578,6 +790,9 @@ export const seller_premium = () => `Premium Seller`
 export const seller_verified = () => `Verified`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -586,6 +801,9 @@ export const seller_verified = () => `Verified`
 export const product_new = () => `New`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -594,6 +812,9 @@ export const product_new = () => `New`
 export const product_likeNew = () => `Like New`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -602,6 +823,9 @@ export const product_likeNew = () => `Like New`
 export const product_good = () => `Good`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -610,6 +834,9 @@ export const product_good = () => `Good`
 export const product_fair = () => `Fair`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -618,6 +845,9 @@ export const product_fair = () => `Fair`
 export const product_location = () => `Location`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -626,6 +856,9 @@ export const product_location = () => `Location`
 export const auth_signIn = () => `Sign In`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -634,6 +867,9 @@ export const auth_signIn = () => `Sign In`
 export const auth_signUp = () => `Sign Up`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -642,6 +878,9 @@ export const auth_signUp = () => `Sign Up`
 export const auth_signOut = () => `Sign Out`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -650,6 +889,9 @@ export const auth_signOut = () => `Sign Out`
 export const profile_orders = () => `Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -658,6 +900,9 @@ export const profile_orders = () => `Orders`
 export const profile_favorites = () => `Favorites`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -666,6 +911,9 @@ export const profile_favorites = () => `Favorites`
 export const profile_startSelling = () => `Start Selling`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -674,6 +922,9 @@ export const profile_startSelling = () => `Start Selling`
 export const profile_dashboard = () => `Dashboard`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -682,6 +933,9 @@ export const profile_dashboard = () => `Dashboard`
 export const profile_settings = () => `Settings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -690,6 +944,9 @@ export const profile_settings = () => `Settings`
 export const profile_myProfile = () => `My Profile`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -698,6 +955,9 @@ export const profile_myProfile = () => `My Profile`
 export const menu_browse = () => `Browse`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -706,6 +966,9 @@ export const menu_browse = () => `Browse`
 export const menu_sellItems = () => `Sell Items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -714,6 +977,9 @@ export const menu_sellItems = () => `Sell Items`
 export const footer_about = () => `About`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -722,6 +988,9 @@ export const footer_about = () => `About`
 export const footer_help = () => `Help`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -730,6 +999,9 @@ export const footer_help = () => `Help`
 export const footer_privacy = () => `Privacy`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -738,6 +1010,9 @@ export const footer_privacy = () => `Privacy`
 export const footer_terms = () => `Terms`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -746,6 +1021,9 @@ export const footer_terms = () => `Terms`
 export const footer_contact = () => `Contact`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -754,6 +1032,9 @@ export const footer_contact = () => `Contact`
 export const seller_unknown = () => `Unknown Seller`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -762,6 +1043,9 @@ export const seller_unknown = () => `Unknown Seller`
 export const seller_soldBy = () => `Sold by`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -770,6 +1054,9 @@ export const seller_soldBy = () => `Sold by`
 export const seller_message = () => `Message`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -778,6 +1065,9 @@ export const seller_message = () => `Message`
 export const seller_follow = () => `Follow`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -786,6 +1076,9 @@ export const seller_follow = () => `Follow`
 export const seller_following = () => `Following`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -794,6 +1087,9 @@ export const seller_following = () => `Following`
 export const seller_viewFullProfile = () => `View full profile`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -802,6 +1098,9 @@ export const seller_viewFullProfile = () => `View full profile`
 export const seller_memberFor = () => `Member for`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -810,6 +1109,9 @@ export const seller_memberFor = () => `Member for`
 export const seller_newMember = () => `New member`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -818,6 +1120,9 @@ export const seller_newMember = () => `New member`
 export const seller_sales = () => `sales`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -826,6 +1131,9 @@ export const seller_sales = () => `sales`
 export const seller_respondsWithin = () => `Usually responds within`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -834,6 +1142,9 @@ export const seller_respondsWithin = () => `Usually responds within`
 export const seller_hour = () => `hour`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -842,6 +1153,9 @@ export const seller_hour = () => `hour`
 export const seller_hours = () => `hours`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -850,6 +1164,9 @@ export const seller_hours = () => `hours`
 export const seller_day = () => `day`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -858,6 +1175,9 @@ export const seller_day = () => `day`
 export const seller_days = () => `days`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -866,6 +1186,9 @@ export const seller_days = () => `days`
 export const seller_activeNow = () => `Active now`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -874,6 +1197,9 @@ export const seller_activeNow = () => `Active now`
 export const seller_activeAgo = () => `Active ago`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -882,6 +1208,9 @@ export const seller_activeAgo = () => `Active ago`
 export const seller_trustedSeller = () => `Trusted Seller`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -890,6 +1219,9 @@ export const seller_trustedSeller = () => `Trusted Seller`
 export const seller_superstarSeller = () => `Superstar Seller`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -898,6 +1230,9 @@ export const seller_superstarSeller = () => `Superstar Seller`
 export const seller_positiveReviews = () => `Positive reviews`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -906,6 +1241,9 @@ export const seller_positiveReviews = () => `Positive reviews`
 export const seller_avgShipping = () => `Avg shipping`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -914,6 +1252,9 @@ export const seller_avgShipping = () => `Avg shipping`
 export const seller_recentActivity = () => `Recent activity`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -922,6 +1263,9 @@ export const seller_recentActivity = () => `Recent activity`
 export const seller_soldThisWeek = () => `Sold items this week`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -930,6 +1274,9 @@ export const seller_soldThisWeek = () => `Sold items this week`
 export const seller_shippedOnTime = () => `of orders shipped on time`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -938,6 +1285,9 @@ export const seller_shippedOnTime = () => `of orders shipped on time`
 export const seller_respondsIn = () => `Responds to messages in`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -946,6 +1296,9 @@ export const seller_respondsIn = () => `Responds to messages in`
 export const product_makeOffer = () => `Make an offer`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -954,6 +1307,9 @@ export const product_makeOffer = () => `Make an offer`
 export const product_askQuestion = () => `Ask a question`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -962,6 +1318,9 @@ export const product_askQuestion = () => `Ask a question`
 export const product_reportItem = () => `Report item`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -970,6 +1329,9 @@ export const product_reportItem = () => `Report item`
 export const product_shipping = () => `Shipping`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -978,6 +1340,9 @@ export const product_shipping = () => `Shipping`
 export const product_returns = () => `Returns`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -986,6 +1351,9 @@ export const product_returns = () => `Returns`
 export const product_payment = () => `Payment`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -994,6 +1362,9 @@ export const product_payment = () => `Payment`
 export const product_protection = () => `Buyer Protection`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1002,6 +1373,9 @@ export const product_protection = () => `Buyer Protection`
 export const product_freeShipping = () => `Free shipping`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1010,6 +1384,9 @@ export const product_freeShipping = () => `Free shipping`
 export const product_fastDelivery = () => `Fast delivery`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1018,6 +1395,9 @@ export const product_fastDelivery = () => `Fast delivery`
 export const product_inStock = () => `In stock`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1026,6 +1406,9 @@ export const product_inStock = () => `In stock`
 export const product_outOfStock = () => `Out of stock`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1034,6 +1417,9 @@ export const product_outOfStock = () => `Out of stock`
 export const product_lastOne = () => `Last one!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1042,6 +1428,9 @@ export const product_lastOne = () => `Last one!`
 export const product_limitedStock = () => `Only left in stock`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1050,6 +1439,9 @@ export const product_limitedStock = () => `Only left in stock`
 export const product_viewedTimes = () => `Viewed times`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1058,6 +1450,9 @@ export const product_viewedTimes = () => `Viewed times`
 export const product_peopleViewing = () => `people viewing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1066,6 +1461,9 @@ export const product_peopleViewing = () => `people viewing`
 export const auth_email = () => `Email`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1074,6 +1472,9 @@ export const auth_email = () => `Email`
 export const auth_password = () => `Password`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1082,6 +1483,9 @@ export const auth_password = () => `Password`
 export const auth_confirmPassword = () => `Confirm Password`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1090,6 +1494,9 @@ export const auth_confirmPassword = () => `Confirm Password`
 export const auth_firstName = () => `First Name`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1098,6 +1505,9 @@ export const auth_firstName = () => `First Name`
 export const auth_lastName = () => `Last Name`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1106,6 +1516,9 @@ export const auth_lastName = () => `Last Name`
 export const auth_username = () => `Username`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1114,6 +1527,9 @@ export const auth_username = () => `Username`
 export const auth_forgotPassword = () => `Forgot password?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1122,6 +1538,9 @@ export const auth_forgotPassword = () => `Forgot password?`
 export const auth_rememberMe = () => `Remember me`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1130,6 +1549,9 @@ export const auth_rememberMe = () => `Remember me`
 export const auth_createAccount = () => `Create account`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1138,6 +1560,9 @@ export const auth_createAccount = () => `Create account`
 export const auth_alreadyHaveAccount = () => `Already have an account?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1146,6 +1571,9 @@ export const auth_alreadyHaveAccount = () => `Already have an account?`
 export const auth_dontHaveAccount = () => `Don't have an account?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1154,6 +1582,9 @@ export const auth_dontHaveAccount = () => `Don't have an account?`
 export const auth_orContinueWith = () => `Or continue with`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1162,6 +1593,9 @@ export const auth_orContinueWith = () => `Or continue with`
 export const auth_termsAgreement = () => `By signing up, you agree to our`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1170,6 +1604,9 @@ export const auth_termsAgreement = () => `By signing up, you agree to our`
 export const auth_termsOfService = () => `Terms of Service`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1178,6 +1615,9 @@ export const auth_termsOfService = () => `Terms of Service`
 export const auth_and = () => `and`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1186,6 +1626,9 @@ export const auth_and = () => `and`
 export const auth_privacyPolicy = () => `Privacy Policy`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1194,6 +1637,9 @@ export const auth_privacyPolicy = () => `Privacy Policy`
 export const onboarding_welcome = () => `Welcome to Driplo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1202,6 +1648,9 @@ export const onboarding_welcome = () => `Welcome to Driplo`
 export const onboarding_step = () => `Step`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1210,6 +1659,9 @@ export const onboarding_step = () => `Step`
 export const onboarding_of = () => `of`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1218,6 +1670,9 @@ export const onboarding_of = () => `of`
 export const onboarding_completeProfile = () => `Complete your profile`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1226,6 +1681,9 @@ export const onboarding_completeProfile = () => `Complete your profile`
 export const onboarding_verifyEmail = () => `Verify your email`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1234,6 +1692,9 @@ export const onboarding_verifyEmail = () => `Verify your email`
 export const onboarding_addPayment = () => `Add payment method`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1242,6 +1703,9 @@ export const onboarding_addPayment = () => `Add payment method`
 export const onboarding_startSelling = () => `Start selling`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1250,6 +1714,9 @@ export const onboarding_startSelling = () => `Start selling`
 export const onboarding_skip = () => `Skip`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1258,6 +1725,9 @@ export const onboarding_skip = () => `Skip`
 export const onboarding_continue = () => `Continue`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1266,6 +1736,9 @@ export const onboarding_continue = () => `Continue`
 export const onboarding_finish = () => `Finish`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1274,6 +1747,9 @@ export const onboarding_finish = () => `Finish`
 export const onboarding_setupComplete = () => `Setup complete!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1282,6 +1758,9 @@ export const onboarding_setupComplete = () => `Setup complete!`
 export const message_newMessage = () => `New message`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1290,6 +1769,9 @@ export const message_newMessage = () => `New message`
 export const message_typing = () => `is typing...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1298,6 +1780,9 @@ export const message_typing = () => `is typing...`
 export const message_sendMessage = () => `Send message`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1306,6 +1791,9 @@ export const message_sendMessage = () => `Send message`
 export const message_typeMessage = () => `Type a message...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1314,6 +1802,9 @@ export const message_typeMessage = () => `Type a message...`
 export const message_noMessages = () => `No messages yet`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1322,6 +1813,9 @@ export const message_noMessages = () => `No messages yet`
 export const message_startConversation = () => `Start a conversation`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1330,6 +1824,9 @@ export const message_startConversation = () => `Start a conversation`
 export const message_delivered = () => `Delivered`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1338,6 +1835,9 @@ export const message_delivered = () => `Delivered`
 export const message_read = () => `Read`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1346,6 +1846,9 @@ export const message_read = () => `Read`
 export const message_unread = () => `Unread`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1354,6 +1857,9 @@ export const message_unread = () => `Unread`
 export const message_markAsRead = () => `Mark as read`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1362,6 +1868,9 @@ export const message_markAsRead = () => `Mark as read`
 export const message_delete = () => `Delete conversation`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1370,6 +1879,9 @@ export const message_delete = () => `Delete conversation`
 export const message_block = () => `Block user`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1378,6 +1890,9 @@ export const message_block = () => `Block user`
 export const message_report = () => `Report`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1386,6 +1901,9 @@ export const message_report = () => `Report`
 export const notification_newFollower = () => `started following you`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1394,6 +1912,9 @@ export const notification_newFollower = () => `started following you`
 export const notification_itemSold = () => `Your item has been sold!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1402,6 +1923,9 @@ export const notification_itemSold = () => `Your item has been sold!`
 export const notification_offerReceived = () => `You received an offer`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1410,6 +1934,9 @@ export const notification_offerReceived = () => `You received an offer`
 export const notification_priceDropped = () => `Price dropped on`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1418,6 +1945,9 @@ export const notification_priceDropped = () => `Price dropped on`
 export const notification_itemLiked = () => `liked your item`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1426,6 +1956,9 @@ export const notification_itemLiked = () => `liked your item`
 export const notification_reviewReceived = () => `left you a review`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1434,6 +1967,9 @@ export const notification_reviewReceived = () => `left you a review`
 export const notification_clearAll = () => `Clear all`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1442,6 +1978,9 @@ export const notification_clearAll = () => `Clear all`
 export const notification_markAllRead = () => `Mark all as read`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1450,6 +1989,9 @@ export const notification_markAllRead = () => `Mark all as read`
 export const notification_settings = () => `Notification settings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1458,6 +2000,9 @@ export const notification_settings = () => `Notification settings`
 export const checkout_summary = () => `Order summary`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1466,6 +2011,9 @@ export const checkout_summary = () => `Order summary`
 export const checkout_subtotal = () => `Subtotal`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1474,6 +2022,9 @@ export const checkout_subtotal = () => `Subtotal`
 export const checkout_shipping = () => `Shipping`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1482,6 +2033,9 @@ export const checkout_shipping = () => `Shipping`
 export const checkout_tax = () => `Tax`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1490,6 +2044,9 @@ export const checkout_tax = () => `Tax`
 export const checkout_total = () => `Total`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1498,6 +2055,9 @@ export const checkout_total = () => `Total`
 export const checkout_proceedToPayment = () => `Proceed to payment`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1506,6 +2066,9 @@ export const checkout_proceedToPayment = () => `Proceed to payment`
 export const checkout_placeOrder = () => `Place order`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1514,6 +2077,9 @@ export const checkout_placeOrder = () => `Place order`
 export const checkout_orderPlaced = () => `Order placed successfully!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1522,6 +2088,9 @@ export const checkout_orderPlaced = () => `Order placed successfully!`
 export const checkout_paymentMethod = () => `Payment method`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1530,6 +2099,9 @@ export const checkout_paymentMethod = () => `Payment method`
 export const checkout_shippingAddress = () => `Shipping address`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1538,6 +2110,9 @@ export const checkout_shippingAddress = () => `Shipping address`
 export const checkout_billingAddress = () => `Billing address`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1546,6 +2121,9 @@ export const checkout_billingAddress = () => `Billing address`
 export const checkout_sameAsShipping = () => `Same as shipping address`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1554,6 +2132,9 @@ export const checkout_sameAsShipping = () => `Same as shipping address`
 export const checkout_addAddress = () => `Add address`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1562,6 +2143,9 @@ export const checkout_addAddress = () => `Add address`
 export const checkout_addCard = () => `Add card`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1570,6 +2154,9 @@ export const checkout_addCard = () => `Add card`
 export const settings_account = () => `Account`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1578,6 +2165,9 @@ export const settings_account = () => `Account`
 export const settings_notifications = () => `Notifications`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1586,6 +2176,9 @@ export const settings_notifications = () => `Notifications`
 export const settings_privacy = () => `Privacy`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1594,6 +2187,9 @@ export const settings_privacy = () => `Privacy`
 export const settings_security = () => `Security`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1602,6 +2198,9 @@ export const settings_security = () => `Security`
 export const settings_payments = () => `Payments`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1610,6 +2209,9 @@ export const settings_payments = () => `Payments`
 export const settings_shipping = () => `Shipping`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1618,6 +2220,9 @@ export const settings_shipping = () => `Shipping`
 export const settings_language = () => `Language`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1626,6 +2231,9 @@ export const settings_language = () => `Language`
 export const settings_currency = () => `Currency`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1634,6 +2242,9 @@ export const settings_currency = () => `Currency`
 export const settings_theme = () => `Theme`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1642,6 +2253,9 @@ export const settings_theme = () => `Theme`
 export const settings_darkMode = () => `Dark mode`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1650,6 +2264,9 @@ export const settings_darkMode = () => `Dark mode`
 export const settings_emailNotifications = () => `Email notifications`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1658,6 +2275,9 @@ export const settings_emailNotifications = () => `Email notifications`
 export const settings_pushNotifications = () => `Push notifications`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1666,6 +2286,9 @@ export const settings_pushNotifications = () => `Push notifications`
 export const settings_changePassword = () => `Change password`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1674,6 +2297,9 @@ export const settings_changePassword = () => `Change password`
 export const settings_twoFactor = () => `Two-factor authentication`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1682,6 +2308,9 @@ export const settings_twoFactor = () => `Two-factor authentication`
 export const settings_deleteAccount = () => `Delete account`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1690,6 +2319,9 @@ export const settings_deleteAccount = () => `Delete account`
 export const settings_downloadData = () => `Download your data`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1698,6 +2330,9 @@ export const settings_downloadData = () => `Download your data`
 export const banner_freeShipping = () => `Free shipping on orders over`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1706,6 +2341,9 @@ export const banner_freeShipping = () => `Free shipping on orders over`
 export const banner_newArrivals = () => `New arrivals daily`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1714,6 +2352,9 @@ export const banner_newArrivals = () => `New arrivals daily`
 export const banner_sale = () => `Sale`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1722,6 +2363,9 @@ export const banner_sale = () => `Sale`
 export const banner_percentOff = () => `off`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1730,6 +2374,9 @@ export const banner_percentOff = () => `off`
 export const banner_shopNow = () => `Shop now`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1738,6 +2385,9 @@ export const banner_shopNow = () => `Shop now`
 export const banner_limitedTime = () => `Limited time offer`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1746,6 +2396,9 @@ export const banner_limitedTime = () => `Limited time offer`
 export const banner_endsSoon = () => `Ends soon`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1754,6 +2407,9 @@ export const banner_endsSoon = () => `Ends soon`
 export const error_generic = () => `Something went wrong`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1762,6 +2418,9 @@ export const error_generic = () => `Something went wrong`
 export const error_network = () => `Network error. Please try again.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1770,6 +2429,9 @@ export const error_network = () => `Network error. Please try again.`
 export const error_notFound = () => `Page not found`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1778,6 +2440,9 @@ export const error_notFound = () => `Page not found`
 export const error_unauthorized = () => `Unauthorized access`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1786,6 +2451,9 @@ export const error_unauthorized = () => `Unauthorized access`
 export const error_validation = () => `Please check your input`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1794,6 +2462,9 @@ export const error_validation = () => `Please check your input`
 export const error_tryAgain = () => `Try again`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1802,6 +2473,9 @@ export const error_tryAgain = () => `Try again`
 export const success_saved = () => `Saved successfully`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1810,6 +2484,9 @@ export const success_saved = () => `Saved successfully`
 export const success_updated = () => `Updated successfully`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1818,6 +2495,9 @@ export const success_updated = () => `Updated successfully`
 export const success_deleted = () => `Deleted successfully`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1826,6 +2506,9 @@ export const success_deleted = () => `Deleted successfully`
 export const success_copied = () => `Copied to clipboard`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1834,6 +2517,9 @@ export const success_copied = () => `Copied to clipboard`
 export const empty_noProducts = () => `No products yet`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1842,6 +2528,9 @@ export const empty_noProducts = () => `No products yet`
 export const empty_noFavorites = () => `No favorites yet`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1850,6 +2539,9 @@ export const empty_noFavorites = () => `No favorites yet`
 export const empty_noOrders = () => `No orders yet`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1858,6 +2550,9 @@ export const empty_noOrders = () => `No orders yet`
 export const empty_noMessages = () => `No messages yet`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1866,6 +2561,9 @@ export const empty_noMessages = () => `No messages yet`
 export const empty_startBrowsing = () => `Start browsing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1874,6 +2572,9 @@ export const empty_startBrowsing = () => `Start browsing`
 export const empty_exploreItems = () => `Explore items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1882,6 +2583,9 @@ export const empty_exploreItems = () => `Explore items`
 export const pagination_showing = () => `Showing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1890,6 +2594,9 @@ export const pagination_showing = () => `Showing`
 export const pagination_of = () => `of`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1898,6 +2605,9 @@ export const pagination_of = () => `of`
 export const pagination_results = () => `results`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1906,6 +2616,9 @@ export const pagination_results = () => `results`
 export const pagination_page = () => `Page`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1914,6 +2627,9 @@ export const pagination_page = () => `Page`
 export const pagination_goToPage = () => `Go to page`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1922,6 +2638,9 @@ export const pagination_goToPage = () => `Go to page`
 export const filter_sortBy = () => `Sort by`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1930,6 +2649,9 @@ export const filter_sortBy = () => `Sort by`
 export const filter_priceLowToHigh = () => `Price: Low to High`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1938,6 +2660,9 @@ export const filter_priceLowToHigh = () => `Price: Low to High`
 export const filter_priceHighToLow = () => `Price: High to Low`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1946,6 +2671,9 @@ export const filter_priceHighToLow = () => `Price: High to Low`
 export const filter_newest = () => `Newest`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1954,6 +2682,9 @@ export const filter_newest = () => `Newest`
 export const filter_mostPopular = () => `Most Popular`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1962,6 +2693,9 @@ export const filter_mostPopular = () => `Most Popular`
 export const filter_bestRated = () => `Best Rated`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1970,6 +2704,9 @@ export const filter_bestRated = () => `Best Rated`
 export const filter_priceRange = () => `Price Range`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1978,6 +2715,9 @@ export const filter_priceRange = () => `Price Range`
 export const filter_condition = () => `Condition`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1986,6 +2726,9 @@ export const filter_condition = () => `Condition`
 export const filter_size = () => `Size`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -1994,6 +2737,9 @@ export const filter_size = () => `Size`
 export const filter_color = () => `Color`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2002,6 +2748,9 @@ export const filter_color = () => `Color`
 export const filter_brand = () => `Brand`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2010,6 +2759,9 @@ export const filter_brand = () => `Brand`
 export const filter_apply = () => `Apply filters`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2018,6 +2770,9 @@ export const filter_apply = () => `Apply filters`
 export const filter_reset = () => `Reset filters`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2026,6 +2781,9 @@ export const filter_reset = () => `Reset filters`
 export const filter_onSale = () => `On Sale`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2034,6 +2792,9 @@ export const filter_onSale = () => `On Sale`
 export const filter_newItems = () => `New Items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2042,6 +2803,9 @@ export const filter_newItems = () => `New Items`
 export const filter_trending = () => `Trending`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2050,6 +2814,9 @@ export const filter_trending = () => `Trending`
 export const filter_showMore = () => `Show more`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2058,6 +2825,9 @@ export const filter_showMore = () => `Show more`
 export const filter_showLess = () => `Show less`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2066,6 +2836,9 @@ export const filter_showLess = () => `Show less`
 export const product_newWithTags = () => `New with tags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2074,6 +2847,9 @@ export const product_newWithTags = () => `New with tags`
 export const product_likeNewCondition = () => `Like new`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2082,6 +2858,9 @@ export const product_likeNewCondition = () => `Like new`
 export const product_goodCondition = () => `Good`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2090,6 +2869,9 @@ export const product_goodCondition = () => `Good`
 export const product_fairCondition = () => `Fair`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2098,6 +2880,9 @@ export const product_fairCondition = () => `Fair`
 export const product_addToFavorites = () => `Add to favorites`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2106,6 +2891,9 @@ export const product_addToFavorites = () => `Add to favorites`
 export const product_itemDetails = () => `Item details`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2114,6 +2902,9 @@ export const product_itemDetails = () => `Item details`
 export const product_postedTime = () => `Posted`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2122,6 +2913,9 @@ export const product_postedTime = () => `Posted`
 export const product_freeShippingLower = () => `Free`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2130,6 +2924,9 @@ export const product_freeShippingLower = () => `Free`
 export const product_youMightLike = () => `You might also like`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2138,6 +2935,9 @@ export const product_youMightLike = () => `You might also like`
 export const product_moreFromSeller = () => `More from`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2146,6 +2946,9 @@ export const product_moreFromSeller = () => `More from`
 export const messages_inbox = () => `Inbox`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2154,6 +2957,9 @@ export const messages_inbox = () => `Inbox`
 export const messages_newMessage = () => `New message`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2162,6 +2968,9 @@ export const messages_newMessage = () => `New message`
 export const messages_reply = () => `Reply`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2170,6 +2979,9 @@ export const messages_reply = () => `Reply`
 export const messages_dismiss = () => `Dismiss`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2178,6 +2990,9 @@ export const messages_dismiss = () => `Dismiss`
 export const messages_messageInput = () => `Message...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2186,6 +3001,9 @@ export const messages_messageInput = () => `Message...`
 export const messages_today = () => `Today`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2194,6 +3012,9 @@ export const messages_today = () => `Today`
 export const messages_now = () => `now`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2202,6 +3023,9 @@ export const messages_now = () => `now`
 export const messages_sent = () => `Sent`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2210,6 +3034,9 @@ export const messages_sent = () => `Sent`
 export const messages_read = () => `Read`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2218,6 +3045,9 @@ export const messages_read = () => `Read`
 export const messages_activeNow = () => `Active now`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2226,6 +3056,9 @@ export const messages_activeNow = () => `Active now`
 export const messages_makeOffer = () => `Make Offer`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2234,6 +3067,9 @@ export const messages_makeOffer = () => `Make Offer`
 export const messages_bundle = () => `Bundle`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2242,6 +3078,9 @@ export const messages_bundle = () => `Bundle`
 export const messages_location = () => `Location`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2250,6 +3089,9 @@ export const messages_location = () => `Location`
 export const messages_photo = () => `Photo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2258,6 +3100,9 @@ export const messages_photo = () => `Photo`
 export const messages_selectConversation = () => `Select a conversation`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2266,6 +3111,9 @@ export const messages_selectConversation = () => `Select a conversation`
 export const messages_chooseMessage = () => `Choose a message from the list to start chatting`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2274,6 +3122,9 @@ export const messages_chooseMessage = () => `Choose a message from the list to s
 export const messages_noProducts = () => `No products - General conversation`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2282,6 +3133,9 @@ export const messages_noProducts = () => `No products - General conversation`
 export const messages_all = () => `All`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2290,6 +3144,9 @@ export const messages_all = () => `All`
 export const messages_unread = () => `Unread`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2298,6 +3155,9 @@ export const messages_unread = () => `Unread`
 export const messages_buying = () => `Buying`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2306,6 +3166,9 @@ export const messages_buying = () => `Buying`
 export const messages_selling = () => `Selling`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2314,6 +3177,9 @@ export const messages_selling = () => `Selling`
 export const messages_offers = () => `Offers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2322,6 +3188,9 @@ export const messages_offers = () => `Offers`
 export const messages_bundleOffer = () => `Bundle Offer`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2330,6 +3199,9 @@ export const messages_bundleOffer = () => `Bundle Offer`
 export const messages_acceptOffer = () => `Accept`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2338,6 +3210,9 @@ export const messages_acceptOffer = () => `Accept`
 export const messages_declineOffer = () => `Decline`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2346,6 +3221,9 @@ export const messages_declineOffer = () => `Decline`
 export const messages_counterOffer = () => `Counter`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2354,6 +3232,9 @@ export const messages_counterOffer = () => `Counter`
 export const messages_save = () => `Save`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2362,6 +3243,9 @@ export const messages_save = () => `Save`
 export const notifications_title = () => `Notifications`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2370,6 +3254,9 @@ export const notifications_title = () => `Notifications`
 export const notifications_unread = () => `unread`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2378,6 +3265,9 @@ export const notifications_unread = () => `unread`
 export const notifications_markAllRead = () => `Mark all read`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2386,6 +3276,9 @@ export const notifications_markAllRead = () => `Mark all read`
 export const notifications_noNotifications = () => `No notifications`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2394,6 +3287,9 @@ export const notifications_noNotifications = () => `No notifications`
 export const notifications_notifyWhenSomethingHappens = () => `We'll notify you when something happens`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2402,6 +3298,9 @@ export const notifications_notifyWhenSomethingHappens = () => `We'll notify you 
 export const notifications_viewAll = () => `View all notifications`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2410,6 +3309,9 @@ export const notifications_viewAll = () => `View all notifications`
 export const product_viewAll = () => `View all`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2418,6 +3320,9 @@ export const product_viewAll = () => `View all`
 export const product_today = () => `today`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2426,6 +3331,9 @@ export const product_today = () => `today`
 export const product_yesterday = () => `yesterday`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2434,6 +3342,9 @@ export const product_yesterday = () => `yesterday`
 export const product_daysAgo = () => `d ago`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2442,6 +3353,9 @@ export const product_daysAgo = () => `d ago`
 export const product_weeksAgo = () => `w ago`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2450,6 +3364,9 @@ export const product_weeksAgo = () => `w ago`
 export const product_monthsAgo = () => `mo ago`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2458,6 +3375,9 @@ export const product_monthsAgo = () => `mo ago`
 export const profile_editProfile = () => `Edit Profile`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2466,6 +3386,9 @@ export const profile_editProfile = () => `Edit Profile`
 export const profile_posts = () => `Posts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2474,6 +3397,9 @@ export const profile_posts = () => `Posts`
 export const profile_sold = () => `Sold`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2482,6 +3408,9 @@ export const profile_sold = () => `Sold`
 export const profile_sales = () => `Sales`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2490,6 +3419,9 @@ export const profile_sales = () => `Sales`
 export const profile_following = () => `Following`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2498,6 +3430,9 @@ export const profile_following = () => `Following`
 export const profile_follow = () => `Follow`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2506,6 +3441,9 @@ export const profile_follow = () => `Follow`
 export const profile_message = () => `Message`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2514,6 +3452,9 @@ export const profile_message = () => `Message`
 export const profile_joined = () => `Joined`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2522,6 +3463,9 @@ export const profile_joined = () => `Joined`
 export const profile_premium = () => `Premium`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2530,6 +3474,9 @@ export const profile_premium = () => `Premium`
 export const profile_noListingsYet = () => `No listings yet`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2538,6 +3485,9 @@ export const profile_noListingsYet = () => `No listings yet`
 export const profile_reviews = () => `Reviews`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2546,6 +3496,9 @@ export const profile_reviews = () => `Reviews`
 export const profile_noReviewsYet = () => `No reviews yet`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2554,6 +3507,9 @@ export const profile_noReviewsYet = () => `No reviews yet`
 export const profile_about = () => `About`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2562,6 +3518,9 @@ export const profile_about = () => `About`
 export const profile_sellerStats = () => `Seller Stats`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2570,6 +3529,9 @@ export const profile_sellerStats = () => `Seller Stats`
 export const profile_itemsSold = () => `Items Sold`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2578,6 +3540,9 @@ export const profile_itemsSold = () => `Items Sold`
 export const profile_rating = () => `Rating`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2586,6 +3551,9 @@ export const profile_rating = () => `Rating`
 export const profile_noRatingsYet = () => `No ratings yet`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2594,6 +3562,9 @@ export const profile_noRatingsYet = () => `No ratings yet`
 export const profile_memberSince = () => `Member Since`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2602,6 +3573,9 @@ export const profile_memberSince = () => `Member Since`
 export const profile_policies = () => `Policies`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2610,6 +3584,9 @@ export const profile_policies = () => `Policies`
 export const profile_returnPolicy = () => `14-day return policy`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2618,6 +3595,9 @@ export const profile_returnPolicy = () => `14-day return policy`
 export const profile_shipsWithin = () => `Ships within 1-2 business days`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2626,6 +3606,9 @@ export const profile_shipsWithin = () => `Ships within 1-2 business days`
 export const profile_securePayments = () => `Secure payments through Driplo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2634,6 +3617,9 @@ export const profile_securePayments = () => `Secure payments through Driplo`
 export const profile_responseTime = () => `Response time: Usually within 1 hour`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2642,6 +3628,9 @@ export const profile_responseTime = () => `Response time: Usually within 1 hour`
 export const profile_anonymous = () => `Anonymous`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2650,6 +3639,9 @@ export const profile_anonymous = () => `Anonymous`
 export const profile_cancel = () => `Cancel`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2658,6 +3650,9 @@ export const profile_cancel = () => `Cancel`
 export const profile_avatar = () => `Avatar`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2666,6 +3661,9 @@ export const profile_avatar = () => `Avatar`
 export const profile_username = () => `Username`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2674,6 +3672,9 @@ export const profile_username = () => `Username`
 export const profile_fullName = () => `Full Name`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2682,6 +3683,9 @@ export const profile_fullName = () => `Full Name`
 export const profile_bio = () => `Bio`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2690,6 +3694,9 @@ export const profile_bio = () => `Bio`
 export const profile_tellPeopleAboutYourself = () => `Tell people about yourself...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2698,6 +3705,9 @@ export const profile_tellPeopleAboutYourself = () => `Tell people about yourself
 export const profile_location = () => `Location`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2706,6 +3716,9 @@ export const profile_location = () => `Location`
 export const profile_socialLinks = () => `Social Links`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2714,6 +3727,9 @@ export const profile_socialLinks = () => `Social Links`
 export const profile_addLink = () => `Add Link`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2722,6 +3738,9 @@ export const profile_addLink = () => `Add Link`
 export const profile_instagram = () => `Instagram`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2730,6 +3749,9 @@ export const profile_instagram = () => `Instagram`
 export const profile_tiktok = () => `TikTok`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2738,6 +3760,9 @@ export const profile_tiktok = () => `TikTok`
 export const profile_website = () => `Website`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2746,6 +3771,9 @@ export const profile_website = () => `Website`
 export const profile_url = () => `URL`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2754,6 +3782,9 @@ export const profile_url = () => `URL`
 export const profile_saveProfile = () => `Save Profile`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2762,6 +3793,9 @@ export const profile_saveProfile = () => `Save Profile`
 export const profile_saving = () => `Saving...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2770,6 +3804,9 @@ export const profile_saving = () => `Saving...`
 export const profile_yourUsername = () => `Your username`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2778,6 +3815,9 @@ export const profile_yourUsername = () => `Your username`
 export const profile_yourFullName = () => `Your full name`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2786,6 +3826,9 @@ export const profile_yourFullName = () => `Your full name`
 export const profile_yourLocation = () => `Your location`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2794,6 +3837,9 @@ export const profile_yourLocation = () => `Your location`
 export const profile_yourAvatar = () => `Your Avatar`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2802,6 +3848,9 @@ export const profile_yourAvatar = () => `Your Avatar`
 export const onboarding_welcomeBrand = () => `Welcome to Driplo Business! 🏢`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2810,6 +3859,9 @@ export const onboarding_welcomeBrand = () => `Welcome to Driplo Business! 🏢`
 export const onboarding_welcomePersonal = () => `Welcome to Driplo! 🎉`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2818,6 +3870,9 @@ export const onboarding_welcomePersonal = () => `Welcome to Driplo! 🎉`
 export const onboarding_profileComplete = () => `Your profile is now complete and verified. You're ready to start buying and selling amazing fashion items!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2826,6 +3881,9 @@ export const onboarding_profileComplete = () => `Your profile is now complete an
 export const onboarding_brandProfileComplete = () => `Your brand profile is set up! To activate full brand features and verification badge, you'll need to subscribe to our Brand plan from your dashboard.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2834,6 +3892,9 @@ export const onboarding_brandProfileComplete = () => `Your brand profile is set 
 export const onboarding_brandProfileSetup = () => `Brand Profile Setup`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2842,6 +3903,9 @@ export const onboarding_brandProfileSetup = () => `Brand Profile Setup`
 export const onboarding_popular = () => `Popular`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2850,6 +3914,9 @@ export const onboarding_popular = () => `Popular`
 export const onboarding_personalAccount = () => `Personal Account`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2858,6 +3925,9 @@ export const onboarding_personalAccount = () => `Personal Account`
 export const onboarding_personalAccountDesc = () => `Perfect for individual sellers and casual users`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2866,6 +3936,9 @@ export const onboarding_personalAccountDesc = () => `Perfect for individual sell
 export const onboarding_personalFeature1 = () => `List up to 50 items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2874,6 +3947,9 @@ export const onboarding_personalFeature1 = () => `List up to 50 items`
 export const onboarding_personalFeature2 = () => `Basic seller tools`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2882,6 +3958,9 @@ export const onboarding_personalFeature2 = () => `Basic seller tools`
 export const onboarding_personalFeature3 = () => `Standard support`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2890,6 +3969,9 @@ export const onboarding_personalFeature3 = () => `Standard support`
 export const onboarding_personalFeature4 = () => `Community access`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2898,6 +3980,9 @@ export const onboarding_personalFeature4 = () => `Community access`
 export const onboarding_brandAccount = () => `Brand Account`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2906,6 +3991,9 @@ export const onboarding_brandAccount = () => `Brand Account`
 export const onboarding_brandAccountDesc = () => `Ideal for businesses and professional sellers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2914,6 +4002,9 @@ export const onboarding_brandAccountDesc = () => `Ideal for businesses and profe
 export const onboarding_brandFeature1 = () => `Unlimited listings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2922,6 +4013,9 @@ export const onboarding_brandFeature1 = () => `Unlimited listings`
 export const onboarding_brandFeature2 = () => `Advanced analytics`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2930,6 +4024,9 @@ export const onboarding_brandFeature2 = () => `Advanced analytics`
 export const onboarding_brandFeature3 = () => `Priority support`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2938,6 +4035,9 @@ export const onboarding_brandFeature3 = () => `Priority support`
 export const onboarding_brandFeature4 = () => `Verification badge`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2946,6 +4046,9 @@ export const onboarding_brandFeature4 = () => `Verification badge`
 export const onboarding_free = () => `Free`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2954,6 +4057,9 @@ export const onboarding_free = () => `Free`
 export const onboarding_perMonth = () => `per month`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2962,6 +4068,9 @@ export const onboarding_perMonth = () => `per month`
 export const onboarding_selected = () => `Selected`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2970,6 +4079,9 @@ export const onboarding_selected = () => `Selected`
 export const onboarding_select = () => `Select`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2978,6 +4090,9 @@ export const onboarding_select = () => `Select`
 export const onboarding_profileCreated = () => `Profile Created`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2986,6 +4101,9 @@ export const onboarding_profileCreated = () => `Profile Created`
 export const onboarding_profileVerified = () => `Profile Verified`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -2994,6 +4112,9 @@ export const onboarding_profileVerified = () => `Profile Verified`
 export const onboarding_brandPending = () => `Brand Pending`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3002,6 +4123,9 @@ export const onboarding_brandPending = () => `Brand Pending`
 export const onboarding_paymentReady = () => `Payment Ready`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3010,6 +4134,9 @@ export const onboarding_paymentReady = () => `Payment Ready`
 export const onboarding_startExploring = () => `Start Exploring`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3018,6 +4145,9 @@ export const onboarding_startExploring = () => `Start Exploring`
 export const onboarding_goToDashboard = () => `Go to Dashboard & Subscribe`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3026,6 +4156,9 @@ export const onboarding_goToDashboard = () => `Go to Dashboard & Subscribe`
 export const onboarding_brandSetupComplete = () => `Your brand profile is set up! To activate full brand features and verification badge, you'll need to subscribe to our Brand plan from your dashboard.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3034,6 +4167,9 @@ export const onboarding_brandSetupComplete = () => `Your brand profile is set up
 export const onboarding_discover = () => `Discover Quality Fashion`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3042,6 +4178,9 @@ export const onboarding_discover = () => `Discover Quality Fashion`
 export const onboarding_discoverDesc = () => `Browse curated items from verified sellers. Find authentic pieces, designer brands, and unique vintage items.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3050,6 +4189,9 @@ export const onboarding_discoverDesc = () => `Browse curated items from verified
 export const onboarding_sell = () => `Sell with Confidence`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3058,6 +4200,9 @@ export const onboarding_sell = () => `Sell with Confidence`
 export const onboarding_sellDesc = () => `List your items quickly with our simple tools. Secure payments, buyer protection, and transparent fees.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3066,6 +4211,9 @@ export const onboarding_sellDesc = () => `List your items quickly with our simpl
 export const onboarding_ready = () => `Ready to Start`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3074,6 +4222,9 @@ export const onboarding_ready = () => `Ready to Start`
 export const onboarding_readyDesc = () => `Complete your profile setup to start buying and selling. Your secure marketplace experience begins now.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3082,6 +4233,9 @@ export const onboarding_readyDesc = () => `Complete your profile setup to start 
 export const onboarding_back = () => `Back`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3090,6 +4244,9 @@ export const onboarding_back = () => `Back`
 export const onboarding_next = () => `Next`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3098,6 +4255,9 @@ export const onboarding_next = () => `Next`
 export const onboarding_getStarted = () => `Get Started`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3106,6 +4266,9 @@ export const onboarding_getStarted = () => `Get Started`
 export const onboarding_designer = () => `Designer`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3114,6 +4277,9 @@ export const onboarding_designer = () => `Designer`
 export const onboarding_vintage = () => `Vintage`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3122,6 +4288,9 @@ export const onboarding_vintage = () => `Vintage`
 export const onboarding_trending = () => `Trending`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3130,6 +4299,9 @@ export const onboarding_trending = () => `Trending`
 export const onboarding_totalSales = () => `Total Sales`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3138,6 +4310,9 @@ export const onboarding_totalSales = () => `Total Sales`
 export const onboarding_happySellers = () => `Happy Sellers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3146,6 +4321,9 @@ export const onboarding_happySellers = () => `Happy Sellers`
 export const onboarding_trustedMarketplace = () => `The trusted marketplace for buying and selling pre-owned fashion. Join thousands of users trading quality clothing.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3154,6 +4332,9 @@ export const onboarding_trustedMarketplace = () => `The trusted marketplace for 
 export const onboarding_chooseAccountType = () => `Choose Your Account Type`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3162,6 +4343,9 @@ export const onboarding_chooseAccountType = () => `Choose Your Account Type`
 export const onboarding_selectPerfectPlan = () => `Select the perfect plan for your selling journey`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3170,6 +4354,9 @@ export const onboarding_selectPerfectPlan = () => `Select the perfect plan for y
 export const onboarding_createProfile = () => `Create Your Profile`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3178,6 +4365,9 @@ export const onboarding_createProfile = () => `Create Your Profile`
 export const onboarding_tellAboutYourself = () => `Tell us a bit about yourself`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3186,6 +4376,9 @@ export const onboarding_tellAboutYourself = () => `Tell us a bit about yourself`
 export const onboarding_chooseAvatar = () => `Choose Your Avatar`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3194,6 +4387,9 @@ export const onboarding_chooseAvatar = () => `Choose Your Avatar`
 export const onboarding_pickProfilePicture = () => `Pick a profile picture that represents you`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3202,6 +4398,9 @@ export const onboarding_pickProfilePicture = () => `Pick a profile picture that 
 export const onboarding_setupPayouts = () => `Set Up Payouts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3210,6 +4409,9 @@ export const onboarding_setupPayouts = () => `Set Up Payouts`
 export const onboarding_choosePaymentMethod = () => `Choose how you'll receive payments from sales`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3218,6 +4420,9 @@ export const onboarding_choosePaymentMethod = () => `Choose how you'll receive p
 export const onboarding_connectSocials = () => `Connect Your Socials`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3226,6 +4431,9 @@ export const onboarding_connectSocials = () => `Connect Your Socials`
 export const onboarding_helpBuyersDiscover = () => `Help buyers discover your style (optional)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3234,6 +4442,9 @@ export const onboarding_helpBuyersDiscover = () => `Help buyers discover your st
 export const onboarding_chooseUniqueUsername = () => `Choose a unique username`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3242,6 +4453,9 @@ export const onboarding_chooseUniqueUsername = () => `Choose a unique username`
 export const onboarding_fullNameOptional = () => `Your full name (optional)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3250,6 +4464,9 @@ export const onboarding_fullNameOptional = () => `Your full name (optional)`
 export const onboarding_usernameMinLength = () => `Username must be at least 3 characters long`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3258,6 +4475,9 @@ export const onboarding_usernameMinLength = () => `Username must be at least 3 c
 export const onboarding_settingUp = () => `Setting up...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3266,6 +4486,9 @@ export const onboarding_settingUp = () => `Setting up...`
 export const onboarding_completeSetup = () => `Complete Setup`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3274,6 +4497,9 @@ export const onboarding_completeSetup = () => `Complete Setup`
 export const onboarding_accountTypePersonal = () => `Personal`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3282,6 +4508,9 @@ export const onboarding_accountTypePersonal = () => `Personal`
 export const onboarding_accountTypeBrand = () => `Brand`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3290,6 +4519,9 @@ export const onboarding_accountTypeBrand = () => `Brand`
 export const sales_activity = () => `Sales Activity`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3298,6 +4530,9 @@ export const sales_activity = () => `Sales Activity`
 export const sales_newSales = () => `new`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3306,6 +4541,9 @@ export const sales_newSales = () => `new`
 export const sales_earned = () => `earned`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3314,6 +4552,9 @@ export const sales_earned = () => `earned`
 export const sales_noSalesYet = () => `No sales yet`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3322,6 +4563,9 @@ export const sales_noSalesYet = () => `No sales yet`
 export const sales_notifyWhenItemsSell = () => `We'll notify you when items sell`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3330,6 +4574,9 @@ export const sales_notifyWhenItemsSell = () => `We'll notify you when items sell
 export const sales_itemSold = () => `Item sold!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3338,6 +4585,9 @@ export const sales_itemSold = () => `Item sold!`
 export const sales_soldTo = () => `Sold to`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3346,6 +4596,9 @@ export const sales_soldTo = () => `Sold to`
 export const sales_viewOrderDetails = () => `View order details`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3354,6 +4607,9 @@ export const sales_viewOrderDetails = () => `View order details`
 export const sales_totalSales = () => `total sale`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3362,6 +4618,9 @@ export const sales_totalSales = () => `total sale`
 export const sales_totalSalesPlural = () => `total sales`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3370,6 +4629,9 @@ export const sales_totalSalesPlural = () => `total sales`
 export const sales_viewAllSales = () => `View all sales`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3378,6 +4640,9 @@ export const sales_viewAllSales = () => `View all sales`
 export const banner_earlyBird = () => `Early Bird`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3386,6 +4651,9 @@ export const banner_earlyBird = () => `Early Bird`
 export const banner_firstMonth = () => `First Month`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3394,6 +4662,9 @@ export const banner_firstMonth = () => `First Month`
 export const banner_off = () => `OFF`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3402,6 +4673,9 @@ export const banner_off = () => `OFF`
 export const banner_mostPopular = () => `Most Popular`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3410,6 +4684,9 @@ export const banner_mostPopular = () => `Most Popular`
 export const banner_business = () => `Business`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3418,6 +4695,9 @@ export const banner_business = () => `Business`
 export const banner_currentlyActive = () => `Currently Active`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3426,6 +4706,9 @@ export const banner_currentlyActive = () => `Currently Active`
 export const banner_offApplied = () => `OFF Applied`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3434,6 +4717,9 @@ export const banner_offApplied = () => `OFF Applied`
 export const banner_spotsLeft = () => `spots left`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3442,6 +4728,9 @@ export const banner_spotsLeft = () => `spots left`
 export const banner_v1Launch = () => `V1 Launch Special`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3450,6 +4739,9 @@ export const banner_v1Launch = () => `V1 Launch Special`
 export const banner_freeBoostEarly = () => `Free seller boost for early adopters`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3458,6 +4750,9 @@ export const banner_freeBoostEarly = () => `Free seller boost for early adopters
 export const banner_priorityPlacement = () => `Get priority placement & featured listings at launch • Limited time only`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3466,6 +4761,9 @@ export const banner_priorityPlacement = () => `Get priority placement & featured
 export const banner_startSelling = () => `Start Selling`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3474,6 +4772,9 @@ export const banner_startSelling = () => `Start Selling`
 export const banner_startSellingFree = () => `Start Selling Free`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3482,6 +4783,9 @@ export const banner_startSellingFree = () => `Start Selling Free`
 export const banner_welcomeToDriplo = () => `DRIPLO`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3490,6 +4794,9 @@ export const banner_welcomeToDriplo = () => `DRIPLO`
 export const banner_joinCommunity = () => `Join our community`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3498,6 +4805,9 @@ export const banner_joinCommunity = () => `Join our community`
 export const banner_sellBuySecond = () => `Sell & buy secondhand fashion`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3506,6 +4816,9 @@ export const banner_sellBuySecond = () => `Sell & buy secondhand fashion`
 export const banner_register = () => `Sign Up`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3514,6 +4827,9 @@ export const banner_register = () => `Sign Up`
 export const banner_recentListings = () => `Recent Listings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3522,6 +4838,9 @@ export const banner_recentListings = () => `Recent Listings`
 export const banner_live = () => `Live`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3530,6 +4849,9 @@ export const banner_live = () => `Live`
 export const banner_justAdded = () => `just added`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3538,6 +4860,9 @@ export const banner_justAdded = () => `just added`
 export const banner_viewProduct = () => `View`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3546,6 +4871,9 @@ export const banner_viewProduct = () => `View`
 export const banner_by = () => `by`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3554,6 +4882,9 @@ export const banner_by = () => `by`
 export const banner_close = () => `Close banner`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3562,6 +4893,9 @@ export const banner_close = () => `Close banner`
 export const promoted_hotPicks = () => `Hot picks today`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3570,6 +4904,9 @@ export const promoted_hotPicks = () => `Hot picks today`
 export const promoted_premiumSellers = () => `Premium sellers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3578,6 +4915,9 @@ export const promoted_premiumSellers = () => `Premium sellers`
 export const checkout_checkout = () => `Checkout`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3586,6 +4926,9 @@ export const checkout_checkout = () => `Checkout`
 export const checkout_completePurchase = () => `Complete your purchase securely`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3594,6 +4937,9 @@ export const checkout_completePurchase = () => `Complete your purchase securely`
 export const checkout_paymentDetails = () => `Payment Details`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3602,6 +4948,9 @@ export const checkout_paymentDetails = () => `Payment Details`
 export const checkout_initializingPayment = () => `Initializing payment...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3610,6 +4959,9 @@ export const checkout_initializingPayment = () => `Initializing payment...`
 export const checkout_processing = () => `Processing...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3618,6 +4970,9 @@ export const checkout_processing = () => `Processing...`
 export const checkout_completePurchaseButton = () => `Complete Purchase`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3626,6 +4981,9 @@ export const checkout_completePurchaseButton = () => `Complete Purchase`
 export const checkout_orderSummary = () => `Order Summary`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3634,6 +4992,9 @@ export const checkout_orderSummary = () => `Order Summary`
 export const checkout_serviceFee = () => `Service fee`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3642,6 +5003,9 @@ export const checkout_serviceFee = () => `Service fee`
 export const checkout_pay = () => `Pay`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3650,6 +5014,9 @@ export const checkout_pay = () => `Pay`
 export const checkout_paymentSystemNotInitialized = () => `Payment system not initialized`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3658,6 +5025,9 @@ export const checkout_paymentSystemNotInitialized = () => `Payment system not in
 export const checkout_paymentFailed = () => `Payment failed`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3666,6 +5036,9 @@ export const checkout_paymentFailed = () => `Payment failed`
 export const checkout_paymentSuccessful = () => `Payment Successful!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3674,6 +5047,9 @@ export const checkout_paymentSuccessful = () => `Payment Successful!`
 export const checkout_paymentSuccessfulDesc = () => `Thank you for your purchase. Your order has been confirmed and the seller has been notified.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3682,6 +5058,9 @@ export const checkout_paymentSuccessfulDesc = () => `Thank you for your purchase
 export const checkout_paymentReference = () => `Payment Reference`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3690,6 +5069,9 @@ export const checkout_paymentReference = () => `Payment Reference`
 export const checkout_viewYourOrders = () => `View Your Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3698,6 +5080,9 @@ export const checkout_viewYourOrders = () => `View Your Orders`
 export const checkout_continueShopping = () => `Continue Shopping`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3706,6 +5091,9 @@ export const checkout_continueShopping = () => `Continue Shopping`
 export const checkout_emailConfirmation = () => `You'll receive an email confirmation shortly with your order details.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3714,6 +5102,9 @@ export const checkout_emailConfirmation = () => `You'll receive an email confirm
 export const search_itemsFound = () => `items found`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3722,6 +5113,9 @@ export const search_itemsFound = () => `items found`
 export const search_for = () => `for`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3730,6 +5124,9 @@ export const search_for = () => `for`
 export const search_filters = () => `Filters`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3738,6 +5135,9 @@ export const search_filters = () => `Filters`
 export const search_quickFilters = () => `Quick Filters`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3746,6 +5146,9 @@ export const search_quickFilters = () => `Quick Filters`
 export const search_size = () => `Size`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3754,6 +5157,9 @@ export const search_size = () => `Size`
 export const search_brand = () => `Brand`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3762,6 +5168,9 @@ export const search_brand = () => `Brand`
 export const search_condition = () => `Condition`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3770,6 +5179,9 @@ export const search_condition = () => `Condition`
 export const search_priceRange = () => `Price Range`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3778,6 +5190,9 @@ export const search_priceRange = () => `Price Range`
 export const search_allBrands = () => `All Brands`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3786,6 +5201,9 @@ export const search_allBrands = () => `All Brands`
 export const search_allConditions = () => `All Conditions`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3794,6 +5212,9 @@ export const search_allConditions = () => `All Conditions`
 export const search_clearAll = () => `Clear All`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3802,6 +5223,9 @@ export const search_clearAll = () => `Clear All`
 export const search_applyFilters = () => `Apply Filters`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3810,6 +5234,9 @@ export const search_applyFilters = () => `Apply Filters`
 export const search_back = () => `Back`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3818,6 +5245,9 @@ export const search_back = () => `Back`
 export const search_noItemsFound = () => `No items found`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3826,6 +5256,9 @@ export const search_noItemsFound = () => `No items found`
 export const search_adjustFilters = () => `Try adjusting your filters or search terms`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3834,6 +5267,9 @@ export const search_adjustFilters = () => `Try adjusting your filters or search 
 export const search_clearAllFilters = () => `Clear all`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3842,6 +5278,9 @@ export const search_clearAllFilters = () => `Clear all`
 export const search_min = () => `Min`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3850,6 +5289,9 @@ export const search_min = () => `Min`
 export const search_max = () => `Max`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3858,6 +5300,9 @@ export const search_max = () => `Max`
 export const search_relevance = () => `Relevance`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3866,6 +5311,9 @@ export const search_relevance = () => `Relevance`
 export const search_newestFirst = () => `Newest first`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3874,6 +5322,9 @@ export const search_newestFirst = () => `Newest first`
 export const search_priceLowToHigh = () => `Price: Low to High`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3882,6 +5333,9 @@ export const search_priceLowToHigh = () => `Price: Low to High`
 export const search_priceHighToLow = () => `Price: High to Low`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3890,6 +5344,9 @@ export const search_priceHighToLow = () => `Price: High to Low`
 export const sell_includes = () => `includes`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3898,6 +5355,9 @@ export const sell_includes = () => `includes`
 export const sell_selected = () => `selected`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3906,6 +5366,9 @@ export const sell_selected = () => `selected`
 export const sell_accessoriesList = () => `accessories list`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3914,6 +5377,9 @@ export const sell_accessoriesList = () => `accessories list`
 export const sell_categoryTitle = () => `Choose Category`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3922,6 +5388,9 @@ export const sell_categoryTitle = () => `Choose Category`
 export const sell_categoryDescription = () => `Select the category that best describes your item`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3930,6 +5399,9 @@ export const sell_categoryDescription = () => `Select the category that best des
 export const sell_beMoreSpecific = () => `Be more specific`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3938,6 +5410,9 @@ export const sell_beMoreSpecific = () => `Be more specific`
 export const sell_optional = () => `(optional)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3946,6 +5421,9 @@ export const sell_optional = () => `(optional)`
 export const sell_typeCategoryPlaceholder = () => `Type category...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3954,6 +5432,9 @@ export const sell_typeCategoryPlaceholder = () => `Type category...`
 export const sell_moreTag = () => `more`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3962,6 +5443,9 @@ export const sell_moreTag = () => `more`
 export const filter_under20 = () => `Under $20`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3970,6 +5454,9 @@ export const filter_under20 = () => `Under $20`
 export const filter_newToday = () => `New Today`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3978,6 +5465,9 @@ export const filter_newToday = () => `New Today`
 export const filter_freeShipping = () => `Free Shipping`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3986,6 +5476,9 @@ export const filter_freeShipping = () => `Free Shipping`
 export const condition_new = () => `New`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -3994,6 +5487,9 @@ export const condition_new = () => `New`
 export const condition_likeNew = () => `Like New`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4002,6 +5498,9 @@ export const condition_likeNew = () => `Like New`
 export const condition_good = () => `Good`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4010,6 +5509,9 @@ export const condition_good = () => `Good`
 export const condition_fair = () => `Fair`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4018,6 +5520,9 @@ export const condition_fair = () => `Fair`
 export const condition_newWithTags = () => `New with tags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4026,6 +5531,9 @@ export const condition_newWithTags = () => `New with tags`
 export const subcategory_dresses = () => `Dresses`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4034,6 +5542,9 @@ export const subcategory_dresses = () => `Dresses`
 export const subcategory_tops = () => `Tops`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4042,6 +5553,9 @@ export const subcategory_tops = () => `Tops`
 export const subcategory_jeans = () => `Jeans`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4050,6 +5564,9 @@ export const subcategory_jeans = () => `Jeans`
 export const subcategory_skirts = () => `Skirts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4058,6 +5575,9 @@ export const subcategory_skirts = () => `Skirts`
 export const subcategory_jackets = () => `Jackets`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4066,6 +5586,9 @@ export const subcategory_jackets = () => `Jackets`
 export const subcategory_accessories = () => `Accessories`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4074,6 +5597,9 @@ export const subcategory_accessories = () => `Accessories`
 export const subcategory_tshirts = () => `T-Shirts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4082,6 +5608,9 @@ export const subcategory_tshirts = () => `T-Shirts`
 export const subcategory_shirts = () => `Shirts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4090,6 +5619,9 @@ export const subcategory_shirts = () => `Shirts`
 export const subcategory_suits = () => `Suits`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4098,6 +5630,9 @@ export const subcategory_suits = () => `Suits`
 export const subcategory_watches = () => `Watches`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4106,6 +5641,9 @@ export const subcategory_watches = () => `Watches`
 export const subcategory_baby = () => `Baby (0-2)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4114,6 +5652,9 @@ export const subcategory_baby = () => `Baby (0-2)`
 export const subcategory_girls2to8 = () => `Girls (2-8)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4122,6 +5663,9 @@ export const subcategory_girls2to8 = () => `Girls (2-8)`
 export const subcategory_boys2to8 = () => `Boys (2-8)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4130,6 +5674,9 @@ export const subcategory_boys2to8 = () => `Boys (2-8)`
 export const subcategory_girls9to16 = () => `Girls (9-16)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4138,6 +5685,9 @@ export const subcategory_girls9to16 = () => `Girls (9-16)`
 export const subcategory_boys9to16 = () => `Boys (9-16)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4146,6 +5696,9 @@ export const subcategory_boys9to16 = () => `Boys (9-16)`
 export const subcategory_school = () => `School`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4154,6 +5707,9 @@ export const subcategory_school = () => `School`
 export const subcategory_toys = () => `Toys`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4162,6 +5718,9 @@ export const subcategory_toys = () => `Toys`
 export const subcategory_dogApparel = () => `Dog Apparel`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4170,6 +5729,9 @@ export const subcategory_dogApparel = () => `Dog Apparel`
 export const subcategory_catAccessories = () => `Cat Accessories`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4178,6 +5740,9 @@ export const subcategory_catAccessories = () => `Cat Accessories`
 export const subcategory_petToys = () => `Pet Toys`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4186,6 +5751,9 @@ export const subcategory_petToys = () => `Pet Toys`
 export const subcategory_leashes = () => `Leashes`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4194,6 +5762,9 @@ export const subcategory_leashes = () => `Leashes`
 export const subcategory_beds = () => `Beds`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4202,6 +5773,9 @@ export const subcategory_beds = () => `Beds`
 export const subcategory_foodBowls = () => `Food Bowls`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4210,6 +5784,9 @@ export const subcategory_foodBowls = () => `Food Bowls`
 export const subcategory_carriers = () => `Carriers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4218,6 +5795,9 @@ export const subcategory_carriers = () => `Carriers`
 export const subcategory_sneakers = () => `Sneakers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4226,6 +5806,9 @@ export const subcategory_sneakers = () => `Sneakers`
 export const subcategory_boots = () => `Boots`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4234,6 +5817,9 @@ export const subcategory_boots = () => `Boots`
 export const subcategory_heels = () => `Heels`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4242,6 +5828,9 @@ export const subcategory_heels = () => `Heels`
 export const subcategory_flats = () => `Flats`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4250,6 +5839,9 @@ export const subcategory_flats = () => `Flats`
 export const subcategory_sandals = () => `Sandals`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4258,6 +5850,9 @@ export const subcategory_sandals = () => `Sandals`
 export const subcategory_athletic = () => `Athletic`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4266,6 +5861,9 @@ export const subcategory_athletic = () => `Athletic`
 export const subcategory_dressShoes = () => `Dress Shoes`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4274,6 +5872,9 @@ export const subcategory_dressShoes = () => `Dress Shoes`
 export const subcategory_handbags = () => `Handbags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4282,6 +5883,9 @@ export const subcategory_handbags = () => `Handbags`
 export const subcategory_backpacks = () => `Backpacks`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4290,6 +5894,9 @@ export const subcategory_backpacks = () => `Backpacks`
 export const subcategory_totes = () => `Totes`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4298,6 +5905,9 @@ export const subcategory_totes = () => `Totes`
 export const subcategory_clutches = () => `Clutches`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4306,6 +5916,9 @@ export const subcategory_clutches = () => `Clutches`
 export const subcategory_crossbody = () => `Crossbody`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4314,6 +5927,9 @@ export const subcategory_crossbody = () => `Crossbody`
 export const subcategory_travel = () => `Travel`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4322,6 +5938,9 @@ export const subcategory_travel = () => `Travel`
 export const subcategory_laptopBags = () => `Laptop Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4330,6 +5949,9 @@ export const subcategory_laptopBags = () => `Laptop Bags`
 export const subcategory_decor = () => `Decor`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4338,6 +5960,9 @@ export const subcategory_decor = () => `Decor`
 export const subcategory_bedding = () => `Bedding`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4346,6 +5971,9 @@ export const subcategory_bedding = () => `Bedding`
 export const subcategory_kitchen = () => `Kitchen`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4354,6 +5982,9 @@ export const subcategory_kitchen = () => `Kitchen`
 export const subcategory_lighting = () => `Lighting`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4362,6 +5993,9 @@ export const subcategory_lighting = () => `Lighting`
 export const subcategory_storage = () => `Storage`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4370,6 +6004,9 @@ export const subcategory_storage = () => `Storage`
 export const subcategory_garden = () => `Garden`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4378,6 +6015,9 @@ export const subcategory_garden = () => `Garden`
 export const subcategory_art = () => `Art`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4386,6 +6026,9 @@ export const subcategory_art = () => `Art`
 export const subcategory_textiles = () => `Textiles`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4394,6 +6037,9 @@ export const subcategory_textiles = () => `Textiles`
 export const subcategory_makeup = () => `Makeup`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4402,6 +6048,9 @@ export const subcategory_makeup = () => `Makeup`
 export const subcategory_skincare = () => `Skincare`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4410,6 +6059,9 @@ export const subcategory_skincare = () => `Skincare`
 export const subcategory_fragrance = () => `Fragrance`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4418,6 +6070,9 @@ export const subcategory_fragrance = () => `Fragrance`
 export const subcategory_hairCare = () => `Hair Care`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4426,6 +6081,9 @@ export const subcategory_hairCare = () => `Hair Care`
 export const subcategory_tools = () => `Tools`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4434,6 +6092,9 @@ export const subcategory_tools = () => `Tools`
 export const subcategory_nails = () => `Nails`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4442,6 +6103,9 @@ export const subcategory_nails = () => `Nails`
 export const subcategory_bathBody = () => `Bath & Body`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4450,6 +6114,9 @@ export const subcategory_bathBody = () => `Bath & Body`
 export const subcategory_sets = () => `Sets`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4458,6 +6125,9 @@ export const subcategory_sets = () => `Sets`
 export const home_searchSuggestions_vintageJackets = () => `Vintage jackets`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4466,6 +6136,9 @@ export const home_searchSuggestions_vintageJackets = () => `Vintage jackets`
 export const home_searchSuggestions_designerBags = () => `Designer bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4474,6 +6147,9 @@ export const home_searchSuggestions_designerBags = () => `Designer bags`
 export const home_searchSuggestions_summerDresses = () => `Summer dresses`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4482,6 +6158,9 @@ export const home_searchSuggestions_summerDresses = () => `Summer dresses`
 export const home_searchSuggestions_sneakers = () => `Sneakers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4490,6 +6169,9 @@ export const home_searchSuggestions_sneakers = () => `Sneakers`
 export const home_trending_vintageJackets = () => `Vintage jackets`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4498,6 +6180,9 @@ export const home_trending_vintageJackets = () => `Vintage jackets`
 export const home_trending_y2kJeans = () => `Y2K jeans`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4506,6 +6191,9 @@ export const home_trending_y2kJeans = () => `Y2K jeans`
 export const home_trending_designerBagsUnder100 = () => `Designer bags under $100`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4514,6 +6202,9 @@ export const home_trending_designerBagsUnder100 = () => `Designer bags under $10
 export const home_browseAll = () => `Browse all items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4522,6 +6213,9 @@ export const home_browseAll = () => `Browse all items`
 export const seller_premiumSeller = () => `Premium Seller`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4530,6 +6224,9 @@ export const seller_premiumSeller = () => `Premium Seller`
 export const seller_premiumSellerDescription = () => `Premium seller with exclusive items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4538,6 +6235,9 @@ export const seller_premiumSellerDescription = () => `Premium seller with exclus
 export const sell_listItem = () => `List an Item`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4546,6 +6246,9 @@ export const sell_listItem = () => `List an Item`
 export const sell_saveDraft = () => `Save Draft`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4554,6 +6257,9 @@ export const sell_saveDraft = () => `Save Draft`
 export const sell_photosAndDetails = () => `Photos & Details`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4562,6 +6268,9 @@ export const sell_photosAndDetails = () => `Photos & Details`
 export const sell_productInfo = () => `Product Info`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4570,6 +6279,9 @@ export const sell_productInfo = () => `Product Info`
 export const sell_priceAndPublish = () => `Price & Publish`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4578,6 +6290,9 @@ export const sell_priceAndPublish = () => `Price & Publish`
 export const sell_photos = () => `Photos`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4586,6 +6301,9 @@ export const sell_photos = () => `Photos`
 export const sell_add = () => `Add`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4594,6 +6312,9 @@ export const sell_add = () => `Add`
 export const sell_cover = () => `Cover`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4602,6 +6323,9 @@ export const sell_cover = () => `Cover`
 export const sell_title = () => `Title`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4610,6 +6334,9 @@ export const sell_title = () => `Title`
 export const sell_titlePlaceholder = () => `e.g. Vintage Levi's Denim Jacket`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4618,6 +6345,9 @@ export const sell_titlePlaceholder = () => `e.g. Vintage Levi's Denim Jacket`
 export const sell_description = () => `Description`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4626,6 +6356,9 @@ export const sell_description = () => `Description`
 export const sell_descriptionPlaceholder = () => `Describe your item...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4634,6 +6367,9 @@ export const sell_descriptionPlaceholder = () => `Describe your item...`
 export const sell_category = () => `Category`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4642,6 +6378,9 @@ export const sell_category = () => `Category`
 export const sell_selectCategory = () => `Select category`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4650,6 +6389,9 @@ export const sell_selectCategory = () => `Select category`
 export const sell_subcategory = () => `Subcategory`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4658,6 +6400,9 @@ export const sell_subcategory = () => `Subcategory`
 export const sell_selectSubcategory = () => `Select subcategory`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4666,6 +6411,9 @@ export const sell_selectSubcategory = () => `Select subcategory`
 export const sell_brand = () => `Brand`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4674,6 +6422,9 @@ export const sell_brand = () => `Brand`
 export const sell_enterBrandName = () => `Enter brand name`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4682,6 +6433,9 @@ export const sell_enterBrandName = () => `Enter brand name`
 export const sell_size = () => `Size`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4690,6 +6444,9 @@ export const sell_size = () => `Size`
 export const sell_selectSize = () => `Select size`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4698,6 +6455,9 @@ export const sell_selectSize = () => `Select size`
 export const sell_condition = () => `Condition`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4706,6 +6466,9 @@ export const sell_condition = () => `Condition`
 export const sell_selectCondition = () => `Select condition`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4714,6 +6477,9 @@ export const sell_selectCondition = () => `Select condition`
 export const sell_color = () => `Color`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4722,6 +6488,9 @@ export const sell_color = () => `Color`
 export const sell_selectColor = () => `Select color`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4730,6 +6499,9 @@ export const sell_selectColor = () => `Select color`
 export const sell_material = () => `Material`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4738,6 +6510,9 @@ export const sell_material = () => `Material`
 export const sell_selectMaterial = () => `Select material`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4746,6 +6521,9 @@ export const sell_selectMaterial = () => `Select material`
 export const sell_price = () => `Price`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4754,6 +6532,9 @@ export const sell_price = () => `Price`
 export const sell_shippingPrice = () => `Shipping Price`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4762,6 +6543,9 @@ export const sell_shippingPrice = () => `Shipping Price`
 export const sell_tags = () => `Tags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4770,6 +6554,9 @@ export const sell_tags = () => `Tags`
 export const sell_addTag = () => `Add Tag`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4778,6 +6565,9 @@ export const sell_addTag = () => `Add Tag`
 export const sell_premiumBoost = () => `Premium Boost`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4786,6 +6576,9 @@ export const sell_premiumBoost = () => `Premium Boost`
 export const sell_boostYourListing = () => `Boost your listing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4794,6 +6587,9 @@ export const sell_boostYourListing = () => `Boost your listing`
 export const sell_boostDescription = () => `Get 3x more visibility for 7 days`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4802,6 +6598,9 @@ export const sell_boostDescription = () => `Get 3x more visibility for 7 days`
 export const sell_publish = () => `Publish`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4810,6 +6609,9 @@ export const sell_publish = () => `Publish`
 export const sell_publishing = () => `Publishing...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4818,6 +6620,9 @@ export const sell_publishing = () => `Publishing...`
 export const sell_brandSubscriptionRequired = () => `Brand Subscription Required`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4826,6 +6631,9 @@ export const sell_brandSubscriptionRequired = () => `Brand Subscription Required
 export const sell_brandSubscriptionDescription = () => `To list products as a business account, you need an active Brand subscription.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4834,6 +6642,9 @@ export const sell_brandSubscriptionDescription = () => `To list products as a bu
 export const sell_brandPlanFeatures = () => `Brand Plan Features:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4842,6 +6653,9 @@ export const sell_brandPlanFeatures = () => `Brand Plan Features:`
 export const sell_listUnlimitedProducts = () => `List unlimited products`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4850,6 +6664,9 @@ export const sell_listUnlimitedProducts = () => `List unlimited products`
 export const sell_brandVerificationBadge = () => `Brand verification badge`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4858,6 +6675,9 @@ export const sell_brandVerificationBadge = () => `Brand verification badge`
 export const sell_businessAccountFeatures = () => `Business account features`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4866,6 +6686,9 @@ export const sell_businessAccountFeatures = () => `Business account features`
 export const sell_prioritySupport = () => `Priority support`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4874,6 +6697,9 @@ export const sell_prioritySupport = () => `Priority support`
 export const sell_subscribeToBrandPlan = () => `Subscribe to Brand Plan`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4882,6 +6708,9 @@ export const sell_subscribeToBrandPlan = () => `Subscribe to Brand Plan`
 export const sell_switchToPersonalAccount = () => `Switch to Personal Account`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4890,6 +6719,9 @@ export const sell_switchToPersonalAccount = () => `Switch to Personal Account`
 export const sell_uploadError = () => `Failed to upload product. Please try again.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4898,6 +6730,9 @@ export const sell_uploadError = () => `Failed to upload product. Please try agai
 export const sell_atLeastOnePhoto = () => `Please add at least one photo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4906,6 +6741,9 @@ export const sell_atLeastOnePhoto = () => `Please add at least one photo`
 export const sell_month = () => `month`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4914,6 +6752,9 @@ export const sell_month = () => `month`
 export const sell_next = () => `Next`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4922,6 +6763,9 @@ export const sell_next = () => `Next`
 export const sell_previous = () => `Previous`
 
 
+
+
+	
 /**
  * @param {{ username: NonNullable<unknown> }} params
  * @returns {string}
@@ -4930,6 +6774,9 @@ export const sell_previous = () => `Previous`
 export const dashboard_welcomeBack = (params) => `Welcome back, ${params.username}!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4938,6 +6785,9 @@ export const dashboard_welcomeBack = (params) => `Welcome back, ${params.usernam
 export const dashboard_shopStatus = () => `Here's what's happening with your shop today.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4946,6 +6796,9 @@ export const dashboard_shopStatus = () => `Here's what's happening with your sho
 export const dashboard_newListing = () => `New Listing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4954,6 +6807,9 @@ export const dashboard_newListing = () => `New Listing`
 export const dashboard_soldItems = () => `Sold Items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4962,6 +6818,9 @@ export const dashboard_soldItems = () => `Sold Items`
 export const dashboard_earnings = () => `Earnings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4970,6 +6829,9 @@ export const dashboard_earnings = () => `Earnings`
 export const dashboard_upgrade = () => `Upgrade`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4978,6 +6840,9 @@ export const dashboard_upgrade = () => `Upgrade`
 export const dashboard_adminPanel = () => `Admin Panel`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4986,6 +6851,9 @@ export const dashboard_adminPanel = () => `Admin Panel`
 export const dashboard_analytics = () => `Analytics`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -4994,6 +6862,9 @@ export const dashboard_analytics = () => `Analytics`
 export const dashboard_settings = () => `Settings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5002,6 +6873,9 @@ export const dashboard_settings = () => `Settings`
 export const dashboard_availableBalance = () => `Available Balance`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5010,6 +6884,9 @@ export const dashboard_availableBalance = () => `Available Balance`
 export const dashboard_totalEarned = () => `Total earned`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5018,6 +6895,9 @@ export const dashboard_totalEarned = () => `Total earned`
 export const dashboard_monthSales = () => `This Month's Sales`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5026,6 +6906,9 @@ export const dashboard_monthSales = () => `This Month's Sales`
 export const dashboard_lastMonthIncrease = () => `+12% from last month`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5034,6 +6917,9 @@ export const dashboard_lastMonthIncrease = () => `+12% from last month`
 export const dashboard_overview = () => `Overview`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5042,6 +6928,9 @@ export const dashboard_overview = () => `Overview`
 export const dashboard_listings = () => `Listings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5050,6 +6939,9 @@ export const dashboard_listings = () => `Listings`
 export const dashboard_orders = () => `Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5058,6 +6950,9 @@ export const dashboard_orders = () => `Orders`
 export const dashboard_sales = () => `Sales`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5066,6 +6961,9 @@ export const dashboard_sales = () => `Sales`
 export const dashboard_totalRevenue = () => `Total Revenue`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5074,6 +6972,9 @@ export const dashboard_totalRevenue = () => `Total Revenue`
 export const dashboard_allTime = () => `All time`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5082,6 +6983,9 @@ export const dashboard_allTime = () => `All time`
 export const dashboard_activeListings = () => `Active Listings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5090,6 +6994,9 @@ export const dashboard_activeListings = () => `Active Listings`
 export const dashboard_currentlyLive = () => `Currently live`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5098,6 +7005,9 @@ export const dashboard_currentlyLive = () => `Currently live`
 export const dashboard_totalViews = () => `Total Views`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5106,6 +7016,9 @@ export const dashboard_totalViews = () => `Total Views`
 export const dashboard_thisMonth = () => `This month`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5114,6 +7027,9 @@ export const dashboard_thisMonth = () => `This month`
 export const dashboard_conversionRate = () => `Conversion Rate`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5122,6 +7038,9 @@ export const dashboard_conversionRate = () => `Conversion Rate`
 export const dashboard_viewsToSales = () => `Views to sales`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5130,6 +7049,9 @@ export const dashboard_viewsToSales = () => `Views to sales`
 export const dashboard_recentOrders = () => `Recent Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5138,6 +7060,9 @@ export const dashboard_recentOrders = () => `Recent Orders`
 export const dashboard_viewAll = () => `View all`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5146,6 +7071,9 @@ export const dashboard_viewAll = () => `View all`
 export const dashboard_product = () => `Product`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5154,6 +7082,9 @@ export const dashboard_product = () => `Product`
 export const dashboard_buyer = () => `Buyer`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5162,6 +7093,9 @@ export const dashboard_buyer = () => `Buyer`
 export const dashboard_price = () => `Price`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5170,6 +7104,9 @@ export const dashboard_price = () => `Price`
 export const dashboard_status = () => `Status`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5178,6 +7115,9 @@ export const dashboard_status = () => `Status`
 export const dashboard_time = () => `Time`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5186,6 +7126,9 @@ export const dashboard_time = () => `Time`
 export const dashboard_action = () => `Action`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5194,6 +7137,9 @@ export const dashboard_action = () => `Action`
 export const dashboard_view = () => `View`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5202,6 +7148,9 @@ export const dashboard_view = () => `View`
 export const dashboard_activeListingsTitle = () => `Your Active Listings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5210,6 +7159,9 @@ export const dashboard_activeListingsTitle = () => `Your Active Listings`
 export const dashboard_manageListings = () => `Manage listings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5218,6 +7170,9 @@ export const dashboard_manageListings = () => `Manage listings`
 export const dashboard_searchListings = () => `Search listings...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5226,6 +7181,9 @@ export const dashboard_searchListings = () => `Search listings...`
 export const dashboard_filter = () => `Filter`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5234,6 +7192,9 @@ export const dashboard_filter = () => `Filter`
 export const dashboard_edit = () => `Edit product`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5242,6 +7203,9 @@ export const dashboard_edit = () => `Edit product`
 export const dashboard_orderManagement = () => `Manage Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5250,6 +7214,9 @@ export const dashboard_orderManagement = () => `Manage Orders`
 export const dashboard_allOrders = () => `All Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5258,6 +7225,9 @@ export const dashboard_allOrders = () => `All Orders`
 export const dashboard_pendingShipment = () => `Pending Shipment`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5266,6 +7236,9 @@ export const dashboard_pendingShipment = () => `Pending Shipment`
 export const dashboard_shipped = () => `Shipped`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5274,6 +7247,9 @@ export const dashboard_shipped = () => `Shipped`
 export const dashboard_delivered = () => `Delivered`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5282,6 +7258,9 @@ export const dashboard_delivered = () => `Delivered`
 export const dashboard_cancelled = () => `Cancelled`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5290,6 +7269,9 @@ export const dashboard_cancelled = () => `Cancelled`
 export const dashboard_export = () => `Export`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5298,6 +7280,9 @@ export const dashboard_export = () => `Export`
 export const dashboard_orderId = () => `Order ID`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5306,6 +7291,9 @@ export const dashboard_orderId = () => `Order ID`
 export const dashboard_total = () => `Total`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5314,6 +7302,9 @@ export const dashboard_total = () => `Total`
 export const dashboard_date = () => `Date`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5322,6 +7313,9 @@ export const dashboard_date = () => `Date`
 export const dashboard_actions = () => `Actions`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5330,6 +7324,9 @@ export const dashboard_actions = () => `Actions`
 export const dashboard_ship = () => `Ship`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5338,6 +7335,9 @@ export const dashboard_ship = () => `Ship`
 export const dashboard_performanceOverview = () => `Performance Overview`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5346,6 +7346,9 @@ export const dashboard_performanceOverview = () => `Performance Overview`
 export const dashboard_chartImplemented = () => `Chart will be implemented with a charting library`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5354,6 +7357,9 @@ export const dashboard_chartImplemented = () => `Chart will be implemented with 
 export const dashboard_topPerformingProducts = () => `Top Performing Products`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5362,6 +7368,9 @@ export const dashboard_topPerformingProducts = () => `Top Performing Products`
 export const dashboard_views = () => `views`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5370,6 +7379,9 @@ export const dashboard_views = () => `views`
 export const dashboard_trafficSources = () => `Traffic Sources`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5378,6 +7390,9 @@ export const dashboard_trafficSources = () => `Traffic Sources`
 export const dashboard_search = () => `Search`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5386,6 +7401,9 @@ export const dashboard_search = () => `Search`
 export const dashboard_direct = () => `Direct`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5394,6 +7412,9 @@ export const dashboard_direct = () => `Direct`
 export const dashboard_social = () => `Social`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5402,6 +7423,9 @@ export const dashboard_social = () => `Social`
 export const dashboard_customerDemographics = () => `Customer Demographics`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5410,6 +7434,9 @@ export const dashboard_customerDemographics = () => `Customer Demographics`
 export const dashboard_age18to24 = () => `Age 18-24`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5418,6 +7445,9 @@ export const dashboard_age18to24 = () => `Age 18-24`
 export const dashboard_age25to34 = () => `Age 25-34`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5426,6 +7456,9 @@ export const dashboard_age25to34 = () => `Age 25-34`
 export const dashboard_age35to44 = () => `Age 35-44`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5434,6 +7467,9 @@ export const dashboard_age35to44 = () => `Age 35-44`
 export const dashboard_age45plus = () => `Age 45+`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5442,6 +7478,9 @@ export const dashboard_age45plus = () => `Age 45+`
 export const dashboard_shopSettings = () => `Shop Settings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5450,6 +7489,9 @@ export const dashboard_shopSettings = () => `Shop Settings`
 export const dashboard_shopName = () => `Shop Name`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5458,6 +7500,9 @@ export const dashboard_shopName = () => `Shop Name`
 export const dashboard_shopDescription = () => `Shop Description`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5466,6 +7511,9 @@ export const dashboard_shopDescription = () => `Shop Description`
 export const dashboard_shopDescriptionPlaceholder = () => `Tell buyers about your shop...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5474,6 +7522,9 @@ export const dashboard_shopDescriptionPlaceholder = () => `Tell buyers about you
 export const dashboard_vacationMode = () => `Vacation Mode`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5482,6 +7533,9 @@ export const dashboard_vacationMode = () => `Vacation Mode`
 export const dashboard_shopCurrentlyActive = () => `Your shop is currently active`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5490,6 +7544,9 @@ export const dashboard_shopCurrentlyActive = () => `Your shop is currently activ
 export const dashboard_shippingSettings = () => `Shipping Settings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5498,6 +7555,9 @@ export const dashboard_shippingSettings = () => `Shipping Settings`
 export const dashboard_processingTime = () => `Processing Time`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5506,6 +7566,9 @@ export const dashboard_processingTime = () => `Processing Time`
 export const dashboard_processingTime1to2Days = () => `1-2 business days`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5514,6 +7577,9 @@ export const dashboard_processingTime1to2Days = () => `1-2 business days`
 export const dashboard_processingTime3to5Days = () => `3-5 business days`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5522,6 +7588,9 @@ export const dashboard_processingTime3to5Days = () => `3-5 business days`
 export const dashboard_processingTime1Week = () => `1 week`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5530,6 +7599,9 @@ export const dashboard_processingTime1Week = () => `1 week`
 export const dashboard_defaultShippingPrice = () => `Default Shipping Price`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5538,6 +7610,9 @@ export const dashboard_defaultShippingPrice = () => `Default Shipping Price`
 export const dashboard_paymentSettings = () => `Payment Settings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5546,6 +7621,9 @@ export const dashboard_paymentSettings = () => `Payment Settings`
 export const dashboard_bankAccount = () => `Bank Account`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5554,6 +7632,9 @@ export const dashboard_bankAccount = () => `Bank Account`
 export const dashboard_change = () => `Change`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5562,6 +7643,9 @@ export const dashboard_change = () => `Change`
 export const dashboard_payoutSchedule = () => `Payout Schedule`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5570,6 +7654,9 @@ export const dashboard_payoutSchedule = () => `Payout Schedule`
 export const dashboard_daily = () => `Daily`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5578,6 +7665,9 @@ export const dashboard_daily = () => `Daily`
 export const dashboard_weekly = () => `Weekly`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5586,6 +7676,9 @@ export const dashboard_weekly = () => `Weekly`
 export const dashboard_monthly = () => `Monthly`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5594,6 +7687,9 @@ export const dashboard_monthly = () => `Monthly`
 export const dashboard_saveSettings = () => `Save Settings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5602,6 +7698,9 @@ export const dashboard_saveSettings = () => `Save Settings`
 export const dashboard_justNow = () => `just now`
 
 
+
+
+	
 /**
  * @param {{ minutes: NonNullable<unknown> }} params
  * @returns {string}
@@ -5610,6 +7709,9 @@ export const dashboard_justNow = () => `just now`
 export const dashboard_minutesAgo = (params) => `${params.minutes}m ago`
 
 
+
+
+	
 /**
  * @param {{ hours: NonNullable<unknown> }} params
  * @returns {string}
@@ -5618,6 +7720,9 @@ export const dashboard_minutesAgo = (params) => `${params.minutes}m ago`
 export const dashboard_hoursAgo = (params) => `${params.hours}h ago`
 
 
+
+
+	
 /**
  * @param {{ days: NonNullable<unknown> }} params
  * @returns {string}
@@ -5626,6 +7731,9 @@ export const dashboard_hoursAgo = (params) => `${params.hours}h ago`
 export const dashboard_daysAgo = (params) => `${params.days}d ago`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5634,6 +7742,9 @@ export const dashboard_daysAgo = (params) => `${params.days}d ago`
 export const admin_dashboard = () => `Dashboard Overview`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5642,6 +7753,9 @@ export const admin_dashboard = () => `Dashboard Overview`
 export const admin_monitorMetrics = () => `Monitor your platform's key metrics and activity`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5650,6 +7764,9 @@ export const admin_monitorMetrics = () => `Monitor your platform's key metrics a
 export const admin_totalUsers = () => `Total Users`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5658,6 +7775,9 @@ export const admin_totalUsers = () => `Total Users`
 export const admin_totalProducts = () => `Total Products`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5666,6 +7786,9 @@ export const admin_totalProducts = () => `Total Products`
 export const admin_totalOrders = () => `Total Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5674,6 +7797,9 @@ export const admin_totalOrders = () => `Total Orders`
 export const admin_totalRevenue = () => `Total Revenue`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5682,6 +7808,9 @@ export const admin_totalRevenue = () => `Total Revenue`
 export const admin_recentOrders = () => `Recent Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5690,6 +7819,9 @@ export const admin_recentOrders = () => `Recent Orders`
 export const admin_orderId = () => `Order ID`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5698,6 +7830,9 @@ export const admin_orderId = () => `Order ID`
 export const admin_buyer = () => `Buyer`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5706,6 +7841,9 @@ export const admin_buyer = () => `Buyer`
 export const admin_seller = () => `Seller`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5714,6 +7852,9 @@ export const admin_seller = () => `Seller`
 export const admin_amount = () => `Amount`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5722,6 +7863,9 @@ export const admin_amount = () => `Amount`
 export const admin_status = () => `Status`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5730,6 +7874,9 @@ export const admin_status = () => `Status`
 export const admin_date = () => `Date`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5738,6 +7885,9 @@ export const admin_date = () => `Date`
 export const admin_noOrders = () => `No orders yet`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5746,6 +7896,9 @@ export const admin_noOrders = () => `No orders yet`
 export const admin_managePayouts = () => `Manage Payouts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5754,6 +7907,9 @@ export const admin_managePayouts = () => `Manage Payouts`
 export const admin_viewMainSite = () => `View Main Site`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5762,6 +7918,9 @@ export const admin_viewMainSite = () => `View Main Site`
 export const admin_driploAdmin = () => `Driplo Admin`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5770,6 +7929,9 @@ export const admin_driploAdmin = () => `Driplo Admin`
 export const admin_backToSite = () => `Back to Site`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5778,6 +7940,9 @@ export const admin_backToSite = () => `Back to Site`
 export const admin_back = () => `Back`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5786,6 +7951,9 @@ export const admin_back = () => `Back`
 export const admin_payoutManagement = () => `Payout Management`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5794,6 +7962,9 @@ export const admin_payoutManagement = () => `Payout Management`
 export const admin_trackProcessPayouts = () => `Track and process seller payouts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5802,6 +7973,9 @@ export const admin_trackProcessPayouts = () => `Track and process seller payouts
 export const admin_refresh = () => `Refresh`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5810,6 +7984,9 @@ export const admin_refresh = () => `Refresh`
 export const admin_loading = () => `Loading...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5818,6 +7995,9 @@ export const admin_loading = () => `Loading...`
 export const admin_pendingPayouts = () => `Pending Payouts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5826,6 +8006,9 @@ export const admin_pendingPayouts = () => `Pending Payouts`
 export const admin_processing = () => `Processing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5834,6 +8017,9 @@ export const admin_processing = () => `Processing`
 export const admin_totalPendingAmount = () => `Total Pending Amount`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5842,6 +8028,9 @@ export const admin_totalPendingAmount = () => `Total Pending Amount`
 export const admin_platformCommission = () => `Platform Commission`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5850,6 +8039,9 @@ export const admin_platformCommission = () => `Platform Commission`
 export const admin_pending = () => `Pending`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5858,6 +8050,9 @@ export const admin_pending = () => `Pending`
 export const admin_noPendingPayouts = () => `No pending payouts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5866,6 +8061,9 @@ export const admin_noPendingPayouts = () => `No pending payouts`
 export const admin_noProcessingPayouts = () => `No processing payouts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5874,6 +8072,9 @@ export const admin_noProcessingPayouts = () => `No processing payouts`
 export const admin_payoutsAppearHere = () => `Payouts will appear here when ready for processing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5882,6 +8083,9 @@ export const admin_payoutsAppearHere = () => `Payouts will appear here when read
 export const admin_commission = () => `Commission`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5890,6 +8094,9 @@ export const admin_commission = () => `Commission`
 export const admin_delivered = () => `Delivered`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5898,6 +8105,9 @@ export const admin_delivered = () => `Delivered`
 export const admin_created = () => `Created`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5906,6 +8116,9 @@ export const admin_created = () => `Created`
 export const admin_startProcessing = () => `Start Processing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5914,6 +8127,9 @@ export const admin_startProcessing = () => `Start Processing`
 export const admin_markCompleted = () => `Mark Completed`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5922,6 +8138,9 @@ export const admin_markCompleted = () => `Mark Completed`
 export const admin_markFailed = () => `Mark Failed`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5930,6 +8149,9 @@ export const admin_markFailed = () => `Mark Failed`
 export const admin_ref = () => `Ref`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5938,6 +8160,9 @@ export const admin_ref = () => `Ref`
 export const category_all = () => `All`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5946,6 +8171,9 @@ export const category_all = () => `All`
 export const category_itemsCount = () => `items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5954,6 +8182,9 @@ export const category_itemsCount = () => `items`
 export const category_loadMore = () => `Load More Items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5962,6 +8193,9 @@ export const category_loadMore = () => `Load More Items`
 export const category_searchPlaceholder = () => `Search in category...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5970,6 +8204,9 @@ export const category_searchPlaceholder = () => `Search in category...`
 export const category_clearAll = () => `Clear all`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5978,6 +8215,9 @@ export const category_clearAll = () => `Clear all`
 export const category_filters = () => `Filters`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5986,6 +8226,9 @@ export const category_filters = () => `Filters`
 export const category_categories = () => `Categories`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -5994,6 +8237,9 @@ export const category_categories = () => `Categories`
 export const ui_scroll = () => `Scroll`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6002,6 +8248,9 @@ export const ui_scroll = () => `Scroll`
 export const onboarding_tutorial_welcomeTitle = () => `Welcome to Driplo! 👋`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6010,6 +8259,9 @@ export const onboarding_tutorial_welcomeTitle = () => `Welcome to Driplo! 👋`
 export const onboarding_tutorial_welcomeContent = () => `Everything is ready! Let us show you how to make the most of our marketplace.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6018,6 +8270,9 @@ export const onboarding_tutorial_welcomeContent = () => `Everything is ready! Le
 export const onboarding_tutorial_discoverTitle = () => `Discover amazing items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6026,6 +8281,9 @@ export const onboarding_tutorial_discoverTitle = () => `Discover amazing items`
 export const onboarding_tutorial_discoverContent = () => `Use the search bar or browse categories to discover unique clothing.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6034,6 +8292,9 @@ export const onboarding_tutorial_discoverContent = () => `Use the search bar or 
 export const onboarding_tutorial_listItemTitle = () => `Upload your first item`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6042,6 +8303,9 @@ export const onboarding_tutorial_listItemTitle = () => `Upload your first item`
 export const onboarding_tutorial_listItemContentBrand = () => `As a brand account you have access to bulk upload tools and advanced analytics.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6050,6 +8314,9 @@ export const onboarding_tutorial_listItemContentBrand = () => `As a brand accoun
 export const onboarding_tutorial_listItemContentPersonal = () => `Ready to sell? Click the '+' button to upload your first item. Add quality photos and honest descriptions.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6058,6 +8325,9 @@ export const onboarding_tutorial_listItemContentPersonal = () => `Ready to sell?
 export const onboarding_tutorial_stayConnectedTitle = () => `Stay connected`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6066,6 +8336,9 @@ export const onboarding_tutorial_stayConnectedTitle = () => `Stay connected`
 export const onboarding_tutorial_stayConnectedContent = () => `Use our messaging system to chat with buyers/sellers. Get notifications for new messages and offers.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6074,6 +8347,9 @@ export const onboarding_tutorial_stayConnectedContent = () => `Use our messaging
 export const onboarding_tutorial_readyTitle = () => `You're ready!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6082,6 +8358,9 @@ export const onboarding_tutorial_readyTitle = () => `You're ready!`
 export const onboarding_tutorial_readyContent = () => `Check your dashboard for your listings, messages, and account settings. Happy trading!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6090,6 +8369,9 @@ export const onboarding_tutorial_readyContent = () => `Check your dashboard for 
 export const close = () => `Close`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6098,6 +8380,9 @@ export const close = () => `Close`
 export const quick_buy = () => `Quick Buy`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6106,6 +8391,9 @@ export const quick_buy = () => `Quick Buy`
 export const view_details = () => `View Details`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6114,6 +8402,9 @@ export const view_details = () => `View Details`
 export const trending_item = () => `Trending Item`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6122,6 +8413,9 @@ export const trending_item = () => `Trending Item`
 export const buyer_protection = () => `Buyer Protection`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6130,6 +8424,9 @@ export const buyer_protection = () => `Buyer Protection`
 export const fast_shipping = () => `Fast Shipping`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6138,6 +8435,9 @@ export const fast_shipping = () => `Fast Shipping`
 export const size = () => `Size`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6146,6 +8446,9 @@ export const size = () => `Size`
 export const add_to_favorites = () => `Add to favorites`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6154,6 +8457,9 @@ export const add_to_favorites = () => `Add to favorites`
 export const remove_from_favorites = () => `Remove from favorites`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6162,6 +8468,9 @@ export const remove_from_favorites = () => `Remove from favorites`
 export const sell_step1 = () => `Photos`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6170,6 +8479,9 @@ export const sell_step1 = () => `Photos`
 export const sell_step2 = () => `Info`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6178,6 +8490,9 @@ export const sell_step2 = () => `Info`
 export const sell_step3 = () => `Price`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6186,6 +8501,9 @@ export const sell_step3 = () => `Price`
 export const sell_step4 = () => `Review`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6194,6 +8512,9 @@ export const sell_step4 = () => `Review`
 export const sell_uploadPhotos = () => `Upload Photos`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6202,6 +8523,9 @@ export const sell_uploadPhotos = () => `Upload Photos`
 export const sell_dragDropPhotos = () => `Drag and drop photos here or click to browse`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6210,6 +8534,9 @@ export const sell_dragDropPhotos = () => `Drag and drop photos here or click to 
 export const sell_uploadingPhoto = () => `Uploading photo...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6218,6 +8545,9 @@ export const sell_uploadingPhoto = () => `Uploading photo...`
 export const sell_uploadPhotos_description = () => `Add up to 10 photos (JPG, PNG, WEBP)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6226,6 +8556,9 @@ export const sell_uploadPhotos_description = () => `Add up to 10 photos (JPG, PN
 export const sell_setCoverPhoto = () => `Set as cover`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6234,6 +8567,9 @@ export const sell_setCoverPhoto = () => `Set as cover`
 export const sell_removePhoto = () => `Remove`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6242,6 +8578,9 @@ export const sell_removePhoto = () => `Remove`
 export const sell_titleRequired = () => `Title is required`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6250,6 +8589,9 @@ export const sell_titleRequired = () => `Title is required`
 export const sell_descriptionRequired = () => `Description is required`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6258,6 +8600,9 @@ export const sell_descriptionRequired = () => `Description is required`
 export const sell_categoryRequired = () => `Category is required`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6266,6 +8611,9 @@ export const sell_categoryRequired = () => `Category is required`
 export const sell_subcategoryRequired = () => `Subcategory is required`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6274,6 +8622,9 @@ export const sell_subcategoryRequired = () => `Subcategory is required`
 export const sell_conditionRequired = () => `Please select condition`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6282,6 +8633,9 @@ export const sell_conditionRequired = () => `Please select condition`
 export const sell_brandRequired = () => `Please select or enter brand`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6290,6 +8644,9 @@ export const sell_brandRequired = () => `Please select or enter brand`
 export const sell_sizeRequired = () => `Please select size`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6298,6 +8655,9 @@ export const sell_sizeRequired = () => `Please select size`
 export const sell_priceRequired = () => `Price is required`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6306,6 +8666,9 @@ export const sell_priceRequired = () => `Price is required`
 export const sell_shippingRequired = () => `Shipping cost is required`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6314,6 +8677,9 @@ export const sell_shippingRequired = () => `Shipping cost is required`
 export const sell_minPhotosRequired = () => `At least 1 photo is required`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6322,6 +8688,9 @@ export const sell_minPhotosRequired = () => `At least 1 photo is required`
 export const sell_maxPhotosReached = () => `Maximum 10 photos allowed`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6330,6 +8699,9 @@ export const sell_maxPhotosReached = () => `Maximum 10 photos allowed`
 export const sell_condition_brandNewWithTags = () => `New with tags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6338,6 +8710,9 @@ export const sell_condition_brandNewWithTags = () => `New with tags`
 export const sell_condition_newWithoutTags = () => `New no tags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6346,6 +8721,9 @@ export const sell_condition_newWithoutTags = () => `New no tags`
 export const sell_condition_likeNew = () => `Like new`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6354,6 +8732,9 @@ export const sell_condition_likeNew = () => `Like new`
 export const sell_condition_good = () => `Good`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6362,6 +8743,9 @@ export const sell_condition_good = () => `Good`
 export const sell_condition_worn = () => `Worn`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6370,6 +8754,9 @@ export const sell_condition_worn = () => `Worn`
 export const sell_condition_fair = () => `Fair`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6378,6 +8765,9 @@ export const sell_condition_fair = () => `Fair`
 export const sell_condition_brandNewWithTags_desc = () => `Never worn`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6386,6 +8776,9 @@ export const sell_condition_brandNewWithTags_desc = () => `Never worn`
 export const sell_condition_newWithoutTags_desc = () => `Never worn`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6394,6 +8787,9 @@ export const sell_condition_newWithoutTags_desc = () => `Never worn`
 export const sell_condition_likeNew_desc = () => `Worn 1-2x`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6402,6 +8798,9 @@ export const sell_condition_likeNew_desc = () => `Worn 1-2x`
 export const sell_condition_good_desc = () => `Minor wear`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6410,6 +8809,9 @@ export const sell_condition_good_desc = () => `Minor wear`
 export const sell_condition_worn_desc = () => `Visible wear`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6418,6 +8820,9 @@ export const sell_condition_worn_desc = () => `Visible wear`
 export const sell_condition_fair_desc = () => `Heavy wear`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6426,6 +8831,9 @@ export const sell_condition_fair_desc = () => `Heavy wear`
 export const sell_brandOther = () => `Other`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6434,6 +8842,9 @@ export const sell_brandOther = () => `Other`
 export const sell_brandCustomPlaceholder = () => `Type brand name...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6442,6 +8853,9 @@ export const sell_brandCustomPlaceholder = () => `Type brand name...`
 export const sell_colorOptional = () => `(optional)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6450,6 +8864,9 @@ export const sell_colorOptional = () => `(optional)`
 export const sell_materialOptional = () => `(optional)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6458,6 +8875,9 @@ export const sell_materialOptional = () => `(optional)`
 export const sell_colorCustomPlaceholder = () => `Or type custom color...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6466,6 +8886,9 @@ export const sell_colorCustomPlaceholder = () => `Or type custom color...`
 export const sell_materialCustomPlaceholder = () => `Or type custom material...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6474,6 +8897,9 @@ export const sell_materialCustomPlaceholder = () => `Or type custom material...`
 export const sell_summary = () => `Summary:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6482,6 +8908,9 @@ export const sell_summary = () => `Summary:`
 export const sell_estimatedEarnings = () => `Estimated Earnings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6490,6 +8919,9 @@ export const sell_estimatedEarnings = () => `Estimated Earnings`
 export const sell_listingPrice = () => `Listing Price`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6498,6 +8930,9 @@ export const sell_listingPrice = () => `Listing Price`
 export const sell_shippingCost = () => `Shipping Cost`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6506,6 +8941,9 @@ export const sell_shippingCost = () => `Shipping Cost`
 export const sell_totalBuyerPays = () => `Total Buyer Pays`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6514,6 +8952,9 @@ export const sell_totalBuyerPays = () => `Total Buyer Pays`
 export const sell_driploFee = () => `Driplo Fee (10%)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6522,6 +8963,9 @@ export const sell_driploFee = () => `Driplo Fee (10%)`
 export const sell_paymentFee = () => `Payment Processing (3%)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6530,6 +8974,9 @@ export const sell_paymentFee = () => `Payment Processing (3%)`
 export const sell_yourEarnings = () => `Your Earnings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6538,6 +8985,9 @@ export const sell_yourEarnings = () => `Your Earnings`
 export const sell_reviewListing = () => `Review Your Listing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6546,6 +8996,9 @@ export const sell_reviewListing = () => `Review Your Listing`
 export const sell_editDetails = () => `Edit Details`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6554,6 +9007,9 @@ export const sell_editDetails = () => `Edit Details`
 export const sell_confirmPublish = () => `Confirm & Publish`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6562,6 +9018,9 @@ export const sell_confirmPublish = () => `Confirm & Publish`
 export const sell_listingSuccess = () => `Your item is now live!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6570,6 +9029,9 @@ export const sell_listingSuccess = () => `Your item is now live!`
 export const sell_viewListing = () => `View Listing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6578,6 +9040,9 @@ export const sell_viewListing = () => `View Listing`
 export const sell_listAnother = () => `List Another Item`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6586,6 +9051,9 @@ export const sell_listAnother = () => `List Another Item`
 export const sell_goToDashboard = () => `Go to Dashboard`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6594,6 +9062,9 @@ export const sell_goToDashboard = () => `Go to Dashboard`
 export const sell_processingUpload = () => `Processing your listing...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6602,6 +9073,9 @@ export const sell_processingUpload = () => `Processing your listing...`
 export const sell_validationError = () => `Please complete all required fields`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6610,6 +9084,9 @@ export const sell_validationError = () => `Please complete all required fields`
 export const sell_setPricing = () => `Set Pricing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6618,6 +9095,9 @@ export const sell_setPricing = () => `Set Pricing`
 export const sell_reviewPublish = () => `Review & Publish`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6626,6 +9106,9 @@ export const sell_reviewPublish = () => `Review & Publish`
 export const sell_back = () => `Back`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6634,6 +9117,9 @@ export const sell_back = () => `Back`
 export const sell_condition_brandNewWithoutTags = () => `New without tags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6642,6 +9128,9 @@ export const sell_condition_brandNewWithoutTags = () => `New without tags`
 export const sell_condition_veryGood = () => `Very good`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6650,6 +9139,9 @@ export const sell_condition_veryGood = () => `Very good`
 export const sell_condition_satisfactory = () => `Satisfactory`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6658,6 +9150,9 @@ export const sell_condition_satisfactory = () => `Satisfactory`
 export const sell_brandPlaceholder = () => `Select or search brand...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6666,6 +9161,9 @@ export const sell_brandPlaceholder = () => `Select or search brand...`
 export const sell_other = () => `Other`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6674,6 +9172,9 @@ export const sell_other = () => `Other`
 export const sell_sizePlaceholder = () => `Select size...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6682,6 +9183,9 @@ export const sell_sizePlaceholder = () => `Select size...`
 export const sell_listingError = () => `Failed to publish. Please try again.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6690,6 +9194,9 @@ export const sell_listingError = () => `Failed to publish. Please try again.`
 export const sell_photosHint = () => `Natural light • All angles`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6698,6 +9205,9 @@ export const sell_photosHint = () => `Natural light • All angles`
 export const sell_minCharacters = () => `Min 3 characters`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6706,6 +9216,9 @@ export const sell_minCharacters = () => `Min 3 characters`
 export const sell_addBrandSize = () => `Add brand/size`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6714,6 +9227,9 @@ export const sell_addBrandSize = () => `Add brand/size`
 export const sell_good = () => `Good`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6722,6 +9238,9 @@ export const sell_good = () => `Good`
 export const sell_whoIsItFor = () => `Who's it for?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6730,6 +9249,9 @@ export const sell_whoIsItFor = () => `Who's it for?`
 export const sell_men = () => `Men`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6738,6 +9260,9 @@ export const sell_men = () => `Men`
 export const sell_women = () => `Women`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6746,6 +9271,9 @@ export const sell_women = () => `Women`
 export const sell_kids = () => `Kids`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6754,6 +9282,9 @@ export const sell_kids = () => `Kids`
 export const sell_unisex = () => `Unisex`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6762,6 +9293,9 @@ export const sell_unisex = () => `Unisex`
 export const sell_sizeGroupXSXL = () => `XS-XL`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6770,6 +9304,9 @@ export const sell_sizeGroupXSXL = () => `XS-XL`
 export const sell_sizeGroupNumbers = () => `Numbers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6778,6 +9315,9 @@ export const sell_sizeGroupNumbers = () => `Numbers`
 export const sell_sizeGroupUKEU = () => `UK/EU`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6786,6 +9326,9 @@ export const sell_sizeGroupUKEU = () => `UK/EU`
 export const sell_sizeGroupOther = () => `Other`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6794,6 +9337,9 @@ export const sell_sizeGroupOther = () => `Other`
 export const sell_uploadingImages = () => `Uploading images...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6802,6 +9348,9 @@ export const sell_uploadingImages = () => `Uploading images...`
 export const sell_imagesOptimized = () => `Images will be optimized automatically on our servers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6810,6 +9359,9 @@ export const sell_imagesOptimized = () => `Images will be optimized automaticall
 export const sell_dropHere = () => `Drop Here`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6818,6 +9370,9 @@ export const sell_dropHere = () => `Drop Here`
 export const sell_addPhoto = () => `Add Photo`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6826,6 +9381,9 @@ export const sell_addPhoto = () => `Add Photo`
 export const sell_removeImage = () => `Remove image`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6834,6 +9392,9 @@ export const sell_removeImage = () => `Remove image`
 export const sell_uploadJPGPNG = () => `Upload JPG/PNG images (optimized automatically)`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown> }} params
  * @returns {string}
@@ -6842,6 +9403,9 @@ export const sell_uploadJPGPNG = () => `Upload JPG/PNG images (optimized automat
 export const sell_photoCount = (params) => `${params.count} photo`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown> }} params
  * @returns {string}
@@ -6850,6 +9414,9 @@ export const sell_photoCount = (params) => `${params.count} photo`
 export const sell_photosCount = (params) => `${params.count} photos`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown>, s: NonNullable<unknown> }} params
  * @returns {string}
@@ -6858,6 +9425,9 @@ export const sell_photosCount = (params) => `${params.count} photos`
 export const sell_photosUploaded = (params) => `${params.count} photo${params.s} uploaded`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown> }} params
  * @returns {string}
@@ -6866,6 +9436,9 @@ export const sell_photosUploaded = (params) => `${params.count} photo${params.s}
 export const sell_moreAllowed = (params) => `${params.count} more allowed`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6874,6 +9447,9 @@ export const sell_moreAllowed = (params) => `${params.count} more allowed`
 export const sell_optimizedForWeb = () => `Optimized for web`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6882,6 +9458,9 @@ export const sell_optimizedForWeb = () => `Optimized for web`
 export const sell_tagsPlaceholder = () => `Add tags like 'vintage', 'y2k', 'streetwear'...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6890,6 +9469,9 @@ export const sell_tagsPlaceholder = () => `Add tags like 'vintage', 'y2k', 'stre
 export const sell_tagsHelp = () => `Tags help buyers find your item`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6898,6 +9480,9 @@ export const sell_tagsHelp = () => `Tags help buyers find your item`
 export const sell_freeShippingAttractsBuyers = () => `Free shipping attracts more buyers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6906,6 +9491,9 @@ export const sell_freeShippingAttractsBuyers = () => `Free shipping attracts mor
 export const sell_free = () => `FREE`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6914,6 +9502,9 @@ export const sell_free = () => `FREE`
 export const sell_colorBlack = () => `Black`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6922,6 +9513,9 @@ export const sell_colorBlack = () => `Black`
 export const sell_colorWhite = () => `White`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6930,6 +9524,9 @@ export const sell_colorWhite = () => `White`
 export const sell_colorGray = () => `Gray`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6938,6 +9535,9 @@ export const sell_colorGray = () => `Gray`
 export const sell_colorNavy = () => `Navy`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6946,6 +9546,9 @@ export const sell_colorNavy = () => `Navy`
 export const sell_colorBrown = () => `Brown`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6954,6 +9557,9 @@ export const sell_colorBrown = () => `Brown`
 export const sell_colorBeige = () => `Beige`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6962,6 +9568,9 @@ export const sell_colorBeige = () => `Beige`
 export const sell_colorRed = () => `Red`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6970,6 +9579,9 @@ export const sell_colorRed = () => `Red`
 export const sell_colorBlue = () => `Blue`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6978,6 +9590,9 @@ export const sell_colorBlue = () => `Blue`
 export const sell_colorGreen = () => `Green`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6986,6 +9601,9 @@ export const sell_colorGreen = () => `Green`
 export const sell_colorPink = () => `Pink`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -6994,6 +9612,9 @@ export const sell_colorPink = () => `Pink`
 export const sell_colorPurple = () => `Purple`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7002,6 +9623,9 @@ export const sell_colorPurple = () => `Purple`
 export const sell_colorMulti = () => `Multi`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7010,6 +9634,9 @@ export const sell_colorMulti = () => `Multi`
 export const sell_materialCotton = () => `Cotton`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7018,6 +9645,9 @@ export const sell_materialCotton = () => `Cotton`
 export const sell_materialPolyester = () => `Polyester`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7026,6 +9656,9 @@ export const sell_materialPolyester = () => `Polyester`
 export const sell_materialLeather = () => `Leather`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7034,6 +9667,9 @@ export const sell_materialLeather = () => `Leather`
 export const sell_materialDenim = () => `Denim`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7042,6 +9678,9 @@ export const sell_materialDenim = () => `Denim`
 export const sell_materialWool = () => `Wool`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7050,6 +9689,9 @@ export const sell_materialWool = () => `Wool`
 export const sell_materialSilk = () => `Silk`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7058,6 +9700,9 @@ export const sell_materialSilk = () => `Silk`
 export const category_unisex = () => `Unisex`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7066,6 +9711,9 @@ export const category_unisex = () => `Unisex`
 export const category_accessories = () => `Accessories`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7074,6 +9722,9 @@ export const category_accessories = () => `Accessories`
 export const category_activewear = () => `Activewear`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7082,6 +9733,9 @@ export const category_activewear = () => `Activewear`
 export const category_boots = () => `Boots`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7090,6 +9744,9 @@ export const category_boots = () => `Boots`
 export const category_dresses = () => `Dresses`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7098,6 +9755,9 @@ export const category_dresses = () => `Dresses`
 export const category_flats = () => `Flats`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7106,6 +9766,9 @@ export const category_flats = () => `Flats`
 export const category_formalShoes = () => `Formal Shoes`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7114,6 +9777,9 @@ export const category_formalShoes = () => `Formal Shoes`
 export const category_heels = () => `Heels`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7122,6 +9788,9 @@ export const category_heels = () => `Heels`
 export const category_hoodies = () => `Hoodies`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7130,6 +9799,9 @@ export const category_hoodies = () => `Hoodies`
 export const category_jackets = () => `Jackets`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7138,6 +9810,9 @@ export const category_jackets = () => `Jackets`
 export const category_jacketsCoats = () => `Jackets & Coats`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7146,6 +9821,9 @@ export const category_jacketsCoats = () => `Jackets & Coats`
 export const category_jeans = () => `Jeans`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7154,6 +9832,9 @@ export const category_jeans = () => `Jeans`
 export const category_jewelry = () => `Jewelry`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7162,6 +9843,9 @@ export const category_jewelry = () => `Jewelry`
 export const category_lingerie = () => `Lingerie & Underwear`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7170,6 +9854,9 @@ export const category_lingerie = () => `Lingerie & Underwear`
 export const category_pantsJeans = () => `Pants & Jeans`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7178,6 +9865,9 @@ export const category_pantsJeans = () => `Pants & Jeans`
 export const category_pantsTrousers = () => `Pants & Trousers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7186,6 +9876,9 @@ export const category_pantsTrousers = () => `Pants & Trousers`
 export const category_sandals = () => `Sandals`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7194,6 +9887,9 @@ export const category_sandals = () => `Sandals`
 export const category_sandalsSlides = () => `Sandals & Slides`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7202,6 +9898,9 @@ export const category_sandalsSlides = () => `Sandals & Slides`
 export const category_shirts = () => `Shirts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7210,6 +9909,9 @@ export const category_shirts = () => `Shirts`
 export const category_shirtsBlouses = () => `Shirts & Blouses`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7218,6 +9920,9 @@ export const category_shirtsBlouses = () => `Shirts & Blouses`
 export const category_shorts = () => `Shorts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7226,6 +9931,9 @@ export const category_shorts = () => `Shorts`
 export const category_skirts = () => `Skirts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7234,6 +9942,9 @@ export const category_skirts = () => `Skirts`
 export const category_sneakers = () => `Sneakers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7242,6 +9953,9 @@ export const category_sneakers = () => `Sneakers`
 export const category_suitsBlazers = () => `Suits & Blazers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7250,6 +9964,9 @@ export const category_suitsBlazers = () => `Suits & Blazers`
 export const category_sweatersHoodies = () => `Sweaters & Hoodies`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7258,6 +9975,9 @@ export const category_sweatersHoodies = () => `Sweaters & Hoodies`
 export const category_swimwear = () => `Swimwear`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7266,6 +9986,9 @@ export const category_swimwear = () => `Swimwear`
 export const category_tshirts = () => `T-Shirts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7274,6 +9997,9 @@ export const category_tshirts = () => `T-Shirts`
 export const category_topsTshirts = () => `Tops & T-Shirts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7282,6 +10008,9 @@ export const category_topsTshirts = () => `Tops & T-Shirts`
 export const category_underwear = () => `Underwear`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7290,6 +10019,9 @@ export const category_underwear = () => `Underwear`
 export const category_watches = () => `Watches`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7298,6 +10030,9 @@ export const category_watches = () => `Watches`
 export const category_hatsAndCaps = () => `Hats & Caps`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7306,6 +10041,9 @@ export const category_hatsAndCaps = () => `Hats & Caps`
 export const category_belts = () => `Belts`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7314,6 +10052,9 @@ export const category_belts = () => `Belts`
 export const category_scarves = () => `Scarves`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7322,6 +10063,9 @@ export const category_scarves = () => `Scarves`
 export const category_sunglasses = () => `Sunglasses`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7330,6 +10074,9 @@ export const category_sunglasses = () => `Sunglasses`
 export const category_wallets = () => `Wallets`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7338,6 +10085,9 @@ export const category_wallets = () => `Wallets`
 export const category_hairAccessories = () => `Hair Accessories`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7346,6 +10096,9 @@ export const category_hairAccessories = () => `Hair Accessories`
 export const category_ties = () => `Ties`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7354,6 +10107,9 @@ export const category_ties = () => `Ties`
 export const category_cufflinks = () => `Cufflinks`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7362,6 +10118,9 @@ export const category_cufflinks = () => `Cufflinks`
 export const category_backpacks = () => `Backpacks`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7370,6 +10129,9 @@ export const category_backpacks = () => `Backpacks`
 export const sell_priceLabel = () => `Price`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7378,6 +10140,9 @@ export const sell_priceLabel = () => `Price`
 export const sell_shippingCostLabel = () => `Shipping Cost`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7386,6 +10151,9 @@ export const sell_shippingCostLabel = () => `Shipping Cost`
 export const sell_tagsOptional = () => `Tags (optional)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7394,6 +10162,9 @@ export const sell_tagsOptional = () => `Tags (optional)`
 export const sell_suggested = () => `Suggested`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7402,6 +10173,9 @@ export const sell_suggested = () => `Suggested`
 export const sell_similarItems = () => `Similar items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7410,6 +10184,9 @@ export const sell_similarItems = () => `Similar items`
 export const sell_confidence = () => `Confidence`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7418,6 +10195,9 @@ export const sell_confidence = () => `Confidence`
 export const sell_getVisibility = () => `Get 3x more visibility for 7 days`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7426,6 +10206,9 @@ export const sell_getVisibility = () => `Get 3x more visibility for 7 days`
 export const sell_premiumLeft = () => `left`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7434,6 +10217,9 @@ export const sell_premiumLeft = () => `left`
 export const sell_featuredSearch = () => `Featured in search results`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7442,6 +10228,9 @@ export const sell_featuredSearch = () => `Featured in search results`
 export const sell_homepageSpotlight = () => `Homepage spotlight`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7450,6 +10239,9 @@ export const sell_homepageSpotlight = () => `Homepage spotlight`
 export const sell_pushNotifications = () => `Push notifications to followers`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7458,6 +10250,9 @@ export const sell_pushNotifications = () => `Push notifications to followers`
 export const sell_reviewYourListing = () => `Review Your Listing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7466,6 +10261,9 @@ export const sell_reviewYourListing = () => `Review Your Listing`
 export const sell_photosSection = () => `Photos`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7474,6 +10272,9 @@ export const sell_photosSection = () => `Photos`
 export const sell_productAlt = () => `Product`
 
 
+
+
+	
 /**
  * @param {{ count: NonNullable<unknown> }} params
  * @returns {string}
@@ -7482,6 +10283,9 @@ export const sell_productAlt = () => `Product`
 export const sell_morePhotos = (params) => `+${params.count} more`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7490,6 +10294,9 @@ export const sell_morePhotos = (params) => `+${params.count} more`
 export const sell_titleLabel = () => `Title`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7498,6 +10305,9 @@ export const sell_titleLabel = () => `Title`
 export const sell_categoryLabel = () => `Category`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7506,6 +10316,9 @@ export const sell_categoryLabel = () => `Category`
 export const sell_brandLabel = () => `Brand`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7514,6 +10327,9 @@ export const sell_brandLabel = () => `Brand`
 export const sell_sizeLabel = () => `Size`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7522,6 +10338,9 @@ export const sell_sizeLabel = () => `Size`
 export const sell_conditionLabel = () => `Condition`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7530,6 +10349,9 @@ export const sell_conditionLabel = () => `Condition`
 export const sell_priceLabel2 = () => `Price`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7538,6 +10360,9 @@ export const sell_priceLabel2 = () => `Price`
 export const sell_shippingLabel = () => `Shipping`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7546,6 +10371,9 @@ export const sell_shippingLabel = () => `Shipping`
 export const sell_premiumBoostActive = () => `Active`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7554,6 +10382,9 @@ export const sell_premiumBoostActive = () => `Active`
 export const sell_notAvailable = () => `N/A`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7562,6 +10393,9 @@ export const sell_notAvailable = () => `N/A`
 export const sell_titleFieldLabel = () => `Title`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7570,6 +10404,9 @@ export const sell_titleFieldLabel = () => `Title`
 export const sell_whatAreYouSelling = () => `What are you selling?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7578,6 +10415,9 @@ export const sell_whatAreYouSelling = () => `What are you selling?`
 export const sell_whoIsThisFor = () => `Who is this for?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7586,6 +10426,9 @@ export const sell_whoIsThisFor = () => `Who is this for?`
 export const sell_selectGenderAge = () => `Select gender/age`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7594,6 +10437,9 @@ export const sell_selectGenderAge = () => `Select gender/age`
 export const sell_whatTypeOfProduct = () => `What type of product?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7602,6 +10448,9 @@ export const sell_whatTypeOfProduct = () => `What type of product?`
 export const sell_selectProductType = () => `Select product type`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7610,6 +10459,9 @@ export const sell_selectProductType = () => `Select product type`
 export const sell_specificCategoryLabel = () => `Specific category`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7618,6 +10470,9 @@ export const sell_specificCategoryLabel = () => `Specific category`
 export const sell_whatExactlyIsIt = () => `What exactly is it?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7626,6 +10481,9 @@ export const sell_whatExactlyIsIt = () => `What exactly is it?`
 export const sell_descriptionOptional = () => `Description (optional)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7634,6 +10492,9 @@ export const sell_descriptionOptional = () => `Description (optional)`
 export const sell_addDetailsPlaceholder = () => `Add details about condition, measurements, flaws...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7642,6 +10503,9 @@ export const sell_addDetailsPlaceholder = () => `Add details about condition, me
 export const sell_customBrandAriaLabel = () => `Custom brand name`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7650,6 +10514,9 @@ export const sell_customBrandAriaLabel = () => `Custom brand name`
 export const sell_dismissSuggestions = () => `Dismiss suggestions`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7658,6 +10525,9 @@ export const sell_dismissSuggestions = () => `Dismiss suggestions`
 export const sell_smartCategorySuggestions = () => `Smart Category Suggestions`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7666,6 +10536,9 @@ export const sell_smartCategorySuggestions = () => `Smart Category Suggestions`
 export const sell_highConfidence = () => `High confidence`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7674,6 +10547,9 @@ export const sell_highConfidence = () => `High confidence`
 export const sell_mediumConfidence = () => `Medium confidence`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7682,6 +10558,9 @@ export const sell_mediumConfidence = () => `Medium confidence`
 export const sell_lowConfidence = () => `Low confidence`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7690,6 +10569,9 @@ export const sell_lowConfidence = () => `Low confidence`
 export const sell_basedOnImage = () => `Based on your image, we suggest:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7698,6 +10580,9 @@ export const sell_basedOnImage = () => `Based on your image, we suggest:`
 export const sell_analysis = () => `Analysis:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7706,6 +10591,9 @@ export const sell_analysis = () => `Analysis:`
 export const sell_applySuggestions = () => `Apply Suggestions`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7714,6 +10602,9 @@ export const sell_applySuggestions = () => `Apply Suggestions`
 export const sell_chooseManually = () => `Choose Manually`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7722,6 +10613,9 @@ export const sell_chooseManually = () => `Choose Manually`
 export const error_notAuthenticated = () => `Not authenticated`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7730,6 +10624,9 @@ export const error_notAuthenticated = () => `Not authenticated`
 export const error_atLeastOnePhoto = () => `At least one photo is required`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7738,6 +10635,9 @@ export const error_atLeastOnePhoto = () => `At least one photo is required`
 export const error_categoryRequired = () => `Category is required. Please select a category for your item.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7746,6 +10646,9 @@ export const error_categoryRequired = () => `Category is required. Please select
 export const error_failedToCreateProduct = () => `Failed to create product`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7754,6 +10657,9 @@ export const error_failedToCreateProduct = () => `Failed to create product`
 export const currency_symbol = () => `$`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7762,6 +10668,9 @@ export const currency_symbol = () => `$`
 export const category_includes = () => `Includes:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7770,6 +10679,9 @@ export const category_includes = () => `Includes:`
 export const category_selected = () => `Selected:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7778,6 +10690,9 @@ export const category_selected = () => `Selected:`
 export const category_accessoriesList = () => `Hats, Caps, Belts, Scarves, Sunglasses, Bags, Wallets`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7786,6 +10701,9 @@ export const category_accessoriesList = () => `Hats, Caps, Belts, Scarves, Sungl
 export const category_clothing = () => `Clothing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7794,6 +10712,9 @@ export const category_clothing = () => `Clothing`
 export const category_shoesType = () => `Shoes`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7802,6 +10723,9 @@ export const category_shoesType = () => `Shoes`
 export const category_accessoriesType = () => `Accessories`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7810,6 +10734,9 @@ export const category_accessoriesType = () => `Accessories`
 export const category_bagsType = () => `Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7818,6 +10745,9 @@ export const category_bagsType = () => `Bags`
 export const category_walletsAndPurses = () => `Wallets & Purses`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7826,6 +10756,9 @@ export const category_walletsAndPurses = () => `Wallets & Purses`
 export const category_gloves = () => `Gloves`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7834,6 +10767,9 @@ export const category_gloves = () => `Gloves`
 export const category_glovesAndMittens = () => `Gloves & Mittens`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7842,6 +10778,9 @@ export const category_glovesAndMittens = () => `Gloves & Mittens`
 export const category_shawls = () => `Shawls`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7850,6 +10789,9 @@ export const category_shawls = () => `Shawls`
 export const category_bandanas = () => `Bandanas`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7858,6 +10800,9 @@ export const category_bandanas = () => `Bandanas`
 export const category_bibs = () => `Bibs`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7866,6 +10811,9 @@ export const category_bibs = () => `Bibs`
 export const category_suspenders = () => `Suspenders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7874,6 +10822,9 @@ export const category_suspenders = () => `Suspenders`
 export const category_keychains = () => `Keychains`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7882,6 +10833,9 @@ export const category_keychains = () => `Keychains`
 export const category_phoneCases = () => `Phone Cases`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7890,6 +10844,9 @@ export const category_phoneCases = () => `Phone Cases`
 export const category_handbags = () => `Handbags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7898,6 +10855,9 @@ export const category_handbags = () => `Handbags`
 export const category_shoulderBags = () => `Shoulder Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7906,6 +10866,9 @@ export const category_shoulderBags = () => `Shoulder Bags`
 export const category_crossbodyBags = () => `Crossbody Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7914,6 +10877,9 @@ export const category_crossbodyBags = () => `Crossbody Bags`
 export const category_clutches = () => `Clutches`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7922,6 +10888,9 @@ export const category_clutches = () => `Clutches`
 export const category_toteBags = () => `Tote Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7930,6 +10899,9 @@ export const category_toteBags = () => `Tote Bags`
 export const category_makeupBags = () => `Makeup Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7938,6 +10910,9 @@ export const category_makeupBags = () => `Makeup Bags`
 export const category_travelBags = () => `Travel Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7946,6 +10921,9 @@ export const category_travelBags = () => `Travel Bags`
 export const category_briefcases = () => `Briefcases`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7954,6 +10932,9 @@ export const category_briefcases = () => `Briefcases`
 export const category_messengerBags = () => `Messenger Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7962,6 +10943,9 @@ export const category_messengerBags = () => `Messenger Bags`
 export const category_gymBags = () => `Gym Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7970,6 +10954,9 @@ export const category_gymBags = () => `Gym Bags`
 export const category_duffelBags = () => `Duffel Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7978,6 +10965,9 @@ export const category_duffelBags = () => `Duffel Bags`
 export const category_laptopBags = () => `Laptop Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7986,6 +10976,9 @@ export const category_laptopBags = () => `Laptop Bags`
 export const category_schoolBags = () => `School Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -7994,6 +10987,9 @@ export const category_schoolBags = () => `School Bags`
 export const category_lunchBags = () => `Lunch Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8002,6 +10998,9 @@ export const category_lunchBags = () => `Lunch Bags`
 export const category_miniBags = () => `Mini Bags`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8010,6 +11009,9 @@ export const category_miniBags = () => `Mini Bags`
 export const category_pocketSquares = () => `Pocket Squares`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8018,6 +11020,9 @@ export const category_pocketSquares = () => `Pocket Squares`
 export const orders_title = () => `My Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8026,6 +11031,9 @@ export const orders_title = () => `My Orders`
 export const orders_subtitle = () => `Track your purchases and sales in one place`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8034,6 +11042,9 @@ export const orders_subtitle = () => `Track your purchases and sales in one plac
 export const orders_allOrders = () => `All Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8042,6 +11053,9 @@ export const orders_allOrders = () => `All Orders`
 export const orders_purchases = () => `Purchases`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8050,6 +11064,9 @@ export const orders_purchases = () => `Purchases`
 export const orders_sales = () => `Sales`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8058,6 +11075,9 @@ export const orders_sales = () => `Sales`
 export const orders_toReview = () => `To Review`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8066,6 +11086,9 @@ export const orders_toReview = () => `To Review`
 export const orders_issues = () => `Issues`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8074,6 +11097,9 @@ export const orders_issues = () => `Issues`
 export const orders_noOrdersFound = () => `No orders found`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8082,6 +11108,9 @@ export const orders_noOrdersFound = () => `No orders found`
 export const orders_startShopping = () => `Start Shopping`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8090,6 +11119,9 @@ export const orders_startShopping = () => `Start Shopping`
 export const orders_seller = () => `Seller`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8098,6 +11130,9 @@ export const orders_seller = () => `Seller`
 export const orders_buyer = () => `Buyer`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8106,6 +11141,9 @@ export const orders_buyer = () => `Buyer`
 export const orders_trackingNumber = () => `Tracking Number`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8114,6 +11152,9 @@ export const orders_trackingNumber = () => `Tracking Number`
 export const orders_leaveReview = () => `Leave Review`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8122,6 +11163,9 @@ export const orders_leaveReview = () => `Leave Review`
 export const orders_cancelOrder = () => `Cancel Order`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8130,6 +11174,9 @@ export const orders_cancelOrder = () => `Cancel Order`
 export const orders_viewProduct = () => `View Product`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8138,6 +11185,9 @@ export const orders_viewProduct = () => `View Product`
 export const orders_noImage = () => `No image`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8146,6 +11196,9 @@ export const orders_noImage = () => `No image`
 export const orders_unknownProduct = () => `Unknown Product`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8154,6 +11207,9 @@ export const orders_unknownProduct = () => `Unknown Product`
 export const sales_overview = () => `Sales Overview`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8162,6 +11218,9 @@ export const sales_overview = () => `Sales Overview`
 export const sales_manageSoldItems = () => `Manage your sold items and earnings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8170,6 +11229,9 @@ export const sales_manageSoldItems = () => `Manage your sold items and earnings`
 export const sales_totalEarnings = () => `Total Earnings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8178,6 +11240,9 @@ export const sales_totalEarnings = () => `Total Earnings`
 export const sales_available = () => `Available`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8186,6 +11251,9 @@ export const sales_available = () => `Available`
 export const sales_itemsSold = () => `Items Sold`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8194,6 +11262,9 @@ export const sales_itemsSold = () => `Items Sold`
 export const sales_thisMonth = () => `This Month`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8202,6 +11273,9 @@ export const sales_thisMonth = () => `This Month`
 export const sales_soldItems = () => `Sold Items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8210,6 +11284,9 @@ export const sales_soldItems = () => `Sold Items`
 export const sales_analytics = () => `Analytics`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8218,6 +11295,9 @@ export const sales_analytics = () => `Analytics`
 export const sales_noItemsSoldYet = () => `No items sold yet`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8226,6 +11306,9 @@ export const sales_noItemsSoldYet = () => `No items sold yet`
 export const sales_startSelling = () => `Start selling to see your sold items here`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8234,6 +11317,9 @@ export const sales_startSelling = () => `Start selling to see your sold items he
 export const sales_createFirstListing = () => `Create Your First Listing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8242,6 +11328,9 @@ export const sales_createFirstListing = () => `Create Your First Listing`
 export const sales_totalEarned = () => `Total Earned`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8250,6 +11339,9 @@ export const sales_totalEarned = () => `Total Earned`
 export const sales_availableBalance = () => `Available Balance`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8258,6 +11350,9 @@ export const sales_availableBalance = () => `Available Balance`
 export const sales_requestPayout = () => `Request Payout`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8266,6 +11361,9 @@ export const sales_requestPayout = () => `Request Payout`
 export const sales_paidOut = () => `Paid Out`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8274,6 +11372,9 @@ export const sales_paidOut = () => `Paid Out`
 export const sales_recentOrders = () => `Recent Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8282,6 +11383,9 @@ export const sales_recentOrders = () => `Recent Orders`
 export const sales_noOrdersYet = () => `No orders yet`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8290,6 +11394,9 @@ export const sales_noOrdersYet = () => `No orders yet`
 export const sales_thisMonthSales = () => `This Month Sales`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8298,6 +11405,9 @@ export const sales_thisMonthSales = () => `This Month Sales`
 export const sales_thisMonthEarnings = () => `This Month Earnings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8306,6 +11416,9 @@ export const sales_thisMonthEarnings = () => `This Month Earnings`
 export const sales_averageOrder = () => `Average Order`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8314,6 +11427,9 @@ export const sales_averageOrder = () => `Average Order`
 export const sales_perSale = () => `Per sale`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8322,6 +11438,9 @@ export const sales_perSale = () => `Per sale`
 export const sales_totalOrders = () => `Total Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8330,6 +11449,9 @@ export const sales_totalOrders = () => `Total Orders`
 export const sales_allTime = () => `All time`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8338,6 +11460,9 @@ export const sales_allTime = () => `All time`
 export const sales_salesPerformance = () => `Sales Performance`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8346,6 +11471,9 @@ export const sales_salesPerformance = () => `Sales Performance`
 export const sales_chartComingSoon = () => `Chart coming soon - Sales data over time`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8354,6 +11482,9 @@ export const sales_chartComingSoon = () => `Chart coming soon - Sales data over 
 export const sales_noChange = () => `No change`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8362,6 +11493,9 @@ export const sales_noChange = () => `No change`
 export const upgrade_title = () => `Upgrade Your Account`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8370,6 +11504,9 @@ export const upgrade_title = () => `Upgrade Your Account`
 export const upgrade_subtitle = () => `Unlock premium features and grow your business`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8378,6 +11515,9 @@ export const upgrade_subtitle = () => `Unlock premium features and grow your bus
 export const upgrade_currentPlan = () => `Current Plan`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8386,6 +11526,9 @@ export const upgrade_currentPlan = () => `Current Plan`
 export const upgrade_choosePlan = () => `Choose Plan`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8394,6 +11537,9 @@ export const upgrade_choosePlan = () => `Choose Plan`
 export const upgrade_features = () => `Features`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8402,6 +11548,9 @@ export const upgrade_features = () => `Features`
 export const upgrade_subscribe = () => `Subscribe`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8410,6 +11559,9 @@ export const upgrade_subscribe = () => `Subscribe`
 export const upgrade_popular = () => `Popular`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8418,6 +11570,9 @@ export const upgrade_popular = () => `Popular`
 export const upgrade_recommended = () => `Recommended`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8426,6 +11581,9 @@ export const upgrade_recommended = () => `Recommended`
 export const breadcrumb_dashboard = () => `Dashboard`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8434,6 +11592,9 @@ export const breadcrumb_dashboard = () => `Dashboard`
 export const breadcrumb_sales = () => `Sales`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8442,6 +11603,9 @@ export const breadcrumb_sales = () => `Sales`
 export const breadcrumb_orders = () => `Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8450,6 +11614,9 @@ export const breadcrumb_orders = () => `Orders`
 export const breadcrumb_settings = () => `Settings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8458,6 +11625,9 @@ export const breadcrumb_settings = () => `Settings`
 export const breadcrumb_upgrade = () => `Upgrade`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8466,6 +11636,9 @@ export const breadcrumb_upgrade = () => `Upgrade`
 export const upgrade_freePlan = () => `Free Plan`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8474,6 +11647,9 @@ export const upgrade_freePlan = () => `Free Plan`
 export const upgrade_premiumPlan = () => `Premium Plan`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8482,6 +11658,9 @@ export const upgrade_premiumPlan = () => `Premium Plan`
 export const upgrade_brandPlan = () => `Brand Plan`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8490,6 +11669,9 @@ export const upgrade_brandPlan = () => `Brand Plan`
 export const upgrade_mostPopular = () => `Most Popular`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8498,6 +11680,9 @@ export const upgrade_mostPopular = () => `Most Popular`
 export const upgrade_activePlan = () => `Active`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8506,6 +11691,9 @@ export const upgrade_activePlan = () => `Active`
 export const upgrade_current = () => `Current`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8514,6 +11702,9 @@ export const upgrade_current = () => `Current`
 export const upgrade_month = () => `month`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8522,6 +11713,9 @@ export const upgrade_month = () => `month`
 export const upgrade_perMonth = () => `/ month`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8530,6 +11724,9 @@ export const upgrade_perMonth = () => `/ month`
 export const upgrade_getPremium = () => `Get Premium`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8538,6 +11735,9 @@ export const upgrade_getPremium = () => `Get Premium`
 export const upgrade_getBrand = () => `Get Brand`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8546,6 +11746,9 @@ export const upgrade_getBrand = () => `Get Brand`
 export const upgrade_cancelPlan = () => `Cancel Plan`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8554,6 +11757,9 @@ export const upgrade_cancelPlan = () => `Cancel Plan`
 export const upgrade_processing = () => `Processing...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8562,6 +11768,9 @@ export const upgrade_processing = () => `Processing...`
 export const upgrade_canceling = () => `Canceling...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8570,6 +11779,9 @@ export const upgrade_canceling = () => `Canceling...`
 export const upgrade_freeFeature1 = () => `Up to 20 products`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8578,6 +11790,9 @@ export const upgrade_freeFeature1 = () => `Up to 20 products`
 export const upgrade_freeFeature2 = () => `Basic support`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8586,6 +11801,9 @@ export const upgrade_freeFeature2 = () => `Basic support`
 export const upgrade_freeFeature3 = () => `Standard listings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8594,6 +11812,9 @@ export const upgrade_freeFeature3 = () => `Standard listings`
 export const upgrade_premiumFeature1 = () => `10 boosted ads/month`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8602,6 +11823,9 @@ export const upgrade_premiumFeature1 = () => `10 boosted ads/month`
 export const upgrade_premiumFeature2 = () => `Priority support`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8610,6 +11834,9 @@ export const upgrade_premiumFeature2 = () => `Priority support`
 export const upgrade_premiumFeature3 = () => `Advanced analytics`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8618,6 +11845,9 @@ export const upgrade_premiumFeature3 = () => `Advanced analytics`
 export const upgrade_brandFeature1 = () => `Unlimited products`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8626,6 +11856,9 @@ export const upgrade_brandFeature1 = () => `Unlimited products`
 export const upgrade_brandFeature2 = () => `Brand verification`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8634,6 +11867,9 @@ export const upgrade_brandFeature2 = () => `Brand verification`
 export const upgrade_brandFeature3 = () => `Bulk tools`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8642,6 +11878,9 @@ export const upgrade_brandFeature3 = () => `Bulk tools`
 export const upgrade_discountFirstMonth = () => `50% OFF First Month!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8650,6 +11889,9 @@ export const upgrade_discountFirstMonth = () => `50% OFF First Month!`
 export const upgrade_faqTitle = () => `Got Questions?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8658,6 +11900,9 @@ export const upgrade_faqTitle = () => `Got Questions?`
 export const upgrade_faqSubtitle = () => `Everything you need to know about our plans`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8666,6 +11911,9 @@ export const upgrade_faqSubtitle = () => `Everything you need to know about our 
 export const upgrade_faqChangePlans = () => `Can I change plans anytime?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8674,6 +11922,9 @@ export const upgrade_faqChangePlans = () => `Can I change plans anytime?`
 export const upgrade_faqChangePlansAnswer = () => `Absolutely! Upgrade, downgrade, or cancel your subscription anytime. Changes take effect at your next billing cycle.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8682,6 +11933,9 @@ export const upgrade_faqChangePlansAnswer = () => `Absolutely! Upgrade, downgrad
 export const upgrade_faqRemainingBoosts = () => `What about my remaining boosts?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8690,6 +11944,9 @@ export const upgrade_faqRemainingBoosts = () => `What about my remaining boosts?
 export const upgrade_faqRemainingBoostsAnswer = () => `Your active boosted ads continue until they expire, but you can't create new ones after canceling Premium.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8698,6 +11955,9 @@ export const upgrade_faqRemainingBoostsAnswer = () => `Your active boosted ads c
 export const upgrade_faqBusinessRequirements = () => `Business selling requirements?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8706,6 +11966,9 @@ export const upgrade_faqBusinessRequirements = () => `Business selling requireme
 export const upgrade_faqBusinessRequirementsAnswer = () => `Yes, business accounts require an active Brand subscription to comply with marketplace policies and verification.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8714,6 +11977,9 @@ export const upgrade_faqBusinessRequirementsAnswer = () => `Yes, business accoun
 export const upgrade_faqEarlyBirdRecurring = () => `Early bird discount recurring?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8722,6 +11988,9 @@ export const upgrade_faqEarlyBirdRecurring = () => `Early bird discount recurrin
 export const upgrade_faqEarlyBirdRecurringAnswer = () => `The early bird discount is a one-time first-month special. Regular pricing applies from month two onwards.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8730,6 +11999,9 @@ export const upgrade_faqEarlyBirdRecurringAnswer = () => `The early bird discoun
 export const upgrade_supportTitle = () => `Still have questions?`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8738,6 +12010,9 @@ export const upgrade_supportTitle = () => `Still have questions?`
 export const upgrade_supportSubtitle = () => `Our support team is here to help you choose the perfect plan`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8746,6 +12021,9 @@ export const upgrade_supportSubtitle = () => `Our support team is here to help y
 export const upgrade_contactSupport = () => `Contact Support`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8754,6 +12032,9 @@ export const upgrade_contactSupport = () => `Contact Support`
 export const upgrade_cancelConfirm = () => `Are you sure you want to cancel your subscription? It will remain active until the end of your billing period.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8762,6 +12043,9 @@ export const upgrade_cancelConfirm = () => `Are you sure you want to cancel your
 export const upgrade_cancelSuccess = () => `Subscription canceled successfully. It will remain active until the end of your billing period.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8770,6 +12054,9 @@ export const upgrade_cancelSuccess = () => `Subscription canceled successfully. 
 export const upgrade_paymentFailed = () => `Payment failed:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8778,6 +12065,9 @@ export const upgrade_paymentFailed = () => `Payment failed:`
 export const upgrade_subscriptionFailed = () => `Failed to process subscription`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8786,6 +12076,9 @@ export const upgrade_subscriptionFailed = () => `Failed to process subscription`
 export const upgrade_createSubscriptionFailed = () => `Failed to create subscription:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8794,6 +12087,9 @@ export const upgrade_createSubscriptionFailed = () => `Failed to create subscrip
 export const upgrade_paymentSetupFailed = () => `Payment setup failed`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8802,6 +12098,9 @@ export const upgrade_paymentSetupFailed = () => `Payment setup failed`
 export const upgrade_cancelSubscriptionFailed = () => `Failed to cancel subscription:`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8810,6 +12109,9 @@ export const upgrade_cancelSubscriptionFailed = () => `Failed to cancel subscrip
 export const dashboard_pleaseLogin = () => `Please log in to access your dashboard`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8818,6 +12120,9 @@ export const dashboard_pleaseLogin = () => `Please log in to access your dashboa
 export const dashboard_logIn = () => `Log In`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8826,6 +12131,9 @@ export const dashboard_logIn = () => `Log In`
 export const dashboard_completeProfile = () => `Complete Your Profile Setup`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8834,6 +12142,9 @@ export const dashboard_completeProfile = () => `Complete Your Profile Setup`
 export const dashboard_completeProfileDesc = () => `You need to complete your profile setup before accessing the dashboard.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8842,6 +12153,9 @@ export const dashboard_completeProfileDesc = () => `You need to complete your pr
 export const dashboard_completeSetup = () => `Complete Setup`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8850,6 +12164,9 @@ export const dashboard_completeSetup = () => `Complete Setup`
 export const dashboard_noRecentOrders = () => `No recent orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8858,6 +12175,9 @@ export const dashboard_noRecentOrders = () => `No recent orders`
 export const dashboard_yourActiveListings = () => `Your Active Listings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8866,6 +12186,9 @@ export const dashboard_yourActiveListings = () => `Your Active Listings`
 export const dashboard_noActiveListings = () => `No active listings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8874,6 +12197,9 @@ export const dashboard_noActiveListings = () => `No active listings`
 export const dashboard_createFirstListing = () => `Create your first listing to start selling`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8882,6 +12208,9 @@ export const dashboard_createFirstListing = () => `Create your first listing to 
 export const dashboard_createListing = () => `Create Listing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8890,6 +12219,9 @@ export const dashboard_createListing = () => `Create Listing`
 export const orders_itemsToShip = () => `Items to Ship`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8898,6 +12230,9 @@ export const orders_itemsToShip = () => `Items to Ship`
 export const orders_totalOrders = () => `Total Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8906,6 +12241,9 @@ export const orders_totalOrders = () => `Total Orders`
 export const orders_ship = () => `Ship`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8914,6 +12252,9 @@ export const orders_ship = () => `Ship`
 export const orders_shipped = () => `Shipped`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8922,6 +12263,9 @@ export const orders_shipped = () => `Shipped`
 export const orders_myOrders = () => `Orders`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8930,6 +12274,9 @@ export const orders_myOrders = () => `Orders`
 export const orders_completed = () => `Done`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8938,6 +12285,9 @@ export const orders_completed = () => `Done`
 export const orders_noOrdersYet = () => `Orders will appear here once processed.`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8946,6 +12296,9 @@ export const orders_noOrdersYet = () => `Orders will appear here once processed.
 export const orders_markAsShipped = () => `Mark as Shipped`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8954,6 +12307,9 @@ export const orders_markAsShipped = () => `Mark as Shipped`
 export const orders_shipTo = () => `Ship to`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8962,6 +12318,9 @@ export const orders_shipTo = () => `Ship to`
 export const orders_updating = () => `Updating...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8970,6 +12329,9 @@ export const orders_updating = () => `Updating...`
 export const listings_pageTitle = () => `My Listings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8978,6 +12340,9 @@ export const listings_pageTitle = () => `My Listings`
 export const listings_myListings = () => `My Listings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8986,6 +12351,9 @@ export const listings_myListings = () => `My Listings`
 export const listings_manageProducts = () => `Manage your products`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -8994,6 +12362,9 @@ export const listings_manageProducts = () => `Manage your products`
 export const listings_newListing = () => `New Listing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9002,6 +12373,9 @@ export const listings_newListing = () => `New Listing`
 export const listings_total = () => `Total`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9010,6 +12384,9 @@ export const listings_total = () => `Total`
 export const listings_active = () => `Active`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9018,6 +12395,9 @@ export const listings_active = () => `Active`
 export const listings_sold = () => `Sold`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9026,6 +12406,9 @@ export const listings_sold = () => `Sold`
 export const listings_draft = () => `Draft`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9034,6 +12417,9 @@ export const listings_draft = () => `Draft`
 export const listings_all = () => `All`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9042,6 +12428,9 @@ export const listings_all = () => `All`
 export const listings_noListings = () => `No listings`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9050,6 +12439,9 @@ export const listings_noListings = () => `No listings`
 export const listings_getStarted = () => `Get started selling today!`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9058,6 +12450,9 @@ export const listings_getStarted = () => `Get started selling today!`
 export const listings_createFirst = () => `Create first listing`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9066,6 +12461,9 @@ export const listings_createFirst = () => `Create first listing`
 export const bundle_title = () => `Bundle & Save on Shipping`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9074,6 +12472,9 @@ export const bundle_title = () => `Bundle & Save on Shipping`
 export const bundle_subtitle = () => `Buy multiple items from`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9082,6 +12483,9 @@ export const bundle_subtitle = () => `Buy multiple items from`
 export const bundle_shipTogether = () => `Ship together`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9090,6 +12494,9 @@ export const bundle_shipTogether = () => `Ship together`
 export const bundle_savePerItem = () => `Save €5 per extra item`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9098,6 +12505,9 @@ export const bundle_savePerItem = () => `Save €5 per extra item`
 export const bundle_yourBundle = () => `Your Bundle`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9106,6 +12516,9 @@ export const bundle_yourBundle = () => `Your Bundle`
 export const bundle_item = () => `item`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9114,6 +12527,9 @@ export const bundle_item = () => `item`
 export const bundle_items = () => `items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9122,6 +12538,9 @@ export const bundle_items = () => `items`
 export const bundle_justThisItem = () => `Just this item`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9130,6 +12549,9 @@ export const bundle_justThisItem = () => `Just this item`
 export const bundle_addTwoItems = () => `+2 items (Save €10)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9138,6 +12560,9 @@ export const bundle_addTwoItems = () => `+2 items (Save €10)`
 export const bundle_addThreeItems = () => `+3 items (Save €15)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9146,6 +12571,9 @@ export const bundle_addThreeItems = () => `+3 items (Save €15)`
 export const bundle_addFiveItems = () => `+5 items (Save €25)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9154,6 +12582,9 @@ export const bundle_addFiveItems = () => `+5 items (Save €25)`
 export const bundle_saveAmount = () => `Save €`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9162,6 +12593,9 @@ export const bundle_saveAmount = () => `Save €`
 export const bundle_addMoreFrom = () => `Add more from @`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9170,6 +12604,9 @@ export const bundle_addMoreFrom = () => `Add more from @`
 export const bundle_noOtherItems = () => `This seller doesn't have any other items available`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9178,6 +12615,9 @@ export const bundle_noOtherItems = () => `This seller doesn't have any other ite
 export const bundle_showAll = () => `Show all`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9186,6 +12626,9 @@ export const bundle_showAll = () => `Show all`
 export const bundle_itemsTotal = () => `Items`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9194,6 +12637,9 @@ export const bundle_itemsTotal = () => `Items`
 export const bundle_shipping = () => `Shipping (once for all)`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9202,6 +12648,9 @@ export const bundle_shipping = () => `Shipping (once for all)`
 export const bundle_serviceFee = () => `Service fee`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9210,6 +12659,9 @@ export const bundle_serviceFee = () => `Service fee`
 export const bundle_youSave = () => `You save on shipping`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9218,6 +12670,9 @@ export const bundle_youSave = () => `You save on shipping`
 export const bundle_total = () => `Total`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9226,6 +12681,9 @@ export const bundle_total = () => `Total`
 export const bundle_continueToCheckout = () => `Continue to checkout`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9234,6 +12692,9 @@ export const bundle_continueToCheckout = () => `Continue to checkout`
 export const bundle_checkoutItems = () => `Checkout`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9242,6 +12703,9 @@ export const bundle_checkoutItems = () => `Checkout`
 export const bundle_quickOptions = () => `Quick Bundle Options`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9250,6 +12714,9 @@ export const bundle_quickOptions = () => `Quick Bundle Options`
 export const bundle_loading = () => `Loading products...`
 
 
+
+
+	
 /**
  * 
  * @returns {string}
@@ -9258,177 +12725,200 @@ export const bundle_loading = () => `Loading products...`
 export const bundle_saveOnShipping = () => `on shipping`
 
 
+
 /**
- * Failed to resolve message common_scroll for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message common_scroll for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const common_scroll = () => "common_scroll"
 
 
+
 /**
- * Failed to resolve message category_women_title for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message category_women_title for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const category_women_title = () => "category_women_title"
 
 
+
 /**
- * Failed to resolve message category_men_title for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message category_men_title for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const category_men_title = () => "category_men_title"
 
 
+
 /**
- * Failed to resolve message category_kids_title for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message category_kids_title for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const category_kids_title = () => "category_kids_title"
 
 
+
 /**
- * Failed to resolve message subcategory_shirtsBBousesr for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_shirtsBBousesr for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_shirtsBBousesr = () => "subcategory_shirtsBBousesr"
 
 
+
 /**
- * Failed to resolve message subcategory_sweatersHoodies for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_sweatersHoodies for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_sweatersHoodies = () => "subcategory_sweatersHoodies"
 
 
+
 /**
- * Failed to resolve message subcategory_jacketsCoats for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_jacketsCoats for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_jacketsCoats = () => "subcategory_jacketsCoats"
 
 
+
 /**
- * Failed to resolve message subcategory_pantsTraousers for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_pantsTraousers for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_pantsTraousers = () => "subcategory_pantsTraousers"
 
 
+
 /**
- * Failed to resolve message subcategory_lingerieUnderwear for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_lingerieUnderwear for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_lingerieUnderwear = () => "subcategory_lingerieUnderwear"
 
 
+
 /**
- * Failed to resolve message subcategory_bagssPurses for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_bagssPurses for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_bagssPurses = () => "subcategory_bagssPurses"
 
 
+
 /**
- * Failed to resolve message subcategory_jewelry for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_jewelry for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_jewelry = () => "subcategory_jewelry"
 
 
+
 /**
- * Failed to resolve message subcategory_tShirts for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_tShirts for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_tShirts = () => "subcategory_tShirts"
 
 
+
 /**
- * Failed to resolve message subcategory_formalShoes for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_formalShoes for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_formalShoes = () => "subcategory_formalShoes"
 
 
+
 /**
- * Failed to resolve message subcategory_sandalsSlides for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_sandalsSlides for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_sandalsSlides = () => "subcategory_sandalsSlides"
 
 
+
 /**
- * Failed to resolve message subcategory_underwear for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_underwear for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_underwear = () => "subcategory_underwear"
 
 
+
 /**
- * Failed to resolve message subcategory_bags for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_bags for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_bags = () => "subcategory_bags"
 
 
+
 /**
- * Failed to resolve message subcategory_activewear for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_activewear for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_activewear = () => "subcategory_activewear"
 
 
+
 /**
- * Failed to resolve message subcategory_swimwear for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_swimwear for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_swimwear = () => "subcategory_swimwear"
 
 
+
 /**
- * Failed to resolve message subcategory_suiBbazers for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_suiBbazers for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_suiBbazers = () => "subcategory_suiBbazers"
 
 
+
 /**
- * Failed to resolve message subcategory_shorts for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_shorts for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_shorts = () => "subcategory_shorts"
 
 
+
 /**
- * Failed to resolve message subcategory_topsShirts for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_topsShirts for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_topsShirts = () => "subcategory_topsShirts"
 
 
+
 /**
- * Failed to resolve message subcategory_pantsJeans for languageTag "en". 
- * @returns {string}
- */
+* Failed to resolve message subcategory_pantsJeans for languageTag "en". 
+* @returns {string}
+*/
 /* @__NO_SIDE_EFFECTS__ */
 export const subcategory_pantsJeans = () => "subcategory_pantsJeans"
+

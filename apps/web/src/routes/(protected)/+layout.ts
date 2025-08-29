@@ -1,13 +1,13 @@
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = async ({ parent }) => {
-  // Use parent data instead of creating duplicate client
+  // Use parent data - no longer passing supabase client
   const parentData = await parent();
   
   return {
-    supabase: parentData.supabase,
     session: parentData.session,
     user: parentData.user,
-    profile: parentData.profile
+    profile: parentData.profile,
+    language: parentData.language
   };
 };

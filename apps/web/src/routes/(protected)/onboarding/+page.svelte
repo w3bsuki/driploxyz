@@ -20,6 +20,7 @@
   import { toasts } from '@repo/ui';
   import { uploadImage } from '$lib/supabase/storage';
   import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
+  import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
 
   interface Props {
@@ -27,6 +28,8 @@
   }
 
   let { data }: Props = $props();
+
+  const supabase = createBrowserSupabaseClient();
 
   let step = $state(1);
   let showSuccessModal = $state(false);
@@ -194,7 +197,7 @@
       toasts.info('Uploading avatar...');
       
       // Upload avatar to Supabase Storage
-      const { url } = await uploadImage(data.supabase, file, data.user.id, 'avatars');
+      const { url } = await uploadImage(supabase, file, data.user.id, 'avatars');
       
       // Update the avatar URL with the uploaded URL
       avatarUrl = url;

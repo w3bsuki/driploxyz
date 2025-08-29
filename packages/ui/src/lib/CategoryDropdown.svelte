@@ -56,32 +56,67 @@
   };
 </script>
 
-<div class="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/60 overflow-hidden z-50">
-  <!-- Categories Section -->
+<div class="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/60 overflow-hidden z-50 max-w-4xl mx-auto">
+  <!-- Header with Close -->
+  <div class="flex items-center justify-between p-4 border-b border-gray-100">
+    <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
+      <span class="text-xl">🛍️</span>
+      Discover Amazing Finds
+    </h2>
+    <button 
+      onclick={onClose}
+      class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+    >
+      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Quick Actions Row -->
+  <div class="p-4 bg-gradient-to-r from-gray-50 to-blue-50 border-b border-gray-100">
+    <div class="flex items-center gap-3 overflow-x-auto scrollbar-hide">
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+        <span>🔥</span>
+        <span>Hot Deals</span>
+      </button>
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+        <span>✨</span>
+        <span>New Today</span>
+      </button>
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+        <span>💎</span>
+        <span>Designer</span>
+      </button>
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+        <span>💰</span>
+        <span>Under $25</span>
+      </button>
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+        <span>🚚</span>
+        <span>Free Ship</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Categories Section - Enhanced -->
   {#if categories.length > 0}
     <div class="p-4 border-b border-gray-100">
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold text-gray-900">{t.categories}</h3>
-        <button 
-          onclick={onClose}
-          class="p-1 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
+      <h3 class="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+        Shop by Category
+      </h3>
       
-      <div class="grid grid-cols-4 gap-2">
+      <div class="grid grid-cols-4 gap-3">
         {#each categories as category}
           <button
             onclick={() => onCategorySelect?.(category)}
-            class="p-3 rounded-lg hover:bg-gray-50 transition-colors text-center group"
+            class="p-4 rounded-xl hover:bg-gradient-to-br hover:from-gray-50 hover:to-blue-50 hover:border-blue-200 border border-gray-200 transition-all text-center group hover:shadow-md"
           >
             {#if category.icon}
-              <div class="text-2xl mb-1">{category.icon}</div>
+              <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">{category.icon}</div>
             {/if}
-            <p class="text-xs font-medium text-gray-700 group-hover:text-black transition-colors">
+            <p class="text-sm font-semibold text-gray-700 group-hover:text-blue-700 transition-colors">
               {category.name}
             </p>
           </button>

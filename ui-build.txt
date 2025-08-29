@@ -1,0 +1,13 @@
+
+> @repo/ui@0.0.0 build K:\driplo-turbo-1\packages\ui
+> svelte-package -o dist
+
+Using $lib/skeleton/CategoryCardSkeleton.svelte.d.ts instead of generated .d.ts file
+Using $lib/skeleton/ImageSkeleton.svelte.d.ts instead of generated .d.ts file
+Using $lib/skeleton/index.d.ts instead of generated .d.ts file
+Using $lib/skeleton/ListItemSkeleton.svelte.d.ts instead of generated .d.ts file
+Using $lib/skeleton/ProductCardSkeleton.svelte.d.ts instead of generated .d.ts file
+Using $lib/skeleton/ProductDetailSkeleton.svelte.d.ts instead of generated .d.ts file
+Using $lib/skeleton/SellerCardSkeleton.svelte.d.ts instead of generated .d.ts file
+Using $lib/skeleton/TextSkeleton.svelte.d.ts instead of generated .d.ts file
+src\lib -> dist

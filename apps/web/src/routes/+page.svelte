@@ -406,7 +406,7 @@
 					/>
 				</div>
 				
-				<!-- Category Pills -->
+				<!-- Enhanced Category Pills -->
 				<nav 
 					role="navigation"
 					aria-label="Browse categories"
@@ -419,36 +419,78 @@
 						aria-label="View all categories"
 						aria-busy={loadingCategory === 'all'}
 						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
-						class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-black text-white rounded-lg text-[13px] sm:text-sm font-medium hover:bg-gray-900 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[65px] min-h-[36px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+						class="category-nav-pill shrink-0 px-4 sm:px-5 py-2.5 bg-gradient-to-r from-gray-900 to-black text-white rounded-xl text-[13px] sm:text-sm font-medium hover:shadow-lg disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[80px] min-h-[44px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black relative"
 					>
 						{#if loadingCategory === 'all'}
 							<LoadingSpinner size="sm" color="white" />
 						{:else}
-							{i18n.search_all()}
+							<span class="text-base">🛍️</span>
+							<span>{i18n.search_all()}</span>
 						{/if}
 					</button>
-					{#each mainCategories as category, i}
-						{@const categoryName = category.slug === 'women' ? i18n.category_women() : 
-						                       category.slug === 'men' ? i18n.category_men() : 
-						                       category.slug === 'kids' ? i18n.category_kids() : 
-						                       category.name}
+					
+					<!-- Women Category with Pink Accent -->
+					{#if mainCategories.find(c => c.slug === 'women')}
+						{@const category = mainCategories.find(c => c.slug === 'women')}
 						<button 
 							onclick={() => navigateToCategory(category.slug)}
-							onkeydown={(e) => handlePillKeyNav(e, i + 1)}
+							onkeydown={(e) => handlePillKeyNav(e, 1)}
 							disabled={loadingCategory === category.slug}
-							aria-label="Browse {categoryName} category"
+							aria-label="Browse Women category"
 							aria-busy={loadingCategory === category.slug}
-							aria-current={$page.url.pathname.includes(category.slug) ? 'page' : undefined}
-							class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-white border border-gray-200 rounded-lg text-[13px] sm:text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[65px] min-h-[36px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
+							class="category-nav-pill shrink-0 px-4 sm:px-5 py-2.5 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 rounded-xl text-[13px] sm:text-sm font-medium text-pink-900 hover:from-pink-100 hover:to-pink-200 hover:border-pink-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[80px] min-h-[44px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400 relative"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="gray" />
+								<LoadingSpinner size="sm" color="pink" />
 							{:else}
-								{categoryName}
+								<span class="text-base">👗</span>
+								<span>{i18n.category_women()}</span>
 							{/if}
 						</button>
-					{/each}
+					{/if}
+					
+					<!-- Men Category with Blue Accent -->
+					{#if mainCategories.find(c => c.slug === 'men')}
+						{@const category = mainCategories.find(c => c.slug === 'men')}
+						<button 
+							onclick={() => navigateToCategory(category.slug)}
+							onkeydown={(e) => handlePillKeyNav(e, 2)}
+							disabled={loadingCategory === category.slug}
+							aria-label="Browse Men category"
+							aria-busy={loadingCategory === category.slug}
+							class="category-nav-pill shrink-0 px-4 sm:px-5 py-2.5 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl text-[13px] sm:text-sm font-medium text-blue-900 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[80px] min-h-[44px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 relative"
+							data-prefetch="hover"
+						>
+							{#if loadingCategory === category.slug}
+								<LoadingSpinner size="sm" color="blue" />
+							{:else}
+								<span class="text-base">👔</span>
+								<span>{i18n.category_men()}</span>
+							{/if}
+						</button>
+					{/if}
+					
+					<!-- Kids Category with Green Accent -->
+					{#if mainCategories.find(c => c.slug === 'kids')}
+						{@const category = mainCategories.find(c => c.slug === 'kids')}
+						<button 
+							onclick={() => navigateToCategory(category.slug)}
+							onkeydown={(e) => handlePillKeyNav(e, 3)}
+							disabled={loadingCategory === category.slug}
+							aria-label="Browse Kids category"
+							aria-busy={loadingCategory === category.slug}
+							class="category-nav-pill shrink-0 px-4 sm:px-5 py-2.5 bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl text-[13px] sm:text-sm font-medium text-green-900 hover:from-green-100 hover:to-green-200 hover:border-green-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[80px] min-h-[44px] transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 relative"
+							data-prefetch="hover"
+						>
+							{#if loadingCategory === category.slug}
+								<LoadingSpinner size="sm" color="green" />
+							{:else}
+								<span class="text-base">👶</span>
+								<span>{i18n.category_kids()}</span>
+							{/if}
+						</button>
+					{/if}
 				</nav>
 			</div>
 		</div>

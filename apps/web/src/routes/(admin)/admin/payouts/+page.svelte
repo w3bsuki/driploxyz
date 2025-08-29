@@ -2,6 +2,7 @@
   import { Button } from '@repo/ui';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
+  import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
 
@@ -11,13 +12,12 @@
 
   let { data }: Props = $props();
   
+  const supabase = createBrowserSupabaseClient();
+  
   let transactions = $state(data.pendingPayouts);
   let loading = $state(false);
   let processing = $state<string | null>(null);
   let activeTab = $state<'pending' | 'processing' | 'completed'>('pending');
-  
-  // Get supabase from the page store which has it from the root layout
-  const supabase = $derived($page.data.supabase);
 
   onMount(async () => {
     if (!supabase) return;
