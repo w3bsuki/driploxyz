@@ -160,10 +160,13 @@ export async function updateUserProfile(
  * Signs out user and redirects
  */
 export async function signOut(supabase: SupabaseClient<Database>) {
-  // Just navigate to logout endpoint - it will handle everything
+  // Call POST /logout to clear Supabase auth cookies on the server
   if (typeof window !== 'undefined') {
+    try {
+      await fetch('/logout', { method: 'POST', credentials: 'include' });
+    } catch {}
     const { goto } = await import('$app/navigation');
-    await goto('/logout', { replaceState: true });
+    await goto('/', { replaceState: true });
   }
 }
 
