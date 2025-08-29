@@ -13,7 +13,8 @@ export default defineConfig(
 		enhancedImages(),
 		paraglideVitePlugin({
 			project: '../../packages/i18n/project.inlang',
-			outdir: '../../packages/i18n/lib/paraglide'
+			outdir: '../../packages/i18n/lib/paraglide',
+			experimentalMiddlewareLocaleSplitting: true
 		}),
 		sveltekit(),
 		// Only upload source maps in production builds
