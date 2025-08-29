@@ -408,3 +408,90 @@ Claude-Code Quick Actions (copy/paste)
 - Debloat next: Phase C (Toasts) then Phase D (Badges) per DEBLOAT_PLAN.md; update exports/imports first, then delete.
 - Data hygiene: add `.range()`/`.limit()` and minimal selects to all queries; replace any `invalidateAll()` with targeted `invalidate()` and ensure `depends('supabase:auth')` coverage.
 - UI/UX sweep: Tailwind v4 CSS-first + Svelte 5 runes; see `.claude/commands/ui-ux-sweep.md`.
+
+---
+
+## CODEX MOBILE STRATEGY NOTE (React Native vs Capacitor)
+
+Decision
+- Build a native app with React Native (Expo) inside this monorepo at `apps/mobile`.
+- Do not use Capacitor unless we need store presence in ~2–3 days post web-MVP (treat as temporary v0 if used).
+
+Why RN (Expo)
+- TypeScript/JS reuse across `packages/*` (types, API, business logic).
+- Native UX/perf (gestures, lists, camera, push) to compete with Vinted/Depop.
+- Team fit with current stack (Svelte/Supabase/TS).
+
+Timing & Deployment
+- Web stays primary; ship web MVP first. Mobile can start in parallel only if it does not slow web.
+- Deploy web on Vercel; deploy native via Expo EAS (App Store / Play). Do not deploy native to Vercel.
+
+Minimal RN Setup (safe for Turborepo)
+1) Scaffold (from repo root):
+   ```sh
+   pnpm dlx create-expo-app apps/mobile --template blank-typescript
+   pnpm install
+   pnpm --filter mobile start
+   ```
+2) Metro config for pnpm (create `apps/mobile/metro.config.js`):
+   ```js
+   const { getDefaultConfig } = require('@expo/metro-config');
+   const path = require('path');
+   const projectRoot = __dirname;
+   const workspaceRoot = path.resolve(projectRoot, '../..');
+   const config = getDefaultConfig(projectRoot);
+   config.watchFolders = [workspaceRoot];
+   config.resolver.nodeModulesPaths = [
+     path.resolve(projectRoot, 'node_modules'),
+     path.resolve(workspaceRoot, 'node_modules'),
+   ];
+   config.resolver.disableHierarchicalLookup = true;
+   module.exports = config;
+   ```
+3) Env for Expo (create `apps/mobile/app.config.ts`):
+   ```ts
+   import 'dotenv/config';
+   import type { ExpoConfig } from '@expo/config';
+   export default (): ExpoConfig => ({
+     name: 'Driplo', slug: 'driplo', scheme: 'driplo', version: '1.0.0',
+     ios: { supportsTablet: false, bundleIdentifier: 'com.driplo.app' },
+     android: { package: 'com.driplo.app' },
+     extra: {
+       PUBLIC_SUPABASE_URL: process.env.PUBLIC_SUPABASE_URL,
+       PUBLIC_SUPABASE_ANON_KEY: process.env.PUBLIC_SUPABASE_ANON_KEY,
+       PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
+     },
+   });
+   ```
+   Ensure root `.env` contains the three PUBLIC_ vars already used by web.
+4) Supabase client (RN):
+   ```sh
+   pnpm --filter mobile add @supabase/supabase-js @react-native-async-storage/async-storage react-native-url-polyfill
+   ```
+   Create `apps/mobile/src/lib/supabase.ts` with AsyncStorage + url polyfill and `persistSession: true`.
+5) Navigation (Expo Router):
+   ```sh
+   pnpm --filter mobile add expo-router react-native-safe-area-context react-native-screens
+   ```
+   Set `"main": "expo-router/entry"` in `apps/mobile/package.json` and add `app/_layout.tsx`, `app/index.tsx`.
+
+Guardrails (avoid churn)
+- Do NOT import Svelte UI from `packages/ui` into mobile; create `packages/ui-native` later if needed.
+- Avoid custom Metro `resolveRequest` and Babel path aliases for now; Metro config above is sufficient.
+- Keep changes out of shared packages unless additive and type-safe.
+
+Optional: Capacitor (only if urgent)
+- Wrap `apps/web` with Capacitor after web launch for a temporary store presence. Expect WebView feel; plan to sunset when RN is ready.
+
+Definition of Done (Mobile Phase 0)
+- App boots on simulator/real device.
+- Supabase auth works (email/magic link), read-only feed screen renders.
+- `pnpm --filter web build` remains green and unaffected.
+
+Claude-Code TODO (exact order)
+- [ ] Create `apps/mobile` via Expo and commit.
+- [ ] Add `apps/mobile/metro.config.js` as shown.
+- [ ] Add `apps/mobile/app.config.ts` and verify `.env` vars.
+- [ ] Install RN Supabase deps and add `src/lib/supabase.ts`.
+- [ ] Add Expo Router with `_layout.tsx` and `index.tsx`; set `main` entry.
+- [ ] Run `pnpm --filter mobile start` and verify web build still passes.

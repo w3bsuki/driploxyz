@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase } })
         price,
         seller_id,
         category_id,
-        brand_id,
+        brand,
         size,
         condition,
         is_sold,
@@ -29,10 +29,6 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase } })
           display_order
         ),
         categories (
-          id,
-          name
-        ),
-        brands (
           id,
           name
         )
@@ -61,7 +57,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase } })
       price: product.price,
       seller_id: product.seller_id,
       category: product.categories?.name,
-      brand: product.brands?.name,
+      brand: product.brand,
       size: product.size,
       condition: product.condition,
       is_sold: product.is_sold,

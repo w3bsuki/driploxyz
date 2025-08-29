@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Avatar, ProductCard, UserBadge, BottomNav } from '@repo/ui';
+  import { Button, Avatar, ProductCard, UserBadge, AdminBadge, BottomNav } from '@repo/ui';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { getProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
@@ -197,8 +197,11 @@
       <div class="flex items-center space-x-2 flex-wrap gap-y-1">
         <h1 class="font-semibold text-sm">{data.profile.username}</h1>
         
+        <!-- Admin Badge (highest priority) -->
+        {#if data.profile.role === 'admin'}
+          <AdminBadge size="sm" />
         <!-- User Badge based on account type -->
-        {#if data.profile.account_type === 'brand'}
+        {:else if data.profile.account_type === 'brand'}
           <UserBadge type="brand" size="sm" />
         {:else if data.profile.account_type === 'premium' || data.profile.account_type === 'pro'}
           <UserBadge type="pro" size="sm" />

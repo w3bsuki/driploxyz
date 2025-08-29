@@ -46,9 +46,14 @@ export { default as AvatarSelector } from './AvatarSelector.svelte';
 export { default as SocialLinksEditor } from './SocialLinksEditor.svelte';
 export { default as PayoutMethodSelector } from './PayoutMethodSelector.svelte';
 export { default as OnboardingSuccessModal } from './OnboardingSuccessModal.svelte';
+
+// Specialized badges (domain-specific)
 export { default as BrandBadge } from './BrandBadge.svelte';
-export { default as NewSellerBadge } from './NewSellerBadge.svelte';
+export { default as UserBadge } from './UserBadge.svelte';
+export { default as ConditionBadge } from './ConditionBadge.svelte';
 export { default as AdminBadge } from './AdminBadge.svelte';
+export { default as NewSellerBadge } from './NewSellerBadge.svelte';
+export { default as PremiumBadge } from './PremiumBadge.svelte';
 
 // Admin Management Components
 export { default as AdminSecurityCheck } from './AdminSecurityCheck.svelte';
@@ -57,8 +62,6 @@ export { default as AdminPayoutDashboard } from './AdminPayoutDashboard.svelte';
 export { default as AdminNotificationCenter } from './AdminNotificationCenter.svelte';
 export { default as AdminAnalyticsPanel } from './AdminAnalyticsPanel.svelte';
 export { default as AdminDashboard } from './AdminDashboard.svelte';
-export { default as PremiumBadge } from './PremiumBadge.svelte';
-export { default as UserBadge } from './UserBadge.svelte';
 export { default as BrandPaymentModal } from './BrandPaymentModal.svelte';
 export { default as WelcomeTutorialFlow } from './WelcomeTutorialFlow.svelte';
 
@@ -165,7 +168,6 @@ export { default as ProductHighlight } from './ProductHighlight.svelte';
 export { default as TrendingSection } from './TrendingSection.svelte';
 
 // Product display components
-export { default as ConditionBadge } from './ConditionBadge.svelte';
 export { default as FavoriteButton } from './FavoriteButton.svelte';
 export { default as ProductImage } from './ProductImage.svelte';
 export { default as ProductMeta } from './ProductMeta.svelte';
