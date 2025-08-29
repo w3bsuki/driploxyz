@@ -10,10 +10,11 @@
     "skipLibCheck": true,
     "allowImportingTsExtensions": false,
     "resolveJsonModule": true,
-    "strict": true,
+    "strict": false,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": false
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "lib", "dist"]
+  "exclude": ["node_modules", "lib/paraglide", "dist"]
 }

@@ -8,8 +8,12 @@ if (!STRIPE_SECRET_KEY) {
 	console.warn('STRIPE_SECRET_KEY not available - Stripe functionality disabled');
 }
 
-export const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY, {
-	apiVersion: '2025-07-30.basil'
-}) : null;
+// Use a stable, valid Stripe API version. If omitted, Stripe defaults to the
+// account's default API version. Pinning avoids unexpected behavior changes.
+export const stripe = STRIPE_SECRET_KEY
+  ? new Stripe(STRIPE_SECRET_KEY, {
+      apiVersion: '2024-06-20'
+    })
+  : null;
 
 export type { Stripe };

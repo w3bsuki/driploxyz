@@ -1,7 +1,5 @@
 // Re-export generated Paraglide functions
-// @ts-ignore - paraglide generated files don't have declaration files
 export * from '../lib/paraglide/messages.js';
-// @ts-ignore - paraglide generated files don't have declaration files
 export * from '../lib/paraglide/runtime.js';
 
 // Type definitions
@@ -14,7 +12,6 @@ export const languageNames: Record<LanguageTag, string> = {
 };
 
 // Compatibility functions for migration from Paraglide 1.x
-// @ts-ignore - paraglide generated files don't have declaration files
 export { 
   isLocale as isAvailableLanguageTag, 
   getLocale as languageTag,

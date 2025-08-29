@@ -1,15 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServices } from '$lib/services';
-import Stripe from 'stripe';
-import { STRIPE_SECRET_KEY } from '$env/static/private';
-
-// Initialize Stripe with secret key - only on server runtime
-const stripe = STRIPE_SECRET_KEY 
-  ? new Stripe(STRIPE_SECRET_KEY, {
-      apiVersion: '2025-07-30.basil'
-    })
-  : null;
+import { stripe } from '$lib/stripe/server.js';
 
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
   try {
