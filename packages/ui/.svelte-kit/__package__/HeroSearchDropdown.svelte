@@ -196,8 +196,8 @@
     role="search"
     class="bg-white rounded-full border border-gray-200 p-1 shadow-sm hover:shadow-md focus-within:border-gray-400 focus-within:ring-2 focus-within:ring-gray-400/20 transition-all"
   >
-    <div class="bg-gray-50 relative rounded-full overflow-hidden min-h-[44px] sm:min-h-[46px]">
-      <div class="relative flex items-center min-h-[44px] sm:min-h-[46px]">
+    <div class="bg-gray-50 relative rounded-full overflow-hidden min-h-11 sm:min-h-12">
+      <div class="relative flex items-center min-h-11 sm:min-h-12">
         <label for="hero-search-input" class="sr-only">{placeholder}</label>
         <div class="absolute left-3 flex items-center justify-center pointer-events-none" aria-hidden="true">
           <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -214,7 +214,7 @@
           autocomplete="off"
           spellcheck="false"
           aria-label={placeholder}
-          class="flex-1 bg-transparent text-[15px] sm:text-base placeholder-gray-500 focus:outline-none border-0 focus:ring-0 min-w-0 pl-10 pr-2 py-2.5 sm:py-3"
+          class="flex-1 bg-transparent text-sm sm:text-base placeholder-gray-500 focus:outline-none border-0 focus:ring-0 min-w-0 pl-10 pr-2 py-2.5 sm:py-3"
           oninput={handleInput}
           onfocus={handleFocus}
           onkeydown={handleKeyDown}

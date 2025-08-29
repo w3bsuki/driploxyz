@@ -76,23 +76,23 @@
   <!-- Quick Actions Row -->
   <div class="p-4 bg-gradient-to-r from-gray-50 to-blue-50 border-b border-gray-100">
     <div class="flex items-center gap-3 overflow-x-auto scrollbar-hide">
-      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-shadow flex items-center gap-2">
         <span>🔥</span>
         <span>Hot Deals</span>
       </button>
-      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-shadow flex items-center gap-2">
         <span>✨</span>
         <span>New Today</span>
       </button>
-      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-shadow flex items-center gap-2">
         <span>💎</span>
         <span>Designer</span>
       </button>
-      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-shadow flex items-center gap-2">
         <span>💰</span>
         <span>Under $25</span>
       </button>
-      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-shadow flex items-center gap-2">
         <span>🚚</span>
         <span>Free Ship</span>
       </button>
@@ -111,7 +111,7 @@
         {#each categories as category}
           <button
             onclick={() => onCategorySelect?.(category)}
-            class="p-4 rounded-xl hover:bg-gradient-to-br hover:from-gray-50 hover:to-blue-50 hover:border-blue-200 border border-gray-200 transition-all text-center group hover:shadow-md"
+            class="p-4 rounded-xl hover:bg-gradient-to-br hover:from-gray-50 hover:to-blue-50 hover:border-blue-200 border border-gray-200 transition-colors text-center group hover:shadow-md"
           >
             {#if category.icon}
               <div class="text-3xl mb-2 group-hover:scale-110 transition-transform">{category.icon}</div>

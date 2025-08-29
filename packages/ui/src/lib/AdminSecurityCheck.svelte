@@ -109,59 +109,81 @@ Requires additional verification for sensitive admin operations
 </Modal>
 
 <style>
-	.security-check {
-		@apply space-y-6;
+	.security-check > * + * {
+		margin-top: 1.5rem;
 	}
 
 	.warning-notice {
-		@apply bg-red-50 border border-red-200 rounded-lg p-4 flex gap-3;
+		background-color: oklch(0.97 0.02 0);
+		border: 1px solid oklch(0.88 0.06 0);
+		border-radius: 0.5rem;
+		padding: 1rem;
+		display: flex;
+		gap: 0.75rem;
 	}
 
 	.warning-icon {
-		@apply text-2xl;
+		font-size: 1.5rem;
 	}
 
 	.warning-content h4 {
-		@apply font-semibold text-red-900 mb-2;
+		font-weight: 600;
+		color: oklch(0.18 0.08 0);
+		margin-bottom: 0.5rem;
 	}
 
 	.warning-content p {
-		@apply text-sm text-red-800;
+		font-size: 0.875rem;
+		color: oklch(0.28 0.12 0);
 	}
 
-	.verification-form {
-		@apply space-y-4;
+	.verification-form > * + * {
+		margin-top: 1rem;
 	}
 
-	.form-group {
-		@apply space-y-2;
+	.form-group > * + * {
+		margin-top: 0.5rem;
 	}
 
 	.form-group label {
-		@apply block text-sm font-medium text-gray-700;
+		display: block;
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: oklch(0.38 0.025 270);
 	}
 
 	.error-message {
-		@apply text-sm text-red-600;
+		font-size: 0.875rem;
+		color: oklch(0.48 0.16 0);
 	}
 
 	.security-info {
-		@apply bg-green-50 border border-green-200 rounded-lg p-4;
+		background-color: oklch(0.97 0.02 145);
+		border: 1px solid oklch(0.88 0.06 145);
+		border-radius: 0.5rem;
+		padding: 1rem;
 	}
 
 	.security-info h5 {
-		@apply font-medium text-green-900 mb-2;
+		font-weight: 500;
+		color: oklch(0.18 0.08 145);
+		margin-bottom: 0.5rem;
 	}
 
-	.security-list {
-		@apply space-y-1;
+	.security-list > * + * {
+		margin-top: 0.25rem;
 	}
 
 	.security-list li {
-		@apply text-sm text-green-800;
+		font-size: 0.875rem;
+		color: oklch(0.28 0.12 145);
 	}
 
 	.modal-actions {
-		@apply flex justify-end gap-3 border-t pt-4;
+		display: flex;
+		justify-content: flex-end;
+		gap: 0.75rem;
+		border-top: 1px solid oklch(0.95 0.005 270);
+		padding-top: 1rem;
 	}
 </style>

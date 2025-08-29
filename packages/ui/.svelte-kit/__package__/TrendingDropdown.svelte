@@ -135,7 +135,7 @@
             <!-- Promoted Crown Badge -->
             {#if product.is_promoted}
               <div class="absolute top-1 right-1 bg-yellow-400 rounded-full p-0.5 shadow-sm border border-yellow-500">
-                <span class="text-[10px] leading-none">👑</span>
+                <span class="text-xs leading-none">👑</span>
               </div>
             {:else}
               <div class="absolute top-1 right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full font-medium">

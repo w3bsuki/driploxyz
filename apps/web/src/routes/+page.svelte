@@ -459,7 +459,7 @@
 						class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-900 to-black text-white rounded-xl text-[12px] sm:text-sm font-medium md:hover:shadow-lg disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[64px] min-h-[36px] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black relative snap-start"
 					>
 						{#if loadingCategory === 'all'}
-							<LoadingSpinner size="sm" color="white" class="w-5 h-5" />
+							<LoadingSpinner size="sm" color="white" />
 						{:else}
 							<span class="text-base">🛍️</span>
 							<span>{i18n.search_all()}</span>
@@ -479,7 +479,7 @@
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="pink" class="w-5 h-5" />
+								<LoadingSpinner size="sm" color="pink" />
 							{:else}
 								<span class="text-base">👗</span>
 								<span>{i18n.category_women()}</span>
@@ -500,7 +500,7 @@
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="blue" class="w-5 h-5" />
+								<LoadingSpinner size="sm" color="blue" />
 							{:else}
 								<span class="text-base">👔</span>
 								<span>{i18n.category_men()}</span>
@@ -521,7 +521,7 @@
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="green" class="w-5 h-5" />
+								<LoadingSpinner size="sm" color="green" />
 							{:else}
 								<span class="text-base">👶</span>
 								<span>{i18n.category_kids()}</span>
