@@ -18,11 +18,14 @@
     md: 'w-8 h-8',
     lg: 'w-12 h-12'
   };
+  
+  // Allow custom class to override size
+  const sizeClass = className || sizes[size];
 </script>
 
 {#if fullscreen}
   <div class="fixed inset-0 bg-white/80 backdrop-blur-sm z-[100] flex items-center justify-center pointer-events-none">
-    <div class="{sizes[size]} {className}">
+    <div class="{sizeClass}">
       <svg 
         class="animate-spin" 
         xmlns="http://www.w3.org/2000/svg" 
@@ -46,7 +49,7 @@
     </div>
   </div>
 {:else}
-  <div class="{sizes[size]} {className}">
+  <div class="{sizeClass}">
     <svg 
       class="animate-spin" 
       xmlns="http://www.w3.org/2000/svg" 

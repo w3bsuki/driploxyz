@@ -48,16 +48,20 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   );
 
   /**
-   * Simple session getter - following Supabase best practices
+   * Safe session getter - validates JWT to prevent tampering
+   * CRITICAL: Always call getUser() first on server to validate JWT signature
    */
   event.locals.safeGetSession = async () => {
-    // Just get the session - Supabase handles validation
-    const { data: { session }, error } = await event.locals.supabase.auth.getSession();
+    // First validate the JWT by calling getUser (makes request to Auth server)
+    const { data: { user }, error } = await event.locals.supabase.auth.getUser();
     
-    if (error || !session) {
+    if (error || !user) {
       return { session: null, user: null };
     }
     
-    return { session, user: session.user };
+    // Only get session after JWT validation passes
+    const { data: { session } } = await event.locals.supabase.auth.getSession();
+    
+    return { session, user };
   };
 }

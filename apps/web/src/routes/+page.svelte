@@ -413,17 +413,6 @@
 	// Scroll detection removed for cleaner UX
 </script>
 
-<style>
-	/* Smooth transitions for sticky search */
-	.sticky-search-container {
-		will-change: transform;
-	}
-	
-	/* Optimize category pills scrolling */
-	.category-nav-pill {
-		transition: transform 0.15s ease, box-shadow 0.15s ease;
-	}
-</style>
 
 {#key currentLang}
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
@@ -470,7 +459,7 @@
 						class="category-nav-pill shrink-0 px-3 sm:px-4 py-2 bg-gradient-to-r from-gray-900 to-black text-white rounded-xl text-[12px] sm:text-sm font-medium md:hover:shadow-lg disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-w-[64px] min-h-[36px] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black relative snap-start"
 					>
 						{#if loadingCategory === 'all'}
-							<LoadingSpinner size="sm" color="white" />
+							<LoadingSpinner size="sm" color="white" class="w-5 h-5" />
 						{:else}
 							<span class="text-base">🛍️</span>
 							<span>{i18n.search_all()}</span>

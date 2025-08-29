@@ -1,10 +1,10 @@
 # 🎨 Driplo Styling Guide — Simple & Fast
 
-## The Setup (What We Actually Use)
+## The Setup (VITE ONLY - NO POSTCSS)
 - **Tailwind CSS v4** with **Vite Plugin** (`@tailwindcss/vite`) 
 - **OKLCH colors** defined in `app.css`
 - **Mobile-first** responsive design
-- That's it. No PostCSS needed. Vite handles everything.
+- **NO PostCSS config needed** - Vite plugin handles autoprefixing & everything
 
 ## 🚨 Quick Fixes Needed
 
