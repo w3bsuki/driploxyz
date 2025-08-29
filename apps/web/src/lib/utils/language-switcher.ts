@@ -43,9 +43,19 @@ export async function switchLanguage(lang: string) {
     document.documentElement.lang = lang;
     
     // Navigate to the language-specific path using SvelteKit navigation
-    // This will trigger a server-side reload with the new locale
-    const currentPath = window.location.pathname;
-    const newPath = lang === 'en' ? currentPath : `/${lang}${currentPath}`;
+    // Map internal locale to URL path
+    const currentPath = window.location.pathname.replace(/^\/(uk|bg)/, '');
+    let newPath: string;
+    
+    if (lang === 'en') {
+      // English uses /uk path
+      newPath = `/uk${currentPath}`;
+    } else if (lang === 'bg') {
+      // Bulgarian is default, no prefix needed
+      newPath = currentPath || '/';
+    } else {
+      newPath = `/${lang}${currentPath}`;
+    }
     
     // Use goto with invalidateAll to ensure fresh data
     await goto(newPath, { invalidateAll: true });

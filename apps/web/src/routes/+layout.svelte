@@ -2,6 +2,7 @@
   import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
   import UnifiedCookieConsent from '$lib/components/UnifiedCookieConsent.svelte';
   import Header from '$lib/components/Header.svelte';
+  import GeoLocaleSuggestion from '$lib/components/GeoLocaleSuggestion.svelte';
   import '../app.css';
   // Deploy to driplo.xyz
   import '$lib/styles/cyrillic-typography.css';
@@ -183,3 +184,6 @@
   detectedRegion={data.detectedRegion || 'BG'}
   currentRegion={data.region || 'BG'}
 />
+
+<!-- Geo-based Locale Suggestion -->
+<GeoLocaleSuggestion />

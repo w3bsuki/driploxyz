@@ -26,16 +26,21 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   
   // HIGHEST PRIORITY: Detect language from URL path
   const pathname = event.url.pathname;
-  let locale = 'en'; // Default to English
+  let locale = 'bg'; // Default to Bulgarian
   
-  // Check if path starts with a locale (e.g., /bg/, /en/)
-  const pathMatch = pathname.match(/^\/([a-z]{2})(\/|$)/);
+  // Check if path starts with a locale (e.g., /uk/, /bg/)
+  const pathMatch = pathname.match(/^\/(uk|bg)(\/|$)/);
   if (pathMatch) {
     const pathLocale = pathMatch[1];
-    if (i18n.isAvailableLanguageTag(pathLocale)) {
-      locale = pathLocale;
-      if (isDebug) console.log(`🌍 Path-based language detected: /${pathLocale}/`);
+    // Map /uk to 'en' locale internally
+    const mappedLocale = pathLocale === 'uk' ? 'en' : pathLocale;
+    if (i18n.isAvailableLanguageTag(mappedLocale)) {
+      locale = mappedLocale;
+      if (isDebug) console.log(`🌍 Path-based language detected: /${pathLocale}/ → ${mappedLocale}`);
     }
+  } else if (pathname === '/' || !pathname.startsWith('/uk') && !pathname.startsWith('/bg')) {
+    // Root or no locale prefix = Bulgarian (default)
+    locale = 'bg';
   }
   
   // SECOND PRIORITY: Check URL parameter
