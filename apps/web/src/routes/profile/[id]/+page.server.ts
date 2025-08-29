@@ -131,6 +131,17 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     images: product.images?.map(img => img.image_url) || []
   })) || [];
 
+  // Get live follower and following counts
+  const { count: followersCount } = await locals.supabase
+    .from('followers')
+    .select('*', { count: 'exact', head: true })
+    .eq('following_id', profile.id);
+
+  const { count: followingCount } = await locals.supabase
+    .from('followers')
+    .select('*', { count: 'exact', head: true })
+    .eq('follower_id', profile.id);
+
   // Check if current user is following this profile
   let isFollowing = false;
   if (session?.user && !isOwnProfile) {
@@ -147,7 +158,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
       products_count: products?.length || 0,
       active_listings: products?.length || 0,
       sold_listings: profile.sales_count || 0,
-      favorites_count: favorites.length
+      favorites_count: favorites.length,
+      followers_count: followersCount || 0,
+      following_count: followingCount || 0
     },
     products: productsWithImages,
     reviews: reviews || [],

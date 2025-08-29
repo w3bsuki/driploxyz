@@ -1,7 +1,8 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-export const POST: RequestHandler = async ({ request, locals: { supabase, session } }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
+  const { session } = await locals.safeGetSession();
   if (!session?.user) {
     throw error(401, 'Unauthorized');
   }
@@ -18,7 +19,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, sessio
     }
 
     // Check if already following
-    const { data: existingFollow } = await supabase
+    const { data: existingFollow } = await locals.supabase
       .from('followers')
       .select('id')
       .eq('follower_id', session.user.id)
@@ -27,7 +28,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, sessio
 
     if (existingFollow) {
       // Unfollow
-      const { error: deleteError } = await supabase
+      const { error: deleteError } = await locals.supabase
         .from('followers')
         .delete()
         .eq('follower_id', session.user.id)
@@ -41,7 +42,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, sessio
       return json({ following: false });
     } else {
       // Follow
-      const { error: insertError } = await supabase
+      const { error: insertError } = await locals.supabase
         .from('followers')
         .insert({
           follower_id: session.user.id,
@@ -54,7 +55,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, sessio
       }
 
       // Get follower info for notifications
-      const { data: followerInfo } = await supabase
+      const { data: followerInfo } = await locals.supabase
         .from('profiles')
         .select('username, full_name, avatar_url')
         .eq('id', session.user.id)
