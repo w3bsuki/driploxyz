@@ -4,7 +4,7 @@ import { createServerSupabaseClient } from '$lib/supabase/server';
 
 export const POST: RequestHandler = async ({ locals, request, cookies }) => {
   try {
-    const supabase = createServerSupabaseClient({ cookies });
+    const supabase = locals.supabase;
     const body = await request.json();
     const { productIds } = body;
 

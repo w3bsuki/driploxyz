@@ -47,7 +47,7 @@
 
 {#if show}
 	<div 
-		class="fixed bottom-4 right-4 z-50 transition-all duration-300 {visible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}"
+		class="fixed bottom-4 right-4 z-50 transition-transform transition-opacity duration-300 {visible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'}"
 	>
 		<div class="flex max-w-md items-start gap-3 rounded-lg bg-white p-4 shadow-lg ring-1 ring-black ring-opacity-5">
 			<div class="flex-shrink-0">

@@ -14,33 +14,29 @@
     onCategoryClick, 
     compact = false,
     translations = {
-      women: 'Women',
-      men: 'Men',
-      kids: 'Kids',
-      pets: 'Pets'
+      women: '',
+      men: '',
+      kids: '',
+      pets: ''
     }
   }: Props = $props();
 
   const categories = $derived([
-    { key: 'women', label: translations.women, emoji: '👗', color: 'pink' },
-    { key: 'men', label: translations.men, emoji: '👔', color: 'blue' },
-    { key: 'kids', label: translations.kids, emoji: '👶', color: 'yellow' },
-    { key: 'pets', label: translations.pets, emoji: '🐕', color: 'green' }
+    { key: 'women', label: translations.women, emoji: '👗' },
+    { key: 'men', label: translations.men, emoji: '👔' },
+    { key: 'kids', label: translations.kids, emoji: '👶' },
+    { key: 'pets', label: translations.pets, emoji: '🐕' }
   ]);
 
-  const colorClasses = {
-    pink: 'bg-pink-50 hover:bg-pink-100 border-pink-200/50',
-    blue: 'bg-blue-50 hover:bg-blue-100 border-blue-200/50',
-    yellow: 'bg-yellow-50 hover:bg-yellow-100 border-yellow-200/50',
-    green: 'bg-green-50 hover:bg-green-100 border-green-200/50'
-  };
+  // Professional neutral styling for all categories
+  const buttonClasses = 'bg-gray-50 hover:bg-gray-100 border-gray-200 hover:border-gray-300';
 </script>
 
 <div class="grid grid-cols-4 gap-2">
   {#each categories as category}
     <a
       href="/category/{category.key}"
-      class="{colorClasses[category.color]} rounded-lg p-2 transition-colors min-h-11 flex flex-col items-center justify-center border"
+      class="{buttonClasses} rounded-lg p-2 transition-colors min-h-11 flex flex-col items-center justify-center border"
       onclick={() => onCategoryClick(category.key)}
     >
       <span class="text-lg mb-0.5">{category.emoji}</span>

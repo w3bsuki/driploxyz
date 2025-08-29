@@ -43,7 +43,7 @@
   
 
   // Use text-base (16px) to prevent mobile zoom on focus
-  const baseClasses = 'block w-full rounded-lg border-2 border-gray-200 px-3 py-2 min-h-9 text-base sm:text-sm placeholder-gray-500 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500';
+  const baseClasses = 'block w-full rounded-[var(--input-radius)] border-2 border-[var(--input-border)] px-[var(--input-padding)] py-2 min-h-[var(--input-height)] text-[var(--input-font)] placeholder-gray-500 transition-colors duration-[var(--duration-base)] focus:outline-none focus:ring-2 focus:ring-[var(--input-focus-ring)] focus:border-[var(--input-focus-border)]';
   const stateClasses = $derived(error 
     ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' 
     : '');

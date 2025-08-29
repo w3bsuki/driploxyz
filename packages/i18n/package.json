@@ -6,7 +6,7 @@
     "build": "pnpm run compile && pnpm run types",
     "compile": "paraglide-js compile --project ./project.inlang --outdir ./lib/paraglide",
     "types": "tsc",
-    "dev": "paraglide-js compile --project ./project.inlang --outdir ./lib/paraglide --watch",
+    "dev": "paraglide-js compile --project ./project.inlang --outdir ./lib/paraglide",
     "clean": "rm -rf lib dist"
   },
   "main": "./lib/index.js",
@@ -23,7 +23,7 @@
     "messages"
   ],
   "dependencies": {
-    "@inlang/paraglide-js": "1.11.2"
+    "@inlang/paraglide-js": "2.2.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

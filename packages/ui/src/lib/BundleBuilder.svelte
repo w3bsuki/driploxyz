@@ -209,7 +209,7 @@
             src={sellerAvatar} 
             alt={sellerUsername}
             size="md"
-            class="ring-2 ring-white shadow-lg"
+            class="ring-2 ring-white shadow-sm md:shadow-lg"
           />
           <div class="flex-1">
             <div class="flex items-center gap-2">
@@ -294,12 +294,12 @@
           </h3>
           
           <!-- Horizontal scrollable products -->
-          <div class="flex gap-3 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4">
+          <div class="flex gap-3 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory pb-2 no-scrollbar -mx-4 px-4">
             {#each sellerProducts as product (product.id)}
               {@const isSelected = selectedItems.some(item => item.id === product.id)}
               <button
                 onclick={() => toggleItem(product)}
-                class="relative bg-white rounded-lg border-2 transition-all overflow-hidden flex-shrink-0 w-32"
+                class="relative bg-white rounded-lg border-2 transition-colors overflow-hidden flex-shrink-0 w-32 scroll-snap-align-start"
                 class:border-[oklch(60%_0.2_250)]={isSelected}
                 class:border-[oklch(90%_0.02_250)]={!isSelected}
                 style:background-color={isSelected ? 'oklch(60% 0.2 250 / 0.05)' : undefined}

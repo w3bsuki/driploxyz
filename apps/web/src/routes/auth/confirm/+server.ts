@@ -60,48 +60,6 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     // The onboarding page will handle showing the success message
     console.log('[AUTH CONFIRM] Email verified, redirecting to onboarding');
     throw redirect(303, '/onboarding?email_verified=true&welcome=true');
-
-    // Check profile status (should exist due to DB trigger)
-    if (!data.user) {
-      console.error('[AUTH CONFIRM] User data is null');
-      throw redirect(303, '/login');
-    }
-
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('onboarding_completed')
-      .eq('id', data.user!.id)
-      .single();
-
-    // If no profile exists (DB trigger failed?), redirect to onboarding
-    if (profileError?.code === 'PGRST116') {
-      console.log('[AUTH CONFIRM] No profile found (DB trigger failed?), redirecting to onboarding');
-      throw redirect(303, '/onboarding?verified=true&welcome=true');
-    }
-
-    if (profileError) {
-      console.error('[AUTH CONFIRM] Profile fetch error:', profileError);
-      throw redirect(303, '/login?verified=success&email=' + encodeURIComponent(data.user!.email || ''));
-    }
-
-    // Route based on onboarding status
-    if (!profile || profile.onboarding_completed !== true) {
-      console.log('[AUTH CONFIRM] User needs onboarding after verification');
-      throw redirect(303, '/onboarding?verified=true');
-    }
-
-    // User is fully verified and onboarded
-    console.log('[AUTH CONFIRM] User fully verified and onboarded, redirecting to:', next);
-    
-    // Validate and sanitize redirect URL
-    let redirectPath = '/dashboard';
-    if (next && next !== 'undefined' && next !== 'null') {
-      if (next.startsWith('/') && !next.includes('://')) {
-        redirectPath = next;
-      }
-    }
-    
-    throw redirect(303, `${redirectPath}?verified=true`);
     
   } catch (error) {
     // If it's already a redirect, re-throw it

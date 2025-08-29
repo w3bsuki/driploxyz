@@ -90,7 +90,7 @@
     </button>
     
     {#if isOpen}
-      <div class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-lg z-50">
+      <div class="absolute right-0 mt-2 w-56 bg-white border border-gray-200 rounded-md shadow-sm md:shadow-lg z-50">
         <div class="py-1">
           {#each countries as country}
             <button

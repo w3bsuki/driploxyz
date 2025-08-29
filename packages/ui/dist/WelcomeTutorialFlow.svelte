@@ -73,8 +73,8 @@
 </script>
 
 {#if show}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-xs">
-    <div class="w-full max-w-sm bg-white rounded-lg shadow-lg border border-gray-200 p-5">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 md:backdrop-blur-xs">
+    <div class="w-full max-w-sm bg-white rounded-lg shadow-sm md:shadow-lg border border-gray-200 p-5">
       <!-- Progress indicator -->
       <div class="flex justify-center mb-4">
         <div class="flex gap-1">

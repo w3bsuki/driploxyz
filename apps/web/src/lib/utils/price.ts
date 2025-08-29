@@ -17,7 +17,7 @@ const LOCALE_MAP = {
  * Supports different currencies and locales with proper number formatting
  */
 export function formatPrice(price: number, locale?: string): string {
-  const currentLocale = locale || i18n.languageTag() as keyof typeof CURRENCY_MAP;
+  const currentLocale = locale || i18n.getLocale() as keyof typeof CURRENCY_MAP;
   
   // For Bulgarian, use simple format: "5лв" instead of "лв 5.00"
   if (currentLocale === 'bg') {

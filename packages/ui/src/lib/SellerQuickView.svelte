@@ -69,7 +69,7 @@
 {#if seller && isOpen}
   <!-- Backdrop -->
   <div 
-    class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center p-4 pb-24 sm:pb-4"
+    class="fixed inset-0 bg-black/50 md:backdrop-blur-xs z-50 flex items-center justify-center p-4 pb-24 sm:pb-4"
     onclick={handleBackdropClick}
     onkeydown={handleKeydown}
     role="dialog"
@@ -86,7 +86,7 @@
         <!-- Close Button -->
         <button
           onclick={onClose}
-          class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full"
+          class="absolute top-3 right-3 p-2 bg-white/90 md:backdrop-blur-sm rounded-full"
           aria-label="Close"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,7 +162,7 @@
                       e.stopPropagation();
                       console.log('Add to wishlist:', product.id);
                     }}
-                    class="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm rounded-full"
+                    class="absolute top-2 right-2 p-1.5 bg-white/90 md:backdrop-blur-sm rounded-full"
                     aria-label="Add to wishlist"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

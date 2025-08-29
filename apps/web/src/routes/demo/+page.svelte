@@ -256,22 +256,22 @@
           <div class="bg-gray-100 p-4 rounded-lg">
             <div class="flex gap-3 flex-wrap">
               <div class="relative w-24 h-24 bg-gray-200 rounded">
-                <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-emerald-500/90 backdrop-blur-sm text-white text-[10px] font-semibold rounded uppercase tracking-wider">BNWT</div>
+                <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-emerald-500/90 backdrop-blur-sm text-white text-xs font-semibold rounded uppercase tracking-wider">BNWT</div>
               </div>
               <div class="relative w-24 h-24 bg-gray-200 rounded">
-                <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-green-500/90 backdrop-blur-sm text-white text-[10px] font-semibold rounded uppercase tracking-wider">NEW</div>
+                <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-green-500/90 backdrop-blur-sm text-white text-xs font-semibold rounded uppercase tracking-wider">NEW</div>
               </div>
               <div class="relative w-24 h-24 bg-gray-200 rounded">
-                <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-blue-500/90 backdrop-blur-sm text-white text-[10px] font-semibold rounded uppercase tracking-wider">LIKE NEW</div>
+                <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-blue-500/90 backdrop-blur-sm text-white text-xs font-semibold rounded uppercase tracking-wider">LIKE NEW</div>
               </div>
               <div class="relative w-24 h-24 bg-gray-200 rounded">
-                <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-yellow-500/90 backdrop-blur-sm text-white text-[10px] font-semibold rounded uppercase tracking-wider">GOOD</div>
+                <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-yellow-500/90 backdrop-blur-sm text-white text-xs font-semibold rounded uppercase tracking-wider">GOOD</div>
               </div>
               <div class="relative w-24 h-24 bg-gray-200 rounded">
-                <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-orange-500/90 backdrop-blur-sm text-white text-[10px] font-semibold rounded uppercase tracking-wider">WORN</div>
+                <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-orange-500/90 backdrop-blur-sm text-white text-xs font-semibold rounded uppercase tracking-wider">WORN</div>
               </div>
               <div class="relative w-24 h-24 bg-gray-200 rounded">
-                <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-red-500/90 backdrop-blur-sm text-white text-[10px] font-semibold rounded uppercase tracking-wider">FAIR</div>
+                <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-red-500/90 backdrop-blur-sm text-white text-xs font-semibold rounded uppercase tracking-wider">FAIR</div>
               </div>
             </div>
           </div>
@@ -340,7 +340,7 @@
                 alt={sampleProduct.title}
                 class="w-full h-full object-cover"
               />
-              <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-blue-500/90 backdrop-blur-sm text-white text-[10px] font-semibold rounded uppercase tracking-wider">
+              <div class="absolute top-2 left-2 px-1.5 py-0.5 bg-blue-500/90 backdrop-blur-sm text-white text-xs font-semibold rounded uppercase tracking-wider">
                 LIKE NEW
               </div>
             </div>
@@ -413,7 +413,7 @@
         <p class="text-base text-gray-900">Base (16px) - Body text</p>
         <p class="text-sm text-gray-700">Small (14px) - Secondary text</p>
         <p class="text-xs text-gray-600">Extra Small (12px) - Captions</p>
-        <p class="text-[11px] text-gray-500">2XS (11px) - Fine print</p>
+        <p class="text-xs text-gray-500">2XS (12px) - Fine print</p>
       </div>
     </section>
 
@@ -521,7 +521,7 @@
             {#if selectedHighlightVariant === 0}
               <!-- Current Design -->
               <article class="relative shrink-0 group">
-                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-colors transition-transform">
                   <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-md transition-shadow">
                     <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
                       <figure class="w-36 h-36 relative">
@@ -529,7 +529,7 @@
                         <!-- PRO Badge - Top -->
                         {#if product.isPro}
                           <div class="absolute top-1.5 left-1/2 -translate-x-1/2">
-                            <div class="bg-white text-gray-800 text-[9px] font-semibold px-2 py-0.5 rounded-full shadow-sm border border-gray-200">
+                            <div class="bg-white text-gray-800 text-xs font-semibold px-2 py-0.5 rounded-full shadow-sm border border-gray-200">
                               <span class="bg-gradient-to-r from-amber-500 to-yellow-500 bg-clip-text text-transparent">PRO</span>
                             </div>
                           </div>
@@ -557,14 +557,14 @@
             {:else if selectedHighlightVariant === 1}
               <!-- Variant 1: Clean Overlay -->
               <article class="relative shrink-0 group">
-                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-colors transition-transform">
                   <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-md transition-shadow">
                     <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
                       <figure class="w-36 h-36 relative">
                         <img src={product.image} alt={product.title} class="w-full h-full object-cover" />
                         <div class="absolute top-2 left-2">
                           <div class="w-5 h-5 rounded-full border border-white bg-gray-200 overflow-hidden shadow-sm">
-                            <div class="w-full h-full bg-gray-300 flex items-center justify-center text-[10px] text-gray-600 font-medium">
+                            <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
                               {product.sellerInitial}
                             </div>
                           </div>
@@ -580,7 +580,7 @@
                   <div class="mt-1.5 px-1 w-36">
                     <div class="flex items-center gap-1">
                       {#if product.isPro}
-                        <span class="bg-gradient-to-r from-amber-500 to-yellow-500 text-[10px] font-bold bg-clip-text text-transparent">PRO</span>
+                        <span class="bg-gradient-to-r from-amber-500 to-yellow-500 text-xs font-bold bg-clip-text text-transparent">PRO</span>
                       {/if}
                       <h3 class="text-xs text-gray-700 truncate flex-1">{product.title}</h3>
                     </div>
@@ -591,7 +591,7 @@
             {:else if selectedHighlightVariant === 2}
               <!-- Variant 2: Info Bar -->
               <article class="relative shrink-0 group">
-                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-colors transition-transform">
                   <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-md transition-shadow">
                     <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
                       <figure class="w-36 h-36 relative">
@@ -600,12 +600,12 @@
                           <div class="flex items-center justify-between px-2 py-1.5">
                             <div class="flex items-center gap-1.5">
                               <div class="w-5 h-5 rounded-full bg-gray-200 overflow-hidden">
-                                <div class="w-full h-full bg-gray-300 flex items-center justify-center text-[10px] text-gray-600 font-medium">
+                                <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
                                   {product.sellerInitial}
                                 </div>
                               </div>
                               {#if product.isPro}
-                                <span class="bg-gradient-to-r from-amber-500 to-yellow-500 text-[10px] font-bold bg-clip-text text-transparent">PRO</span>
+                                <span class="bg-gradient-to-r from-amber-500 to-yellow-500 text-xs font-bold bg-clip-text text-transparent">PRO</span>
                               {/if}
                             </div>
                             <div class="text-gray-900 text-sm font-bold">{product.price}€</div>
@@ -623,7 +623,7 @@
             {:else if selectedHighlightVariant === 3}
               <!-- Variant 3: Price Focus -->
               <article class="relative shrink-0 group">
-                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-colors transition-transform">
                   <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-md transition-shadow">
                     <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
                       <figure class="w-36 h-36 relative">
@@ -645,7 +645,7 @@
                       {/if}
                       <h3 class="text-xs text-gray-700 truncate flex-1">{product.title}</h3>
                     </div>
-                    <p class="text-[10px] text-gray-500">@{product.seller}</p>
+                    <p class="text-xs text-gray-500">@{product.seller}</p>
                   </div>
                 </button>
               </article>
@@ -653,7 +653,7 @@
             {:else if selectedHighlightVariant === 4}
               <!-- Variant 4: No Overlays -->
               <article class="relative shrink-0 group">
-                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-colors transition-transform">
                   <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-md transition-shadow">
                     <div class="bg-gray-50/80 relative rounded-xl border border-gray-100 overflow-hidden">
                       <figure class="w-36 h-36 relative">
@@ -664,12 +664,12 @@
                       <div class="flex items-center justify-between mb-1">
                         <div class="flex items-center gap-1.5">
                           <div class="w-4 h-4 rounded-full bg-gray-200 overflow-hidden">
-                            <div class="w-full h-full bg-gray-300 flex items-center justify-center text-[9px] text-gray-600 font-medium">
+                            <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
                               {product.sellerInitial}
                             </div>
                           </div>
                           {#if product.isPro}
-                            <span class="bg-gradient-to-r from-amber-500 to-yellow-500 text-[9px] font-bold bg-clip-text text-transparent">PRO</span>
+                            <span class="bg-gradient-to-r from-amber-500 to-yellow-500 text-xs font-bold bg-clip-text text-transparent">PRO</span>
                           {/if}
                         </div>
                         <div class="text-gray-900 text-sm font-bold">{product.price}€</div>
@@ -683,7 +683,7 @@
             {:else if selectedHighlightVariant === 5}
               <!-- Variant 5: Minimal -->
               <article class="relative shrink-0 group">
-                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-xl transition-all">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-xl transition-colors transition-transform">
                   <div class="relative">
                     <figure class="w-36 h-36 relative rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
                       <img src={product.image} alt={product.title} class="w-full h-full object-cover" />
@@ -712,12 +712,12 @@
             {:else if selectedHighlightVariant === 6}
               <!-- Variant 6: Instagram Style -->
               <article class="relative shrink-0 group">
-                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all pt-2">
-                  <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-lg transition-all duration-200 group-hover:scale-[1.02]">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-colors transition-transform pt-2">
+                  <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-lg transition-colors transition-transform duration-200 group-hover:scale-[1.02]">
                     <!-- PRO Badge - Outside frame, top center -->
                     {#if product.isPro}
                       <div class="absolute -top-1.5 left-1/2 -translate-x-1/2 z-10">
-                        <div class="bg-black text-white text-[9px] font-bold px-2.5 py-1 rounded-full shadow-lg border border-white/20">
+                        <div class="bg-black text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg border border-white/20">
                           PRO
                         </div>
                       </div>
@@ -741,7 +741,7 @@
                   <div class="mt-2.5 px-1 w-36">
                     <div class="flex items-center gap-1.5">
                       <div class="w-4 h-4 rounded-full bg-gray-200 overflow-hidden shrink-0">
-                        <div class="w-full h-full bg-gray-300 flex items-center justify-center text-[9px] text-gray-600 font-medium">
+                        <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-medium">
                           {product.sellerInitial}
                         </div>
                       </div>
@@ -754,12 +754,12 @@
             {:else if selectedHighlightVariant === 7}
               <!-- Variant 7: Clean Focus -->
               <article class="relative shrink-0 group">
-                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all pt-2">
-                  <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-lg transition-all duration-200 group-hover:scale-[1.02]">
+                <button class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-colors transition-transform pt-2">
+                  <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-lg transition-colors transition-transform duration-200 group-hover:scale-[1.02]">
                     <!-- PRO Badge - Outside frame, top center -->
                     {#if product.isPro}
                       <div class="absolute -top-1.5 left-1/2 -translate-x-1/2 z-10">
-                        <div class="bg-black text-white text-[9px] font-bold px-2.5 py-1 rounded-full shadow-lg border border-white/20">
+                        <div class="bg-black text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg border border-white/20">
                           PRO
                         </div>
                       </div>
@@ -853,7 +853,7 @@
           <div class="flex gap-2 overflow-x-auto">
             {#each [1,2,3,4] as i}
               <div class="relative w-20 h-20 bg-gray-100 rounded flex-shrink-0">
-                <div class="absolute top-1 left-1 px-1 py-0.5 bg-emerald-500/90 text-white text-[9px] font-bold rounded">NEW</div>
+                <div class="absolute top-1 left-1 px-1 py-0.5 bg-emerald-500/90 text-white text-xs font-bold rounded">NEW</div>
               </div>
             {/each}
           </div>

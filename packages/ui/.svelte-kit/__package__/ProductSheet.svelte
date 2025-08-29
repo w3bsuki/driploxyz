@@ -131,7 +131,7 @@
 {#if isVisible}
   <div 
     bind:this={sheetRef}
-    class="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl z-50 lg:hidden {sheetHeight} {className}"
+    class="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-sm md:shadow-2xl z-50 lg:hidden {sheetHeight} {className}"
     style={transformStyle}
     ontouchstart={handleTouchStart}
     ontouchmove={handleTouchMove}

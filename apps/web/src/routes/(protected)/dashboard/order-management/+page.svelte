@@ -312,7 +312,7 @@
         <nav class="grid grid-cols-4 gap-0.5 p-1">
           <button
             onclick={() => activeTab = 'to_ship'}
-            class="relative px-2 py-2.5 rounded-md font-medium text-xs sm:text-sm transition-all
+            class="relative px-2 py-2.5 rounded-md font-medium text-xs sm:text-sm transition-colors
               {activeTab === 'to_ship' 
                 ? 'bg-gray-900 text-white shadow-sm' 
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}"
@@ -323,7 +323,7 @@
               </svg>
               <span class="block">{i18n.orders_ship()}</span>
               {#if actionCounts().toShip > 0}
-                <span class="absolute -top-1 -right-1 {activeTab === 'to_ship' ? 'bg-white text-gray-900' : 'bg-orange-500 text-white'} text-[10px] rounded-full px-1.5 py-0.5 font-bold min-w-[18px] text-center">
+                <span class="absolute -top-1 -right-1 {activeTab === 'to_ship' ? 'bg-white text-gray-900' : 'bg-orange-500 text-white'} text-xs rounded-full px-1.5 py-0.5 font-bold min-w-[18px] text-center">
                   {actionCounts().toShip}
                 </span>
               {/if}
@@ -332,7 +332,7 @@
           
           <button
             onclick={() => activeTab = 'shipped'}
-            class="px-2 py-2.5 rounded-md font-medium text-xs sm:text-sm transition-all
+            class="px-2 py-2.5 rounded-md font-medium text-xs sm:text-sm transition-colors
               {activeTab === 'shipped' 
                 ? 'bg-gray-900 text-white shadow-sm' 
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}"
@@ -347,7 +347,7 @@
           
           <button
             onclick={() => activeTab = 'incoming'}
-            class="relative px-2 py-2.5 rounded-md font-medium text-xs sm:text-sm transition-all
+            class="relative px-2 py-2.5 rounded-md font-medium text-xs sm:text-sm transition-colors
               {activeTab === 'incoming' 
                 ? 'bg-gray-900 text-white shadow-sm' 
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}"
@@ -358,7 +358,7 @@
               </svg>
               <span class="block">{i18n.orders_myOrders()}</span>
               {#if actionCounts().incoming > 0}
-                <span class="absolute -top-1 -right-1 {activeTab === 'incoming' ? 'bg-white text-gray-900' : 'bg-blue-500 text-white'} text-[10px] rounded-full px-1.5 py-0.5 font-bold min-w-[18px] text-center">
+                <span class="absolute -top-1 -right-1 {activeTab === 'incoming' ? 'bg-white text-gray-900' : 'bg-blue-500 text-white'} text-xs rounded-full px-1.5 py-0.5 font-bold min-w-[18px] text-center">
                   {actionCounts().incoming}
                 </span>
               {/if}
@@ -367,7 +367,7 @@
           
           <button
             onclick={() => activeTab = 'completed'}
-            class="px-2 py-2.5 rounded-md font-medium text-xs sm:text-sm transition-all
+            class="px-2 py-2.5 rounded-md font-medium text-xs sm:text-sm transition-colors
               {activeTab === 'completed' 
                 ? 'bg-gray-900 text-white shadow-sm' 
                 : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'}"
@@ -414,7 +414,7 @@
             {#each filteredOrders() as order}
               {@const isSeller = order.seller_id === data.user?.id}
               
-              <div class="border border-gray-200 rounded-xl hover:shadow-md transition-all p-5 bg-white">
+              <div class="border border-gray-200 rounded-xl hover:shadow-md transition-shadow p-5 bg-white">
                 <div class="flex items-start gap-4">
                   <!-- Product/Bundle Image -->
                   {#if order.is_bundle && order.items_count > 1}

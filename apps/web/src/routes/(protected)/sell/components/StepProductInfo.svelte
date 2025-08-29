@@ -131,7 +131,7 @@
         <button
           type="button"
           onclick={() => selectBrand(brand)}
-          class="px-2.5 py-2.5 text-xs font-medium rounded-lg border transition-all {
+          class="px-2.5 py-2.5 text-xs font-medium rounded-lg border transition-colors {
             formData.brand === brand || (brand === 'Other' && showCustomBrand)
               ? 'border-black bg-black text-white' 
               : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
@@ -171,13 +171,13 @@
     <div class="space-y-2">
       {#each sizeGroups() as [group, sizes]}
         <div>
-          <span class="text-[10px] uppercase tracking-wider text-gray-500 font-semibold">{group === 'XS-XL' ? i18n.sell_sizeGroupXSXL() : group === 'Numbers' ? i18n.sell_sizeGroupNumbers() : group === 'UK/EU' ? i18n.sell_sizeGroupUKEU() : i18n.sell_sizeGroupOther()}</span>
+          <span class="text-xs uppercase tracking-wider text-gray-500 font-semibold">{group === 'XS-XL' ? i18n.sell_sizeGroupXSXL() : group === 'Numbers' ? i18n.sell_sizeGroupNumbers() : group === 'UK/EU' ? i18n.sell_sizeGroupUKEU() : i18n.sell_sizeGroupOther()}</span>
           <div class="grid grid-cols-3 gap-1.5 mt-1 sm:grid-cols-4 sm:gap-1">
             {#each sizes as size}
               <button
                 type="button"
                 onclick={() => selectSize(size.value)}
-                class="px-2 py-2 text-xs font-medium rounded-lg border transition-all {
+                class="px-2 py-2 text-xs font-medium rounded-lg border transition-colors {
                   formData.size === size.value 
                     ? 'border-black bg-black text-white' 
                     : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
@@ -212,7 +212,7 @@
           aria-label="Select {color.name}"
         >
           <div 
-            class="w-full aspect-square rounded-lg border-2 transition-all {
+            class="w-full aspect-square rounded-lg border-2 transition-colors {
               formData.color === color.name 
                 ? 'border-blue-500 ring-2 ring-blue-500 ring-opacity-50' 
                 : 'border-gray-200 hover:border-gray-300'
@@ -225,7 +225,7 @@
               </svg>
             {/if}
           </div>
-          <span class="text-[10px] text-gray-600 mt-0.5 block">{color.name}</span>
+          <span class="text-xs text-gray-600 mt-0.5 block">{color.name}</span>
         </button>
       {/each}
     </div>
@@ -252,7 +252,7 @@
         <button
           type="button"
           onclick={() => { formData.material = material; onFieldChange('material', material); }}
-          class="flex items-center justify-center px-2.5 py-2.5 text-xs font-medium rounded-lg border transition-all {
+          class="flex items-center justify-center px-2.5 py-2.5 text-xs font-medium rounded-lg border transition-colors {
             formData.material === material 
               ? 'border-blue-500 bg-blue-50 text-blue-700' 
               : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'

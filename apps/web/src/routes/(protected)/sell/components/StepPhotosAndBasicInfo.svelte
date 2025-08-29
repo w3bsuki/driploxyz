@@ -82,7 +82,7 @@
         class="w-full px-3 py-2 text-base sm:text-sm border border-gray-200 focus:ring-2 focus:ring-blue-500 rounded-md"
       />
       <div class="flex items-center justify-between mt-1.5">
-        <div class="text-[11px]">
+        <div class="text-xs">
           {#if formData.title.length < 3}
             <span class="text-red-600">{i18n.sell_minCharacters()}</span>
           {:else if formData.title.length < 15}
@@ -91,7 +91,7 @@
             <span class="text-green-600">✓ {i18n.sell_good()}</span>
           {/if}
         </div>
-        <span class="text-[11px] text-gray-500">{formData.title.length}/50</span>
+        <span class="text-xs text-gray-500">{formData.title.length}/50</span>
       </div>
     </div>
     
@@ -107,7 +107,7 @@
         rows="3"
         class="w-full px-3 py-2 text-base sm:text-sm border border-gray-200 focus:ring-2 focus:ring-blue-500 rounded-md resize-none"
       ></textarea>
-      <div class="text-[11px] text-gray-500 mt-1 text-right">
+      <div class="text-xs text-gray-500 mt-1 text-right">
         {formData.description.length}/500
       </div>
     </div>

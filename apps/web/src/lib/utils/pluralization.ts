@@ -115,7 +115,7 @@ type PluralKey = keyof typeof PLURAL_TRANSLATIONS['en'];
  * Get pluralized text based on count and locale
  */
 export function pluralize(key: PluralKey, count: number, locale?: string): string {
-  const currentLocale = (locale || i18n.languageTag()) as LocaleKey;
+  const currentLocale = (locale || i18n.getLocale()) as LocaleKey;
   
   // Fallback to English if locale not supported
   const translations = PLURAL_TRANSLATIONS[currentLocale] || PLURAL_TRANSLATIONS.en;

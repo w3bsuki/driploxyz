@@ -1,12 +1,15 @@
-import { getLanguageDomain } from './domains';
+import { goto, invalidate } from '$app/navigation';
+import * as i18n from '@repo/i18n';
 
 export async function switchLanguage(lang: string) {
   console.log('Switching language to:', lang);
   
+  if (!i18n.isAvailableLanguageTag(lang)) {
+    console.error('Invalid language tag:', lang);
+    return;
+  }
+  
   try {
-    // Get the domain URL for the target language
-    const targetUrl = getLanguageDomain(lang, new URL(window.location.href));
-    
     // For localhost or dev, we still need to handle cookies
     if (window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1')) {
       const { ProductionCookieManager } = await import('$lib/cookies/production-cookie-system');
@@ -35,17 +38,23 @@ export async function switchLanguage(lang: string) {
     // Store selection in sessionStorage for cross-domain state
     sessionStorage.setItem('selectedLocale', lang);
     
-    // Navigate to the language-specific domain
-    // Using replace to not add to history when switching languages
-    window.location.replace(targetUrl);
+    // Update runtime locale
+    i18n.setLocale(lang as any);
+    document.documentElement.lang = lang;
+    
+    // Navigate to the language-specific path using SvelteKit navigation
+    // This will trigger a server-side reload with the new locale
+    const currentPath = window.location.pathname;
+    const newPath = lang === 'en' ? currentPath : `/${lang}${currentPath}`;
+    
+    // Use goto with invalidateAll to ensure fresh data
+    await goto(newPath, { invalidateAll: true });
     
   } catch (error) {
     console.error('Language switch failed:', error);
     
-    // Fallback: Try the old approach with URL parameter
-    const url = new URL(window.location.href);
-    url.searchParams.set('locale', lang);
-    window.location.href = url.toString();
+    // Fallback: Invalidate auth to trigger reload
+    await invalidate('supabase:auth');
   }
 }
 

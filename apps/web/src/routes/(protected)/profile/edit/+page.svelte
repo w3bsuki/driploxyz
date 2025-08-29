@@ -112,7 +112,7 @@
                   class="relative group shrink-0"
                   aria-label="Select avatar option {avatars.indexOf(avatar) + 1}"
                 >
-                  <div class="relative w-16 h-16 overflow-hidden rounded-xl border-2 transition-all duration-200 {avatarUrl === avatar ? 'border-black ring-2 ring-black/20' : 'border-gray-200 hover:border-gray-300'}">
+                  <div class="relative w-16 h-16 overflow-hidden rounded-xl border-2 transition-colors duration-200 {avatarUrl === avatar ? 'border-black ring-2 ring-black/20' : 'border-gray-200 hover:border-gray-300'}">
                     <img src={avatar} alt="Avatar option" class="w-full h-full object-cover" />
                     
                     <!-- Selection indicator -->

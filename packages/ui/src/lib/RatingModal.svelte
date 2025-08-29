@@ -104,7 +104,7 @@
           <button
             type="button"
             onclick={() => setRating(star)}
-            class="w-10 h-10 rounded-lg border-2 transition-all {rating >= star ? 'bg-yellow-400 border-yellow-500' : 'bg-gray-100 border-gray-300 hover:bg-gray-200'}"
+            class="w-10 h-10 rounded-lg border-2 transition-colors {rating >= star ? 'bg-yellow-400 border-yellow-500' : 'bg-gray-100 border-gray-300 hover:bg-gray-200'}"
             aria-label="{star} stars"
           >
             <svg class="w-6 h-6 mx-auto {rating >= star ? 'text-white' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
@@ -127,7 +127,7 @@
             <button
               type="button"
               onclick={() => setCommunicationRating(star)}
-              class="w-8 h-8 rounded border transition-all {communicationRating >= star ? 'bg-blue-400 border-blue-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
+              class="w-8 h-8 rounded border transition-colors {communicationRating >= star ? 'bg-blue-400 border-blue-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
               aria-label="{star} stars for communication"
             >
               <svg class="w-4 h-4 mx-auto {communicationRating >= star ? 'text-white' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
@@ -148,7 +148,7 @@
             <button
               type="button"
               onclick={() => setShippingRating(star)}
-              class="w-8 h-8 rounded border transition-all {shippingRating >= star ? 'bg-green-400 border-green-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
+              class="w-8 h-8 rounded border transition-colors {shippingRating >= star ? 'bg-green-400 border-green-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
               aria-label="{star} stars for shipping"
             >
               <svg class="w-4 h-4 mx-auto {shippingRating >= star ? 'text-white' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
@@ -169,7 +169,7 @@
             <button
               type="button"
               onclick={() => setProductQualityRating(star)}
-              class="w-8 h-8 rounded border transition-all {productQualityRating >= star ? 'bg-purple-400 border-purple-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
+              class="w-8 h-8 rounded border transition-colors {productQualityRating >= star ? 'bg-purple-400 border-purple-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
               aria-label="{star} stars for product quality"
             >
               <svg class="w-4 h-4 mx-auto {productQualityRating >= star ? 'text-white' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">

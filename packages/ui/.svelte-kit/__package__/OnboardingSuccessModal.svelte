@@ -28,8 +28,8 @@
 </script>
 
 {#if show}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-    <div class="w-full max-w-md bg-white rounded-xl shadow-xl border border-gray-200 p-8 text-center">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 md:backdrop-blur-xs">
+    <div class="w-full max-w-md bg-white rounded-xl shadow-sm md:shadow-xl border border-gray-200 p-8 text-center">
       <!-- Success Icon -->
       <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
         <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

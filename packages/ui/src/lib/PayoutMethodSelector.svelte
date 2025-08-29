@@ -94,13 +94,13 @@
       <button
         onclick={() => handleMethodSelect(method.type)}
         type="button"
-        class="relative group transition-all duration-300 {expandedMethod === method.type ? 'sm:col-span-1' : ''}"
+        class="relative group transition-colors duration-300 {expandedMethod === method.type ? 'sm:col-span-1' : ''}"
       >
         <!-- Mobile: Horizontal card, Desktop: Vertical card -->
-        <div class="{method.color} text-white rounded-xl p-4 sm:p-5 transition-all duration-300 shadow-lg hover:shadow-xl {selectedMethod === method.type ? 'ring-2 ring-offset-2 ring-white/40 scale-[1.02]' : ''}">
+        <div class="{method.color} text-white rounded-xl p-4 sm:p-5 transition-colors duration-300 shadow-lg hover:shadow-xl {selectedMethod === method.type ? 'ring-2 ring-offset-2 ring-white/40 scale-[1.02]' : ''}">
           <div class="flex sm:flex-col sm:items-center sm:text-center gap-4 sm:gap-3">
             <!-- Icon -->
-            <div class="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center flex-shrink-0">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 md:backdrop-blur rounded-xl flex items-center justify-center flex-shrink-0">
               {#if method.svgIcon}
                 <div class="w-8 h-8 sm:w-9 sm:h-9 text-white">
                   {@html method.svgIcon}
@@ -126,7 +126,7 @@
             <!-- Selected/Expand Indicator -->
             <div class="flex-shrink-0 sm:absolute sm:top-2 sm:right-2">
               {#if selectedMethod === method.type}
-                <div class="w-6 h-6 bg-white/25 backdrop-blur rounded-full flex items-center justify-center">
+                <div class="w-6 h-6 bg-white/25 md:backdrop-blur rounded-full flex items-center justify-center">
                   <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
                   </svg>
@@ -235,7 +235,7 @@
                 ⚠️ Missing: {!payoutDetails ? 'Account details' : ''}{!payoutDetails && !payoutName ? ' & ' : ''}{!payoutName ? 'Account holder name' : ''}
               </p>
             {:else}
-              <p class="text-xs text-gray-500 truncate max-w-[200px]">{payoutDetails}</p>
+              <p class="text-xs text-gray-500 truncate max-w-52">{payoutDetails}</p>
             {/if}
           </div>
         </div>

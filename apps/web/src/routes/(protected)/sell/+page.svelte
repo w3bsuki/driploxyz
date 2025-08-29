@@ -334,7 +334,7 @@
             1
           {/if}
         </div>
-        <span class="text-[10px] mt-1 whitespace-nowrap {
+        <span class="text-xs mt-1 whitespace-nowrap {
           currentStep === 1 ? 'text-gray-900 font-medium' : 'text-gray-400'
         }">{i18n.sell_step1()}</span>
       </div>
@@ -359,7 +359,7 @@
             2
           {/if}
         </div>
-        <span class="text-[10px] mt-1 whitespace-nowrap {
+        <span class="text-xs mt-1 whitespace-nowrap {
           currentStep === 2 ? 'text-gray-900 font-medium' : 'text-gray-400'
         }">{i18n.sell_step2()}</span>
       </div>
@@ -384,7 +384,7 @@
             3
           {/if}
         </div>
-        <span class="text-[10px] mt-1 whitespace-nowrap {
+        <span class="text-xs mt-1 whitespace-nowrap {
           currentStep === 3 ? 'text-gray-900 font-medium' : 'text-gray-400'
         }">{i18n.sell_step3()}</span>
       </div>
@@ -409,7 +409,7 @@
             4
           {/if}
         </div>
-        <span class="text-[10px] mt-1 whitespace-nowrap {
+        <span class="text-xs mt-1 whitespace-nowrap {
           currentStep === 4 ? 'text-gray-900 font-medium' : 'text-gray-400'
         }">{i18n.sell_step4()}</span>
       </div>

@@ -42,7 +42,7 @@
   }: Props = $props();
 </script>
 
-<div class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50">
+<div class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-sm md:shadow-xl border border-gray-200 py-2 z-50">
   <!-- User Info Header -->
   <div class="px-4 py-3 border-b border-gray-100">
     <div class="flex items-center space-x-3">

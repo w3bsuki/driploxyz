@@ -41,7 +41,7 @@
   ></button>
 
   <!-- Menu -->
-  <div class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-2">
+  <div class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-sm md:shadow-lg z-50 mt-2">
     <div class="p-4">
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
         {#each subcategories as subcategory}

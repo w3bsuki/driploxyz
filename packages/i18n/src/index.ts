@@ -13,6 +13,15 @@ export const languageNames: Record<LanguageTag, string> = {
   bg: 'Български'
 };
 
+// Compatibility functions for migration from Paraglide 1.x
+// @ts-ignore - paraglide generated files don't have declaration files
+export { 
+  isLocale as isAvailableLanguageTag, 
+  getLocale as languageTag,
+  getLocale,
+  setLocale
+} from '../lib/paraglide/runtime.js';
+
 // Simple language detection (for later use)
 export function detectLanguage(acceptLanguage?: string): LanguageTag {
   if (!acceptLanguage) return 'en';

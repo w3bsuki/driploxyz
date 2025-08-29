@@ -27,7 +27,7 @@
     children
   }: Props = $props();
 
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors duration-150 relative select-none';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-[var(--btn-radius)] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors duration-[var(--duration-fast)] relative select-none';
 
   const variantClasses = {
     primary: 'bg-gray-900 text-white focus-visible:ring-gray-700 hover:bg-gray-800 active:bg-gray-950',
@@ -38,9 +38,9 @@
   };
 
   const sizeClasses = {
-    sm: 'px-3 py-1.5 text-sm min-h-8',    // Compact for dense UI (32px)
-    md: 'px-4 py-2 text-sm min-h-9',      // Standard - most buttons (36px)
-    lg: 'px-5 py-3 text-base min-h-11'    // Primary CTAs (buy, sell) - MOBILE FIRST (44px)
+    sm: 'px-[var(--btn-padding-sm)] text-[var(--btn-font-sm)] min-h-[var(--btn-height-sm)]',    // Compact for dense UI (32px)
+    md: 'px-[var(--btn-padding-md)] text-[var(--btn-font-md)] min-h-[var(--btn-height-md)]',      // Standard - most buttons (36px)
+    lg: 'px-[var(--btn-padding-lg)] text-[var(--btn-font-lg)] min-h-[var(--btn-height-lg)]'    // Primary CTAs (buy, sell) - MOBILE FIRST (44px)
   };
 
   const classes = $derived(`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${loading ? 'pointer-events-none opacity-70' : ''} ${className}`);
@@ -82,6 +82,6 @@
   }
   
   .animate-spin {
-    animation: spin 0.6s linear infinite;
+    animation: spin var(--duration-slower) linear infinite;
   }
 </style>

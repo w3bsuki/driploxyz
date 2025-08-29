@@ -23,7 +23,7 @@
     role="button"
     tabindex="-1"
   >
-    <div class="bg-white rounded-xl w-full max-w-sm p-6 shadow-xl animate-in fade-in-0 scale-in-95 duration-200">
+    <div class="bg-white rounded-xl w-full max-w-sm p-6 shadow-sm md:shadow-xl animate-in fade-in-0 scale-in-95 duration-200">
       <!-- Close button -->
       <button
         onclick={onClose}

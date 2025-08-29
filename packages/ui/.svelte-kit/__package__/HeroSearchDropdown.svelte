@@ -194,7 +194,7 @@
   <!-- Hero Search Bar with Nested Design -->
   <form 
     role="search"
-    class="bg-white rounded-full border border-gray-200 p-1 shadow-sm hover:shadow-md focus-within:border-gray-400 focus-within:ring-2 focus-within:ring-gray-400/20 transition-all"
+    class="bg-white rounded-full border border-gray-200 p-1 shadow-sm hover:shadow-md focus-within:border-gray-400 focus-within:ring-2 focus-within:ring-gray-400/20 transition-colors"
   >
     <div class="bg-gray-50 relative rounded-full overflow-hidden min-h-11 sm:min-h-12">
       <div class="relative flex items-center min-h-11 sm:min-h-12">
@@ -266,7 +266,7 @@
     <div class="absolute z-50 w-full mt-2">
       {#if isSearchMode && searchResults.length > 0}
         <!-- Search Results Mode -->
-        <div class="bg-white border border-gray-200 rounded-xl shadow-xl max-h-96 overflow-y-auto">
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm md:shadow-xl max-h-96 overflow-y-auto">
           {#each searchResults as result, index}
             <button
               onclick={() => navigateToProduct(result)}

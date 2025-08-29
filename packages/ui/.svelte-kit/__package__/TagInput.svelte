@@ -99,7 +99,7 @@
 
   <div class="p-1">
     <div class="relative">
-      <div class="min-h-10 rounded-lg border-2 px-3 py-2 flex flex-wrap gap-2 items-center transition-all duration-200 focus-within:ring-2 focus-within:ring-gray-500/20 focus-within:border-gray-500
+      <div class="min-h-10 rounded-lg border-2 px-3 py-2 flex flex-wrap gap-2 items-center transition-colors duration-200 focus-within:ring-2 focus-within:ring-gray-500/20 focus-within:border-gray-500
       {error 
         ? 'border-red-300 focus-within:ring-red-500/20 focus-within:border-red-500' 
         : 'border-gray-200'}
@@ -134,14 +134,14 @@
           onkeydown={handleKeydown}
           onfocus={handleInputFocus}
           onblur={handleInputBlur}
-          class="flex-1 min-w-[120px] outline-hidden text-sm bg-transparent placeholder-gray-400"
+          class="flex-1 min-w-30 outline-hidden text-sm bg-transparent placeholder-gray-400"
           aria-label="Add new tag"
         />
       {/if}
       </div>
 
       {#if showSuggestions && filteredSuggestions.length > 0}
-        <div class="absolute z-10 mt-1 w-full bg-white rounded-lg border border-gray-200 shadow-lg max-h-48 overflow-auto">
+        <div class="absolute z-10 mt-1 w-full bg-white rounded-lg border border-gray-200 shadow-sm md:shadow-lg max-h-48 overflow-auto">
         {#each filteredSuggestions as suggestion}
           <button
             type="button"

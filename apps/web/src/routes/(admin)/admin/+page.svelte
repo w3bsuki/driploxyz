@@ -49,7 +49,7 @@
 
   <!-- Stats Grid -->
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-    <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
+    <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-transform hover:scale-105">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm font-medium text-gray-600">{i18n.admin_totalUsers()}</p>
@@ -65,7 +65,7 @@
       </div>
     </div>
 
-    <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
+    <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-transform hover:scale-105">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm font-medium text-gray-600">{i18n.admin_totalProducts()}</p>
@@ -81,7 +81,7 @@
       </div>
     </div>
 
-    <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
+    <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-transform hover:scale-105">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm font-medium text-gray-600">{i18n.admin_totalOrders()}</p>
@@ -97,7 +97,7 @@
       </div>
     </div>
 
-    <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105">
+    <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-transform hover:scale-105">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-sm font-medium text-gray-600">{i18n.admin_totalRevenue()}</p>
@@ -173,7 +173,7 @@
 
   <!-- Quick Actions -->
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-    <a href="/admin/payouts" class="group backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center space-x-3">
+    <a href="/admin/payouts" class="group backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-transform hover:scale-105 flex items-center justify-center space-x-3">
       <div class="p-3 bg-gradient-to-br from-indigo-100/50 to-purple-100/50 rounded-xl backdrop-blur-sm group-hover:scale-110 transition-transform">
         <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -182,7 +182,7 @@
       <span class="font-medium text-gray-700">{i18n.admin_managePayouts()}</span>
     </a>
     
-    <a href="/" class="group backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all hover:scale-105 flex items-center justify-center space-x-3">
+    <a href="/" class="group backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-transform hover:scale-105 flex items-center justify-center space-x-3">
       <div class="p-3 bg-gradient-to-br from-blue-100/50 to-cyan-100/50 rounded-xl backdrop-blur-sm group-hover:scale-110 transition-transform">
         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />

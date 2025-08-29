@@ -58,15 +58,15 @@
 	>
 		<div class="flex min-h-screen items-center justify-center p-4 text-center sm:p-0">
 			<div
-				class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+				class="fixed inset-0 bg-black/60 md:backdrop-blur-sm transition-opacity"
 				aria-hidden="true"
 				onclick={handleBackdropClick}
 			></div>
 
-			<div class="relative inline-block w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-2xl transition-all">
+			<div class="relative inline-block w-full max-w-4xl transform overflow-hidden rounded-2xl bg-white text-left align-middle shadow-sm md:shadow-2xl transition-colors">
 				<button
 					onclick={onClose}
-					class="absolute right-4 top-4 z-10 rounded-full bg-white/90 p-2 text-gray-600 backdrop-blur-sm transition-all hover:bg-white hover:text-gray-900 hover:shadow-lg"
+					class="absolute right-4 top-4 z-10 rounded-full bg-white/90 p-2 text-gray-600 md:backdrop-blur-sm transition-colors hover:bg-white hover:text-gray-900 hover:shadow-sm md:hover:shadow-lg"
 					aria-label="Close"
 				>
 					<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,13 +77,13 @@
 				<div class="grid md:grid-cols-2">
 					<div class="relative aspect-square overflow-hidden bg-gray-50">
 						{#if product?.badge}
-							<span class="absolute left-3 top-3 z-10 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 px-3 py-1.5 text-xs font-semibold text-white shadow-lg">
+							<span class="absolute left-3 top-3 z-10 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 px-3 py-1.5 text-xs font-semibold text-white shadow-sm md:shadow-lg">
 								{product?.badge}
 							</span>
 						{/if}
 						
 						{#if product?.discount}
-							<span class="absolute right-3 top-3 z-10 rounded-full bg-red-500 px-3 py-1.5 text-sm font-bold text-white shadow-lg">
+							<span class="absolute right-3 top-3 z-10 rounded-full bg-red-500 px-3 py-1.5 text-sm font-bold text-white shadow-sm md:shadow-lg">
 								-{product?.discount}%
 							</span>
 						{/if}
@@ -197,7 +197,7 @@
 						<div class="mt-6 flex gap-3">
 							<button
 								onclick={onBuy}
-								class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 font-semibold text-white shadow-lg transition-all hover:bg-gray-800"
+								class="flex flex-1 items-center justify-center gap-2 rounded-xl bg-black px-6 py-3 font-semibold text-white shadow-sm md:shadow-lg transition-colors hover:bg-gray-800"
 							>
 								<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -207,7 +207,7 @@
 							
 							<button
 								onclick={onView}
-								class="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 transition-all hover:border-gray-300 hover:bg-gray-50"
+								class="flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-6 py-3 font-semibold text-gray-700 transition-colors hover:border-gray-300 hover:bg-gray-50"
 							>
 								<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -218,7 +218,7 @@
 
 							<button
 								onclick={onToggleFavorite}
-								class="flex items-center justify-center rounded-xl border-2 border-gray-200 bg-white p-3 text-gray-600 transition-all hover:border-red-200 hover:bg-red-50 hover:text-red-500"
+								class="flex items-center justify-center rounded-xl border-2 border-gray-200 bg-white p-3 text-gray-600 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-500"
 								aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
 							>
 								<svg class="h-5 w-5" fill={isFavorite ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">

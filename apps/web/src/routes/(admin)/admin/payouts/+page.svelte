@@ -181,21 +181,21 @@
 
   <!-- Payout Statistics -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-    <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
+    <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-transform hover:scale-105">
       <div class="text-sm font-medium text-gray-600">{i18n.admin_pendingPayouts()}</div>
       <div class="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">{transactions.filter(t => t.payout_status === 'pending').length}</div>
     </div>
-    <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
+    <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-transform hover:scale-105">
       <div class="text-sm font-medium text-gray-600">{i18n.admin_processing()}</div>
       <div class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{transactions.filter(t => t.payout_status === 'processing').length}</div>
     </div>
-    <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
+    <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-transform hover:scale-105">
       <div class="text-sm font-medium text-gray-600">Total Pending Amount</div>
       <div class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
         €{transactions.filter(t => t.payout_status === 'pending').reduce((sum, t) => sum + Number(t.seller_earnings), 0).toFixed(2)}
       </div>
     </div>
-    <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all hover:scale-105">
+    <div class="backdrop-blur-xl bg-white/60 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-transform hover:scale-105">
       <div class="text-sm font-medium text-gray-600">Platform Commission</div>
       <div class="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
         €{transactions.filter(t => t.payout_status === 'pending').reduce((sum, t) => sum + Number(t.commission_amount), 0).toFixed(2)}
@@ -208,7 +208,7 @@
     <nav class="flex space-x-2">
       <button
         onclick={() => activeTab = 'pending'}
-        class="px-6 py-3 rounded-xl font-medium text-sm whitespace-nowrap transition-all
+        class="px-6 py-3 rounded-xl font-medium text-sm whitespace-nowrap transition-colors
           {activeTab === 'pending' 
             ? 'bg-gradient-to-r from-yellow-500 to-orange-500 text-white shadow-md' 
             : 'text-gray-600 hover:bg-gray-100/50'}"
@@ -217,7 +217,7 @@
       </button>
       <button
         onclick={() => activeTab = 'processing'}
-        class="px-6 py-3 rounded-xl font-medium text-sm whitespace-nowrap transition-all
+        class="px-6 py-3 rounded-xl font-medium text-sm whitespace-nowrap transition-colors
           {activeTab === 'processing' 
             ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-md' 
             : 'text-gray-600 hover:bg-gray-100/50'}"
@@ -243,7 +243,7 @@
   {:else}
     <div class="space-y-4">
       {#each filteredTransactions as transaction}
-        <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all">
+        <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-transform">
           <div class="p-6">
             <div class="flex items-start justify-between">
               <!-- Seller & Product Info -->

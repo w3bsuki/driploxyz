@@ -267,7 +267,7 @@
 <!-- Email Verification Success Modal -->
 {#if showEmailVerifiedWelcome}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 transform transition-all">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 transform transition-transform">
       <div class="text-center mb-6">
         <!-- Success Icon -->
         <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -308,7 +308,7 @@
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
         {#each Array(totalSteps) as _, i}
-          <div class="h-2 rounded-full transition-all duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
+          <div class="h-2 rounded-full transition-colors transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
       </div>
 
@@ -377,7 +377,7 @@
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
         {#each Array(totalSteps) as _, i}
-          <div class="h-2 rounded-full transition-all duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
+          <div class="h-2 rounded-full transition-colors transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
       </div>
 
@@ -456,7 +456,7 @@
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
         {#each Array(totalSteps) as _, i}
-          <div class="h-2 rounded-full transition-all duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
+          <div class="h-2 rounded-full transition-colors transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
       </div>
 
@@ -498,7 +498,7 @@
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
         {#each Array(totalSteps) as _, i}
-          <div class="h-2 rounded-full transition-all duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
+          <div class="h-2 rounded-full transition-colors transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
       </div>
 

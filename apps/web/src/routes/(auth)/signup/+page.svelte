@@ -140,7 +140,7 @@
           type="text"
           required
           bind:value={formData.fullName}
-          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base sm:text-sm"
           placeholder="John Doe"
           />
         </div>
@@ -159,7 +159,7 @@
           autocomplete="email"
           required
           bind:value={formData.email}
-          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base sm:text-sm"
           placeholder="john@example.com"
           />
         </div>
@@ -178,7 +178,7 @@
           autocomplete="new-password"
           required
           bind:value={formData.password}
-          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base sm:text-sm"
           placeholder="Minimum 8 characters"
           />
         </div>
@@ -196,7 +196,7 @@
           autocomplete="new-password"
           required
           bind:value={formData.confirmPassword}
-          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base sm:text-sm"
           placeholder="Re-enter your password"
           />
         </div>
@@ -224,7 +224,7 @@
         <button
           type="submit"
           disabled={submitting}
-          class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-blue-600 hover:bg-blue-700 text-white focus-visible:ring-blue-500 px-4 py-2.5 text-sm transition-all duration-200"
+          class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-blue-600 hover:bg-blue-700 text-white focus-visible:ring-blue-500 px-4 py-2.5 text-sm transition-colors duration-200"
         >
           {#if submitting}
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

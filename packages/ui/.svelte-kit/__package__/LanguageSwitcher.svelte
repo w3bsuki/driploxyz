@@ -44,7 +44,7 @@
 		{#each languages as lang}
 			<button
 				onclick={() => selectLanguage(lang.code)}
-				class="px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-200 hover:scale-105 active:scale-95
+				class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors duration-200 hover:scale-105 active:scale-95
 					{currentLanguage === lang.code 
 						? 'bg-blue-600 text-white shadow-md' 
 						: 'bg-white text-gray-700 hover:bg-blue-50 border border-gray-200 hover:border-blue-200'}"
@@ -61,9 +61,9 @@
 		{#each languages as lang}
 			<button
 				onclick={() => selectLanguage(lang.code)}
-				class="w-10 h-10 flex items-center justify-center text-lg font-medium rounded-full transition-all duration-200 hover:scale-110 active:scale-95
+				class="w-10 h-10 flex items-center justify-center text-lg font-medium rounded-full transition-colors duration-200 hover:scale-110 active:scale-95
 					{currentLanguage === lang.code 
-						? 'bg-blue-600 text-white shadow-lg ring-2 ring-blue-300' 
+						? 'bg-blue-600 text-white shadow-sm md:shadow-lg ring-2 ring-blue-300' 
 						: 'bg-white text-gray-700 hover:bg-blue-50 border border-gray-200 hover:border-blue-200 hover:shadow-md'}"
 				title={lang.name}
 			>
@@ -75,7 +75,7 @@
 	<div class="relative {className}">
 		<button
 			onclick={() => showDropdown = !showDropdown}
-			class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-all duration-200 hover:shadow-md active:scale-98"
+			class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors duration-200 hover:shadow-md active:scale-98"
 		>
 			{#if currentLang.flag}
 				<span>{currentLang.flag}</span>
@@ -87,12 +87,12 @@
 		</button>
 
 		{#if showDropdown}
-			<div class="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5">
+			<div class="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-lg bg-white shadow-sm md:shadow-lg ring-1 ring-black ring-opacity-5">
 				<div class="py-1">
 					{#each languages as lang}
 						<button
 							onclick={() => selectLanguage(lang.code)}
-							class="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-all duration-150 hover:translate-x-1
+							class="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors duration-150 hover:translate-x-1
 								{currentLanguage === lang.code ? 'bg-blue-50 font-semibold text-blue-700 border-l-2 border-blue-500' : ''}"
 						>
 							{#if lang.flag}

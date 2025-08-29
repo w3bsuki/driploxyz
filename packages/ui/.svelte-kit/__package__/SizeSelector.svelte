@@ -45,12 +45,12 @@
     const isHovered = hoveredSize === size.value;
     const status = getSizeStatus(size);
     
-    let classes = 'relative flex flex-col items-center justify-center min-h-14 px-3 py-2 rounded-xl border-2 font-semibold transition-all duration-200 cursor-pointer select-none ';
+    let classes = 'relative flex flex-col items-center justify-center min-h-14 px-3 py-2 rounded-xl border-2 font-semibold transition-colors duration-200 cursor-pointer select-none ';
     
     if (status === 'unavailable') {
       classes += 'border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed opacity-60 ';
     } else if (isSelected) {
-      classes += 'border-black bg-black text-white shadow-lg scale-105 ';
+      classes += 'border-black bg-black text-white shadow-sm md:shadow-lg scale-105 ';
     } else if (isHovered) {
       classes += 'border-gray-400 bg-gray-50 text-gray-900 scale-102 ';
     } else {

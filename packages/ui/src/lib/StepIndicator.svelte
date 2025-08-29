@@ -53,7 +53,7 @@
       compact: 'w-6 h-6 text-xs'
     };
     
-    const base = `flex items-center justify-center ${sizeClasses[variant]} rounded-full font-medium transition-all duration-200`;
+    const base = `flex items-center justify-center ${sizeClasses[variant]} rounded-full font-medium transition-colors duration-200`;
     
     switch (state) {
       case 'completed':
@@ -69,7 +69,7 @@
 
   function getLineClasses(stepId: number) {
     const isCompleted = stepId < currentStep || completedStepsArray.includes(stepId);
-    return `flex-1 h-0.5 mx-2 transition-all duration-300 ${
+    return `flex-1 h-0.5 mx-2 transition-colors duration-300 ${
       isCompleted ? 'bg-green-500' : 'bg-gray-200'
     }`;
   }

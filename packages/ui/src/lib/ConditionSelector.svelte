@@ -78,7 +78,7 @@
 
   function getButtonClasses(condition: ConditionValue) {
     const isSelected = value === condition;
-    const base = 'relative flex items-center justify-center px-4 py-2 rounded-full border-2 min-w-20 whitespace-nowrap text-sm font-medium transition-all duration-200 sm:flex-col sm:items-start sm:p-3 sm:rounded-lg sm:min-h-15 sm:w-full sm:text-left sm:min-w-0 sm:whitespace-normal';
+    const base = 'relative flex items-center justify-center px-4 py-2 rounded-full border-2 min-w-20 whitespace-nowrap text-sm font-medium transition-colors duration-200 scroll-snap-align-start sm:flex-col sm:items-start sm:p-3 sm:rounded-lg sm:min-h-15 sm:w-full sm:text-left sm:min-w-0 sm:whitespace-normal sm:scroll-snap-align-none';
     
     if (disabled) {
       return `${base} opacity-50 cursor-not-allowed border-gray-200 bg-gray-50`;
@@ -103,7 +103,7 @@
   {/if}
 
   <!-- Mobile: horizontal pills, Desktop: 2x2 grid -->
-  <div class="flex gap-2 overflow-x-auto sm:grid sm:grid-cols-2 sm:gap-2" role="group" aria-labelledby={label ? "condition-label" : undefined}>
+  <div class="flex gap-2 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory sm:grid sm:grid-cols-2 sm:gap-2" role="group" aria-labelledby={label ? "condition-label" : undefined}>
     {#each conditions as condition}
       <button
         type="button"

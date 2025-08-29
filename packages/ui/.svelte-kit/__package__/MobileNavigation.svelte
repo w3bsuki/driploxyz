@@ -53,27 +53,27 @@
     onLanguageChange,
     signingOut = false,
     translations = {
-      sellItems: 'Sell Items',
-      myProfile: 'My Profile',
-      startSelling: 'Start Selling',
-      settings: 'Settings',
-      signOut: 'Sign Out',
-      signingOut: 'Signing out...',
-      signIn: 'Sign In',
-      signUp: 'Sign Up',
-      browseCategories: 'Browse Categories',
-      orders: 'Orders',
-      favorites: 'Favorites',
-      categoryWomen: 'Women',
-      categoryMen: 'Men',
-      categoryKids: 'Kids',
-      categoryPets: 'Pets'
+      sellItems: '',
+      myProfile: '',
+      startSelling: '',
+      settings: '',
+      signOut: '',
+      signingOut: '',
+      signIn: '',
+      signUp: '',
+      browseCategories: '',
+      orders: '',
+      favorites: '',
+      categoryWomen: '',
+      categoryMen: '',
+      categoryKids: '',
+      categoryPets: ''
     }
   }: Props = $props();
 </script>
 
 {#if isOpen}
-  <div class="sm:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-xl z-50">
+  <div class="sm:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-sm md:shadow-xl z-50">
     <div class="px-3 py-3">
       <nav class="space-y-3">
         {#if isLoggedIn && user && profile}

@@ -60,7 +60,7 @@
     aria-modal="true"
     tabindex="-1"
   >
-    <div class="bg-white rounded-lg shadow-xl w-full {sizeClasses[size]} {className}">
+    <div class="bg-white rounded-lg shadow-sm md:shadow-xl w-full {sizeClasses[size]} {className}">
       <!-- Header Section -->
       {#if header}
         <div class="px-6 py-4 border-b border-gray-200">

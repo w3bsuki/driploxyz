@@ -59,9 +59,11 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase, co
       subcategoriesWithCounts.sort((a, b) => b.productCount - a.productCount);
     }
 
-    // Get level 3 categories if this is a level 2 category (for better UX)
+    // Get level 3 categories for dynamic pills (works for both level 1 and level 2 pages)
     let level3Categories: any[] = [];
+    
     if (category.level === 2) {
+      // Level 2 page: Get direct children (level 3)
       const { data: level3Data } = await supabase
         .from('categories')
         .select('id, name, slug, parent_id')
@@ -71,6 +73,38 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase, co
       if (level3Data && level3Data.length > 0) {
         // Get product counts for level 3 categories
         const level3Promises = level3Data.map(async (l3cat) => {
+          const { count } = await supabase
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .eq('category_id', l3cat.id)
+            .eq('is_active', true)
+            .eq('is_sold', false)
+            .eq('country_code', currentCountry);
+          
+          return {
+            ...l3cat,
+            productCount: count || 0
+          };
+        });
+        
+        level3Categories = await Promise.all(level3Promises);
+        level3Categories = level3Categories
+          .filter(cat => cat.productCount > 0)
+          .sort((a, b) => b.productCount - a.productCount);
+      }
+    } else if (category.level === 1 && directSubcategories.length > 0) {
+      // Level 1 page: Get ALL level 3 categories under ALL level 2 children
+      const level2Ids = directSubcategories.map(sub => sub.id);
+      
+      const { data: allLevel3Data } = await supabase
+        .from('categories')
+        .select('id, name, slug, parent_id')
+        .in('parent_id', level2Ids)
+        .order('sort_order');
+      
+      if (allLevel3Data && allLevel3Data.length > 0) {
+        // Get product counts for all level 3 categories
+        const level3Promises = allLevel3Data.map(async (l3cat) => {
           const { count } = await supabase
             .from('products')
             .select('*', { count: 'exact', head: true })

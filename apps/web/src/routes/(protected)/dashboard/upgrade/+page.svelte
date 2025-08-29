@@ -327,7 +327,7 @@
             {:else}
               <button
                 onclick={() => subscribeToPlan('c0587696-cbcd-4e6b-b6bc-ba84fb47ddce', 'premium')}
-                class="w-full font-semibold text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 py-3 px-4 rounded-lg transition-all"
+                class="w-full font-semibold text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 py-3 px-4 rounded-lg transition-colors"
                 disabled={!!loading}
               >
                 {loading === 'premium' ? i18n.upgrade_processing() : i18n.upgrade_getPremium()}
@@ -404,7 +404,7 @@
             {:else}
               <button
                 onclick={() => subscribeToPlan('989b722e-4050-4c63-ac8b-ab105f14027c', 'brand')}
-                class="w-full font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 py-3 px-4 rounded-lg transition-all"
+                class="w-full font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 py-3 px-4 rounded-lg transition-colors"
                 disabled={!!loading}
               >
                 {loading === 'brand' ? i18n.upgrade_processing() : i18n.upgrade_getBrand()}

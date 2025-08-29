@@ -270,7 +270,7 @@
           </a>
           <span class="text-gray-400">/</span>
         {/if}
-        <span class="text-gray-700 font-medium truncate max-w-[120px]">{data.product.title}</span>
+        <span class="text-gray-700 font-medium truncate max-w-32">{data.product.title}</span>
       </nav>
     </div>
   </div>

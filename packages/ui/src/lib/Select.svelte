@@ -49,7 +49,7 @@
     ) : []
   );
 
-  const baseClasses = 'block w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 min-h-9 text-base sm:text-sm bg-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 appearance-none cursor-pointer';
+  const baseClasses = 'block w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 min-h-9 text-base sm:text-sm bg-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 appearance-none cursor-pointer';
   const stateClasses = $derived(error 
     ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' 
     : '');

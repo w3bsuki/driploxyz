@@ -10,7 +10,7 @@ const LOCALE_MAP: Record<string, string> = {
  * Format date using Intl.DateTimeFormat for proper locale-specific formatting
  */
 export function formatDate(date: Date | string | number, options?: Intl.DateTimeFormatOptions, locale?: string): string {
-  const currentLocale = locale || i18n.languageTag();
+  const currentLocale = locale || i18n.getLocale();
   const intlLocale = LOCALE_MAP[currentLocale] || 'en-US';
   const dateObj = typeof date === 'string' || typeof date === 'number' ? new Date(date) : date;
   
@@ -55,7 +55,7 @@ export function formatTime(date: Date | string | number, locale?: string): strin
  * Format relative time (e.g., "2 hours ago", "yesterday")
  */
 export function formatRelativeTime(date: Date | string | number, locale?: string): string {
-  const currentLocale = locale || i18n.languageTag();
+  const currentLocale = locale || i18n.getLocale();
   const intlLocale = LOCALE_MAP[currentLocale] || 'en-US';
   const dateObj = typeof date === 'string' || typeof date === 'number' ? new Date(date) : date;
   const now = new Date();
@@ -136,7 +136,7 @@ function formatRelativeTimeFallback(diffMs: number, locale: string): string {
  * Format duration (e.g., "2h 30m")
  */
 export function formatDuration(ms: number, locale?: string): string {
-  const currentLocale = locale || i18n.languageTag();
+  const currentLocale = locale || i18n.getLocale();
   const seconds = Math.floor(ms / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours = Math.floor(minutes / 60);

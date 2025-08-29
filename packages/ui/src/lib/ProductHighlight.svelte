@@ -61,22 +61,22 @@
   <button 
     onclick={handleClick}
     onkeydown={handleKeyDown}
-    class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-all pt-2"
+    class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-colors pt-2"
     aria-label="View {product.title} - {formattedPrice}"
     aria-describedby="product-{product.id}-info"
     tabindex={index === 0 ? 0 : -1}
   >
-    <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-lg transition-all duration-200 group-hover:scale-[1.02]">
+    <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-sm md:group-hover:shadow-lg transition-colors duration-200 group-hover:scale-[1.02]">
       <!-- PRO Badge - Outside frame, top center -->
       {#if product.is_promoted}
         <div class="absolute -top-1.5 left-1/2 -translate-x-1/2 z-10">
-          <div class="bg-black text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-lg border border-white/20">
+          <div class="bg-black text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm md:shadow-lg border border-white/20">
             PRO
           </div>
         </div>
       {/if}
       
-      <div class="bg-gray-50/60 relative rounded-xl border border-gray-200/60 overflow-hidden backdrop-blur-sm">
+      <div class="bg-gray-50/60 relative rounded-xl border border-gray-200/60 overflow-hidden md:backdrop-blur-sm">
         <!-- Product image -->
         <figure class="w-[calc((100vw-4.8rem)/3)] h-[calc((100vw-4.8rem)/3)] sm:w-32 sm:h-32 lg:w-36 lg:h-36 relative max-w-32">
           <img 
@@ -92,7 +92,7 @@
       <!-- Price badge - Bottom center like PRO badge -->
       <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 z-10">
         <div 
-          class="bg-black text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-lg border border-white/20"
+          class="bg-black text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm md:shadow-lg border border-white/20"
           aria-label="Price"
         >
           {formattedPrice}

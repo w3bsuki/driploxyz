@@ -64,13 +64,13 @@
     <!-- Main Action Button (Favorite) -->
     <button
       onclick={handleFavorite}
-      class="relative w-14 h-14 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95
-             {isFavorited ? 'bg-red-50 shadow-red-100' : 'hover:shadow-xl'}"
+      class="relative w-14 h-14 bg-white rounded-full shadow-sm md:shadow-lg flex items-center justify-center transition-colors duration-200 hover:scale-110 active:scale-95
+             {isFavorited ? 'bg-red-50 shadow-red-100' : 'hover:shadow-sm md:hover:shadow-xl'}"
       in:scale={{ duration: 300, easing: elasticOut }}
     >
       <!-- Heart Icon -->
       <svg 
-        class="w-6 h-6 transition-all duration-200 {isFavorited ? 'text-red-500 scale-110' : 'text-gray-700'}" 
+        class="w-6 h-6 transition-colors duration-200 {isFavorited ? 'text-red-500 scale-110' : 'text-gray-700'}" 
         fill={isFavorited ? 'currentColor' : 'none'}
         stroke="currentColor" 
         viewBox="0 0 24 24"
@@ -101,7 +101,7 @@
     <!-- Share Button -->
     <button
       onclick={handleShare}
-      class="relative w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 hover:shadow-xl"
+      class="relative w-12 h-12 bg-white rounded-full shadow-sm md:shadow-lg flex items-center justify-center transition-colors duration-200 hover:scale-110 active:scale-95 hover:shadow-sm md:hover:shadow-xl"
       in:fly={{ x: position === 'right' ? 20 : -20, duration: 300, delay: 100, easing: quintOut }}
     >
       <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,7 +122,7 @@
     {#if onAddToCart}
       <button
         onclick={onAddToCart}
-        class="relative w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 hover:shadow-xl
+        class="relative w-12 h-12 bg-white rounded-full shadow-sm md:shadow-lg flex items-center justify-center transition-colors duration-200 hover:scale-110 active:scale-95 hover:shadow-sm md:hover:shadow-xl
                {isInCart ? 'bg-green-50 shadow-green-100' : ''}"
         in:fly={{ x: position === 'right' ? 20 : -20, duration: 300, delay: 200, easing: quintOut }}
       >
@@ -142,7 +142,7 @@
     {#if onMessage}
       <button
         onclick={onMessage}
-        class="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 hover:shadow-xl"
+        class="w-12 h-12 bg-white rounded-full shadow-sm md:shadow-lg flex items-center justify-center transition-colors duration-200 hover:scale-110 active:scale-95 hover:shadow-sm md:hover:shadow-xl"
         in:fly={{ x: position === 'right' ? 20 : -20, duration: 300, delay: 300, easing: quintOut }}
         aria-label="Message seller"
       >
@@ -169,11 +169,11 @@
 
 <!-- Desktop Quick Actions Bar (subtle, top-right corner) -->
 <div class="hidden lg:block fixed top-20 right-4 z-30">
-  <div class="flex items-center gap-2 bg-white/90 backdrop-blur-xs rounded-full px-4 py-2 shadow-lg">
+  <div class="flex items-center gap-2 bg-white/90 md:backdrop-blur-xs rounded-full px-4 py-2 shadow-sm md:shadow-lg">
     <!-- Favorite -->
     <button
       onclick={handleFavorite}
-      class="relative p-2 rounded-full transition-all duration-200 hover:bg-gray-100 active:scale-95
+      class="relative p-2 rounded-full transition-colors duration-200 hover:bg-gray-100 active:scale-95
              {isFavorited ? 'bg-red-50 text-red-500' : 'text-gray-600'}"
       title="Add to favorites"
     >
@@ -196,7 +196,7 @@
     <!-- Share -->
     <button
       onclick={handleShare}
-      class="p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-all duration-200 active:scale-95"
+      class="p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors duration-200 active:scale-95"
       title="Share product"
       aria-label="Share product"
     >
@@ -212,7 +212,7 @@
     {#if onAddToCart}
       <button
         onclick={onAddToCart}
-        class="p-2 rounded-full transition-all duration-200 active:scale-95
+        class="p-2 rounded-full transition-colors duration-200 active:scale-95
                {isInCart ? 'bg-green-50 text-green-600' : 'text-gray-600 hover:bg-gray-100'}"
         title={isInCart ? 'In cart' : 'Add to cart'}
       >
@@ -232,7 +232,7 @@
     {#if onMessage}
       <button
         onclick={onMessage}
-        class="p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-all duration-200 active:scale-95"
+        class="p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors duration-200 active:scale-95"
         title="Message seller"
         aria-label="Message seller"
       >

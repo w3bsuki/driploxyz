@@ -126,7 +126,7 @@
     <!-- Condition Badge -->
     {#if condition}
       <div class="absolute top-4 left-4 z-10">
-        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold shadow-lg backdrop-blur-xs {conditionColors}">
+        <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-semibold shadow-sm md:shadow-lg md:backdrop-blur-xs {conditionColors}">
           {conditionLabels}
         </span>
       </div>
@@ -139,7 +139,7 @@
         {#if selectedIndex > 0}
           <button
             onclick={() => selectedIndex--}
-            class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 z-10"
+            class="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-sm md:shadow-lg flex items-center justify-center transition-colors duration-200 hover:scale-110 z-10"
             aria-label="Previous image"
           >
             <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,7 +152,7 @@
         {#if selectedIndex < images.length - 1}
           <button
             onclick={() => selectedIndex++}
-            class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 z-10"
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white rounded-full shadow-sm md:shadow-lg flex items-center justify-center transition-colors duration-200 hover:scale-110 z-10"
             aria-label="Next image"
           >
             <svg class="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,7 +165,7 @@
 
     <!-- Image Counter -->
     {#if images && images.length > 1}
-      <div class="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium backdrop-blur-xs">
+      <div class="absolute bottom-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium md:backdrop-blur-xs">
         {selectedIndex + 1} / {images?.length || 0}
       </div>
     {/if}
@@ -175,11 +175,11 @@
   <!-- Thumbnail Strip -->
   {#if images && images.length > 1}
     <div class="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/20 to-transparent">
-      <div class="flex gap-2 overflow-x-auto scrollbar-hide">
+      <div class="flex gap-2 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory scrollbar-hide">
         {#each images as image, index}
           <button
             onclick={() => handleThumbnailClick(index)}
-            class="shrink-0 w-16 h-16 rounded-lg overflow-hidden ring-2 transition-all duration-200
+            class="shrink-0 w-16 h-16 rounded-lg overflow-hidden ring-2 transition-colors duration-200 scroll-snap-align-start
                    {selectedIndex === index ? 'ring-white scale-105' : 'ring-transparent hover:ring-white/50'}"
             aria-label="View image {index + 1}"
           >

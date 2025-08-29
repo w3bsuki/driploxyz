@@ -4,15 +4,14 @@ import { defineConfig } from 'vite';
 import { defineConfig as defineVitestConfig } from 'vitest/config';
 import tailwindcss from '@tailwindcss/vite';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
-import { paraglide } from '@inlang/paraglide-js-adapter-sveltekit/vite';
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
 
 export default defineConfig(
 	defineVitestConfig({
 	plugins: [
 		tailwindcss(), 
 		enhancedImages(),
-		// Paraglide MUST come before sveltekit() for proper tree-shaking
-		paraglide({
+		paraglideVitePlugin({
 			project: '../../packages/i18n/project.inlang',
 			outdir: '../../packages/i18n/lib/paraglide'
 		}),

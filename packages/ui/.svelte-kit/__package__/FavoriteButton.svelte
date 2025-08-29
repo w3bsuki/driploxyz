@@ -70,11 +70,11 @@
   <button 
     onclick={handleFavorite}
     disabled={isLoading}
-    class="group flex items-center gap-1 px-2 py-1.5 bg-white/95 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 shadow-sm hover:shadow-md border border-gray-200/50 {isLoading ? 'opacity-50 cursor-not-allowed' : ''} {currentFavorited ? 'bg-red-50/95 hover:bg-red-50 border-red-200/50' : ''}"
+    class="group flex items-center gap-1 px-2 py-1.5 bg-white/95 md:backdrop-blur-sm rounded-full hover:bg-white transition-colors duration-200 shadow-sm hover:shadow-md border border-gray-200/50 {isLoading ? 'opacity-50 cursor-not-allowed' : ''} {currentFavorited ? 'bg-red-50/95 hover:bg-red-50 border-red-200/50' : ''}"
     aria-label={currentFavorited ? removeFromFavoritesText : addToFavoritesText}
   >
     <svg 
-      class="w-4 h-4 transition-all duration-200 {currentFavorited ? 'text-red-600 fill-red-600' : 'text-gray-500 group-hover:text-red-500'}" 
+      class="w-4 h-4 transition-colors duration-200 {currentFavorited ? 'text-red-600 fill-red-600' : 'text-gray-500 group-hover:text-red-500'}" 
       viewBox="0 0 24 24"
       stroke="currentColor"
       stroke-width="2"
@@ -87,7 +87,7 @@
       />
     </svg>
     {#if showCount}
-      <span class="text-xs font-semibold transition-all duration-200 {currentFavorited ? 'text-red-600' : 'text-gray-600'}">
+      <span class="text-xs font-semibold transition-colors duration-200 {currentFavorited ? 'text-red-600' : 'text-gray-600'}">
         {favoriteCount > 999 ? `${Math.floor(favoriteCount/1000)}k` : favoriteCount}
       </span>
     {/if}

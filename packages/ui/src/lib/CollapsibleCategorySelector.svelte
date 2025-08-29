@@ -150,7 +150,7 @@
   <button
     type="button"
     onclick={toggleExpanded}
-    class="w-full flex items-center justify-between px-4 py-3 bg-white border rounded-lg transition-all {
+    class="w-full flex items-center justify-between px-4 py-3 bg-white border rounded-lg transition-colors {
       isExpanded 
         ? 'border-gray-900 ring-2 ring-gray-900 ring-offset-2' 
         : gender 
@@ -199,7 +199,7 @@
             <button
               type="button"
               onclick={() => selectGender(category.id)}
-              class="px-2 py-2 text-xs font-medium rounded-md border transition-all {
+              class="px-2 py-2 text-xs font-medium rounded-md border transition-colors {
                 gender === category.id 
                   ? 'border-gray-900 bg-gray-50 text-gray-900 ring-2 ring-gray-900' 
                   : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
@@ -223,7 +223,7 @@
               <button
                 type="button"
                 onclick={() => selectType(category.id)}
-                class="flex items-center gap-2 px-2.5 py-2 text-xs font-medium rounded-md border transition-all text-left {
+                class="flex items-center gap-2 px-2.5 py-2 text-xs font-medium rounded-md border transition-colors text-left {
                   type === category.id 
                     ? 'border-gray-900 bg-gray-50 text-gray-900 ring-2 ring-gray-900' 
                     : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
@@ -264,7 +264,7 @@
                 <button
                   type="button"
                   onclick={() => selectSpecific(category.id)}
-                  class="px-3 py-2.5 text-sm font-medium rounded border transition-all text-left {
+                  class="px-3 py-2.5 text-sm font-medium rounded border transition-colors text-left {
                     specific === category.id 
                       ? 'border-gray-900 bg-gray-50 text-gray-900 ring-1 ring-gray-900' 
                       : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'

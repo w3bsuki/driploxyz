@@ -129,7 +129,7 @@
 </script>
 
 <div 
-  class="bg-white border rounded-xl p-4 transition-all duration-200 hover:shadow-md {className}"
+  class="bg-white border rounded-xl p-4 transition-colors duration-200 hover:shadow-md {className}"
   onmouseenter={() => isHovering = true}
   onmouseleave={() => isHovering = false}
   role="region"
@@ -224,7 +224,7 @@
     
     <button
       onclick={onFollow}
-      class="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all
+      class="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors
              {isFollowing 
                ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
                : 'bg-black text-white hover:bg-gray-800'}"

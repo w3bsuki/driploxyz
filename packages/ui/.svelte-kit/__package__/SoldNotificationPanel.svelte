@@ -91,7 +91,7 @@
 {#if show}
   <!-- Glass Morphism Backdrop -->
   <button 
-    class="fixed inset-0 bg-black/20 backdrop-blur-xs z-40 bg-transparent border-0 cursor-default"
+    class="fixed inset-0 bg-black/20 md:backdrop-blur-xs z-40 bg-transparent border-0 cursor-default"
     onclick={onClose}
     aria-label="Close sold items panel"
     tabindex="-1"
@@ -99,7 +99,7 @@
 
   <!-- Sold Notification Panel -->
   <div class="fixed top-16 right-4 w-96 max-w-[calc(100vw-2rem)] z-50 {className}">
-    <div class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl ring-1 ring-black/5 
+    <div class="bg-white/95 md:backdrop-blur-xl rounded-2xl shadow-sm md:shadow-2xl ring-1 ring-black/5 
       border border-white/20 overflow-hidden max-h-[80vh] flex flex-col">
       
       <!-- Header -->

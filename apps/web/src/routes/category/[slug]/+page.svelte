@@ -35,10 +35,14 @@
       'Kids': i18n.category_kids(),
       'Unisex': i18n.category_unisex(),
       
-      // Level 2 - Main categories
-      'Accessories': i18n.category_accessories(),
-      'Activewear': i18n.category_activewear(),
+      // Level 2 - Main categories (FIXED: using correct i18n function names)
+      'Clothing': i18n.category_clothing(),
+      'Shoes': i18n.category_shoesType(),
+      'Accessories': i18n.category_accessoriesType(),
       'Bags': i18n.category_bags(),
+      
+      // Additional Level 2/3 categories
+      'Activewear': i18n.category_activewear(),
       'Boots': i18n.category_boots(),
       'Dresses': i18n.category_dresses(),
       'Flats': i18n.category_flats(),
@@ -112,23 +116,39 @@
   
   // Use sellers data from server (all sellers with products in this category)
   
-  // Determine background color based on category
-  const categoryBgColor = $derived.by(() => {
-    const categoryColors = {
-      'women': 'bg-pink-500',
-      'men': 'bg-blue-600',
-      'kids': 'bg-orange-500',
-      'unisex': 'bg-slate-600',
-      'default': 'bg-gray-700'
-    };
-    return categoryColors[categorySlug] || categoryColors['default'];
-  });
+  // Professional neutral background for all categories
+  const categoryBgColor = 'bg-white';
   
   let selectedSubcategory = $state<string | null>(null);
   let sortBy = $state('popular');
   let showFilters = $state(false);
   let searchQuery = $state('');
   let showMegaMenu = $state(false);
+  
+  // Dynamic pills state for level 2 → level 3 drill-down
+  let selectedLevel2Category = $state<string | null>(null);
+  let pillsMode = $state<'level2' | 'level3'>('level2');
+  let selectedLevel3Category = $state<string | null>(null);
+  
+  // Organize level 3 categories by their parent (level 2) category
+  const level3ByParent = $derived.by(() => {
+    const grouped: Record<string, any[]> = {};
+    level3Categories.forEach(l3cat => {
+      if (l3cat.parent_id) {
+        if (!grouped[l3cat.parent_id]) {
+          grouped[l3cat.parent_id] = [];
+        }
+        grouped[l3cat.parent_id].push(l3cat);
+      }
+    });
+    return grouped;
+  });
+  
+  // Get current level 3 categories based on selected level 2 category
+  const currentLevel3Categories = $derived(
+    selectedLevel2Category ? (level3ByParent[selectedLevel2Category] || []) : []
+  );
+
   
   // Seller quick view modal state
   let selectedSeller = $state<any>(null);
@@ -159,9 +179,40 @@
     { value: 'fair', label: i18n.condition_fair() }
   ];
   
-  // Filter products based on search query, subcategory and filters
+  // Filter products based on search query, category hierarchy and filters
   let filteredProducts = $derived(
     displayProducts.filter(p => {
+      // Category hierarchy filter (most important)
+      if (selectedLevel3Category) {
+        // Level 3 filter (e.g., T-shirts, Dresses)
+        const originalProduct = products.find(prod => prod.id === p.id);
+        if (!originalProduct) return false;
+        
+        const belongsToLevel3 = originalProduct.category_id === selectedLevel3Category;
+        if (!belongsToLevel3) return false;
+      } else if (selectedLevel2Category) {
+        // Level 2 filter (e.g., Clothing, Shoes)
+        const originalProduct = products.find(prod => prod.id === p.id);
+        if (!originalProduct) return false;
+        
+        // Check if product belongs to selected level 2 category or its children
+        const belongsToLevel2 = originalProduct.category_id === selectedLevel2Category ||
+                               (originalProduct.categories && originalProduct.categories.parent_id === selectedLevel2Category);
+        
+        if (!belongsToLevel2) return false;
+      }
+      
+      // Legacy support for old selectedSubcategory (can remove later)
+      if (selectedSubcategory && !selectedLevel2Category && !selectedLevel3Category) {
+        const originalProduct = products.find(prod => prod.id === p.id);
+        if (!originalProduct) return false;
+        
+        const belongsToSubcategory = originalProduct.category_id === selectedSubcategory ||
+                                   (originalProduct.categories && originalProduct.categories.parent_id === selectedSubcategory);
+        
+        if (!belongsToSubcategory) return false;
+      }
+      
       // Search filter
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase().trim();
@@ -180,6 +231,54 @@
     })
   );
   
+  // Dynamic pills interaction functions
+  function handleLevel2Select(categoryId: string) {
+    if (selectedLevel2Category === categoryId) {
+      // Clicking same category - deselect and return to level 2 view
+      selectedLevel2Category = null;
+      selectedLevel3Category = null;
+      pillsMode = 'level2';
+    } else {
+      // Select new level 2 category
+      selectedLevel2Category = categoryId;
+      selectedLevel3Category = null;
+      
+      // Check if this category has level 3 subcategories
+      const hasLevel3 = level3ByParent[categoryId] && level3ByParent[categoryId].length > 0;
+      
+      // Switch to level 3 view if there are level 3 categories for this parent
+      if (hasLevel3) {
+        pillsMode = 'level3';
+      } else {
+        // Stay in level 2 mode if no level 3 categories
+        pillsMode = 'level2';
+      }
+    }
+  }
+  
+  function handleLevel3Select(categoryId: string) {
+    if (selectedLevel3Category === categoryId) {
+      // Deselect level 3, stay in level 3 view but show all level 2 products
+      selectedLevel3Category = null;
+    } else {
+      // Select level 3 category
+      selectedLevel3Category = categoryId;
+    }
+  }
+  
+  function handleBackToLevel2() {
+    pillsMode = 'level2';
+    selectedLevel2Category = null;
+    selectedLevel3Category = null;
+  }
+  
+  function clearAllCategoryFilters() {
+    selectedLevel2Category = null;
+    selectedLevel3Category = null;
+    selectedSubcategory = null;
+    pillsMode = 'level2';
+  }
+
   function toggleSize(size: string) {
     if (selectedSizes.includes(size)) {
       selectedSizes = selectedSizes.filter(s => s !== size);
@@ -197,7 +296,7 @@
   }
   
   function clearFilters() {
-    selectedSubcategory = null;
+    clearAllCategoryFilters();
     selectedSizes = [];
     selectedBrands = [];
     selectedConditions = [];
@@ -237,15 +336,9 @@
     </div>
   </div>
 
-  <!-- Clean Category Section -->
-  <div class="bg-white border-b">
+  <!-- Category Section with Brand Colors -->
+  <div class="border-b {categoryBgColor}">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      
-      <!-- Category Header -->
-      <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-900 mb-2">{translateCategoryName(category.name)}</h1>
-        <p class="text-gray-600">{category.description || ''}</p>
-      </div>
 
       <!-- Top Sellers -->
       {#if sellers.length > 0}
@@ -260,14 +353,14 @@
                 <img 
                   src={seller.avatar_url} 
                   alt={seller.username} 
-                  class="w-12 h-12 rounded-full border-2 border-gray-200 group-hover:border-gray-300 shadow-sm transition-all" 
+                  class="w-12 h-12 rounded-full border-2 border-gray-200 group-hover:border-gray-300 shadow-sm transition-colors" 
                 />
                 {#if seller.itemCount === 1}
                   <span class="absolute -bottom-1 -right-1 bg-green-500 text-white text-[9px] font-bold px-1 py-0.5 rounded-full border border-white">{i18n.condition_new().toUpperCase()}</span>
                 {/if}
               </div>
               <span class="text-xs mt-1 font-medium text-gray-700 group-hover:text-gray-900">{seller.username}</span>
-              <span class="text-[10px] text-gray-500">{seller.itemCount} {i18n.category_itemsCount()}</span>
+              <span class="text-xs text-gray-500">{seller.itemCount} {i18n.category_itemsCount()}</span>
             </button>
           {/each}
         </div>
@@ -319,35 +412,16 @@
         </div>
       </div>
 
-      <!-- Category Pills with Product Counts -->
-      {#if subcategories.length > 0 || level3Categories.length > 0}
+      <!-- Dynamic Category Pills with Smooth Transitions -->
+      {#if subcategories.length > 0}
         <div class="flex justify-center">
-          <div class="flex overflow-x-auto scrollbar-hide space-x-2 px-4">
-            <!-- Show level 2 subcategories OR level 3 categories -->
-            {#if level3Categories.length > 0}
-              <!-- Level 3 categories (T-shirts, Shirts, etc.) -->
+          <div class="flex overflow-x-auto scrollbar-hide space-x-2 px-4 transition-transform duration-300">
+            {#if pillsMode === 'level2'}
+              <!-- Level 2 View: Show main categories (Clothing, Shoes, etc.) -->
               <button
-                onclick={() => goto(`/category/${categorySlug}`)}
-                class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors flex items-center gap-2 bg-gray-900 text-white"
-              >
-                <span>{i18n.category_all()}</span>
-                <span class="text-xs opacity-75">({products.length})</span>
-              </button>
-              {#each level3Categories as l3cat}
-                <button
-                  onclick={() => goto(`/category/${l3cat.slug}`)}
-                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200"
-                >
-                  <span>{translateSubcategoryName(l3cat.name)}</span>
-                  <span class="text-xs opacity-75">({l3cat.productCount})</span>
-                </button>
-              {/each}
-            {:else}
-              <!-- Level 2 subcategories (Clothing, Shoes, etc.) -->
-              <button
-                onclick={() => goto(`/category/${categorySlug}`)}
-                class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors flex items-center gap-2
-                  {!selectedSubcategory 
+                onclick={() => clearAllCategoryFilters()}
+                class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2
+                  {!selectedLevel2Category && !selectedLevel3Category
                     ? 'bg-gray-900 text-white' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
               >
@@ -356,16 +430,56 @@
               </button>
               {#each subcategories.filter(s => s.productCount > 0) as subcat}
                 <button
-                  onclick={() => goto(`/category/${subcat.slug}`)}
-                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors flex items-center gap-2
-                    {selectedSubcategory === subcat.id
+                  onclick={() => handleLevel2Select(subcat.id)}
+                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2
+                    {selectedLevel2Category === subcat.id
                       ? 'bg-gray-900 text-white' 
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
                 >
                   <span>{translateSubcategoryName(subcat.name)}</span>
-                  {#if subcat.productCount > 0}
-                    <span class="text-xs opacity-75">({subcat.productCount})</span>
-                  {/if}
+                  <span class="text-xs opacity-75">({subcat.productCount})</span>
+                </button>
+              {/each}
+            {:else if pillsMode === 'level3'}
+              <!-- Level 3 View: Show subcategories (T-shirts, Dresses, etc.) -->
+              <button
+                onclick={() => handleBackToLevel2()}
+                class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2 bg-gray-200 text-gray-600 hover:bg-gray-300"
+                title="Back to main categories"
+              >
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                <span>Back</span>
+              </button>
+              
+              <button
+                onclick={() => { selectedLevel3Category = null; }}
+                class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2
+                  {!selectedLevel3Category
+                    ? 'bg-gray-900 text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+              >
+                <span>{i18n.category_all()}</span>
+                <span class="text-xs opacity-75">
+                  ({filteredProducts.filter(p => {
+                    const orig = products.find(prod => prod.id === p.id);
+                    return orig && (orig.category_id === selectedLevel2Category || 
+                           (orig.categories && orig.categories.parent_id === selectedLevel2Category));
+                  }).length})
+                </span>
+              </button>
+              
+              {#each currentLevel3Categories as l3cat}
+                <button
+                  onclick={() => handleLevel3Select(l3cat.id)}
+                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2
+                    {selectedLevel3Category === l3cat.id
+                      ? 'bg-gray-900 text-white' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+                >
+                  <span>{translateSubcategoryName(l3cat.name)}</span>
+                  <span class="text-xs opacity-75">({l3cat.productCount})</span>
                 </button>
               {/each}
             {/if}
@@ -549,7 +663,7 @@
             {#each sizes as size}
               <button
                 onclick={() => toggleSize(size)}
-                class="px-3 py-2 text-sm border rounded-lg transition-all duration-200 font-medium
+                class="px-3 py-2 text-sm border rounded-lg transition-colors duration-200 font-medium
                   {selectedSizes.includes(size) 
                     ? 'bg-black text-white border-black shadow-sm' 
                     : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'}"
@@ -567,7 +681,7 @@
             {#each conditions as condition}
               <button
                 onclick={() => toggleCondition(condition.value)}
-                class="w-full py-3 px-3 text-sm rounded-lg border text-left transition-all duration-200 font-medium
+                class="w-full py-3 px-3 text-sm rounded-lg border text-left transition-colors duration-200 font-medium
                   {selectedConditions.includes(condition.value)
                     ? 'bg-black text-white border-black shadow-sm' 
                     : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'}"

@@ -571,7 +571,7 @@ export class ProductionLocaleManager {
     });
     
     // Update runtime
-    i18n.setLanguageTag(locale as any);
+    i18n.setLocale(locale as any);
     
     if (browser) {
       document.documentElement.lang = locale;
@@ -627,7 +627,7 @@ export class ProductionLocaleManager {
     const stored = this.getLocale();
     
     if (stored !== 'en') {
-      i18n.setLanguageTag(stored as any);
+      i18n.setLocale(stored as any);
       if (browser) {
         document.documentElement.lang = stored;
       }
@@ -635,7 +635,7 @@ export class ProductionLocaleManager {
     }
     
     const detected = this.detectLocale();
-    i18n.setLanguageTag(detected as any);
+    i18n.setLocale(detected as any);
     
     if (browser) {
       document.documentElement.lang = detected;

@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import { LocaleDetectionBanner } from '@repo/ui';
-  import { languageTag, setLanguageTag } from '@repo/i18n';
+  import { getLocale, setLocale } from '@repo/i18n';
   import type { LanguageTag } from '@repo/i18n';
   import {
     detectUserLocale,
@@ -15,7 +15,7 @@
   let showBanner = $state(false);
   let detectedLocale = $state<LanguageTag>('en');
   let detectedCountry = $state<string | null>(null);
-  let currentLocale = $state<LanguageTag>(languageTag());
+  let currentLocale = $state<LanguageTag>(getLocale());
   
   // Detect and handle locale on component mount
   $effect(async () => {
@@ -30,7 +30,7 @@
     const storedPreference = getStoredLocalePreference();
     if (storedPreference && storedPreference !== currentLocale) {
       // Apply stored preference
-      setLanguageTag(storedPreference);
+      setLocale(storedPreference);
       await goto($page.url.pathname, { replaceState: true });
       return;
     }
@@ -56,7 +56,7 @@
     storeLocalePreference(detectedLocale);
     
     // Switch locale
-    setLanguageTag(detectedLocale);
+    setLocale(detectedLocale);
     
     // Hide banner
     showBanner = false;

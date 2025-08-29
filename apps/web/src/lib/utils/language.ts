@@ -49,7 +49,7 @@ export function initializeLanguage(serverLanguage?: string) {
   
   // Use server language if provided (SSR first)
   if (serverLanguage && i18n.isAvailableLanguageTag(serverLanguage)) {
-    i18n.setLanguageTag(serverLanguage as any);
+    i18n.setLocale(serverLanguage as any);
     document.documentElement.lang = serverLanguage;
     return;
   }
@@ -57,7 +57,7 @@ export function initializeLanguage(serverLanguage?: string) {
   // Fallback to cookie if no server language
   const storedLang = getStoredLanguage();
   if (storedLang && i18n.isAvailableLanguageTag(storedLang)) {
-    i18n.setLanguageTag(storedLang as any);
+    i18n.setLocale(storedLang as any);
     document.documentElement.lang = storedLang;
   } else {
     // Last resort: browser language detection
@@ -68,7 +68,7 @@ export function initializeLanguage(serverLanguage?: string) {
     }
     
     const finalLang = i18n.isAvailableLanguageTag(browserLang) ? browserLang : 'en';
-    i18n.setLanguageTag(finalLang as any);
+    i18n.setLocale(finalLang as any);
     document.documentElement.lang = finalLang;
     setStoredLanguage(finalLang);
   }
@@ -86,7 +86,7 @@ export async function switchLanguage(lang: string) {
   setStoredLanguage(lang);
   
   // Update runtime
-  i18n.setLanguageTag(lang as any);
+  i18n.setLocale(lang as any);
   document.documentElement.lang = lang;
   
   // Force page reload to sync server-side - only invalidate auth to sync language

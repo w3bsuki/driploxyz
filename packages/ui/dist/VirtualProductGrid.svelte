@@ -2,10 +2,17 @@
   import { browser } from '$app/environment';
   import ProductCard from './ProductCard.svelte';
   import { ProductCardSkeleton } from './skeleton/index.js';
-  // Performance utilities removed - component needs refactoring if used
-  const VirtualList = null;
-  const throttle = (fn: Function) => fn;
-  const PerformanceMonitor = null;
+  // Simple throttle implementation
+  function throttle(fn: Function, limit: number) {
+    let inThrottle: boolean;
+    return function(this: any, ...args: any[]) {
+      if (!inThrottle) {
+        fn.apply(this, args);
+        inThrottle = true;
+        setTimeout(() => inThrottle = false, limit);
+      }
+    };
+  }
 
   interface Product {
     id: string;
@@ -55,8 +62,8 @@
   let containerWidth = $state(0);
   let mounted = $state(false);
   
-  // Performance monitoring
-  const perf = browser ? PerformanceMonitor.getInstance() : null;
+  // Simple performance monitoring (optional)
+  const perf = null;
 
   // Calculate responsive items per row
   const responsiveItemsPerRow = $derived(() => {

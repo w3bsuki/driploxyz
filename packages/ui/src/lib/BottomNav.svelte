@@ -83,11 +83,11 @@
   
   function getItemClasses(item: NavItem): string {
     if (item.isSpecial) {
-      return 'flex items-center justify-center py-1.5 min-h-12';
+      return 'flex items-center justify-center py-1.5 min-h-11';
     }
     const active = isActive(item);
     const isLoading = clickedItem === item.href || (isNavigating && navigatingTo === item.href);
-    return `flex flex-col items-center py-2 px-1 min-h-12 transition-all duration-200 ${
+    return `flex flex-col items-center py-2 px-1 min-h-11 transition-colors duration-200 ${
       active ? 'text-gray-900' : isLoading ? 'text-gray-700 opacity-70' : 'text-gray-500 hover:text-gray-700'
     }`;
   }
@@ -103,7 +103,7 @@
   });
 </script>
 
-<nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-white shadow-lg pb-safe sm:hidden z-50 before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gray-200 before:to-transparent">
+<nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-white shadow-sm md:shadow-lg pb-safe sm:hidden z-50 before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gray-200 before:to-transparent">
   <div class="grid grid-cols-5">
     {#each navItems as item}
       {@const isLoading = clickedItem === item.href || (isNavigating && navigatingTo === item.href)}
@@ -116,14 +116,14 @@
         data-sveltekit-preload-code="hover"
       >
         {#if item.isSpecial}
-          <div class="bg-gray-900 text-white rounded-full p-2.5 shadow-lg transform {isActive(item) ? 'scale-105' : ''} transition-all duration-200 hover:bg-gray-800 relative">
+          <div class="bg-gray-900 text-white rounded-full p-2.5 shadow-sm md:shadow-lg {isActive(item) ? 'scale-105' : ''} transition-colors duration-200 hover:bg-gray-800 relative">
             <svg class="w-5 h-5 {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
             </svg>
           </div>
         {:else}
           <div class="relative">
-            <svg class="w-5 h-5 transition-all duration-200 {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 transition-opacity duration-200 {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
             </svg>
             {#if item.showBadge && unreadMessageCount > 0}

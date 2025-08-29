@@ -55,7 +55,7 @@
   }
 
   function getFilterButtonClasses(style: string = 'default'): string {
-    const baseClasses = 'px-2.5 py-1 rounded-full text-xs font-medium transition-all hover:scale-105 shrink-0';
+    const baseClasses = 'px-2.5 py-1 rounded-full text-xs font-medium transition-colors hover:scale-105 shrink-0 scroll-snap-align-start';
     
     switch(style) {
       case 'price':
@@ -141,7 +141,7 @@
 
         <!-- Quick Filter Pills -->
         {#if quickFilters.length > 0}
-          <div class="hidden sm:flex items-center gap-1.5 overflow-x-auto scrollbar-hide">
+          <div class="hidden sm:flex items-center gap-1.5 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory scrollbar-hide">
             {#each quickFilters.slice(0, 4) as filter}
               <button
                 onclick={() => onFilterClick?.(filter.value)}

@@ -305,7 +305,7 @@
               showCategoryDropdown = !showCategoryDropdown;
               categoryLevel = 1;
             }}
-            class="flex items-center gap-2 h-12 px-3 sm:px-4 hover:bg-gray-100 rounded-l-xl text-sm font-medium transition-all border-0 focus:ring-2 focus:ring-black"
+            class="flex items-center gap-2 h-12 px-3 sm:px-4 hover:bg-gray-100 rounded-l-xl text-sm font-medium transition-colors border-0 focus:ring-2 focus:ring-black"
           >
             <span class="text-base">
               {filters.level1 ? 
@@ -512,7 +512,7 @@
         <!-- Main Category Pills -->
         <button
           onclick={() => handleCategorySelect(null)}
-          class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors min-h-[36px]
+          class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors min-h-9
             {filters.level1 === null 
               ? 'bg-black text-white' 
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
@@ -523,7 +523,7 @@
         {#each mainCategories as cat}
           <button
             onclick={() => handleCategorySelect(cat.key)}
-            class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5 min-h-[36px]
+            class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5 min-h-9
               {filters.level1 === cat.key 
                 ? 'bg-black text-white' 
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
@@ -539,7 +539,7 @@
         {#each quickPriceFilters as price}
           <button
             onclick={() => handleQuickPrice(price.min, price.max)}
-            class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors min-h-[36px]
+            class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors min-h-9
               {filters.minPrice === price.min && filters.maxPrice === price.max
                 ? 'bg-blue-600 text-white' 
                 : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}"
@@ -596,7 +596,7 @@
                 <div class="flex gap-2 overflow-x-auto scrollbar-hide px-4">
                   <button
                     onclick={() => filterStore.updateFilter('size', 'all')}
-                    class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-[32px]
+                    class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-8
                       {filters.size === 'all' 
                         ? 'bg-black text-white' 
                         : 'bg-gray-100 text-gray-700'}"
@@ -606,7 +606,7 @@
                   {#each currentSizes as size}
                     <button
                       onclick={() => filterStore.updateFilter('size', filters.size === size ? 'all' : size)}
-                      class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-[32px]
+                      class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-8
                         {filters.size === size 
                           ? 'bg-black text-white' 
                           : 'bg-gray-100 text-gray-700'}"
@@ -623,7 +623,7 @@
                 <div class="flex gap-2 overflow-x-auto scrollbar-hide px-4">
                   <button
                     onclick={() => filterStore.updateFilter('condition', 'all')}
-                    class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-[32px]
+                    class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-8
                       {filters.condition === 'all' 
                         ? 'bg-black text-white' 
                         : 'bg-gray-100 text-gray-700'}"
@@ -633,7 +633,7 @@
                   {#each conditions as condition}
                     <button
                       onclick={() => filterStore.updateFilter('condition', filters.condition === condition.key ? 'all' : condition.key)}
-                      class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-[32px]
+                      class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-8
                         {filters.condition === condition.key 
                           ? 'bg-black text-white' 
                           : 'bg-gray-100 text-gray-700'}"
@@ -650,7 +650,7 @@
                 <div class="flex gap-2 overflow-x-auto scrollbar-hide px-4">
                   <button
                     onclick={() => filterStore.updateFilter('brand', 'all')}
-                    class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-[32px]
+                    class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-8
                       {filters.brand === 'all' 
                         ? 'bg-black text-white' 
                         : 'bg-gray-100 text-gray-700'}"
@@ -660,7 +660,7 @@
                   {#each currentBrands as brand}
                     <button
                       onclick={() => filterStore.updateFilter('brand', filters.brand === brand ? 'all' : brand)}
-                      class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-[32px]
+                      class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-8
                         {filters.brand === brand 
                           ? 'bg-black text-white' 
                           : 'bg-gray-100 text-gray-700'}"
@@ -695,7 +695,7 @@
                   {#each quickPriceFilters as price}
                     <button
                       onclick={() => handleQuickPrice(price.min, price.max)}
-                      class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-[32px]
+                      class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-8
                         {filters.minPrice === price.min && filters.maxPrice === price.max
                           ? 'bg-black text-white' 
                           : 'bg-gray-100 text-gray-700'}"
@@ -900,7 +900,7 @@
                 url.searchParams.set('page', String(data.currentPage - 1));
                 goto(url.pathname + url.search);
               }}
-              class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 min-h-[36px]"
+              class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 min-h-9"
             >
               ← Previous
             </button>
@@ -917,7 +917,7 @@
                 url.searchParams.set('page', String(data.currentPage + 1));
                 goto(url.pathname + url.search);
               }}
-              class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 min-h-[36px]"
+              class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 min-h-9"
             >
               Next →
             </button>

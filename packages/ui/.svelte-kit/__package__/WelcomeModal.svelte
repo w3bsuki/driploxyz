@@ -104,14 +104,14 @@
 
 {#if show}
   <!-- Glass Morphism Backdrop -->
-  <div class="fixed inset-0 bg-black/40 backdrop-blur-md z-50 flex items-center justify-center p-4">
+  <div class="fixed inset-0 bg-black/40 md:backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="w-full max-w-md mx-auto">
       <!-- Main Modal -->
-      <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl ring-1 ring-white/20 border border-white/30 overflow-hidden">
+      <div class="bg-white/95 md:backdrop-blur-xl rounded-3xl shadow-sm md:shadow-2xl ring-1 ring-white/20 border border-white/30 overflow-hidden">
         <!-- Progress Bar -->
         <div class="h-1 bg-gray-200/50">
           <div 
-            class="h-full bg-linear-to-r from-blue-500 to-purple-500 transition-all duration-500 ease-out"
+            class="h-full bg-linear-to-r from-blue-500 to-purple-500 transition-colors duration-500 ease-out"
             style="width: {((currentStep + 1) / effectiveSteps.length) * 100}%"
           ></div>
         </div>
@@ -140,7 +140,7 @@
             {#each effectiveSteps as step, index}
               <button
                 onclick={() => currentStep = index}
-                class="w-2 h-2 rounded-full transition-all duration-300 {index === currentStep ? 'bg-black w-8' : 'bg-gray-300 hover:bg-gray-400'}"
+                class="w-2 h-2 rounded-full transition-colors duration-300 {index === currentStep ? 'bg-black w-8' : 'bg-gray-300 hover:bg-gray-400'}"
                 aria-label={`Go to step ${index + 1}`}
               ></button>
             {/each}
@@ -183,15 +183,15 @@
       <!-- Feature Highlights for Discovery Step -->
       {#if currentStepData.id === 'discover'}
         <div class="grid grid-cols-3 gap-3 mt-6">
-          <div class="bg-white/80 backdrop-blur-xs rounded-xl p-3 border border-white/30 text-center">
+          <div class="bg-white/80 md:backdrop-blur-xs rounded-xl p-3 border border-white/30 text-center">
             <div class="text-lg mb-1">👗</div>
             <div class="text-xs font-medium text-gray-700">{translations.designer || 'Designer'}</div>
           </div>
-          <div class="bg-white/80 backdrop-blur-xs rounded-xl p-3 border border-white/30 text-center">
+          <div class="bg-white/80 md:backdrop-blur-xs rounded-xl p-3 border border-white/30 text-center">
             <div class="text-lg mb-1">♻️</div>
             <div class="text-xs font-medium text-gray-700">{translations.vintage || 'Vintage'}</div>
           </div>
-          <div class="bg-white/80 backdrop-blur-xs rounded-xl p-3 border border-white/30 text-center">
+          <div class="bg-white/80 md:backdrop-blur-xs rounded-xl p-3 border border-white/30 text-center">
             <div class="text-lg mb-1">⚡</div>
             <div class="text-xs font-medium text-gray-700">{translations.trending || 'Trending'}</div>
           </div>
@@ -201,11 +201,11 @@
       <!-- Stats for Sell Step -->
       {#if currentStepData.id === 'sell'}
         <div class="grid grid-cols-2 gap-3 mt-6">
-          <div class="bg-white/80 backdrop-blur-xs rounded-xl p-4 border border-white/30 text-center">
+          <div class="bg-white/80 md:backdrop-blur-xs rounded-xl p-4 border border-white/30 text-center">
             <div class="text-lg font-bold text-green-600 mb-1">$2.5M+</div>
             <div class="text-xs text-gray-600">{translations.totalSales || 'Total Sales'}</div>
           </div>
-          <div class="bg-white/80 backdrop-blur-xs rounded-xl p-4 border border-white/30 text-center">
+          <div class="bg-white/80 md:backdrop-blur-xs rounded-xl p-4 border border-white/30 text-center">
             <div class="text-lg font-bold text-blue-600 mb-1">50K+</div>
             <div class="text-xs text-gray-600">{translations.happySellers || 'Happy Sellers'}</div>
           </div>

@@ -23,7 +23,7 @@ const RTL_LANGUAGES = new Set([
  * Check if current locale is RTL
  */
 export function isRTL(locale?: string): boolean {
-  const currentLocale = locale || i18n.languageTag();
+  const currentLocale = locale || i18n.getLocale();
   return RTL_LANGUAGES.has(currentLocale);
 }
 
@@ -150,7 +150,7 @@ export function rtlClasses(classes: {
  * Format number for RTL locales (some RTL languages use different number systems)
  */
 export function formatNumber(num: number, locale?: string): string {
-  const currentLocale = locale || i18n.languageTag();
+  const currentLocale = locale || i18n.getLocale();
   
   try {
     return new Intl.NumberFormat(currentLocale).format(num);

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
-	import { AdminDashboard } from '@repo/ui';
+	// TODO: Create AdminDashboard component in @repo/ui or move to local components
+	// import { AdminDashboard } from '@repo/ui';
 	import { goto } from '$app/navigation';
 
 	interface Props {
@@ -49,26 +50,8 @@
 	};
 </script>
 
-<!-- Use the comprehensive AdminDashboard component -->
+<!-- TODO: Replace with proper AdminDashboard component -->
 {#if activeView === 'overview'}
-	<AdminDashboard
-		{activeView}
-		adminUser={{
-			username: data.user?.email?.split('@')[0] || 'admin',
-			role: 'super_admin',
-			permissions: ['manage_payouts', 'view_users', 'manage_listings', 'view_analytics'],
-			country_access: ['UK', 'BG']
-		}}
-		quickStats={{
-			pending_payouts: stats.pendingPayouts,
-			unread_notifications: stats.unreadNotifications,
-			new_users_today: stats.newUsersToday,
-			total_revenue_today: stats.totalRevenue
-		}}
-		onViewChange={handleViewChange}
-		onLogout={handleLogout}
-	/>
-{:else}
 	<div class="min-h-screen bg-gray-50">
 		<div class="container mx-auto px-4 py-8">
 			<div class="mb-8">

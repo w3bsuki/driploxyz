@@ -366,7 +366,7 @@
       </div>
       <div class="w-full bg-blue-200 rounded-full h-2">
         <div 
-          class="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+          class="bg-blue-600 h-2 rounded-full transition-colors duration-300 ease-out"
           style="width: {conversionProgress.total > 0 ? (conversionProgress.current / conversionProgress.total) * 100 : 0}%"
         />
       </div>
@@ -417,7 +417,7 @@
           onclick={() => removeImage(index)}
           disabled={uploading || isProcessing}
           class="absolute bottom-1.5 right-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 
-                 opacity-0 group-hover:opacity-100 transition-all duration-200 
+                 opacity-0 group-hover:opacity-100 transition-colors duration-200 
                  disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label={removeImageText}
         >
@@ -434,7 +434,7 @@
         role="button"
         tabindex="0"
         class="aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center 
-               cursor-pointer transition-all duration-200 
+               cursor-pointer transition-colors duration-200 
                {isDragging 
                  ? 'border-blue-500 bg-blue-50 scale-105' 
                  : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'}"

@@ -84,7 +84,7 @@
           <a
             href={item.href}
             onclick={() => mobileMenuOpen = false}
-            class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all
+            class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
                    {$page.url.pathname === item.href 
                      ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md' 
                      : 'text-gray-700 hover:bg-gray-100/50'}"
@@ -106,7 +106,7 @@
             {#each navItems as item}
               <a
                 href={item.href}
-                class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-all
+                class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
                        {$page.url.pathname === item.href 
                          ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md transform scale-105' 
                          : 'text-gray-700 hover:bg-gray-100/50 hover:scale-102'}"

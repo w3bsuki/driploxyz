@@ -26,21 +26,11 @@
   // Region switch modal state
   let showRegionModal = $state(false);
 
-  // CRITICAL: Initialize language IMMEDIATELY on mount, before any child components
-  // This runs synchronously during component initialization
-  if (browser && data?.language) {
-    if (dev) console.log('🌍 Client: Initializing language IMMEDIATELY with:', data.language);
-    initializeLanguage(data.language);
-    if (i18n.isAvailableLanguageTag(data.language)) {
-      sessionStorage.setItem('selectedLocale', data.language);
-    }
-  }
-  
   // Language initialization - Header component handles switching
   $effect(() => {
     if (browser && data?.language) {
       // Only initialize if language actually changed
-      if (i18n.languageTag() !== data.language) {
+      if (i18n.getLocale() !== data.language) {
         if (dev) console.log('🌍 Client: Language change detected, updating to:', data.language);
         initializeLanguage(data.language);
         if (i18n.isAvailableLanguageTag(data.language)) {

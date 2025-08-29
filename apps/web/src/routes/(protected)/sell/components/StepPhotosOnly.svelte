@@ -73,7 +73,7 @@
         maxlength="500"
         class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-gray-500/20 focus:border-gray-500 resize-none text-base sm:text-sm"
       />
-      <div class="text-[11px] text-gray-500 mt-1 text-right">
+      <div class="text-xs text-gray-500 mt-1 text-right">
         {formData.description.length}/500
       </div>
     </div>

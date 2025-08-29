@@ -105,7 +105,7 @@
   <!-- Modal content -->
   <div 
     bind:this={modalRef}
-    class="bg-white rounded-xl w-full max-w-[280px] p-3 shadow-xl"
+    class="bg-white rounded-xl w-full max-w-72 p-3 shadow-xl"
     role="document"
   >
     <!-- Product image with close button -->
@@ -132,7 +132,7 @@
       {#if product.seller_name}
         <button 
           onclick={toggleSellerInfo}
-          class="absolute bottom-2 left-2 flex items-center gap-1.5 bg-white/95 backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-all duration-200 {showSellerInfo ? 'px-2.5 py-1.5' : 'pr-2'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+          class="absolute bottom-2 left-2 flex items-center gap-1.5 bg-white/95 md:backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors duration-200 {showSellerInfo ? 'px-2.5 py-1.5' : 'pr-2'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
           aria-label="View seller information for {product.seller_name}"
           aria-expanded={showSellerInfo}
         >
@@ -150,7 +150,7 @@
             {/if}
           </div>
           <div 
-            class="overflow-hidden transition-all duration-200 {showSellerInfo ? 'max-w-40' : 'max-w-20'}"
+            class="overflow-hidden transition-colors duration-200 {showSellerInfo ? 'max-w-40' : 'max-w-20'}"
             aria-hidden={!showSellerInfo}
           >
             {#if showSellerInfo}
@@ -206,7 +206,7 @@
           {#each product.sizes as size}
             <button
               onclick={() => selectedSize = size}
-              class="px-2 py-1 text-xs border rounded transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black {selectedSize === size ? 'bg-black text-white border-black' : 'border-gray-300 hover:border-gray-400'}"
+              class="px-2 py-1 text-xs border rounded transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black {selectedSize === size ? 'bg-black text-white border-black' : 'border-gray-300 hover:border-gray-400'}"
               role="radio"
               aria-checked={selectedSize === size}
               aria-label="Size {size}"
@@ -235,7 +235,7 @@
       <button 
         onclick={handleAddToCart}
         disabled={!canPurchase}
-        class="flex-1 bg-black text-white text-sm py-2.5 px-4 rounded-lg font-medium transition-all hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black disabled:opacity-50 disabled:cursor-not-allowed"
+        class="flex-1 bg-black text-white text-sm py-2.5 px-4 rounded-lg font-medium transition-colors hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black disabled:opacity-50 disabled:cursor-not-allowed"
         aria-label="Buy {product.title} now{selectedSize ? ` in size ${selectedSize}` : ''}"
       >
         Buy Now
@@ -243,7 +243,7 @@
       <button 
         onclick={handleToggleFavorite}
         disabled={isLoadingFavorite}
-        class="p-2.5 border rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black {isLoadingFavorite ? 'opacity-50 cursor-wait' : ''} {isFavorited ? 'border-red-300 bg-red-50 text-red-600' : 'border-gray-300 hover:bg-gray-50'}"
+        class="p-2.5 border rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black {isLoadingFavorite ? 'opacity-50 cursor-wait' : ''} {isFavorited ? 'border-red-300 bg-red-50 text-red-600' : 'border-gray-300 hover:bg-gray-50'}"
         aria-label="{isFavorited ? 'Remove from' : 'Add to'} favorites"
         aria-pressed={isFavorited}
       >

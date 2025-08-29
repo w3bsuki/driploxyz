@@ -9,11 +9,11 @@
   let { tabs, activeTab, onTabChange, class: className = '' }: Props = $props();
 </script>
 
-<div class="flex space-x-1 overflow-x-auto pb-2 {className}">
+<div class="flex space-x-1 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory pb-2 {className}">
   {#each tabs as tab}
     <button
       onclick={() => onTabChange(tab.id)}
-      class="flex items-center px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
+      class="flex items-center px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors scroll-snap-align-start
         {activeTab === tab.id 
           ? 'bg-black text-white' 
           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"

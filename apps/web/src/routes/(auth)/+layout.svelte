@@ -23,13 +23,13 @@
       <div class="bg-gray-100 p-1 mx-4 mb-3 rounded-xl flex">
         <a 
           href="/login" 
-          class="flex-1 text-center py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-200 {isLogin ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-600 hover:text-gray-800'}"
+          class="flex-1 text-center py-2 px-3 rounded-lg text-sm font-semibold transition-colors duration-200 {isLogin ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-600 hover:text-gray-800'}"
         >
           Sign In
         </a>
         <a 
           href="/signup" 
-          class="flex-1 text-center py-2 px-3 rounded-lg text-sm font-semibold transition-all duration-200 {isSignup ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-600 hover:text-gray-800'}"
+          class="flex-1 text-center py-2 px-3 rounded-lg text-sm font-semibold transition-colors duration-200 {isSignup ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-600 hover:text-gray-800'}"
         >
           Sign Up
         </a>

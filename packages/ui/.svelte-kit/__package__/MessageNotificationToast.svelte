@@ -57,7 +57,7 @@
 
 {#if show}
   <div class="fixed top-4 right-4 z-50 animate-in slide-in-from-right-full duration-300">
-    <div class="w-80 max-w-[calc(100vw-2rem)] bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl 
+    <div class="w-80 max-w-[calc(100vw-2rem)] bg-white/95 md:backdrop-blur-xl rounded-2xl shadow-sm md:shadow-2xl 
       ring-1 ring-black/5 border border-white/20 overflow-hidden">
       
       <!-- Header -->

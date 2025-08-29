@@ -147,7 +147,3 @@ Admin Login Page - Extra secure with multiple verification steps
 	</div>
 </div>
 
-<style>
-	:global(body) {
-		@apply bg-gray-900;
-	}</style>

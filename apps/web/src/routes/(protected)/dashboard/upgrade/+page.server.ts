@@ -114,7 +114,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
     console.error('Error in upgrade page load:', error);
     
     // If it's a redirect, re-throw it
-    if (error?.status === 303) {
+    if (error instanceof Response && error.status === 303) {
       throw error;
     }
     

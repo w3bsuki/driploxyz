@@ -111,7 +111,7 @@
         onclick={() => handleSelect(accountType.value)}
         class="w-full text-left max-w-xs relative"
       >
-        <div class="bg-white/90 backdrop-blur-md rounded-xl border p-1.5 shadow-sm transition-all {selected === accountType.value ? 'border-gray-300 shadow-md ring-1 ring-gray-300/50' : 'border-gray-200/60 hover:border-gray-300/80 hover:shadow-md'}">
+        <div class="bg-white/90 md:backdrop-blur-md rounded-xl border p-1.5 shadow-sm transition-colors {selected === accountType.value ? 'border-gray-300 shadow-md ring-1 ring-gray-300/50' : 'border-gray-200/60 hover:border-gray-300/80 hover:shadow-md'}">
         <!-- Popular badge -->
         {#if accountType.popular}
           <div class="absolute -top-2 left-4 z-10">
@@ -134,7 +134,7 @@
               <span class="text-lg">{accountType.icon}</span>
               <span>{accountType.title}</span>
             </div>
-            <span class="border-gray-200 text-gray-600 rounded-full border px-2 py-0.5 text-xs transition-all {selected === accountType.value ? 'bg-gray-900 text-white border-gray-900' : 'hover:border-gray-300'}">
+            <span class="border-gray-200 text-gray-600 rounded-full border px-2 py-0.5 text-xs transition-colors {selected === accountType.value ? 'bg-gray-900 text-white border-gray-900' : 'hover:border-gray-300'}">
               {selected === accountType.value ? (translations.selected || 'Selected') : (translations.select || 'Select')}
             </span>
           </div>

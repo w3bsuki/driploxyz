@@ -15,9 +15,9 @@
     children
   }: Props = $props();
 
-  const baseClasses = 'bg-white rounded-lg shadow-sm';
-  const paddingClasses = $derived(padding ? 'p-6' : '');
-  const hoverClasses = $derived(hover ? 'cursor-pointer hover:shadow-lg' : '');
+  const baseClasses = 'bg-[var(--card-bg)] rounded-[var(--card-radius)] shadow-[var(--card-shadow)] border border-[var(--card-border)]';
+  const paddingClasses = $derived(padding ? 'p-[var(--card-padding-md)]' : '');
+  const hoverClasses = $derived(hover ? 'cursor-pointer hover:shadow-[var(--shadow-md)] transition-shadow duration-[var(--duration-base)]' : '');
   const classes = $derived(`${baseClasses} ${paddingClasses} ${hoverClasses} ${className}`);
 </script>
 

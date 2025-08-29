@@ -62,7 +62,7 @@
   <div class="space-y-4">
     {#each links as link, index}
       {@const platformInfo = getPlatformInfo(link.type)}
-      <div class="group bg-white/70 backdrop-blur-xs rounded-2xl border border-gray-200/50 p-4 hover:bg-white/90 transition-all duration-300">
+      <div class="group bg-white/70 md:backdrop-blur-xs rounded-2xl border border-gray-200/50 p-4 hover:bg-white/90 transition-colors duration-300">
         <div class="flex items-start space-x-4">
           <!-- Platform Icon -->
           <div class="shrink-0">

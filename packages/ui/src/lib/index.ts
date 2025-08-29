@@ -19,8 +19,9 @@ export { default as ProductGallery } from './ProductGallery.svelte';
 export { default as SizeSelector } from './SizeSelector.svelte';
 export { default as ConditionReport } from './ConditionReport.svelte';
 export { default as SellerCard } from './SellerCard.svelte';
-export { default as LiveActivity } from './LiveActivity.svelte';
-export { default as ProductSheet } from './ProductSheet.svelte';
+// MOVED TO EXPERIMENTAL - Unused components
+// export { default as LiveActivity } from './LiveActivity.svelte';
+// export { default as ProductSheet } from './ProductSheet.svelte';
 export { default as QuickActions } from './QuickActions.svelte';
 export { default as TabGroup } from './TabGroup.svelte';
 
@@ -60,7 +61,8 @@ export { default as BrandPaymentModal } from './BrandPaymentModal.svelte';
 export { default as WelcomeTutorialFlow } from './WelcomeTutorialFlow.svelte';
 
 // Country/Region components
-export { default as CountrySwitcher } from './CountrySwitcher.svelte';
+// MOVED TO EXPERIMENTAL - Country switcher (unused)  
+// export { default as CountrySwitcher } from './CountrySwitcher.svelte';
 export { default as CountryDetectionBanner } from './CountryDetectionBanner.svelte';
 
 // Order and Review components
@@ -76,7 +78,8 @@ export { default as ProductSoldManager } from './ProductSoldManager.svelte';
 export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte';
 
 // Image components
-export { default as ImageOptimized } from './ImageOptimized.svelte';
+// MOVED TO EXPERIMENTAL - Image optimization (unused)
+// export { default as ImageOptimized } from './ImageOptimized.svelte';
 
 // Search components
 export { default as TrendingDropdown } from './TrendingDropdown.svelte';
@@ -107,14 +110,16 @@ export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
 export { default as LocaleDetectionBanner } from './LocaleDetectionBanner.svelte';
 
 // Navigation components
-export { default as MegaMenu } from './MegaMenu.svelte';
-export { default as CategoryMegaMenu } from './CategoryMegaMenu.svelte';
-export { default as CategorySidebar } from './CategorySidebar.svelte';
+// MOVED TO EXPERIMENTAL - Navigation components (unused)
+// export { default as MegaMenu } from './MegaMenu.svelte';
+// export { default as CategoryMegaMenu } from './CategoryMegaMenu.svelte';
+// export { default as CategorySidebar } from './CategorySidebar.svelte';
 export { default as BottomNav } from './BottomNav.svelte';
 
 // Form components
 export { default as Select } from './Select.svelte';
-export { default as StepIndicator } from './StepIndicator.svelte';
+// MOVED TO EXPERIMENTAL - Step indicator (unused)
+// export { default as StepIndicator } from './StepIndicator.svelte';
 export { default as ConditionSelector } from './ConditionSelector.svelte';
 export { default as BrandSelector } from './BrandSelector.svelte';
 export { default as CategorySelector } from './CategorySelector.svelte';
@@ -139,8 +144,9 @@ export { default as Accordion } from './Accordion.svelte';
 export { default as SellerQuickView } from './SellerQuickView.svelte';
 
 // Product quick view components
-export { default as ProductQuickView } from './ProductQuickView.svelte';
-export { default as HighlightQuickView } from './HighlightQuickView.svelte';
+// MOVED TO EXPERIMENTAL - Quick view components (unused)
+// export { default as ProductQuickView } from './ProductQuickView.svelte';
+// export { default as HighlightQuickView } from './HighlightQuickView.svelte';
 
 // Auth components
 export { default as AuthPopup } from './AuthPopup.svelte';

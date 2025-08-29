@@ -80,7 +80,7 @@
   <!-- Dropdown menu ABOVE the backdrop -->
   <div class="absolute top-full left-0 right-0 mt-2 z-50">
     <div 
-      class="bg-white rounded-xl shadow-2xl border border-gray-200 max-h-[calc(100vh-200px)] sm:max-h-[70vh] overflow-y-auto {className}">
+      class="bg-white rounded-xl shadow-sm md:shadow-2xl border border-gray-200 max-h-[calc(100vh-200px)] sm:max-h-[70vh] overflow-y-auto {className}">
       <div class="p-4">
         <!-- Header with clear button -->
         <div class="flex items-center justify-between mb-3">
@@ -116,7 +116,7 @@
                   e.stopPropagation();
                   selectCategory(cat.key);
                 }}
-                class="flex flex-col items-center p-3 rounded-lg transition-all {
+                class="flex flex-col items-center p-3 rounded-lg transition-colors {
                   selectedCategory === cat.key 
                     ? 'bg-black text-white' 
                     : 'bg-gray-50 hover:bg-gray-100'

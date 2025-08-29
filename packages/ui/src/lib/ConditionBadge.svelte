@@ -35,12 +35,12 @@
   };
   
   const conditionColors = {
-    'brand_new_with_tags': 'bg-emerald-500/90 text-white backdrop-blur-sm',
-    'new_without_tags': 'bg-green-500/90 text-white backdrop-blur-sm',
-    'like_new': 'bg-blue-500/90 text-white backdrop-blur-sm',
-    'good': 'bg-yellow-500/90 text-white backdrop-blur-sm',
-    'worn': 'bg-orange-500/90 text-white backdrop-blur-sm',
-    'fair': 'bg-red-500/90 text-white backdrop-blur-sm'
+    'brand_new_with_tags': 'bg-emerald-500/90 text-white md:backdrop-blur-sm',
+    'new_without_tags': 'bg-green-500/90 text-white md:backdrop-blur-sm',
+    'like_new': 'bg-blue-500/90 text-white md:backdrop-blur-sm',
+    'good': 'bg-yellow-500/90 text-white md:backdrop-blur-sm',
+    'worn': 'bg-orange-500/90 text-white md:backdrop-blur-sm',
+    'fair': 'bg-red-500/90 text-white md:backdrop-blur-sm'
   };
 </script>
 

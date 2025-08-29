@@ -183,7 +183,7 @@
         <button
           type="button"
           onclick={() => selectGender(category.id)}
-          class="flex flex-col items-center px-2 py-2.5 text-xs font-medium rounded-lg border transition-all {
+          class="flex flex-col items-center px-2 py-2.5 text-xs font-medium rounded-lg border transition-colors {
             formData.gender_category_id === category.id 
               ? 'border-black bg-black text-white' 
               : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
@@ -191,7 +191,7 @@
           aria-pressed={formData.gender_category_id === category.id}
         >
           <span class="text-base mb-0.5">{getEmoji(category.name)}</span>
-          <span class="text-[10px]">{translateCategory(category.name)}</span>
+          <span class="text-xs">{translateCategory(category.name)}</span>
         </button>
       {/each}
     </div>
@@ -209,7 +209,7 @@
           <button
             type="button"
             onclick={() => selectType(category.id)}
-            class="flex items-center gap-2 px-2.5 py-2.5 text-xs font-medium rounded-lg border transition-all text-left {
+            class="flex items-center gap-2 px-2.5 py-2.5 text-xs font-medium rounded-lg border transition-colors text-left {
               formData.type_category_id === category.id 
                 ? 'border-black bg-black text-white' 
                 : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
@@ -242,7 +242,7 @@
             <button
               type="button"
               onclick={() => selectSpecific(category.id)}
-              class="px-2.5 py-2.5 text-xs font-medium rounded-lg border transition-all text-left {
+              class="px-2.5 py-2.5 text-xs font-medium rounded-lg border transition-colors text-left {
                 formData.category_id === category.id 
                   ? 'border-black bg-black text-white' 
                   : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
@@ -268,15 +268,15 @@
         <button
           type="button"
           onclick={() => selectCondition(condition.value)}
-          class="px-2.5 py-2.5 text-center rounded-lg border transition-all text-xs {
+          class="px-2.5 py-2.5 text-center rounded-lg border transition-colors text-xs {
             formData.condition === condition.value 
               ? 'border-black bg-black text-white' 
               : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
           }"
           aria-pressed={formData.condition === condition.value}
         >
-          <div class="font-medium text-[13px]">{condition.label}</div>
-          <div class="text-[10px] opacity-70 mt-0.5">{condition.description}</div>
+          <div class="font-medium text-sm">{condition.label}</div>
+          <div class="text-xs opacity-70 mt-0.5">{condition.description}</div>
         </button>
       {/each}
     </div>

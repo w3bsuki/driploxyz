@@ -69,17 +69,17 @@
   );
   
   // Language handling
-  let currentLang = $state(initialLanguage || i18n.languageTag());
+  let currentLang = $state(initialLanguage || i18n.getLocale());
   
   $effect(() => {
-    if (initialLanguage && initialLanguage !== i18n.languageTag()) {
-      i18n.setLanguageTag(initialLanguage);
+    if (initialLanguage && initialLanguage !== i18n.getLocale()) {
+      i18n.setLocale(initialLanguage);
       currentLang = initialLanguage;
     }
   });
   
   $effect(() => {
-    const newLang = i18n.languageTag();
+    const newLang = i18n.getLocale();
     if (newLang !== currentLang) {
       currentLang = newLang;
       // Update HTML lang attribute
@@ -250,7 +250,7 @@
           <div class="relative">
             <button
               onclick={() => (userMenuOpen = !userMenuOpen)}
-              class="block rounded-full hover:ring-2 hover:ring-gray-200 transition-all"
+              class="block rounded-full hover:ring-2 hover:ring-gray-200 transition-colors"
               aria-label="User menu"
             >
               <Avatar 

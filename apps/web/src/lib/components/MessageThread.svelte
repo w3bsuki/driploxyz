@@ -121,7 +121,7 @@
         <div class="flex justify-between items-start mb-2">
           <div>
             <p class="text-xs font-semibold text-blue-900 uppercase tracking-wide">{i18n.messages_bundleOffer()}</p>
-            <p class="text-[11px] text-blue-700">{conversation.bundleItems?.length} items • Save ${(conversation.bundleItems?.reduce((sum, item) => sum + item.price, 0) || 0) - conversation.offerPrice}</p>
+            <p class="text-xs text-blue-700">{conversation.bundleItems?.length} items • Save ${(conversation.bundleItems?.reduce((sum, item) => sum + item.price, 0) || 0) - conversation.offerPrice}</p>
           </div>
           <p class="text-lg font-bold text-blue-900">${conversation.offerPrice}</p>
         </div>
@@ -159,7 +159,7 @@
   <div bind:this={messagesContainer} class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
     <!-- Date Separator -->
     <div class="flex items-center justify-center">
-      <span class="text-[11px] text-gray-500 bg-white px-3 py-1 rounded-full">{i18n.messages_today()}</span>
+      <span class="text-xs text-gray-500 bg-white px-3 py-1 rounded-full">{i18n.messages_today()}</span>
     </div>
     
     <!-- Messages -->
@@ -170,13 +170,13 @@
             <p class="text-sm leading-relaxed">{message.content}</p>
           </div>
           <div class="flex items-center justify-between mt-1.5 px-2">
-            <p class="text-[11px] text-gray-500 {message.sender_id === currentUserId ? 'order-2' : ''}">
+            <p class="text-xs text-gray-500 {message.sender_id === currentUserId ? 'order-2' : ''}">
               {timeAgo(message.created_at)}
             </p>
             
             <!-- Message Status for sent messages -->
             {#if message.sender_id === currentUserId}
-              <div class="flex items-center space-x-1 text-[10px] text-gray-400">
+              <div class="flex items-center space-x-1 text-xs text-gray-400">
                 {#if message.status === 'sending'}
                   <svg class="w-3 h-3 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10" stroke-width="2" />

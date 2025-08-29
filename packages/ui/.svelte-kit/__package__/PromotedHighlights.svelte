@@ -136,7 +136,7 @@
     <nav 
       role="navigation"
       aria-label="Promoted products carousel"
-      class="overflow-x-auto scrollbar-hide"
+      class="overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory scrollbar-hide"
       onkeydown={handleKeyNavigation}
     >
       <div 
@@ -147,7 +147,7 @@
         <!-- Promoted Products -->
         {#if hasProducts}
           {#each promotedProducts as product, index}
-            <div role="listitem" data-highlight-item>
+            <div role="listitem" data-highlight-item class="scroll-snap-align-start">
               <ProductHighlight 
                 {product} 
                 currency={translations.common_currency}
@@ -170,7 +170,7 @@
             <div 
               role="listitem" 
               data-highlight-item
-              class="relative shrink-0"
+              class="relative shrink-0 scroll-snap-align-start"
             >
               <button
                 onclick={() => onSellerClick(seller)}
@@ -187,7 +187,7 @@
                 />
                 {#if seller.premium}
                   <div 
-                    class="absolute -top-1 -right-1 w-5 h-5 bg-purple-500 rounded-full border border-white shadow-lg flex items-center justify-center"
+                    class="absolute -top-1 -right-1 w-5 h-5 bg-purple-500 rounded-full border border-white shadow-sm md:shadow-lg flex items-center justify-center"
                     aria-hidden="true"
                   >
                     <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">

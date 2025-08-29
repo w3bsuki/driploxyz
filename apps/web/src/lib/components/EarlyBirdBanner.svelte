@@ -112,18 +112,18 @@
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
           </span>
-          <span class="font-medium text-[10px] uppercase tracking-wider">{i18n.banner_live()}</span>
+          <span class="font-medium text-xs uppercase tracking-wider">{i18n.banner_live()}</span>
         </div>
         
         <div class="flex-1 min-w-0">
           <p 
-            class="text-sm text-center whitespace-nowrap overflow-hidden text-ellipsis transition-all duration-300 {visible ? 'opacity-100' : 'opacity-0'}"
+            class="text-sm text-center whitespace-nowrap overflow-hidden text-ellipsis transition-opacity duration-300 {visible ? 'opacity-100' : 'opacity-0'}"
           >
             <span class="text-white font-medium">{current.user}</span>
             <span class="mx-1.5 text-gray-400">{i18n.banner_justAdded()}</span>
             <a 
               href="/product/{current.id}"
-              class="text-white font-medium underline decoration-dotted underline-offset-4 decoration-gray-500 hover:decoration-solid hover:decoration-white transition-all focus:outline-none focus:ring-2 focus:ring-white/20 rounded"
+              class="text-white font-medium underline decoration-dotted underline-offset-4 decoration-gray-500 hover:decoration-solid hover:decoration-white transition-colors focus:outline-none focus:ring-2 focus:ring-white/20 rounded"
               aria-label="{i18n.banner_viewProduct()} {current.title} {i18n.banner_by()} {current.user}"
             >
               {current.title}
@@ -133,7 +133,7 @@
         
         <button 
           onclick={dismiss}
-          class="text-gray-400 hover:text-white p-1.5 hover:bg-gray-800 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-white/20"
+          class="text-gray-400 hover:text-white p-1.5 hover:bg-gray-800 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-white/20"
           aria-label={i18n.banner_close()}
           type="button"
         >

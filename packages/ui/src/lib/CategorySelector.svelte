@@ -161,7 +161,7 @@
         <button
           type="button"
           onclick={() => selectGender(category.id)}
-          class="px-3 py-2.5 text-sm font-medium rounded-lg border transition-all {
+          class="px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors {
             gender === category.id 
               ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
               : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
@@ -191,7 +191,7 @@
             <button
               type="button"
               onclick={() => selectType(category.id)}
-              class="flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border transition-all text-left {
+              class="flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors text-left {
                 type === category.id 
                   ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
                   : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
@@ -236,7 +236,7 @@
         <button
           type="button"
           onclick={() => selectSpecific('')}
-          class="w-full flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border transition-all text-left {
+          class="w-full flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors text-left {
             specific === '' 
               ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
               : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
@@ -261,7 +261,7 @@
             <button
               type="button"
               onclick={() => selectSpecific(category.id)}
-              class="flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border transition-all text-left {
+              class="flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors text-left {
                 specific === category.id 
                   ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
                   : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'

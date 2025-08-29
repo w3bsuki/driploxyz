@@ -52,14 +52,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		
 		// If any critical service is down, return 503
 		if (!checks.database || !checks.auth) {
-			throw error(503, {
-				message: 'Service degraded',
-				code: 'HEALTH_CHECK_FAILED',
-				details: {
-					checks,
-					responseTime,
-				}
-			});
+			throw error(503, 'Service degraded');
 		}
 		
 		// Return health status

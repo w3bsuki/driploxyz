@@ -51,7 +51,7 @@
 <div class="fixed bottom-0 right-0 z-50 p-4 space-y-2 pointer-events-none">
 	{#each toasts as toast (toast.id)}
 		<div
-			class="max-w-sm p-4 rounded-lg shadow-lg transform transition-all duration-300 ease-out pointer-events-auto {getToastStyles(toast.type)}"
+			class="max-w-sm p-4 rounded-lg shadow-sm md:shadow-lg transform transition-colors duration-300 ease-out pointer-events-auto {getToastStyles(toast.type)}"
 		>
 			<div class="flex items-center justify-between">
 				<p class="text-sm font-medium">{toast.message}</p>

@@ -111,22 +111,22 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   // Apply locale with error handling
   try {
     if (locale && i18n.isAvailableLanguageTag(locale)) {
-      i18n.setLanguageTag(locale as any);
+      i18n.setLocale(locale as any);
     } else {
-      i18n.setLanguageTag('en');
+      i18n.setLocale('en');
     }
   } catch (error) {
     console.error(`❌ Failed to set language tag '${locale}':`, error);
     // Fallback to English if language setting fails
     try {
-      i18n.setLanguageTag('en');
+      i18n.setLocale('en');
     } catch (fallbackError) {
       console.error(`❌ Critical: Failed to set fallback language 'en':`, fallbackError);
       throw new Error(`Language system failure: ${fallbackError}`);
     }
   }
   
-  (event.locals as any).locale = i18n.languageTag();
+  (event.locals as any).locale = i18n.getLocale();
 }
 
 /**

@@ -47,7 +47,7 @@
   }: Props = $props();
 
   function getFilterButtonClasses(style: string = 'default'): string {
-    const baseClasses = 'px-3 py-1.5 rounded-full text-xs font-medium transition-all hover:scale-105';
+    const baseClasses = 'px-3 py-1.5 rounded-full text-xs font-medium transition-colors hover:scale-105';
     
     switch(style) {
       case 'price':
@@ -65,7 +65,7 @@
   }
 </script>
 
-<div class="w-full bg-white/95 backdrop-blur-md rounded-xl shadow-xl border border-gray-200/60 overflow-hidden max-w-4xl mx-auto">
+<div class="w-full bg-white/95 md:backdrop-blur-md rounded-xl shadow-sm md:shadow-xl border border-gray-200/60 overflow-hidden max-w-4xl mx-auto">
   <!-- Header with Close -->
   <div class="flex items-center justify-between p-4 border-b border-gray-100">
     <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
@@ -76,24 +76,24 @@
 
   <!-- Quick Actions Row -->
   <div class="p-4 bg-gradient-to-r from-gray-50 to-blue-50 border-b border-gray-100">
-    <div class="flex items-center gap-3 overflow-x-auto scrollbar-hide">
-      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+    <div class="flex items-center gap-3 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory scrollbar-hide">
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-xl text-sm font-semibold hover:shadow-sm md:hover:shadow-lg transition-colors flex items-center gap-2 scroll-snap-align-start">
         <span>🔥</span>
         <span>Hot Deals</span>
       </button>
-      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl text-sm font-semibold hover:shadow-sm md:hover:shadow-lg transition-colors flex items-center gap-2 scroll-snap-align-start">
         <span>✨</span>
         <span>New Today</span>
       </button>
-      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl text-sm font-semibold hover:shadow-sm md:hover:shadow-lg transition-colors flex items-center gap-2 scroll-snap-align-start">
         <span>💎</span>
         <span>Designer</span>
       </button>
-      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl text-sm font-semibold hover:shadow-sm md:hover:shadow-lg transition-colors flex items-center gap-2 scroll-snap-align-start">
         <span>💰</span>
         <span>Under $25</span>
       </button>
-      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl text-sm font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+      <button class="shrink-0 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl text-sm font-semibold hover:shadow-sm md:hover:shadow-lg transition-colors flex items-center gap-2 scroll-snap-align-start">
         <span>🚚</span>
         <span>Free Ship</span>
       </button>

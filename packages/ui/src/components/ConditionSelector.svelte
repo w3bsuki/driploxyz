@@ -45,7 +45,7 @@
       <button
         type="button"
         onclick={() => value = condition.value}
-        class="relative rounded-md border p-2 text-center transition-all cursor-pointer text-xs font-medium
+        class="relative rounded-md border p-2 text-center transition-colors cursor-pointer text-xs font-medium
           {value === condition.value 
             ? 'border-blue-500 bg-blue-50 text-blue-700' 
             : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700'}"

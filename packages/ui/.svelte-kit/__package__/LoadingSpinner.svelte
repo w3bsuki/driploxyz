@@ -21,7 +21,7 @@
 </script>
 
 {#if fullscreen}
-  <div class="fixed inset-0 bg-white/80 backdrop-blur-sm z-[100] flex items-center justify-center pointer-events-none">
+  <div class="fixed inset-0 bg-white/80 md:backdrop-blur-sm z-[100] flex items-center justify-center pointer-events-none">
     <div class="{sizes[size]} {className}">
       <svg 
         class="animate-spin" 

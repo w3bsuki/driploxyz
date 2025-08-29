@@ -25,7 +25,7 @@
   };
 </script>
 
-<div class="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-50">
+<div class="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white border border-gray-200 rounded-lg shadow-sm md:shadow-lg p-4 z-50">
   <button
     onclick={onDismiss}
     class="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors"

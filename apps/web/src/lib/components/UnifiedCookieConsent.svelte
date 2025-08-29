@@ -316,7 +316,7 @@
               {#each languages as lang}
                 <button
                   onclick={() => selectedLocale = lang.code}
-                  class="p-2 rounded-lg border-2 transition-all hover:scale-105
+                  class="p-2 rounded-lg border-2 transition-colors transition-transform hover:scale-105
                     {selectedLocale === lang.code 
                       ? 'border-blue-500 bg-blue-50' 
                       : 'border-gray-200 bg-white hover:border-gray-300'}"
@@ -456,7 +456,7 @@
               <button
                 onclick={acceptAll}
                 class="flex-1 lg:flex-none px-5 py-3 bg-black text-white rounded-xl font-semibold 
-                       hover:bg-gray-800 transition-all hover:scale-[1.02] shadow-lg text-sm"
+                       hover:bg-gray-800 transition-colors transition-transform hover:scale-[1.02] shadow-lg text-sm"
               >
                 Accept All
               </button>
@@ -464,7 +464,7 @@
               <button
                 onclick={acceptNecessary}
                 class="flex-1 lg:flex-none px-5 py-3 bg-white text-gray-700 rounded-xl font-semibold 
-                       border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all text-sm"
+                       border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors text-sm"
               >
                 Essential Only
               </button>
@@ -481,7 +481,7 @@
                 <button
                   onclick={savePreferences}
                   class="flex-1 lg:flex-none px-5 py-3 bg-gradient-to-r from-blue-600 to-purple-600 
-                         text-white rounded-xl font-semibold hover:shadow-lg transition-all text-sm"
+                         text-white rounded-xl font-semibold hover:shadow-lg transition-colors text-sm"
                 >
                   Save My Choices
                 </button>
