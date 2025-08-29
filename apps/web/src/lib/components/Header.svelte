@@ -13,6 +13,7 @@
   } from '@repo/ui';
   import type { User, Profile } from '@repo/ui/types';
   import * as i18n from '@repo/i18n';
+  // Force fresh i18n import
   // Auth stores removed - using props directly
   import { signOut, canSell } from '$lib/auth';
   import { 
@@ -167,7 +168,12 @@
     categoryWomen: i18n.category_women(),
     categoryMen: i18n.category_men(),
     categoryKids: i18n.category_kids(),
-    categoryPets: i18n.category_pets()
+    categoryPets: i18n.category_pets(),
+    help: 'Help Center',
+    privacy: 'Privacy',
+    terms: 'Terms',
+    returns: 'Returns',
+    trustSafety: 'Trust & Safety'
   });
 </script>
 
