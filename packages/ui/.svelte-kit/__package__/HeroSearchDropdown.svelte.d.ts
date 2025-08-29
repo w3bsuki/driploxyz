@@ -34,4 +34,3 @@ interface Props {
 declare const HeroSearchDropdown: import("svelte").Component<Props, {}, "value">;
 type HeroSearchDropdown = ReturnType<typeof HeroSearchDropdown>;
 export default HeroSearchDropdown;
-//# sourceMappingURL=HeroSearchDropdown.svelte.d.ts.map

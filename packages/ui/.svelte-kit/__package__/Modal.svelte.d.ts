@@ -16,4 +16,3 @@ interface Props {
 declare const Modal: import("svelte").Component<Props, {}, "">;
 type Modal = ReturnType<typeof Modal>;
 export default Modal;
-//# sourceMappingURL=Modal.svelte.d.ts.map

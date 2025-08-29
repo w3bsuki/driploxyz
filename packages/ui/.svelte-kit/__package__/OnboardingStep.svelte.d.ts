@@ -8,4 +8,3 @@ interface Props {
 declare const OnboardingStep: import("svelte").Component<Props, {}, "">;
 type OnboardingStep = ReturnType<typeof OnboardingStep>;
 export default OnboardingStep;
-//# sourceMappingURL=OnboardingStep.svelte.d.ts.map

@@ -16,4 +16,3 @@ interface Props {
 declare const ErrorBoundary: import("svelte").Component<Props, {}, "">;
 type ErrorBoundary = ReturnType<typeof ErrorBoundary>;
 export default ErrorBoundary;
-//# sourceMappingURL=ErrorBoundary.svelte.d.ts.map

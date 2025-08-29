@@ -40,4 +40,3 @@ interface Props {
 declare const BundleBuilder: import("svelte").Component<Props, {}, "">;
 type BundleBuilder = ReturnType<typeof BundleBuilder>;
 export default BundleBuilder;
-//# sourceMappingURL=BundleBuilder.svelte.d.ts.map

@@ -16,4 +16,3 @@ interface Props {
 declare const StepIndicator: import("svelte").Component<Props, {}, "">;
 type StepIndicator = ReturnType<typeof StepIndicator>;
 export default StepIndicator;
-//# sourceMappingURL=StepIndicator.svelte.d.ts.map

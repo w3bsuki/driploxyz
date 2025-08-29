@@ -12,6 +12,17 @@
   import { browser } from '$app/environment';
   import { debounce } from '$lib/utils/debounce';
   
+  // Infinite scroll sentinel
+  let loadMoreTrigger: HTMLDivElement | null = null;
+  $effect(() => {
+    if (!browser || !loadMoreTrigger) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) loadMore();
+    }, { rootMargin: '400px 0px' });
+    io.observe(loadMoreTrigger);
+    return () => io.disconnect();
+  });
+
   interface Props {
     data: PageData;
   }
@@ -205,6 +216,53 @@
     }))
   );
   
+  // Map ensures fallback category name for cards
+  const displayProductsWithCategory = $derived(
+    displayProducts.map(p => ({
+      ...p,
+      category_name: p.category_name || p.main_category_name || 'Uncategorized'
+    }))
+  );
+
+  // Infinite scroll state
+  let nextPage = $state((data.currentPage || 1) + 1);
+  let hasMore = $state(!!data.hasMore);
+  let loadingMore = $state(false);
+
+  async function loadMore() {
+    if (!browser || loadingMore || !hasMore) return;
+    loadingMore = true;
+    try {
+      const params = new URLSearchParams();
+      // Carry over filters
+      if (filters.query) params.set('q', filters.query);
+      if (filters.level1) params.set('category', filters.level1);
+      if (filters.level2) params.set('subcategory', filters.level2);
+      if (filters.level3) params.set('specific', filters.level3);
+      if (filters.size && filters.size !== 'all') params.set('size', filters.size);
+      if (filters.brand && filters.brand !== 'all') params.set('brand', filters.brand);
+      if (filters.condition && filters.condition !== 'all') params.set('condition', filters.condition);
+      if (filters.minPrice) params.set('min_price', filters.minPrice);
+      if (filters.maxPrice) params.set('max_price', filters.maxPrice);
+      if (filters.sortBy && filters.sortBy !== 'relevance') params.set('sort', filters.sortBy);
+      params.set('page', String(nextPage));
+      params.set('pageSize', String(data.pageSize || 50));
+
+      const res = await fetch(`/api/search?${params.toString()}`);
+      if (res.ok) {
+        const json = await res.json();
+        if (Array.isArray(json.products) && json.products.length > 0) {
+          filterStore.appendProducts(json.products);
+        }
+        hasMore = !!json.hasMore;
+        nextPage = (json.currentPage || nextPage) + 1;
+      }
+    } catch {}
+    finally {
+      loadingMore = false;
+    }
+  }
+  
   // Debounced search handler
   const handleSearchDebounced = debounce((query: string) => {
     filterStore.updateFilter('query', query);
@@ -294,7 +352,7 @@
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0" onclick={handleClickOutside}>
   
   <!-- Clean Header Section -->
-  <div class="bg-white sticky top-0 z-30 border-b border-gray-100">
+  <div class="bg-white sticky z-30 border-b border-gray-100" style="top: var(--app-header-offset, 56px);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
       <!-- Search Container -->
@@ -893,11 +951,11 @@
     </div>
   </div>
   
-  <!-- Products Grid -->
+  <!-- Products Grid (window scroll + infinite load) -->
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-    {#if displayProducts.length > 0}
+    {#if displayProductsWithCategory.length > 0}
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
-        {#each displayProducts as product}
+        {#each displayProductsWithCategory as product}
           <ProductCard 
             {product}
             onclick={() => goto(`/product/${product.id}`)}
@@ -920,9 +978,16 @@
           />
         {/each}
       </div>
+      <!-- Infinite scroll sentinel -->
+      {#if hasMore}
+        <div class="flex justify-center py-6">
+          <div class="text-xs text-gray-500">{loadingMore ? 'Loading more…' : 'Scroll to load more'}</div>
+        </div>
+        <div bind:this={loadMoreTrigger} class="h-1"></div>
+      {/if}
       
-      <!-- Simple Pagination -->
-      {#if data.hasMore || data.currentPage > 1}
+      <!-- Simple Pagination (disabled when infinite scroll is active) -->
+      {#if false && (data.hasMore || data.currentPage > 1)}
         <div class="flex justify-center items-center gap-4 mt-8 mb-4">
           {#if data.currentPage > 1}
             <button

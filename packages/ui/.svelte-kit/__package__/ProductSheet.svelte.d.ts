@@ -30,4 +30,3 @@ interface Props {
 declare const ProductSheet: import("svelte").Component<Props, {}, "selectedSize">;
 type ProductSheet = ReturnType<typeof ProductSheet>;
 export default ProductSheet;
-//# sourceMappingURL=ProductSheet.svelte.d.ts.map

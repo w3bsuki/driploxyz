@@ -10,4 +10,3 @@ interface Props {
 declare const HighlightQuickView: import("svelte").Component<Props, {}, "">;
 type HighlightQuickView = ReturnType<typeof HighlightQuickView>;
 export default HighlightQuickView;
-//# sourceMappingURL=HighlightQuickView.svelte.d.ts.map

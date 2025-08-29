@@ -29,4 +29,3 @@ interface Props {
 declare const CategorySidebar: import("svelte").Component<Props, {}, "">;
 type CategorySidebar = ReturnType<typeof CategorySidebar>;
 export default CategorySidebar;
-//# sourceMappingURL=CategorySidebar.svelte.d.ts.map

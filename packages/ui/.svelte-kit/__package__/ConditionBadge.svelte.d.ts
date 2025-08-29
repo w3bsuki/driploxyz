@@ -13,4 +13,3 @@ interface Props {
 declare const ConditionBadge: import("svelte").Component<Props, {}, "">;
 type ConditionBadge = ReturnType<typeof ConditionBadge>;
 export default ConditionBadge;
-//# sourceMappingURL=ConditionBadge.svelte.d.ts.map

@@ -27,6 +27,7 @@
   .emoji-track {
     display: flex;
     flex-direction: column;
+    /* Move exactly one emoji height per step (4 emojis => 0%, -25%, -50%, -75%) */
     animation: emoji-slide 8s steps(4, end) infinite;
     /* Use transform for GPU acceleration */
     will-change: transform;
@@ -41,7 +42,7 @@
 
   @keyframes emoji-slide {
     0% { transform: translateY(0); }
-    100% { transform: translateY(-480%); }
+    100% { transform: translateY(-75%); }
   }
 
   /* Respect prefers-reduced-motion for accessibility */

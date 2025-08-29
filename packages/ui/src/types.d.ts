@@ -127,4 +127,3 @@ export interface OptimizedImageProps {
     sizes?: string;
     onclick?: () => void;
 }
-//# sourceMappingURL=types.d.ts.map

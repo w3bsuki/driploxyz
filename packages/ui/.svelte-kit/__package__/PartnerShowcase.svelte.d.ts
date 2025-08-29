@@ -18,4 +18,3 @@ interface Props {
 declare const PartnerShowcase: import("svelte").Component<Props, {}, "">;
 type PartnerShowcase = ReturnType<typeof PartnerShowcase>;
 export default PartnerShowcase;
-//# sourceMappingURL=PartnerShowcase.svelte.d.ts.map

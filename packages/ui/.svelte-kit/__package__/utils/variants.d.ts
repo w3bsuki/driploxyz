@@ -46,4 +46,3 @@ export type AvatarVariantProps = {
     size?: AvatarSize;
 };
 export {};
-//# sourceMappingURL=variants.d.ts.map

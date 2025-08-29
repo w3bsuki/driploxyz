@@ -12,4 +12,3 @@ interface Props {
 declare const LanguageSwitcher: import("svelte").Component<Props, {}, "">;
 type LanguageSwitcher = ReturnType<typeof LanguageSwitcher>;
 export default LanguageSwitcher;
-//# sourceMappingURL=LanguageSwitcher.svelte.d.ts.map

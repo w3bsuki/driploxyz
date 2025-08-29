@@ -16,4 +16,3 @@ interface Props {
 declare const CheckoutSummary: import("svelte").Component<Props, {}, "">;
 type CheckoutSummary = ReturnType<typeof CheckoutSummary>;
 export default CheckoutSummary;
-//# sourceMappingURL=CheckoutSummary.svelte.d.ts.map

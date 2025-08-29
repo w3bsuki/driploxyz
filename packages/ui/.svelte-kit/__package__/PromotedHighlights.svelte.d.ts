@@ -30,4 +30,3 @@ interface Props {
 declare const PromotedHighlights: import("svelte").Component<Props, {}, "">;
 type PromotedHighlights = ReturnType<typeof PromotedHighlights>;
 export default PromotedHighlights;
-//# sourceMappingURL=PromotedHighlights.svelte.d.ts.map

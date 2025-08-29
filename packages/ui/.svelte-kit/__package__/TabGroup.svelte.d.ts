@@ -11,4 +11,3 @@ interface Props {
 declare const TabGroup: import("svelte").Component<Props, {}, "">;
 type TabGroup = ReturnType<typeof TabGroup>;
 export default TabGroup;
-//# sourceMappingURL=TabGroup.svelte.d.ts.map

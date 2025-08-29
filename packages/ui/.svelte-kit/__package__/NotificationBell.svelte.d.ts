@@ -7,4 +7,3 @@ interface Props {
 declare const NotificationBell: import("svelte").Component<Props, {}, "">;
 type NotificationBell = ReturnType<typeof NotificationBell>;
 export default NotificationBell;
-//# sourceMappingURL=NotificationBell.svelte.d.ts.map

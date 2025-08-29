@@ -6,4 +6,3 @@ interface Props {
 declare const UserBadge: import("svelte").Component<Props, {}, "">;
 type UserBadge = ReturnType<typeof UserBadge>;
 export default UserBadge;
-//# sourceMappingURL=UserBadge.svelte.d.ts.map

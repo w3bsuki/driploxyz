@@ -7,4 +7,3 @@ interface Props {
 declare const LoadingSpinner: import("svelte").Component<Props, {}, "">;
 type LoadingSpinner = ReturnType<typeof LoadingSpinner>;
 export default LoadingSpinner;
-//# sourceMappingURL=LoadingSpinner.svelte.d.ts.map

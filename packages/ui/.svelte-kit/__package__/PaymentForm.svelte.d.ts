@@ -38,4 +38,3 @@ interface Props {
 declare const PaymentForm: import("svelte").Component<Props, {}, "">;
 type PaymentForm = ReturnType<typeof PaymentForm>;
 export default PaymentForm;
-//# sourceMappingURL=PaymentForm.svelte.d.ts.map

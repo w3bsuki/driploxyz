@@ -7,4 +7,3 @@ interface Props {
 declare const ProductPrice: import("svelte").Component<Props, {}, "">;
 type ProductPrice = ReturnType<typeof ProductPrice>;
 export default ProductPrice;
-//# sourceMappingURL=ProductPrice.svelte.d.ts.map

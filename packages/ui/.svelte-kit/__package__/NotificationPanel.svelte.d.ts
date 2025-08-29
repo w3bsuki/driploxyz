@@ -38,4 +38,3 @@ interface Props {
 declare const NotificationPanel: import("svelte").Component<Props, {}, "">;
 type NotificationPanel = ReturnType<typeof NotificationPanel>;
 export default NotificationPanel;
-//# sourceMappingURL=NotificationPanel.svelte.d.ts.map

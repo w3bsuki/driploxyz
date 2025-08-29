@@ -14,4 +14,3 @@ interface Props {
 declare const Button: import("svelte").Component<Props, {}, "">;
 type Button = ReturnType<typeof Button>;
 export default Button;
-//# sourceMappingURL=Button.svelte.d.ts.map

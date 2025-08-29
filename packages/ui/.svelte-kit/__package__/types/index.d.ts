@@ -157,4 +157,3 @@ export interface AccessibilityProps {
 export interface Translations {
     [key: string]: string | Translations;
 }
-//# sourceMappingURL=index.d.ts.map

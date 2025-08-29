@@ -12,7 +12,9 @@ const MANUALLY_PROMOTED_IDS: string[] = [
   // 'product-id-3'
 ];
 
-export const load: PageServerLoad = async ({ url, locals: { supabase, country, safeGetSession } }) => {
+export const load: PageServerLoad = async ({ url, locals: { supabase, country, safeGetSession }, setHeaders, depends }) => {
+  // Mark dependencies for client-side invalidation
+  depends('home:data');
   // Check if this is an auth callback that went to the wrong URL
   const code = url.searchParams.get('code');
   if (code) {
@@ -130,53 +132,6 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
     if (featuredResult.status === 'fulfilled') {
       const { data: rawProducts } = featuredResult.value;
       if (rawProducts) {
-        // Get unique parent category IDs (need to get level 1 categories)
-        const categoryIds = [...new Set(
-          rawProducts
-            .map(item => item.categories?.parent_id || item.categories?.id)
-            .filter((id): id is string => Boolean(id))
-        )];
-
-        // Fetch parent categories and their parents (to get level 1)
-        let categoryHierarchy: Record<string, any> = {};
-        if (categoryIds.length > 0) {
-          const { data: parents } = await supabase
-            .from('categories')
-            .select('id, name, parent_id')
-            .in('id', categoryIds);
-          
-          if (parents) {
-            // Get level 1 parent IDs if these are level 2 categories
-            const grandparentIds = [...new Set(
-              parents
-                .map(p => p.parent_id)
-                .filter((id): id is string => Boolean(id))
-            )];
-            
-            let level1Categories: Record<string, string> = {};
-            if (grandparentIds.length > 0) {
-              const { data: grandparents } = await supabase
-                .from('categories')
-                .select('id, name')
-                .in('id', grandparentIds);
-              
-              if (grandparents) {
-                level1Categories = Object.fromEntries(
-                  grandparents.map(g => [g.id, g.name])
-                );
-              }
-            }
-            
-            // Build hierarchy map
-            parents.forEach(p => {
-              categoryHierarchy[p.id] = {
-                name: p.name,
-                level1Name: p.parent_id ? level1Categories[p.parent_id] : p.name
-              };
-            });
-          }
-        }
-
         // Transform products for frontend
         featuredProducts = rawProducts.map((item, index) => {
           // AUTO PROMOTION: Promote newest listings (first 3 items since ordered by created_at DESC)
@@ -199,10 +154,8 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
             // Simplify image structure
             images: item.product_images?.map((img: { image_url: string }) => img.image_url) || [],
             product_images: item.product_images?.map((img: { image_url: string }) => img.image_url) || [],
-            // Category info - ALWAYS show level 1 category at top
-            main_category_name: item.categories?.parent_id 
-              ? categoryHierarchy[item.categories.parent_id]?.level1Name 
-              : (item.categories?.id ? categoryHierarchy[item.categories.id]?.level1Name || categoryHierarchy[item.categories.id]?.name : null),
+            // Category info - avoid extra DB calls; fall back gracefully
+            main_category_name: item.categories?.parent_id ? null : (item.categories?.name ?? null),
             category_name: item.categories?.name,
             subcategory_name: item.categories?.parent_id ? item.categories.name : null,
             // Seller info
@@ -231,6 +184,12 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
           favorites.map(f => [f.product_id, true])
         );
       }
+    }
+
+    // Cache headers for guests only to avoid caching personalized data
+    if (!userId) {
+      // Allow CDN/browser caching of data payload briefly
+      setHeaders({ 'cache-control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600' });
     }
 
     // Return critical data immediately, stream non-critical data

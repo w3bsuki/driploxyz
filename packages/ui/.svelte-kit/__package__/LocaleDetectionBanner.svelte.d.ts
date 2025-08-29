@@ -9,4 +9,3 @@ interface Props {
 declare const LocaleDetectionBanner: import("svelte").Component<Props, {}, "">;
 type LocaleDetectionBanner = ReturnType<typeof LocaleDetectionBanner>;
 export default LocaleDetectionBanner;
-//# sourceMappingURL=LocaleDetectionBanner.svelte.d.ts.map

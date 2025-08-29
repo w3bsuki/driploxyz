@@ -8,4 +8,3 @@ interface Props {
 declare const RatingModal: import("svelte").Component<Props, {}, "open">;
 type RatingModal = ReturnType<typeof RatingModal>;
 export default RatingModal;
-//# sourceMappingURL=RatingModal.svelte.d.ts.map

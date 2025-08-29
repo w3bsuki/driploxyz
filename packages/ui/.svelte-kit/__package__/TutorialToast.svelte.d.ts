@@ -11,4 +11,3 @@ interface Props {
 declare const TutorialToast: import("svelte").Component<Props, {}, "">;
 type TutorialToast = ReturnType<typeof TutorialToast>;
 export default TutorialToast;
-//# sourceMappingURL=TutorialToast.svelte.d.ts.map

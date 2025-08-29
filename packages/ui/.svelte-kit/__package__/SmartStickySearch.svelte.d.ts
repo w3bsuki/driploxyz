@@ -16,4 +16,3 @@ interface Props {
 declare const SmartStickySearch: import("svelte").Component<Props, {}, "show" | "value">;
 type SmartStickySearch = ReturnType<typeof SmartStickySearch>;
 export default SmartStickySearch;
-//# sourceMappingURL=SmartStickySearch.svelte.d.ts.map

@@ -1,6 +1,8 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { enhancedImages } from '@sveltejs/enhanced-img';
 import { defineConfig } from 'vite';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig as defineVitestConfig } from 'vitest/config';
 import tailwindcss from '@tailwindcss/vite';
 import { sentryVitePlugin } from '@sentry/vite-plugin';
@@ -28,6 +30,14 @@ export default defineConfig(
 			}
 		})
 	].filter(Boolean),
+
+	resolve: {
+		alias: {
+			// Use source files from workspace during dev to avoid packaging/watch issues
+			'@repo/ui': fileURLToPath(new URL('../../packages/ui/src/lib/index.ts', import.meta.url)),
+			'@repo/ui/types': fileURLToPath(new URL('../../packages/ui/src/types', import.meta.url))
+		}
+	},
 	
 	build: {
 		rollupOptions: {
@@ -54,7 +64,10 @@ export default defineConfig(
 	
 	server: {
 		fs: {
-			allow: ['..']
+			allow: [
+				'..',
+				fileURLToPath(new URL('../../packages', import.meta.url))
+			]
 		}
 	},
 	

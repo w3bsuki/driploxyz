@@ -13,4 +13,3 @@ interface Props {
 declare const FavoriteButton: import("svelte").Component<Props, {}, "">;
 type FavoriteButton = ReturnType<typeof FavoriteButton>;
 export default FavoriteButton;
-//# sourceMappingURL=FavoriteButton.svelte.d.ts.map

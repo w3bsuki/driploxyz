@@ -13,4 +13,3 @@ declare const ProductSoldManager: import("svelte").Component<Props, {
 }, "">;
 type ProductSoldManager = ReturnType<typeof ProductSoldManager>;
 export default ProductSoldManager;
-//# sourceMappingURL=ProductSoldManager.svelte.d.ts.map

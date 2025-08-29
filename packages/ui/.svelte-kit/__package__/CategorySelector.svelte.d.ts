@@ -21,4 +21,3 @@ interface Props {
 declare const CategorySelector: import("svelte").Component<Props, {}, "type" | "gender" | "specific">;
 type CategorySelector = ReturnType<typeof CategorySelector>;
 export default CategorySelector;
-//# sourceMappingURL=CategorySelector.svelte.d.ts.map

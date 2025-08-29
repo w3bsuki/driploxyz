@@ -8,4 +8,3 @@ interface Props {
 declare const CountryDetectionBanner: import("svelte").Component<Props, {}, "">;
 type CountryDetectionBanner = ReturnType<typeof CountryDetectionBanner>;
 export default CountryDetectionBanner;
-//# sourceMappingURL=CountryDetectionBanner.svelte.d.ts.map

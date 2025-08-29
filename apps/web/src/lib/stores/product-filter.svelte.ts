@@ -49,6 +49,7 @@ export interface ProductFilterStore {
   updateMultipleFilters: (updates: Partial<FilterState>) => void;
   resetFilters: () => void;
   setProducts: (products: any[]) => void;
+  appendProducts: (products: any[]) => void;
 }
 
 /**
@@ -204,6 +205,21 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
     allProducts = products;
   }
   
+  function appendProducts(products: any[]) {
+    if (!Array.isArray(products) || products.length === 0) return;
+    const byId = new Map<string, any>();
+    // keep order: existing first, then new unique
+    for (const p of allProducts) {
+      if (p && p.id) byId.set(p.id, p);
+    }
+    for (const p of products) {
+      if (p && p.id && !byId.has(p.id)) {
+        byId.set(p.id, p);
+      }
+    }
+    allProducts = Array.from(byId.values());
+  }
+  
   return {
     get allProducts() { return allProducts; },
     get filters() { return filters; },
@@ -212,7 +228,8 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
     updateFilter,
     updateMultipleFilters,
     resetFilters,
-    setProducts
+    setProducts,
+    appendProducts
   };
 }
 

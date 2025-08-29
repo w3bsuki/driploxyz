@@ -17,4 +17,3 @@ interface Props {
 declare const ImageOptimized: import("svelte").Component<Props, {}, "">;
 type ImageOptimized = ReturnType<typeof ImageOptimized>;
 export default ImageOptimized;
-//# sourceMappingURL=ImageOptimized.svelte.d.ts.map

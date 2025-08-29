@@ -15,4 +15,3 @@ interface Props {
 declare const OrderActions: import("svelte").Component<Props, {}, "">;
 type OrderActions = ReturnType<typeof OrderActions>;
 export default OrderActions;
-//# sourceMappingURL=OrderActions.svelte.d.ts.map

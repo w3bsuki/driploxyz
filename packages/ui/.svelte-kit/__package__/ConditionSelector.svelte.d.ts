@@ -12,4 +12,3 @@ interface Props {
 declare const ConditionSelector: import("svelte").Component<Props, {}, "value">;
 type ConditionSelector = ReturnType<typeof ConditionSelector>;
 export default ConditionSelector;
-//# sourceMappingURL=ConditionSelector.svelte.d.ts.map

@@ -10,4 +10,3 @@ interface Props {
 declare const ProductMeta: import("svelte").Component<Props, {}, "">;
 type ProductMeta = ReturnType<typeof ProductMeta>;
 export default ProductMeta;
-//# sourceMappingURL=ProductMeta.svelte.d.ts.map

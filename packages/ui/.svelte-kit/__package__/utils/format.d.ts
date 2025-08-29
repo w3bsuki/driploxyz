@@ -10,4 +10,3 @@ export declare function formatNumber(num: number): string;
  * Format file sizes
  */
 export declare function formatBytes(bytes: number): string;
-//# sourceMappingURL=format.d.ts.map

@@ -304,7 +304,7 @@
 <!-- Instagram-style App -->
 <div class="min-h-screen bg-gray-100">
   <!-- Instagram-style Header -->
-  <div class="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
+  <div class="bg-white border-b border-gray-200 sticky z-20 shadow-sm" style="top: var(--app-header-offset, 56px);">
     <div class="max-w-md mx-auto px-4 py-3">
       <nav class="flex items-center gap-3">
         <button onclick={() => history.back()} class="p-1 -m-1 hover:text-gray-900 transition-colors">

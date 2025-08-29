@@ -5,6 +5,10 @@
 		"noUncheckedIndexedAccess": true,
 		"exactOptionalPropertyTypes": false,
 		"noImplicitOverride": true,
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
+		"paths": {
+			"@repo/ui": ["../../packages/ui/src/lib/index.ts"],
+			"@repo/ui/*": ["../../packages/ui/src/*"]
+		}
 	}
 }

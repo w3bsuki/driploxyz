@@ -4,4 +4,3 @@ interface Props {
 declare const PremiumBadge: import("svelte").Component<Props, {}, "">;
 type PremiumBadge = ReturnType<typeof PremiumBadge>;
 export default PremiumBadge;
-//# sourceMappingURL=PremiumBadge.svelte.d.ts.map

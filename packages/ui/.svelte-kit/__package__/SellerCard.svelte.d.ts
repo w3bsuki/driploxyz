@@ -39,4 +39,3 @@ interface Props {
 declare const SellerCard: import("svelte").Component<Props, {}, "">;
 type SellerCard = ReturnType<typeof SellerCard>;
 export default SellerCard;
-//# sourceMappingURL=SellerCard.svelte.d.ts.map

@@ -15,6 +15,7 @@
   import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer, Footer } from '@repo/ui';
   import OrderNotificationToast from '$lib/components/OrderNotificationToast.svelte';
   import RegionSwitchModal from '$lib/components/RegionSwitchModal.svelte';
+  import TopProgress from '$lib/components/TopProgress.svelte';
   import { page } from '$app/stores';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import { initializeLanguage } from '$lib/utils/language';
@@ -22,6 +23,7 @@
   import * as i18n from '@repo/i18n';
   import type { LayoutData } from './$types';
   import type { Snippet } from 'svelte';
+  let headerContainer: HTMLDivElement | null = null;
 
   let { data, children }: { data: LayoutData; children?: Snippet } = $props();
   
@@ -48,6 +50,7 @@
   const isSellPage = $derived($page.route.id?.includes('/sell'));
   const isOnboardingPage = $derived($page.route.id?.includes('/onboarding'));
   const isMessagesConversation = $derived($page.route.id?.includes('/messages') && $page.url.searchParams.has('conversation'));
+  const isSearchPage = $derived($page.route.id?.includes('/search'));
   
   // Check if we should show region prompt
   $effect(() => {
@@ -57,6 +60,24 @@
         showRegionModal = true;
       }, 2000);
     }
+  });
+
+  // Dynamic header offset for sticky elements
+  $effect(() => {
+    if (!browser) return;
+    const updateOffset = () => {
+      const height = headerContainer?.offsetHeight || 0;
+      // Fallback to 56px if header not present
+      document.documentElement.style.setProperty('--app-header-offset', `${height || 56}px`);
+    };
+    updateOffset();
+    const ro = new ResizeObserver(updateOffset);
+    if (headerContainer) ro.observe(headerContainer);
+    window.addEventListener('resize', updateOffset);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', updateOffset);
+    };
   });
   
   // Initialize performance optimizations on mount
@@ -202,11 +223,15 @@
 </script>
 
 {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
-  <div class="sticky top-0 z-50">
-    <EarlyBirdBanner />
+  <div class="sticky top-0 z-50" bind:this={headerContainer}>
+    {#if !isSearchPage}
+      <EarlyBirdBanner />
+    {/if}
     <Header user={data?.user} profile={data?.profile} />
   </div>
 {/if}
+<!-- Route progress just below header -->
+<TopProgress />
 <div>
   {@render children?.()}
 </div>

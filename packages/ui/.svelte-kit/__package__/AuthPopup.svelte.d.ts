@@ -8,4 +8,3 @@ interface Props {
 declare const AuthPopup: import("svelte").Component<Props, {}, "">;
 type AuthPopup = ReturnType<typeof AuthPopup>;
 export default AuthPopup;
-//# sourceMappingURL=AuthPopup.svelte.d.ts.map

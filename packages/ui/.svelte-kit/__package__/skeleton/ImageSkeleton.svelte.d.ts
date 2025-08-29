@@ -9,4 +9,3 @@ interface Props {
 declare const ImageSkeleton: import("svelte").Component<Props, {}, "">;
 type ImageSkeleton = ReturnType<typeof ImageSkeleton>;
 export default ImageSkeleton;
-//# sourceMappingURL=ImageSkeleton.svelte.d.ts.map

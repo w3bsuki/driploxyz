@@ -10,4 +10,3 @@ interface Props {
 declare const PayoutMethodSelector: import("svelte").Component<Props, {}, "selectedMethod" | "payoutDetails" | "payoutName">;
 type PayoutMethodSelector = ReturnType<typeof PayoutMethodSelector>;
 export default PayoutMethodSelector;
-//# sourceMappingURL=PayoutMethodSelector.svelte.d.ts.map

@@ -40,4 +40,3 @@ interface Props {
 declare const WelcomeModal: import("svelte").Component<Props, {}, "">;
 type WelcomeModal = ReturnType<typeof WelcomeModal>;
 export default WelcomeModal;
-//# sourceMappingURL=WelcomeModal.svelte.d.ts.map

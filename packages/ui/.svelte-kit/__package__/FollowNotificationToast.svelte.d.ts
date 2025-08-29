@@ -11,4 +11,3 @@ interface Props {
 declare const FollowNotificationToast: import("svelte").Component<Props, {}, "">;
 type FollowNotificationToast = ReturnType<typeof FollowNotificationToast>;
 export default FollowNotificationToast;
-//# sourceMappingURL=FollowNotificationToast.svelte.d.ts.map

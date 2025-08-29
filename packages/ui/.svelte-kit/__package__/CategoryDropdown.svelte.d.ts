@@ -33,4 +33,3 @@ interface Props {
 declare const CategoryDropdown: import("svelte").Component<Props, {}, "">;
 type CategoryDropdown = ReturnType<typeof CategoryDropdown>;
 export default CategoryDropdown;
-//# sourceMappingURL=CategoryDropdown.svelte.d.ts.map

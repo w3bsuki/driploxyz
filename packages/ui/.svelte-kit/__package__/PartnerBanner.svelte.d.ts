@@ -18,4 +18,3 @@ interface Props {
 declare const PartnerBanner: import("svelte").Component<Props, {}, "">;
 type PartnerBanner = ReturnType<typeof PartnerBanner>;
 export default PartnerBanner;
-//# sourceMappingURL=PartnerBanner.svelte.d.ts.map

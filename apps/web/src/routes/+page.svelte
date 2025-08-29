@@ -4,7 +4,7 @@
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
-	import { goto } from '$app/navigation';
+	import { goto, preloadCode, preloadData } from '$app/navigation';
 	import { page, navigating } from '$app/stores';
 	import { browser } from '$app/environment';
 	import { serviceUtils } from '$lib/services';
@@ -310,6 +310,15 @@
 		// Toggle category dropdown instead of navigating
 		showCategoryDropdown = !showCategoryDropdown;
 	}
+
+	async function prefetchCategoryPath(path: string) {
+		try {
+			await preloadCode(path);
+			preloadData(path).catch(() => {});
+		} catch (e) {
+			// ignore
+		}
+	}
 	
 	function handlePillKeyNav(e: KeyboardEvent, index: number) {
 		const pills = document.querySelectorAll('[role="navigation"] button');
@@ -449,6 +458,8 @@
 					class="flex items-center justify-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
 				>
 					<button 
+						onmouseenter={() => preloadCode('/search')}
+						ontouchstart={() => preloadCode('/search')}
 						onclick={() => navigateToAllSearch()}
 						onkeydown={(e) => handlePillKeyNav(e, 0)}
 						disabled={loadingCategory === 'all'}
@@ -468,6 +479,8 @@
 					{#if mainCategories.find(c => c.slug === 'women')}
 						{@const category = mainCategories.find(c => c.slug === 'women')}
 						<button 
+							onmouseenter={() => prefetchCategoryPath(`/category/${category.slug}`)}
+							ontouchstart={() => prefetchCategoryPath(`/category/${category.slug}`)}
 							onclick={() => navigateToCategory(category.slug)}
 							onkeydown={(e) => handlePillKeyNav(e, 1)}
 							disabled={loadingCategory === category.slug}
@@ -489,6 +502,8 @@
 					{#if mainCategories.find(c => c.slug === 'men')}
 						{@const category = mainCategories.find(c => c.slug === 'men')}
 						<button 
+							onmouseenter={() => prefetchCategoryPath(`/category/${category.slug}`)}
+							ontouchstart={() => prefetchCategoryPath(`/category/${category.slug}`)}
 							onclick={() => navigateToCategory(category.slug)}
 							onkeydown={(e) => handlePillKeyNav(e, 2)}
 							disabled={loadingCategory === category.slug}
@@ -510,6 +525,8 @@
 					{#if mainCategories.find(c => c.slug === 'kids')}
 						{@const category = mainCategories.find(c => c.slug === 'kids')}
 						<button 
+							onmouseenter={() => prefetchCategoryPath(`/category/${category.slug}`)}
+							ontouchstart={() => prefetchCategoryPath(`/category/${category.slug}`)}
 							onclick={() => navigateToCategory(category.slug)}
 							onkeydown={(e) => handlePillKeyNav(e, 3)}
 							disabled={loadingCategory === category.slug}

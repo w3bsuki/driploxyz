@@ -20,4 +20,3 @@ interface Props {
 declare const Input: import("svelte").Component<Props, {}, "value">;
 type Input = ReturnType<typeof Input>;
 export default Input;
-//# sourceMappingURL=Input.svelte.d.ts.map

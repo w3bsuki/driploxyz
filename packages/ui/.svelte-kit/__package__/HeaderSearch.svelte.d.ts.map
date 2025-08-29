@@ -1,1 +1,0 @@
-{"version":3,"file":"HeaderSearch.svelte.d.ts","sourceRoot":"","sources":["../src/lib/HeaderSearch.svelte.ts"],"names":[],"mappings":"AAGE,UAAU,KAAK;IACb,WAAW,CAAC,EAAE,MAAM,CAAC;IACrB,QAAQ,CAAC,EAAE,CAAC,KAAK,EAAE,MAAM,KAAK,IAAI,CAAC;IACnC,KAAK,CAAC,EAAE,MAAM,CAAC;CAChB;AAoCH,QAAA,MAAM,YAAY,2CAAwC,CAAC;AAC3D,KAAK,YAAY,GAAG,UAAU,CAAC,OAAO,YAAY,CAAC,CAAC;AACpD,eAAe,YAAY,CAAC"}

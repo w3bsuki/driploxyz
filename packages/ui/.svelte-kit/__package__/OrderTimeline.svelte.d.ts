@@ -15,4 +15,3 @@ interface Props {
 declare const OrderTimeline: import("svelte").Component<Props, {}, "">;
 type OrderTimeline = ReturnType<typeof OrderTimeline>;
 export default OrderTimeline;
-//# sourceMappingURL=OrderTimeline.svelte.d.ts.map

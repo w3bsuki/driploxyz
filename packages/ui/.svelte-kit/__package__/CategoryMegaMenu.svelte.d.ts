@@ -13,4 +13,3 @@ interface Props {
 declare const CategoryMegaMenu: import("svelte").Component<Props, {}, "">;
 type CategoryMegaMenu = ReturnType<typeof CategoryMegaMenu>;
 export default CategoryMegaMenu;
-//# sourceMappingURL=CategoryMegaMenu.svelte.d.ts.map

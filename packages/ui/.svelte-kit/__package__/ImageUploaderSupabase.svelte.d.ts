@@ -26,4 +26,3 @@ interface Props {
 declare const ImageUploaderSupabase: import("svelte").Component<Props, {}, "images" | "uploading">;
 type ImageUploaderSupabase = ReturnType<typeof ImageUploaderSupabase>;
 export default ImageUploaderSupabase;
-//# sourceMappingURL=ImageUploaderSupabase.svelte.d.ts.map

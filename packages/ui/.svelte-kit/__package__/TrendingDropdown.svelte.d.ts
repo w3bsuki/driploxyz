@@ -28,4 +28,3 @@ interface Props {
 declare const TrendingDropdown: import("svelte").Component<Props, {}, "">;
 type TrendingDropdown = ReturnType<typeof TrendingDropdown>;
 export default TrendingDropdown;
-//# sourceMappingURL=TrendingDropdown.svelte.d.ts.map

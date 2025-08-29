@@ -20,4 +20,3 @@ interface Props {
 declare const HeaderUserMenu: import("svelte").Component<Props, {}, "">;
 type HeaderUserMenu = ReturnType<typeof HeaderUserMenu>;
 export default HeaderUserMenu;
-//# sourceMappingURL=HeaderUserMenu.svelte.d.ts.map

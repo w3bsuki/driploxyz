@@ -14,4 +14,3 @@ interface Props {
 declare const ConditionReport: import("svelte").Component<Props, {}, "">;
 type ConditionReport = ReturnType<typeof ConditionReport>;
 export default ConditionReport;
-//# sourceMappingURL=ConditionReport.svelte.d.ts.map

@@ -42,6 +42,11 @@
     class?: string;
     loading?: boolean;
     translations?: Record<string, any>;
+    onEndReached?: () => void;
+    endThreshold?: number;
+    scrollParent?: 'self' | 'window';
+    topOffset?: number;
+    bottomOffset?: number;
   }
 
   let {
@@ -54,13 +59,19 @@
     onFavorite,
     class: className = '',
     loading = false,
-    translations = {}
+    translations = {},
+    onEndReached,
+    endThreshold = 200,
+    scrollParent = 'self',
+    topOffset = 0,
+    bottomOffset = 0
   }: Props = $props();
 
   let containerElement: HTMLDivElement;
   let scrollTop = $state(0);
   let containerWidth = $state(0);
   let mounted = $state(false);
+  let viewportHeightState = $state(containerHeight);
   
   // Simple performance monitoring (optional)
   const perf = null;
@@ -82,11 +93,12 @@
     const itemsInRow = responsiveItemsPerRow();
     const totalRows = Math.ceil(items.length / itemsInRow);
     const rowHeight = itemHeight + gap;
-    
+    const vpHeight = scrollParent === 'self' ? containerHeight : viewportHeightState;
+
     const startRow = Math.floor(scrollTop / rowHeight);
     const endRow = Math.min(
       totalRows - 1,
-      startRow + Math.ceil(containerHeight / rowHeight) + 1 // Buffer
+      startRow + Math.ceil(vpHeight / rowHeight) + 1 // Buffer
     );
 
     const startIndex = startRow * itemsInRow;
@@ -125,31 +137,80 @@
 
   // Throttled scroll handler for better performance
   const handleScroll = throttle((event: Event) => {
-    const target = event.target as HTMLDivElement;
     perf?.startTiming('virtual-scroll');
-    scrollTop = target.scrollTop;
+    if (scrollParent === 'self') {
+      const target = event.target as HTMLDivElement;
+      scrollTop = target.scrollTop;
+    } else {
+      updateScrollTopFromWindow();
+    }
     perf?.endTiming('virtual-scroll');
+    maybeReachEnd();
   }, 16); // ~60fps
 
   function handleResize() {
     if (containerElement) {
       containerWidth = containerElement.clientWidth;
     }
+    maybeReachEnd();
+  }
+
+  function maybeReachEnd() {
+    if (!containerElement || !onEndReached) return;
+    if (loading) return;
+    if (scrollParent === 'self') {
+      const nearEnd = containerElement.scrollTop + containerElement.clientHeight >= (containerElement.scrollHeight - endThreshold);
+      if (nearEnd) onEndReached?.();
+    } else {
+      const rect = containerElement.getBoundingClientRect();
+      const containerTop = rect.top + window.scrollY;
+      const totalH = totalHeight();
+      const viewportBottom = window.scrollY + window.innerHeight - bottomOffset;
+      if (viewportBottom >= (containerTop + totalH - endThreshold)) onEndReached?.();
+    }
+  }
+
+  function updateScrollTopFromWindow() {
+    if (!containerElement) return;
+    const rect = containerElement.getBoundingClientRect();
+    const viewportStart = topOffset; // px from viewport top where content is visible
+    const y = (viewportStart - rect.top);
+    // scrollTop within container space
+    scrollTop = Math.max(0, y);
   }
 
   // Use $effect for lifecycle management
   $effect(() => {
     if (!browser || !containerElement) return;
-    
     mounted = true;
     handleResize();
-    
-    // Setup resize observer
     const resizeObserver = new ResizeObserver(throttle(handleResize, 100));
     resizeObserver.observe(containerElement);
 
+    const onWindowScroll = throttle(() => {
+      if (scrollParent === 'window') {
+        // Compute viewport height minus offsets
+        viewportHeightState = Math.max(0, window.innerHeight - topOffset - bottomOffset);
+        updateScrollTopFromWindow();
+        maybeReachEnd();
+      }
+    }, 16);
+
+    if (scrollParent === 'window') {
+      viewportHeightState = Math.max(0, window.innerHeight - topOffset - bottomOffset);
+      updateScrollTopFromWindow();
+      window.addEventListener('scroll', onWindowScroll, { passive: true });
+      window.addEventListener('resize', onWindowScroll);
+      window.addEventListener('orientationchange', onWindowScroll);
+    }
+
     return () => {
       resizeObserver.disconnect();
+      if (scrollParent === 'window') {
+        window.removeEventListener('scroll', onWindowScroll as any);
+        window.removeEventListener('resize', onWindowScroll as any);
+        window.removeEventListener('orientationchange', onWindowScroll as any);
+      }
     };
   });
 
@@ -171,8 +232,8 @@
 <div 
   bind:this={containerElement}
   class="virtual-grid-container {className}"
-  style="height: {containerHeight}px; overflow-y: auto;"
-  onscroll={handleScroll}
+  style={scrollParent === 'self' ? `height: ${containerHeight}px; overflow-y:auto;` : `min-height: ${viewportHeightState}px; overflow: visible;`}
+  onscroll={scrollParent === 'self' ? handleScroll : undefined}
 >
   <!-- Total height spacer -->
   <div style="height: {totalHeight}px; position: relative;">
@@ -229,18 +290,10 @@
 </div>
 
 <style>
-  .virtual-grid-container {
-    position: relative;
-    contain: strict;
-    overflow-anchor: none; /* Prevent scroll anchoring */
-  }
+  .virtual-grid-container { position: relative; contain: strict; overflow-anchor: none; }
 
   /* Smooth scrolling */
-  .virtual-grid-container {
-    scroll-behavior: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #cbd5e0 #f7fafc;
-  }
+  .virtual-grid-container { scroll-behavior: auto; scrollbar-width: thin; scrollbar-color: #cbd5e0 #f7fafc; }
 
   .virtual-grid-container::-webkit-scrollbar {
     width: 6px;

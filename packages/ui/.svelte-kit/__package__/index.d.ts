@@ -95,4 +95,3 @@ export { default as PromotedHighlights } from './PromotedHighlights.svelte';
 export * from './utils/variants.js';
 export * from './types/index.js';
 export * from './tokens.js';
-//# sourceMappingURL=index.d.ts.map

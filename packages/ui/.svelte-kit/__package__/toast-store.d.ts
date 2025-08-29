@@ -14,4 +14,3 @@ export declare const toasts: {
     remove(id: string): void;
     clear(): void;
 };
-//# sourceMappingURL=toast-store.d.ts.map

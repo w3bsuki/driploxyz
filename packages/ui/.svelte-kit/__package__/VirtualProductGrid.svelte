@@ -42,6 +42,8 @@
     class?: string;
     loading?: boolean;
     translations?: Record<string, any>;
+    onEndReached?: () => void;
+    endThreshold?: number;
   }
 
   let {
@@ -54,7 +56,9 @@
     onFavorite,
     class: className = '',
     loading = false,
-    translations = {}
+    translations = {},
+    onEndReached,
+    endThreshold = 200
   }: Props = $props();
 
   let containerElement: HTMLDivElement;
@@ -129,11 +133,22 @@
     perf?.startTiming('virtual-scroll');
     scrollTop = target.scrollTop;
     perf?.endTiming('virtual-scroll');
+    maybeReachEnd();
   }, 16); // ~60fps
 
   function handleResize() {
     if (containerElement) {
       containerWidth = containerElement.clientWidth;
+    }
+    maybeReachEnd();
+  }
+
+  function maybeReachEnd() {
+    if (!containerElement || !onEndReached) return;
+    if (loading) return;
+    const nearEnd = containerElement.scrollTop + containerElement.clientHeight >= (containerElement.scrollHeight - endThreshold);
+    if (nearEnd) {
+      onEndReached?.();
     }
   }
 

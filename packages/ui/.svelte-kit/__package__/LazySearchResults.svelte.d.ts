@@ -19,4 +19,3 @@ interface Props {
 declare const LazySearchResults: import("svelte").Component<Props, {}, "">;
 type LazySearchResults = ReturnType<typeof LazySearchResults>;
 export default LazySearchResults;
-//# sourceMappingURL=LazySearchResults.svelte.d.ts.map

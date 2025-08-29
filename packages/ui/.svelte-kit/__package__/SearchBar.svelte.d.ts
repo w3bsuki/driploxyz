@@ -12,4 +12,3 @@ interface Props {
 declare const SearchBar: import("svelte").Component<Props, {}, "value">;
 type SearchBar = ReturnType<typeof SearchBar>;
 export default SearchBar;
-//# sourceMappingURL=SearchBar.svelte.d.ts.map

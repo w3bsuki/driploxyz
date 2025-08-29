@@ -14,4 +14,3 @@ interface Props {
 declare const QuickActions: import("svelte").Component<Props, {}, "">;
 type QuickActions = ReturnType<typeof QuickActions>;
 export default QuickActions;
-//# sourceMappingURL=QuickActions.svelte.d.ts.map

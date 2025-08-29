@@ -16,4 +16,3 @@ declare const HeaderLogo: $$__sveltets_2_IsomorphicComponent<Record<string, neve
 }, {}, {}, string>;
 type HeaderLogo = InstanceType<typeof HeaderLogo>;
 export default HeaderLogo;
-//# sourceMappingURL=HeaderLogo.svelte.d.ts.map

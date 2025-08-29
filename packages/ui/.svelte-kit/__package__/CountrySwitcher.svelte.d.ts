@@ -8,4 +8,3 @@ interface Props {
 declare const CountrySwitcher: import("svelte").Component<Props, {}, "">;
 type CountrySwitcher = ReturnType<typeof CountrySwitcher>;
 export default CountrySwitcher;
-//# sourceMappingURL=CountrySwitcher.svelte.d.ts.map

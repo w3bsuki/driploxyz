@@ -3,4 +3,3 @@ export declare class Counter {
     increment: () => void;
     decrement: () => void;
 }
-//# sourceMappingURL=my-counter-class.svelte.d.ts.map

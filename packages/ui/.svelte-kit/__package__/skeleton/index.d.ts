@@ -5,4 +5,3 @@ export { default as CategoryCardSkeleton } from './CategoryCardSkeleton.svelte';
 export { default as ListItemSkeleton } from './ListItemSkeleton.svelte';
 export { default as TextSkeleton } from './TextSkeleton.svelte';
 export { default as ImageSkeleton } from './ImageSkeleton.svelte';
-//# sourceMappingURL=index.d.ts.map

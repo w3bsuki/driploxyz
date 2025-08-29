@@ -7,4 +7,3 @@ interface Props {
 declare const TextSkeleton: import("svelte").Component<Props, {}, "">;
 type TextSkeleton = ReturnType<typeof TextSkeleton>;
 export default TextSkeleton;
-//# sourceMappingURL=TextSkeleton.svelte.d.ts.map

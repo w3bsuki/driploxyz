@@ -12,4 +12,3 @@ interface Props {
 declare const ReviewModal: import("svelte").Component<Props, {}, "">;
 type ReviewModal = ReturnType<typeof ReviewModal>;
 export default ReviewModal;
-//# sourceMappingURL=ReviewModal.svelte.d.ts.map

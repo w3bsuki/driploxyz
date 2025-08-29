@@ -26,4 +26,3 @@ interface Props {
 declare const MessageNotificationToast: import("svelte").Component<Props, {}, "">;
 type MessageNotificationToast = ReturnType<typeof MessageNotificationToast>;
 export default MessageNotificationToast;
-//# sourceMappingURL=MessageNotificationToast.svelte.d.ts.map

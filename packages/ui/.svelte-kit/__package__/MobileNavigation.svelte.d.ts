@@ -39,4 +39,3 @@ interface Props {
 declare const MobileNavigation: import("svelte").Component<Props, {}, "">;
 type MobileNavigation = ReturnType<typeof MobileNavigation>;
 export default MobileNavigation;
-//# sourceMappingURL=MobileNavigation.svelte.d.ts.map

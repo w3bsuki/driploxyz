@@ -22,4 +22,3 @@ interface Props {
 declare const LiveActivity: import("svelte").Component<Props, {}, "">;
 type LiveActivity = ReturnType<typeof LiveActivity>;
 export default LiveActivity;
-//# sourceMappingURL=LiveActivity.svelte.d.ts.map

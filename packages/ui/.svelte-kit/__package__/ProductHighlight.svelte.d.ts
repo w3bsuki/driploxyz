@@ -14,4 +14,3 @@ interface Props {
 declare const ProductHighlight: import("svelte").Component<Props, {}, "">;
 type ProductHighlight = ReturnType<typeof ProductHighlight>;
 export default ProductHighlight;
-//# sourceMappingURL=ProductHighlight.svelte.d.ts.map

@@ -26,4 +26,3 @@ interface Props {
 declare const SellerQuickView: import("svelte").Component<Props, {}, "isOpen">;
 type SellerQuickView = ReturnType<typeof SellerQuickView>;
 export default SellerQuickView;
-//# sourceMappingURL=SellerQuickView.svelte.d.ts.map

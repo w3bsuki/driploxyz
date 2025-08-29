@@ -25,8 +25,9 @@ interface Props {
     class?: string;
     loading?: boolean;
     translations?: Record<string, any>;
+    onEndReached?: () => void;
+    endThreshold?: number;
 }
 declare const VirtualProductGrid: import("svelte").Component<Props, {}, "">;
 type VirtualProductGrid = ReturnType<typeof VirtualProductGrid>;
 export default VirtualProductGrid;
-//# sourceMappingURL=VirtualProductGrid.svelte.d.ts.map

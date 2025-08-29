@@ -17,4 +17,3 @@ interface Props {
 declare const MegaMenu: import("svelte").Component<Props, {}, "">;
 type MegaMenu = ReturnType<typeof MegaMenu>;
 export default MegaMenu;
-//# sourceMappingURL=MegaMenu.svelte.d.ts.map

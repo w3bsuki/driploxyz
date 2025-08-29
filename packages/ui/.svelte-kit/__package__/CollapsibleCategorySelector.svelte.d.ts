@@ -24,4 +24,3 @@ interface Props {
 declare const CollapsibleCategorySelector: import("svelte").Component<Props, {}, "type" | "gender" | "specific">;
 type CollapsibleCategorySelector = ReturnType<typeof CollapsibleCategorySelector>;
 export default CollapsibleCategorySelector;
-//# sourceMappingURL=CollapsibleCategorySelector.svelte.d.ts.map
