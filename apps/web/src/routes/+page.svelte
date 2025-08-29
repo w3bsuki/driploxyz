@@ -479,7 +479,7 @@
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="pink" />
+								<LoadingSpinner size="sm" color="pink" class="w-5 h-5" />
 							{:else}
 								<span class="text-base">👗</span>
 								<span>{i18n.category_women()}</span>
@@ -500,7 +500,7 @@
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="blue" />
+								<LoadingSpinner size="sm" color="blue" class="w-5 h-5" />
 							{:else}
 								<span class="text-base">👔</span>
 								<span>{i18n.category_men()}</span>
@@ -521,7 +521,7 @@
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="green" />
+								<LoadingSpinner size="sm" color="green" class="w-5 h-5" />
 							{:else}
 								<span class="text-base">👶</span>
 								<span>{i18n.category_kids()}</span>
