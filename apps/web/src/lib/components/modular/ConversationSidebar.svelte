@@ -21,8 +21,22 @@
     showOnMobile 
   }: Props = $props();
 
-  // Force show all conversations - bypass filtering entirely
-  let filteredConversations = $derived(conversations || []);
+  // Filter conversations based on active tab
+  let filteredConversations = $derived(() => {
+    if (!conversations) return [];
+    
+    switch (activeTab) {
+      case 'unread':
+        return conversations.filter(c => c.unread);
+      case 'buying':
+        return conversations.filter(c => c.isProductConversation);
+      case 'selling':
+        return conversations.filter(c => !c.isProductConversation);
+      case 'all':
+      default:
+        return conversations;
+    }
+  });
 
   const timeAgo = (dateStr: string) => {
     const date = new Date(dateStr);
