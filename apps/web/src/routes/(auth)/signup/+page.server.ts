@@ -4,6 +4,7 @@ import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
 import type { Actions, PageServerLoad } from './$types';
 import { detectLanguage } from '@repo/i18n';
 import { getUserCountry } from '$lib/country/detection';
+import { env } from '$env/dynamic/public';
 
 export const load: PageServerLoad = async (event) => {
   const { session } = await event.locals.safeGetSession();
@@ -19,8 +20,8 @@ export const actions: Actions = {
   signup: async (event) => {
     const { request, locals: { supabase }, cookies, url, getClientAddress } = event;
 
-    // Get PUBLIC_SITE_URL from environment (dynamic)
-    const PUBLIC_SITE_URL = process.env.PUBLIC_SITE_URL;
+    // Get PUBLIC_SITE_URL from SvelteKit env (typed and consistent)
+    const PUBLIC_SITE_URL = env.PUBLIC_SITE_URL;
     
     const formData = await request.formData();
     const email = formData.get('email') as string;
@@ -162,26 +163,9 @@ export const actions: Actions = {
       });
     }
 
-    // Create profile with temporary username - user will choose real username in onboarding
-    const tempUsername = `user${data.user.id.substring(0, 8)}`;
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert({
-        id: data.user.id,
-        username: tempUsername,
-        full_name: validatedFullName,
-        onboarding_completed: false,
-        country_code: userCountry // Set country code from detection
-      });
-
-    if (profileError) {
-      console.error('Profile creation error:', profileError);
-      if (profileError.code !== '23505') { // Not a duplicate key error
-        // Profile creation failed - this is serious
-        console.error('Failed to create profile for user:', data.user.id, profileError);
-      }
-      // Continue with signup success even if profile creation fails - user can complete in onboarding
-    }
+    // Profile creation is handled by database trigger - no manual insertion needed
+    // This prevents race conditions and ensures consistency
+    // The onboarding process will UPDATE the profile with user's chosen data
 
     // If user has a session (e.g., email confirmation not required), redirect to onboarding
     if (data.session) {

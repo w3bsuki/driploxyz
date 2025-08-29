@@ -12,12 +12,13 @@
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications';
-  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer, Footer } from '@repo/ui';
   import OrderNotificationToast from '$lib/components/OrderNotificationToast.svelte';
   import RegionSwitchModal from '$lib/components/RegionSwitchModal.svelte';
   import { page } from '$app/stores';
   import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import { initializeLanguage } from '$lib/utils/language';
+  import { switchLanguage } from '$lib/utils/language-switcher';
   import * as i18n from '@repo/i18n';
   import type { LayoutData } from './$types';
   import type { Snippet } from 'svelte';
@@ -41,9 +42,8 @@
     }
   });
 
-  // Create browser client locally - not passed from load
-  import { createBrowserSupabaseClient } from '$lib/supabase/client';
-  const supabase = browser ? createBrowserSupabaseClient() : null;
+  // Get Supabase client from load function (following official pattern)
+  const { supabase, session, user } = $derived(data);
   const isAuthPage = $derived($page.route.id?.includes('(auth)'));
   const isSellPage = $derived($page.route.id?.includes('/sell'));
   const isOnboardingPage = $derived($page.route.id?.includes('/onboarding'));
@@ -92,29 +92,108 @@
     }
   });
 
-  // Simple auth state listener - only for real auth changes
+  // Comprehensive auth state management following Supabase best practices
   $effect(() => {
     if (!browser || !supabase) return;
     
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event) => {
-      // Only invalidate on actual sign in/out events
-      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
-        // Small delay to let server-side redirects complete first
-        setTimeout(() => {
-          invalidate('supabase:auth');
-        }, 100);
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      const sessionChanged = newSession?.expires_at !== session?.expires_at;
+      
+      if (dev) {
+        console.log('[Auth State Change]', event, {
+          sessionChanged,
+          hasNewSession: !!newSession,
+          userId: newSession?.user?.id
+        });
+      }
+
+      switch (event) {
+        case 'INITIAL_SESSION':
+          // Initial session load - no action needed as layout already has the data
+          break;
+          
+        case 'SIGNED_IN':
+          // User successfully signed in
+          if (dev) console.log('🔐 User signed in, invalidating auth state');
+          setTimeout(() => invalidate('supabase:auth'), 50);
+          break;
+          
+        case 'SIGNED_OUT':
+          // User signed out - clear any cached data and invalidate
+          if (dev) console.log('🚪 User signed out, invalidating auth state');
+          setTimeout(() => invalidate('supabase:auth'), 50);
+          break;
+          
+        case 'TOKEN_REFRESHED':
+          // Session tokens were refreshed
+          if (sessionChanged) {
+            if (dev) console.log('🔄 Session tokens refreshed, updating state');
+            setTimeout(() => invalidate('supabase:auth'), 50);
+          }
+          break;
+          
+        case 'USER_UPDATED':
+          // User metadata was updated
+          if (dev) console.log('👤 User data updated');
+          setTimeout(() => invalidate('supabase:auth'), 50);
+          break;
+          
+        case 'PASSWORD_RECOVERY':
+          // Password recovery initiated - no action needed
+          if (dev) console.log('🔑 Password recovery initiated');
+          break;
+          
+        default:
+          if (dev) console.log('❓ Unknown auth event:', event);
+          break;
       }
     });
 
     return () => authListener.subscription.unsubscribe();
   });
 
+  // Session health monitoring for logged-in users
+  $effect(() => {
+    if (!browser || !session) return;
+    
+    let warningShown = false;
+    
+    const checkSessionHealth = () => {
+      if (!session?.expires_at) return;
+      
+      const expiresAt = new Date(session.expires_at * 1000).getTime();
+      const now = Date.now();
+      const timeUntilExpiry = expiresAt - now;
+      
+      // Warn if session expires in less than 5 minutes
+      if (timeUntilExpiry > 0 && timeUntilExpiry < 5 * 60 * 1000 && !warningShown) {
+        warningShown = true;
+        if (dev) {
+          console.warn('⚠️ Session expiring soon:', Math.floor(timeUntilExpiry / 1000 / 60), 'minutes remaining');
+        }
+      }
+      
+      // Session has expired
+      if (timeUntilExpiry <= 0) {
+        if (dev) console.warn('🚨 Session expired, should refresh');
+        // The onAuthStateChange listener will handle the refresh/signout
+        return;
+      }
+    };
+    
+    // Check immediately and then every minute
+    checkSessionHealth();
+    const interval = setInterval(checkSessionHealth, 60 * 1000);
+    
+    return () => clearInterval(interval);
+  });
+
   // Initialize order notifications subscription for logged-in users
   $effect(() => {
-    if (!browser || !supabase || !data?.user?.id) return;
+    if (!browser || !supabase || !user?.id) return;
     
     // Subscribe to order notifications (sales, purchases, status updates)
-    const unsubscribe = orderNotificationActions.subscribeToNotifications(supabase, data.user.id);
+    const unsubscribe = orderNotificationActions.subscribeToNotifications(supabase, user.id);
     
     return () => {
       if (unsubscribe) unsubscribe();
@@ -131,6 +210,38 @@
 <div>
   {@render children?.()}
 </div>
+
+<!-- Footer -->
+{#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
+  <Footer 
+    currentLanguage={data?.language || 'en'}
+    onLanguageChange={switchLanguage}
+    translations={{
+      company: 'Company',
+      about: 'About Driplo',
+      careers: 'Careers',
+      press: 'Press',
+      support: 'Support',
+      help: 'Help Center',
+      trustSafety: 'Trust & Safety',
+      legal: 'Legal',
+      privacy: 'Privacy Policy',
+      terms: 'Terms & Conditions',
+      cookies: 'Cookie Policy',
+      returns: 'Return Policy',
+      community: 'Community',
+      blog: 'Blog',
+      newsletter: 'Newsletter',
+      followUs: 'Follow Us',
+      madeWith: 'Made with',
+      in: 'in',
+      bulgaria: 'Bulgaria',
+      allRightsReserved: 'All rights reserved.',
+      newsletterPlaceholder: 'Enter your email',
+      subscribe: 'Subscribe'
+    }}
+  />
+{/if}
 
 <!-- Toast Container -->
 <ToastContainer />

@@ -29,6 +29,11 @@ interface Props {
         categoryMen?: string;
         categoryKids?: string;
         categoryPets?: string;
+        help?: string;
+        privacy?: string;
+        terms?: string;
+        returns?: string;
+        trustSafety?: string;
     };
 }
 declare const MobileNavigation: import("svelte").Component<Props, {}, "">;

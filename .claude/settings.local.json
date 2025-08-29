@@ -56,7 +56,8 @@
       "Bash(pnpm install:*)",
       "Bash(pnpm run:*)",
       "Bash(timeout:*)",
-      "mcp__supabase__list_migrations"
+      "mcp__supabase__list_migrations",
+      "mcp__svelte-docs__svelte5_migration"
     ]
   },
   "enableAllProjectMcpServers": true,

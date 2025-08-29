@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page, navigating } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { Button, ProductCard, Breadcrumb, SellerQuickView, SearchBar, BottomNav, type Product, type BreadcrumbItem } from '@repo/ui';
+  import { Button, ProductCard, Breadcrumb, SellerQuickView, SearchBar, BottomNav, PartnerBanner, type Product, type BreadcrumbItem } from '@repo/ui';
   import * as i18n from '@repo/i18n';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { formatPrice } from '$lib/utils/price';
@@ -363,6 +363,25 @@
               <span class="text-xs text-gray-500">{seller.itemCount} {i18n.category_itemsCount()}</span>
             </button>
           {/each}
+        </div>
+      {/if}
+
+      <!-- Partner Showcase (Women's Category Only) -->
+      {#if category.slug === 'women' || category.slug === 'womens'}
+        <div class="pb-6">
+          <PartnerBanner 
+            partner={{
+              id: 'indecisive-wear',
+              name: 'Indecisive Wear',
+              description: 'Unique statement pieces for the fashion-forward',
+              instagram: 'https://instagram.com/indecisivewear',
+              category: 'women',
+              logo: 'https://via.placeholder.com/80x80/000000/FFFFFF?text=IW'
+            }}
+            size="medium"
+            variant="banner"
+            showDescription={true}
+          />
         </div>
       {/if}
       

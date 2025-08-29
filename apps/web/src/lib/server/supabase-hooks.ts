@@ -48,20 +48,47 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   );
 
   /**
-   * Safe session getter - validates JWT to prevent tampering
-   * CRITICAL: Always call getUser() first on server to validate JWT signature
+   * Safe session getter with per-request caching and proper validation order
+   * Following Supabase best practices: getSession() first, then validate if needed
    */
   event.locals.safeGetSession = async () => {
-    // First validate the JWT by calling getUser (makes request to Auth server)
-    const { data: { user }, error } = await event.locals.supabase.auth.getUser();
-    
-    if (error || !user) {
-      return { session: null, user: null };
+    // Check if we already cached the result for this request
+    if ((event.locals as any).__sessionCache !== undefined) {
+      return (event.locals as any).__sessionCache;
     }
-    
-    // Only get session after JWT validation passes
-    const { data: { session } } = await event.locals.supabase.auth.getSession();
-    
-    return { session, user };
+
+    let result: { session: any; user: any } = { session: null, user: null };
+
+    try {
+      // Step 1: Get session from cookies/storage (cheap operation)
+      const { data: { session }, error: sessionError } = await event.locals.supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        // No session or session error - cache and return null result
+        (event.locals as any).__sessionCache = result;
+        return result;
+      }
+
+      // Step 2: Validate JWT by calling getUser() (expensive network call)
+      const { data: { user }, error: userError } = await event.locals.supabase.auth.getUser();
+      
+      if (userError || !user) {
+        // JWT validation failed - session is invalid
+        (event.locals as any).__sessionCache = result;
+        return result;
+      }
+
+      // Success - we have a valid session and user
+      result = { session, user };
+      
+    } catch (error) {
+      // Any unexpected error should result in no session
+      console.warn('Session validation error:', error);
+      result = { session: null, user: null };
+    }
+
+    // Cache result for this request to avoid duplicate expensive calls
+    (event.locals as any).__sessionCache = result;
+    return result;
   };
 }
