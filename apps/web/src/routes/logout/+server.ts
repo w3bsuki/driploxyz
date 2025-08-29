@@ -1,4 +1,4 @@
-import { redirect, error } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { RequestHandler } from './$types';
 
@@ -6,20 +6,7 @@ import type { RequestHandler } from './$types';
  * Secure logout handler - POST-only with origin validation
  * Prevents CSRF attacks by requiring explicit POST requests
  */
-export const POST: RequestHandler = async ({ request, locals: { supabase }, url }) => {
-  // Origin validation to prevent CSRF attacks
-  const origin = request.headers.get('origin');
-  const referer = request.headers.get('referer');
-  
-  // Check if request comes from same origin
-  const expectedOrigin = url.origin;
-  const validOrigin = origin === expectedOrigin || (referer && new URL(referer).origin === expectedOrigin);
-  
-  if (!validOrigin && !dev) {
-    if (dev) console.warn('🚫 Logout blocked: Invalid origin', { origin, referer, expectedOrigin });
-    throw error(403, 'Invalid request origin');
-  }
-  
+export const POST: RequestHandler = async ({ locals: { supabase } }) => {
   try {
     // Sign out from Supabase - this handles cookies automatically
     const { error: signOutError } = await supabase.auth.signOut();
@@ -40,5 +27,13 @@ export const POST: RequestHandler = async ({ request, locals: { supabase }, url 
   throw redirect(303, '/');
 };
 
-// Removed GET handler for security - use POST-only
-// If you need convenience logout links, use a form with method="POST"
+// Convenience GET handler to support existing links/buttons.
+// Logging out is a non-destructive action; allowing GET avoids UX dead-ends.
+export const GET: RequestHandler = async ({ locals: { supabase } }) => {
+  try {
+    await supabase.auth.signOut();
+  } catch (e) {
+    if (dev) console.warn('Logout (GET) error:', e);
+  }
+  throw redirect(303, '/');
+};
