@@ -22,9 +22,9 @@
   const MAX_RECONNECT_ATTEMPTS = 5;
   let isCleanupMode = false;
   
-  // Development-only logging
+  // Development-only logging with stricter controls
   function logDebug(message: string, data?: any) {
-    if (dev) {
+    if (dev && typeof window !== 'undefined' && localStorage.getItem('debug_messages') === '1') {
       console.log(message, data);
     }
   }
@@ -34,120 +34,48 @@
     console.error(message, error);
   }
   
-  // Optimized message handler - reduced database calls
-  async function handleMessageChange(payload: any) {
+  // Optimized message handler - no expensive database queries
+  function handleMessageChange(payload: any) {
     if (isCleanupMode) return; // Ignore events during cleanup
-    
-    logDebug('📨 Real-time event:', { 
-      type: payload.eventType, 
-      messageId: payload.new?.id || payload.old?.id,
-      sender: payload.new?.sender_id,
-      receiver: payload.new?.receiver_id
-    });
     
     try {
       if (payload.eventType === 'INSERT') {
         const newMessage = payload.new;
-        if (!newMessage) return;
+        if (!newMessage || !newMessage.created_at) return;
         
-        // Quick user relevance check - avoid unnecessary processing
-        if (newMessage.sender_id !== user.id && newMessage.receiver_id !== user.id) {
-          logDebug('Message not for current user, ignoring');
-          return;
-        }
-        
-        // Don't skip real database inserts - they will have created_at
-        // Only skip if it's clearly an optimistic message without proper timestamp
-        if (!newMessage.created_at) {
-          logDebug('Skipping message without timestamp:', newMessage.id);
-          return;
-        }
-        
-        // Check for duplicates before expensive database query
+        // Check for duplicates
         const messageExists = messages.some(m => m.id === newMessage.id);
-        if (messageExists) {
-          logDebug('Duplicate message prevented:', newMessage.id);
-          return;
-        }
+        if (messageExists) return;
         
-        logDebug('📩 Processing new real-time message:', newMessage.id);
+        // Use the message data directly from realtime payload
+        // The database view will provide all necessary details
+        const updatedMessages = [...messages, newMessage];
+        onMessageChange(updatedMessages);
         
-        // Fetch full message details - single query
-        const { data: fullMessage, error } = await supabase
-          .from('messages_with_details')
-          .select('*')
-          .eq('id', newMessage.id)
-          .single();
-        
-        if (error) {
-          logError('Error fetching message details:', error);
-          
-          // Fallback with basic info to prevent message loss
-          const fallbackMessage = {
-            ...newMessage,
-            sender: null,
-            receiver: null,
-            product: null
-          };
-          
-          const updatedMessages = [...messages, fallbackMessage];
-          onMessageChange(updatedMessages);
-          return;
-        }
-        
-        if (fullMessage) {
-          logDebug('📬 Adding real-time message:', fullMessage.id);
-          const updatedMessages = [...messages, fullMessage];
-          onMessageChange(updatedMessages);
-          
-          // Mark as delivered asynchronously - don't block UI
-          if (newMessage.receiver_id === user.id && newMessage.sender_id !== user.id) {
-            supabase.rpc('mark_message_delivered', {
-              p_message_id: newMessage.id
-            }).catch(() => {
-              logDebug('Message delivery marking failed - function may not exist');
-            });
-          }
+        // Mark as delivered asynchronously - don't block UI
+        if (newMessage.receiver_id === user.id && newMessage.sender_id !== user.id) {
+          supabase.rpc('mark_message_delivered', {
+            p_message_id: newMessage.id
+          }).catch(() => {
+            // Message delivery marking failed (non-critical)
+          });
         }
       } 
       else if (payload.eventType === 'UPDATE') {
         const updatedMessage = payload.new;
         if (!updatedMessage) return;
         
-        // Find and update the message in place - avoid database query if possible
-        const messageIndex = messages.findIndex(m => m.id === updatedMessage.id);
-        if (messageIndex >= 0) {
-          // For simple updates like read status, use payload data
-          if (updatedMessage.is_read !== undefined) {
-            const updatedMessages = [...messages];
-            updatedMessages[messageIndex] = { ...updatedMessages[messageIndex], ...updatedMessage };
-            onMessageChange(updatedMessages);
-            logDebug('📝 Updated message in-place:', updatedMessage.id);
-            return;
-          }
-        }
-        
-        // For complex updates, fetch full details
-        const { data: fullMessage, error } = await supabase
-          .from('messages_with_details')
-          .select('*')
-          .eq('id', updatedMessage.id)
-          .single();
-        
-        if (!error && fullMessage) {
-          const updatedMessages = messages.map(msg => 
-            msg.id === fullMessage.id ? fullMessage : msg
-          );
-          onMessageChange(updatedMessages);
-          logDebug('📝 Updated message from DB:', fullMessage.id);
-        }
+        // Update message in place using payload data
+        const updatedMessages = messages.map(msg => 
+          msg.id === updatedMessage.id ? { ...msg, ...updatedMessage } : msg
+        );
+        onMessageChange(updatedMessages);
       } 
       else if (payload.eventType === 'DELETE') {
         const deletedMessage = payload.old;
         if (deletedMessage) {
           const updatedMessages = messages.filter(msg => msg.id !== deletedMessage.id);
           onMessageChange(updatedMessages);
-          logDebug('🗑️ Removed message:', deletedMessage.id);
         }
       }
     } catch (error) {
@@ -155,11 +83,11 @@
     }
   }
   
-  // Optimized subscription setup with connection management
+  // Optimized subscription setup with user-specific filters
   async function setupMessageSubscription() {
     if (!user || !supabase || isCleanupMode) return;
     
-    logDebug('🔄 Setting up message subscription:', user.id);
+    // Setting up message subscription with user filters
     
     // Prevent duplicate subscriptions
     if (messageChannel) {
@@ -167,20 +95,33 @@
       messageChannel = null;
     }
     
-    // Single channel for all message events
+    // Single channel with filtered subscriptions for performance
     messageChannel = supabase
       .channel(`user-messages-${user.id}`, {
         config: {
-          broadcast: { self: false }, // Don't broadcast to self
-          presence: { key: user.id }  // Use user ID as presence key
+          broadcast: { self: false },
+          presence: { key: user.id }
         }
       })
+      // Listen to messages where user is the receiver
       .on(
         'postgres_changes',
         {
-          event: '*', // Listen to all events
+          event: '*',
+          schema: 'public', 
+          table: 'messages',
+          filter: `receiver_id=eq.${user.id}`
+        },
+        handleMessageChange
+      )
+      // Listen to messages where user is the sender
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
           schema: 'public',
-          table: 'messages'
+          table: 'messages', 
+          filter: `sender_id=eq.${user.id}`
         },
         handleMessageChange
       )
@@ -197,12 +138,10 @@
           // Exponential backoff reconnection
           if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS && !isCleanupMode) {
             reconnectAttempts++;
-            const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 10000); // Max 10s
-            logDebug(`🔄 Reconnecting in ${delay}ms (${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS})`);
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 10000);
             setTimeout(() => setupMessageSubscription(), delay);
           }
         } else if (status === 'SUBSCRIBED') {
-          logDebug('✅ Message channel connected');
           reconnectAttempts = 0;
         }
       });
@@ -212,7 +151,7 @@
   async function setupPresenceSubscription() {
     if (!user || !supabase || isCleanupMode) return;
     
-    logDebug('🔄 Setting up presence channel');
+    // Setting up presence channel
     
     // Cleanup existing presence
     if (presenceChannel) {
@@ -255,10 +194,10 @@
         }
       })
       .on('presence', { event: 'join' }, ({ key, newPresences }) => {
-        logDebug('👤 User joined:', key);
+        // User joined
       })
       .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
-        logDebug('👋 User left:', key);
+        // User left
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
@@ -269,7 +208,7 @@
           };
           
           await presenceChannel?.track(trackData);
-          logDebug('✅ Presence active:', user.id);
+          // Presence active
         }
       });
   }
@@ -287,7 +226,7 @@
     if (isCleanupMode) return; // Prevent multiple cleanup calls
     isCleanupMode = true;
     
-    logDebug('🧹 Cleaning up subscriptions');
+    // Cleaning up subscriptions
     
     const cleanupPromises = [];
     
@@ -317,7 +256,7 @@
     
     try {
       await Promise.all(cleanupPromises);
-      logDebug('✅ Cleanup completed');
+      // Cleanup completed
     } catch (error) {
       logError('Cleanup error (non-critical):', error);
     }

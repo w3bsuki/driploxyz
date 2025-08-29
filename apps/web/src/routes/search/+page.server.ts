@@ -404,7 +404,7 @@ export const load: PageServerLoad = async ({ url, locals, setHeaders }) => {
 
     // Transform products for UI with category hierarchy from joined data
     const transformedProducts = (products || []).map(product => {
-      // Use the direct category information from the join
+      // Use the direct category information from the join and traverse up to find main category
       let mainCategoryName = '';
       let subcategoryName = '';
       let specificCategoryName = '';
@@ -414,8 +414,22 @@ export const load: PageServerLoad = async ({ url, locals, setHeaders }) => {
           mainCategoryName = product.categories.name;
         } else if (product.categories.level === 2) {
           subcategoryName = product.categories.name;
+          // Find the parent (Level 1) category
+          const parentCat = allCategories?.find(cat => cat.id === product.categories.parent_id);
+          if (parentCat) {
+            mainCategoryName = parentCat.name;
+          }
         } else if (product.categories.level === 3) {
           specificCategoryName = product.categories.name;
+          // Find the parent (Level 2) and grandparent (Level 1) categories
+          const parentCat = allCategories?.find(cat => cat.id === product.categories.parent_id);
+          if (parentCat) {
+            subcategoryName = parentCat.name;
+            const grandparentCat = allCategories?.find(cat => cat.id === parentCat.parent_id);
+            if (grandparentCat) {
+              mainCategoryName = grandparentCat.name;
+            }
+          }
         }
       }
 

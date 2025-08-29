@@ -13,7 +13,7 @@
   
   let { data }: Props = $props();
   
-  let activeTab = $state<'posts' | 'reviews' | 'about' | 'likes'>('posts');
+  let activeTab = $state<'posts' | 'reviews' | 'about' | 'ratings'>('posts');
   let isFollowing = $state(data.isFollowing || false);
   let showFollowersModal = $state(false);
   let showFollowingModal = $state(false);
@@ -160,18 +160,13 @@
         <!-- Action Buttons -->
         {#if data.isOwnProfile}
           <div class="flex space-x-2">
-            <a href="/profile/edit" class="flex-1">
-              <Button variant="outline" size="sm" class="w-full text-sm">{i18n.profile_editProfile()}</Button>
-            </a>
             <Button 
-              onclick={() => {
-                console.log('Account button clicked');
-                window.location.href = '/dashboard';
-              }}
+              onclick={() => goto('/account')}
+              variant="primary" 
               size="sm" 
               class="flex-1 text-sm"
             >
-              {i18n.profile_dashboard()}
+              Go to My Account
             </Button>
           </div>
         {:else}
@@ -274,20 +269,18 @@
         aria-label="About"
       >
         <svg class="w-6 h-6 mx-auto {activeTab === 'about' ? 'text-black' : 'text-gray-400'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </button>
-      {#if data.isOwnProfile}
-        <button
-          onclick={() => activeTab = 'likes'}
-          class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'likes' ? 'border-black' : 'border-transparent'}"
-          aria-label="Likes"
-        >
-          <svg class="w-6 h-6 mx-auto {activeTab === 'likes' ? 'text-black' : 'text-gray-400'}" fill="{activeTab === 'likes' ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-        </button>
-      {/if}
+      <button
+        onclick={() => activeTab = 'ratings'}
+        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'ratings' ? 'border-black' : 'border-transparent'}"
+        aria-label="Ratings"
+      >
+        <svg class="w-6 h-6 mx-auto {activeTab === 'ratings' ? 'text-black' : 'text-gray-400'}" fill="{activeTab === 'ratings' ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+        </svg>
+      </button>
     </div>
   </div>
 
@@ -392,50 +385,105 @@
           </div>
         </div>
       </div>
-    {:else if activeTab === 'likes'}
-      <!-- Wishlist/Likes -->
-      {#if data.favorites && data.favorites.length > 0}
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-          {#each data.favorites as favorite}
-            <button 
-              onclick={() => goto(getProductUrl(favorite))}
-              class="bg-white border rounded-lg overflow-hidden hover:shadow-md transition-shadow relative group"
-            >
-              {#if favorite.is_sold}
-                <div class="absolute inset-0 bg-black bg-opacity-50 z-10 flex items-center justify-center">
-                  <span class="text-white font-semibold text-lg">SOLD</span>
+    {:else if activeTab === 'ratings'}
+      <!-- Rating Breakdown -->
+      <div class="space-y-6">
+        <!-- Overall Rating -->
+        <div class="text-center">
+          <div class="text-4xl font-bold mb-2">
+            {#if data.profile.rating}
+              {data.profile.rating.toFixed(1)}
+            {:else}
+              N/A
+            {/if}
+          </div>
+          <div class="flex justify-center mb-2">
+            {#each Array(5) as _, i}
+              <svg 
+                class="w-6 h-6 {i < Math.round(data.profile.rating || 0) ? 'text-yellow-400 fill-current' : 'text-gray-300'}" 
+                viewBox="0 0 20 20"
+              >
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
+            {/each}
+          </div>
+          <p class="text-sm text-gray-500">
+            Based on {data.profile.review_count || 0} {data.profile.review_count === 1 ? 'review' : 'reviews'}
+          </p>
+        </div>
+
+        <!-- Rating Breakdown -->
+        {#if data.profile.rating_breakdown}
+          <div class="space-y-2">
+            {#each [5, 4, 3, 2, 1] as star}
+              {@const count = data.profile.rating_breakdown[star.toString()] || 0}
+              {@const total = data.profile.review_count || 1}
+              {@const percentage = (count / total) * 100}
+              <div class="flex items-center space-x-2">
+                <span class="text-sm w-8">{star}★</span>
+                <div class="flex-1 bg-gray-200 rounded-full h-2">
+                  <div 
+                    class="bg-yellow-400 h-2 rounded-full transition-all duration-300" 
+                    style="width: {percentage}%"
+                  ></div>
                 </div>
-              {/if}
-              {#if favorite.images && favorite.images[0]}
-                <img 
-                  src={favorite.images[0]} 
-                  alt={favorite.title}
-                  class="w-full h-40 object-cover"
-                />
-              {:else}
-                <div class="w-full h-40 bg-gray-200 flex items-center justify-center">
-                  <span class="text-gray-400">{i18n.product_noImage()}</span>
-                </div>
-              {/if}
-              <div class="p-2">
-                <h4 class="font-medium text-sm line-clamp-1">{favorite.title}</h4>
-                <p class="text-lg font-semibold">{i18n.common_currency()}{favorite.price}</p>
-                {#if favorite.seller_name}
-                  <p class="text-xs text-gray-500">by {favorite.seller_name}</p>
-                {/if}
+                <span class="text-sm text-gray-500 w-8">{count}</span>
               </div>
-            </button>
-          {/each}
-        </div>
-      {:else}
-        <div class="text-center py-12 text-gray-500">
-          <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-          <p class="text-lg font-medium mb-2">{i18n.profile_noFavorites ? i18n.profile_noFavorites() : 'No favorites yet'}</p>
-          <p class="text-sm">{i18n.profile_startBrowsing ? i18n.profile_startBrowsing() : 'Start browsing to add items to your wishlist'}</p>
-        </div>
-      {/if}
+            {/each}
+          </div>
+        {/if}
+
+        <!-- Recent Reviews Sample -->
+        {#if data.reviews.length > 0}
+          <div>
+            <h3 class="font-semibold mb-3">Recent Reviews</h3>
+            <div class="space-y-4">
+              {#each data.reviews.slice(0, 3) as review}
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <div class="flex items-start space-x-3">
+                    <Avatar 
+                      src={review.reviewer?.avatar_url}
+                      name={review.reviewer?.username || 'User'}
+                      size="sm"
+                    />
+                    <div class="flex-1">
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="text-sm font-medium">{review.reviewer?.username || i18n.profile_anonymous()}</span>
+                        <span class="text-xs text-gray-500">{timeAgo(review.created_at)}</span>
+                      </div>
+                      <div class="flex items-center mb-2">
+                        {#each Array(5) as _, i}
+                          <svg 
+                            class="w-4 h-4 {i < review.rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}" 
+                            viewBox="0 0 20 20"
+                          >
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                          </svg>
+                        {/each}
+                      </div>
+                      {#if review.comment}
+                        <p class="text-sm text-gray-700">{review.comment}</p>
+                      {/if}
+                    </div>
+                  </div>
+                </div>
+              {/each}
+              {#if data.reviews.length > 3}
+                <button 
+                  onclick={() => activeTab = 'reviews'}
+                  class="text-sm text-blue-600 hover:underline"
+                >
+                  View all {data.reviews.length} reviews
+                </button>
+              {/if}
+            </div>
+          </div>
+        {:else}
+          <div class="text-center py-8 text-gray-500">
+            <p>No reviews yet</p>
+          </div>
+        {/if}
+      </div>
     {/if}
   </div>
 </div>

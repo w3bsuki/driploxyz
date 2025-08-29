@@ -46,33 +46,32 @@
 	
 	// Initialize favorites from server data on mount
 	$effect(() => {
-		if (browser && data.user && userFavoritesData) {
-			// Initialize favorites state from server
-			favoritesStore.update(state => ({
-				...state,
-				favorites: {
-					...state.favorites,
-					...userFavoritesData
-				}
-			}));
-			
-			// Initialize favorite counts from products
+		if (browser) {
+			// Always initialize favorite counts from products, regardless of login status
 			const counts: Record<string, number> = {};
 			[...promotedProducts, ...products].forEach(product => {
-				if (product.favorites_count !== undefined) {
-					counts[product.id] = product.favorites_count;
+				if (product.favorite_count !== undefined) {
+					counts[product.id] = product.favorite_count;
 				}
 			});
 			
-			if (Object.keys(counts).length > 0) {
-				favoritesStore.update(state => ({
-					...state,
-					favoriteCounts: {
-						...state.favoriteCounts,
-						...counts
-					}
-				}));
+			// Initialize favorites state from server if user is logged in
+			const updates: any = {
+				favoriteCounts: {
+					...counts
+				}
+			};
+
+			if (data.user && userFavoritesData) {
+				updates.favorites = {
+					...userFavoritesData
+				};
 			}
+
+			favoritesStore.update(state => ({
+				...state,
+				...updates
+			}));
 		}
 	});
 	

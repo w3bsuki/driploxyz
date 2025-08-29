@@ -102,12 +102,12 @@
     { key: 'unisex', label: i18n.category_unisex(), icon: '🌍' }
   ];
   
-  // Quick price filters (most used)
-  const quickPriceFilters = [
-    { key: 'under-25', label: 'Under $25', min: '', max: '25' },
-    { key: '25-50', label: '$25-50', min: '25', max: '50' },
-    { key: '50-100', label: '$50-100', min: '50', max: '100' },
-    { key: 'over-100', label: '$100+', min: '100', max: '' }
+  // Quick condition filters (most used)
+  const quickConditionFilters = [
+    { key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: i18n.sell_condition_brandNewWithTags() },
+    { key: 'new_without_tags', label: i18n.sell_condition_newWithoutTags(), shortLabel: i18n.condition_new() },
+    { key: 'like_new', label: i18n.condition_likeNew(), shortLabel: i18n.condition_likeNew() },
+    { key: 'good', label: i18n.condition_good(), shortLabel: i18n.condition_good() }
   ];
   
   // Common sizes based on category
@@ -239,19 +239,13 @@
     setTimeout(() => { isFilterLoading = false; }, 300);
   }
   
-  function handleQuickPrice(min: string, max: string) {
+  function handleQuickCondition(conditionKey: string) {
     isFilterLoading = true;
     // Toggle off if already selected
-    if (filters.minPrice === min && filters.maxPrice === max) {
-      filterStore.updateMultipleFilters({
-        minPrice: '',
-        maxPrice: ''
-      });
+    if (filters.condition === conditionKey) {
+      filterStore.updateFilter('condition', 'all');
     } else {
-      filterStore.updateMultipleFilters({
-        minPrice: min,
-        maxPrice: max
-      });
+      filterStore.updateFilter('condition', conditionKey);
     }
     // Reset loading state after a brief delay
     setTimeout(() => { isFilterLoading = false; }, 300);
@@ -363,51 +357,55 @@
           
           <!-- Category Dropdown Menu -->
           {#if showCategoryDropdown}
-            <div class="absolute top-full left-0 mt-1 w-72 sm:w-80 bg-white rounded-xl shadow md:shadow-lg border border-gray-100 z-40 max-h-96 overflow-y-auto">
+            <div class="absolute top-full left-0 mt-1 w-72 sm:w-80 bg-white rounded-xl shadow-lg border border-gray-200/60 z-40 max-h-[360px] overflow-hidden">
                 
                 <!-- Level 1: Gender Categories -->
                 {#if categoryLevel === 1}
                   <div class="p-2">
-                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2">Categories</div>
-                    <button
-                      onclick={() => {
-                        filterStore.updateMultipleFilters({ level1: null, level2: null, level3: null });
-                        showCategoryDropdown = false;
-                      }}
-                      class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left transition-colors
-                        {!filters.level1 ? 'bg-gray-100' : ''}"
-                    >
-                      <span class="text-lg">🌍</span>
-                      <span class="font-medium">All Categories</span>
-                    </button>
-                    {#each categoryHierarchy.level1 as category}
+                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2 border-b border-gray-100 mb-1">
+                      Categories
+                    </div>
+                    <div class="space-y-0.5 overflow-y-auto max-h-72">
                       <button
                         onclick={() => {
-                          // First, set the filter
-                          filterStore.updateMultipleFilters({ level1: category.key, level2: null, level3: null });
-                          
-                          // Then navigate to next level if subcategories exist
-                          if (categoryHierarchy.level2[category.key]?.length > 0) {
-                            categoryLevel = 2;
-                          } else {
-                            // No subcategories, close dropdown
-                            showCategoryDropdown = false;
-                          }
+                          filterStore.updateMultipleFilters({ level1: null, level2: null, level3: null });
+                          showCategoryDropdown = false;
                         }}
-                        class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left transition-colors
-                          {filters.level1 === category.key ? 'bg-blue-50 text-blue-700' : ''}"
+                        class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-gray-50 text-left transition-colors
+                          {!filters.level1 ? 'bg-gray-100' : ''}"
                       >
-                        <div class="flex items-center gap-3">
-                          <span class="text-lg">{category.icon}</span>
-                          <span class="font-medium">{category.name}</span>
-                        </div>
-                        {#if categoryHierarchy.level2[category.key]?.length > 0}
-                          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                          </svg>
-                        {/if}
+                        <span class="text-base">🌍</span>
+                        <span class="text-sm font-medium text-gray-900">All Categories</span>
                       </button>
-                    {/each}
+                      {#each categoryHierarchy.level1 as category}
+                        <button
+                          onclick={() => {
+                            // First, set the filter
+                            filterStore.updateMultipleFilters({ level1: category.key, level2: null, level3: null });
+                            
+                            // Then navigate to next level if subcategories exist
+                            if (categoryHierarchy.level2[category.key]?.length > 0) {
+                              categoryLevel = 2;
+                            } else {
+                              // No subcategories, close dropdown
+                              showCategoryDropdown = false;
+                            }
+                          }}
+                          class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50 text-left transition-colors group
+                            {filters.level1 === category.key ? 'bg-blue-50 text-blue-700' : ''}"
+                        >
+                          <div class="flex items-center gap-2.5">
+                            <span class="text-base">{category.icon}</span>
+                            <span class="text-sm font-medium text-gray-900 {filters.level1 === category.key ? 'text-blue-700' : ''}">{category.name}</span>
+                          </div>
+                          {#if categoryHierarchy.level2[category.key]?.length > 0}
+                            <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                          {/if}
+                        </button>
+                      {/each}
+                    </div>
                   </div>
                 {/if}
                 
@@ -416,55 +414,57 @@
                   <div class="p-2">
                     <button
                       onclick={() => categoryLevel = 1}
-                      class="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                      class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors mb-1"
                     >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                       </svg>
                       Back to Categories
                     </button>
-                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2">
+                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2 border-b border-gray-100 mb-1">
                       {categoryHierarchy.level1.find(cat => cat.key === filters.level1)?.name}
                     </div>
-                    <button
-                      onclick={() => {
-                        filterStore.updateMultipleFilters({ level2: null, level3: null });
-                        showCategoryDropdown = false;
-                      }}
-                      class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left transition-colors
-                        {!filters.level2 ? 'bg-gray-100' : ''}"
-                    >
-                      <span class="text-lg">📦</span>
-                      <span class="font-medium">All {categoryHierarchy.level1.find(cat => cat.key === filters.level1)?.name}</span>
-                    </button>
-                    {#each categoryHierarchy.level2[filters.level1] as subcategory}
+                    <div class="space-y-0.5 overflow-y-auto max-h-72">
                       <button
                         onclick={() => {
-                          // First, set the level2 filter
-                          filterStore.updateMultipleFilters({ level2: subcategory.key, level3: null });
-                          
-                          // Then check if we need to go to level 3
-                          if (categoryHierarchy.level3[`${filters.level1}-${subcategory.key}`]?.length > 0) {
-                            categoryLevel = 3;
-                          } else {
-                            // No level 3 subcategories, close dropdown
-                            showCategoryDropdown = false;
-                          }
+                          filterStore.updateMultipleFilters({ level2: null, level3: null });
+                          showCategoryDropdown = false;
                         }}
-                        class="w-full flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left transition-colors
-                          {filters.level2 === subcategory.key ? 'bg-blue-50 text-blue-700' : ''}"
+                        class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-gray-50 text-left transition-colors
+                          {!filters.level2 ? 'bg-gray-100' : ''}"
                       >
-                        <div class="flex items-center gap-3">
-                          <span class="text-lg">{subcategory.icon}</span>
-                          <span class="font-medium">{subcategory.name}</span>
-                        </div>
-                        {#if categoryHierarchy.level3[`${filters.level1}-${subcategory.key}`]?.length > 0}
-                          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                          </svg>
-                        {/if}
+                        <span class="text-base">📦</span>
+                        <span class="text-sm font-medium text-gray-900">All {categoryHierarchy.level1.find(cat => cat.key === filters.level1)?.name}</span>
                       </button>
-                    {/each}
+                      {#each categoryHierarchy.level2[filters.level1] as subcategory}
+                        <button
+                          onclick={() => {
+                            // First, set the level2 filter
+                            filterStore.updateMultipleFilters({ level2: subcategory.key, level3: null });
+                            
+                            // Then check if we need to go to level 3
+                            if (categoryHierarchy.level3[`${filters.level1}-${subcategory.key}`]?.length > 0) {
+                              categoryLevel = 3;
+                            } else {
+                              // No level 3 subcategories, close dropdown
+                              showCategoryDropdown = false;
+                            }
+                          }}
+                          class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50 text-left transition-colors group
+                            {filters.level2 === subcategory.key ? 'bg-blue-50 text-blue-700' : ''}"
+                        >
+                          <div class="flex items-center gap-2.5">
+                            <span class="text-base">{subcategory.icon}</span>
+                            <span class="text-sm font-medium text-gray-900 {filters.level2 === subcategory.key ? 'text-blue-700' : ''}">{subcategory.name}</span>
+                          </div>
+                          {#if categoryHierarchy.level3[`${filters.level1}-${subcategory.key}`]?.length > 0}
+                            <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                          {/if}
+                        </button>
+                      {/each}
+                    </div>
                   </div>
                 {/if}
                 
@@ -473,40 +473,42 @@
                   <div class="p-2">
                     <button
                       onclick={() => categoryLevel = 2}
-                      class="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                      class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors mb-1"
                     >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                       </svg>
                       Back to {categoryHierarchy.level2[filters.level1]?.find(cat => cat.key === filters.level2)?.name}
                     </button>
-                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2">
+                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2 border-b border-gray-100 mb-1">
                       {categoryHierarchy.level2[filters.level1]?.find(cat => cat.key === filters.level2)?.name}
                     </div>
-                    <button
-                      onclick={() => {
-                        filterStore.updateFilter('level3', null);
-                        showCategoryDropdown = false;
-                      }}
-                      class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left transition-colors
-                        {!filters.level3 ? 'bg-gray-100' : ''}"
-                    >
-                      <span class="text-lg">📄</span>
-                      <span class="font-medium">All {categoryHierarchy.level2[filters.level1]?.find(cat => cat.key === filters.level2)?.name}</span>
-                    </button>
-                    {#each categoryHierarchy.level3[`${filters.level1}-${filters.level2}`] as specific}
+                    <div class="space-y-0.5 overflow-y-auto max-h-72">
                       <button
                         onclick={() => {
-                          filterStore.updateFilter('level3', specific.key);
+                          filterStore.updateFilter('level3', null);
                           showCategoryDropdown = false;
                         }}
-                        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-left transition-colors
-                          {filters.level3 === specific.key ? 'bg-blue-50 text-blue-700' : ''}"
+                        class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-gray-50 text-left transition-colors
+                          {!filters.level3 ? 'bg-gray-100' : ''}"
                       >
-                        <span class="text-lg">{specific.icon}</span>
-                        <span class="font-medium">{specific.name}</span>
+                        <span class="text-base">📄</span>
+                        <span class="text-sm font-medium text-gray-900">All {categoryHierarchy.level2[filters.level1]?.find(cat => cat.key === filters.level2)?.name}</span>
                       </button>
-                    {/each}
+                      {#each categoryHierarchy.level3[`${filters.level1}-${filters.level2}`] as specific}
+                        <button
+                          onclick={() => {
+                            filterStore.updateFilter('level3', specific.key);
+                            showCategoryDropdown = false;
+                          }}
+                          class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-gray-50 text-left transition-colors group
+                            {filters.level3 === specific.key ? 'bg-blue-50 text-blue-700' : ''}"
+                        >
+                          <span class="text-base">{specific.icon}</span>
+                          <span class="text-sm font-medium text-gray-900 {filters.level3 === specific.key ? 'text-blue-700' : ''}">{specific.name}</span>
+                        </button>
+                      {/each}
+                    </div>
                   </div>
                 {/if}
               </div>
@@ -542,16 +544,30 @@
         
         <div class="w-px h-5 bg-gray-200 mx-2"></div>
         
-        <!-- Price Pills -->
-        {#each quickPriceFilters as price}
+        <!-- Condition Pills -->
+        {#each quickConditionFilters as condition, index}
           <button
-            onclick={() => handleQuickPrice(price.min, price.max)}
-            class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors min-h-9
-              {filters.minPrice === price.min && filters.maxPrice === price.max
-                ? 'bg-blue-600 text-white' 
-                : 'bg-blue-50 text-blue-700 hover:bg-blue-100'}"
+            onclick={() => handleQuickCondition(condition.key)}
+            class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-9 relative overflow-hidden
+              {filters.condition === condition.key
+                ? index === 0 ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-md' 
+                  : index === 1 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
+                  : index === 2 ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md'
+                  : 'bg-gradient-to-r from-slate-600 to-gray-600 text-white shadow-md'
+                : 'bg-white text-gray-700 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:shadow-sm'}"
           >
-            {price.label}
+            <span class="relative z-10 flex items-center gap-1">
+              {#if index === 0}
+                <span class="w-1.5 h-1.5 rounded-full {filters.condition === condition.key ? 'bg-white' : 'bg-emerald-500'}"></span>
+              {:else if index === 1}
+                <span class="w-1.5 h-1.5 rounded-full {filters.condition === condition.key ? 'bg-white' : 'bg-blue-500'}"></span>
+              {:else if index === 2}
+                <span class="w-1.5 h-1.5 rounded-full {filters.condition === condition.key ? 'bg-white' : 'bg-amber-500'}"></span>
+              {:else}
+                <span class="w-1.5 h-1.5 rounded-full {filters.condition === condition.key ? 'bg-white' : 'bg-slate-500'}"></span>
+              {/if}
+              {condition.shortLabel}
+            </span>
           </button>
         {/each}
         
@@ -699,15 +715,23 @@
                       class="w-16 px-2 py-1.5 border border-gray-200 rounded-full text-sm text-center"
                     />
                   </div>
-                  {#each quickPriceFilters as price}
+                  {#each quickConditionFilters.slice(0, 2) as condition, index}
                     <button
-                      onclick={() => handleQuickPrice(price.min, price.max)}
-                      class="shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition-colors min-h-8
-                        {filters.minPrice === price.min && filters.maxPrice === price.max
-                          ? 'bg-black text-white' 
-                          : 'bg-gray-100 text-gray-700'}"
+                      onclick={() => handleQuickCondition(condition.key)}
+                      class="shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 min-h-8 relative overflow-hidden
+                        {filters.condition === condition.key
+                          ? index === 0 ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-sm' 
+                            : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-sm'
+                          : 'bg-white text-gray-700 border border-gray-300'}"
                     >
-                      {price.label}
+                      <span class="relative z-10 flex items-center gap-1">
+                        {#if index === 0}
+                          <span class="w-1 h-1 rounded-full {filters.condition === condition.key ? 'bg-white' : 'bg-emerald-500'}"></span>
+                        {:else}
+                          <span class="w-1 h-1 rounded-full {filters.condition === condition.key ? 'bg-white' : 'bg-blue-500'}"></span>
+                        {/if}
+                        {condition.shortLabel}
+                      </span>
                     </button>
                   {/each}
                 </div>

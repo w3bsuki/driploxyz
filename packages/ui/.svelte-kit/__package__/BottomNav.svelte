@@ -68,17 +68,17 @@
       showBadge: true
     },
     {
-      href: '/profile/me',
+      href: '/account',
       label: labels.profile,
       icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
-      matchPath: '/profile'
+      matchPath: '/account'
     }
   ];
   
   function isActive(item: NavItem): boolean {
     const path = item.matchPath || item.href;
     if (path === '/') return currentPath === '/';
-    return currentPath.startsWith(path) || (path === '/profile' && currentPath.startsWith('/dashboard'));
+    return currentPath.startsWith(path) || (path === '/account' && currentPath.startsWith('/dashboard'));
   }
   
   function getItemClasses(item: NavItem): string {

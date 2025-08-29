@@ -38,9 +38,23 @@
     typingUsers: Map<string, any>;
     onBackToList: () => void;
     messagesContainer?: HTMLDivElement | null;
+    isLoadingOlder?: boolean;
+    hasMoreMessages?: boolean;
+    onScroll?: () => void;
   }
   
-  let { messages, conversation, currentUserId, onlineUsers, typingUsers, onBackToList, messagesContainer = $bindable() }: Props = $props();
+  let { 
+    messages, 
+    conversation, 
+    currentUserId, 
+    onlineUsers, 
+    typingUsers, 
+    onBackToList, 
+    messagesContainer = $bindable(), 
+    isLoadingOlder = false, 
+    hasMoreMessages = true, 
+    onScroll 
+  }: Props = $props();
   
   const timeAgo = (date: string) => {
     return i18n.messages_now();
@@ -156,7 +170,27 @@
   </div>
 
   <!-- Messages - Scrollable Only -->
-  <div bind:this={messagesContainer} class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+  <div 
+    bind:this={messagesContainer} 
+    class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50"
+    onscroll={onScroll}
+  >
+    <!-- Loading Indicator for Older Messages -->
+    {#if isLoadingOlder}
+      <div class="flex items-center justify-center py-2">
+        <div class="flex items-center space-x-2 text-gray-500">
+          <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span class="text-xs">Loading older messages...</span>
+        </div>
+      </div>
+    {:else if !hasMoreMessages && messages.length > 10}
+      <div class="flex items-center justify-center py-2">
+        <span class="text-xs text-gray-400">• Start of conversation •</span>
+      </div>
+    {/if}
+    
     <!-- Date Separator -->
     <div class="flex items-center justify-center">
       <span class="text-xs text-gray-500 bg-white px-3 py-1 rounded-full">{i18n.messages_today()}</span>

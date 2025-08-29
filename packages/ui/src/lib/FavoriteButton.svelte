@@ -9,6 +9,7 @@
     addToFavoritesText?: string;
     removeFromFavoritesText?: string;
     showCount?: boolean;
+    favoritesState?: { favoriteCounts: Record<string, number> };
   }
 
   let { 
@@ -17,7 +18,8 @@
     onFavorite,
     addToFavoritesText = 'Add to favorites',
     removeFromFavoritesText = 'Remove from favorites',
-    showCount = true
+    showCount = true,
+    favoritesState
   }: Props = $props();
 
   let isLoading = $state(false);
@@ -29,7 +31,8 @@
   });
 
   $effect(() => {
-    favoriteCount = product.favorite_count || 0;
+    // Use store count if available, otherwise fall back to product count
+    favoriteCount = favoritesState?.favoriteCounts[product.id] ?? product.favorite_count ?? 0;
   });
 
   async function handleFavorite(event: MouseEvent) {

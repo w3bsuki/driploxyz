@@ -51,19 +51,9 @@ sw.addEventListener('fetch', (event) => {
 	// Skip auth requests
 	if (url.pathname.startsWith('/auth/')) return;
 	
-	// Handle navigation requests (HTML pages)
+	// Handle navigation requests (HTML pages) - let browser handle normally
 	if (request.mode === 'navigate') {
-		event.respondWith(
-			fetch(request)
-				.catch(() => {
-					// Return offline page for navigation failures
-					return caches.match('/offline') || 
-						new Response('Offline - Please check your connection', {
-							status: 503,
-							headers: { 'Content-Type': 'text/html' }
-						});
-				})
-		);
+		// Don't intercept navigation to prevent delays
 		return;
 	}
 	
@@ -107,21 +97,8 @@ sw.addEventListener('fetch', (event) => {
 		return;
 	}
 	
-	// Default strategy: network first, cache fallback
-	event.respondWith(
-		fetch(request)
-			.then((response) => {
-				// Cache successful responses
-				if (response.ok) {
-					const responseClone = response.clone();
-					caches.open(CACHE_NAME).then((cache) => {
-						cache.put(request, responseClone);
-					});
-				}
-				return response;
-			})
-			.catch(() => caches.match(request))
-	);
+	// Let browser handle other requests normally to prevent delays
+	// Don't intercept unless it's a cached asset or image
 });
 
 // Background sync for offline actions

@@ -3,6 +3,8 @@ import type { PageServerLoad, Actions } from './$types';
 
 export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, depends }) => {
   depends('messages:all');
+  depends('messages:pagination');
+  
   const { user } = await parent();
 
   if (!user) {
@@ -14,12 +16,47 @@ export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, 
   const conversationParam = searchParams.get('conversation');
   
   
-  // Use optimized view for better performance
-  const { data: messages, error: messagesError } = await supabase
-    .from('messages_with_details' as any)
-    .select('*')
-    .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
-    .order('created_at', { ascending: false }) as any;
+  // Implement pagination for better performance
+  let messages;
+  let messagesError;
+  
+  if (conversationParam) {
+    // If viewing a specific conversation, load only the most recent messages
+    const parts = conversationParam.split('__');
+    const [otherUserId, productId] = parts.length >= 2 ? parts : [parts[0], 'general'];
+    
+    // Fix the product_id filter - PostgreSQL doesn't accept string 'null' as UUID null
+    let query = supabase
+      .from('messages_with_details' as any)
+      .select('*')
+      .or(`and(sender_id.eq.${user.id},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${user.id})`)
+      .order('created_at', { ascending: false })
+      .limit(20) as any;
+    
+    // Apply product_id filter correctly
+    if (productId === 'general') {
+      query = query.is('product_id', null);
+    } else {
+      query = query.eq('product_id', productId);
+    }
+    
+    const { data, error } = await query;
+      
+    // Reverse messages so oldest is first (for chronological display in chat)
+    messages = data ? data.reverse() : [];
+    messagesError = error;
+  } else {
+    // For conversation list, only load recent messages for preview building
+    const { data, error } = await supabase
+      .from('messages_with_details' as any)
+      .select('*')
+      .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+      .order('created_at', { ascending: false })
+      .limit(50) as any; // Reduced from 100 to 50 for better performance
+      
+    messages = data; // Keep in descending order for conversation list building
+    messagesError = error;
+  }
   
   if (messagesError) {
     console.error('Error fetching messages:', messagesError);
@@ -78,11 +115,15 @@ export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, 
     const parts = conversationParam.split('__');
     const [otherUserId, productId] = parts.length >= 2 ? parts : [parts[0], 'general'];
     
-    // Use the database function to mark messages as read
-    await supabase.rpc('mark_messages_as_read' as any, {
-      p_sender_id: otherUserId,
-      p_product_id: productId === 'general' ? null : productId
-    });
+    // Use the database function to mark messages as read - fix UUID handling
+    try {
+      await supabase.rpc('mark_messages_as_read' as any, {
+        p_sender_id: otherUserId,
+        p_product_id: productId === 'general' ? null : productId
+      });
+    } catch (error: any) {
+      // Mark as read failed (non-critical) - fail silently
+    }
   }
 
   // Count unread messages for the user
@@ -97,7 +138,11 @@ export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, 
     conversationUser,
     conversationProduct,
     conversationParam,
-    unreadCount: unreadCount || 0
+    unreadCount: unreadCount || 0,
+    isPaginated: true,
+    hasSpecificConversation: !!conversationParam,
+    messageLimit: conversationParam ? 20 : 50, // Track pagination limit for client-side loading
+    loadTime: Date.now() // Performance tracking
   };
 };
 

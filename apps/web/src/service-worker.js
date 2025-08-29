@@ -8,10 +8,7 @@ const RUNTIME_CACHE = `runtime-${version}`;
 // Files to cache on install
 const CACHE_FILES = [
   ...build, // SvelteKit build files
-  ...files, // Static files from /static
-  '/offline', // Offline fallback page
-  '/placeholder-product.svg',
-  '/favicon.png'
+  ...files  // Static files from /static
 ];
 
 // Install event - cache essential files
@@ -56,10 +53,26 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch event - DISABLED to fix image loading issues
+// Fetch event - optimized for performance
 self.addEventListener('fetch', event => {
-  // DISABLED - let browser handle all fetches normally
-  return;
+  const { request } = event;
+  const url = new URL(request.url);
+  
+  // Skip non-GET requests
+  if (request.method !== 'GET') return;
+  
+  // Skip API and auth requests
+  if (url.pathname.startsWith('/api/') || url.pathname.startsWith('/auth/')) return;
+  
+  // Let browser handle navigation normally to prevent delays
+  if (request.mode === 'navigate') return;
+  
+  // Only handle static assets that are actually cached
+  if (isStaticAsset(url)) {
+    event.respondWith(
+      caches.match(request).then(cached => cached || fetch(request))
+    );
+  }
 });
 
 async function handleFetch(request) {

@@ -16,6 +16,7 @@
     priority?: boolean;
     index?: number;
     totalCount?: number;
+    favoritesState?: { favoriteCounts: Record<string, number> };
     translations?: {
       size?: string;
       currency?: string;
@@ -43,6 +44,7 @@
     priority = false,
     index = 0,
     totalCount = 1,
+    favoritesState,
     translations = {
       size: 'Size',
       currency: '$',
@@ -104,6 +106,7 @@
     <FavoriteButton 
       {product}
       {favorited}
+      {favoritesState}
       onFavorite={() => onFavorite?.(product.id)}
       addToFavoritesText={translations.addToFavorites}
       removeFromFavoritesText={translations.removeFromFavorites}

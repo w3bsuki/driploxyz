@@ -24,13 +24,7 @@
   
   const languages = [
     { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'bg', name: 'Български', flag: '🇧🇬' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'fr', name: 'Français', flag: '🇫🇷' },
-    { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
-    { code: 'it', name: 'Italiano', flag: '🇮🇹' },
-    { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-    { code: 'ua', name: 'Українська', flag: '🇺🇦' }
+    { code: 'bg', name: 'Български', flag: '🇧🇬' }
   ];
   
   const countryNames: Record<string, string> = {
@@ -170,26 +164,40 @@
     if (showLanguageSelector && selectedLocale || pendingLang) {
       const targetLang = pendingLang || selectedLocale;
       try {
-        // Simple approach: Set cookie and refresh
+        // Set cookie first
         document.cookie = `locale=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
         
         // Clear the pending language switch
         sessionStorage.removeItem('pendingLanguageSwitch');
         
-        // Close banner and refresh to apply language
+        // Close banner
         showBanner = false;
         showLanguageSelector = false;
         
-        // Refresh to apply the language change
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
+        // Redirect to proper URL with language prefix
+        const currentUrl = new URL(window.location.href);
+        let newPath = currentUrl.pathname;
+        
+        // Remove existing locale prefix if any
+        newPath = newPath.replace(/^\/(?:bg|uk)(?=\/|$)/, '');
+        
+        // Add new locale prefix (bg uses no prefix, en uses /uk)
+        if (targetLang === 'bg') {
+          newPath = newPath || '/';
+        } else if (targetLang === 'en') {
+          newPath = '/uk' + (newPath === '/' ? '' : newPath);
+        }
+        
+        // Build final URL
+        const finalUrl = `${currentUrl.protocol}//${currentUrl.host}${newPath}${currentUrl.search}${currentUrl.hash}`;
+        
+        // Navigate to the new URL
+        window.location.href = finalUrl;
         
       } catch (e) {
-        // Fallback: Set the locale cookie directly
+        // Fallback: Set the locale cookie directly and refresh
         document.cookie = `locale=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
         
-        // Force reload to apply language
         setTimeout(() => {
           window.location.reload();
         }, 100);
@@ -227,26 +235,41 @@
     if (preferences.functional && (showLanguageSelector && selectedLocale || pendingLang)) {
       const targetLang = pendingLang || selectedLocale;
       try {
-        // Use the proper locale manager now that functional cookies are enabled
-        await localeManager.setLocale(targetLang, true); // true = skip reload for instant switching
+        // Set cookie first
+        document.cookie = `locale=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
         
         // Clear the pending language switch
         sessionStorage.removeItem('pendingLanguageSwitch');
-        
-        // Trigger a manual UI update
-        const { invalidateAll } = await import('$app/navigation');
-        await invalidateAll();
         
         // Close banner
         showBanner = false;
         showPreferences = false;
         showLanguageSelector = false;
         
+        // Redirect to proper URL with language prefix
+        const currentUrl = new URL(window.location.href);
+        let newPath = currentUrl.pathname;
+        
+        // Remove existing locale prefix if any
+        newPath = newPath.replace(/^\/(?:bg|uk)(?=\/|$)/, '');
+        
+        // Add new locale prefix (bg uses no prefix, en uses /uk)
+        if (targetLang === 'bg') {
+          newPath = newPath || '/';
+        } else if (targetLang === 'en') {
+          newPath = '/uk' + (newPath === '/' ? '' : newPath);
+        }
+        
+        // Build final URL
+        const finalUrl = `${currentUrl.protocol}//${currentUrl.host}${newPath}${currentUrl.search}${currentUrl.hash}`;
+        
+        // Navigate to the new URL
+        window.location.href = finalUrl;
+        
       } catch (e) {
-        // Fallback: Set the locale cookie directly
+        // Fallback: Set the locale cookie directly and reload
         document.cookie = `locale=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
         
-        // Force reload to apply language
         setTimeout(() => {
           window.location.reload();
         }, 100);
@@ -261,12 +284,29 @@
   async function saveLanguage() {
     if (selectedLocale) {
       try {
-        // Simple approach: Set cookie and refresh
+        // Set cookie first
         document.cookie = `locale=${selectedLocale}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
         
-        setTimeout(() => {
-          window.location.reload();
-        }, 100);
+        // Redirect to proper URL with language prefix
+        const currentUrl = new URL(window.location.href);
+        let newPath = currentUrl.pathname;
+        
+        // Remove existing locale prefix if any
+        newPath = newPath.replace(/^\/(?:bg|uk)(?=\/|$)/, '');
+        
+        // Add new locale prefix (bg uses no prefix, en uses /uk)
+        if (selectedLocale === 'bg') {
+          newPath = newPath || '/';
+        } else if (selectedLocale === 'en') {
+          newPath = '/uk' + (newPath === '/' ? '' : newPath);
+        }
+        
+        // Build final URL
+        const finalUrl = `${currentUrl.protocol}//${currentUrl.host}${newPath}${currentUrl.search}${currentUrl.hash}`;
+        
+        // Navigate to the new URL
+        window.location.href = finalUrl;
+        
       } catch (e) {
         // Fallback: Force refresh anyway
         window.location.reload();
@@ -312,18 +352,18 @@
               </p>
             </div>
             
-            <div class="grid grid-cols-4 sm:grid-cols-8 gap-2 max-w-2xl mx-auto">
+            <div class="flex justify-center gap-3 max-w-sm mx-auto">
               {#each languages as lang}
                 <button
                   onclick={() => selectedLocale = lang.code}
-                  class="p-2 rounded-lg border-2 transition-colors transition-transform hover:scale-105
+                  class="flex-1 min-h-[44px] p-3 rounded-lg border-2 transition-all duration-200 hover:scale-105
                     {selectedLocale === lang.code 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 bg-white hover:border-gray-300'}"
+                      ? 'border-blue-500 bg-blue-50 shadow-md' 
+                      : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'}"
                   title={lang.name}
                 >
-                  <div class="text-2xl">{lang.flag}</div>
-                  <div class="text-xs mt-1 font-medium">{lang.code.toUpperCase()}</div>
+                  <div class="text-2xl leading-none">{lang.flag}</div>
+                  <div class="text-xs mt-1 font-medium text-gray-700">{lang.code.toUpperCase()}</div>
                 </button>
               {/each}
             </div>
@@ -331,23 +371,23 @@
         {/if}
         
         <!-- Cookie Consent Section -->
-        <div class="p-6">
-          <div class="flex flex-col lg:flex-row gap-6">
+        <div class="p-4 sm:p-6">
+          <div class="flex flex-col lg:flex-row gap-4 lg:gap-6">
             
             <!-- Content -->
             <div class="flex-1">
-              <div class="flex items-start gap-4">
+              <div class="flex items-start gap-3 sm:gap-4">
                 <div class="flex-shrink-0">
-                  <div class="w-12 h-12 bg-gradient-to-br from-black to-gray-700 rounded-xl flex items-center justify-center shadow-lg">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-black to-gray-700 rounded-xl flex items-center justify-center shadow-lg">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                             d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                   </div>
                 </div>
                 
-                <div class="flex-1">
-                  <h2 class="text-xl font-bold text-gray-900 mb-2">
+                <div class="flex-1 min-w-0">
+                  <h2 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">
                     Privacy & Cookie Settings
                   </h2>
                   <p class="text-sm text-gray-600 leading-relaxed">
@@ -452,19 +492,19 @@
             </div>
             
             <!-- Actions -->
-            <div class="flex flex-row lg:flex-col gap-2 lg:w-64">
+            <div class="flex flex-col sm:flex-row lg:flex-col gap-2 lg:w-64">
               <button
                 onclick={acceptAll}
-                class="flex-1 lg:flex-none px-5 py-3 bg-black text-white rounded-xl font-semibold 
-                       hover:bg-gray-800 transition-colors transition-transform hover:scale-[1.02] shadow-lg text-sm"
+                class="min-h-[44px] px-4 py-3 bg-black text-white rounded-xl font-semibold 
+                       hover:bg-gray-800 transition-all hover:scale-[1.02] shadow-lg text-sm"
               >
                 Accept All
               </button>
               
               <button
                 onclick={acceptNecessary}
-                class="flex-1 lg:flex-none px-5 py-3 bg-white text-gray-700 rounded-xl font-semibold 
-                       border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors text-sm"
+                class="min-h-[44px] px-4 py-3 bg-white text-gray-700 rounded-xl font-semibold 
+                       border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all text-sm"
               >
                 Essential Only
               </button>
@@ -472,16 +512,16 @@
               {#if !showPreferences}
                 <button
                   onclick={togglePreferences}
-                  class="flex-1 lg:flex-none px-5 py-3 text-gray-600 hover:text-gray-900 
-                         font-semibold transition-colors text-sm"
+                  class="min-h-[44px] px-4 py-3 text-gray-600 hover:text-gray-900 
+                         font-semibold transition-colors text-sm hover:bg-gray-50 rounded-xl"
                 >
                   Customize
                 </button>
               {:else}
                 <button
                   onclick={savePreferences}
-                  class="flex-1 lg:flex-none px-5 py-3 bg-gradient-to-r from-blue-600 to-purple-600 
-                         text-white rounded-xl font-semibold hover:shadow-lg transition-colors text-sm"
+                  class="min-h-[44px] px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 
+                         text-white rounded-xl font-semibold hover:shadow-lg transition-all text-sm"
                 >
                   Save My Choices
                 </button>

@@ -28,6 +28,9 @@
   let isFavorited = $state(data.isFavorited || false);
   let showFullDescription = $state(false);
   let showBundleBuilder = $state(false);
+  let isLiking = $state(false);
+  let showShareMenu = $state(false);
+  let viewCount = $state(data.product.view_count || 0);
   
   // Create Supabase client for bundle functionality
   const supabase = createBrowserSupabaseClient();
@@ -148,11 +151,20 @@
     const now = new Date();
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
     
-    if (diffInSeconds < 60) return 'Just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-    return `${Math.floor(diffInSeconds / 604800)}w ago`;
+    // Real Instagram-style time formatting
+    if (diffInSeconds < 30) return 'now';
+    if (diffInSeconds < 60) return `${diffInSeconds}s`;
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d`;
+    if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 604800)}w`;
+    
+    // For older posts, show actual date
+    const months = Math.floor(diffInSeconds / 2592000);
+    if (months < 12) return `${months}mo`;
+    
+    // Show actual date for posts older than 1 year
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   }
   
   async function handleFavorite() {
@@ -161,6 +173,11 @@
       return;
     }
     
+    // Instagram-style immediate feedback
+    isLiking = true;
+    const wasLiked = isFavorited;
+    isFavorited = !isFavorited;
+    
     try {
       const response = await fetch(`/api/favorites/${data.product.id}`, {
         method: 'POST'
@@ -168,12 +185,16 @@
       
       if (!response.ok) {
         throw new Error('Failed to update favorite');
+        isFavorited = wasLiked; // Revert on error
+      } else {
+        const result = await response.json();
+        isFavorited = result.favorited;
       }
-      
-      const result = await response.json();
-      isFavorited = result.favorited;
     } catch (error) {
       console.error('Error updating favorite:', error);
+      isFavorited = wasLiked; // Revert on error
+    } finally {
+      isLiking = false;
     }
   }
   
@@ -232,7 +253,30 @@
         url: window.location.href
       });
     } else {
+      // Show Instagram-style share menu
+      showShareMenu = true;
       navigator.clipboard.writeText(window.location.href);
+      // Auto-hide after 2 seconds
+      setTimeout(() => {
+        showShareMenu = false;
+      }, 2000);
+    }
+  }
+  
+  function handleDoubleTap(event: Event) {
+    // Instagram-style double-tap to like
+    event.preventDefault();
+    if (!isFavorited) {
+      handleFavorite();
+      // Show heart animation
+      const heart = document.createElement('div');
+      heart.innerHTML = '❤️';
+      heart.className = 'fixed pointer-events-none text-6xl z-50 animate-ping';
+      heart.style.left = '50%';
+      heart.style.top = '50%';
+      heart.style.transform = 'translate(-50%, -50%)';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 1000);
     }
   }
 </script>
@@ -257,65 +301,63 @@
   ].filter(Boolean)}
 />
 
-<div class="min-h-screen bg-gray-50">
-  <!-- Compact Sticky Breadcrumb -->
-  <div class="bg-white border-b border-gray-200 sticky top-0 z-20">
-    <div class="max-w-7xl mx-auto px-3 py-2">
-      <nav class="flex items-center gap-1.5 text-xs text-gray-500">
-        <a href="/" class="hover:text-gray-900 transition-colors">Home</a>
-        <span class="text-gray-400">/</span>
-        {#if data.product.category_name}
-          <a href="/search?category={data.product.category_name}" class="hover:text-gray-900 transition-colors">
-            {getCategoryTranslation(data.product.category_name)}
-          </a>
-          <span class="text-gray-400">/</span>
-        {/if}
-        <span class="text-gray-700 font-medium truncate max-w-32">{data.product.title}</span>
+<!-- Instagram-style App -->
+<div class="min-h-screen bg-gray-100">
+  <!-- Instagram-style Header -->
+  <div class="bg-white border-b border-gray-200 sticky top-0 z-20 shadow-sm">
+    <div class="max-w-md mx-auto px-4 py-3">
+      <nav class="flex items-center gap-3">
+        <button onclick={() => history.back()} class="p-1 -m-1 hover:text-gray-900 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <span class="flex-1 text-center font-semibold text-gray-900 truncate">{data.product.title}</span>
+        <button onclick={handleShare} class="p-1 -m-1 hover:text-gray-900 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          </svg>
+        </button>
       </nav>
     </div>
   </div>
 
-  <div class="max-w-7xl mx-auto pb-24 lg:pb-8">
-    <div class="lg:grid lg:grid-cols-2 lg:gap-6 lg:p-6">
-      <!-- Left Column: Social Media Style Product Card -->
-      <div class="bg-white lg:rounded-2xl lg:shadow-sm overflow-hidden">
-        <!-- Seller Header (Instagram-style) -->
-        <div class="border-b border-gray-100">
-          <a 
-            href="/profile/{data.product.seller_username || data.product.seller_id}" 
-            class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
-          >
-            <Avatar 
-              src={data.product.seller_avatar} 
-              alt={data.product.seller_name}
-              size="sm"
-              fallback={data.product.seller_name?.[0]?.toUpperCase() || 'S'}
-            />
-            <div class="flex-1">
+  <!-- Instagram-style Post Feed -->
+  <div class="max-w-md mx-auto pb-20">
+    <!-- Social Post Card -->
+    <div class="bg-white">
+      
+      <!-- Instagram-style Seller Header -->
+      <div class="p-3">
+        <a href="/profile/{data.product.seller_username || data.product.seller_id}" class="flex items-center gap-3">
+          <Avatar 
+            src={data.product.seller_avatar} 
+            alt={data.product.seller_name}
+            size="sm"
+            fallback={data.product.seller_name?.[0]?.toUpperCase() || 'S'}
+          />
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
               <p class="text-sm font-semibold text-gray-900">{data.product.seller_name}</p>
-              <div class="flex items-center gap-2 text-xs text-gray-500">
-                <span>{data.sellerProducts?.length || 0} items</span>
-                {#if data.product.seller_rating}
-                  <span>•</span>
-                  <div class="flex items-center gap-0.5">
-                    <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                    </svg>
-                    <span>{data.product.seller_rating.toFixed(1)}</span>
-                  </div>
-                {/if}
-                <span>•</span>
-                <span>{getRelativeTime(data.product.created_at)}</span>
-              </div>
+              {#if data.product.seller_rating >= 4.5}
+                <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.238.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                </svg>
+              {/if}
             </div>
-            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            <p class="text-xs text-gray-500">{data.product.location || 'Online'} • {getRelativeTime(data.product.created_at)}</p>
+          </div>
+          <button class="text-gray-500 hover:text-gray-700 p-1 -m-1">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"/>
             </svg>
-          </a>
-        </div>
+          </button>
+        </a>
+      </div>
 
-        <!-- Product Image -->
-        <div class="aspect-square p-4 bg-gray-50">
+      <!-- Instagram-style Framed Image -->
+      <div class="bg-white p-4" ondblclick={handleDoubleTap}>
+        <div class="aspect-square bg-black relative rounded-lg overflow-hidden shadow-lg">
           <ProductGallery
             images={productImages}
             title={data.product.title}
@@ -328,294 +370,188 @@
               fair: i18n.product_fairCondition()
             }}
           />
-        </div>
-
-        <!-- Action Bar (Instagram-style) -->
-        <div class="border-t border-gray-100">
-          <div class="flex items-center justify-between px-4 py-3">
-            <div class="flex items-center gap-3">
-              <button 
-                onclick={handleFavorite}
-                disabled={!data.user}
-                class="hover:scale-110 transition-transform"
-                aria-label="{isFavorited ? 'Remove from favorites' : 'Add to favorites'}"
-              >
-                <svg 
-                  class="w-6 h-6 {isFavorited ? 'text-red-500' : 'text-gray-700 hover:text-red-500'} transition-colors" 
-                  fill={isFavorited ? 'currentColor' : 'none'} 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                </svg>
-              </button>
-              <button 
-                onclick={handleShare}
-                class="hover:scale-110 transition-transform" 
-                aria-label="Share"
-              >
-                <svg class="w-6 h-6 text-gray-700 hover:text-gray-900 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a3 3 0 10-4.056-4.424M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-              </button>
+          
+          <!-- Price Tag Overlay -->
+          <div class="absolute bottom-3 right-3 bg-black/80 backdrop-blur-sm text-white px-2.5 py-1 rounded-full text-xs font-bold">
+            {formatPrice(data.product.price)}
+          </div>
+          
+          <!-- Status Badge -->
+          {#if data.product.is_sold}
+            <div class="absolute top-3 left-3 bg-red-500 text-white px-2.5 py-1 rounded-full text-xs font-semibold">
+              SOLD
             </div>
-            <span class="text-xs text-gray-500">{data.product.view_count || 0} views</span>
-          </div>
-        </div>
-
-        <!-- Title and Price (Prominent) -->
-        <div class="px-4 pb-3 border-b border-gray-100">
-          <h1 class="text-lg font-bold text-gray-900 mb-1">{data.product.title}</h1>
-          <div class="flex items-center justify-between">
-            <p class="text-2xl font-black text-gray-900">{formatPrice(data.product.price)}</p>
-            {#if data.product.is_sold}
-              <span class="px-3 py-1 bg-red-100 text-red-600 rounded-full text-xs font-semibold">SOLD</span>
-            {:else}
-              <span class="px-3 py-1 bg-green-100 text-green-600 rounded-full text-xs font-semibold">Available</span>
-            {/if}
-          </div>
-        </div>
-
-        <!-- Product Details Grid -->
-        <div class="px-4 py-3">
-          <div class="grid grid-cols-2 gap-3">
-            {#if data.product.brand}
-              <div class="bg-gray-50 rounded-lg px-3 py-2">
-                <p class="text-xs text-gray-500 mb-0.5">Brand</p>
-                <p class="text-sm font-semibold text-gray-900">{data.product.brand}</p>
-              </div>
-            {/if}
-            {#if data.product.size}
-              <div class="bg-gray-50 rounded-lg px-3 py-2">
-                <p class="text-xs text-gray-500 mb-0.5">Size</p>
-                <p class="text-sm font-semibold text-gray-900">{data.product.size}</p>
-              </div>
-            {/if}
-            <div class="bg-gray-50 rounded-lg px-3 py-2">
-              <p class="text-xs text-gray-500 mb-0.5">Condition</p>
-              <p class="text-sm font-semibold text-gray-900">{conditionLabel}</p>
+          {:else}
+            <div class="absolute top-3 left-3 bg-green-500 text-white px-2.5 py-1 rounded-full text-xs font-semibold">
+              AVAILABLE
             </div>
-            {#if data.product.color}
-              <div class="bg-gray-50 rounded-lg px-3 py-2">
-                <p class="text-xs text-gray-500 mb-0.5">Color</p>
-                <p class="text-sm font-semibold text-gray-900">{data.product.color}</p>
-              </div>
-            {/if}
-            <div class="bg-gray-50 rounded-lg px-3 py-2">
-              <p class="text-xs text-gray-500 mb-0.5">Category</p>
-              <p class="text-sm font-semibold text-gray-900">{getCategoryTranslation(data.product.category_name)}</p>
-            </div>
-            {#if data.product.location}
-              <div class="bg-gray-50 rounded-lg px-3 py-2">
-                <p class="text-xs text-gray-500 mb-0.5">Location</p>
-                <p class="text-sm font-semibold text-gray-900">{data.product.location}</p>
-              </div>
-            {/if}
-          </div>
-        </div>
-
-        <!-- Description -->
-        {#if data.product.description}
-          <div class="px-4 py-3 border-t border-gray-100">
-            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{data.product.description}</p>
-          </div>
-        {/if}
-
-        <!-- Mobile Buy Button -->
-        <div class="lg:hidden sticky bottom-0 bg-white border-t border-gray-200 p-3">
-          {#if !data.product.is_sold && data.product.seller_id !== data.user?.id}
-            <button 
-              onclick={handleBuyNow}
-              class="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors"
-            >
-              {i18n.product_buyNow()} • {formatPrice(data.product.price)}
-            </button>
-          {:else if data.product.is_sold}
-            <button 
-              disabled
-              class="w-full bg-gray-200 text-gray-500 py-3 rounded-xl font-semibold cursor-not-allowed"
-            >
-              {i18n.product_sold()}
-            </button>
           {/if}
         </div>
       </div>
 
-      <!-- Right Column: Actions and Recommendations (Desktop) -->
-      <div class="px-3 lg:px-0 mt-4 lg:mt-0">
-        <!-- Desktop Buy Section -->
-        <div class="hidden lg:block bg-white rounded-2xl shadow-sm p-4 mb-4">
-          <div class="flex items-center justify-between mb-3">
-            <div>
-              <p class="text-sm text-gray-500">Price</p>
-              <p class="text-3xl font-black text-gray-900">{formatPrice(data.product.price)}</p>
-            </div>
-            {#if data.product.is_sold}
-              <span class="px-4 py-2 bg-red-100 text-red-600 rounded-full text-sm font-semibold">SOLD</span>
-            {:else}
-              <span class="px-4 py-2 bg-green-100 text-green-600 rounded-full text-sm font-semibold">Available</span>
-            {/if}
+      <!-- Instagram-style Action Bar -->
+      <div class="p-3">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-4">
+            <button 
+              onclick={handleFavorite}
+              disabled={!data.user || isLiking}
+              class="p-1 -m-1 transition-all duration-200 {isLiking ? 'scale-125' : 'active:scale-95 hover:scale-105'}"
+              aria-label="{isFavorited ? 'Remove from favorites' : 'Add to favorites'}"
+            >
+              <svg 
+                class="w-7 h-7 {isFavorited ? 'text-red-500 drop-shadow-sm' : 'text-gray-900'} transition-all duration-200 {isLiking ? 'animate-pulse' : ''}" 
+                fill={isFavorited ? 'currentColor' : 'none'} 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+                stroke-width="{isFavorited ? '0' : '2'}"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+              </svg>
+            </button>
+            
+            <button onclick={handleMessage} class="p-1 -m-1 transition-all duration-200 active:scale-95 hover:scale-105 hover:rotate-12">
+              <svg class="w-7 h-7 text-gray-900 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+              </svg>
+            </button>
+            
+            <button onclick={handleShare} class="p-1 -m-1 transition-all duration-200 active:scale-95 hover:scale-105 hover:-rotate-12 relative">
+              <svg class="w-7 h-7 text-gray-900 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+              </svg>
+              {#if showShareMenu}
+                <div class="absolute -top-8 -left-8 bg-black text-white text-xs px-2 py-1 rounded-full animate-bounce">
+                  Copied!
+                </div>
+              {/if}
+            </button>
           </div>
-          {#if !data.product.is_sold && data.product.seller_id !== data.user?.id}
-            <button 
-              onclick={handleBuyNow}
-              class="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors mb-2"
-            >
-              {i18n.product_buyNow()}
-            </button>
-            <button 
-              onclick={handleMakeOffer}
-              class="w-full bg-white text-black border border-gray-300 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
-            >
-              {i18n.product_makeOffer()}
-            </button>
-          {:else if data.product.is_sold}
-            <button 
-              disabled
-              class="w-full bg-gray-200 text-gray-500 py-3 rounded-xl font-semibold cursor-not-allowed"
-            >
-              {i18n.product_sold()}
+          
+          <!-- Quick Buy Button -->
+          {#if !data.product.is_sold}
+            <button onclick={handleBuyNow} class="px-4 py-1 bg-blue-500 text-white text-sm font-semibold rounded-full hover:bg-blue-600 transition-colors">
+              Buy Now
             </button>
           {/if}
         </div>
-        <!-- Similar Products (moved here for desktop) -->
-        {#if data.similarProducts && data.similarProducts.length > 0}
-          <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 mb-4">
-            <div class="flex justify-between items-center mb-3">
-              <h2 class="font-semibold text-base">{i18n.product_youMightLike()}</h2>
-              {#if data.similarProducts.length > 3}
-                <span class="text-xs text-gray-500">{data.similarProducts.length} items</span>
-              {/if}
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-              {#each data.similarProducts.slice(0, 4) as product}
-                <a 
-                  href={getProductUrl(product)}
-                  class="bg-gray-50 rounded-lg p-2 hover:bg-gray-100 transition-colors"
-                >
-                  <div class="aspect-square rounded overflow-hidden mb-2">
-                    <img 
-                      src={product.images?.[0]?.image_url || '/placeholder-product.svg'} 
-                      alt={product.title}
-                      class="w-full h-full object-cover"
-                    />
-                  </div>
-                  <p class="text-xs font-medium text-gray-900 truncate">{product.title}</p>
-                  <p class="text-xs font-bold text-gray-900">{formatPrice(product.price)}</p>
-                </a>
-              {/each}
-            </div>
-          </div>
-        {/if}
+        
+        <!-- Likes count with Instagram-style animation -->
+        <p class="text-sm font-semibold text-gray-900 mb-2 transition-all duration-300">
+          {#if viewCount > 0}
+            <span class="hover:underline cursor-pointer">{viewCount.toLocaleString()} {viewCount === 1 ? 'like' : 'likes'}</span>
+          {:else}
+            Be the first to like this
+          {/if}
+        </p>
+        
+        <!-- Caption -->
+        <div class="text-sm text-gray-900 leading-relaxed">
+          <span class="font-semibold">{data.product.seller_name}</span>
+          <span class="ml-2">{data.product.title}</span>
+          {#if data.product.description}
+            <p class="text-gray-700 mt-1 text-sm leading-relaxed">{data.product.description}</p>
+          {/if}
+        </div>
+        
+        <!-- Product details as hashtags with Instagram-style interactions -->
+        <div class="flex flex-wrap gap-1 mt-3 text-sm">
+          {#if data.product.brand}
+            <span class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer transition-all active:scale-95">#{data.product.brand.toLowerCase().replace(/\s+/g, '')}</span>
+          {/if}
+          {#if data.product.size}
+            <span class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer transition-all active:scale-95">#{data.product.size.toLowerCase().replace(/\s+/g, '')}</span>
+          {/if}
+          <span class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer transition-all active:scale-95">#{conditionLabel.toLowerCase().replace(/\s+/g, '')}</span>
+          <span class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer transition-all active:scale-95">#{getCategoryTranslation(data.product.category_name).toLowerCase().replace(/\s+/g, '')}</span>
+          <span class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer transition-all active:scale-95">#vintage</span>
+          <span class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer transition-all active:scale-95">#thrifted</span>
+          <span class="text-blue-600 hover:text-blue-800 hover:underline cursor-pointer transition-all active:scale-95">#sustainable</span>
+        </div>
+        
+        <!-- Time since posted - Real Instagram style -->
+        <p class="text-xs text-gray-400 mt-2 font-normal">{getRelativeTime(data.product.created_at)}</p>
       </div>
     </div>
     
-    <!-- Mobile Similar products section - Horizontal scroll -->
-    <div class="lg:hidden">
-      {#if data.similarProducts && data.similarProducts.length > 0}
-        <div class="bg-white border-t border-gray-200 px-4 py-3">
-          <div class="flex justify-between items-center mb-3">
-            <h2 class="font-semibold text-base">{i18n.product_youMightLike()}</h2>
-            {#if data.similarProducts.length > 4}
-              <span class="text-xs text-gray-500">{data.similarProducts.length} items</span>
-            {/if}
-          </div>
-          <div class="flex gap-3 overflow-x-auto scrollbar-hide -mx-2 px-2 pb-1">
-            {#each data.similarProducts as product}
-              <div class="w-40 shrink-0">
-                <ProductCard 
-                  product={{
-                    ...product,
-                    images: (product.images || []).map(img => img.image_url),
-                    sellerName: product.seller_name,
-                    sellerRating: product.seller_rating,
-                    sellerAvatar: product.seller_avatar
-                  }}
-                  onclick={() => goto(getProductUrl(product))}
-                  compact={true}
-                  translations={{
-                    size: i18n.product_size(),
-                    newSeller: i18n.trending_newSeller(),
-                    unknownSeller: i18n.seller_unknown(),
-                    currency: i18n.common_currency(),
-                    addToFavorites: i18n.product_addToFavorites(),
-                    formatPrice: (price: number) => formatPrice(price),
-                    new: i18n.product_new(),
-                    likeNew: i18n.product_likeNew(),
-                    good: i18n.product_good(),
-                    fair: i18n.product_fair(),
-                    categoryTranslation: getCategoryTranslation
-                  }}
+    <!-- Similar Products - Instagram Stories Style -->
+    {#if data.similarProducts && data.similarProducts.length > 0}
+      <div class="bg-white mt-1 py-4 border-t border-gray-100">
+        <div class="px-3 mb-3">
+          <h3 class="font-semibold text-sm text-gray-900">You might also like</h3>
+        </div>
+        <div class="flex gap-4 overflow-x-auto scrollbar-hide px-3">
+          {#each data.similarProducts.slice(0, 10) as product}
+            <a href={getProductUrl(product)} class="shrink-0 transition-transform active:scale-95 hover:scale-105">
+              <div class="w-20 h-20 rounded-2xl border-2 border-gray-200 overflow-hidden mb-2 hover:border-blue-300 hover:shadow-lg transition-all duration-200">
+                <img 
+                  src={product.images?.[0]?.image_url || '/placeholder-product.svg'} 
+                  alt={product.title}
+                  class="w-full h-full object-cover hover:scale-110 transition-transform duration-200"
                 />
               </div>
-            {/each}
-          </div>
+              <p class="text-xs text-center text-gray-600 font-medium w-20 truncate">{formatPrice(product.price)}</p>
+            </a>
+          {/each}
         </div>
-      {/if}
-      
-      <!-- More from seller section - Horizontal scroll -->
-      {#if data.sellerProducts && data.sellerProducts.length > 0}
-        <div class="bg-white border-t border-gray-200 px-4 py-3">
-          <div class="flex justify-between items-center mb-3">
-            <h2 class="font-semibold text-base">More from {data.product.seller_name}</h2>
-            <a href="/profile/{data.product.seller_username || data.product.seller_id}" class="text-xs text-gray-600 font-medium hover:text-gray-900">
-              View all →
+      </div>
+    {/if}
+    
+    <!-- More from Seller - Instagram Stories Style -->
+    {#if data.sellerProducts && data.sellerProducts.length > 0}
+      <div class="bg-white mt-1 py-4 border-t border-gray-100">
+        <div class="px-3 mb-3">
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold text-sm text-gray-900">More from {data.product.seller_name}</h3>
+            <a href="/profile/{data.product.seller_username || data.product.seller_id}" class="text-xs text-blue-600 font-medium hover:text-blue-700">
+              View all
             </a>
           </div>
-          <div class="flex gap-3 overflow-x-auto scrollbar-hide -mx-2 px-2 pb-1">
-            {#each data.sellerProducts as product}
-              <div class="w-40 shrink-0">
-                <ProductCard 
-                  product={{
-                    ...product,
-                    images: (product.images || []).map(img => img.image_url),
-                    sellerName: product.seller_name,
-                    sellerRating: product.seller_rating,
-                    sellerAvatar: product.seller_avatar
-                  }}
-                  onclick={() => goto(getProductUrl(product))}
-                  compact={true}
-                  translations={{
-                    size: i18n.product_size(),
-                    newSeller: i18n.trending_newSeller(),
-                    unknownSeller: i18n.seller_unknown(),
-                    currency: i18n.common_currency(),
-                    addToFavorites: i18n.product_addToFavorites(),
-                    formatPrice: (price: number) => formatPrice(price),
-                    new: i18n.product_new(),
-                    likeNew: i18n.product_likeNew(),
-                    good: i18n.product_good(),
-                    fair: i18n.product_fair(),
-                    categoryTranslation: getCategoryTranslation
-                  }}
+        </div>
+        <div class="flex gap-4 overflow-x-auto scrollbar-hide px-3">
+          {#each data.sellerProducts.slice(0, 10) as product}
+            <a href={getProductUrl(product)} class="shrink-0 transition-transform active:scale-95 hover:scale-105">
+              <div class="w-20 h-20 rounded-2xl border-2 border-gray-200 overflow-hidden mb-2 hover:border-blue-300 hover:shadow-lg transition-all duration-200">
+                <img 
+                  src={product.images?.[0]?.image_url || '/placeholder-product.svg'} 
+                  alt={product.title}
+                  class="w-full h-full object-cover hover:scale-110 transition-transform duration-200"
                 />
               </div>
-            {/each}
-          </div>
+              <p class="text-xs text-center text-gray-600 font-medium w-20 truncate">{formatPrice(product.price)}</p>
+            </a>
+          {/each}
         </div>
-      {/if}
-    </div>
+      </div>
+    {/if}
   </div>
   
-  <!-- Mobile bottom action bar - Fixed at bottom -->
-  <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-3 py-2.5 z-30 safe-area-bottom">
-    <div class="flex gap-2">
-      <Button 
-        variant="outline" 
-        onclick={handleMakeOffer}
-        class="flex-1"
-        size="md"
-      >
-        {i18n.product_makeOffer()}
-      </Button>
-      <Button 
-        variant="primary" 
-        onclick={handleBuyNow}
-        class="flex-1"
-        size="md"
-      >
-        {i18n.product_buyNow()}
-      </Button>
+  <!-- Instagram-style Bottom Bar -->
+  <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-30 safe-area-bottom">
+    <div class="max-w-md mx-auto px-4 py-3">
+      {#if !data.product.is_sold && data.product.seller_id !== data.user?.id}
+        <div class="flex gap-3">
+          <button 
+            onclick={handleMakeOffer}
+            class="flex-1 min-h-[44px] bg-gray-100 text-gray-900 rounded-xl font-semibold hover:bg-gray-200 hover:scale-105 transition-all active:scale-95 shadow-md hover:shadow-lg"
+          >
+            💬 Make Offer
+          </button>
+          <button 
+            onclick={handleBuyNow}
+            class="flex-1 min-h-[44px] bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-blue-700 hover:scale-105 transition-all shadow-lg hover:shadow-xl active:scale-95"
+          >
+            🛍️ Buy {formatPrice(data.product.price)}
+          </button>
+        </div>
+      {:else if data.product.is_sold}
+        <button 
+          disabled
+          class="w-full min-h-[44px] bg-gray-100 text-gray-500 rounded-xl font-semibold cursor-not-allowed"
+        >
+          Sold Out
+        </button>
+      {/if}
     </div>
   </div>
 </div>
