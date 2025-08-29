@@ -146,3 +146,38 @@ All core social features are production-ready:
 **All social engagement features are fully functional and tested.** The architecture maintains clean patterns with no over-engineering. Database migrations are applied, session handling is fixed, and counts are auto-maintained.
 
 **Time to test live!** 🔥
+
+---
+
+messages_updated_audit
+
+Issue observed
+- Console: `POST https://www.driplo.xyz/messages?/sendMessage 405 (Method Not Allowed)`
+
+What this means
+- `?/sendMessage` is a SvelteKit form action URL that only works if the page defines a matching server action in `+page.server.ts`:
+  - `export const actions = { sendMessage: async (...) => { /* insert into messages */ } }`
+- Our current code path for sending messages uses a direct Supabase insert from the client in `apps/web/src/routes/(protected)/messages/+page.svelte` and in `messages/new/+page.svelte`. There is no `sendMessage` server action on the messages page, so posting to `?/sendMessage` returns 405.
+
+Repo audit (current)
+- Sender: `+page.svelte` → inserts into `public.messages` via Supabase (works with RLS).
+- New message page: also inserts directly via Supabase.
+- No `?/sendMessage` references exist in source; error likely comes from a stale client bundle or cached SW asset.
+- DB deps: `migrations/006_social_features.sql` adds `messages_with_details` view and `mark_messages_as_read` RPC; ensure applied.
+- Realtime: `RealtimeManager.svelte` subscribes to `public.messages`; requires Realtime enabled in Supabase.
+
+Fix paths
+1) Recommended: Redeploy + cache bust
+   - Redeploy the web app (Vercel) so the latest bundle (with client-side insert) is served.
+   - Purge Edge Cache; ensure the Service Worker updates (new version) so stale assets stop posting to `?/sendMessage`.
+   - Users may need a hard refresh on mobile to pick up the new SW.
+
+2) Backward-compatibility (optional): Add server action
+   - Implement a `sendMessage` action in `apps/web/src/routes/(protected)/messages/+page.server.ts` that inserts into `public.messages`. This makes `?/sendMessage` valid for older/stale clients and avoids 405s.
+
+Hardening checklist
+- [ ] Supabase: apply `migrations/006_social_features.sql` in prod.
+- [ ] Enable Realtime for `public.messages` (INSERT/UPDATE/DELETE).
+- [ ] Verify `messages_with_details` view exists; the server load depends on it.
+- [ ] Keep client sending via Supabase insert; optional server action for legacy support.
+- [ ] Optional: implement `update_user_presence` / `mark_message_delivered` RPCs used in UI (currently logged if missing).

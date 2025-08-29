@@ -1,9 +1,8 @@
 import { dev } from '$app/environment';
-import { CSRF_SECRET } from '$env/static/private';
 
 // CSRF token generation and validation
 export class CSRFProtection {
-	private static SECRET = dev ? 'fallback-dev-secret-change-in-prod' : CSRF_SECRET;
+	private static SECRET = 'fallback-dev-secret-change-in-prod';
 	
 	// Generate a CSRF token using crypto
 	static generateToken(sessionId: string): string {
