@@ -11,11 +11,12 @@ export default defineConfig(
 	plugins: [
 		tailwindcss(), 
 		enhancedImages(),
-		paraglideVitePlugin({
-			project: '../../packages/i18n/project.inlang',
-			outdir: '../../packages/i18n/lib/paraglide',
-			experimentalMiddlewareLocaleSplitting: true
-		}),
+    // Disable experimental locale splitting to avoid runtime dependency
+    // on globalThis.__paraglide_ssr (was causing client crash)
+    paraglideVitePlugin({
+        project: '../../packages/i18n/project.inlang',
+        outdir: '../../packages/i18n/lib/paraglide'
+    }),
 		sveltekit(),
 		// Only upload source maps in production builds
 		process.env.NODE_ENV === 'production' && sentryVitePlugin({

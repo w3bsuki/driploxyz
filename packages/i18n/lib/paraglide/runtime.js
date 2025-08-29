@@ -78,7 +78,7 @@ export const urlPatterns = [
  */
 export let serverAsyncLocalStorage = undefined;
 export const disableAsyncLocalStorage = false;
-export const experimentalMiddlewareLocaleSplitting = true;
+export const experimentalMiddlewareLocaleSplitting = false;
 export const isServer = import.meta.env?.SSR ?? typeof window === 'undefined';
 /**
  * Sets the server side async local storage.
