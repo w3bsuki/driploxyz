@@ -25,10 +25,6 @@
       "svelte": "./dist/index.js",
       "default": "./dist/index.js"
     },
-    "./utils/performance": {
-      "types": "./dist/utils/performance.d.ts",
-      "default": "./dist/utils/performance.js"
-    },
     "./types": {
       "types": "./dist/types/index.d.ts",
       "default": "./dist/types/index.js"

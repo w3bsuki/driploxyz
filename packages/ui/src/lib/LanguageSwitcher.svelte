@@ -11,9 +11,7 @@
 		currentLanguage = 'en',
 		languages = [
 			{ code: 'en', name: 'English', flag: '🇬🇧' },
-			{ code: 'bg', name: 'Български', flag: '🇧🇬' },
-			{ code: 'ru', name: 'Русский', flag: '🇷🇺' },
-			{ code: 'ua', name: 'Українська', flag: '🇺🇦' }
+			{ code: 'bg', name: 'Български', flag: '🇧🇬' }
 		],
 		onLanguageChange = () => {},
 		variant = 'dropdown',

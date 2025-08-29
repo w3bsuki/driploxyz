@@ -53,3 +53,17 @@ Pointers
 - Use: REFACTOR_GUIDE.md and OVER_ENGINEERING_AUDIT.md for patterns + deletions
 - Use: reference/CLAUDE_OPERATIONS.md for ready-to-run prompts
 
+RPC Strategy: Ship Now vs. Hardening Later
+- Ship Now (recommended): Remove RPC usage for `queue_slug_generation` and `get_category_hierarchy` in app code.
+  - Sell: set `slug` synchronously with `serviceUtils.slugify(title)` at insert; remove `rpc('queue_slug_generation', ...)`.
+  - Search: derive names from joined `categories` (or a small helper); remove `rpc('get_category_hierarchy', ...)`.
+- Hardening Later: Add DB functions if you need DB-level invariants; regenerate types afterward.
+- See: `.claude/commands/resolve-rpcs.md`.
+
+UI/UX Sweep (Tailwind v4 + Svelte 5)
+- Tailwind v4: rely on CSS-first `@import 'tailwindcss';`; remove heavy @apply utilities and custom PostCSS.
+- Tokens: keep OKLCH variables; 44px primary tap targets; mobile-first spacing.
+- Svelte 5: prefer `$state/$derived/$effect`; use `onevent` instead of `on:event` where applicable.
+- Remove duplicate UI in `@repo/ui` per DEBLOAT_PLAN.md and ensure web imports only from `@repo/ui`.
+- See: `.claude/commands/ui-ux-sweep.md`.
+

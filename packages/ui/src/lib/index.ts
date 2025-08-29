@@ -176,10 +176,6 @@ export { default as FeaturedProducts } from './FeaturedProducts.svelte';
 export { default as PromotedHighlights } from './PromotedHighlights.svelte';
 
 // Performance utilities
-export * from './utils/performance.js';
-export { PerformanceMonitor } from './utils/performance.js';
-export { webVitals } from './utils/web-vitals.js';
-export type { Metric, MetricCallback } from './utils/web-vitals.js';
 
 // Variant system utilities
 export * from './utils/variants.js';

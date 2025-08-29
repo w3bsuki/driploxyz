@@ -3,17 +3,13 @@ import * as i18n from '@repo/i18n';
 // Currency mappings for each locale
 const CURRENCY_MAP = {
   'en': 'USD',
-  'bg': 'BGN', 
-  'ru': 'RUB',
-  'ua': 'UAH'
+  'bg': 'BGN'
 } as const;
 
 // Locale mappings for Intl formatting
 const LOCALE_MAP = {
   'en': 'en-US',
-  'bg': 'bg-BG',
-  'ru': 'ru-RU', 
-  'ua': 'uk-UA'
+  'bg': 'bg-BG'
 } as const;
 
 /**
@@ -54,8 +50,6 @@ function formatPriceFallback(price: number, locale: string): string {
   
   switch (locale) {
     case 'bg': return `${roundedPrice}лв`;
-    case 'ru': return `${roundedPrice} ₽`;
-    case 'ua': return `${roundedPrice} ₴`;
     default: return `$${roundedPrice}`;
   }
 }

@@ -82,7 +82,6 @@ class EmailService {
       'fr': 'fr',
       'de': 'de',
       'it': 'it',
-      'ru': 'ru'
     };
     
     // Check if domain has country code

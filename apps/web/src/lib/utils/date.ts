@@ -3,9 +3,7 @@ import * as i18n from '@repo/i18n';
 // Locale mappings for Intl date formatting
 const LOCALE_MAP: Record<string, string> = {
   'en': 'en-US',
-  'bg': 'bg-BG',
-  'ru': 'ru-RU',
-  'ua': 'uk-UA'
+  'bg': 'bg-BG'
 };
 
 /**
@@ -124,26 +122,6 @@ function formatRelativeTimeFallback(diffMs: number, locale: string): string {
       days: 'дни',
       ago: 'преди'
     },
-    ru: {
-      now: 'только что',
-      min: 'минута',
-      mins: 'минут',
-      hour: 'час',
-      hours: 'часов',
-      day: 'день',
-      days: 'дней',
-      ago: 'назад'
-    },
-    ua: {
-      now: 'щойно',
-      min: 'хвилина',
-      mins: 'хвилин',
-      hour: 'година',
-      hours: 'годин',
-      day: 'день',
-      days: 'днів',
-      ago: 'тому'
-    }
   };
   
   const t = translations[locale as keyof typeof translations] || translations.en;
@@ -167,8 +145,6 @@ export function formatDuration(ms: number, locale?: string): string {
   const units = {
     en: { d: 'd', h: 'h', m: 'm', s: 's' },
     bg: { d: 'д', h: 'ч', m: 'м', s: 'с' },
-    ru: { d: 'д', h: 'ч', m: 'м', s: 'с' },
-    ua: { d: 'д', h: 'г', m: 'хв', s: 'с' }
   };
   
   const unit = units[currentLocale as keyof typeof units] || units.en;

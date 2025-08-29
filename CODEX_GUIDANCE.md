@@ -73,6 +73,18 @@ Claude-Ready Commands
 - Debloat UI: `.claude/commands/debloat-ui.md`
 - Ship sequence: `.claude/commands/ship-now.md`
 
+TS Error Triage (fast path)
+- i18n types: trim to EN+BG only to remove RU/UA references
+  - Edit `packages/i18n/src/index.ts`: `export type LanguageTag = 'en' | 'bg'` and prune `languageNames` to en/bg.
+  - Search for lingering RU/UA: `rg -n "\bru\b|\bua\b" packages apps/web/src` and fix.
+  - Build: `pnpm -C packages/i18n dev` (optional) then `pnpm -C apps/web build`.
+- RPC calls: pick one approach per below and proceed.
+  - Option A (implement): create `queue_slug_generation` and `get_category_hierarchy` in Supabase; regenerate DB types; keep current code.
+  - Option B (remove, recommended to ship):
+    - Sell page `apps/web/src/routes/(protected)/sell/+page.server.ts:195`: remove `rpc('queue_slug_generation')`; set `slug` synchronously using `serviceUtils.slugify(title)` at insert or immediate update.
+    - Search page `apps/web/src/routes/search/+page.server.ts:406`: remove `rpc('get_category_hierarchy')`; derive names from the joined `categories` row (already present) or a small helper that walks parents.
+    - Build and fix types after edits.
+
 PR Template (copy/paste)
 - Summary: What and why (one paragraph).
 - Evidence: TS error counts delta, bundle sizes before/after.
@@ -91,4 +103,18 @@ FAQ
   - A: Yes for configured languages. Today you’ve limited locales to EN+BG, and domain detection/redirects are correct. For strict per-locale code-splitting at runtime, use an adapter and dynamic imports — a follow-up task, not required to ship.
 - Q: Should components create Supabase clients?
   - A: No. Use a single browser client (layout/singleton) to avoid duplicate listeners and churn.
+
+RPC Strategy: Ship Now vs. Hardening Later
+- Ship Now (recommended):
+  - Sell: set `slug` at insert with `serviceUtils.slugify(title)`; remove `rpc('queue_slug_generation', ...)`.
+  - Search: remove `rpc('get_category_hierarchy', ...)`; use joined `categories`.
+- Hardening Later:
+  - Create Postgres functions; regenerate `@repo/database` types; keep code.
+  - Use when you need DB-level invariants or complex multi-table logic.
+
+UI/UX (Tailwind v4 + Svelte 5)
+- Tailwind v4: prefer CSS-first config and small utilities; avoid heavy @apply.
+- Keep OKLCH tokens; 44px primary touch targets; mobile-first spacing.
+- Svelte 5 runes: `$state/$derived/$effect`; prefer `onevent` over `on:event`.
+- Ensure web imports only from `@repo/ui`; delete duplicates per DEBLOAT_PLAN.md.
 

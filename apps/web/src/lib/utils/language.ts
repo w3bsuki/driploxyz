@@ -101,8 +101,6 @@ export async function switchLanguage(lang: string) {
 export function getAvailableLanguages() {
   return [
     { code: 'en', name: 'English', nativeName: 'English' },
-    { code: 'bg', name: 'Bulgarian', nativeName: 'Български' },
-    { code: 'ru', name: 'Russian', nativeName: 'Русский' },
-    { code: 'ua', name: 'Ukrainian', nativeName: 'Українська' }
+    { code: 'bg', name: 'Bulgarian', nativeName: 'Български' }
   ];
 }

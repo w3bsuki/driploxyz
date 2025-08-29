@@ -1,7 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { ProductSchema } from '$lib/validation/product';
 import type { PageServerLoad, Actions } from './$types';
-import { createServices } from '$lib/services';
+import { createServices, serviceUtils } from '$lib/services';
 import { getUserCountry } from '$lib/country/detection';
 import * as i18n from '@repo/i18n';
 
@@ -69,6 +69,9 @@ export const actions: Actions = {
       });
     }
 
+    // Create services for slug generation
+    const services = createServices(supabase, null);
+    
     const formData = await request.formData();
     
     // Extract form values
@@ -181,7 +184,7 @@ export const actions: Actions = {
           view_count: 0,
           favorite_count: 0,
           country_code: userCountry, // Add country code for multi-tenancy
-          slug: null // Will be generated in background
+          slug: serviceUtils.slugify(title.trim()) // Generate slug immediately
         })
         .select()
         .single();
@@ -190,13 +193,7 @@ export const actions: Actions = {
         throw new Error(`Failed to create product: ${productError.message}`);
       }
 
-      // Phase 2: Queue slug generation for background processing
-      try {
-        await supabase.rpc('queue_slug_generation', { p_product_id: product.id });
-      } catch (slugError) {
-        // Slug generation failure should not block product creation
-        console.warn('Failed to queue slug generation:', slugError);
-      }
+      // Slug is now generated synchronously during product creation
 
       // Add product images with error handling
       if (photo_urls && photo_urls.length > 0) {
@@ -232,7 +229,7 @@ export const actions: Actions = {
           .eq('id', session.user.id)
           .single();
           
-        if (profile && profile.premium_boosts_remaining > 0) {
+        if (profile && profile.premium_boosts_remaining && profile.premium_boosts_remaining > 0) {
           // Update product to be boosted
           await supabase
             .from('products')

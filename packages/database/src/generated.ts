@@ -53,29 +53,8 @@ export type Database = {
             foreignKeyName: "admin_actions_admin_id_fkey"
             columns: ["admin_id"]
             isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "admin_actions_admin_id_fkey"
-            columns: ["admin_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "admin_actions_admin_id_fkey"
-            columns: ["admin_id"]
-            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "admin_actions_admin_id_fkey"
-            columns: ["admin_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -130,29 +109,8 @@ export type Database = {
             foreignKeyName: "admin_notifications_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "admin_notifications_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "admin_notifications_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "admin_notifications_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -198,29 +156,8 @@ export type Database = {
             foreignKeyName: "badges_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "badges_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "badges_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "badges_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -272,42 +209,7 @@ export type Database = {
             foreignKeyName: "balance_history_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "balance_history_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "balance_history_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "balance_history_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "balance_history_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "balance_history_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
             referencedColumns: ["id"]
           },
           {
@@ -316,13 +218,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "balance_history_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -383,29 +278,8 @@ export type Database = {
             foreignKeyName: "brands_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: true
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "brands_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: true
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "brands_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "brands_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: true
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -442,42 +316,7 @@ export type Database = {
             foreignKeyName: "bundle_sessions_buyer_id_fkey"
             columns: ["buyer_id"]
             isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "bundle_sessions_buyer_id_fkey"
-            columns: ["buyer_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "bundle_sessions_buyer_id_fkey"
-            columns: ["buyer_id"]
-            isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "bundle_sessions_buyer_id_fkey"
-            columns: ["buyer_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "bundle_sessions_seller_id_fkey"
-            columns: ["seller_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "bundle_sessions_seller_id_fkey"
-            columns: ["seller_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
             referencedColumns: ["id"]
           },
           {
@@ -486,13 +325,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "bundle_sessions_seller_id_fkey"
-            columns: ["seller_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -679,29 +511,8 @@ export type Database = {
             foreignKeyName: "favorites_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "favorites_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "favorites_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "favorites_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -729,42 +540,7 @@ export type Database = {
             foreignKeyName: "followers_follower_id_fkey"
             columns: ["follower_id"]
             isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "followers_follower_id_fkey"
-            columns: ["follower_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "followers_follower_id_fkey"
-            columns: ["follower_id"]
-            isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "followers_follower_id_fkey"
-            columns: ["follower_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "followers_following_id_fkey"
-            columns: ["following_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "followers_following_id_fkey"
-            columns: ["following_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
             referencedColumns: ["id"]
           },
           {
@@ -773,52 +549,84 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "followers_following_id_fkey"
-            columns: ["following_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
         ]
+      }
+      manual_config_tasks: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          description: string
+          id: string
+          instructions: string
+          priority: string
+          task_type: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          description: string
+          id?: string
+          instructions: string
+          priority?: string
+          task_type: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          description?: string
+          id?: string
+          instructions?: string
+          priority?: string
+          task_type?: string
+        }
+        Relationships: []
       }
       messages: {
         Row: {
           content: string
           country_code: string | null
           created_at: string | null
+          delivered_at: string | null
           id: string
           image_urls: string[] | null
           is_read: boolean | null
           order_id: string | null
           product_id: string | null
+          read_at: string | null
           receiver_id: string
           sender_id: string
+          status: Database["public"]["Enums"]["message_status"] | null
         }
         Insert: {
           content: string
           country_code?: string | null
           created_at?: string | null
+          delivered_at?: string | null
           id?: string
           image_urls?: string[] | null
           is_read?: boolean | null
           order_id?: string | null
           product_id?: string | null
+          read_at?: string | null
           receiver_id: string
           sender_id: string
+          status?: Database["public"]["Enums"]["message_status"] | null
         }
         Update: {
           content?: string
           country_code?: string | null
           created_at?: string | null
+          delivered_at?: string | null
           id?: string
           image_urls?: string[] | null
           is_read?: boolean | null
           order_id?: string | null
           product_id?: string | null
+          read_at?: string | null
           receiver_id?: string
           sender_id?: string
+          status?: Database["public"]["Enums"]["message_status"] | null
         }
         Relationships: [
           {
@@ -839,42 +647,7 @@ export type Database = {
             foreignKeyName: "messages_receiver_id_fkey"
             columns: ["receiver_id"]
             isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "messages_receiver_id_fkey"
-            columns: ["receiver_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "messages_receiver_id_fkey"
-            columns: ["receiver_id"]
-            isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "messages_receiver_id_fkey"
-            columns: ["receiver_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "messages_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "messages_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
             referencedColumns: ["id"]
           },
           {
@@ -883,13 +656,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "messages_sender_id_fkey"
-            columns: ["sender_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1123,29 +889,8 @@ export type Database = {
             foreignKeyName: "orders_buyer_id_fkey"
             columns: ["buyer_id"]
             isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "orders_buyer_id_fkey"
-            columns: ["buyer_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "orders_buyer_id_fkey"
-            columns: ["buyer_id"]
-            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "orders_buyer_id_fkey"
-            columns: ["buyer_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "orders_product_id_fkey"
@@ -1158,29 +903,8 @@ export type Database = {
             foreignKeyName: "orders_seller_id_fkey"
             columns: ["seller_id"]
             isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "orders_seller_id_fkey"
-            columns: ["seller_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "orders_seller_id_fkey"
-            columns: ["seller_id"]
-            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "orders_seller_id_fkey"
-            columns: ["seller_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1250,42 +974,7 @@ export type Database = {
             foreignKeyName: "payout_requests_processed_by_fkey"
             columns: ["processed_by"]
             isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "payout_requests_processed_by_fkey"
-            columns: ["processed_by"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payout_requests_processed_by_fkey"
-            columns: ["processed_by"]
-            isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payout_requests_processed_by_fkey"
-            columns: ["processed_by"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "payout_requests_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "payout_requests_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
             referencedColumns: ["id"]
           },
           {
@@ -1294,15 +983,35 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payout_requests_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
         ]
+      }
+      presence: {
+        Row: {
+          created_at: string | null
+          id: string
+          last_seen: string | null
+          status: string | null
+          typing_in_conversation: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          last_seen?: string | null
+          status?: string | null
+          typing_in_conversation?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          last_seen?: string | null
+          status?: string | null
+          typing_in_conversation?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       product_images: {
         Row: {
@@ -1372,6 +1081,7 @@ export type Database = {
           seller_id: string
           shipping_cost: number | null
           size: string | null
+          slug: string | null
           sold_at: string | null
           status: string | null
           tags: string[] | null
@@ -1408,6 +1118,7 @@ export type Database = {
           seller_id: string
           shipping_cost?: number | null
           size?: string | null
+          slug?: string | null
           sold_at?: string | null
           status?: string | null
           tags?: string[] | null
@@ -1444,6 +1155,7 @@ export type Database = {
           seller_id?: string
           shipping_cost?: number | null
           size?: string | null
+          slug?: string | null
           sold_at?: string | null
           status?: string | null
           tags?: string[] | null
@@ -1463,29 +1175,8 @@ export type Database = {
             foreignKeyName: "products_seller_id_fkey"
             columns: ["seller_id"]
             isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "products_seller_id_fkey"
-            columns: ["seller_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "products_seller_id_fkey"
-            columns: ["seller_id"]
-            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "products_seller_id_fkey"
-            columns: ["seller_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1737,42 +1428,7 @@ export type Database = {
             foreignKeyName: "reviews_reviewee_id_fkey"
             columns: ["reviewee_id"]
             isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "reviews_reviewee_id_fkey"
-            columns: ["reviewee_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "reviews_reviewee_id_fkey"
-            columns: ["reviewee_id"]
-            isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "reviews_reviewee_id_fkey"
-            columns: ["reviewee_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "reviews_reviewer_id_fkey"
-            columns: ["reviewer_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "reviews_reviewer_id_fkey"
-            columns: ["reviewer_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
             referencedColumns: ["id"]
           },
           {
@@ -1781,13 +1437,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "reviews_reviewer_id_fkey"
-            columns: ["reviewer_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1833,29 +1482,49 @@ export type Database = {
             foreignKeyName: "seller_balances_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: true
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "seller_balances_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "seller_balances_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      slug_processing_queue: {
+        Row: {
+          attempts: number
+          created_at: string | null
+          error_message: string | null
+          id: string
+          max_attempts: number
+          product_id: string
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          attempts?: number
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          max_attempts?: number
+          product_id: string
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          attempts?: number
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          max_attempts?: number
+          product_id?: string
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
           {
-            foreignKeyName: "seller_balances_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
+            foreignKeyName: "slug_processing_queue_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
           },
         ]
       }
@@ -2168,417 +1837,60 @@ export type Database = {
       }
     }
     Views: {
-      admin_financial_overview: {
+      messages_with_details: {
         Row: {
-          active_subscriptions: number | null
-          expiring_soon_count: number | null
-          monthly_platform_revenue: number | null
-          monthly_seller_earnings: number | null
-          monthly_subscription_revenue: number | null
-          overdue_payouts_count: number | null
-          pending_payouts_amount: number | null
-          pending_payouts_count: number | null
-          total_available_balance: number | null
-          total_pending_balance: number | null
-          total_platform_revenue: number | null
-          total_seller_earnings: number | null
-          total_withdrawn: number | null
-        }
-        Relationships: []
-      }
-      admin_payout_dashboard: {
-        Row: {
-          account_type: string | null
-          admin_notes: string | null
-          amount: number | null
-          available_balance: number | null
-          currency: string | null
-          days_pending: number | null
-          full_name: string | null
-          net_amount: number | null
-          payout_id: string | null
-          payout_method: Json | null
-          pending_balance: number | null
-          processed_at: string | null
-          processed_by_username: string | null
-          reference_number: string | null
-          rejection_reason: string | null
-          requested_at: string | null
-          reviewed_at: string | null
-          risk_level: string | null
-          status: string | null
-          total_earned: number | null
-          total_withdrawn: number | null
-          username: string | null
-        }
-        Relationships: []
-      }
-      admin_payout_requests_view: {
-        Row: {
-          admin_notes: string | null
-          amount: number | null
+          content: string | null
           country_code: string | null
           created_at: string | null
-          currency: string | null
-          full_name: string | null
+          delivered_at: string | null
           id: string | null
-          metadata: Json | null
-          net_amount: number | null
-          payout_method: Json | null
-          processed_at: string | null
-          processed_by: string | null
-          reference_number: string | null
-          rejection_reason: string | null
-          requested_amount: number | null
-          requested_at: string | null
-          reviewed_at: string | null
-          status: string | null
-          status_display: string | null
-          transaction_fee: number | null
-          updated_at: string | null
-          user_email: string | null
-          user_id: string | null
-          username: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "payout_requests_processed_by_fkey"
-            columns: ["processed_by"]
-            isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "payout_requests_processed_by_fkey"
-            columns: ["processed_by"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payout_requests_processed_by_fkey"
-            columns: ["processed_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payout_requests_processed_by_fkey"
-            columns: ["processed_by"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "payout_requests_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_user_subscriptions"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "payout_requests_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "admin_users_view"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payout_requests_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "payout_requests_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "seller_performance_metrics"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
-      admin_stats_view: {
-        Row: {
-          active_users: number | null
-          country_code: string | null
-          new_users_week: number | null
-          paid_users: number | null
-          stat_type: string | null
-          total_users: number | null
-        }
-        Relationships: []
-      }
-      admin_transactions_view: {
-        Row: {
-          amount_total: number | null
-          buyer_country: string | null
-          buyer_id: string | null
-          buyer_username: string | null
-          commission_amount: number | null
-          country_code: string | null
-          created_at: string | null
-          currency: string | null
-          id: string | null
-          metadata: Json | null
+          image_urls: string[] | null
+          is_read: boolean | null
           order_id: string | null
-          payment_status: string | null
-          payout_date: string | null
-          payout_reference: string | null
-          payout_status: string | null
-          processed_at: string | null
-          product_price: number | null
-          product_title: string | null
-          seller_country: string | null
-          seller_earnings: number | null
-          seller_id: string | null
-          seller_username: string | null
-          shipping_cost: number | null
-          status: string | null
-          stripe_payment_intent_id: string | null
-          updated_at: string | null
+          product: Json | null
+          product_id: string | null
+          read_at: string | null
+          receiver: Json | null
+          receiver_id: string | null
+          sender: Json | null
+          sender_id: string | null
+          status: Database["public"]["Enums"]["message_status"] | null
         }
         Relationships: [
           {
-            foreignKeyName: "transactions_order_id_fkey"
+            foreignKeyName: "messages_order_id_fkey"
             columns: ["order_id"]
             isOneToOne: false
             referencedRelation: "orders"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "messages_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
-      }
-      admin_user_subscriptions: {
-        Row: {
-          account_type: string | null
-          active_listings: number | null
-          amount_paid: number | null
-          brand_status: string | null
-          cancel_at_period_end: boolean | null
-          currency: string | null
-          current_period_end: string | null
-          current_period_start: string | null
-          discount_code: string | null
-          discount_percent: number | null
-          full_name: string | null
-          grace_period_ends_at: string | null
-          plan_name: string | null
-          price_monthly: number | null
-          sales_count: number | null
-          sold_listings: number | null
-          subscription_expires_at: string | null
-          subscription_health: string | null
-          subscription_id: string | null
-          subscription_status: string | null
-          subscription_tier: string | null
-          total_sales_value: number | null
-          user_created_at: string | null
-          user_id: string | null
-          username: string | null
-          verification_status: string | null
-        }
-        Relationships: []
-      }
-      admin_users_view: {
-        Row: {
-          account_locked_until: string | null
-          account_type: string | null
-          auth_created_at: string | null
-          avatar_url: string | null
-          avg_shipping_hours: number | null
-          bio: string | null
-          brand_status: string | null
-          country_code: string | null
-          created_at: string | null
-          currency: string | null
-          current_balance: number | null
-          date_of_birth: string | null
-          email: string | null
-          email_confirmed_at: string | null
-          failed_login_attempts: number | null
-          followers_count: number | null
-          following_count: number | null
-          full_name: string | null
-          grace_period_ends_at: string | null
-          id: string | null
-          is_verified: boolean | null
-          last_active_at: string | null
-          last_password_change: string | null
-          last_payout_at: string | null
-          last_sign_in_at: string | null
-          last_stats_update: string | null
-          location: string | null
-          monthly_views: number | null
-          on_time_shipping_rate: number | null
-          onboarding_completed: boolean | null
-          payout_method: Json | null
-          payout_settings: Json | null
-          phone: string | null
-          premium_boosts_remaining: number | null
-          purchases_count: number | null
-          rating: number | null
-          rating_breakdown: Json | null
-          region: string | null
-          response_time_hours: number | null
-          review_count: number | null
-          role: Database["public"]["Enums"]["user_role"] | null
-          sales_count: number | null
-          seller_metrics: Json | null
-          social_links: Json | null
-          subscription_expires_at: string | null
-          subscription_tier: string | null
-          total_reviews: number | null
-          total_sales: number | null
-          total_sales_value: number | null
-          total_withdrawn: number | null
-          two_factor_enabled: boolean | null
-          updated_at: string | null
-          username: string | null
-          verification_documents: Json | null
-          verification_status: string | null
-          verified: boolean | null
-          weekly_sales_count: number | null
-        }
-        Relationships: []
-      }
-      seller_performance_metrics: {
-        Row: {
-          account_type: string | null
-          active_listings: number | null
-          available_balance: number | null
-          avg_rating: number | null
-          avg_sale_value: number | null
-          last_sale_date: string | null
-          sales_last_30_days: number | null
-          sell_through_rate: number | null
-          sold_listings: number | null
-          subscription_tier: string | null
-          total_earned: number | null
-          total_listings: number | null
-          total_revenue: number | null
-          total_reviews: number | null
-          total_sales: number | null
-          total_withdrawn: number | null
-          user_id: string | null
-          username: string | null
-        }
-        Relationships: []
       }
     }
     Functions: {
-      activate_brand_subscription: {
-        Args: { p_discount_code?: string; p_plan_id: string; p_user_id: string }
-        Returns: Json
-      }
-      admin_adjust_balance: {
-        Args: { p_amount: number; p_reason: string; p_user_id: string }
-        Returns: Json
-      }
-      admin_approve_payout: {
-        Args: { p_admin_id: string; p_notes?: string; p_payout_id: string }
-        Returns: Json
-      }
-      admin_batch_approve_payouts: {
-        Args: { p_payout_ids: string[] }
-        Returns: Json
-      }
-      admin_complete_payout: {
-        Args: {
-          p_admin_id: string
-          p_payout_id: string
-          p_transaction_reference?: string
-        }
-        Returns: Json
-      }
-      admin_get_dashboard_summary: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      admin_get_pending_payouts: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          amount: number
-          available_balance: number
-          currency: string
-          days_pending: number
-          payout_id: string
-          payout_method: Json
-          requested_at: string
-          username: string
-        }[]
-      }
-      admin_get_user_financial_history: {
-        Args: { p_username: string }
-        Returns: Json
-      }
-      admin_quick_approve_payout: {
-        Args: { p_payout_id: string }
-        Returns: Json
-      }
-      admin_quick_complete_payout: {
-        Args: { p_payout_id: string; p_reference?: string }
-        Returns: Json
-      }
-      approve_payout_request: {
-        Args: { admin_notes?: string; request_id: string }
-        Returns: boolean
-      }
-      archive_completed_orders: {
-        Args: Record<PropertyKey, never>
-        Returns: number
-      }
-      assign_onboarding_badge: {
-        Args: { user_id: string }
-        Returns: undefined
-      }
-      calculate_response_time: {
-        Args: { p_user_id: string }
-        Returns: unknown
-      }
-      calculate_seller_metrics: {
-        Args: { user_uuid: string }
-        Returns: Json
-      }
-      calculate_seller_stats: {
-        Args: { seller_uuid: string }
-        Returns: {
-          avg_rating: number
-          response_time: unknown
-          total_followers: number
-          total_sales: number
-        }[]
-      }
-      can_access_country_data: {
-        Args: { target_country_code: string }
-        Returns: boolean
-      }
-      can_manage_payouts: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
       can_message_about_product: {
         Args: { product_id: string; sender_id: string }
-        Returns: boolean
-      }
-      can_update_order_status: {
-        Args: { new_status: string; order_id: string; user_id: string }
-        Returns: boolean
-      }
-      can_user_create_listing: {
-        Args: { user_id: string }
-        Returns: boolean
-      }
-      can_view_all_users: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      can_view_cross_country: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      check_email_exists: {
-        Args: { email_to_check: string }
         Returns: boolean
       }
       check_rate_limit: {
@@ -2590,10 +1902,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      cleanup_old_messages: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
       create_order_transaction: {
         Args: {
           p_amount: number
@@ -2603,10 +1911,6 @@ export type Database = {
         }
         Returns: string
       }
-      create_payout_request: {
-        Args: { p_amount: number; p_payout_method: Json; p_user_id: string }
-        Returns: Json
-      }
       decrement_favorite_count: {
         Args: { product_uuid: string }
         Returns: undefined
@@ -2615,44 +1919,13 @@ export type Database = {
         Args: { base_username: string }
         Returns: string
       }
-      get_admin_countries: {
-        Args: Record<PropertyKey, never>
-        Returns: string[]
+      get_category_hierarchy: {
+        Args: { category_uuid: string }
+        Returns: Json
       }
-      get_archiving_stats: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          oldest_completed_order_days: number
-          orders_ready_for_archive: number
-          total_archived_orders: number
-        }[]
-      }
-      get_category_descendants: {
-        Args: { root_category_id: string }
-        Returns: {
-          id: string
-          level: number
-          name: string
-        }[]
-      }
-      get_conversation_thread: {
-        Args: { product_id?: string; user1_id: string; user2_id: string }
-        Returns: {
-          created_at: string
-          id: string
-          is_read: boolean
-          message: string
-          receiver_id: string
-          sender_id: string
-        }[]
-      }
-      get_file_extension: {
-        Args: { filename: string }
-        Returns: string
-      }
-      get_product_favorite_count: {
-        Args: { product_id: string }
-        Returns: number
+      get_homepage_data: {
+        Args: { p_country_code?: string; p_limit?: number }
+        Returns: Json
       }
       get_product_suggestions: {
         Args: { for_product_id: string; limit_count?: number }
@@ -2664,33 +1937,17 @@ export type Database = {
         }[]
       }
       get_products_by_category_name_across_genders: {
-        Args: { category_name: string; country_code?: string }
+        Args:
+          | { category_name: string; country_code?: string }
+          | { category_name_input: string }
         Returns: {
-          category_id: string
-        }[]
-      }
-      get_seller_analytics: {
-        Args: { date_from?: string; date_to?: string; seller_id: string }
-        Returns: Json
-      }
-      get_user_country: {
-        Args: { user_id: string }
-        Returns: string
-      }
-      get_user_country_code: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_user_messages: {
-        Args: { p_limit?: number; p_offset?: number; p_user_id: string }
-        Returns: {
-          created_at: string
+          condition: string
+          first_image: string
           id: string
-          is_read: boolean
-          message: string
-          product_id: string
-          receiver_id: string
-          sender_id: string
+          price: number
+          seller_username: string
+          size: string
+          title: string
         }[]
       }
       increment_favorite_count: {
@@ -2703,10 +1960,6 @@ export type Database = {
       }
       is_admin: {
         Args: { user_id?: string }
-        Returns: boolean
-      }
-      is_admin_secure: {
-        Args: Record<PropertyKey, never>
         Returns: boolean
       }
       is_super_admin: {
@@ -2722,35 +1975,13 @@ export type Database = {
         }
         Returns: string
       }
-      log_login_attempt: {
-        Args: {
-          p_email: string
-          p_error?: string
-          p_ip: unknown
-          p_success: boolean
-          p_user_agent: string
-        }
-        Returns: undefined
-      }
       process_sale: {
         Args: { p_commission_rate?: number; p_order_id: string }
         Returns: Json
       }
-      recalculate_all_seller_stats: {
-        Args: { p_seller_id: string }
+      queue_slug_generation: {
+        Args: { p_product_id: string }
         Returns: undefined
-      }
-      reject_payout_request: {
-        Args: {
-          admin_notes?: string
-          rejection_reason: string
-          request_id: string
-        }
-        Returns: boolean
-      }
-      same_country_as_user: {
-        Args: { target_user_id: string }
-        Returns: boolean
       }
       search_products: {
         Args: {
@@ -2782,74 +2013,38 @@ export type Database = {
           title: string
         }[]
       }
-      sync_user_verification_status: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          updated_count: number
-        }[]
-      }
-      track_and_update_product_view: {
-        Args:
-          | {
-              p_product_id: string
-              p_session_id?: string
-              p_viewer_id?: string
-            }
-          | { p_product_id: string; p_viewer_id?: string }
-        Returns: undefined
-      }
       track_product_view: {
-        Args:
-          | {
-              p_product_id: string
-              p_session_id?: string
-              p_viewer_id?: string
-            }
-          | { p_product_id: string; p_viewer_id?: string }
+        Args: {
+          p_product_id: string
+          p_session_id?: string
+          p_viewer_id?: string
+        }
         Returns: undefined
       }
       track_profile_view: {
-        Args:
-          | {
-              p_profile_id: string
-              p_session_id?: string
-              p_viewer_id?: string
-            }
-          | { p_profile_id: string; p_viewer_id?: string }
+        Args: {
+          p_profile_id: string
+          p_session_id?: string
+          p_viewer_id?: string
+        }
         Returns: undefined
       }
       update_last_active: {
         Args: { user_id: string }
         Returns: undefined
       }
-      user_owns_resource: {
-        Args: { requesting_user_id?: string; resource_user_id: string }
-        Returns: boolean
-      }
       validate_discount_code: {
-        Args:
-          | { code: string }
-          | {
-              code_input: string
-              order_total_input?: number
-              user_id_input?: string
-            }
-          | {
-              p_amount: number
-              p_code: string
-              p_plan_type: string
-              p_user_id: string
-            }
-          | {
-              p_amount: number
-              p_code: string
-              p_plan_type: string
-              p_user_id: string
-            }
+        Args: {
+          p_amount: number
+          p_code: string
+          p_plan_type: string
+          p_user_id: string
+        }
         Returns: Json
       }
     }
     Enums: {
+      message_status: "sent" | "delivered" | "read"
       order_status:
         | "pending"
         | "paid"
@@ -2992,6 +2187,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      message_status: ["sent", "delivered", "read"],
       order_status: [
         "pending",
         "paid",

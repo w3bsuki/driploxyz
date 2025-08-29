@@ -13,9 +13,7 @@
   
   const localeNames: Record<LanguageTag, string> = {
     en: 'English',
-    bg: 'Български',
-    ru: 'Русский',
-    ua: 'Українська'
+    bg: 'Български'
   };
   
   const countryNames: Record<string, string> = {

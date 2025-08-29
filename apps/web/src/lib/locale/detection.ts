@@ -4,19 +4,18 @@ import type { LanguageTag } from '@repo/i18n';
 const countryToLanguage: Record<string, LanguageTag> = {
   // Bulgaria
   BG: 'bg',
-  // Russia and Russian-speaking countries
-  RU: 'ru',
-  BY: 'ru', // Belarus
-  KZ: 'ru', // Kazakhstan
-  // Ukraine
-  UA: 'ua',
   // Default to English for all others
   US: 'en',
   GB: 'en',
   CA: 'en',
   AU: 'en',
   NZ: 'en',
-  IE: 'en'
+  IE: 'en',
+  // Russia, Ukraine, Belarus, etc. default to English now
+  RU: 'en',
+  BY: 'en',
+  KZ: 'en',
+  UA: 'en'
 };
 
 // Language detection based on browser settings
@@ -39,8 +38,7 @@ export function detectBrowserLanguage(): LanguageTag {
   
   // Direct language matches
   if (langCode.startsWith('bg')) return 'bg';
-  if (langCode.startsWith('ru')) return 'ru';
-  if (langCode.startsWith('uk') || langCode.startsWith('ua')) return 'ua';
+  // All other languages default to English
   
   return 'en';
 }
@@ -149,7 +147,7 @@ export function getStoredLocalePreference(): LanguageTag | null {
   
   try {
     const stored = localStorage.getItem('preferredLocale');
-    if (stored && ['en', 'bg', 'ru', 'ua'].includes(stored)) {
+    if (stored && ['en', 'bg'].includes(stored)) {
       return stored as LanguageTag;
     }
   } catch (error) {

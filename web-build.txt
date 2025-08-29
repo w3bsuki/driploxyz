@@ -7,7 +7,7 @@
 Using existing cloned repo
 [36mℹ[39m [1m[34m[paraglide] [39m[22mCompiling Messages into ../../packages/i18n/lib/paraglide
 transforming...
-2:33:00 AM [vite-plugin-svelte] src/routes/(protected)/listings/+page.svelte:223:22 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+4:02:03 AM [vite-plugin-svelte] src/routes/(protected)/listings/+page.svelte:223:22 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
 https://svelte.dev/e/a11y_consider_explicit_label
 221:                     </span>
 222:                     <div class="flex space-x-2">
@@ -15,7 +15,7 @@ https://svelte.dev/e/a11y_consider_explicit_label
                                    ^
 224:                         onclick={(e) => { e.stopPropagation(); goto(`/product/${listing.id}/edit`); }} 
 225:                         class="text-blue-600 hover:text-blue-800"
-2:33:00 AM [vite-plugin-svelte] src/routes/(protected)/settings/+page.svelte:322:18 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+4:02:03 AM [vite-plugin-svelte] src/routes/(protected)/settings/+page.svelte:322:18 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
 https://svelte.dev/e/a11y_consider_explicit_label
 320:                     </div>
 321:                   </div>
@@ -23,7 +23,7 @@ https://svelte.dev/e/a11y_consider_explicit_label
                                ^
 323:                     onclick={() => handleToggle(item)}
 324:                     class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition-colors"
-2:33:00 AM [vite-plugin-svelte] src/routes/(protected)/settings/+page.svelte:326:20 Self-closing HTML tags for non-void elements are ambiguous — use `<span ...></span>` rather than `<span ... />`
+4:02:03 AM [vite-plugin-svelte] src/routes/(protected)/settings/+page.svelte:326:20 Self-closing HTML tags for non-void elements are ambiguous — use `<span ...></span>` rather than `<span ... />`
 https://svelte.dev/e/element_invalid_self_closing_tag
 324:                     class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition-colors"
 325:                   >
@@ -31,7 +31,7 @@ https://svelte.dev/e/element_invalid_self_closing_tag
                                                                                                                                  ^
 327:                   </button>
 328:                 </div>
-2:33:01 AM [vite-plugin-svelte] src/routes/profile/[id]/+page.svelte:495:10 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+4:02:03 AM [vite-plugin-svelte] src/routes/profile/[id]/+page.svelte:495:10 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
 https://svelte.dev/e/a11y_consider_explicit_label
 493:         <div class="p-4 border-b flex justify-between items-center">
 494:           <h2 class="font-semibold">Followers</h2>
@@ -39,7 +39,7 @@ https://svelte.dev/e/a11y_consider_explicit_label
                         ^
 496:             onclick={() => showFollowersModal = false}
 497:             class="text-gray-500 hover:text-gray-700"
-2:33:01 AM [vite-plugin-svelte] src/routes/profile/[id]/+page.svelte:547:10 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+4:02:03 AM [vite-plugin-svelte] src/routes/profile/[id]/+page.svelte:547:10 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
 https://svelte.dev/e/a11y_consider_explicit_label
 545:         <div class="p-4 border-b flex justify-between items-center">
 546:           <h2 class="font-semibold">Following</h2>
@@ -47,4 +47,1785 @@ https://svelte.dev/e/a11y_consider_explicit_label
                         ^
 548:             onclick={() => showFollowingModal = false}
 549:             class="text-gray-500 hover:text-gray-700"
-2:33:01 AM [vite-plugin-svelte] src/lib/components/Header.svelte:277:14 `<svelte:component>` is deprecated in runes mode — components are dynamic by default
+4:02:04 AM [vite-plugin-svelte] src/lib/components/Header.svelte:277:14 `<svelte:component>` is deprecated in runes mode — components are dynamic by default
+https://svelte.dev/e/svelte_component_deprecated
+275:             
+276:             {#if notificationPanelLoaded && NotificationPanel}
+277:               <svelte:component 
+                     ^
+278:                 this={NotificationPanel}
+279:                 notifications={$notifications}
+4:02:04 AM [vite-plugin-svelte] src/lib/components/Header.svelte:56:6 `NotificationPanel` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+54:   let signingOut = $state(false);
+55:   let notificationService: RealtimeNotificationService | null = null;
+56:   let NotificationPanel: any = null;
+                                ^
+57:   let notificationPanelLoaded = $state(false);
+58:   
+4:02:04 AM [vite-plugin-svelte] src/lib/components/OrderNotificationToast.svelte:85:3 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+83:       </div>
+84:       
+85:       <button
+                  ^
+86:         onclick={handleDismiss}
+87:         class="flex-shrink-0 text-gray-400 hover:text-gray-500"
+4:02:04 AM [vite-plugin-svelte] src/lib/components/RegionSwitchModal.svelte:120:4 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+118:   <div class="fixed inset-0 z-50 overflow-y-auto">
+119:     <!-- Backdrop -->
+120:     <div 
+           ^
+121:       class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+122:       onclick={onClose}
+4:02:04 AM [vite-plugin-svelte] src/lib/components/RegionSwitchModal.svelte:120:4 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+118:   <div class="fixed inset-0 z-50 overflow-y-auto">
+119:     <!-- Backdrop -->
+120:     <div 
+           ^
+121:       class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+122:       onclick={onClose}
+4:02:04 AM [vite-plugin-svelte] src/lib/components/RegionSwitchModal.svelte:120:4 Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag
+118:   <div class="fixed inset-0 z-50 overflow-y-auto">
+119:     <!-- Backdrop -->
+120:     <div 
+           ^
+121:       class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+122:       onclick={onClose}
+4:02:04 AM [vite-plugin-svelte] src/lib/components/RegionSwitchModal.svelte:129:8 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+127:       <div class="relative bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+128:         <!-- Close button -->
+129:         <button
+                     ^
+130:           onclick={onClose}
+131:           class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+4:02:04 AM [vite-plugin-svelte] src/routes/+page.svelte:451:5 Redundant role 'navigation'
+https://svelte.dev/e/a11y_no_redundant_roles
+449:         <!-- Enhanced Category Pills -->
+450:         <nav 
+451:           role="navigation"
+                                ^
+452:           aria-label="Browse categories"
+453:           class="flex items-center justify-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide"
+4:02:04 AM [vite-plugin-svelte] src/routes/+page.svelte:540:3 `<svelte:component>` is deprecated in runes mode — components are dynamic by default
+https://svelte.dev/e/svelte_component_deprecated
+538:     <!-- Lazy load PromotedHighlights with skeleton -->
+539:     {#if PromotedHighlights}
+540:       <svelte:component
+             ^
+541:         this={PromotedHighlights}
+542:         promotedProducts={promotedProducts.map(product => ({
+4:02:04 AM [vite-plugin-svelte] src/routes/+page.svelte:656:1 `<svelte:component>` is deprecated in runes mode — components are dynamic by default
+https://svelte.dev/e/svelte_component_deprecated
+654: <!-- Quick View Dialog for Premium Sellers (Lazy Loaded) -->
+655: {#if QuickViewDialog && selectedSeller}
+656:   <svelte:component 
+         ^
+657:     this={QuickViewDialog}
+658:     seller={selectedSeller} 
+4:02:04 AM [vite-plugin-svelte] src/routes/+page.svelte:410:1 Unused CSS selector ".sticky-search-container"
+https://svelte.dev/e/css_unused_selector
+408: <style>
+409:   /* Smooth transitions for sticky search */
+410:   .sticky-search-container {
+                               ^
+411:     will-change: transform;
+412:   }
+4:02:04 AM [vite-plugin-svelte] src/routes/(protected)/sell/+page.svelte:1000:2 Unused CSS selector ".animate-bounce-in"
+https://svelte.dev/e/css_unused_selector
+ 998:   }
+ 999:   
+1000:   .animate-bounce-in {
+                          ^
+1001:     animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+1002:   }
+4:02:04 AM [vite-plugin-svelte] src/routes/(protected)/sell/+page.svelte:1013:2 Unused CSS selector ".animate-check-mark"
+https://svelte.dev/e/css_unused_selector
+1011:   }
+1012:   
+1013:   .animate-check-mark {
+                           ^
+1014:     stroke-dasharray: 100;
+1015:     stroke-dashoffset: 100;
+4:02:04 AM [vite-plugin-svelte] src/routes/search/+page.svelte:332:0 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+330: </svelte:head>
+331: 
+332: <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0" onclick={handleClickOutside}>
+           ^
+333:   
+334:   <!-- Clean Header Section -->
+4:02:04 AM [vite-plugin-svelte] src/routes/search/+page.svelte:332:0 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+330: </svelte:head>
+331: 
+332: <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0" onclick={handleClickOutside}>
+           ^
+333:   
+334:   <!-- Clean Header Section -->
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/Card.svelte:24:0 noninteractive element cannot have nonnegative tabIndex value
+https://svelte.dev/e/a11y_no_noninteractive_tabindex
+22: </script>
+23: 
+24: <div 
+         ^
+25:   class={classes} 
+26:   {onclick}
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/Avatar.svelte:85:0 noninteractive element cannot have nonnegative tabIndex value
+https://svelte.dev/e/a11y_no_noninteractive_tabindex
+83: </script>
+84: 
+85: <div
+        ^
+86:   role={onclick ? "button" : undefined}
+87:   tabindex={onclick ? 0 : undefined}
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CategoryDropdown.svelte:66:4 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+64:       Discover Amazing Finds
+65:     </h2>
+66:     <button 
+                 ^
+67:       onclick={onClose}
+68:       class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ProductGallery.svelte:35:6 `imageRef` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+33:   let selectedIndex = $state(0);
+34:   let galleryRef: HTMLDivElement;
+35:   let imageRef: HTMLImageElement;
+                                    ^
+36: 
+37:   let selectedImage = $state('/placeholder-product.svg');
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ProductSheet.svelte:55:6 `sheetRef` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+53:   }: Props = $props();
+54: 
+55:   let sheetRef: HTMLDivElement;
+                                  ^
+56:   let isDragging = $state(false);
+57:   let dragY = $state(0);
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/RatingModal.svelte:99:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+ 97:     <!-- Overall Rating -->
+ 98:     <div class="mb-6">
+ 99:       <label class="block text-sm font-medium text-gray-700 mb-2">
+                   ^
+100:         Overall Rating <span class="text-red-500">*</span>
+101:       </label>
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/RatingModal.svelte:122:8 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+120:       <!-- Communication -->
+121:       <div>
+122:         <label class="block text-sm font-medium text-gray-700 mb-1">
+                     ^
+123:           Communication
+124:         </label>
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/RatingModal.svelte:143:8 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+141:       <!-- Shipping Speed -->
+142:       <div>
+143:         <label class="block text-sm font-medium text-gray-700 mb-1">
+                     ^
+144:           Shipping Speed
+145:         </label>
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/RatingModal.svelte:164:8 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+162:       <!-- Product Quality -->
+163:       <div>
+164:         <label class="block text-sm font-medium text-gray-700 mb-1">
+                     ^
+165:           Product as Described
+166:         </label>
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AccountTypeSelector.svelte:170:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+168:   {#if showDiscountCode && (selected === 'brand' || selected === 'premium')}
+169:     <div class="max-w-md mx-auto p-4 bg-gray-50 rounded-lg border border-gray-200">
+170:       <label class="block text-sm font-medium text-gray-700 mb-2">
+                   ^
+171:         {translations.haveDiscountCode || 'Have a discount code?'}
+172:       </label>
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/PayoutMethodSelector.svelte:167:12 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+165:               {currentMethod.name} Details
+166:             </h3>
+167:             <button
+                        ^
+168:               type="button"
+169:               onclick={() => expandedMethod = null}
+Error: Cannot apply unknown utility class `space-y-6`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+Error: Cannot apply unknown utility class `space-y-6`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+Error: Cannot apply unknown utility class `space-y-6`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:503:1 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+501: <!-- Rejection Modal -->
+502: {#if rejectionModalOpen && rejectionRequest}
+503:   <div class="modal-backdrop" onclick={() => rejectionModalOpen = false}>
+             ^
+504:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+505:       <div class="modal-header">
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:503:1 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+501: <!-- Rejection Modal -->
+502: {#if rejectionModalOpen && rejectionRequest}
+503:   <div class="modal-backdrop" onclick={() => rejectionModalOpen = false}>
+             ^
+504:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+505:       <div class="modal-header">
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:504:2 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+502: {#if rejectionModalOpen && rejectionRequest}
+503:   <div class="modal-backdrop" onclick={() => rejectionModalOpen = false}>
+504:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+               ^
+505:       <div class="modal-header">
+506:         <h3>Reject Payout Request</h3>
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:504:2 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+502: {#if rejectionModalOpen && rejectionRequest}
+503:   <div class="modal-backdrop" onclick={() => rejectionModalOpen = false}>
+504:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+               ^
+505:       <div class="modal-header">
+506:         <h3>Reject Payout Request</h3>
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:553:1 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+551: <!-- Processing Modal -->
+552: {#if processingModalOpen && processingRequest}
+553:   <div class="modal-backdrop" onclick={() => processingModalOpen = false}>
+             ^
+554:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+555:       <div class="modal-header">
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:553:1 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+551: <!-- Processing Modal -->
+552: {#if processingModalOpen && processingRequest}
+553:   <div class="modal-backdrop" onclick={() => processingModalOpen = false}>
+             ^
+554:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+555:       <div class="modal-header">
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:554:2 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+552: {#if processingModalOpen && processingRequest}
+553:   <div class="modal-backdrop" onclick={() => processingModalOpen = false}>
+554:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+               ^
+555:       <div class="modal-header">
+556:         <h3>Process Payout</h3>
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:554:2 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+552: {#if processingModalOpen && processingRequest}
+553:   <div class="modal-backdrop" onclick={() => processingModalOpen = false}>
+554:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+               ^
+555:       <div class="modal-header">
+556:         <h3>Process Payout</h3>
+Error: Cannot apply unknown utility class `space-y-6`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminNotificationCenter.svelte:336:4 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+334:     {:else}
+335:       {#each filteredNotifications as notification (notification.id)}
+336:         <div 
+                   ^
+337:           class="notification-item" 
+338:           class:unread={!notification.is_read}
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminNotificationCenter.svelte:336:4 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+334:     {:else}
+335:       {#each filteredNotifications as notification (notification.id)}
+336:         <div 
+                   ^
+337:           class="notification-item" 
+338:           class:unread={!notification.is_read}
+Error: Cannot apply unknown utility class `space-y-6`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+Error: Cannot apply unknown utility class `bg-gray-50`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CountrySwitcher.svelte:155:10 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+153:         <div class="flex justify-between items-center mb-4">
+154:           <h2 class="text-xl font-semibold">Select Your Country</h2>
+155:           <button
+                      ^
+156:             onclick={() => isOpen = false}
+157:             class="p-1 hover:bg-gray-100 rounded-full"
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ReviewModal.svelte:78:3 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+76:     <!-- Star Rating -->
+77:     <div>
+78:       <label class="block text-sm font-medium text-gray-700 mb-2">
+                  ^
+79:         Rating
+80:       </label>
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ReviewModal.svelte:83:5 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+81:       <div class="flex space-x-1">
+82:         {#each stars as star}
+83:           <button
+                     ^
+84:             type="button"
+85:             onclick={() => rating = star}
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ReviewModal.svelte:127:3 Self-closing HTML tags for non-void elements are ambiguous — use `<textarea ...></textarea>` rather than `<textarea ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag
+125:         Comment (optional)
+126:       </label>
+127:       <textarea
+             ^
+128:         id="review-comment"
+129:         bind:value={comment}
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ImageOptimized.svelte:113:0 noninteractive element cannot have nonnegative tabIndex value
+https://svelte.dev/e/a11y_no_noninteractive_tabindex
+111: </script>
+112: 
+113: <div 
+           ^
+114:   bind:this={containerElement}
+115:   class={containerClasses}
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ImageOptimized.svelte:38:6 `imageElement` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+36:   }: Props = $props();
+37: 
+38:   let imageElement: HTMLImageElement;
+                                        ^
+39:   let containerElement: HTMLDivElement;
+40:   let imageLoaded = $state(false);
+4:02:05 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/SmartStickySearch.svelte:35:6 `inputElement` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+33:   let observer: IntersectionObserver | null = null;
+34:   let searchTimeout: NodeJS.Timeout;
+35:   let inputElement: HTMLInputElement;
+                                        ^
+36: 
+37:   function handleInput() {
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CategorySelector.svelte:156:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+154:   <!-- Step 1: Gender - Compact horizontal pills -->
+155:   <div>
+156:     <label class="block text-sm font-medium text-gray-700 mb-2">
+                 ^
+157:       {whoIsItForLabel} <span class="text-red-500">*</span>
+158:     </label>
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CategorySelector.svelte:182:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+180:   {#if gender && typeCategories.length > 0}
+181:     <div class="animate-in fade-in slide-in-from-bottom-2 duration-200">
+182:       <label class="block text-sm font-medium text-gray-700 mb-2">
+                   ^
+183:         {categoryLabel} <span class="text-red-500">*</span>
+184:       </label>
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CategorySelector.svelte:230:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+228:   {#if type && specificCategories.length > 0}
+229:     <div class="animate-in fade-in slide-in-from-bottom-2 duration-200">
+230:       <label class="block text-sm font-medium text-gray-700 mb-2">
+                   ^
+231:         Be more specific <span class="text-gray-400">(optional - helps buyers find your item)</span>
+232:       </label>
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CollapsibleCategorySelector.svelte:194:8 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+192:       <!-- Step 1: Gender Selection -->
+193:       <div>
+194:         <label class="block text-xs font-medium text-gray-600 mb-1.5">
+                     ^
+195:           {whoIsItForLabel}
+196:         </label>
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CollapsibleCategorySelector.svelte:218:10 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+216:       {#if showTypeLevel && typeCategories.length > 0}
+217:         <div class="animate-in fade-in slide-in-from-left-2 duration-200">
+218:           <label class="block text-xs font-medium text-gray-600 mb-1.5">
+                       ^
+219:             {categoryLabel}
+220:           </label>
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CollapsibleCategorySelector.svelte:256:10 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+254:       {#if showSpecificLevel && specificCategories.length > 0}
+255:         <div class="animate-in fade-in slide-in-from-left-2 duration-200">
+256:           <label class="block text-xs font-medium text-gray-600 mb-1.5">
+                       ^
+257:             {beMoreSpecificLabel} <span class="text-gray-400">{optionalText}</span>
+258:           </label>
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ImageUploaderSupabase.svelte:408:8 Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag
+406:       </div>
+407:       <div class="w-full bg-blue-200 rounded-full h-2">
+408:         <div 
+               ^
+409:           class="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+410:           style="width: {conversionProgress.total > 0 ? (conversionProgress.current / conversionProgress.total) * 100 : 0}%"
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ImageUploaderSupabase.svelte:420:2 `<div>` with a drop, dragover or dragleave handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+418: 
+419:   <!-- Image grid with upload area -->
+420:   <div 
+             ^
+421:     class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3"
+422:     ondrop={handleDrop}
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ImageUploaderSupabase.svelte:565:12 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+563:           <!-- Dismiss button -->
+564:           <div class="ml-auto pl-3">
+565:             <button
+                         ^
+566:               type="button"
+567:               onclick={() => currentError = ''}
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/TutorialToast.svelte:146:6 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+144:       
+145:       <!-- Close button -->
+146:       <button
+                   ^
+147:         onclick={handleDismiss}
+148:         class="flex-shrink-0 text-gray-400 hover:text-gray-600"
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/TutorialToast.svelte:29:6 `toastElement` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+27:   let show = $state(true);
+28:   let targetRect = $state<DOMRect | null>(null);
+29:   let toastElement: HTMLDivElement;
+                                      ^
+30: 
+31:   onMount(() => {
+Error: Cannot apply unknown utility class `bg-white`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+Error: Cannot apply unknown utility class `bg-white`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+Error: Cannot apply unknown utility class `bg-white`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/HighlightQuickView.svelte:97:0 Elements with the 'dialog' interactive role must have a tabindex value
+https://svelte.dev/e/a11y_interactive_supports_focus
+ 95: 
+ 96: <!-- Modal backdrop -->
+ 97: <div
+         ^
+ 98:   class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+ 99:   onclick={handleBackdropClick}
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/HighlightQuickView.svelte:97:0 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+ 95: 
+ 96: <!-- Modal backdrop -->
+ 97: <div
+         ^
+ 98:   class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+ 99:   onclick={handleBackdropClick}
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AuthPopup.svelte:60:2 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+58: 
+59: {#if isOpen}
+60:   <div
+          ^
+61:     class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+62:     onclick={handleBackdropClick}
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AuthPopup.svelte:68:6 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+66:     <div class="bg-white rounded-xl w-full max-w-sm p-6 shadow-xl animate-in fade-in-0 scale-in-95 duration-200">
+67:       <!-- Close button -->
+68:       <button
+                 ^
+69:         onclick={onClose}
+70:         class="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/FeaturedProducts.svelte:65:2 Redundant role 'region'
+https://svelte.dev/e/a11y_no_redundant_roles
+63:   class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4"
+64:   aria-label={sectionTitle}
+65:   role="region"
+                   ^
+66: >
+67:   
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/PromotedHighlights.svelte:124:2 Redundant role 'region'
+https://svelte.dev/e/a11y_no_redundant_roles
+122:   class="bg-gradient-to-br from-gray-50/90 to-white/95 border-y border-gray-200/60 backdrop-blur-sm relative overflow-hidden"
+123:   aria-label={translations.trending_promoted}
+124:   role="region"
+                    ^
+125: >
+126:   <!-- Subtle inner shadow for depth -->
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/PromotedHighlights.svelte:137:6 Redundant role 'navigation'
+https://svelte.dev/e/a11y_no_redundant_roles
+135:     {/if}
+136:     <nav 
+137:       role="navigation"
+                            ^
+138:       aria-label="Promoted products carousel"
+139:       class="overflow-x-auto scrollbar-hide"
+4:02:06 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/PromotedHighlights.svelte:136:4 Non-interactive element `<nav>` should not be assigned mouse or keyboard event listeners
+https://svelte.dev/e/a11y_no_noninteractive_element_interactions
+134:       <span class="sr-only">{sellers.length} premium sellers available</span>
+135:     {/if}
+136:     <nav 
+              ^
+137:       role="navigation"
+138:       aria-label="Promoted products carousel"
+4:02:06 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepPhotosOnly.svelte:66:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+64:     
+65:     <div>
+66:       <label class="block text-sm font-medium text-gray-700 mb-1">
+                  ^
+67:         {i18n.sell_description()}
+68:       </label>
+4:02:06 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepPhotosOnly.svelte:69:6 Self-closing HTML tags for non-void elements are ambiguous — use `<textarea ...></textarea>` rather than `<textarea ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag
+67:         {i18n.sell_description()}
+68:       </label>
+69:       <textarea
+            ^
+70:         bind:value={formData.description}
+71:         placeholder={i18n.sell_descriptionPlaceholder()}
+4:02:06 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepProductInfo.svelte:125:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+123:   <!-- Brand Section -->
+124:   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
+125:     <label class="text-sm font-medium text-gray-700 mb-2 block">
+                 ^
+126:       {i18n.sell_brand()} <span class="text-red-500">*</span>
+127:     </label>
+4:02:06 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepProductInfo.svelte:167:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+165:   <!-- Size Section -->
+166:   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
+167:     <label class="text-sm font-medium text-gray-700 mb-2 block">
+                 ^
+168:       {i18n.sell_size()} <span class="text-red-500">*</span>
+169:     </label>
+4:02:06 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepProductInfo.svelte:202:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+200:   <!-- Step 4: Color (optional) - Visual color picker + custom -->
+201:   <div>
+202:     <label class="block text-sm font-medium text-gray-700 mb-2">
+                 ^
+203:       {i18n.sell_color()} <span class="text-gray-400 text-xs">{i18n.sell_optional()}</span>
+204:     </label>
+4:02:06 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepProductInfo.svelte:246:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+244:   <!-- Step 5: Material (optional) - Common materials -->
+245:   <div>
+246:     <label class="block text-sm font-medium text-gray-700 mb-2">
+                 ^
+247:       {i18n.sell_material()} <span class="text-gray-400 text-xs">{i18n.sell_optional()}</span>
+248:     </label>
+4:02:06 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepCategory.svelte:177:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+175:   <!-- Gender Selection Card -->
+176:   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
+177:     <label class="text-sm font-medium text-gray-700 mb-2 block">
+                 ^
+178:       {i18n.sell_whoIsItFor()} <span class="text-red-500">*</span>
+179:     </label>
+4:02:06 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepCategory.svelte:203:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+201:   {#if typeCategories.length > 0}
+202:     <div class="bg-white rounded-lg border-2 border-gray-200 p-3 animate-in fade-in slide-in-from-top duration-200">
+203:       <label class="text-sm font-medium text-gray-700 mb-2 block">
+                   ^
+204:         {i18n.sell_category()} <span class="text-red-500">*</span>
+205:       </label>
+4:02:06 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepCategory.svelte:235:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+233:   {#if specificCategories.length > 0}
+234:     <div class="bg-white rounded-lg border-2 border-gray-200 p-3 animate-in fade-in slide-in-from-top duration-200">
+235:       <label class="text-sm font-medium text-gray-700 mb-2 block">
+                   ^
+236:         {i18n.sell_beMoreSpecific()} <span class="text-gray-400 text-xs">{i18n.sell_optional()}</span>
+237:       </label>
+4:02:06 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepCategory.svelte:262:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+260:   <!-- Condition Selection Card -->
+261:   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
+262:     <label class="text-sm font-medium text-gray-700 mb-2 block">
+                 ^
+263:       {i18n.sell_condition()} <span class="text-red-500">*</span>
+264:     </label>
+Error: Cannot apply unknown utility class `space-y-6`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+[33msrc/routes/+page.svelte (401:25): "trending_hotPicks" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/+page.svelte".[39m
+[33msrc/routes/+page.svelte (401:50): "trending_hotPicks" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/+page.svelte".[39m
+[33msrc/routes/+page.svelte (403:19): "seller_itemsCount" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/+page.svelte".[39m
+[33msrc/routes/+page.svelte (403:44): "seller_itemsCount" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/+page.svelte".[39m
+[33msrc/routes/+page.svelte (404:28): "search_viewAllResults" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/+page.svelte".[39m
+[33msrc/routes/+page.svelte (404:57): "search_viewAllResults" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/+page.svelte".[39m
+[33msrc/routes/(protected)/onboarding/+page.svelte (422:28): "onboarding_uploadCustom" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/(protected)/onboarding/+page.svelte".[39m
+[33msrc/routes/(protected)/onboarding/+page.svelte (423:27): "onboarding_generateNew" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/(protected)/onboarding/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (115:55): "profile_likes" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (115:76): "profile_likes" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (414:52): "product_noImage" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (432:52): "profile_noFavorites" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (432:79): "profile_noFavorites" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (433:35): "profile_startBrowsing" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (433:64): "profile_startBrowsing" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[32m✓[39m 573 modules transformed.
+rendering chunks...
+[36mvite v7.1.2 [32mbuilding for production...[36m[39m
+[sentry-vite-plugin] Info: Sending telemetry data on issues and performance to Sentry. To disable telemetry, set `options.telemetry` to `false`.
+Using existing cloned repo
+[36mℹ[39m [1m[34m[paraglide] [39m[22mCompiling Messages into ../../packages/i18n/lib/paraglide
+transforming...
+4:02:15 AM [vite-plugin-svelte] src/routes/+page.svelte:451:5 Redundant role 'navigation'
+https://svelte.dev/e/a11y_no_redundant_roles
+449:         <!-- Enhanced Category Pills -->
+450:         <nav 
+451:           role="navigation"
+                                ^
+452:           aria-label="Browse categories"
+453:           class="flex items-center justify-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide"
+4:02:15 AM [vite-plugin-svelte] src/routes/+page.svelte:540:3 `<svelte:component>` is deprecated in runes mode — components are dynamic by default
+https://svelte.dev/e/svelte_component_deprecated
+538:     <!-- Lazy load PromotedHighlights with skeleton -->
+539:     {#if PromotedHighlights}
+540:       <svelte:component
+             ^
+541:         this={PromotedHighlights}
+542:         promotedProducts={promotedProducts.map(product => ({
+4:02:15 AM [vite-plugin-svelte] src/routes/+page.svelte:656:1 `<svelte:component>` is deprecated in runes mode — components are dynamic by default
+https://svelte.dev/e/svelte_component_deprecated
+654: <!-- Quick View Dialog for Premium Sellers (Lazy Loaded) -->
+655: {#if QuickViewDialog && selectedSeller}
+656:   <svelte:component 
+         ^
+657:     this={QuickViewDialog}
+658:     seller={selectedSeller} 
+4:02:15 AM [vite-plugin-svelte] src/routes/+page.svelte:410:1 Unused CSS selector ".sticky-search-container"
+https://svelte.dev/e/css_unused_selector
+408: <style>
+409:   /* Smooth transitions for sticky search */
+410:   .sticky-search-container {
+                               ^
+411:     will-change: transform;
+412:   }
+4:02:16 AM [vite-plugin-svelte] src/routes/(protected)/listings/+page.svelte:223:22 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+221:                     </span>
+222:                     <div class="flex space-x-2">
+223:                       <button 
+                                   ^
+224:                         onclick={(e) => { e.stopPropagation(); goto(`/product/${listing.id}/edit`); }} 
+225:                         class="text-blue-600 hover:text-blue-800"
+4:02:16 AM [vite-plugin-svelte] src/routes/(protected)/sell/+page.svelte:1000:2 Unused CSS selector ".animate-bounce-in"
+https://svelte.dev/e/css_unused_selector
+ 998:   }
+ 999:   
+1000:   .animate-bounce-in {
+                          ^
+1001:     animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+1002:   }
+4:02:16 AM [vite-plugin-svelte] src/routes/(protected)/sell/+page.svelte:1013:2 Unused CSS selector ".animate-check-mark"
+https://svelte.dev/e/css_unused_selector
+1011:   }
+1012:   
+1013:   .animate-check-mark {
+                           ^
+1014:     stroke-dasharray: 100;
+1015:     stroke-dashoffset: 100;
+4:02:16 AM [vite-plugin-svelte] src/routes/(protected)/settings/+page.svelte:322:18 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+320:                     </div>
+321:                   </div>
+322:                   <button
+                               ^
+323:                     onclick={() => handleToggle(item)}
+324:                     class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition-colors"
+4:02:16 AM [vite-plugin-svelte] src/routes/(protected)/settings/+page.svelte:326:20 Self-closing HTML tags for non-void elements are ambiguous — use `<span ...></span>` rather than `<span ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag
+324:                     class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition-colors"
+325:                   >
+326:                     <span class="translate-x-1 inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
+                                                                                                                                 ^
+327:                   </button>
+328:                 </div>
+4:02:17 AM [vite-plugin-svelte] src/routes/profile/[id]/+page.svelte:495:10 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+493:         <div class="p-4 border-b flex justify-between items-center">
+494:           <h2 class="font-semibold">Followers</h2>
+495:           <button 
+                        ^
+496:             onclick={() => showFollowersModal = false}
+497:             class="text-gray-500 hover:text-gray-700"
+4:02:17 AM [vite-plugin-svelte] src/routes/profile/[id]/+page.svelte:547:10 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+545:         <div class="p-4 border-b flex justify-between items-center">
+546:           <h2 class="font-semibold">Following</h2>
+547:           <button 
+                        ^
+548:             onclick={() => showFollowingModal = false}
+549:             class="text-gray-500 hover:text-gray-700"
+4:02:17 AM [vite-plugin-svelte] src/routes/search/+page.svelte:332:0 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+330: </svelte:head>
+331: 
+332: <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0" onclick={handleClickOutside}>
+           ^
+333:   
+334:   <!-- Clean Header Section -->
+4:02:17 AM [vite-plugin-svelte] src/routes/search/+page.svelte:332:0 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+330: </svelte:head>
+331: 
+332: <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0" onclick={handleClickOutside}>
+           ^
+333:   
+334:   <!-- Clean Header Section -->
+4:02:17 AM [vite-plugin-svelte] src/lib/components/Header.svelte:277:14 `<svelte:component>` is deprecated in runes mode — components are dynamic by default
+https://svelte.dev/e/svelte_component_deprecated
+275:             
+276:             {#if notificationPanelLoaded && NotificationPanel}
+277:               <svelte:component 
+                     ^
+278:                 this={NotificationPanel}
+279:                 notifications={$notifications}
+4:02:17 AM [vite-plugin-svelte] src/lib/components/Header.svelte:56:6 `NotificationPanel` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+54:   let signingOut = $state(false);
+55:   let notificationService: RealtimeNotificationService | null = null;
+56:   let NotificationPanel: any = null;
+                                ^
+57:   let notificationPanelLoaded = $state(false);
+58:   
+4:02:17 AM [vite-plugin-svelte] src/lib/components/OrderNotificationToast.svelte:85:3 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+83:       </div>
+84:       
+85:       <button
+                  ^
+86:         onclick={handleDismiss}
+87:         class="flex-shrink-0 text-gray-400 hover:text-gray-500"
+4:02:17 AM [vite-plugin-svelte] src/lib/components/RegionSwitchModal.svelte:120:4 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+118:   <div class="fixed inset-0 z-50 overflow-y-auto">
+119:     <!-- Backdrop -->
+120:     <div 
+           ^
+121:       class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+122:       onclick={onClose}
+4:02:17 AM [vite-plugin-svelte] src/lib/components/RegionSwitchModal.svelte:120:4 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+118:   <div class="fixed inset-0 z-50 overflow-y-auto">
+119:     <!-- Backdrop -->
+120:     <div 
+           ^
+121:       class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+122:       onclick={onClose}
+4:02:17 AM [vite-plugin-svelte] src/lib/components/RegionSwitchModal.svelte:120:4 Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag
+118:   <div class="fixed inset-0 z-50 overflow-y-auto">
+119:     <!-- Backdrop -->
+120:     <div 
+           ^
+121:       class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+122:       onclick={onClose}
+4:02:17 AM [vite-plugin-svelte] src/lib/components/RegionSwitchModal.svelte:129:8 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+127:       <div class="relative bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+128:         <!-- Close button -->
+129:         <button
+                     ^
+130:           onclick={onClose}
+131:           class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+4:02:17 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepPhotosOnly.svelte:66:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+64:     
+65:     <div>
+66:       <label class="block text-sm font-medium text-gray-700 mb-1">
+                  ^
+67:         {i18n.sell_description()}
+68:       </label>
+4:02:17 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepPhotosOnly.svelte:69:6 Self-closing HTML tags for non-void elements are ambiguous — use `<textarea ...></textarea>` rather than `<textarea ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag
+67:         {i18n.sell_description()}
+68:       </label>
+69:       <textarea
+            ^
+70:         bind:value={formData.description}
+71:         placeholder={i18n.sell_descriptionPlaceholder()}
+4:02:17 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepCategory.svelte:177:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+175:   <!-- Gender Selection Card -->
+176:   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
+177:     <label class="text-sm font-medium text-gray-700 mb-2 block">
+                 ^
+178:       {i18n.sell_whoIsItFor()} <span class="text-red-500">*</span>
+179:     </label>
+4:02:17 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepCategory.svelte:203:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+201:   {#if typeCategories.length > 0}
+202:     <div class="bg-white rounded-lg border-2 border-gray-200 p-3 animate-in fade-in slide-in-from-top duration-200">
+203:       <label class="text-sm font-medium text-gray-700 mb-2 block">
+                   ^
+204:         {i18n.sell_category()} <span class="text-red-500">*</span>
+205:       </label>
+4:02:17 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepCategory.svelte:235:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+233:   {#if specificCategories.length > 0}
+234:     <div class="bg-white rounded-lg border-2 border-gray-200 p-3 animate-in fade-in slide-in-from-top duration-200">
+235:       <label class="text-sm font-medium text-gray-700 mb-2 block">
+                   ^
+236:         {i18n.sell_beMoreSpecific()} <span class="text-gray-400 text-xs">{i18n.sell_optional()}</span>
+237:       </label>
+4:02:17 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepCategory.svelte:262:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+260:   <!-- Condition Selection Card -->
+261:   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
+262:     <label class="text-sm font-medium text-gray-700 mb-2 block">
+                 ^
+263:       {i18n.sell_condition()} <span class="text-red-500">*</span>
+264:     </label>
+4:02:17 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepProductInfo.svelte:125:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+123:   <!-- Brand Section -->
+124:   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
+125:     <label class="text-sm font-medium text-gray-700 mb-2 block">
+                 ^
+126:       {i18n.sell_brand()} <span class="text-red-500">*</span>
+127:     </label>
+4:02:17 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepProductInfo.svelte:167:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+165:   <!-- Size Section -->
+166:   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
+167:     <label class="text-sm font-medium text-gray-700 mb-2 block">
+                 ^
+168:       {i18n.sell_size()} <span class="text-red-500">*</span>
+169:     </label>
+4:02:17 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepProductInfo.svelte:202:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+200:   <!-- Step 4: Color (optional) - Visual color picker + custom -->
+201:   <div>
+202:     <label class="block text-sm font-medium text-gray-700 mb-2">
+                 ^
+203:       {i18n.sell_color()} <span class="text-gray-400 text-xs">{i18n.sell_optional()}</span>
+204:     </label>
+4:02:17 AM [vite-plugin-svelte] src/routes/(protected)/sell/components/StepProductInfo.svelte:246:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+244:   <!-- Step 5: Material (optional) - Common materials -->
+245:   <div>
+246:     <label class="block text-sm font-medium text-gray-700 mb-2">
+                 ^
+247:       {i18n.sell_material()} <span class="text-gray-400 text-xs">{i18n.sell_optional()}</span>
+248:     </label>
+4:02:17 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/Card.svelte:24:0 noninteractive element cannot have nonnegative tabIndex value
+https://svelte.dev/e/a11y_no_noninteractive_tabindex
+22: </script>
+23: 
+24: <div 
+         ^
+25:   class={classes} 
+26:   {onclick}
+4:02:17 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/Avatar.svelte:85:0 noninteractive element cannot have nonnegative tabIndex value
+https://svelte.dev/e/a11y_no_noninteractive_tabindex
+83: </script>
+84: 
+85: <div
+        ^
+86:   role={onclick ? "button" : undefined}
+87:   tabindex={onclick ? 0 : undefined}
+4:02:17 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CategoryDropdown.svelte:66:4 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+64:       Discover Amazing Finds
+65:     </h2>
+66:     <button 
+                 ^
+67:       onclick={onClose}
+68:       class="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+4:02:17 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ProductGallery.svelte:35:6 `imageRef` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+33:   let selectedIndex = $state(0);
+34:   let galleryRef: HTMLDivElement;
+35:   let imageRef: HTMLImageElement;
+                                    ^
+36: 
+37:   let selectedImage = $state('/placeholder-product.svg');
+4:02:17 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ProductSheet.svelte:55:6 `sheetRef` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+53:   }: Props = $props();
+54: 
+55:   let sheetRef: HTMLDivElement;
+                                  ^
+56:   let isDragging = $state(false);
+57:   let dragY = $state(0);
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/RatingModal.svelte:99:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+ 97:     <!-- Overall Rating -->
+ 98:     <div class="mb-6">
+ 99:       <label class="block text-sm font-medium text-gray-700 mb-2">
+                   ^
+100:         Overall Rating <span class="text-red-500">*</span>
+101:       </label>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/RatingModal.svelte:122:8 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+120:       <!-- Communication -->
+121:       <div>
+122:         <label class="block text-sm font-medium text-gray-700 mb-1">
+                     ^
+123:           Communication
+124:         </label>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/RatingModal.svelte:143:8 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+141:       <!-- Shipping Speed -->
+142:       <div>
+143:         <label class="block text-sm font-medium text-gray-700 mb-1">
+                     ^
+144:           Shipping Speed
+145:         </label>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/RatingModal.svelte:164:8 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+162:       <!-- Product Quality -->
+163:       <div>
+164:         <label class="block text-sm font-medium text-gray-700 mb-1">
+                     ^
+165:           Product as Described
+166:         </label>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AccountTypeSelector.svelte:170:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+168:   {#if showDiscountCode && (selected === 'brand' || selected === 'premium')}
+169:     <div class="max-w-md mx-auto p-4 bg-gray-50 rounded-lg border border-gray-200">
+170:       <label class="block text-sm font-medium text-gray-700 mb-2">
+                   ^
+171:         {translations.haveDiscountCode || 'Have a discount code?'}
+172:       </label>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/PayoutMethodSelector.svelte:167:12 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+165:               {currentMethod.name} Details
+166:             </h3>
+167:             <button
+                        ^
+168:               type="button"
+169:               onclick={() => expandedMethod = null}
+Error: Cannot apply unknown utility class `space-y-6`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+Error: Cannot apply unknown utility class `space-y-6`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+Error: Cannot apply unknown utility class `space-y-6`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:503:1 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+501: <!-- Rejection Modal -->
+502: {#if rejectionModalOpen && rejectionRequest}
+503:   <div class="modal-backdrop" onclick={() => rejectionModalOpen = false}>
+             ^
+504:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+505:       <div class="modal-header">
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:503:1 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+501: <!-- Rejection Modal -->
+502: {#if rejectionModalOpen && rejectionRequest}
+503:   <div class="modal-backdrop" onclick={() => rejectionModalOpen = false}>
+             ^
+504:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+505:       <div class="modal-header">
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:504:2 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+502: {#if rejectionModalOpen && rejectionRequest}
+503:   <div class="modal-backdrop" onclick={() => rejectionModalOpen = false}>
+504:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+               ^
+505:       <div class="modal-header">
+506:         <h3>Reject Payout Request</h3>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:504:2 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+502: {#if rejectionModalOpen && rejectionRequest}
+503:   <div class="modal-backdrop" onclick={() => rejectionModalOpen = false}>
+504:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+               ^
+505:       <div class="modal-header">
+506:         <h3>Reject Payout Request</h3>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:553:1 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+551: <!-- Processing Modal -->
+552: {#if processingModalOpen && processingRequest}
+553:   <div class="modal-backdrop" onclick={() => processingModalOpen = false}>
+             ^
+554:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+555:       <div class="modal-header">
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:553:1 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+551: <!-- Processing Modal -->
+552: {#if processingModalOpen && processingRequest}
+553:   <div class="modal-backdrop" onclick={() => processingModalOpen = false}>
+             ^
+554:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+555:       <div class="modal-header">
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:554:2 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+552: {#if processingModalOpen && processingRequest}
+553:   <div class="modal-backdrop" onclick={() => processingModalOpen = false}>
+554:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+               ^
+555:       <div class="modal-header">
+556:         <h3>Process Payout</h3>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminPayoutDashboard.svelte:554:2 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+552: {#if processingModalOpen && processingRequest}
+553:   <div class="modal-backdrop" onclick={() => processingModalOpen = false}>
+554:     <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+               ^
+555:       <div class="modal-header">
+556:         <h3>Process Payout</h3>
+Error: Cannot apply unknown utility class `space-y-6`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+Error: Cannot apply unknown utility class `bg-gray-50`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+Error: Cannot apply unknown utility class `space-y-6`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminNotificationCenter.svelte:336:4 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+334:     {:else}
+335:       {#each filteredNotifications as notification (notification.id)}
+336:         <div 
+                   ^
+337:           class="notification-item" 
+338:           class:unread={!notification.is_read}
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AdminNotificationCenter.svelte:336:4 `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+334:     {:else}
+335:       {#each filteredNotifications as notification (notification.id)}
+336:         <div 
+                   ^
+337:           class="notification-item" 
+338:           class:unread={!notification.is_read}
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CountrySwitcher.svelte:155:10 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+153:         <div class="flex justify-between items-center mb-4">
+154:           <h2 class="text-xl font-semibold">Select Your Country</h2>
+155:           <button
+                      ^
+156:             onclick={() => isOpen = false}
+157:             class="p-1 hover:bg-gray-100 rounded-full"
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ReviewModal.svelte:78:3 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+76:     <!-- Star Rating -->
+77:     <div>
+78:       <label class="block text-sm font-medium text-gray-700 mb-2">
+                  ^
+79:         Rating
+80:       </label>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ReviewModal.svelte:83:5 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+81:       <div class="flex space-x-1">
+82:         {#each stars as star}
+83:           <button
+                     ^
+84:             type="button"
+85:             onclick={() => rating = star}
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ReviewModal.svelte:127:3 Self-closing HTML tags for non-void elements are ambiguous — use `<textarea ...></textarea>` rather than `<textarea ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag
+125:         Comment (optional)
+126:       </label>
+127:       <textarea
+             ^
+128:         id="review-comment"
+129:         bind:value={comment}
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ImageOptimized.svelte:113:0 noninteractive element cannot have nonnegative tabIndex value
+https://svelte.dev/e/a11y_no_noninteractive_tabindex
+111: </script>
+112: 
+113: <div 
+           ^
+114:   bind:this={containerElement}
+115:   class={containerClasses}
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ImageOptimized.svelte:38:6 `imageElement` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+36:   }: Props = $props();
+37: 
+38:   let imageElement: HTMLImageElement;
+                                        ^
+39:   let containerElement: HTMLDivElement;
+40:   let imageLoaded = $state(false);
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/SmartStickySearch.svelte:35:6 `inputElement` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+33:   let observer: IntersectionObserver | null = null;
+34:   let searchTimeout: NodeJS.Timeout;
+35:   let inputElement: HTMLInputElement;
+                                        ^
+36: 
+37:   function handleInput() {
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CategorySelector.svelte:156:4 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+154:   <!-- Step 1: Gender - Compact horizontal pills -->
+155:   <div>
+156:     <label class="block text-sm font-medium text-gray-700 mb-2">
+                 ^
+157:       {whoIsItForLabel} <span class="text-red-500">*</span>
+158:     </label>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CategorySelector.svelte:182:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+180:   {#if gender && typeCategories.length > 0}
+181:     <div class="animate-in fade-in slide-in-from-bottom-2 duration-200">
+182:       <label class="block text-sm font-medium text-gray-700 mb-2">
+                   ^
+183:         {categoryLabel} <span class="text-red-500">*</span>
+184:       </label>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CategorySelector.svelte:230:6 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+228:   {#if type && specificCategories.length > 0}
+229:     <div class="animate-in fade-in slide-in-from-bottom-2 duration-200">
+230:       <label class="block text-sm font-medium text-gray-700 mb-2">
+                   ^
+231:         Be more specific <span class="text-gray-400">(optional - helps buyers find your item)</span>
+232:       </label>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CollapsibleCategorySelector.svelte:194:8 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+192:       <!-- Step 1: Gender Selection -->
+193:       <div>
+194:         <label class="block text-xs font-medium text-gray-600 mb-1.5">
+                     ^
+195:           {whoIsItForLabel}
+196:         </label>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CollapsibleCategorySelector.svelte:218:10 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+216:       {#if showTypeLevel && typeCategories.length > 0}
+217:         <div class="animate-in fade-in slide-in-from-left-2 duration-200">
+218:           <label class="block text-xs font-medium text-gray-600 mb-1.5">
+                       ^
+219:             {categoryLabel}
+220:           </label>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/CollapsibleCategorySelector.svelte:256:10 A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control
+254:       {#if showSpecificLevel && specificCategories.length > 0}
+255:         <div class="animate-in fade-in slide-in-from-left-2 duration-200">
+256:           <label class="block text-xs font-medium text-gray-600 mb-1.5">
+                       ^
+257:             {beMoreSpecificLabel} <span class="text-gray-400">{optionalText}</span>
+258:           </label>
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ImageUploaderSupabase.svelte:408:8 Self-closing HTML tags for non-void elements are ambiguous — use `<div ...></div>` rather than `<div ... />`
+https://svelte.dev/e/element_invalid_self_closing_tag
+406:       </div>
+407:       <div class="w-full bg-blue-200 rounded-full h-2">
+408:         <div 
+               ^
+409:           class="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+410:           style="width: {conversionProgress.total > 0 ? (conversionProgress.current / conversionProgress.total) * 100 : 0}%"
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ImageUploaderSupabase.svelte:420:2 `<div>` with a drop, dragover or dragleave handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions
+418: 
+419:   <!-- Image grid with upload area -->
+420:   <div 
+             ^
+421:     class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3"
+422:     ondrop={handleDrop}
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/ImageUploaderSupabase.svelte:565:12 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+563:           <!-- Dismiss button -->
+564:           <div class="ml-auto pl-3">
+565:             <button
+                         ^
+566:               type="button"
+567:               onclick={() => currentError = ''}
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/TutorialToast.svelte:146:6 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+144:       
+145:       <!-- Close button -->
+146:       <button
+                   ^
+147:         onclick={handleDismiss}
+148:         class="flex-shrink-0 text-gray-400 hover:text-gray-600"
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/TutorialToast.svelte:29:6 `toastElement` is updated, but is not declared with `$state(...)`. Changing its value will not correctly trigger updates
+https://svelte.dev/e/non_reactive_update
+27:   let show = $state(true);
+28:   let targetRect = $state<DOMRect | null>(null);
+29:   let toastElement: HTMLDivElement;
+                                      ^
+30: 
+31:   onMount(() => {
+Error: Cannot apply unknown utility class `bg-white`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+Error: Cannot apply unknown utility class `bg-white`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+Error: Cannot apply unknown utility class `bg-white`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AuthPopup.svelte:60:2 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+58: 
+59: {#if isOpen}
+60:   <div
+          ^
+61:     class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+62:     onclick={handleBackdropClick}
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/AuthPopup.svelte:68:6 Buttons and links should either contain text or have an `aria-label` or `aria-labelledby` attribute
+https://svelte.dev/e/a11y_consider_explicit_label
+66:     <div class="bg-white rounded-xl w-full max-w-sm p-6 shadow-xl animate-in fade-in-0 scale-in-95 duration-200">
+67:       <!-- Close button -->
+68:       <button
+                 ^
+69:         onclick={onClose}
+70:         class="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/HighlightQuickView.svelte:97:0 Elements with the 'dialog' interactive role must have a tabindex value
+https://svelte.dev/e/a11y_interactive_supports_focus
+ 95: 
+ 96: <!-- Modal backdrop -->
+ 97: <div
+         ^
+ 98:   class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+ 99:   onclick={handleBackdropClick}
+4:02:18 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/HighlightQuickView.svelte:97:0 Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events
+ 95: 
+ 96: <!-- Modal backdrop -->
+ 97: <div
+         ^
+ 98:   class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+ 99:   onclick={handleBackdropClick}
+4:02:19 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/FeaturedProducts.svelte:65:2 Redundant role 'region'
+https://svelte.dev/e/a11y_no_redundant_roles
+63:   class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4"
+64:   aria-label={sectionTitle}
+65:   role="region"
+                   ^
+66: >
+67:   
+4:02:19 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/PromotedHighlights.svelte:124:2 Redundant role 'region'
+https://svelte.dev/e/a11y_no_redundant_roles
+122:   class="bg-gradient-to-br from-gray-50/90 to-white/95 border-y border-gray-200/60 backdrop-blur-sm relative overflow-hidden"
+123:   aria-label={translations.trending_promoted}
+124:   role="region"
+                    ^
+125: >
+126:   <!-- Subtle inner shadow for depth -->
+4:02:19 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/PromotedHighlights.svelte:137:6 Redundant role 'navigation'
+https://svelte.dev/e/a11y_no_redundant_roles
+135:     {/if}
+136:     <nav 
+137:       role="navigation"
+                            ^
+138:       aria-label="Promoted products carousel"
+139:       class="overflow-x-auto scrollbar-hide"
+4:02:19 AM [vite-plugin-svelte] K:/driplo-turbo-1/packages/ui/dist/PromotedHighlights.svelte:136:4 Non-interactive element `<nav>` should not be assigned mouse or keyboard event listeners
+https://svelte.dev/e/a11y_no_noninteractive_element_interactions
+134:       <span class="sr-only">{sellers.length} premium sellers available</span>
+135:     {/if}
+136:     <nav 
+              ^
+137:       role="navigation"
+138:       aria-label="Promoted products carousel"
+Error: Cannot apply unknown utility class `space-y-6`. Are you using CSS modules or similar and missing `@reference`? https://tailwindcss.com/docs/functions-and-directives#reference-directive
+    at onInvalidCandidate (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:1332)
+    at ge (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:13:29871)
+    at K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:373
+    at L (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:3:1656)
+    at je (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:18:172)
+    at yi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:780)
+    at async bi (K:\driplo-turbo-1\node_modules\.pnpm\tailwindcss@4.1.12\node_modules\tailwindcss\dist\lib.js:35:1123)
+    at async _r (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+node@4.1.12\node_modules\@tailwindcss\node\dist\index.js:10:3384)
+    at async W (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4048)
+    at async Object.Once (K:\driplo-turbo-1\node_modules\.pnpm\@tailwindcss+postcss@4.1.12\node_modules\@tailwindcss\postcss\dist\index.js:10:4318)
+[33m.svelte-kit/generated/client-optimized/app.js (107:20): "init" is not exported by "src/hooks.client.ts", imported by ".svelte-kit/generated/client-optimized/app.js".[39m
+[33msrc/routes/+page.svelte (401:25): "trending_hotPicks" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/+page.svelte".[39m
+[33msrc/routes/+page.svelte (401:50): "trending_hotPicks" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/+page.svelte".[39m
+[33msrc/routes/+page.svelte (403:19): "seller_itemsCount" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/+page.svelte".[39m
+[33msrc/routes/+page.svelte (403:44): "seller_itemsCount" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/+page.svelte".[39m
+[33msrc/routes/+page.svelte (404:28): "search_viewAllResults" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/+page.svelte".[39m
+[33msrc/routes/+page.svelte (404:57): "search_viewAllResults" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/+page.svelte".[39m
+[33msrc/routes/(protected)/onboarding/+page.svelte (422:28): "onboarding_uploadCustom" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/(protected)/onboarding/+page.svelte".[39m
+[33msrc/routes/(protected)/onboarding/+page.svelte (423:27): "onboarding_generateNew" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/(protected)/onboarding/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (115:55): "profile_likes" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (115:76): "profile_likes" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (414:52): "product_noImage" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (432:52): "profile_noFavorites" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (432:79): "profile_noFavorites" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (433:35): "profile_startBrowsing" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[33msrc/routes/profile/[id]/+page.svelte (433:64): "profile_startBrowsing" is not exported by "../../packages/i18n/lib/index.js", imported by "src/routes/profile/[id]/+page.svelte".[39m
+[32m✓[39m 998 modules transformed.
+rendering chunks...
+[33m[plugin vite:reporter] 
+(!) K:/driplo-turbo-1/apps/web/src/lib/cookies/production-cookie-system.ts is dynamically imported by K:/driplo-turbo-1/apps/web/src/lib/utils/language-switcher.ts but also statically imported by K:/driplo-turbo-1/apps/web/src/lib/components/UnifiedCookieConsent.svelte, K:/driplo-turbo-1/apps/web/src/routes/+layout.svelte, dynamic import will not move module into another chunk.
+[39m
+[33m[plugin vite:reporter] 
+(!) K:/driplo-turbo-1/packages/ui/dist/ProductCard.svelte is dynamically imported by K:/driplo-turbo-1/packages/ui/dist/LazySearchResults.svelte but also statically imported by K:/driplo-turbo-1/packages/ui/dist/FeaturedProducts.svelte, K:/driplo-turbo-1/packages/ui/dist/VirtualProductGrid.svelte, K:/driplo-turbo-1/packages/ui/dist/index.js, dynamic import will not move module into another chunk.
+[39m
+[sentry-vite-plugin] Warning: No auth token provided. Will not create release. Please set the `authToken` option. You can find information on how to generate a Sentry auth token here: https://docs.sentry.io/api/auth/
+computing gzip size...
+[sentry-vite-plugin] Warning: No auth token provided. Will not upload source maps. Please set the `authToken` option. You can find information on how to generate a Sentry auth token here: https://docs.sentry.io/api/auth/
+[2m.svelte-kit/output/client/[22m[32m_app/version.json                                      [39m[1m[2m  0.03 kB[22m[1m[22m[2m │ gzip:   0.05 kB[22m
+[2m.svelte-kit/output/client/[22m[32m.vite/manifest.json                                    [39m[1m[2m 32.83 kB[22m[1m[22m[2m │ gzip:   3.35 kB[22m
+[2m.svelte-kit/output/client/[22m[35m_app/immutable/assets/5.CyaOQ4rU.css                   [39m[1m[2m  0.06 kB[22m[1m[22m[2m │ gzip:   0.08 kB[22m
+[2m.svelte-kit/output/client/[22m[35m_app/immutable/assets/18.DQEB6zD3.css                  [39m[1m[2m  0.11 kB[22m[1m[22m[2m │ gzip:   0.10 kB[22m
+[2m.svelte-kit/output/client/[22m[35m_app/immutable/assets/46.DaOzI50t.css                  [39m[1m[2m  0.14 kB[22m[1m[22m[2m │ gzip:   0.11 kB[22m
+[2m.svelte-kit/output/client/[22m[35m_app/immutable/assets/40.CGx84DNT.css                  [39m[1m[2m  0.14 kB[22m[1m[22m[2m │ gzip:   0.11 kB[22m
+[2m.svelte-kit/output/client/[22m[35m_app/immutable/assets/43.C6mMohG1.css                  [39m[1m[2m  0.14 kB[22m[1m[22m[2m │ gzip:   0.11 kB[22m
+[2m.svelte-kit/output/client/[22m[35m_app/immutable/assets/34.ChQ1AHpL.css                  [39m[1m[2m  0.17 kB[22m[1m[22m[2m │ gzip:   0.12 kB[22m
+[2m.svelte-kit/output/client/[22m[35m_app/immutable/assets/1._mS1DO2N.css                   [39m[1m[2m  0.20 kB[22m[1m[22m[2m │ gzip:   0.16 kB[22m
+[2m.svelte-kit/output/client/[22m[35m_app/immutable/assets/36.B0xH5o93.css                  [39m[1m[2m  0.84 kB[22m[1m[22m[2m │ gzip:   0.33 kB[22m
+[2m.svelte-kit/output/client/[22m[35m_app/immutable/assets/PromotedHighlights.B1BnoG-j.css  [39m[1m[2m 10.25 kB[22m[1m[22m[2m │ gzip:   2.70 kB[22m
+[2m.svelte-kit/output/client/[22m[35m_app/immutable/assets/0.DW7Ij_5x.css                   [39m[1m[2m141.14 kB[22m[1m[22m[2m │ gzip:  19.68 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/W38swcBE.js                      [39m[1m[2m  0.61 kB[22m[1m[22m[2m │ gzip:   0.33 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/N_IM7yit.js                      [39m[1m[2m  0.63 kB[22m[1m[22m[2m │ gzip:   0.34 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/CnnjwRB_.js                      [39m[1m[2m  0.63 kB[22m[1m[22m[2m │ gzip:   0.33 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/entry/start.DXKVbdc3.js                 [39m[1m[2m  0.63 kB[22m[1m[22m[2m │ gzip:   0.35 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/0.C9sClKKG.js                     [39m[1m[2m  0.64 kB[22m[1m[22m[2m │ gzip:   0.35 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/DPIOqmmP.js                      [39m[1m[2m  0.65 kB[22m[1m[22m[2m │ gzip:   0.35 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/47.DCPVcnvs.js                    [39m[1m[2m  0.70 kB[22m[1m[22m[2m │ gzip:   0.39 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/21.sUGjhysC.js                    [39m[1m[2m  0.82 kB[22m[1m[22m[2m │ gzip:   0.48 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/DNyA_S_t.js                      [39m[1m[2m  0.84 kB[22m[1m[22m[2m │ gzip:   0.46 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/Bm5dJdBp.js                      [39m[1m[2m  0.84 kB[22m[1m[22m[2m │ gzip:   0.48 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/BjQiFJfU.js                      [39m[1m[2m  0.96 kB[22m[1m[22m[2m │ gzip:   0.61 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/BVw3azIi.js                      [39m[1m[2m  0.96 kB[22m[1m[22m[2m │ gzip:   0.53 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/Bns5alx7.js                      [39m[1m[2m  0.96 kB[22m[1m[22m[2m │ gzip:   0.53 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/4.BKJ6Ud2c.js                     [39m[1m[2m  1.00 kB[22m[1m[22m[2m │ gzip:   0.55 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/4UxPg32N.js                      [39m[1m[2m  1.06 kB[22m[1m[22m[2m │ gzip:   0.54 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/8.Xoz8Krbu.js                     [39m[1m[2m  1.08 kB[22m[1m[22m[2m │ gzip:   0.62 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/WNKgeuEq.js                      [39m[1m[2m  1.12 kB[22m[1m[22m[2m │ gzip:   0.60 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/D1HwRYzL.js                      [39m[1m[2m  1.29 kB[22m[1m[22m[2m │ gzip:   0.67 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/CNsegXnW.js                      [39m[1m[2m  1.31 kB[22m[1m[22m[2m │ gzip:   0.60 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/Dp9R8uJO.js                      [39m[1m[2m  1.36 kB[22m[1m[22m[2m │ gzip:   0.77 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/DIrhuhx8.js                      [39m[1m[2m  1.43 kB[22m[1m[22m[2m │ gzip:   0.71 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/DxR8kdzg.js                      [39m[1m[2m  1.48 kB[22m[1m[22m[2m │ gzip:   0.82 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/DdIa10Oz.js                      [39m[1m[2m  1.57 kB[22m[1m[22m[2m │ gzip:   0.75 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/DE83-m2Z.js                      [39m[1m[2m  1.81 kB[22m[1m[22m[2m │ gzip:   0.88 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/CECGyjJP.js                      [39m[1m[2m  1.83 kB[22m[1m[22m[2m │ gzip:   0.94 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/CqluF-t_.js                      [39m[1m[2m  1.88 kB[22m[1m[22m[2m │ gzip:   0.90 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/Du2zJqAR.js                      [39m[1m[2m  1.92 kB[22m[1m[22m[2m │ gzip:   1.04 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/39.BJAlaNdg.js                    [39m[1m[2m  2.05 kB[22m[1m[22m[2m │ gzip:   1.12 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/5ejeRoP-.js                      [39m[1m[2m  2.15 kB[22m[1m[22m[2m │ gzip:   1.02 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/3.Cfp5g1Ex.js                     [39m[1m[2m  2.27 kB[22m[1m[22m[2m │ gzip:   1.09 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/cIYUXQJX.js                      [39m[1m[2m  2.40 kB[22m[1m[22m[2m │ gzip:   1.13 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/DsSsvaAZ.js                      [39m[1m[2m  2.46 kB[22m[1m[22m[2m │ gzip:   1.36 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/C7uXpQ95.js                      [39m[1m[2m  2.58 kB[22m[1m[22m[2m │ gzip:   1.29 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/D41c8Dj-.js                      [39m[1m[2m  2.83 kB[22m[1m[22m[2m │ gzip:   1.32 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/Cyt2mZeD.js                      [39m[1m[2m  3.31 kB[22m[1m[22m[2m │ gzip:   1.41 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/MUn74zJP.js                      [39m[1m[2m  3.63 kB[22m[1m[22m[2m │ gzip:   1.89 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/42.CiSoogjT.js                    [39m[1m[2m  3.67 kB[22m[1m[22m[2m │ gzip:   1.58 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/31.D9WTA0vV.js                    [39m[1m[2m  3.81 kB[22m[1m[22m[2m │ gzip:   1.87 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/9.BJt9qjhV.js                     [39m[1m[2m  4.14 kB[22m[1m[22m[2m │ gzip:   1.93 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/DiTHxUlv.js                      [39m[1m[2m  4.14 kB[22m[1m[22m[2m │ gzip:   1.87 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/1.DLslZWlR.js                     [39m[1m[2m  4.38 kB[22m[1m[22m[2m │ gzip:   1.92 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/12.B7WE1SDp.js                    [39m[1m[2m  4.52 kB[22m[1m[22m[2m │ gzip:   2.08 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/CmwJbq9z.js                      [39m[1m[2m  4.62 kB[22m[1m[22m[2m │ gzip:   2.08 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/23.BoLxhgFT.js                    [39m[1m[2m  4.75 kB[22m[1m[22m[2m │ gzip:   1.93 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/2.gOgT2CQG.js                     [39m[1m[2m  5.14 kB[22m[1m[22m[2m │ gzip:   2.26 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/27.BbdpPY59.js                    [39m[1m[2m  5.27 kB[22m[1m[22m[2m │ gzip:   2.47 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/15.CvoH6gTf.js                    [39m[1m[2m  5.75 kB[22m[1m[22m[2m │ gzip:   2.76 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/14.Pjsks34L.js                    [39m[1m[2m  6.99 kB[22m[1m[22m[2m │ gzip:   3.09 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/13.Bdf7Qpfo.js                    [39m[1m[2m  7.04 kB[22m[1m[22m[2m │ gzip:   2.35 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/CiOl7nx-.js                      [39m[1m[2m  7.90 kB[22m[1m[22m[2m │ gzip:   1.97 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/34.B-ka9WpU.js                    [39m[1m[2m  8.46 kB[22m[1m[22m[2m │ gzip:   3.45 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/25.0_K4Gza2.js                    [39m[1m[2m  8.57 kB[22m[1m[22m[2m │ gzip:   3.24 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/30.C8hmU_nm.js                    [39m[1m[2m  8.96 kB[22m[1m[22m[2m │ gzip:   3.59 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/10.BOo54Pf2.js                    [39m[1m[2m  9.28 kB[22m[1m[22m[2m │ gzip:   3.57 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/24.QFI-aVwb.js                    [39m[1m[2m 10.00 kB[22m[1m[22m[2m │ gzip:   3.97 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/28.BgMv6MzS.js                    [39m[1m[2m 10.19 kB[22m[1m[22m[2m │ gzip:   4.10 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/6.XXSEkSgp.js                     [39m[1m[2m 10.24 kB[22m[1m[22m[2m │ gzip:   3.13 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/32.SQmfkqoz.js                    [39m[1m[2m 10.56 kB[22m[1m[22m[2m │ gzip:   3.41 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/11.Ez6uHtWE.js                    [39m[1m[2m 11.17 kB[22m[1m[22m[2m │ gzip:   4.13 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/7.C9o2v0y4.js                     [39m[1m[2m 11.88 kB[22m[1m[22m[2m │ gzip:   4.23 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/22.C2bt8XA2.js                    [39m[1m[2m 13.89 kB[22m[1m[22m[2m │ gzip:   4.66 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/20.WlnJoEYf.js                    [39m[1m[2m 14.02 kB[22m[1m[22m[2m │ gzip:   4.48 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/29.lhtG6UI4.js                    [39m[1m[2m 14.14 kB[22m[1m[22m[2m │ gzip:   5.43 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/37.CehOOgt8.js                    [39m[1m[2m 14.43 kB[22m[1m[22m[2m │ gzip:   4.92 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/17.3yyNjTOq.js                    [39m[1m[2m 16.81 kB[22m[1m[22m[2m │ gzip:   5.33 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/40.CgSkESzJ.js                    [39m[1m[2m 17.81 kB[22m[1m[22m[2m │ gzip:   6.69 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/5.DIVC0liq.js                     [39m[1m[2m 19.34 kB[22m[1m[22m[2m │ gzip:   6.70 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/BmSq5g15.js                      [39m[1m[2m 19.94 kB[22m[1m[22m[2m │ gzip:   8.15 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/Cu3nDi9M.js                      [39m[1m[2m 22.07 kB[22m[1m[22m[2m │ gzip:   8.74 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/18.B6GSM76a.js                    [39m[1m[2m 23.47 kB[22m[1m[22m[2m │ gzip:   7.41 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/44.BBVR3wo_.js                    [39m[1m[2m 24.14 kB[22m[1m[22m[2m │ gzip:   7.42 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/16.DplfahwN.js                    [39m[1m[2m 24.86 kB[22m[1m[22m[2m │ gzip:   7.93 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/43.DkInF5Co.js                    [39m[1m[2m 27.20 kB[22m[1m[22m[2m │ gzip:   8.93 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/26.DgEgc9EC.js                    [39m[1m[2m 27.86 kB[22m[1m[22m[2m │ gzip:   9.44 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/46.zfrYyVLB.js                    [39m[1m[2m 29.38 kB[22m[1m[22m[2m │ gzip:   8.64 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/CyIj-r2H.js                      [39m[1m[2m 29.69 kB[22m[1m[22m[2m │ gzip:   9.81 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/41.CkZ8ARPf.js                    [39m[1m[2m 37.28 kB[22m[1m[22m[2m │ gzip:   8.65 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/lQH3UYJ1.js                      [39m[1m[2m 39.33 kB[22m[1m[22m[2m │ gzip:  15.42 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/BwU9gbET.js                      [39m[1m[2m 41.51 kB[22m[1m[22m[2m │ gzip:  14.43 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/CgO8CQ9H.js                      [39m[1m[2m 45.33 kB[22m[1m[22m[2m │ gzip:  15.64 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/B9OnJK-x.js                      [39m[1m[2m 48.12 kB[22m[1m[22m[2m │ gzip:  12.10 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/nodes/36.BX5ZO-on.js                    [39m[1m[2m116.85 kB[22m[1m[22m[2m │ gzip:  31.05 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/B_gWURo5.js                      [39m[1m[2m125.42 kB[22m[1m[22m[2m │ gzip:  33.91 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/CQcRvdZG.js                      [39m[1m[2m130.87 kB[22m[1m[22m[2m │ gzip:  37.11 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/entry/app.KcgLvnxv.js                   [39m[1m[2m262.56 kB[22m[1m[22m[2m │ gzip:  86.69 kB[22m
+[2m.svelte-kit/output/client/[22m[36m_app/immutable/chunks/BwZZAuEL.js                      [39m[1m[2m415.52 kB[22m[1m[22m[2m │ gzip: 119.10 kB[22m
+[32m✓ built in 13.56s[39m
+[36mvite v7.1.2 [32mbuilding for production...[36m[39m
+transforming...
+[32m✓[39m 2 modules transformed.
+rendering chunks...
+computing gzip size...
+[2m.svelte-kit/output/client/[22m[36mservice-worker.mjs  [39m[1m[2m6.21 kB[22m[1m[22m[2m │ gzip: 1.91 kB[22m
+[32m✓ built in 16ms[39m
+[sentry-vite-plugin] Warning: No auth token provided. Will not create release. Please set the `authToken` option. You can find information on how to generate a Sentry auth token here: https://docs.sentry.io/api/auth/
+[2m.svelte-kit/output/server/[22m[32m.vite/manifest.json                                                      [39m[1m[2m 55.12 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[35m_app/immutable/assets/_page.CyaOQ4rU.css                                 [39m[1m[2m  0.06 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[35m_app/immutable/assets/_page.DQEB6zD3.css                                 [39m[1m[2m  0.11 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[35m_app/immutable/assets/_page.DaOzI50t.css                                 [39m[1m[2m  0.14 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[35m_app/immutable/assets/_page.CGx84DNT.css                                 [39m[1m[2m  0.14 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[35m_app/immutable/assets/_page.C6mMohG1.css                                 [39m[1m[2m  0.14 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[35m_app/immutable/assets/_page.ChQ1AHpL.css                                 [39m[1m[2m  0.17 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[35m_app/immutable/assets/_error._mS1DO2N.css                                [39m[1m[2m  0.20 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[35m_app/immutable/assets/_page.B0xH5o93.css                                 [39m[1m[2m  0.84 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[35m_app/immutable/assets/PromotedHighlights.XI9KhiXM.css                    [39m[1m[2m  5.45 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[35m_app/immutable/assets/_layout.BDZFtI64.css                               [39m[1m[2m140.88 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/false.js                                                          [39m[1m[2m  0.82 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/index4.js                                                         [39m[1m[2m  0.86 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/demo/_page.server.ts.js                                    [39m[1m[2m  0.87 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/purchases/_page.server.ts.js         [39m[1m[2m  0.90 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/purchases/_page.server.ts.js                   [39m[1m[2m  0.90 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/register/_page.server.ts.js                                [39m[1m[2m  0.90 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/sold/_page.server.ts.js              [39m[1m[2m  0.91 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/html.js                                                           [39m[1m[2m  0.92 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/earnings/_page.server.ts.js          [39m[1m[2m  0.92 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/settings/_page.server.ts.js                    [39m[1m[2m  0.92 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/fallbacks/layout.svelte.js                                       [39m[1m[2m  0.93 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/seo-urls.js                                                       [39m[1m[2m  0.94 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/matchers/locale.js                                               [39m[1m[2m  0.94 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/_...slug_/_page.svelte.js                                  [39m[1m[2m  0.96 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/logout/_server.ts.js                                   [39m[1m[2m  0.98 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/client.js                                                         [39m[1m[2m  1.01 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/sold/_page.ts.js                     [39m[1m[2m  1.01 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/_layout.ts.js                                  [39m[1m[2m  1.02 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/earnings/_page.ts.js                 [39m[1m[2m  1.03 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/shared-server.js                                                  [39m[1m[2m  1.06 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/_layout.ts.js                                              [39m[1m[2m  1.07 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(auth)/_layout.server.ts.js                                [39m[1m[2m  1.09 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/onboarding/_page.ts.js                         [39m[1m[2m  1.10 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/state.svelte.js                                                   [39m[1m[2m  1.11 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/_layout.server.ts.js                           [39m[1m[2m  1.15 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/public.js                                                         [39m[1m[2m  1.17 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/server.js                                                         [39m[1m[2m  1.17 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36minternal.js                                                              [39m[1m[2m  1.17 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/client2.js                                                        [39m[1m[2m  1.19 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/profile/edit/_page.ts.js                       [39m[1m[2m  1.23 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/private.js                                                        [39m[1m[2m  1.24 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(admin)/_layout.server.ts.js                               [39m[1m[2m  1.25 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/recent-listings/_server.ts.js                      [39m[1m[2m  1.32 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/profile/_page.server.ts.js                     [39m[1m[2m  1.33 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/become-seller/_page.server.ts.js               [39m[1m[2m  1.40 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/environment.js                                                    [39m[1m[2m  1.42 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/ProductCardSkeleton.js                                            [39m[1m[2m  1.46 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/subscription-plans/_server.ts.js                   [39m[1m[2m  1.51 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/server2.js                                                        [39m[1m[2m  1.51 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/robots.txt/_server.ts.js                               [39m[1m[2m  1.52 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/Card.js                                                           [39m[1m[2m  1.53 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/region/switch/_server.ts.js                        [39m[1m[2m  1.53 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/stores.js                                                         [39m[1m[2m  1.55 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(auth)/auth-code-error/_page.svelte.js                     [39m[1m[2m  1.55 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/welcome/_page.server.ts.js                     [39m[1m[2m  1.69 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/PromotedHighlights.svelte_svelte_type_style_lang.js               [39m[1m[2m  1.70 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/favorites/cleanup/_server.ts.js                    [39m[1m[2m  1.71 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/onboarding/complete/_server.ts.js                  [39m[1m[2m  1.82 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/price.js                                                          [39m[1m[2m  1.92 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/utils.js                                                          [39m[1m[2m  1.93 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/messages/new/_page.ts.js                       [39m[1m[2m  2.01 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/products/_id_/_server.ts.js                        [39m[1m[2m  2.04 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/offer/_sellerId_/_page.server.ts.js            [39m[1m[2m  2.05 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/order-management/_page.server.ts.js  [39m[1m[2m  2.05 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/subscriptions/cancel/_server.ts.js                 [39m[1m[2m  2.09 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/subscriptions/plans/_server.ts.js                  [39m[1m[2m  2.10 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/checkout/_productId_/_page.ts.js               [39m[1m[2m  2.12 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/stripe-debug/_server.ts.js                         [39m[1m[2m  2.15 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/geo-detection.js                                                  [39m[1m[2m  2.15 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/subscriptions/discount/_server.ts.js               [39m[1m[2m  2.17 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/listings/_page.server.ts.js                    [39m[1m[2m  2.17 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/payments/create-intent/_server.ts.js               [39m[1m[2m  2.23 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/auth/verified/_page.svelte.js                              [39m[1m[2m  2.23 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(admin)/admin/_page.server.ts.js                           [39m[1m[2m  2.25 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/followers/toggle/_server.ts.js                     [39m[1m[2m  2.38 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/checkout/confirm/_server.ts.js                     [39m[1m[2m  2.39 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/earnings/_page.svelte.js             [39m[1m[2m  2.39 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/auth.js                                                           [39m[1m[2m  2.44 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/LoadingSpinner.js                                                 [39m[1m[2m  2.46 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/upgrade/success/_page.server.ts.js   [39m[1m[2m  2.50 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/_layout.server.ts.js                                       [39m[1m[2m  2.58 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/cron/archive-orders/_server.ts.js                  [39m[1m[2m  2.61 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/_page.ts.js                          [39m[1m[2m  2.62 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/products/price-suggestions/_server.ts.js           [39m[1m[2m  2.67 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/favorites/status/_server.ts.js                     [39m[1m[2m  2.71 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/Avatar.js                                                         [39m[1m[2m  2.74 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/test-stripe/_server.ts.js                          [39m[1m[2m  2.75 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/OrderStatus.js                                                    [39m[1m[2m  2.78 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/test-seo/_server.ts.js                             [39m[1m[2m  2.79 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/sellers/_sellerId_/products/_server.ts.js          [39m[1m[2m  2.80 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/favorites/_page.server.ts.js                   [39m[1m[2m  2.83 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/profile/update-account-type/_server.ts.js          [39m[1m[2m  2.83 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/Input.js                                                          [39m[1m[2m  2.94 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(auth)/_layout.svelte.js                                   [39m[1m[2m  3.00 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/auth/callback/_server.ts.js                            [39m[1m[2m  3.00 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/product/_id_/edit/_page.server.ts.js           [39m[1m[2m  3.03 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/subscriptions/validate-discount/_server.ts.js      [39m[1m[2m  3.05 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/jobs/process-slugs/_server.ts.js                   [39m[1m[2m  3.05 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/admin/archive-orders/_server.ts.js                 [39m[1m[2m  3.08 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/messageNotifications.js                                           [39m[1m[2m  3.13 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(admin)/admin/payouts/_page.server.ts.js                   [39m[1m[2m  3.13 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/messages/_page.server.ts.js                    [39m[1m[2m  3.15 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/sales/_page.server.ts.js             [39m[1m[2m  3.24 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/Modal.js                                                          [39m[1m[2m  3.37 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/index.js                                                          [39m[1m[2m  3.43 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/favorites/_productId_/_server.ts.js                [39m[1m[2m  3.46 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/upgrade/_page.server.ts.js           [39m[1m[2m  3.54 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/reviews/_server.ts.js                              [39m[1m[2m  3.56 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/health/_server.ts.js                               [39m[1m[2m  3.61 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/webhooks/stripe/subscriptions/_server.ts.js        [39m[1m[2m  3.79 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(auth)/forgot-password/_page.server.ts.js                  [39m[1m[2m  3.86 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(auth)/login/_page.server.ts.js                            [39m[1m[2m  3.95 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/privacy/cookies/_page.svelte.js                            [39m[1m[2m  3.98 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/auth/confirm/_server.ts.js                             [39m[1m[2m  4.00 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/sitemap.xml/_server.ts.js                              [39m[1m[2m  4.03 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/checkout/bundle/_page.svelte.js                [39m[1m[2m  4.05 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/search/_server.ts.js                               [39m[1m[2m  4.22 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/subscriptions/create/_server.ts.js                 [39m[1m[2m  4.24 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/product/_id_/_page.server.ts.js                            [39m[1m[2m  4.31 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/rate-limiter.js                                                   [39m[1m[2m  4.34 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/profile/_id_/_page.server.ts.js                            [39m[1m[2m  4.35 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/orders/_page.server.ts.js                      [39m[1m[2m  4.50 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/orders/_id_/status/_server.ts.js                   [39m[1m[2m  4.65 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/payment/success/_page.svelte.js                [39m[1m[2m  4.74 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/Button.js                                                         [39m[1m[2m  4.78 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(auth)/forgot-password/_page.svelte.js                     [39m[1m[2m  4.82 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/product.js                                                        [39m[1m[2m  4.88 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/favorites/_server.ts.js                            [39m[1m[2m  4.90 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/orders/_id_/_server.ts.js                          [39m[1m[2m  4.98 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(admin)/_layout.svelte.js                                  [39m[1m[2m  5.24 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/messages/new/_page.svelte.js                   [39m[1m[2m  5.59 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/mapping.js                                                        [39m[1m[2m  5.60 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/BottomNav.js                                                      [39m[1m[2m  5.76 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/transactions.js                                                   [39m[1m[2m  5.84 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(auth)/verify-email/_page.svelte.js                        [39m[1m[2m  5.95 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/_...slug_/_page.server.ts.js                               [39m[1m[2m  5.97 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/_error.svelte.js                                           [39m[1m[2m  6.00 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/detection.js                                                      [39m[1m[2m  6.04 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/subscriptions.js                                                  [39m[1m[2m  6.07 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/exports.js                                                        [39m[1m[2m  6.24 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/checkout/_productId_/_page.svelte.js           [39m[1m[2m  6.47 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/category/_slug_/_page.server.ts.js                         [39m[1m[2m  6.51 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/upgrade/success/_page.svelte.js      [39m[1m[2m  7.00 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(auth)/signup/_page.server.ts.js                           [39m[1m[2m  7.23 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/checkout/_server.ts.js                             [39m[1m[2m  7.26 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/_page.server.ts.js                                         [39m[1m[2m  7.45 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/become-seller/_page.svelte.js                  [39m[1m[2m  7.70 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/onboarding/_page.server.ts.js                  [39m[1m[2m  7.92 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/webhooks/stripe/_server.ts.js                      [39m[1m[2m  8.29 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/sell/_page.server.ts.js                        [39m[1m[2m  8.38 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(auth)/login/_page.svelte.js                               [39m[1m[2m  8.52 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/sales/_page.svelte.js                [39m[1m[2m  8.85 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/listings/_page.svelte.js                       [39m[1m[2m  9.25 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/endpoints/api/payments/confirm/_server.ts.js                     [39m[1m[2m  9.49 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/favorites/_page.svelte.js                      [39m[1m[2m  9.52 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/offer/_sellerId_/_page.svelte.js               [39m[1m[2m 10.22 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/ProductCard.js                                                    [39m[1m[2m 10.44 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(auth)/signup/_page.svelte.js                              [39m[1m[2m 10.57 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(admin)/admin/_page.svelte.js                              [39m[1m[2m 10.81 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mremote-entry.js                                                          [39m[1m[2m 11.22 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/profile/edit/_page.svelte.js                   [39m[1m[2m 11.35 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/hooks.server.js                                                   [39m[1m[2m 12.58 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/product/_id_/edit/_page.svelte.js              [39m[1m[2m 12.63 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/search/_page.server.ts.js                                  [39m[1m[2m 12.79 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/profiles.js                                                       [39m[1m[2m 12.89 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(admin)/admin/payouts/_page.svelte.js                      [39m[1m[2m 14.19 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/shared.js                                                         [39m[1m[2m 15.46 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/profile/_id_/_page.svelte.js                               [39m[1m[2m 16.68 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/upgrade/_page.svelte.js              [39m[1m[2m 16.93 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/settings/_page.svelte.js                       [39m[1m[2m 18.06 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/internal.js                                                       [39m[1m[2m 19.96 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/stripe.js                                                         [39m[1m[2m 20.17 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/orders/_page.svelte.js                         [39m[1m[2m 23.14 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/order-management/_page.svelte.js     [39m[1m[2m 24.33 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/search/_page.svelte.js                                     [39m[1m[2m 24.57 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/dashboard/_page.svelte.js                      [39m[1m[2m 25.12 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/messages/_page.svelte.js                       [39m[1m[2m 28.24 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/_layout.svelte.js                                          [39m[1m[2m 29.51 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/category/_slug_/_page.svelte.js                            [39m[1m[2m 29.79 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/index3.js                                                         [39m[1m[2m 34.54 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/demo/_page.svelte.js                                       [39m[1m[2m 45.09 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/product/_id_/_page.svelte.js                               [39m[1m[2m 49.84 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/onboarding/_page.svelte.js                     [39m[1m[2m 50.66 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/_page.svelte.js                                            [39m[1m[2m 53.86 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/i18n-en.js                                                        [39m[1m[2m 56.02 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/index2.js                                                         [39m[1m[2m 57.11 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/i18n-bg.js                                                        [39m[1m[2m 64.52 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mentries/pages/(protected)/sell/_page.svelte.js                           [39m[1m[2m 92.70 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mindex.js                                                                 [39m[1m[2m139.90 kB[22m[1m[22m
+[2m.svelte-kit/output/server/[22m[36mchunks/i18n-core.js                                                      [39m[1m[2m152.18 kB[22m[1m[22m
+[sentry-vite-plugin] Warning: No auth token provided. Will not upload source maps. Please set the `authToken` option. You can find information on how to generate a Sentry auth token here: https://docs.sentry.io/api/auth/
+[32m✓ built in 24.68s[39m
+
+Run npm run preview to preview your production build locally.
+
+> Using @sveltejs/adapter-vercel
+  Warning: The following modules failed to locate dependencies that may (or may not) be required for your app to work:
+  ..\..\node_modules\.pnpm\resend@6.0.1\node_modules\resend\dist\index.mjs
+    - [1m[36m@react-email/render[39m[22m
+  ..\..\node_modules\.pnpm\resend@6.0.1\node_modules\resend\dist\index.js
+    - [1m[36m@react-email/render[39m[22m
+  ..\..\node_modules\.pnpm\@sentry+sveltekit@10.5.0_@sveltejs+kit@2.36.2_@opentelemetry+api@1.9.0_@sveltejs+vite-plugin-_6kmyojicdft4pugpo7ctp3r7oq\node_modules\@sentry\sveltekit\build\esm\vite\svelteConfig.js
+    - [1m[36mfile:///K:/svelte.config.ts[39m[22m
+  ..\..\node_modules\.pnpm\import-in-the-middle@1.14.2\node_modules\import-in-the-middle\lib\get-exports.js
+    - [1m[36mK:\driplo-turbo-1\node_modules\.pnpm\import-in-the-middle@1.14.2\node_modules\import-in-the-middle\lib/[39m[22m
+  ..\..\node_modules\.pnpm\@babel+core@7.28.3\node_modules\@babel\core\lib\config\files\module-types.js
+    - [1m[36m@babel/preset-typescript[39m[22m
+    - [1m[36m@babel/preset-typescript/package.json[39m[22m
+  ..\..\node_modules\.pnpm\chokidar@3.6.0\node_modules\chokidar\lib\fsevents-handler.js
+    - [1m[36mfsevents[39m[22m
+  ..\..\node_modules\.pnpm\@sentry+sveltekit@10.5.0_@sveltejs+kit@2.36.2_@opentelemetry+api@1.9.0_@sveltejs+vite-plugin-_6kmyojicdft4pugpo7ctp3r7oq\node_modules\@sentry\sveltekit\build\cjs\vite\svelteConfig.js
+    - [1m[36mfile:///K:/svelte.config.ts[39m[22m
+  ✔ done

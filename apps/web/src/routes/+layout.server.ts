@@ -37,7 +37,7 @@ export const load: LayoutServerLoad = async (event) => {
   if (user && supabase) {
     const { data, error: profileError } = await supabase
       .from('profiles')
-      .select('id, username, full_name, avatar_url, onboarding_completed, account_type, subscription_tier')
+      .select('id, username, full_name, avatar_url, onboarding_completed, account_type, subscription_tier, region')
       .eq('id', user.id)
       .single();
 

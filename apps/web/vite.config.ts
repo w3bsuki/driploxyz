@@ -36,8 +36,6 @@ export default defineConfig(
 					// Split each language into its own chunk
 					if (id.includes('paraglide/messages/en.js')) return 'i18n-en';
 					if (id.includes('paraglide/messages/bg.js')) return 'i18n-bg';
-					if (id.includes('paraglide/messages/ru.js')) return 'i18n-ru';
-					if (id.includes('paraglide/messages/ua.js')) return 'i18n-ua';
 					
 					// Split the main messages file
 					if (id.includes('paraglide/messages.js')) return 'i18n-core';

@@ -93,8 +93,8 @@ function buildCategoryHierarchy(categories: Category[]): Record<string, Category
         c.is_active
       );
       
-      if (hierarchy[l1.slug].level2) {
-        hierarchy[l1.slug].level2[l2.slug] = {
+      if (hierarchy[l1.slug]?.level2) {
+        hierarchy[l1.slug]!.level2![l2.slug] = {
         id: l2.id,
         name: l2.name,
         slug: l2.slug,

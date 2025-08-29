@@ -20,7 +20,7 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   
   // HIGHEST PRIORITY: Detect language from domain
   const hostname = event.url.hostname;
-  let locale: string | null = null;
+  let locale = 'en'; // Default to English instead of null
   
   // Domain to language mapping
   const domainLanguageMap: Record<string, string> = {
@@ -35,7 +35,7 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
     // 'ua.driplo.xyz': 'ua',
     'driplo.com': 'en',      // Main domain defaults to English
     'driplo.xyz': 'en',
-    'localhost': null,       // Don't force language on localhost
+    'localhost': 'en',       // Default to English on localhost
   };
   
   // Check if hostname matches any domain mapping
@@ -47,31 +47,34 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
     }
   }
   
-  // If no domain match or on localhost, check URL parameter (second priority)
-  if (!locale) {
-    locale = event.url.searchParams.get('locale');
+  // If no domain match, check URL parameter (second priority)
+  if (locale === 'en') { // Only check URL param if we're on default
+    const urlLocale = event.url.searchParams.get('locale');
     
     // Validate URL locale parameter
-    if (locale && !i18n.isAvailableLanguageTag(locale)) {
-      locale = null;
+    if (urlLocale && i18n.isAvailableLanguageTag(urlLocale)) {
+      locale = urlLocale;
     }
   }
   
   // Fallback to cookie if no domain or URL locale (third priority)
   // ALWAYS try to get locale from cookie, regardless of consent
-  if (!locale) {
+  if (locale === 'en') { // Only check cookie if we're on default
     // Try both cookie names (production and fallback)
-    locale = event.cookies.get(COOKIES.LOCALE) || event.cookies.get('locale') || null;
+    const cookieLocale = event.cookies.get(COOKIES.LOCALE) || event.cookies.get('locale');
+    if (cookieLocale && i18n.isAvailableLanguageTag(cookieLocale)) {
+      locale = cookieLocale;
+    }
   }
   
   // Check functional consent status
   const hasFunctionalConsent = checkServerConsent(event.cookies, 'functional');
   
-  // Detect from headers if no domain, cookie or URL param (fourth priority)
-  if (!locale) {
+  // Detect from headers if still on default (fourth priority)
+  if (locale === 'en') { // Only check headers if we're still on default
     const acceptLang = event.request.headers.get('accept-language');
     if (acceptLang) {
-      const browserLang = acceptLang.split(',')[0]?.split('-')[0]?.toLowerCase() || 'en';
+      const browserLang = acceptLang.split(',')[0]?.split('-')[0]?.toLowerCase();
       locale = i18n.isAvailableLanguageTag(browserLang) ? browserLang : 'en';
     } else {
       locale = 'en';

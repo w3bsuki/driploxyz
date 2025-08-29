@@ -395,3 +395,16 @@ Codex Review Addendum (2025-08-28)
 - i18n: Domain-based detection is fine; do not edit generated Paraglide output. If dynamic loading is needed, wrap it in an adapter module and import the adapter from apps.
 - Admin Tailwind v4: Ensure `@tailwindcss/vite` is added in `svelte.config.js` and that the entry CSS (`apps/admin/src/app.css`) contains `@import "tailwindcss";`.
 - Data hygiene: Continue adding `.range()` (or `.limit()`) to all queries and keep selects minimal. Replace any `invalidateAll()` with targeted invalidations plus `depends('supabase:auth')` where auth affects data.
+
+---
+
+Claude-Code Quick Actions (copy/paste)
+- Fix i18n types fast: run `.claude/commands/fix-i18n-types.md`
+  - Trim `LanguageTag` to `'en' | 'bg'` in `packages/i18n/src/index.ts` and remove RU/UA names.
+  - Search/fix lingering RU/UA references; rebuild and attach TS/bundle deltas.
+- Resolve RPCs fast: run `.claude/commands/resolve-rpcs.md` (choose Option B: remove RPC usage)
+  - Sell: set `slug` at insert with `serviceUtils.slugify(title)`; remove `rpc('queue_slug_generation', ...)`.
+  - Search: remove `rpc('get_category_hierarchy', ...)`; derive from joined `categories`.
+- Debloat next: Phase C (Toasts) then Phase D (Badges) per DEBLOAT_PLAN.md; update exports/imports first, then delete.
+- Data hygiene: add `.range()`/`.limit()` and minimal selects to all queries; replace any `invalidateAll()` with targeted `invalidate()` and ensure `depends('supabase:auth')` coverage.
+- UI/UX sweep: Tailwind v4 CSS-first + Svelte 5 runes; see `.claude/commands/ui-ux-sweep.md`.

@@ -399,28 +399,20 @@ export const load: PageServerLoad = async ({ url, locals, setHeaders }) => {
       return aIndex - bIndex;
     });
 
-    // Transform products for UI with proper category hierarchy using the database function
-    const transformedProducts = await Promise.all((products || []).map(async product => {
-      // Use the database function to get hierarchy efficiently with error handling
-      const { data: hierarchy, error: hierarchyError } = await locals.supabase
-        .rpc('get_category_hierarchy', { category_uuid: product.category_id })
-        .single();
+    // Transform products for UI with category hierarchy from joined data
+    const transformedProducts = (products || []).map(product => {
+      // Use the direct category information from the join
+      let mainCategoryName = '';
+      let subcategoryName = '';
+      let specificCategoryName = '';
       
-      // Fallback for category names if database function fails
-      let mainCategoryName = hierarchy?.level_1_name;
-      let subcategoryName = hierarchy?.level_2_name;
-      let specificCategoryName = hierarchy?.level_3_name;
-      
-      if (hierarchyError || !hierarchy) {
-        // Fallback: use the direct category name from the join
-        if (product.categories) {
-          if (product.categories.level === 1) {
-            mainCategoryName = product.categories.name;
-          } else if (product.categories.level === 2) {
-            subcategoryName = product.categories.name;
-          } else if (product.categories.level === 3) {
-            specificCategoryName = product.categories.name;
-          }
+      if (product.categories) {
+        if (product.categories.level === 1) {
+          mainCategoryName = product.categories.name;
+        } else if (product.categories.level === 2) {
+          subcategoryName = product.categories.name;
+        } else if (product.categories.level === 3) {
+          specificCategoryName = product.categories.name;
         }
       }
 
@@ -440,7 +432,7 @@ export const load: PageServerLoad = async ({ url, locals, setHeaders }) => {
         subcategory_name: subcategoryName || null,
         specific_category_name: specificCategoryName || null
       };
-    }));
+    });
 
     return {
       products: transformedProducts,

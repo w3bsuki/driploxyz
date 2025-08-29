@@ -2,7 +2,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import { COOKIES } from '$lib/cookies/production-cookie-system';
 
-export type CountryCode = 'BG' | 'GB' | 'US' | 'RU' | 'UA' | 'DE' | 'FR' | 'ES' | 'IT' | 'NL' | 'PL' | 'RO';
+export type CountryCode = 'BG' | 'GB' | 'US' | 'DE' | 'FR' | 'ES' | 'IT' | 'NL' | 'PL' | 'RO';
 
 export interface CountryConfig {
   code: CountryCode;
@@ -36,20 +36,6 @@ export const COUNTRY_CONFIGS: Record<CountryCode, CountryConfig> = {
     locale: 'en',
     domain: 'driplo.us',
     defaultShipping: 4.99
-  },
-  RU: {
-    code: 'RU',
-    name: 'Russia',
-    currency: 'RUB',
-    locale: 'ru',
-    defaultShipping: 300
-  },
-  UA: {
-    code: 'UA',
-    name: 'Ukraine',
-    currency: 'UAH',
-    locale: 'ua',
-    defaultShipping: 100
   },
   DE: {
     code: 'DE',
@@ -162,12 +148,14 @@ export async function detectCountryFromIP(event: RequestEvent): Promise<CountryC
       'GR': 'BG', // Greece
       'TR': 'BG', // Turkey
       
-      // Baltic states to Russia
-      'LV': 'RU', // Latvia
-      'LT': 'RU', // Lithuania
-      'EE': 'RU', // Estonia
-      'BY': 'RU', // Belarus
-      'KZ': 'RU', // Kazakhstan
+      // Baltic states to Bulgaria  
+      'LV': 'BG', // Latvia
+      'LT': 'BG', // Lithuania
+      'EE': 'BG', // Estonia
+      'BY': 'BG', // Belarus
+      'KZ': 'BG', // Kazakhstan
+      'RU': 'BG', // Russia
+      'UA': 'BG', // Ukraine
       
       // Western Europe to UK
       'IE': 'GB', // Ireland
@@ -288,8 +276,6 @@ export function convertPrice(price: number, fromCountry: CountryCode, toCountry:
     'GBP': 2.3,
     'USD': 1.8,
     'EUR': 1.95,
-    'RUB': 0.02,
-    'UAH': 0.05,
     'PLN': 0.45,
     'RON': 0.39
   };
