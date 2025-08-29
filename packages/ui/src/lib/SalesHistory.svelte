@@ -166,6 +166,8 @@ Lightweight display component with pagination
 </div>
 
 <style>
+	@reference theme();
+	
 	.sales-history {
 		@apply bg-white rounded-lg border p-6;
 	}

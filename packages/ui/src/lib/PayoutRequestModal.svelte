@@ -226,6 +226,8 @@ Creates payout requests via Supabase RPC calls
 </Modal>
 
 <style>
+	@reference theme();
+	
 	.payout-form {
 		@apply space-y-6;
 	}

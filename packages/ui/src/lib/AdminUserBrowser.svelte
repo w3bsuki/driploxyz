@@ -132,16 +132,16 @@ View users by country, search, filter, and manage accounts
 	};
 </script>
 
-<div class="admin-user-browser">
+<div class="flex flex-col gap-6">
 	<!-- Search and Filters -->
-	<div class="search-section">
-		<div class="search-header">
-			<h2>User Management</h2>
+	<div class="bg-white rounded-lg border p-6 flex flex-col gap-4">
+		<div class="flex items-center justify-between">
+			<h2 class="text-2xl font-bold text-gray-900">User Management</h2>
 			<Badge variant="secondary">{users.length} users</Badge>
 		</div>
 
-		<div class="search-controls">
-			<div class="search-input">
+		<div class="flex flex-col gap-4">
+			<div class="flex gap-3">
 				<Input
 					bind:value={searchQuery}
 					placeholder="Search by username, email, or ID..."
@@ -152,7 +152,7 @@ View users by country, search, filter, and manage accounts
 				</Button>
 			</div>
 
-			<div class="filters">
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
 				<Select
 					bind:value={filters.country}
 					options={[
@@ -187,7 +187,7 @@ View users by country, search, filter, and manage accounts
 	</div>
 
 	<!-- Users Table -->
-	<div class="users-table-container">
+	<div class="bg-white rounded-lg border">
 		{#if loading}
 			<div class="loading-state">
 				<p>Loading users...</p>
@@ -354,42 +354,6 @@ View users by country, search, filter, and manage accounts
 
 <style>
 	@reference theme();
-	
-	.admin-user-browser {
-		@apply flex flex-col gap-6;
-	}
-
-	.search-section {
-		@apply bg-white rounded-lg border p-6 flex flex-col gap-4;
-	}
-
-	.search-header {
-		@apply flex items-center justify-between;
-	}
-
-	.search-header h2 {
-		@apply text-2xl font-bold text-gray-900;
-	}
-
-	.search-controls {
-		@apply flex flex-col gap-4;
-	}
-
-	.search-input {
-		@apply flex gap-3;
-	}
-
-	.search-input > :first-child {
-		@apply flex-1;
-	}
-
-	.filters {
-		@apply grid grid-cols-1 md:grid-cols-3 gap-3;
-	}
-
-	.users-table-container {
-		@apply bg-white rounded-lg border;
-	}
 
 	.loading-state,
 	.empty-state {

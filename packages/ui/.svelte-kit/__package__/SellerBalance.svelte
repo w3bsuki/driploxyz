@@ -119,6 +119,8 @@ Shows available balance, earnings, and payout button
 </div>
 
 <style>
+	@reference theme();
+	
 	.seller-balance-widget {
 		@apply bg-white rounded-lg border p-6;
 	}

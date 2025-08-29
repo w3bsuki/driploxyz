@@ -179,6 +179,8 @@ Lightweight component for displaying brand subscription info
 </div>
 
 <style>
+	@reference theme();
+	
 	.subscription-status {
 		@apply bg-white rounded-lg border p-6 space-y-6;
 	}
