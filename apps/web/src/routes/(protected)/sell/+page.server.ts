@@ -121,7 +121,7 @@ export const actions: Actions = {
     if (!validation.success) {
       const errors: Record<string, string> = {};
       validation.error.errors.forEach((error) => {
-        if (error.path.length > 0) {
+        if (error.path.length > 0 && error.path[0] != null) {
           errors[error.path[0]] = error.message;
         }
       });

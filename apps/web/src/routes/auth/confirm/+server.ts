@@ -70,7 +70,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('onboarding_completed')
-      .eq('id', data.user.id)
+      .eq('id', data.user!.id)
       .single();
 
     // If no profile exists (DB trigger failed?), redirect to onboarding
@@ -81,7 +81,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
     if (profileError) {
       console.error('[AUTH CONFIRM] Profile fetch error:', profileError);
-      throw redirect(303, '/login?verified=success&email=' + encodeURIComponent(data.user.email || ''));
+      throw redirect(303, '/login?verified=success&email=' + encodeURIComponent(data.user!.email || ''));
     }
 
     // Route based on onboarding status

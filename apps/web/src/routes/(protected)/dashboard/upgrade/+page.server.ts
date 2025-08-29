@@ -54,7 +54,7 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
     });
 
     // Get user's current subscriptions (only if user exists)
-    let userSubscriptions = [];
+    let userSubscriptions: any[] = [];
     let profile = null;
     
     if (user) {

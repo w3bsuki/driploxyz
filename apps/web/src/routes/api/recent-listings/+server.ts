@@ -6,6 +6,7 @@ export const GET: RequestHandler = async ({ locals }) => {
     .from('products')
     .select('id, title, profiles!inner(username)')
     .eq('is_active', true)
+    .eq('country_code', locals.country || 'BG')
     .not('title', 'ilike', '%UK%')
     .not('title', 'ilike', '%TEST%')
     .not('title', 'ilike', '%London%')

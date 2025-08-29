@@ -21,7 +21,7 @@ async function getCategoryWithDescendants(supabase: any, categoryId: string): Pr
     return [categoryId]; // Include at least the parent category
   }
   
-  const level1Ids = data?.map(d => d.id) || [categoryId];
+  const level1Ids = data?.map((d: { id: string }) => d.id) || [categoryId];
   
   // Get grandchildren (level 3) if any level 2 categories were found
   const { data: grandchildren } = await supabase
@@ -30,7 +30,7 @@ async function getCategoryWithDescendants(supabase: any, categoryId: string): Pr
     .in('parent_id', level1Ids)
     .eq('is_active', true);
     
-  const grandchildrenIds = grandchildren?.map(d => d.id) || [];
+  const grandchildrenIds = grandchildren?.map((d: { id: string }) => d.id) || [];
   
   return [...level1Ids, ...grandchildrenIds];
 }
@@ -328,7 +328,10 @@ export const load: PageServerLoad = async ({ url, locals, setHeaders }) => {
 
     // Apply other filters
     if (condition && condition !== 'all') {
-      productsQuery = productsQuery.eq('condition', condition);
+      const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'] as const;
+      if (validConditions.includes(condition as any)) {
+        productsQuery = productsQuery.eq('condition', condition as typeof validConditions[number]);
+      }
     }
 
     if (brand && brand !== 'all') {

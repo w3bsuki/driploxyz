@@ -59,6 +59,39 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase, co
       subcategoriesWithCounts.sort((a, b) => b.productCount - a.productCount);
     }
 
+    // Get level 3 categories if this is a level 2 category (for better UX)
+    let level3Categories: any[] = [];
+    if (category.level === 2) {
+      const { data: level3Data } = await supabase
+        .from('categories')
+        .select('id, name, slug, parent_id')
+        .eq('parent_id', category.id)
+        .order('sort_order');
+      
+      if (level3Data && level3Data.length > 0) {
+        // Get product counts for level 3 categories
+        const level3Promises = level3Data.map(async (l3cat) => {
+          const { count } = await supabase
+            .from('products')
+            .select('*', { count: 'exact', head: true })
+            .eq('category_id', l3cat.id)
+            .eq('is_active', true)
+            .eq('is_sold', false)
+            .eq('country_code', currentCountry);
+          
+          return {
+            ...l3cat,
+            productCount: count || 0
+          };
+        });
+        
+        level3Categories = await Promise.all(level3Promises);
+        level3Categories = level3Categories
+          .filter(cat => cat.productCount > 0)
+          .sort((a, b) => b.productCount - a.productCount);
+      }
+    }
+
     // Parse query parameters for filtering
     const searchParams = url.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
@@ -91,8 +124,7 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase, co
     
     // Build filters from query parameters
     const filters: any = {
-      category_ids: categoryIds,
-      country_code: currentCountry // Filter by country
+      category_ids: categoryIds
     };
 
     if (searchParams.get('min_price')) {
@@ -146,7 +178,7 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase, co
       .in('category_id', categoryIds)
       .eq('is_active', true)
       .eq('is_sold', false)
-      .eq('country_code', currentCountry) // Filter sellers by country
+      .eq('country_code', currentCountry)
       .not('seller_id', 'is', null);
 
     if (sellersError) {
@@ -185,6 +217,7 @@ export const load: PageServerLoad = async ({ params, url, locals: { supabase, co
       category,
       breadcrumb,
       subcategories: subcategoriesWithCounts,
+      level3Categories,
       products: products || [],
       sellers, // Add sellers to the returned data
       pagination: {

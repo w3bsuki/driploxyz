@@ -24,6 +24,7 @@ export const GET: RequestHandler = async ({ url, locals }) => {
       `)
       .eq('is_sold', false)
       .eq('is_active', true)
+      .eq('country_code', locals.country || 'BG')
       .ilike('title', `%${query}%`)
       .limit(limit);
 

@@ -94,7 +94,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
     }
   };
   
-  const currentTransition = validTransitions[order.status];
+  const currentTransition = order.status ? validTransitions[order.status] : null;
   
   if (!currentTransition) {
     return json({ error: 'Invalid current status' }, { status: 400 });

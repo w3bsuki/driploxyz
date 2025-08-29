@@ -130,7 +130,7 @@ export function getBreadcrumbFromUrl(url: string): Array<{label: string, href: s
   const breadcrumbs = [{ label: 'Home', href: '/' }];
   
   // If it's a slug-based URL, parse the path structure
-  if (parts.length >= 2 && !isUUID(parts[0])) {
+  if (parts.length >= 2 && parts[0] && !isUUID(parts[0])) {
     // Add gender category
     if (parts[0]) {
       breadcrumbs.push({

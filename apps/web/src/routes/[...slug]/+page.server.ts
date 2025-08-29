@@ -14,7 +14,7 @@ import type { PageServerLoad } from './$types';
  * 2. Handle direct UUID lookups 
  * 3. Redirect legacy /product/uuid URLs to SEO URLs
  */
-export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession }, url }) => {
+export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession, country }, url }) => {
   const { session } = await safeGetSession();
   const slug = params.slug;
 
@@ -47,6 +47,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
         .select('id, slug')
         .eq('id', uuid)
         .eq('is_active', true)
+        .eq('country_code', country || 'BG')
         .single();
       
       if (productData?.slug) {
@@ -65,6 +66,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
       .select('id, slug')
       .eq('id', slug)
       .eq('is_active', true)
+      .eq('country_code', country || 'BG')
       .single();
     
     if (productData?.slug) {
@@ -72,7 +74,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
       throw redirect(301, `/${productData.slug}`);
     } else if (productData) {
       // Use UUID until slug is generated
-      product = await getProductData(supabase, slug, session);
+      product = await getProductData(supabase, slug, session, country);
     }
   }
 
@@ -83,10 +85,11 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
       .select('id')
       .eq('slug', slug)
       .eq('is_active', true)
+      .eq('country_code', country || 'BG')
       .single();
     
     if (productData) {
-      product = await getProductData(supabase, productData.id, session);
+      product = await getProductData(supabase, productData.id, session, country);
     }
   }
 
@@ -108,7 +111,7 @@ function isUUID(str: string): boolean {
 /**
  * Get complete product data with all related information
  */
-async function getProductData(supabase: any, productId: string, session: any) {
+async function getProductData(supabase: any, productId: string, session: any, country?: string) {
   // Get main product with optimized query including full seller info
   const { data: product, error: productError } = await supabase
     .from('products')
@@ -153,6 +156,7 @@ async function getProductData(supabase: any, productId: string, session: any) {
     `)
     .eq('id', productId)
     .eq('is_active', true)
+    .eq('country_code', country || 'BG')
     .single();
 
   if (productError || !product) {
@@ -229,7 +233,7 @@ async function getProductData(supabase: any, productId: string, session: any) {
   return {
     product: {
       ...product,
-      images: product.product_images?.map(img => img.image_url) || [],
+      images: product.product_images?.map((img: { image_url: string }) => img.image_url) || [],
       seller: product.profiles,
       seller_name: product.profiles?.full_name || product.profiles?.username || 'Unknown Seller',
       seller_username: product.profiles?.username,
@@ -239,13 +243,13 @@ async function getProductData(supabase: any, productId: string, session: any) {
       category_name: product.categories?.name,
       parent_category: parentCategory
     },
-    similarProducts: similarProducts.map(p => ({
+    similarProducts: similarProducts.map((p: any) => ({
       ...p,
-      images: p.product_images?.map(img => img.image_url) || []
+      images: p.product_images?.map((img: { image_url: string }) => img.image_url) || []
     })),
-    sellerProducts: sellerProducts.map(p => ({
+    sellerProducts: sellerProducts.map((p: any) => ({
       ...p,
-      images: p.product_images?.map(img => img.image_url) || []
+      images: p.product_images?.map((img: { image_url: string }) => img.image_url) || []
     })),
     isOwner,
     isFavorited,

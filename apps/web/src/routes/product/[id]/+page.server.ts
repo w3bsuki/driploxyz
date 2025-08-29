@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession } }) => {
+export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession, country } }) => {
   const { session } = await safeGetSession();
 
   // Get main product with optimized query including full seller info
@@ -47,6 +47,7 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
     `)
     .eq('id', params.id)
     .eq('is_active', true)
+    .eq('country_code', country || 'BG')
     .single();
 
   if (productError || !product) {

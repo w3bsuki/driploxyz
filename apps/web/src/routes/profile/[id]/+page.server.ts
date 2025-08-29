@@ -52,7 +52,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
   const isOwnProfile = session?.user?.id === profile.id;
 
   // Get user's favorites/wishlist if it's their own profile
-  let favorites = [];
+  let favorites: any[] = [];
   if (isOwnProfile) {
     const { data: userFavorites } = await locals.supabase
       .from('favorites')
@@ -91,7 +91,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     }
   }
 
-  // Get user's products
+  // Get user's products (filtered by region)
   const { data: products } = await locals.supabase
     .from('products')
     .select(`
@@ -103,6 +103,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     .eq('seller_id', profile.id)
     .eq('is_active', true)
     .eq('is_sold', false)
+    .eq('country_code', locals.country || 'BG')
     .order('created_at', { ascending: false });
 
   // Get user's reviews

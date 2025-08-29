@@ -45,7 +45,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				const { data: product } = await locals.supabase
 					.from('products')
 					.select('title')
-					.eq('id', result.transaction.product_id)
+					.eq('id', result.order.product_id)
 					.single();
 
 				// Get buyer email
@@ -58,9 +58,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 					.eq('id', result.order.seller_id)
 					.single();
 				
-				if (buyer?.email && product) {
+				if (buyer?.user?.email && product) {
 					// Send order confirmation to buyer
-					await sendEmail(buyer.email, emailTemplates.orderConfirmation({
+					await sendEmail(buyer.user.email, emailTemplates.orderConfirmation({
 						id: result.order.id,
 						product: { title: product.title },
 						total_amount: result.order.total_amount,
@@ -70,12 +70,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 				
 				// Send sold notification to seller
 				const { data: sellerAuth } = await locals.supabase.auth.admin.getUserById(result.order.seller_id);
-				if (sellerAuth?.email && product) {
-					await sendEmail(sellerAuth.email, emailTemplates.productSold({
+				if (sellerAuth?.user?.email && product) {
+					await sendEmail(sellerAuth.user.email, emailTemplates.productSold({
 						product: { title: product.title },
 						amount: result.order.total_amount,
 						commission: result.transaction.commission_amount * 100, // Convert to cents
-						net_amount: result.transaction.seller_amount * 100
+						net_amount: result.transaction.seller_earnings * 100
 					}));
 				}
 			} catch (emailError) {

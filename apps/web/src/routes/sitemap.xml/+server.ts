@@ -52,10 +52,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 			...p,
 			updated_at: p.updated_at!
 		})),
-		sellers: (sellers || []).filter(s => s.updated_at).map(s => ({
-			...s,
-			updated_at: s.updated_at!
-		}))
+		sellers: (sellers || [])
+			.filter(s => s.updated_at && s.username)
+			.map(s => ({
+				username: s.username!,
+				updated_at: s.updated_at!
+			}))
 	});
 	
 	return new Response(xml, {

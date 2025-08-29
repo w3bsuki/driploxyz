@@ -15,12 +15,12 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
     return;
   }
   
-  // Check for required environment variables
+  // Check for required configuration
   if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
     throw error(500, 'Server configuration error. Please contact support.');
   }
 
-  // Create Supabase client following official documentation pattern
+  // Create Supabase client
   event.locals.supabase = createServerClient<Database>(
     PUBLIC_SUPABASE_URL,
     PUBLIC_SUPABASE_ANON_KEY,

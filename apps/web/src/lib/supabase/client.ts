@@ -6,8 +6,8 @@ import type { Database } from '@repo/database';
  * Create a Supabase client for use in the browser
  * This uses SSR package for proper cookie handling in SvelteKit
  */
-export const createBrowserSupabaseClient = () =>
-  createBrowserClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+export const createBrowserSupabaseClient = () => {
+  return createBrowserClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
     auth: {
       flowType: 'pkce',
       detectSessionInUrl: true,
@@ -15,3 +15,4 @@ export const createBrowserSupabaseClient = () =>
       autoRefreshToken: true
     }
   });
+};

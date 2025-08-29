@@ -11,12 +11,18 @@ const isDebug = false; // Disabled to reduce console spam
  * Handles locale detection from domain, URL, cookies, and headers
  */
 export async function setupI18n(event: RequestEvent): Promise<void> {
-  // Clean up legacy cookies
-  ['driplo_language', 'language', 'lang'].forEach(old => {
+  // Clean up legacy cookies INCLUDING removed locales
+  ['driplo_language', 'language', 'lang', 'ru', 'ua'].forEach(old => {
     if (event.cookies.get(old)) {
       event.cookies.delete(old, { path: '/' });
     }
   });
+  
+  // Clean up invalid locale values from current cookie
+  const cookieLocale = event.cookies.get(COOKIES.LOCALE);
+  if (cookieLocale && !i18n.isAvailableLanguageTag(cookieLocale)) {
+    event.cookies.delete(COOKIES.LOCALE, { path: '/' });
+  }
   
   // HIGHEST PRIORITY: Detect language from domain
   const hostname = event.url.hostname;

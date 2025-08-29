@@ -3,7 +3,7 @@ import type { RequestHandler } from './$types';
 import { createServices } from '$lib/services';
 import { stripe } from '$lib/stripe/server.js';
 
-export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
+export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession, country } }) => {
   console.log('[Checkout API] Starting checkout process');
   
   const { session } = await safeGetSession();
@@ -34,6 +34,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
           .from('products')
           .select('id, is_sold, seller_id')
           .eq('id', item.id)
+          .eq('country_code', country || 'BG')
           .single();
         
         if (!product || product.is_sold) {
@@ -76,9 +77,15 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
           profiles!products_seller_id_fkey (
             id,
             username
+          ),
+          product_images (
+            id,
+            image_url,
+            display_order
           )
         `)
         .eq('id', productId)
+        .eq('country_code', country || 'BG')
         .single();
 
       if (productError || !product) {

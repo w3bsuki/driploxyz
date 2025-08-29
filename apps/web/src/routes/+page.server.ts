@@ -5,7 +5,7 @@ import { dev } from '$app/environment';
 // MANUAL PROMOTION SYSTEM
 // Add product IDs here to promote them with crown badges 👑
 // TODO: Replace with database is_promoted field when premium plans launch
-const MANUALLY_PROMOTED_IDS = [
+const MANUALLY_PROMOTED_IDS: string[] = [
   // Add product IDs you want to promote, e.g.:
   // 'product-id-1',
   // 'product-id-2',
@@ -102,7 +102,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
         `)
         .eq('is_active', true)
         .eq('is_sold', false)
-        .eq('country_code', country || 'BG') // Default to BG if no country detected
+        .eq('country_code', country || 'BG')
         .order('created_at', { ascending: false })
         .limit(12)
     ]);
@@ -111,7 +111,22 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
     const categories = categoriesResult.status === 'fulfilled' ? (categoriesResult.value.data || []) : [];
     const topSellers = topSellersResult.status === 'fulfilled' ? (topSellersResult.value.data || []) : [];
     
-    let featuredProducts = [];
+    let featuredProducts: Array<{
+      id: string;
+      title: string;
+      price: number;
+      condition: string;
+      size: string | null;
+      location: string | null;
+      created_at: string | null;
+      seller_id: string;
+      is_promoted: boolean;
+      favorite_count: number;
+      images: string[];
+      product_images: string[];
+      main_category_name?: string;
+      seller?: { username: string | null };
+    }> = [];
     if (featuredResult.status === 'fulfilled') {
       const { data: rawProducts } = featuredResult.value;
       if (rawProducts) {
@@ -119,7 +134,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
         const categoryIds = [...new Set(
           rawProducts
             .map(item => item.categories?.parent_id || item.categories?.id)
-            .filter(Boolean)
+            .filter((id): id is string => Boolean(id))
         )];
 
         // Fetch parent categories and their parents (to get level 1)
@@ -135,7 +150,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
             const grandparentIds = [...new Set(
               parents
                 .map(p => p.parent_id)
-                .filter(Boolean)
+                .filter((id): id is string => Boolean(id))
             )];
             
             let level1Categories: Record<string, string> = {};
@@ -182,8 +197,8 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
             // Add favorite count
             favorite_count: item.favorite_count || 0,
             // Simplify image structure
-            images: item.product_images?.map((img: any) => img.image_url) || [],
-            product_images: item.product_images?.map((img: any) => img.image_url) || [],
+            images: item.product_images?.map((img: { image_url: string }) => img.image_url) || [],
+            product_images: item.product_images?.map((img: { image_url: string }) => img.image_url) || [],
             // Category info - ALWAYS show level 1 category at top
             main_category_name: item.categories?.parent_id 
               ? categoryHierarchy[item.categories.parent_id]?.level1Name 

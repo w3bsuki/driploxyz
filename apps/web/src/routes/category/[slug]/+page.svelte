@@ -86,6 +86,7 @@
   const category = data.category || { name: 'Women', slug: 'women', description: 'Discover amazing deals on women\'s clothing' };
   const categorySlug = category?.slug || 'women';
   const subcategories = data.subcategories || [];
+  const level3Categories = data.level3Categories || [];
   const products = data.products || [];
   const sellers = data.sellers || [];
   
@@ -319,33 +320,55 @@
       </div>
 
       <!-- Category Pills with Product Counts -->
-      {#if subcategories.length > 0}
+      {#if subcategories.length > 0 || level3Categories.length > 0}
         <div class="flex justify-center">
           <div class="flex overflow-x-auto scrollbar-hide space-x-2 px-4">
-            <button
-              onclick={() => goto(`/category/${categorySlug}`)}
-              class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors flex items-center gap-2
-                {!selectedSubcategory 
-                  ? 'bg-gray-900 text-white' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-            >
-              <span>{i18n.category_all()}</span>
-              <span class="text-xs opacity-75">({products.length})</span>
-            </button>
-            {#each subcategories.filter(s => s.productCount > 0) as subcat}
+            <!-- Show level 2 subcategories OR level 3 categories -->
+            {#if level3Categories.length > 0}
+              <!-- Level 3 categories (T-shirts, Shirts, etc.) -->
               <button
-                onclick={() => goto(`/category/${subcat.slug}`)}
+                onclick={() => goto(`/category/${categorySlug}`)}
+                class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors flex items-center gap-2 bg-gray-900 text-white"
+              >
+                <span>{i18n.category_all()}</span>
+                <span class="text-xs opacity-75">({products.length})</span>
+              </button>
+              {#each level3Categories as l3cat}
+                <button
+                  onclick={() => goto(`/category/${l3cat.slug}`)}
+                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200"
+                >
+                  <span>{translateSubcategoryName(l3cat.name)}</span>
+                  <span class="text-xs opacity-75">({l3cat.productCount})</span>
+                </button>
+              {/each}
+            {:else}
+              <!-- Level 2 subcategories (Clothing, Shoes, etc.) -->
+              <button
+                onclick={() => goto(`/category/${categorySlug}`)}
                 class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors flex items-center gap-2
-                  {selectedSubcategory === subcat.id
+                  {!selectedSubcategory 
                     ? 'bg-gray-900 text-white' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
               >
-                <span>{translateSubcategoryName(subcat.name)}</span>
-                {#if subcat.productCount > 0}
-                  <span class="text-xs opacity-75">({subcat.productCount})</span>
-                {/if}
+                <span>{i18n.category_all()}</span>
+                <span class="text-xs opacity-75">({products.length})</span>
               </button>
-            {/each}
+              {#each subcategories.filter(s => s.productCount > 0) as subcat}
+                <button
+                  onclick={() => goto(`/category/${subcat.slug}`)}
+                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors flex items-center gap-2
+                    {selectedSubcategory === subcat.id
+                      ? 'bg-gray-900 text-white' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+                >
+                  <span>{translateSubcategoryName(subcat.name)}</span>
+                  {#if subcat.productCount > 0}
+                    <span class="text-xs opacity-75">({subcat.productCount})</span>
+                  {/if}
+                </button>
+              {/each}
+            {/if}
           </div>
         </div>
       {/if}

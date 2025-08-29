@@ -86,13 +86,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		console.error('Health check error:', err);
 		
 		// Return 503 Service Unavailable
-		throw error(503, {
-			message: 'Service unavailable',
-			code: 'HEALTH_CHECK_ERROR',
-			details: {
-				error: err instanceof Error ? err.message : 'Unknown error',
-			}
-		});
+		throw error(503, 'Service unavailable - Health check error');
 	}
 };
 

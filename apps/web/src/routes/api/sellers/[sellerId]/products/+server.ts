@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ params, url, locals: { supabase } }) => {
+export const GET: RequestHandler = async ({ params, url, locals: { supabase, country } }) => {
   const { sellerId } = params;
   const available = url.searchParams.get('available') === 'true';
   const limit = parseInt(url.searchParams.get('limit') || '20');
@@ -34,6 +34,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase } })
         )
       `)
       .eq('seller_id', sellerId)
+      .eq('country_code', country || 'BG')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
@@ -63,7 +64,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase } })
       is_sold: product.is_sold,
       created_at: product.created_at,
       images: product.product_images
-        ?.sort((a, b) => a.display_order - b.display_order)
+        ?.sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
         ?.map(img => img.image_url) || []
     })) || [];
 
