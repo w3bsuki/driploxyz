@@ -17,7 +17,6 @@
   import RegionSwitchModal from '$lib/components/RegionSwitchModal.svelte';
   import TopProgress from '$lib/components/TopProgress.svelte';
   import { page } from '$app/stores';
-  import EarlyBirdBanner from '$lib/components/EarlyBirdBanner.svelte';
   import { initializeLanguage } from '$lib/utils/language';
   import { switchLanguage } from '$lib/utils/language-switcher';
   import * as i18n from '@repo/i18n';
@@ -35,7 +34,7 @@
     if (browser && data?.language) {
       // Only initialize if language actually changed
       if (i18n.getLocale() !== data.language) {
-        if (dev) console.log('🌍 Client: Language change detected, updating to:', data.language);
+        // Language change detected
         initializeLanguage(data.language);
         if (i18n.isAvailableLanguageTag(data.language)) {
           sessionStorage.setItem('selectedLocale', data.language);
@@ -120,13 +119,7 @@
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       const sessionChanged = newSession?.expires_at !== session?.expires_at;
       
-      if (dev) {
-        console.log('[Auth State Change]', event, {
-          sessionChanged,
-          hasNewSession: !!newSession,
-          userId: newSession?.user?.id
-        });
-      }
+      // Auth state change tracked
 
       switch (event) {
         case 'INITIAL_SESSION':
@@ -135,7 +128,7 @@
           
         case 'SIGNED_IN':
           // User successfully signed in
-          if (dev) console.log('🔐 User signed in, invalidating auth state');
+          // User signed in, invalidating auth state
           setTimeout(() => invalidate('supabase:auth'), 50);
           break;
           
@@ -224,9 +217,6 @@
 
 {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
   <div class="sticky top-0 z-50" bind:this={headerContainer}>
-    {#if !isSearchPage}
-      <EarlyBirdBanner />
-    {/if}
     <Header user={data?.user} profile={data?.profile} />
   </div>
 {/if}

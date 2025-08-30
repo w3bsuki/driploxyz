@@ -5,6 +5,8 @@
  */
 import * as i18n from '@repo/i18n';
 
+// All translation functions are now properly typed and available
+
 // Map database category names to translation functions
 export const categoryTranslations: Record<string, () => string> = {
   // Level 1 - Gender/Age

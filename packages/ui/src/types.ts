@@ -86,6 +86,8 @@ export type BadgeSize = 'sm' | 'md' | 'lg';
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search';
 export type SearchBarVariant = 'hero' | 'power' | 'compact';
 export type MegaMenuVariant = 'dropdown' | 'accordion';
+export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+export type AvatarVariant = 'circle' | 'square';
 
 export interface CategorySubcategory {
   name: string;

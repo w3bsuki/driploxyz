@@ -8,6 +8,7 @@
   import { ConversationService, type Conversation } from '$lib/services/ConversationService';
   import ConversationSidebar from '$lib/components/modular/ConversationSidebar.svelte';
   import ChatWindow from '$lib/components/modular/ChatWindow.svelte';
+  import ConnectionStatus from '$lib/components/modular/ConnectionStatus.svelte';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   import { messagingLogger } from '$lib/utils/log';
@@ -28,6 +29,9 @@
   let hasMoreMessages = $state(true);
   let isInitializing = $state(true);
   let isLoadingConversation = $state(false);
+  let connectionStatus = $state<'connected' | 'connecting' | 'error' | 'disconnected'>('disconnected');
+  let connectionMessage = $state('');
+  let canRetryConnection = $state(false);
 
   const supabase = createBrowserSupabaseClient();
 
@@ -63,20 +67,43 @@
           activeConversation = updatedConversation;
         }
       });
+      
+      // Handle connection status changes
+      conversationService.on('connection_status', (status: any) => {
+        connectionStatus = status.status;
+        connectionMessage = status.message;
+        canRetryConnection = status.canRetry;
+      });
+      
+      // Handle connection errors
+      conversationService.on('connection_error', (error: any) => {
+        messagingLogger.error('Realtime connection error', error);
+        connectionStatus = 'error';
+        connectionMessage = error.message || 'Connection failed';
+        canRetryConnection = true;
+      });
+      
+      // Handle message errors
+      conversationService.on('message_error', (errorData: any) => {
+        messagingLogger.error('Message error', errorData.error);
+        // Could show a toast notification here
+      });
 
-      // Initialize with server data - trigger conversations_updated event
-      if (data.messages && data.messages.length > 0) {
-        conversationService.initializeConversations(data.messages);
+      // Initialize with optimized server data
+      if (data.conversations && data.conversations.length > 0) {
+        // Use conversation summaries (much faster)
+        conversationService.initializeConversations(data.conversations, 'conversations');
+      } else if (data.messages && data.messages.length > 0) {
+        // Fallback to message-based initialization for specific conversation
+        conversationService.initializeConversations(data.messages, 'messages');
       } else {
-        // If no messages, still trigger empty conversations
+        // No data - empty state
         conversations = [];
         isInitializing = false;
       }
       
-      // Setup real-time subscriptions (non-blocking)
-      setTimeout(() => {
-        conversationService.setupRealtimeSubscriptions();
-      }, 100);
+      // Setup real-time subscriptions immediately (no delay)
+      conversationService.setupRealtimeSubscriptions();
       
       // Set initial unread count
       if (data.unreadCount !== undefined) {
@@ -90,7 +117,7 @@
     }
   });
 
-  // Handle URL conversation parameter
+  // Handle URL conversation parameter with better loading states
   $effect(() => {
     const conversationParam = $page.url.searchParams.get('conversation');
     
@@ -98,13 +125,17 @@
       // Find and set active conversation
       const conversation = conversations.find(c => c.id === conversationParam);
       if (conversation) {
+        // Load messages if not already loaded
+        if (conversation.messages.length === 0 && data.messages && data.messages.length > 0) {
+          conversation.messages = data.messages;
+          conversation.messageCache = new Set(data.messages.map(m => m.id));
+        }
         activeConversation = conversation;
         showSidebarOnMobile = false; // Show chat on mobile
       } else {
-        // If conversation doesn't exist in list, create it from server data or as new conversation
+        // Create new conversation from server data (for starting new conversations)
         const [otherUserId, productId] = conversationParam.split('__');
         
-        // Always create conversation - enables starting new conversations
         const newConversation: Conversation = {
           id: conversationParam,
           userId: otherUserId,
@@ -175,7 +206,7 @@
   }
 
   async function handleLoadOlder() {
-    if (!activeConversation || !conversationService || isLoadingOlder) return;
+    if (!activeConversation || !conversationService || isLoadingOlder || !hasMoreMessages) return;
     
     const oldestMessage = activeConversation.messages[0];
     if (!oldestMessage) return;
@@ -188,11 +219,31 @@
         oldestMessage.created_at
       );
       hasMoreMessages = hasMore;
+      
+      // Update the active conversation with new messages
+      const updatedConversation = conversationService.getConversation(activeConversation.id);
+      if (updatedConversation) {
+        activeConversation = updatedConversation;
+      }
+    } catch (error) {
+      messagingLogger.error('Failed to load older messages', error, {
+        conversationId: activeConversation.id,
+        userId: data.user?.id
+      });
     } finally {
       isLoadingOlder = false;
     }
   }
 
+  // Retry connection handler
+  function handleRetryConnection() {
+    if (conversationService) {
+      connectionStatus = 'connecting';
+      connectionMessage = 'Reconnecting...';
+      conversationService.setupRealtimeSubscriptions();
+    }
+  }
+  
   // Cleanup
   onDestroy(() => {
     conversationService?.cleanup();
@@ -204,6 +255,13 @@
 </svelte:head>
 
 <div class="h-screen bg-gray-50 flex flex-col overflow-hidden">
+  <!-- Connection Status -->
+  <ConnectionStatus 
+    status={connectionStatus}
+    message={connectionMessage}
+    canRetry={canRetryConnection}
+    onRetry={handleRetryConnection}
+  />
 
   <!-- Main Content -->
   <div class="flex-1 overflow-hidden">
@@ -272,8 +330,8 @@
           home: i18n.nav_home(),
           search: i18n.nav_search(),
           sell: i18n.nav_sell(),
-          messages: i18n.nav_messages(),
-          profile: i18n.nav_profile()
+          profile: i18n.nav_profile(),
+          wishlist: i18n.nav_wishlist()
         }}
       />
     </div>

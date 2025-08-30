@@ -3,9 +3,7 @@ import type { Product } from '@repo/ui';
 
 export const load: PageLoad = async ({ params, fetch }) => {
 	try {
-		// Debug logging for product ID
-		console.log('Checkout page - params.productId:', params.productId);
-		console.log('Checkout page - typeof params.productId:', typeof params.productId);
+		// Product ID passed from route parameters
 		
 		// Validate product ID
 		if (!params.productId || params.productId === '[object Object]') {

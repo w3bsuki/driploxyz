@@ -28,7 +28,7 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
     .order('created_at', { ascending: false });
 
   if (payoutsError) {
-    console.error('Error fetching payouts:', payoutsError);
+    // Payouts fetch error - will return empty list
   }
 
   // Get order and seller details separately to avoid join issues
@@ -87,8 +87,7 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
     stats
   };
   } catch (error) {
-    console.error('Admin payouts page error:', error);
-    // Return safe defaults
+    // Admin payouts page error - return safe defaults
     return {
       user: parentData?.user || null,
       pendingPayouts: [],

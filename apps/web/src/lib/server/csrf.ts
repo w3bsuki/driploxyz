@@ -79,6 +79,15 @@ export class CSRFProtection {
 			}
 
 			const [timestampStr, nonce, providedSignature] = parts;
+			if (!timestampStr || !nonce || !providedSignature) {
+				authLogger.warn('Invalid CSRF token parts', { 
+					partsCount: parts.length,
+					hasTimestamp: timestampStr ? 1 : 0,
+					hasNonce: nonce ? 1 : 0,
+					hasSignature: providedSignature ? 1 : 0
+				});
+				return false;
+			}
 			const timestamp = parseInt(timestampStr, 10);
 
 			// Check token expiration (default 1 hour)
@@ -181,7 +190,7 @@ export class CSRFProtection {
 		
 		authLogger.debug('Set new CSRF token cookie', { 
 			sessionId: sessionId.slice(0, 8) + '...',
-			secure: !dev,
+			secure: dev ? 0 : 1,
 			domain: event.url.hostname
 		});
 		
@@ -226,9 +235,9 @@ export class CSRFProtection {
 				method, 
 				pathname,
 				sessionId: sessionId.slice(0, 8) + '...',
-				hasProvidedToken: Boolean(providedToken),
-				hasHeaderToken: Boolean(event.request.headers.get('x-csrf-token')),
-				hasCookieToken: Boolean(event.cookies.get('csrf_token'))
+				hasProvidedToken: providedToken ? 1 : 0,
+				hasHeaderToken: event.request.headers.get('x-csrf-token') ? 1 : 0,
+				hasCookieToken: event.cookies.get('csrf_token') ? 1 : 0
 			});
 			return false;
 		}

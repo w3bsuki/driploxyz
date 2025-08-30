@@ -2,6 +2,8 @@
 export * from '../lib/paraglide/messages.js';
 export * from '../lib/paraglide/runtime.js';
 
+// Export TypeScript definitions for generated functions are handled by .d.ts files
+
 // Type definitions
 export type LanguageTag = 'en' | 'bg';
 
@@ -11,13 +13,20 @@ export const languageNames: Record<LanguageTag, string> = {
   bg: 'Български'
 };
 
-// Compatibility functions for migration from Paraglide 1.x
+// Export Paraglide 2.x functions with aliases for compatibility  
 export { 
-  isLocale as isAvailableLanguageTag, 
-  getLocale as languageTag,
+  setLocale,
   getLocale,
-  setLocale
+  isLocale,
+  locales,
+  baseLocale
 } from '../lib/paraglide/runtime.js';
+
+// Compatibility aliases for old API
+export { setLocale as setLanguageTag } from '../lib/paraglide/runtime.js';
+export { getLocale as languageTag } from '../lib/paraglide/runtime.js';  
+export { locales as availableLanguageTags } from '../lib/paraglide/runtime.js';
+export { isLocale as isAvailableLanguageTag } from '../lib/paraglide/runtime.js';
 
 // Simple language detection (for later use)
 export function detectLanguage(acceptLanguage?: string): LanguageTag {

@@ -36,7 +36,6 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
     });
 
     if (!success || confirmError) {
-      console.error('Payment confirmation error:', confirmError);
       return error(500, { message: confirmError?.message || 'Payment confirmation failed' });
     }
 
@@ -48,7 +47,6 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
     });
 
   } catch (err) {
-    console.error('Payment confirmation API error:', err);
     return error(500, { message: 'Internal server error' });
   }
 };

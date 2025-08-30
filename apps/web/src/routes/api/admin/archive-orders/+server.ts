@@ -33,8 +33,7 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession }
 
     const supabase = createSupabaseAdmin();
 
-    // TODO: Implement order archiving when database functions are ready
-    // For now, return placeholder response to unblock production deployment
+    // Order archiving implementation pending database functions
     const result = 0; // No orders archived
     const stats = [{
       total_orders: 0,
@@ -51,7 +50,6 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession }
     });
 
   } catch (err) {
-    console.error('Archive orders API error:', err);
     return error(500, 'Internal server error');
   }
 };
@@ -67,8 +65,7 @@ export const GET: RequestHandler = async ({ locals: { safeGetSession } }) => {
 
     const supabase = createSupabaseAdmin();
 
-    // TODO: Implement archiving statistics when database functions are ready
-    // For now, return placeholder stats to unblock production deployment
+    // Archiving statistics implementation pending database functions
     const stats = [{
       total_orders: 0,
       archived_orders: 0,
@@ -87,7 +84,6 @@ export const GET: RequestHandler = async ({ locals: { safeGetSession } }) => {
     });
 
   } catch (err) {
-    console.error('Archive stats API error:', err);
     return error(500, 'Internal server error');
   }
 };

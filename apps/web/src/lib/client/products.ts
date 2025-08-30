@@ -23,7 +23,7 @@ export async function getPriceSuggestions(params: {
 
     return await response.json();
   } catch (error) {
-    console.error('Error getting price suggestions:', error);
+    // Price suggestions failed - return default fallback
     return {
       suggested: null,
       range: null,

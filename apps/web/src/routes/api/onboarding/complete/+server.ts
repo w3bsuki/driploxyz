@@ -26,13 +26,11 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       .eq('id', session.user.id);
 
     if (error) {
-      console.error('Profile update error:', error);
       return json({ error: 'Failed to update profile' }, { status: 500 });
     }
 
     return json({ success: true });
   } catch (error) {
-    console.error('Onboarding error:', error);
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 };

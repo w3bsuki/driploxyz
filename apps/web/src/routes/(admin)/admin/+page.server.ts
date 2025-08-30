@@ -43,7 +43,7 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
       recentOrders: recentOrders || []
     };
   } catch (error) {
-    console.error('Admin dashboard error:', error);
+    // Admin dashboard error - return default stats
     return {
       stats: {
         totalUsers: 0,

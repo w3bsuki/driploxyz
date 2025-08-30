@@ -346,7 +346,7 @@
     home: i18n.nav_home(),
     search: i18n.nav_search(),
     sell: i18n.nav_sell(),
-    messages: i18n.nav_messages(),
-    profile: i18n.nav_profile()
+    profile: i18n.nav_profile(),
+    wishlist: i18n.nav_wishlist()
   }}
 />

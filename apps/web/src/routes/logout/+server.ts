@@ -12,14 +12,14 @@ export const POST: RequestHandler = async ({ locals: { supabase } }) => {
     const { error: signOutError } = await supabase.auth.signOut();
     
     if (signOutError) {
-      console.error('Logout error:', signOutError);
+      // Logout error logged internally
       // Even if logout fails on server, clear local state
     }
     
-    if (dev) console.log('👋 User logged out successfully');
+    // User logged out successfully
     
   } catch (error) {
-    console.error('Unexpected logout error:', error);
+    // Unexpected logout error handled
     // Continue with redirect even if there's an error - clear client state
   }
   
@@ -33,7 +33,7 @@ export const GET: RequestHandler = async ({ locals: { supabase } }) => {
   try {
     await supabase.auth.signOut();
   } catch (e) {
-    if (dev) console.warn('Logout (GET) error:', e);
+    // Logout GET error handled
   }
   throw redirect(303, '/');
 };

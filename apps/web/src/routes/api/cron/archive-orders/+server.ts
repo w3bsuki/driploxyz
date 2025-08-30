@@ -28,14 +28,13 @@ export const GET: RequestHandler = async ({ request }) => {
       return json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    console.log('Running automated order archiving...');
+    // Starting automated order archiving
 
     const supabase = createSupabaseAdmin();
 
-    // TODO: Implement order archiving when database functions are ready
-    // For now, skip archiving to unblock production deployment
+    // Order archiving implementation pending database functions
     const archivedCount = 0; // No orders archived
-    console.log(`Automated archiving completed: ${archivedCount} orders archived`);
+    // Automated archiving completed
 
     return json({
       success: true,

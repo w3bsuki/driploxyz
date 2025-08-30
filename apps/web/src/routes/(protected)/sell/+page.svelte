@@ -458,7 +458,7 @@
           // Capture current formData state to avoid Svelte warning
           const currentFormData = { ...formData };
           
-          // DEBUG: Check what the original form data contains
+          // Validate condition before form submission
           // Ensure condition is ALWAYS sent with valid value
           const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'];
           const conditionValue = currentFormData.condition && validConditions.includes(currentFormData.condition) ? currentFormData.condition : 'good';

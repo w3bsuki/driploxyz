@@ -3,7 +3,7 @@
  * Provides type-safe variant composition utilities for Svelte 5 components
  */
 
-import type { ButtonVariant, ButtonSize, BadgeVariant, BadgeSize, AvatarSize, AvatarVariant } from '../types.js';
+import type { ButtonVariant, ButtonSize, BadgeVariant, BadgeSize, AvatarSize, AvatarVariant } from '../../types.js';
 
 // Generic variant builder type
 type VariantConfig<TVariants extends Record<string, any>> = {
@@ -160,7 +160,7 @@ export function createResponsiveVariants<T extends Record<string, any>>(
       } else {
         // Responsive variant: "md:variant"
         const [breakpoint, variantKey] = key.split(':');
-        const variantClass = baseVariants[variantKey]?.[value];
+        const variantClass = baseVariants[variantKey]?.[value as keyof typeof baseVariants[keyof typeof baseVariants]];
         if (variantClass) classes.push(`${breakpoint}:${variantClass}`);
       }
     });

@@ -17,7 +17,7 @@
     onSearch,
     onFilter,
     showCategoriesButton = true,
-    categoriesText = 'Categories',
+    categoriesText = 'Categories', // Will be overridden by parent component
     isDropdownOpen = false,
     searchId = 'search-input',
     class: className = ''

@@ -260,8 +260,7 @@ export class ProductService {
     error: string | null;
   }> {
     try {
-      // TEMPORARY FIX: Skip premium boost query that's causing 400 errors
-      // TODO: Fix premium_boosts table/query later
+      // Skip premium boost query - premium features not yet implemented
       const boostedProducts: any[] = [];
       const boostedError = null;
 

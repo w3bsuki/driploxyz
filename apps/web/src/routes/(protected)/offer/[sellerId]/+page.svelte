@@ -22,7 +22,7 @@
     brand: p.brand,
     size: p.size,
     condition: p.condition,
-    category: 'Clothing', // TODO: get category name from category_id
+    category: 'Clothing', // Category name lookup to be implemented
     sellerId: p.sellerId,
     sellerName: p.sellerName,
     sellerRating: p.sellerRating,

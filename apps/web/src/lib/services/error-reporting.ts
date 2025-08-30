@@ -64,14 +64,7 @@ class ErrorReportingService {
 			return;
 		}
 		
-		// TODO: Initialize Sentry here when ready
-		// const Sentry = await import('@sentry/sveltekit');
-		// Sentry.init({
-		//   dsn: this.config.dsn,
-		//   environment: this.config.environment,
-		//   release: this.config.release,
-		//   sampleRate: this.config.sampleRate
-		// });
+		// Sentry integration planned for future implementation
 		
 		this.isInitialized = true;
 		
@@ -110,8 +103,7 @@ class ErrorReportingService {
 			return;
 		}
 		
-		// TODO: Send to Sentry when integrated
-		// Sentry.captureMessage(message, context.level || 'info');
+		// Future: Send to Sentry when integrated
 		
 		this.logError(new Error(message), context);
 	}
@@ -122,8 +114,7 @@ class ErrorReportingService {
 	setUser(user: Partial<User> | null) {
 		if (!this.config.enabled || !this.isInitialized) return;
 		
-		// TODO: Set Sentry user context
-		// Sentry.setUser(user);
+		// Future: Set Sentry user context
 	}
 	
 	/**
@@ -132,13 +123,7 @@ class ErrorReportingService {
 	addBreadcrumb(message: string, category: string, data?: Record<string, unknown>) {
 		if (!this.config.enabled || !this.isInitialized) return;
 		
-		// TODO: Add Sentry breadcrumb
-		// Sentry.addBreadcrumb({
-		//   message,
-		//   category,
-		//   data,
-		//   timestamp: Date.now()
-		// });
+		// Future: Add Sentry breadcrumb
 		
 		if (dev) {
 			console.log(`[Breadcrumb] ${category}: ${message}`, data);
@@ -149,13 +134,7 @@ class ErrorReportingService {
 	 * Private: Send error to reporting service
 	 */
 	private sendToReporting(error: Error, context: ErrorContext) {
-		// TODO: Send to Sentry when integrated
-		// Sentry.captureException(error, {
-		//   tags: context.tags,
-		//   extra: context.extra,
-		//   fingerprint: context.fingerprint,
-		//   level: context.level
-		// });
+		// Future: Send to Sentry when integrated
 		
 		this.logError(error, context);
 	}
@@ -246,8 +225,7 @@ class ErrorReportingService {
 	 * Performance monitoring
 	 */
 	startTransaction(name: string, op: string) {
-		// TODO: Integrate with Sentry Performance
-		// return Sentry.startTransaction({ name, op });
+		// Future: Integrate with Sentry Performance
 		
 		return {
 			finish: () => {

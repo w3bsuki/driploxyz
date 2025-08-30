@@ -22,7 +22,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (error) {
-		console.error('Error fetching user listings:', error);
+		// Error fetching user listings - return empty array
 		return {
 			listings: []
 		};

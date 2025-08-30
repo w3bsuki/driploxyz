@@ -34,9 +34,9 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
     const pathLocale = pathMatch[1];
     // Map /uk to 'en' locale internally
     const mappedLocale = pathLocale === 'uk' ? 'en' : pathLocale;
-    if (i18n.isAvailableLanguageTag(mappedLocale)) {
+    if (mappedLocale && i18n.isAvailableLanguageTag(mappedLocale)) {
       locale = mappedLocale;
-      if (isDebug) console.log(`🌍 Path-based language detected: /${pathLocale}/ → ${mappedLocale}`);
+      // Path-based language detected
     }
   } else if (pathname === '/' || !pathname.startsWith('/uk') && !pathname.startsWith('/bg')) {
     // Root or no locale prefix = Bulgarian (default)
@@ -69,7 +69,7 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
     const acceptLang = event.request.headers.get('accept-language');
     if (acceptLang) {
       const browserLang = acceptLang.split(',')[0]?.split('-')[0]?.toLowerCase();
-      locale = i18n.isAvailableLanguageTag(browserLang) ? browserLang : 'en';
+      locale = (browserLang && i18n.isAvailableLanguageTag(browserLang)) ? browserLang : 'en';
     } else {
       locale = 'en';
     }

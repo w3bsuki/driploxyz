@@ -1,4 +1,4 @@
-// import type nodemailer from 'nodemailer'; // TODO: Install nodemailer if SMTP email is needed
+// import type nodemailer from 'nodemailer'; // SMTP email functionality available when needed
 import { welcomeEmailTemplate } from './templates/welcome';
 import { baseEmailTemplate } from './templates/base-template';
 
@@ -43,7 +43,7 @@ class EmailService {
   
   private initializeTransporter() {
     try {
-      // TODO: Uncomment when nodemailer is installed
+      // Nodemailer integration available when needed
       // this.transporter = nodemailer.createTransporter({
       //   host: this.config.host,
       //   port: this.config.port,

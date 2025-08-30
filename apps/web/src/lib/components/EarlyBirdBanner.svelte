@@ -74,7 +74,7 @@
         }
       }
     } catch (err) {
-      console.error('Failed to fetch recent listings:', err);
+      // Recent listings fetch failed - banner will remain hidden
     }
   }
   

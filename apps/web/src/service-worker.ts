@@ -111,5 +111,4 @@ sw.addEventListener('sync', (event: any) => {
 async function syncFavorites() {
 	// Sync favorited items when back online
 	// This would sync with your Supabase backend
-	console.log('Syncing favorites...');
 }

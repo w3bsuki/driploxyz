@@ -35,7 +35,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         .eq('following_id', following_id);
 
       if (deleteError) {
-        console.error('Error unfollowing:', deleteError);
         throw error(500, 'Failed to unfollow');
       }
 
@@ -50,7 +49,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         });
 
       if (insertError) {
-        console.error('Error following:', insertError);
         throw error(500, 'Failed to follow');
       }
 
@@ -67,7 +65,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       });
     }
   } catch (err) {
-    console.error('Follow toggle error:', err);
     throw error(500, 'Internal server error');
   }
 };

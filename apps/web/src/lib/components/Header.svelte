@@ -98,7 +98,7 @@
       }
       // The signOut function handles the redirect
     } catch (error) {
-      console.error('Sign out error:', error);
+      // Sign out error - reset loading state
       signingOut = false;
     }
   }
@@ -163,6 +163,10 @@
     signIn: i18n.auth_signIn(),
     signUp: i18n.auth_signUp(),
     browseCategories: i18n.nav_browseCategories(),
+    whatLookingFor: i18n.search_whatLookingFor ? i18n.search_whatLookingFor() : 'What are you looking for?',
+    browseAll: i18n.search_all(),
+    popularBrands: i18n.trending_brands ? i18n.trending_brands() : 'Popular Brands',
+    newToday: i18n.filter_newToday ? i18n.filter_newToday() : 'New Today',
     orders: i18n.nav_orders(),
     favorites: i18n.nav_favorites(),
     categoryWomen: i18n.category_women(),
@@ -177,7 +181,7 @@
   });
 </script>
 
-<header class="bg-white border-b border-gray-200 shadow-sm">
+<header class="bg-white shadow-sm" style="box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);">
   <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <!-- Left: Mobile Menu + Logo -->
@@ -185,7 +189,7 @@
         <!-- Mobile Menu Button -->
         <button
           onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
-          class="sm:hidden p-1 text-gray-700 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-50 mr-1"
+          class="sm:hidden p-1 text-gray-700 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-50"
           aria-label="Toggle menu"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -225,6 +229,21 @@
         </div>
         
         {#if isLoggedIn}
+          <!-- Messages -->
+          <div class="relative">
+            <a 
+              href="/messages"
+              class="flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition-colors relative"
+              aria-label="Messages"
+            >
+              <svg class="w-5 h-5 text-gray-600 hover:text-gray-900 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              <!-- Message badge (similar to notifications) -->
+              <span class="absolute -top-1 -right-1 h-2 w-2 bg-blue-500 rounded-full opacity-0"></span>
+            </a>
+          </div>
+          
           <!-- Notifications -->
           <div class="relative">
             <NotificationBell 
@@ -267,28 +286,6 @@
               />
             </button>
             
-            {#if userMenuOpen}
-              <!-- Click outside to close -->
-              <button 
-                class="fixed inset-0 z-40" 
-                onclick={closeMenus}
-                aria-label="Close menu"
-              ></button>
-              
-              <div class="relative z-50">
-                <HeaderUserMenu 
-                  user={currentUser}
-                  profile={currentProfile}
-                  {userDisplayName}
-                  {initials}
-                  canSell={userCanSell}
-                  onSignOut={handleSignOut}
-                  onClose={closeMenus}
-                  {signingOut}
-                  translations={userMenuTranslations}
-                />
-              </div>
-            {/if}
           </div>
         {:else}
           <!-- Auth Buttons -->
@@ -329,6 +326,30 @@
     />
   {/if}
 </header>
+
+<!-- User Menu Dropdown -->
+{#if userMenuOpen}
+  <!-- Click outside to close -->
+  <button 
+    class="fixed inset-0 z-40" 
+    onclick={closeMenus}
+    aria-label="Close menu"
+  ></button>
+  
+  <div class="fixed top-[72px] right-3 sm:right-6 lg:right-8 z-50">
+    <HeaderUserMenu 
+      user={currentUser}
+      profile={currentProfile}
+      {userDisplayName}
+      {initials}
+      canSell={userCanSell}
+      onSignOut={handleSignOut}
+      onClose={closeMenus}
+      {signingOut}
+      translations={userMenuTranslations}
+    />
+  </div>
+{/if}
 
 <!-- Message Toast Notifications -->
 {#each $messageToasts as toast (toast.id)}

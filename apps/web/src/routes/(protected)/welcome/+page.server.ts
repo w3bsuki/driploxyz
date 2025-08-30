@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 import type { PageServerLoad } from './$types';
 
 /**
@@ -14,21 +15,27 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
 
   const parentData = await parent();
   
-  console.log('[WELCOME] Checking profile for user:', user.email);
-  console.log('[WELCOME] Profile data:', {
-    hasProfile: !!parentData.profile,
-    onboardingCompleted: parentData.profile?.onboarding_completed,
-    accountType: parentData.profile?.account_type,
-    username: parentData.profile?.username
-  });
+  if (dev) {
+    console.log('[WELCOME] Checking profile for user:', user.email);
+    console.log('[WELCOME] Profile data:', {
+      hasProfile: !!parentData.profile,
+      onboardingCompleted: parentData.profile?.onboarding_completed,
+      accountType: parentData.profile?.account_type,
+      username: parentData.profile?.username
+    });
+  }
 
   // If onboarding not completed, send back to onboarding
   if (!parentData.profile || !parentData.profile.onboarding_completed) {
-    console.log('[WELCOME] Profile not complete, redirecting to onboarding');
+    if (dev) {
+      console.log('[WELCOME] Profile not complete, redirecting to onboarding');
+    }
     throw redirect(303, '/onboarding');
   }
 
   // Profile is complete, proceed to dashboard
-  console.log('[WELCOME] Profile complete, redirecting to dashboard');
+  if (dev) {
+    console.log('[WELCOME] Profile complete, redirecting to dashboard');
+  }
   throw redirect(303, '/dashboard');
 };

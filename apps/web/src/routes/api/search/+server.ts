@@ -94,7 +94,12 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
       const max = parseFloat(maxPrice);
       if (!isNaN(max)) productsQuery = productsQuery.lte('price', max);
     }
-    if (condition && condition !== 'all') productsQuery = productsQuery.eq('condition', condition);
+    if (condition && condition !== 'all') {
+      const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'] as const;
+      if (validConditions.includes(condition as any)) {
+        productsQuery = productsQuery.eq('condition', condition as typeof validConditions[number]);
+      }
+    }
     if (brand && brand !== 'all') productsQuery = productsQuery.ilike('brand', `%${brand}%`);
     if (size && size !== 'all') productsQuery = productsQuery.eq('size', size);
 

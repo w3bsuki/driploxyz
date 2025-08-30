@@ -80,7 +80,7 @@
         transactions = transactionData;
       }
     } catch (error) {
-      console.error('Error loading transactions:', error);
+      // Transaction loading failed - error state handled by component
     }
     loading = false;
   }
@@ -132,7 +132,7 @@
 
       await loadTransactions();
     } catch (error) {
-      console.error('Error updating payout:', error);
+      // Payout update failed
       alert('Failed to update payout status');
     } finally {
       processing = null;

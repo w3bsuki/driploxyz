@@ -4,7 +4,7 @@ import { dev } from '$app/environment';
 
 // MANUAL PROMOTION SYSTEM
 // Add product IDs here to promote them with crown badges 👑
-// TODO: Replace with database is_promoted field when premium plans launch
+// Will be replaced with database is_promoted field when premium plans launch
 const MANUALLY_PROMOTED_IDS: string[] = [
   // Add product IDs you want to promote, e.g.:
   // 'product-id-1',
@@ -155,7 +155,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
             images: item.product_images?.map((img: { image_url: string }) => img.image_url) || [],
             product_images: item.product_images?.map((img: { image_url: string }) => img.image_url) || [],
             // Category info - avoid extra DB calls; fall back gracefully
-            main_category_name: item.categories?.parent_id ? null : (item.categories?.name ?? null),
+            main_category_name: item.categories?.parent_id ? undefined : (item.categories?.name ?? undefined),
             category_name: item.categories?.name,
             subcategory_name: item.categories?.parent_id ? item.categories.name : null,
             // Seller info

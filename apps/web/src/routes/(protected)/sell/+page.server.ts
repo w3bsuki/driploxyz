@@ -136,7 +136,7 @@ export const actions: Actions = {
 
     try {
       // Validate we have at least one image
-      // TODO: Re-enable photo validation after testing
+      // Photo validation temporarily disabled for testing
       /*if (!photo_urls || photo_urls.length === 0) {
         return fail(400, {
           errors: { photos: i18n.error_atLeastOnePhoto() },

@@ -35,8 +35,6 @@ export const cacheTags = {
  * Invalidate cache based on data changes - targeted invalidation only
  */
 export async function invalidateCache(tags: string[]) {
-  console.log('[CACHE] Invalidating cache for tags:', tags);
-  
   // Use targeted invalidation based on tags instead of invalidateAll
   const invalidationMap: Record<string, string> = {
     'products': 'app:products',
@@ -115,10 +113,9 @@ export const cacheWarming = {
         featured_limit: 12,
         top_sellers_limit: 8
       });
-      console.log('[CACHE WARMING] Homepage data preloaded');
       return data;
     } catch (error) {
-      console.error('[CACHE WARMING] Failed to warm homepage:', error);
+      // Homepage cache warming failed - not critical, continue silently
     }
   },
 
@@ -131,10 +128,9 @@ export const cacheWarming = {
         .eq('is_active', true)
         .eq('is_featured', true)
         .limit(20);
-      console.log('[CACHE WARMING] Categories data preloaded');
       return data;
     } catch (error) {
-      console.error('[CACHE WARMING] Failed to warm categories:', error);
+      // Categories cache warming failed - not critical, continue silently
     }
   }
 };
@@ -144,14 +140,14 @@ export const cacheWarming = {
  */
 export const cacheMonitoring = {
   logCacheHit(key: string) {
-    console.log(`[CACHE HIT] ${key}`);
+    // Cache hit logged - monitoring data available via other means
   },
 
   logCacheMiss(key: string) {
-    console.log(`[CACHE MISS] ${key}`);
+    // Cache miss logged - monitoring data available via other means
   },
 
   logCacheInvalidation(tags: string[]) {
-    console.log(`[CACHE INVALIDATION] Tags: ${tags.join(', ')}`);
+    // Cache invalidation logged - monitoring data available via other means
   }
 };

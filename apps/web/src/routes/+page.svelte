@@ -208,7 +208,7 @@
 		try {
 			await favoritesActions.toggleFavorite(productId);
 		} catch (error) {
-			console.error('Failed to toggle favorite:', error);
+			// Failed to toggle favorite
 		}
 	}
 
@@ -397,7 +397,24 @@
 	function handleHeroFilterClick(filterValue: string) {
 		const url = new URL('/search', window.location.origin);
 		
-		if (filterValue.startsWith('price_under_')) {
+		// Handle new V1 filters
+		if (filterValue === 'newest') {
+			url.searchParams.set('sort', 'newest');
+		} else if (filterValue === 'under25') {
+			url.searchParams.set('max_price', '25');
+		} else if (filterValue === 'price-low') {
+			url.searchParams.set('sort', 'price-low');
+		} else if (filterValue === 'price-high') {
+			url.searchParams.set('sort', 'price-high');
+		} else if (filterValue === 'search') {
+			goto('/search');
+			return;
+		} else if (filterValue.startsWith('condition=')) {
+			const condition = filterValue.replace('condition=', '');
+			url.searchParams.set('condition', condition);
+		} 
+		// Legacy filters
+		else if (filterValue.startsWith('price_under_')) {
 			const price = filterValue.replace('price_under_', '');
 			url.searchParams.set('max_price', price);
 		} else if (filterValue.startsWith('brand_')) {
@@ -426,29 +443,47 @@
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
 	<main class="max-w-7xl mx-auto">
 		<!-- Hero Search -->
-		<div class="bg-white border-b border-gray-100">
-			<div class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
-				<!-- Hero Search with Trending Dropdown -->
-				<div id="hero-search-container" class="max-w-2xl mx-auto relative mb-3">
-					<HeroSearchDropdown 
-						bind:value={searchQuery}
-						onSearch={handleSearch}
-						placeholder={i18n.search_placeholder()}
-						categoriesText={i18n.search_categories ? i18n.search_categories() : 'Categories'}
-						trendingProducts={products.slice(0, 8)}
-						topSellers={sellers}
-						quickFilters={heroQuickFilters}
-						onProductClick={handleProductClick}
-						onSellerClick={handleSellerClick}
-						onFilterClick={handleHeroFilterClick}
-						{formatPrice}
-						translations={{
-							trendingNow: i18n.trending_hotPicks ? i18n.trending_hotPicks() : 'Trending Now',
-							topSellers: i18n.promoted_premiumSellers ? i18n.promoted_premiumSellers() : 'Top Sellers',
-							items: i18n.seller_itemsCount ? i18n.seller_itemsCount() : 'items',
-							viewAllResults: i18n.search_viewAllResults ? i18n.search_viewAllResults() : 'View all results for'
-						}}
-					/>
+		<div class="bg-gradient-to-b from-white to-gray-50/30 border-b border-gray-100">
+			<div class="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+				<!-- Hero Search with Enhanced Styling -->
+				<div id="hero-search-container" class="max-w-2xl mx-auto relative mb-4">
+					<div class="relative">
+						<!-- Enhanced search container with subtle shadow -->
+						<div class="bg-white rounded-2xl shadow-sm border border-gray-200 hover:border-gray-300 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all duration-200">
+							<HeroSearchDropdown 
+								bind:value={searchQuery}
+								onSearch={handleSearch}
+								placeholder={i18n.search_placeholder()}
+								categoriesText={i18n.search_categories()}
+								trendingProducts={products.slice(0, 8)}
+								topSellers={sellers}
+								quickFilters={heroQuickFilters}
+								onProductClick={handleProductClick}
+								onSellerClick={handleSellerClick}
+								onFilterClick={handleHeroFilterClick}
+								{formatPrice}
+								class="rounded-2xl"
+								translations={{
+									quickShop: i18n.search_quickShop(),
+									shopByCondition: i18n.search_shopByCondition(),
+									shopByPrice: i18n.search_shopByPrice(),
+									quickAccess: i18n.search_quickAccess(),
+									topSellers: i18n.search_topSellers(),
+									newWithTags: i18n.search_newWithTags(),
+									likeNew: i18n.search_likeNew(),
+									good: i18n.search_good(),
+									fair: i18n.search_fair(),
+									under25: i18n.search_under25(),
+									cheapest: i18n.search_cheapest(),
+									newest: i18n.search_newest(),
+									premium: i18n.search_premium(),
+									myFavorites: i18n.search_myFavorites(),
+									browseAll: i18n.search_browseAll(),
+									viewAllResults: i18n.search_viewAllResults()
+								}}
+							/>
+						</div>
+					</div>
 				</div>
 				
 				<!-- Enhanced Category Pills -->
@@ -466,7 +501,7 @@
 						aria-label="View all categories"
 						aria-busy={loadingCategory === 'all'}
 						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
-						class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-gradient-to-r from-gray-900 to-black text-white rounded-xl text-xs sm:text-sm font-medium md:hover:shadow-lg disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black relative snap-start"
+						class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-black text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-gray-800 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black relative snap-start transition-colors"
 					>
 						{#if loadingCategory === 'all'}
 							<LoadingSpinner size="sm" color="white" />
@@ -486,11 +521,11 @@
 							disabled={loadingCategory === category.slug}
 							aria-label="Browse Women category"
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-gradient-to-r from-pink-50 to-pink-100 border border-pink-200 rounded-xl text-xs sm:text-sm font-medium text-pink-900 hover:from-pink-100 hover:to-pink-200 hover:border-pink-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-400 relative snap-start"
+							class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-medium text-gray-900 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 relative snap-start transition-colors"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="pink" />
+								<LoadingSpinner size="sm" color="gray" />
 							{:else}
 								<span class="text-sm sm:text-base">👗</span>
 								<span>{i18n.category_women()}</span>
@@ -509,11 +544,11 @@
 							disabled={loadingCategory === category.slug}
 							aria-label="Browse Men category"
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-xl text-xs sm:text-sm font-medium text-blue-900 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 relative snap-start"
+							class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-medium text-gray-900 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 relative snap-start transition-colors"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="blue" />
+								<LoadingSpinner size="sm" color="gray" />
 							{:else}
 								<span class="text-sm sm:text-base">👔</span>
 								<span>{i18n.category_men()}</span>
@@ -532,11 +567,11 @@
 							disabled={loadingCategory === category.slug}
 							aria-label="Browse Kids category"
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl text-xs sm:text-sm font-medium text-green-900 hover:from-green-100 hover:to-green-200 hover:border-green-300 hover:shadow-md disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 relative snap-start"
+							class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-medium text-gray-900 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 relative snap-start transition-colors"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="green" />
+								<LoadingSpinner size="sm" color="gray" />
 							{:else}
 								<span class="text-sm sm:text-base">👶</span>
 								<span>{i18n.category_kids()}</span>
@@ -660,7 +695,7 @@
 		home: i18n.nav_home(),
 		search: i18n.nav_search(),
 		sell: i18n.nav_sell(),
-		messages: i18n.nav_messages(),
+		wishlist: i18n.nav_wishlist(),
 		profile: i18n.nav_profile()
 	}}
 />

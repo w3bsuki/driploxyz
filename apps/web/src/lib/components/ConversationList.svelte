@@ -86,7 +86,6 @@
       class="w-full px-4 py-4 hover:bg-gray-50 border-b border-gray-200 transition-colors text-left min-h-[68px] cursor-pointer
         {selectedConversationId === conv.id ? 'bg-gray-50' : ''}"
       onclick={() => {
-        console.log('🖱️ Conversation clicked:', conv.id, conv.userName);
         onConversationSelect(conv.id);
       }}
     >

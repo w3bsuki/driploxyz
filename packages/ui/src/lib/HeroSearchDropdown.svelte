@@ -37,9 +37,21 @@
     formatPrice?: (price: number) => string;
     categoriesText?: string;
     translations: {
-      trendingNow: string;
+      quickShop: string;
+      shopByCondition: string;
+      shopByPrice: string;
+      quickAccess: string;
       topSellers: string;
-      items: string;
+      newWithTags: string;
+      likeNew: string;
+      good: string;
+      fair: string;
+      under25: string;
+      cheapest: string;
+      newest: string;
+      premium: string;
+      myFavorites: string;
+      browseAll: string;
       viewAllResults: string;
     };
     class?: string;
@@ -56,7 +68,7 @@
     onSellerClick,
     onFilterClick,
     formatPrice = (price: number) => `$${price}`,
-    categoriesText = 'Categories',
+    categoriesText = 'Categories', // Will be overridden by parent component
     translations,
     class: className = ''
   }: Props = $props();
@@ -304,13 +316,10 @@
       {:else if !isSearchMode}
         <!-- Trending Content Mode -->
         <TrendingDropdown
-          {trendingProducts}
           {topSellers}
           {quickFilters}
-          onProductClick={handleProductClick}
           onSellerClick={handleSellerClick}  
           onFilterClick={handleFilterClick}
-          {formatPrice}
           {translations}
         />
       {/if}

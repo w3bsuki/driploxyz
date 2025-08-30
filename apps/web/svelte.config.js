@@ -12,7 +12,13 @@ const config = {
 	kit: {
 		adapter: adapter({
 			runtime: 'nodejs22.x'
-		})
+		}),
+		alias: {
+			'@repo/ui': '../../packages/ui/src/lib/index.ts',
+			'@repo/ui/*': '../../packages/ui/src/*',
+			'@repo/database': '../../packages/database/src/index.ts',
+			'@repo/i18n': '../../packages/i18n/src/index.ts'
+		}
 	},
 };
 

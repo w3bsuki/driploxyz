@@ -5,7 +5,7 @@ import { createServerSupabaseClient } from '$lib/supabase/server';
 export const POST: RequestHandler = async (event) => {
   try {
     const { code, planId } = await event.request.json();
-    console.log('[Validate Discount] Request:', { code, planId });
+    // Validating discount code for subscription
     
     if (!code || !planId) {
       return json({ 
@@ -51,14 +51,14 @@ export const POST: RequestHandler = async (event) => {
       .single();
 
     if (validationError) {
-      console.error('[Discount Validation] Database error:', validationError);
+      // Discount validation database error
       return json({ 
         valid: false, 
         error: 'Failed to validate discount code' 
       }, { status: 500 });
     }
 
-    console.log('[Discount Validation] Result:', validationResult);
+    // Discount validation completed
 
     // Handle both nested and flat response structures
     const result = (validationResult as any)?.validate_discount_code || validationResult;
@@ -81,7 +81,7 @@ export const POST: RequestHandler = async (event) => {
     }
 
   } catch (error) {
-    console.error('[Discount Validation] Internal error:', error);
+    // Internal error during discount validation
     return json({ 
       valid: false, 
       error: 'Internal server error' 
