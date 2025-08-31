@@ -441,57 +441,52 @@
 
 {#key currentLang}
 <div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
-	<main class="max-w-7xl mx-auto">
+	<main class="max-w-6xl mx-auto">
 		<!-- Hero Search -->
-		<div class="bg-gradient-to-b from-white to-gray-50/30 border-b border-gray-100">
-			<div class="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-				<!-- Hero Search with Enhanced Styling -->
+		<div class="bg-white border-b border-gray-200">
+			<div class="px-4 sm:px-6 lg:px-8 py-4">
+				<!-- Hero Search -->
 				<div id="hero-search-container" class="max-w-2xl mx-auto relative mb-4">
-					<div class="relative">
-						<!-- Enhanced search container with subtle shadow -->
-						<div class="bg-white rounded-2xl shadow-sm border border-gray-200 hover:border-gray-300 focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 transition-all duration-200">
-							<HeroSearchDropdown 
-								bind:value={searchQuery}
-								onSearch={handleSearch}
-								placeholder={i18n.search_placeholder()}
-								categoriesText={i18n.search_categories()}
-								trendingProducts={products.slice(0, 8)}
-								topSellers={sellers}
-								quickFilters={heroQuickFilters}
-								onProductClick={handleProductClick}
-								onSellerClick={handleSellerClick}
-								onFilterClick={handleHeroFilterClick}
-								{formatPrice}
-								class="rounded-2xl"
-								translations={{
-									quickShop: i18n.search_quickShop(),
-									shopByCondition: i18n.search_shopByCondition(),
-									shopByPrice: i18n.search_shopByPrice(),
-									quickAccess: i18n.search_quickAccess(),
-									topSellers: i18n.search_topSellers(),
-									newWithTags: i18n.search_newWithTags(),
-									likeNew: i18n.search_likeNew(),
-									good: i18n.search_good(),
-									fair: i18n.search_fair(),
-									under25: i18n.search_under25(),
-									cheapest: i18n.search_cheapest(),
-									newest: i18n.search_newest(),
-									premium: i18n.search_premium(),
-									myFavorites: i18n.search_myFavorites(),
-									browseAll: i18n.search_browseAll(),
-									viewAllResults: i18n.search_viewAllResults()
-								}}
-							/>
-						</div>
-					</div>
+					<HeroSearchDropdown 
+						bind:value={searchQuery}
+						onSearch={handleSearch}
+						placeholder={i18n.search_placeholder()}
+						categoriesText={i18n.search_categories()}
+						trendingProducts={products.slice(0, 8)}
+						topSellers={sellers}
+						quickFilters={heroQuickFilters}
+						onProductClick={handleProductClick}
+						onSellerClick={handleSellerClick}
+						onFilterClick={handleHeroFilterClick}
+						{formatPrice}
+						translations={{
+							quickShop: i18n.search_quickShop(),
+							shopByCondition: i18n.search_shopByCondition(),
+							shopByPrice: i18n.search_shopByPrice(),
+							quickAccess: i18n.search_quickAccess(),
+							topSellers: i18n.search_topSellers(),
+							newWithTags: i18n.search_newWithTags(),
+							likeNew: i18n.search_likeNew(),
+							good: i18n.search_good(),
+							fair: i18n.search_fair(),
+							under25: i18n.search_under25(),
+							cheapest: i18n.search_cheapest(),
+							newest: i18n.search_newest(),
+							premium: i18n.search_premium(),
+							myFavorites: i18n.search_myFavorites(),
+							browseAll: i18n.search_browseAll(),
+							viewAllResults: i18n.search_viewAllResults()
+						}}
+					/>
 				</div>
 				
-				<!-- Enhanced Category Pills -->
+				<!-- Category Pills -->
 				<nav 
 					role="navigation"
 					aria-label="Browse categories"
-					class="flex items-center justify-center gap-1 sm:gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
+					class="flex items-center justify-center gap-2 overflow-x-auto scrollbar-hide"
 				>
+					<!-- All Categories -->
 					<button 
 						onmouseenter={() => preloadCode('/search')}
 						ontouchstart={() => preloadCode('/search')}
@@ -501,7 +496,7 @@
 						aria-label="View all categories"
 						aria-busy={loadingCategory === 'all'}
 						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
-						class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-black text-white rounded-xl text-xs sm:text-sm font-medium hover:bg-gray-800 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black relative snap-start transition-colors"
+						class="shrink-0 px-3 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
 					>
 						{#if loadingCategory === 'all'}
 							<LoadingSpinner size="sm" color="white" />
@@ -510,7 +505,7 @@
 						{/if}
 					</button>
 					
-					<!-- Women Category with Pink Accent -->
+					<!-- Women Category - Standard Action (36px) -->
 					{#if mainCategories.find(c => c.slug === 'women')}
 						{@const category = mainCategories.find(c => c.slug === 'women')}
 						<button 
@@ -521,19 +516,19 @@
 							disabled={loadingCategory === category.slug}
 							aria-label="Browse Women category"
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-medium text-gray-900 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 relative snap-start transition-colors"
+							class="shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="gray" />
+								<LoadingSpinner size="sm" color="pink" />
 							{:else}
-								<span class="text-sm sm:text-base">👗</span>
+								<span class="text-base">👗</span>
 								<span>{i18n.category_women()}</span>
 							{/if}
 						</button>
 					{/if}
 					
-					<!-- Men Category with Blue Accent -->
+					<!-- Men Category - Standard Action (36px) -->
 					{#if mainCategories.find(c => c.slug === 'men')}
 						{@const category = mainCategories.find(c => c.slug === 'men')}
 						<button 
@@ -544,19 +539,19 @@
 							disabled={loadingCategory === category.slug}
 							aria-label="Browse Men category"
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-medium text-gray-900 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 relative snap-start transition-colors"
+							class="shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="gray" />
+								<LoadingSpinner size="sm" color="blue" />
 							{:else}
-								<span class="text-sm sm:text-base">👔</span>
+								<span class="text-base">👔</span>
 								<span>{i18n.category_men()}</span>
 							{/if}
 						</button>
 					{/if}
 					
-					<!-- Kids Category with Green Accent -->
+					<!-- Kids Category - Standard Action (36px) -->
 					{#if mainCategories.find(c => c.slug === 'kids')}
 						{@const category = mainCategories.find(c => c.slug === 'kids')}
 						<button 
@@ -567,13 +562,13 @@
 							disabled={loadingCategory === category.slug}
 							aria-label="Browse Kids category"
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-3 sm:px-5 py-2 bg-white border border-gray-200 rounded-xl text-xs sm:text-sm font-medium text-gray-900 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-1.5 min-w-[72px] sm:min-w-[96px] h-9 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 relative snap-start transition-colors"
+							class="shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="gray" />
+								<LoadingSpinner size="sm" color="green" />
 							{:else}
-								<span class="text-sm sm:text-base">👶</span>
+								<span class="text-base">👶</span>
 								<span>{i18n.category_kids()}</span>
 							{/if}
 						</button>
@@ -613,10 +608,10 @@
 			{:else if highlightsInView}
 				<!-- Loading skeleton for promoted highlights when in view -->
 				<div class="w-full bg-gradient-to-br from-gray-50/90 to-white/95 border-y border-gray-200/60">
-					<div class="px-4 sm:px-5 lg:px-6 py-3 sm:py-3.5">
-						<div class="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide">
+					<div class="px-4 sm:px-6 lg:px-8 py-3 sm:py-3.5">
+						<div class="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide">
 							{#each Array(4) as _}
-								<div class="flex-shrink-0 w-40 sm:w-44 bg-gray-100 rounded-lg h-48 sm:h-52 animate-pulse"></div>
+								<div class="flex-shrink-0 w-44 sm:w-52 md:w-56 bg-gray-100 rounded-xl aspect-[4/5] animate-pulse"></div>
 							{/each}
 						</div>
 					</div>
@@ -695,7 +690,7 @@
 		home: i18n.nav_home(),
 		search: i18n.nav_search(),
 		sell: i18n.nav_sell(),
-		wishlist: i18n.nav_wishlist(),
+		messages: i18n.nav_messages(),
 		profile: i18n.nav_profile()
 	}}
 />

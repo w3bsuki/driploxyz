@@ -83,25 +83,25 @@
       <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
         <button 
           onclick={() => onFilterClick('condition=brand_new_with_tags')}
-          class="shrink-0 px-4 py-2 bg-gradient-to-r from-emerald-50 to-emerald-100 border border-emerald-200 rounded-lg text-sm font-medium text-emerald-800 hover:from-emerald-100 hover:to-emerald-200 hover:border-emerald-300 transition-all duration-200"
+          class="shrink-0 px-4 py-2 bg-green-50 border border-green-200 rounded-lg text-sm font-medium text-green-800 hover:bg-green-100 hover:border-green-300 transition-colors min-h-[36px]"
         >
           🏷️ {translations.newWithTags}
         </button>
         <button 
           onclick={() => onFilterClick('condition=new_without_tags')}
-          class="shrink-0 px-4 py-2 bg-gradient-to-r from-blue-50 to-blue-100 border border-blue-200 rounded-lg text-sm font-medium text-blue-800 hover:from-blue-100 hover:to-blue-200 hover:border-blue-300 transition-all duration-200"
+          class="shrink-0 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg text-sm font-medium text-blue-800 hover:bg-blue-100 hover:border-blue-300 transition-colors min-h-[36px]"
         >
           ✨ {translations.likeNew}
         </button>
         <button 
           onclick={() => onFilterClick('condition=like_new')}
-          class="shrink-0 px-4 py-2 bg-gradient-to-r from-violet-50 to-violet-100 border border-violet-200 rounded-lg text-sm font-medium text-violet-800 hover:from-violet-100 hover:to-violet-200 hover:border-violet-300 transition-all duration-200"
+          class="shrink-0 px-4 py-2 bg-purple-50 border border-purple-200 rounded-lg text-sm font-medium text-purple-800 hover:bg-purple-100 hover:border-purple-300 transition-colors min-h-[36px]"
         >
           👍 {translations.good}
         </button>
         <button 
           onclick={() => onFilterClick('condition=good')}
-          class="shrink-0 px-4 py-2 bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200 rounded-lg text-sm font-medium text-amber-800 hover:from-amber-100 hover:to-amber-200 hover:border-amber-300 transition-all duration-200"
+          class="shrink-0 px-4 py-2 bg-orange-50 border border-orange-200 rounded-lg text-sm font-medium text-orange-800 hover:bg-orange-100 hover:border-orange-300 transition-colors min-h-[36px]"
         >
           📦 {translations.fair}
         </button>
@@ -114,25 +114,25 @@
       <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
         <button 
           onclick={() => onFilterClick('under25')}
-          class="shrink-0 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg text-sm font-medium hover:from-green-700 hover:to-emerald-700 hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-200"
+          class="shrink-0 px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-medium hover:bg-green-700 transition-colors min-h-[36px]"
         >
           💰 {translations.under25}
         </button>
         <button 
           onclick={() => onFilterClick('price-low')}
-          class="shrink-0 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg text-sm font-medium hover:from-blue-700 hover:to-indigo-700 hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-200"
+          class="shrink-0 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors min-h-[36px]"
         >
           💸 {translations.cheapest}
         </button>
         <button 
           onclick={() => onFilterClick('newest')}
-          class="shrink-0 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm font-medium hover:from-purple-700 hover:to-pink-700 hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-200"
+          class="shrink-0 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors min-h-[36px]"
         >
           📅 {translations.newest}
         </button>
         <button 
           onclick={() => onFilterClick('price-high')}
-          class="shrink-0 px-4 py-2 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-lg text-sm font-medium hover:from-amber-700 hover:to-orange-700 hover:shadow-md transform hover:-translate-y-0.5 transition-all duration-200"
+          class="shrink-0 px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium hover:bg-orange-700 transition-colors min-h-[36px]"
         >
           🔥 {translations.premium}
         </button>
@@ -141,12 +141,12 @@
 
   </div>
 
-  <!-- Top Sellers - Gamification -->
+  <!-- Top Sellers -->
   {#if topSellers.length > 0}
-    <div class="border-t border-gray-100 p-6 bg-gradient-to-br from-gray-50 to-white">
+    <div class="border-t border-gray-100 p-6 bg-gray-50">
       <div class="space-y-3">
         <h3 class="text-xs uppercase tracking-wide font-semibold text-gray-500 flex items-center gap-2">
-          <span class="w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-pulse"></span>
+          <span class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
           {translations.topSellers}
         </h3>
         <div class="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-1">
@@ -156,7 +156,7 @@
               class="shrink-0 flex items-center gap-3 px-4 py-3 bg-white border border-gray-200 rounded-xl hover:border-gray-300 hover:shadow-sm transition-all duration-200 group min-w-[140px]"
             >
               <div class="relative">
-                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden ring-2 ring-white shadow-sm">
+                <div class="w-10 h-10 rounded-full bg-gray-100 overflow-hidden border-2 border-white shadow-sm">
                   {#if seller.avatar}
                     <img 
                       src={seller.avatar} 
@@ -170,7 +170,7 @@
                   {/if}
                 </div>
                 {#if index < 3}
-                  <div class="absolute -top-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
+                  <div class="absolute -top-1 -right-1 bg-orange-500 rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
                     <span class="text-white text-xs font-bold">{index + 1}</span>
                   </div>
                 {/if}

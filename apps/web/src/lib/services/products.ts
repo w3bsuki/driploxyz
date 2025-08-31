@@ -27,6 +27,20 @@ export interface ProductFilters {
   country_code?: string;
 }
 
+export interface HierarchicalProductFilters {
+  category_id?: string; // Single category for hierarchical filtering
+  include_descendants?: boolean; // Include subcategories (default: true)
+  min_price?: number;
+  max_price?: number;
+  conditions?: Database['public']['Enums']['product_condition'][];
+  sizes?: string[];
+  brands?: string[];
+  location?: string;
+  seller_id?: string;
+  search?: string;
+  country_code?: string;
+}
+
 export interface ProductSort {
   by: 'created_at' | 'price' | 'popularity' | 'relevance';
   direction: 'asc' | 'desc';
@@ -467,6 +481,195 @@ export class ProductService {
       return { data: products, error: null };
     } catch (error) {
       return { data: [], error: 'Failed to search products' };
+    }
+  }
+
+  // ===== NEW HIERARCHICAL METHODS =====
+
+  /**
+   * Get products using hierarchical category filtering
+   * Supports filtering by category and its descendants automatically
+   */
+  async getHierarchicalProducts(
+    filters: HierarchicalProductFilters = {},
+    sort?: ProductSort,
+    limit?: number,
+    offset?: number
+  ): Promise<{ 
+    data: ProductWithImages[]; 
+    error: string | null;
+    total?: number;
+  }> {
+    try {
+      let query = this.supabase
+        .from('products')
+        .select(`
+          *,
+          favorite_count,
+          product_images!product_id (
+            id, image_url, alt_text, display_order, created_at, product_id, sort_order
+          ),
+          categories!category_id (name),
+          profiles!seller_id (username, rating, avatar_url)
+        `, { count: 'exact' })
+        .eq('is_active', true)
+        .eq('is_sold', false);
+
+      // HIERARCHICAL CATEGORY FILTERING
+      if (filters.category_id) {
+        if (filters.include_descendants !== false) { // Default to true
+          // Get products in category tree (category + all descendants)
+          const { data: productIds, error: productIdsError } = await this.supabase.rpc('get_products_in_category_tree', {
+            category_uuid: filters.category_id
+          });
+
+          if (productIdsError) {
+            return { data: [], error: productIdsError.message };
+          }
+
+          if (productIds && productIds.length > 0) {
+            const ids = productIds.map(p => p.product_id);
+            query = query.in('id', ids);
+          } else {
+            // No products in this category tree
+            return { data: [], error: null, total: 0 };
+          }
+        } else {
+          // Exact category match only
+          query = query.eq('category_id', filters.category_id);
+        }
+      }
+
+      // Apply other filters
+      if (filters.country_code) {
+        query = query.eq('country_code', filters.country_code);
+      }
+      
+      if (filters.min_price !== undefined) {
+        query = query.gte('price', filters.min_price);
+      }
+      
+      if (filters.max_price !== undefined) {
+        query = query.lte('price', filters.max_price);
+      }
+      
+      if (filters.conditions?.length) {
+        query = query.in('condition', filters.conditions);
+      }
+      
+      if (filters.sizes?.length) {
+        query = query.in('size', filters.sizes);
+      }
+      
+      if (filters.brands?.length) {
+        query = query.in('brand', filters.brands);
+      }
+      
+      if (filters.location) {
+        query = query.ilike('location', `%${filters.location}%`);
+      }
+      
+      if (filters.seller_id) {
+        query = query.eq('seller_id', filters.seller_id);
+      }
+      
+      if (filters.search) {
+        query = query.or(`title.ilike.%${filters.search}%,description.ilike.%${filters.search}%,brand.ilike.%${filters.search}%`);
+      }
+
+      // Apply sorting
+      if (sort) {
+        const { by, direction } = sort;
+        if (by === 'popularity') {
+          query = query.order('favorite_count', { ascending: direction === 'asc' });
+        } else {
+          query = query.order(by, { ascending: direction === 'asc' });
+        }
+      } else {
+        query = query.order('created_at', { ascending: false });
+      }
+
+      // Apply pagination
+      if (limit) {
+        query = query.limit(limit);
+      }
+      if (offset) {
+        query = query.range(offset, offset + (limit || 10) - 1);
+      }
+
+      const { data, error, count } = await query;
+
+      if (error) {
+        return { data: [], error: error.message };
+      }
+
+      // Transform the data
+      const products: ProductWithImages[] = (data || []).map(item => ({
+        ...item,
+        images: Array.isArray(item.product_images) ? item.product_images : [],
+        category_name: (item.categories && typeof item.categories === 'object' && 'name' in item.categories) ? item.categories.name : undefined,
+        seller_name: (item.profiles && typeof item.profiles === 'object' && 'username' in item.profiles) ? (item.profiles.username ?? undefined) : undefined,
+        seller_rating: (item.profiles && typeof item.profiles === 'object' && 'rating' in item.profiles) ? item.profiles.rating ?? undefined : undefined
+      }));
+
+      return { data: products, error: null, total: count || 0 };
+    } catch (error) {
+      return { data: [], error: 'Failed to fetch hierarchical products' };
+    }
+  }
+
+  /**
+   * Get products for a specific category level (1, 2, or 3) with proper hierarchy
+   */
+  async getProductsForCategoryLevel(
+    categoryId: string, 
+    level: number,
+    additionalFilters: Omit<HierarchicalProductFilters, 'category_id'> = {},
+    sort?: ProductSort,
+    limit?: number,
+    offset?: number
+  ): Promise<{ data: ProductWithImages[]; error: string | null; total?: number }> {
+    
+    const filters: HierarchicalProductFilters = {
+      ...additionalFilters,
+      category_id: categoryId,
+      // Level 1 & 2 should include descendants, Level 3 should be exact
+      include_descendants: level < 3
+    };
+
+    return this.getHierarchicalProducts(filters, sort, limit, offset);
+  }
+
+  /**
+   * Get category-specific product count (including descendants)
+   */
+  async getCategoryProductCount(categoryId: string): Promise<{ count: number; error: string | null }> {
+    try {
+      const { data, error } = await this.supabase.rpc('get_products_in_category_tree', {
+        category_uuid: categoryId
+      });
+
+      if (error) {
+        return { count: 0, error: error.message };
+      }
+
+      // Filter active and not sold products
+      const activeProducts = await Promise.all(
+        (data || []).map(async (item) => {
+          const { data: product } = await this.supabase
+            .from('products')
+            .select('is_active, is_sold')
+            .eq('id', item.product_id)
+            .single();
+          
+          return product?.is_active && !product?.is_sold;
+        })
+      );
+
+      const count = activeProducts.filter(Boolean).length;
+      return { count, error: null };
+    } catch (error) {
+      return { count: 0, error: 'Failed to get category product count' };
     }
   }
 }

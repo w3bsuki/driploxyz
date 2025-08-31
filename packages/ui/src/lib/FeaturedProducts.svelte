@@ -1,8 +1,8 @@
 <script lang="ts">
   import ProductCard from './ProductCard.svelte';
   import Button from './Button.svelte';
-  import { ProductCardSkeleton } from './skeleton/index.js';
-  import type { Product } from './types/index.js';
+  import { ProductCardSkeleton } from './skeleton/index';
+  import type { Product } from './types/index';
 
   interface Translations {
     empty_noProducts: string;
@@ -60,15 +60,19 @@
 
 <!-- Product Grid Section -->
 <section 
-  class="px-3 sm:px-4 lg:px-6 py-3 sm:py-4"
+  class="px-4 sm:px-6 lg:px-8 py-4"
   aria-label={sectionTitle}
   role="region"
 >
+  <!-- Section Header -->
+  <div class="mb-4">
+    <h2 class="text-lg font-semibold text-gray-900">{sectionTitle}</h2>
+  </div>
   
   <!-- Loading State -->
   {#if loading}
     <div 
-      class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-3 lg:gap-4"
+      class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3"
       role="status"
       aria-busy="true"
       aria-live="polite"
@@ -83,7 +87,7 @@
   {:else if hasProducts}
     <div 
       id={gridId}
-      class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-3 lg:gap-4"
+      class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3"
       role="list"
       aria-label="Product grid with {products.length} items"
     >

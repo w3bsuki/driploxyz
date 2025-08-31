@@ -1,7 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import ProductCard from './ProductCard.svelte';
-  import { ProductCardSkeleton } from './skeleton/index.js';
+  import { ProductCardSkeleton } from './skeleton/index';
   // Simple throttle implementation
   function throttle(fn: Function, limit: number) {
     let inThrottle: boolean;

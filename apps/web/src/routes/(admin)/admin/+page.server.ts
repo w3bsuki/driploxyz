@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals: { supabase } }) => {
+export const load = (async ({ locals: { supabase } }) => {
   try {
     // Get dashboard statistics
     const [
@@ -54,4 +54,4 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
       recentOrders: []
     };
   }
-};
+}) satisfies PageServerLoad;

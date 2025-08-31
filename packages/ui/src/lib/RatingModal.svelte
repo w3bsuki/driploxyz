@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Modal from './Modal.svelte';
+  import Dialog from './primitives/dialog/Dialog.svelte';
   import Button from './Button.svelte';
 
   interface Props {
@@ -81,19 +81,18 @@
   }
 </script>
 
-<Modal bind:open>
-  <div class="p-6 max-w-md mx-auto">
-    <h2 class="text-xl font-semibold mb-4">Rate Your Purchase</h2>
-    
-    <div class="mb-4">
-      <p class="text-sm text-gray-600 mb-2">
-        How was your experience with <span class="font-medium">{sellerName}</span>?
-      </p>
-      <p class="text-xs text-gray-500">
-        Product: {productTitle}
-      </p>
-    </div>
-    
+<Dialog bind:open>
+  {#snippet title()}
+    Rate Your Purchase
+  {/snippet}
+
+  {#snippet description()}
+    How was your experience with <span class="font-medium">{sellerName}</span>?
+    <br>
+    <span class="text-xs text-gray-500">Product: {productTitle}</span>
+  {/snippet}
+
+  {#snippet children()}
     <!-- Overall Rating -->
     <div class="mb-6">
       <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -194,25 +193,16 @@
         placeholder="Share your experience with other buyers..."
       ></textarea>
     </div>
-    
-    <!-- Actions -->
-    <div class="flex gap-3">
-      <Button
-        onclick={() => open = false}
-        variant="outline"
-        class="flex-1"
-        disabled={submitting}
-      >
-        Cancel
-      </Button>
-      <Button
-        onclick={submitRating}
-        variant="primary"
-        class="flex-1"
-        disabled={submitting || rating === 0}
-      >
-        {submitting ? 'Submitting...' : 'Submit Review'}
-      </Button>
-    </div>
-  </div>
-</Modal>
+  {/snippet}
+
+  {#snippet actions()}
+    <Button
+      onclick={submitRating}
+      variant="primary"
+      class="flex-1 min-h-[44px]"
+      disabled={submitting || rating === 0}
+    >
+      {submitting ? 'Submitting...' : 'Submit Review'}
+    </Button>
+  {/snippet}
+</Dialog>

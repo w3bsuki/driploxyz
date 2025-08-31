@@ -1,7 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 
-export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, depends }) => {
+export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
   depends('messages:conversations');
   depends('messages:specific');
   
@@ -168,9 +168,9 @@ export const load: PageServerLoad = async ({ locals: { supabase }, url, parent, 
       email: user.email
     }
   };
-};
+}) satisfies PageServerLoad;
 
-export const actions: Actions = {
+export const actions = {
   sendMessage: async ({ request, locals: { supabase, safeGetSession } }) => {
     const { session } = await safeGetSession();
     const user = session?.user;
@@ -209,4 +209,4 @@ export const actions: Actions = {
 
     return { success: true };
   }
-};
+} satisfies Actions;

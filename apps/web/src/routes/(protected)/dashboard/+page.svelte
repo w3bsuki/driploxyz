@@ -442,6 +442,7 @@
 <!-- Welcome Modal for first-time users -->
 {#if showWelcomeModal}
   <WelcomeModal
+    show={showWelcomeModal}
     username={data.profile?.username || 'there'}
     onComplete={() => {
       showWelcomeModal = false;

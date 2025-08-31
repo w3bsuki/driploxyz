@@ -1,5 +1,22 @@
-import { writable } from 'svelte/store';
+/**
+ * Legacy Toast Store - Backward Compatible
+ * 
+ * This implementation maintains 100% backward compatibility with existing code
+ * while internally using the new Melt UI toast system for enhanced UX.
+ * 
+ * Usage patterns that continue to work:
+ * - toasts.success('Operation completed')
+ * - toasts.error('Something went wrong')
+ * - toasts.show('Custom message', 'info', 3000)
+ * 
+ * For new code, consider using the modern API:
+ * import { toasts as modernToasts } from '@repo/ui/primitives'
+ */
 
+import { writable } from 'svelte/store';
+import { toasts as modernToasts } from './primitives/toast/store';
+
+// Legacy interface - kept for backward compatibility
 export interface ToastMessage {
   id: string;
   message: string;
@@ -10,29 +27,48 @@ export interface ToastMessage {
 function createToastStore() {
   const { subscribe, update } = writable<ToastMessage[]>([]);
 
+  // Bridge between legacy and modern toast systems
+  function addLegacyToast(message: string, type: ToastMessage['type'] = 'info', duration = 5000): string {
+    // Use modern toast system internally
+    const id = modernToasts.show(message, type, { duration });
+    
+    // Also update the legacy store for components still subscribing to it
+    const legacyToast: ToastMessage = { id, message, type, duration };
+    update(toasts => [...toasts, legacyToast]);
+    
+    // Auto-remove from legacy store after duration
+    setTimeout(() => {
+      update(toasts => toasts.filter(t => t.id !== id));
+    }, duration);
+    
+    return id;
+  }
+
   return {
     subscribe,
     show(message: string, type: ToastMessage['type'] = 'info', duration = 5000) {
-      const id = Date.now().toString();
-      update(toasts => [...toasts, { id, message, type, duration }]);
-      return id;
+      return addLegacyToast(message, type, duration);
     },
     success(message: string, duration = 5000) {
-      return this.show(message, 'success', duration);
+      return addLegacyToast(message, 'success', duration);
     },
     error(message: string, duration = 5000) {
-      return this.show(message, 'error', duration);
+      return addLegacyToast(message, 'error', duration);
     },
     warning(message: string, duration = 5000) {
-      return this.show(message, 'warning', duration);
+      return addLegacyToast(message, 'warning', duration);
     },
     info(message: string, duration = 5000) {
-      return this.show(message, 'info', duration);
+      return addLegacyToast(message, 'info', duration);
     },
     remove(id: string) {
+      // Remove from both systems
+      modernToasts.dismiss(id);
       update(toasts => toasts.filter(t => t.id !== id));
     },
     clear() {
+      // Clear both systems
+      modernToasts.dismissAll();
       update(() => []);
     }
   };

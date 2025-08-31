@@ -38,6 +38,61 @@ pnpm dev --filter web  # Opens at http://localhost:5173
 | [ROADMAP.md](./ROADMAP.md) | Priorities, bugs, technical debt, feature pipeline |
 | [OPERATIONS.md](./OPERATIONS.md) | Deployment, monitoring, scaling, incident response |
 | [CLAUDE.md](./CLAUDE.md) | AI assistant context and rules |
+| [CLAUDE_HOOKS.md](./docs/CLAUDE_HOOKS.md) | Claude‑code hooks & execution protocol |
+
+## 🧭 Execution Workflow (Claude‑code)
+
+Start here: `docs/RUNBOOK.md` for the single active task. Read `CLAUDE.md` first, then follow these tasks in order. Keep PRs small (≤400 LOC), update checkboxes in `docs/CODEX_TASKLIST.md`, and use the playbooks for precise steps and snippets.
+
+- Task 0 — Melt UI Fix Pack (if blocking)
+  - Source: `docs/MELT_UI_MIGRATION.md`
+  - Goal: fix barrels (extensionless exports), load `semantic.css`, refactor Select actions, replace invalid utilities, adopt Tabs/Tooltip/Toast on one page.
+
+- Task 1 — TypeScript Audit
+  - Source: `docs/playbooks/typescript.md`
+  - DoD: extensionless barrels, `satisfies` on loads/actions, no implicit `any`.
+
+- Task 2 — Svelte 5 Audit
+  - Source: `docs/playbooks/svelte5.md`
+  - DoD: runes used for state ($state/$derived), property events (`onclick`), `$bindable` where two‑way binding is needed.
+
+- Task 3 — SvelteKit 2 Audit
+  - Source: `docs/playbooks/sveltekit2.md`
+  - DoD: server‑first loads/actions, typed PageData, unified reroute export, canonical/hreflang utilities.
+
+- Task 4 — Paraglide (i18n)
+  - Source: `docs/playbooks/paraglide.md`
+  - DoD: default `bg`, `/uk` → `en`, single reroute on server/client, link helper, canonical/hreflang on product/search/home, no hardcoded strings.
+
+- Task 5 — Tailwind v4 Tokens
+  - Source: `docs/playbooks/tailwindcss-v4.md`
+  - DoD: `semantic.css` loaded once, tokens only (no raw colors), fix `outline-hidden` → `outline-none`.
+
+- Task 6 — Melt UI Adoption
+  - Source: `docs/playbooks/melt-ui.md` and `docs/MELT_UI_MIGRATION.md`
+  - DoD: wrappers exported via `@repo/ui`, header menu aligned on mobile, Tabs/Tooltip/Toast used in real views, delete app‑level duplicates.
+
+- Task 7 — Supabase Auth & Data
+  - Source: `docs/playbooks/supabase.md`
+  - DoD: SSR `safeGetSession`, POST‑only logout with origin checks, onboarding updates profile only, reviews table + RLS.
+
+- Task 8 — Playwright Smokes + a11y
+  - Source: `docs/playbooks/playwright.md`
+  - DoD: smokes for auth/sell/search/buy/orders/reviews, axe checks on home/product/search/checkout.
+
+## 🧹 Debloat & Refactor Plan
+
+Do a light pre‑cleanup to reduce noise, then a final sweep after audits.
+
+- Pre‑cleanup (now):
+  - Remove duplicate/backups (e.g., `service-worker.js`, `*.bak`), fix barrels, load `semantic.css`.
+  - Replace app‑level duplicates with `@repo/ui` and delete wrappers once green.
+
+- During audits (per task):
+  - Refactor in place following each playbook; remove dead code as you go.
+
+- Final sweep (pre‑release):
+  - Repo‑wide search for TODO/console.*, unused exports; run formatting/lint; confirm 0 TS errors; QA gates per `docs/V1_driplo.md`.
 
 ## 🛠 **Tech Stack**
 

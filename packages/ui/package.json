@@ -28,10 +28,13 @@
     "./types": {
       "types": "./dist/types/index.d.ts",
       "default": "./dist/types/index.js"
-    }
+    },
+    "./styles/tokens.css": "./src/styles/tokens.css",
+    "./styles/semantic.css": "./src/styles/semantic.css"
   },
   "files": [
     "dist",
+    "src/styles",
     "!dist/**/*.test.*",
     "!dist/**/*.spec.*"
   ],
@@ -60,6 +63,7 @@
     "vitest": "^1.6.0"
   },
   "dependencies": {
+    "@melt-ui/svelte": "^0.86.6",
     "@supabase/supabase-js": "^2.56.0",
     "tslib": "^2.7.0"
   }

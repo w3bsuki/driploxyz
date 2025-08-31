@@ -15,6 +15,13 @@ export interface CategoryTree extends Category {
   product_count: number;
 }
 
+export interface CategoryBreadcrumb {
+  id: string;
+  name: string;
+  slug: string;
+  level: number;
+}
+
 export class CategoryService {
   constructor(private supabase: SupabaseClient<Database>) {}
 
@@ -383,6 +390,218 @@ export class CategoryService {
     } catch (error) {
       console.error('Error in getPopularCategories:', error);
       return { data: [], error: 'Failed to fetch popular categories' };
+    }
+  }
+
+  // ===== NEW HIERARCHICAL METHODS =====
+
+  /**
+   * Get all descendant categories (children, grandchildren, etc.)
+   */
+  async getDescendants(categoryId: string): Promise<{ data: Category[]; error: string | null }> {
+    try {
+      const { data, error } = await this.supabase.rpc('get_category_descendants', {
+        category_uuid: categoryId
+      });
+
+      if (error) {
+        console.error('Error fetching descendants:', error);
+        return { data: [], error: error.message };
+      }
+
+      // Get full category details for the descendant IDs
+      if (!data || data.length === 0) {
+        return { data: [], error: null };
+      }
+
+      const descendantIds = data.map(d => d.descendant_id);
+      
+      const { data: categories, error: categoriesError } = await this.supabase
+        .from('categories')
+        .select('*')
+        .in('id', descendantIds)
+        .eq('is_active', true)
+        .order('level')
+        .order('sort_order')
+        .order('name');
+
+      if (categoriesError) {
+        console.error('Error fetching category details:', categoriesError);
+        return { data: [], error: categoriesError.message };
+      }
+
+      return { data: categories || [], error: null };
+    } catch (error) {
+      console.error('Error in getDescendants:', error);
+      return { data: [], error: 'Failed to fetch descendants' };
+    }
+  }
+
+  /**
+   * Get all ancestor categories (parent, grandparent, etc.) for breadcrumbs
+   */
+  async getAncestors(categoryId: string): Promise<{ data: CategoryBreadcrumb[]; error: string | null }> {
+    try {
+      const { data, error } = await this.supabase.rpc('get_category_ancestors', {
+        category_uuid: categoryId
+      });
+
+      if (error) {
+        console.error('Error fetching ancestors:', error);
+        return { data: [], error: error.message };
+      }
+
+      // Get full category details for the ancestor IDs
+      if (!data || data.length === 0) {
+        return { data: [], error: null };
+      }
+
+      const ancestorIds = data.map(d => d.ancestor_id);
+      
+      const { data: categories, error: categoriesError } = await this.supabase
+        .from('categories')
+        .select('id, name, slug, level')
+        .in('id', ancestorIds)
+        .eq('is_active', true)
+        .order('level'); // Level 1 first, then 2, then 3
+
+      if (categoriesError) {
+        console.error('Error fetching ancestor details:', categoriesError);
+        return { data: [], error: categoriesError.message };
+      }
+
+      return { data: (categories || []).map(c => ({
+        id: c.id,
+        name: c.name,
+        slug: c.slug,
+        level: c.level || 1
+      })), error: null };
+    } catch (error) {
+      console.error('Error in getAncestors:', error);
+      return { data: [], error: 'Failed to fetch ancestors' };
+    }
+  }
+
+  /**
+   * Get product count for a category (including descendants)
+   */
+  async getHierarchicalProductCount(categoryId: string): Promise<{ count: number; error: string | null }> {
+    try {
+      const { data, error } = await this.supabase.rpc('get_products_in_category_tree', {
+        category_uuid: categoryId
+      });
+
+      if (error) {
+        console.error('Error fetching hierarchical product count:', error);
+        return { count: 0, error: error.message };
+      }
+
+      return { count: data?.length || 0, error: null };
+    } catch (error) {
+      console.error('Error in getHierarchicalProductCount:', error);
+      return { count: 0, error: 'Failed to get product count' };
+    }
+  }
+
+  /**
+   * Get categories by level with hierarchical product counts
+   */
+  async getCategoriesByLevelWithCounts(level: number): Promise<{ data: CategoryWithChildren[]; error: string | null }> {
+    try {
+      const { data: categories, error } = await this.supabase
+        .from('categories')
+        .select('*')
+        .eq('level', level)
+        .eq('is_active', true)
+        .order('sort_order')
+        .order('name');
+
+      if (error) {
+        console.error('Error fetching categories by level:', error);
+        return { data: [], error: error.message };
+      }
+
+      if (!categories) {
+        return { data: [], error: null };
+      }
+
+      // Get hierarchical product counts for each category
+      const categoriesWithCounts = await Promise.all(
+        categories.map(async (category) => {
+          const { count } = await this.getHierarchicalProductCount(category.id);
+          return {
+            ...category,
+            product_count: count,
+            children: []
+          };
+        })
+      );
+
+      return { data: categoriesWithCounts, error: null };
+    } catch (error) {
+      console.error('Error in getCategoriesByLevelWithCounts:', error);
+      return { data: [], error: 'Failed to fetch categories with counts' };
+    }
+  }
+
+  /**
+   * Determine category level from slug pattern
+   */
+  getCategoryLevelFromSlug(slug: string): number {
+    const parts = slug.split('-');
+    
+    // Level 1: women, men, kids, unisex (single word)
+    if (['women', 'men', 'kids', 'unisex'].includes(slug)) {
+      return 1;
+    }
+    
+    // Level 2: women-clothing, men-shoes (gender + type)
+    if (parts.length === 2) {
+      const [gender, type] = parts;
+      if (['women', 'men', 'kids', 'unisex'].includes(gender) &&
+          ['clothing', 'shoes', 'accessories', 'bags'].includes(type)) {
+        return 2;
+      }
+    }
+    
+    // Level 3: everything else (women-clothing-dresses, etc.)
+    return 3;
+  }
+
+  /**
+   * Build complete breadcrumb trail including current category
+   */
+  async getCompleteBreadcrumb(categoryId: string): Promise<{ data: CategoryBreadcrumb[]; error: string | null }> {
+    try {
+      // Get ancestors
+      const { data: ancestors, error: ancestorsError } = await this.getAncestors(categoryId);
+      
+      if (ancestorsError) {
+        return { data: [], error: ancestorsError };
+      }
+
+      // Get current category
+      const { data: currentCategory, error: currentError } = await this.getCategory(categoryId);
+      
+      if (currentError || !currentCategory) {
+        return { data: ancestors, error: null };
+      }
+
+      // Combine ancestors + current category
+      const breadcrumb = [
+        ...ancestors,
+        {
+          id: currentCategory.id,
+          name: currentCategory.name,
+          slug: currentCategory.slug,
+          level: currentCategory.level || 1
+        }
+      ];
+
+      return { data: breadcrumb, error: null };
+    } catch (error) {
+      console.error('Error in getCompleteBreadcrumb:', error);
+      return { data: [], error: 'Failed to build complete breadcrumb' };
     }
   }
 }

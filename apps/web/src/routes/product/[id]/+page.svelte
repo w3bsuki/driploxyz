@@ -5,42 +5,37 @@
   import ProductImageSection from '$lib/components/product/ProductImageSection.svelte';
   import ProductActions from '$lib/components/product/ProductActions.svelte';
   import ProductDetails from '$lib/components/product/ProductDetails.svelte';
-  import RelatedProducts from '$lib/components/product/RelatedProducts.svelte';
   import ProductActionBar from '$lib/components/product/ProductActionBar.svelte';
+  import RelatedProducts from '$lib/components/product/RelatedProducts.svelte';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
-  import { getConditionLabel } from '$lib/components/product/product-utils';
-  
+  import { getConditionLabel, shareProduct } from '$lib/components/product/product-utils';
+  import * as i18n from '@repo/i18n';
+
   interface Props {
     data: PageData;
   }
-  
+
   let { data }: Props = $props();
-  
-  let isFavorited = $state(data.isFavorited || false);
+
+  let isFavorited = $state(data?.isFavorited ?? false);
   let showBundleBuilder = $state(false);
   let isLiking = $state(false);
-  let showShareMenu = $state(false);
+  let showFullDescription = $state(false);
   let viewCount = $state(data.product.view_count || 0);
-  
-  // Create Supabase client for bundle functionality
+
   const supabase = createBrowserSupabaseClient();
-  
   const conditionLabel = $derived(getConditionLabel(data.product.condition));
-  
-  // Clean state management and handlers
-  
+
   async function handleFavorite() {
     if (!data.user) {
       goto('/login');
       return;
     }
     
-    // Optimistic UI update
     isLiking = true;
     const wasLiked = isFavorited;
     isFavorited = !isFavorited;
@@ -51,7 +46,7 @@
       });
       
       if (!response.ok) {
-        isFavorited = wasLiked; // Revert on error
+        isFavorited = wasLiked;
         throw new Error('Failed to update favorite');
       } else {
         const result = await response.json();
@@ -59,12 +54,12 @@
       }
     } catch (error) {
       console.error('Error updating favorite:', error);
-      isFavorited = wasLiked; // Revert on error
+      isFavorited = wasLiked;
     } finally {
       isLiking = false;
     }
   }
-  
+
   async function handleBuyNow() {
     if (!data.user) {
       goto('/login');
@@ -72,28 +67,25 @@
     }
     showBundleBuilder = true;
   }
-  
+
   async function handleBundleConfirm(items: any[]) {
-    // Close bundle builder
     showBundleBuilder = false;
     
-    // If only one item, go to regular checkout
     if (items.length === 1) {
       const productId = typeof items[0].id === 'string' 
         ? items[0].id 
         : String(items[0].id);
       goto(`/checkout/${productId}`);
     } else {
-      // Go to bundle checkout with items in state
       const bundleData = encodeURIComponent(JSON.stringify(items));
       goto(`/checkout/bundle?items=${bundleData}`);
     }
   }
-  
+
   function handleBundleCancel() {
     showBundleBuilder = false;
   }
-  
+
   function handleMessage() {
     if (!data.user) {
       goto('/login');
@@ -101,7 +93,7 @@
     }
     goto(`/messages?conversation=${data.product.seller_id}__${data.product.id}`);
   }
-  
+
   function handleMakeOffer() {
     if (!data.user) {
       goto('/login');
@@ -109,33 +101,25 @@
     }
     goto(`/offer/${data.product.id}`);
   }
-  
+
   function handleShare() {
-    if (navigator.share) {
-      navigator.share({
-        title: data.product.title,
-        text: `Check out ${data.product.title} on Driplo`,
-        url: window.location.href
-      });
-    } else {
-      showShareMenu = true;
-      navigator.clipboard.writeText(window.location.href);
-      setTimeout(() => {
-        showShareMenu = false;
-      }, 2000);
-    }
+    shareProduct({ title: data.product.title }, () => {
+      // Share completed
+    });
   }
-  
+
   function handleDoubleTap(event: Event) {
-    // Double-tap to like (no animations per CLAUDE.md)
     event.preventDefault();
     if (!isFavorited && data.user) {
       handleFavorite();
     }
   }
+
+  function handleToggleDescription() {
+    showFullDescription = !showFullDescription;
+  }
 </script>
 
-<!-- SEO Meta Tags with structured data -->
 <SEOMetaTags
   title="{data.product.title} - {formatPrice(data.product.price)}"
   description={data.product.description || `${data.product.title} - ${conditionLabel} condition, ${data.product.brand || ''} ${data.product.category_name || ''} available on Driplo`}
@@ -155,42 +139,39 @@
   ].filter(Boolean)}
 />
 
-<!-- Professional Product Page -->
-<div class="min-h-screen bg-gray-50">
+<!-- Clean Modular Product Page -->
+<div class="min-h-screen bg-white">
+  
   <ProductHeader 
     title={data.product.title}
     onShare={handleShare}
   />
 
-  <!-- Product Content -->
-  <div class="max-w-md mx-auto pb-20">
-    <!-- Product Card -->
-    <div class="bg-white shadow-sm">
-      <ProductImageSection 
-        product={data.product}
-        sellerProducts={data.sellerProducts || []}
-        onDoubleTap={handleDoubleTap}
-        onMessageSeller={handleMessage}
-      />
-
-      <ProductActions
-        {isFavorited}
-        {isLiking}
-        {viewCount}
-        user={data.user}
-        productId={data.product.id}
-        {showShareMenu}
-        onFavorite={handleFavorite}
-        onMessage={handleMessage}
-        onShare={handleShare}
-        onBuyNow={handleBuyNow}
-        isProductSold={data.product.is_sold}
-      />
-      
-      <ProductDetails product={data.product} />
-    </div>
+  <!-- Content -->
+  <div class="pb-20">
     
-    <RelatedProducts
+    <ProductImageSection 
+      product={data.product}
+      onDoubleTap={handleDoubleTap}
+    />
+
+    <ProductActions 
+      isFavorited={isFavorited}
+      isLiking={isLiking}
+      viewCount={viewCount}
+      hasUser={!!data.user}
+      onFavorite={handleFavorite}
+      onMessage={handleMessage}
+      onShare={handleShare}
+    />
+
+    <ProductDetails 
+      product={data.product}
+      showFullDescription={showFullDescription}
+      onToggleDescription={handleToggleDescription}
+    />
+
+    <RelatedProducts 
       similarProducts={data.similarProducts}
       sellerProducts={data.sellerProducts}
       sellerName={data.product.seller_name}
@@ -199,14 +180,13 @@
     />
   </div>
   
-  <ProductActionBar
+  <ProductActionBar 
     product={data.product}
     user={data.user}
     onMakeOffer={handleMakeOffer}
     onBuyNow={handleBuyNow}
   />
 </div>
-
 
 <!-- Bundle Builder Modal -->
 {#if showBundleBuilder}

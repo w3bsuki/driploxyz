@@ -30,6 +30,7 @@
   let publishError = $state<string | null>(null);
   let validationMessage = $state<string | null>(null);
   let showValidationPopup = $state(false);
+  let isProgressing = $state(false);
   
   // Show validation message with auto-hide
   function showValidation(message: string) {
@@ -305,12 +306,12 @@
     </div>
   {/if}
   
-  <!-- Fixed Stepper at top of viewport -->
-  <div class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-4 py-3">
+  <!-- Clean Progress Bar -->
+  <div class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
     <!-- Close button -->
     <button 
       onclick={() => goto('/')}
-      class="absolute right-4 top-3 p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+      class="absolute right-3 top-3 p-2 hover:bg-gray-100 rounded-full transition-colors z-10"
       aria-label="Close"
     >
       <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -318,111 +319,51 @@
       </svg>
     </button>
     
-    <div class="relative flex items-center w-full pr-8">
-      <!-- Step 1 -->
-      <div class="flex flex-col items-center">
-        <div class="{
-          1 <= currentStep 
-            ? 'w-8 h-8 bg-black text-white' 
-            : 'w-8 h-8 bg-gray-100 text-gray-400'
-        } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
-          {#if 1 < currentStep}
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+    <!-- Step info and progress -->
+    <div class="px-4 py-4 pr-12">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <h2 class="text-sm font-semibold text-gray-900">
+            {#if currentStep === 1}
+              {i18n.sell_step1()}
+            {:else if currentStep === 2}
+              {i18n.sell_step2()}
+            {:else if currentStep === 3}
+              {i18n.sell_step3()}
+            {:else if currentStep === 4}
+              {i18n.sell_step4()}
+            {:else if currentStep === 5}
+              {i18n.sell_step4()}
+            {/if}
+          </h2>
+          <p class="text-xs text-gray-500 mt-0.5">
+            Step {currentStep} of 5
+          </p>
+        </div>
+        {#if isDraftSaved}
+          <div class="flex items-center gap-1.5 text-green-600">
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
             </svg>
-          {:else}
-            1
-          {/if}
-        </div>
-        <span class="text-xs mt-1 whitespace-nowrap {
-          currentStep === 1 ? 'text-gray-900 font-medium' : 'text-gray-400'
-        }">{i18n.sell_step1()}</span>
+            <span class="text-xs font-medium">Saved</span>
+          </div>
+        {/if}
       </div>
       
-      <!-- Line 1-2 -->
-      <div class="flex-1 h-[2px] -mt-6 {
-        currentStep > 1 ? 'bg-black' : 'bg-gray-200'
-      }"></div>
-      
-      <!-- Step 2 -->
-      <div class="flex flex-col items-center -ml-2">
-        <div class="{
-          2 <= currentStep 
-            ? 'w-8 h-8 bg-black text-white' 
-            : 'w-8 h-8 bg-gray-100 text-gray-400'
-        } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
-          {#if 2 < currentStep}
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-            </svg>
-          {:else}
-            2
-          {/if}
-        </div>
-        <span class="text-xs mt-1 whitespace-nowrap {
-          currentStep === 2 ? 'text-gray-900 font-medium' : 'text-gray-400'
-        }">{i18n.sell_step2()}</span>
-      </div>
-      
-      <!-- Line 2-3 -->
-      <div class="flex-1 h-[2px] -mt-6 {
-        currentStep > 2 ? 'bg-black' : 'bg-gray-200'
-      }"></div>
-      
-      <!-- Step 3 -->
-      <div class="flex flex-col items-center">
-        <div class="{
-          3 <= currentStep 
-            ? 'w-8 h-8 bg-black text-white' 
-            : 'w-8 h-8 bg-gray-100 text-gray-400'
-        } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
-          {#if 3 < currentStep}
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-            </svg>
-          {:else}
-            3
-          {/if}
-        </div>
-        <span class="text-xs mt-1 whitespace-nowrap {
-          currentStep === 3 ? 'text-gray-900 font-medium' : 'text-gray-400'
-        }">{i18n.sell_step3()}</span>
-      </div>
-      
-      <!-- Line 3-4 -->
-      <div class="flex-1 h-[2px] -mt-6 {
-        currentStep > 3 ? 'bg-black' : 'bg-gray-200'
-      }"></div>
-      
-      <!-- Step 4 -->
-      <div class="flex flex-col items-center">
-        <div class="{
-          4 <= currentStep 
-            ? 'w-8 h-8 bg-black text-white' 
-            : 'w-8 h-8 bg-gray-100 text-gray-400'
-        } rounded-full flex items-center justify-center text-xs font-medium transition-colors relative z-10">
-          {#if 4 < currentStep}
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-            </svg>
-          {:else}
-            4
-          {/if}
-        </div>
-        <span class="text-xs mt-1 whitespace-nowrap {
-          currentStep === 4 ? 'text-gray-900 font-medium' : 'text-gray-400'
-        }">{i18n.sell_step4()}</span>
+      <!-- Progress bar -->
+      <div class="w-full bg-gray-100 rounded-full h-1 overflow-hidden">
+        <div 
+          class="h-full bg-black rounded-full transition-all duration-300 ease-out {isProgressing ? 'animate-pulse' : ''}"
+          style="width: {((currentStep - 1) / 4) * 100}%"
+        ></div>
       </div>
     </div>
-    {#if isDraftSaved}
-      <p class="text-xs text-green-600 text-center mt-2">Draft saved</p>
-    {/if}
   </div>
 
   <!-- Content - flex-1 to fill available space -->
   <!-- Scrollable content area between fixed header and footer -->
   <div class="flex-1 overflow-y-auto pt-[72px] pb-[88px]">
-    <div class="max-w-lg mx-auto px-4 py-6">
+    <div class="max-w-lg mx-auto px-4 py-4">
     {#if data.needsBrandSubscription}
       <!-- Brand subscription required -->
       <div class="text-center py-12">
@@ -567,7 +508,7 @@
         
         <!-- Step 3: Product Details -->
         {#if currentStep === 3}
-          <div class="space-y-4 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
+          <div class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
             
             <StepProductInfo
               bind:formData
@@ -586,7 +527,7 @@
         
         <!-- Step 4: Pricing -->
         {#if currentStep === 4}
-          <div class="space-y-4 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
+          <div class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
             
             <StepPricing
               bind:formData
@@ -606,8 +547,8 @@
         
         <!-- Step 5: Review -->
         {#if currentStep === 5}
-          <div class="space-y-4 animate-in fade-in slide-in-from-right duration-300 min-h-[60vh]">
-            <div class="bg-white rounded-lg border-2 border-gray-200 p-4">
+          <div class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
+            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
               <div class="text-center mb-6">
                 <h2 class="text-lg font-semibold text-gray-900 mb-1">{i18n.sell_reviewListing()}</h2>
                 <p class="text-sm text-gray-600">Everything look good? Your listing will appear like this:</p>
@@ -736,21 +677,25 @@
     </div>
   </div>
   
-  <!-- Sticky Navigation - Outside of content, fixed at bottom -->
+  <!-- Enhanced Sticky Navigation - Better touch targets -->
   {#if !data.needsBrandSubscription && !showSuccess}
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 z-40">
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-4 z-40 shadow-lg shadow-black/5">
       <div class="max-w-lg mx-auto flex gap-3">
         {#if currentStep > 1}
           <Button
             type="button"
             variant="ghost"
             onclick={() => {
-              currentStep--;
+              isProgressing = true;
               publishError = null;
-              scrollToTop();
+              setTimeout(() => {
+                currentStep--;
+                scrollToTop();
+                isProgressing = false;
+              }, 150);
             }}
             disabled={submitting}
-            class="flex-1 h-12"
+            class="flex-1 min-h-[48px]"
           >
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -768,9 +713,13 @@
                   (currentStep === 2 && canProceedStep2) ||
                   (currentStep === 3 && canProceedStep3) ||
                   (currentStep === 4 && canProceedStep4)) {
-                currentStep++;
+                isProgressing = true;
                 publishError = null;
-                scrollToTop();
+                setTimeout(() => {
+                  currentStep++;
+                  scrollToTop();
+                  isProgressing = false;
+                }, 150);
               } else {
                 // Show specific validation message
                 if (currentStep === 1) {
@@ -804,7 +753,7 @@
               }
             }}
             disabled={submitting}
-            class="flex-1 h-12"
+            class="flex-1 min-h-[48px]"
           >
             {i18n.common_next()}
             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -822,7 +771,7 @@
               }
             }}
             disabled={submitting || !canSubmit}
-            class="flex-1 h-12"
+            class="flex-1 min-h-[48px]"
           >
             {#if submitting}
               <span class="flex items-center justify-center">

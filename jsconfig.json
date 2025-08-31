@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "checkJs": false
+  },
+  "exclude": [
+    "**/node_modules",
+    "**/.svelte-kit",
+    "**/.turbo",
+    "**/.vercel",
+    "**/build",
+    "**/dist",
+    "**/coverage",
+    "**/playwright-report",
+    "**/cypress",
+    "**/storybook-static"
+  ]
+}
+

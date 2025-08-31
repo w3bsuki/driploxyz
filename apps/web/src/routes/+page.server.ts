@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
+import { createServices } from '$lib/services';
 
 // MANUAL PROMOTION SYSTEM
 // Add product IDs here to promote them with crown badges 👑
@@ -12,7 +13,7 @@ const MANUALLY_PROMOTED_IDS: string[] = [
   // 'product-id-3'
 ];
 
-export const load: PageServerLoad = async ({ url, locals: { supabase, country, safeGetSession }, setHeaders, depends }) => {
+export const load = (async ({ url, locals: { supabase, country, safeGetSession }, setHeaders, depends }) => {
   // Mark dependencies for client-side invalidation
   depends('home:data');
   // Check if this is an auth callback that went to the wrong URL
@@ -73,7 +74,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
         .order('created_at', { ascending: false })
         .limit(8),
       
-      // Get featured products with images, categories, and favorite counts
+      // Get featured products with images and category info
       supabase
         .from('products')
         .select(`
@@ -82,19 +83,16 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
           price,
           condition,
           size,
+          brand,
           location,
           created_at,
           seller_id,
           country_code,
           favorite_count,
           slug,
+          category_id,
           product_images!inner (
             image_url
-          ),
-          categories (
-            id,
-            name,
-            parent_id
           ),
           profiles!products_seller_id_fkey (
             username,
@@ -113,6 +111,9 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
     const categories = categoriesResult.status === 'fulfilled' ? (categoriesResult.value.data || []) : [];
     const topSellers = topSellersResult.status === 'fulfilled' ? (topSellersResult.value.data || []) : [];
     
+    // DEBUG: Log what categories we actually have
+    console.log('🔍 CATEGORIES FROM SUPABASE:', JSON.stringify(categories, null, 2));
+    
     let featuredProducts: Array<{
       id: string;
       title: string;
@@ -127,16 +128,42 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
       images: string[];
       product_images: string[];
       main_category_name?: string;
+      category_name?: string;
+      subcategory_name?: string;
       seller?: { username: string | null };
     }> = [];
     if (featuredResult.status === 'fulfilled') {
       const { data: rawProducts } = featuredResult.value;
       if (rawProducts) {
-        // Transform products for frontend
-        featuredProducts = rawProducts.map((item, index) => {
+        // Create services to get category hierarchy
+        const services = createServices(supabase, null);
+        
+        // Transform products for frontend with proper category hierarchy
+        featuredProducts = await Promise.all(rawProducts.map(async (item, index) => {
           // AUTO PROMOTION: Promote newest listings (first 3 items since ordered by created_at DESC)
-          // Later: Replace with database field when premium plans are active
           const isPromoted = index < 3 || MANUALLY_PROMOTED_IDS.includes(item.id);
+          
+          // Get category hierarchy for this product
+          let main_category_name: string | undefined;
+          let category_name: string | undefined;
+          let subcategory_name: string | undefined;
+          
+          if (item.category_id) {
+            try {
+              const { data: breadcrumb } = await services.categories.getCompleteBreadcrumb(item.category_id);
+              if (breadcrumb && breadcrumb.length > 0) {
+                // breadcrumb is ordered from root to leaf
+                // Level 1 (root): Women/Men/Kids/Unisex
+                // Level 2: Clothing/Shoes/Accessories/Bags  
+                // Level 3 (leaf): T-Shirts/Sneakers/etc
+                main_category_name = breadcrumb[0]?.name; // Level 1
+                category_name = breadcrumb[breadcrumb.length - 1]?.name; // Current category (Level 3)
+                subcategory_name = breadcrumb.length > 1 ? breadcrumb[breadcrumb.length - 1]?.name : undefined;
+              }
+            } catch (error) {
+              // Fallback - just use undefined
+            }
+          }
           
           return {
             id: item.id,
@@ -144,20 +171,18 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
             price: item.price,
             condition: item.condition,
             size: item.size,
+            brand: item.brand,
             location: item.location,
             created_at: item.created_at,
             seller_id: item.seller_id,
-            // Promote newest listings + any manually added IDs
             is_promoted: isPromoted,
-            // Add favorite count
             favorite_count: item.favorite_count || 0,
-            // Simplify image structure
             images: item.product_images?.map((img: { image_url: string }) => img.image_url) || [],
             product_images: item.product_images?.map((img: { image_url: string }) => img.image_url) || [],
-            // Category info - avoid extra DB calls; fall back gracefully
-            main_category_name: item.categories?.parent_id ? undefined : (item.categories?.name ?? undefined),
-            category_name: item.categories?.name,
-            subcategory_name: item.categories?.parent_id ? item.categories.name : null,
+            // Use the hierarchy we just fetched
+            main_category_name,
+            category_name,
+            subcategory_name,
             // Seller info
             seller_name: item.profiles?.username,
             seller_avatar: item.profiles?.avatar_url,
@@ -165,7 +190,7 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
                               item.profiles?.account_type === 'pro' || item.profiles?.account_type === 'premium' ? 'pro' :
                               'new_seller'
           };
-        });
+        }));
       }
     }
 
@@ -227,4 +252,4 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, country, s
       }
     };
   }
-};
+}) satisfies PageServerLoad;

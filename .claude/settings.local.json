@@ -58,7 +58,11 @@
       "Bash(timeout:*)",
       "mcp__supabase__list_migrations",
       "mcp__svelte-docs__svelte5_migration",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(pnpm --filter web run build)",
+      "WebFetch(domain:www.vinted.com)",
+      "WebFetch(domain:www.instagram.com)",
+      "Bash(curl:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

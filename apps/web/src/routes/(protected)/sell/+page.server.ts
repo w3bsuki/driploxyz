@@ -5,7 +5,7 @@ import { createServices, serviceUtils } from '$lib/services';
 import { getUserCountry } from '$lib/country/detection';
 import * as i18n from '@repo/i18n';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load = (async ({ locals }) => {
   // Get the session from locals 
   const { supabase, session } = locals;
   
@@ -58,9 +58,9 @@ export const load: PageServerLoad = async ({ locals }) => {
       needsBrandSubscription: false
     };
   }
-};
+}) satisfies PageServerLoad;
 
-export const actions: Actions = {
+export const actions = {
   create: async (event) => {
     const { request, locals: { supabase, session } } = event;
     if (!session) {
@@ -271,4 +271,4 @@ export const actions: Actions = {
       });
     }
   }
-};
+} satisfies Actions;

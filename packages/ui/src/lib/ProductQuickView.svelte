@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Product } from '../types';
-	import { formatCurrency } from './utils/format.js';
+	import { formatCurrency } from './utils/format';
 
 	interface Props {
 		product: Product;

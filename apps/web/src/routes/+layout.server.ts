@@ -12,7 +12,7 @@ const REDIRECT_PATHS_TO_SKIP = [
   '/auth'
 ];
 
-export const load: LayoutServerLoad = async (event) => {
+export const load = (async (event) => {
   const { url, cookies, depends, locals, fetch } = event;
   // CRITICAL: Only depend on auth - other deps cause unnecessary reloads
   depends('supabase:auth');
@@ -97,4 +97,4 @@ export const load: LayoutServerLoad = async (event) => {
     shouldPromptRegionSwitch,
     currency: geoLocation.currency
   };
-};
+}) satisfies LayoutServerLoad;

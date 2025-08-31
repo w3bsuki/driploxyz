@@ -3,7 +3,7 @@
  * Provides type-safe variant composition utilities for Svelte 5 components
  */
 
-import type { ButtonVariant, ButtonSize, BadgeVariant, BadgeSize, AvatarSize, AvatarVariant } from '../../types.js';
+import type { ButtonVariant, ButtonSize, BadgeVariant, BadgeSize, AvatarSize, AvatarVariant } from '../../types';
 
 // Generic variant builder type
 type VariantConfig<TVariants extends Record<string, any>> = {
@@ -55,7 +55,7 @@ export function createVariants<TVariants extends Record<string, any>>(
 
 // Pre-configured variant systems for common components
 export const buttonVariants = createVariants({
-  base: 'inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors duration-200',
+  base: 'inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors duration-200',
   variants: {
     variant: {
       primary: 'bg-blue-600 text-white focus-visible:ring-blue-500 hover:bg-blue-700',

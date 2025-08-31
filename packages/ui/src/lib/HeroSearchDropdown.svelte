@@ -206,7 +206,7 @@
   <!-- Hero Search Bar with Nested Design -->
   <form 
     role="search"
-    class="bg-white rounded-full border border-gray-200 p-1 shadow-sm hover:shadow-md focus-within:border-gray-400 focus-within:ring-2 focus-within:ring-gray-400/20 transition-colors"
+    class="bg-white rounded-full border border-gray-200 p-1 shadow-sm hover:shadow-md focus-within:border-gray-300 transition-colors"
   >
     <div class="bg-gray-50 relative rounded-full overflow-hidden min-h-11 sm:min-h-12">
       <div class="relative flex items-center min-h-11 sm:min-h-12">
@@ -237,7 +237,7 @@
             <button
               type="button"
               onclick={clearSearch}
-              class="p-1.5 hover:bg-gray-200 rounded-full transition-colors mr-1 focus:outline-none focus:ring-2 focus:ring-gray-400"
+              class="p-1.5 hover:bg-gray-200 rounded-full transition-colors mr-1 focus:outline-none focus:ring-2 focus:ring-gray-300"
               aria-label="Clear search query"
             >
               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -256,7 +256,7 @@
             aria-expanded={showDropdown}
             aria-haspopup="listbox"
             aria-label="{categoriesText} filter"
-            class="px-3 py-1.5 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center gap-1 ring-1 ring-gray-200 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-gray-400"
+            class="px-3 py-1.5 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center gap-1 ring-1 ring-gray-200 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-gray-300"
           >
             <svg 
               class="w-4 h-4 text-gray-600 shrink-0 transition-transform {showDropdown ? 'rotate-180' : ''}" 

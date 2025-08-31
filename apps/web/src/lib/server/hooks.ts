@@ -1,5 +1,4 @@
 import { sequence } from '@sveltejs/kit/hooks';
-import { handleErrorWithSentry, sentryHandle } from '@sentry/sveltekit';
 import type { Handle, HandleServerError } from '@sveltejs/kit';
 
 import { setupEnvironment } from './env.js';
@@ -69,13 +68,44 @@ const authGuardHandler: Handle = async ({ event, resolve }) => {
  * CRITICAL: supabaseHandler MUST run first to set up auth before other handlers
  * localeRedirectHandler runs early to handle unknown locale prefixes
  */
-export const handle: Handle = isSentryAvailable() 
-  ? sequence(sentryHandle(), localeRedirectHandler, supabaseHandler, languageHandler, countryRedirectHandler, authGuardHandler)
-  : sequence(localeRedirectHandler, supabaseHandler, languageHandler, countryRedirectHandler, authGuardHandler);
+export const handle: Handle = async (args) => {
+  const base = sequence(
+    localeRedirectHandler,
+    supabaseHandler,
+    languageHandler,
+    countryRedirectHandler,
+    authGuardHandler
+  );
+
+  if (isSentryAvailable()) {
+    await setupSentry();
+    const { sentryHandle } = await import('@sentry/sveltekit');
+    const withSentry = sequence(
+      sentryHandle(),
+      localeRedirectHandler,
+      supabaseHandler,
+      languageHandler,
+      countryRedirectHandler,
+      authGuardHandler
+    );
+    // @ts-expect-error - sequence returns a Handle-compatible fn
+    return withSentry(args);
+  }
+
+  // @ts-expect-error - sequence returns a Handle-compatible fn
+  return base(args);
+};
 
 /**
  * Error handler with optional Sentry integration
  */
-export const handleError: HandleServerError = isSentryAvailable() 
-  ? handleErrorWithSentry() 
-  : createErrorHandler();
+export const handleError: HandleServerError = async (input) => {
+  if (isSentryAvailable()) {
+    await setupSentry();
+    const { handleErrorWithSentry } = await import('@sentry/sveltekit');
+    const sentryErrHandler = handleErrorWithSentry();
+    return sentryErrHandler(input);
+  }
+  const errHandler = createErrorHandler();
+  return errHandler(input);
+};

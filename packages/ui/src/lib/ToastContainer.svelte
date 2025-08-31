@@ -1,5 +1,17 @@
+<!--
+  Legacy ToastContainer - Backward Compatible
+  
+  This component maintains backward compatibility while internally using the new
+  Melt UI toast system. Existing components can continue using this component
+  without any changes.
+  
+  For new code, consider using the modern ToastProvider:
+  import { ToastProvider } from '@repo/ui/primitives'
+-->
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import ToastProvider from './primitives/toast/ToastProvider.svelte';
+	import { setToastProvider } from './primitives/toast/store';
 
 	interface Toast {
 		id: string;
@@ -9,27 +21,50 @@
 	}
 
 	let toasts = $state<Toast[]>([]);
+	let toastProvider: any;
 
-	// Global toast function that other components can call
+	// Global toast function that other components can call (legacy support)
 	function addToast(message: string, type: Toast['type'] = 'info', duration = 3000) {
 		const id = Math.random().toString(36).substring(2, 9);
 		const toast: Toast = { id, message, type, duration };
 		toasts = [...toasts, toast];
 
+		// If modern toast provider is available, use it
+		if (toastProvider?.addToastData) {
+			toastProvider.addToastData({
+				id,
+				type: type || 'info',
+				description: message,
+				duration
+			});
+		}
+
 		// Auto-remove after duration
 		setTimeout(() => {
 			removeToast(id);
 		}, duration);
+		
+		return id;
 	}
 
 	function removeToast(id: string) {
 		toasts = toasts.filter(t => t.id !== id);
+		
+		// Also remove from modern provider if available
+		if (toastProvider?.removeToastData) {
+			toastProvider.removeToastData(id);
+		}
 	}
 
-	// Expose the addToast function globally for other components
+	// Expose the addToast function globally for other components (legacy support)
 	onMount(() => {
 		if (typeof window !== 'undefined') {
 			(window as any).showToast = addToast;
+		}
+		
+		// Set up connection to modern toast system
+		if (toastProvider) {
+			setToastProvider(toastProvider);
 		}
 	});
 
@@ -47,8 +82,18 @@
 	}
 </script>
 
-<!-- Toast Container -->
-<div class="fixed bottom-0 right-0 z-50 p-4 space-y-2 pointer-events-none">
+<!-- Use modern ToastProvider internally -->
+<ToastProvider 
+	bind:this={toastProvider}
+	position="bottom-right"
+	limit={5}
+	duration={5000}
+	class="toast-provider"
+/>
+
+<!-- Legacy Toast Container - Only shown for components still subscribing to legacy store -->
+{#if toasts.length > 0}
+<div class="fixed bottom-0 right-0 z-40 p-4 space-y-2 pointer-events-none">
 	{#each toasts as toast (toast.id)}
 		<div
 			class="max-w-sm p-4 rounded-lg shadow-sm md:shadow-lg transform transition-colors duration-300 ease-out pointer-events-auto {getToastStyles(toast.type)}"
@@ -57,7 +102,7 @@
 				<p class="text-sm font-medium">{toast.message}</p>
 				<button
 					onclick={() => removeToast(toast.id)}
-					class="ml-4 text-white/80 hover:text-white focus:outline-none"
+					class="ml-4 text-white/80 hover:text-white focus:outline-none min-h-[36px] min-w-[36px] flex items-center justify-center"
 					aria-label="Close notification"
 				>
 					<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,3 +113,4 @@
 		</div>
 	{/each}
 </div>
+{/if}

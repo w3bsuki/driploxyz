@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import type { Product } from './types';
   import Button from './Button.svelte';
-  import Modal from './Modal.svelte';
+  import Dialog from './primitives/dialog/Dialog.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
   import ImageOptimized from './ImageOptimized.svelte';
   import Badge from './Badge.svelte';
@@ -20,6 +20,7 @@
     onConfirm: (items: Product[]) => void;
     onCancel: () => void;
     open?: boolean;
+    onOpenChange?: (open: boolean) => void;
     supabaseClient: any;
     translations: {
       bundle_title: () => string;
@@ -59,6 +60,7 @@
     onConfirm, 
     onCancel,
     open = true,
+    onOpenChange,
     supabaseClient,
     translations 
   }: Props = $props();
@@ -197,47 +199,55 @@
   function handleConfirm() {
     onConfirm(selectedItems);
   }
+
+  function handleOpenChange(isOpen: boolean) {
+    if (!isOpen) {
+      onCancel();
+    }
+    onOpenChange?.(isOpen);
+  }
 </script>
 
-<Modal {open} onClose={onCancel} size="large">
-  <div class="bundle-builder p-0">
-    <!-- Header with Seller Info -->
-    <div class="sticky top-0 z-10 bg-white border-b border-[oklch(90%_0.02_250)]">
-      <div class="p-4 pb-3">
-        <div class="flex items-center gap-3 mb-3">
-          <Avatar 
-            src={sellerAvatar} 
-            alt={sellerUsername}
-            size="md"
-            class="ring-2 ring-white shadow-sm md:shadow-lg"
-          />
-          <div class="flex-1">
-            <div class="flex items-center gap-2">
-              <span class="font-semibold text-[oklch(10%_0.02_250)]">@{sellerUsername}</span>
-              {#if sellerRating > 0}
-                <div class="flex items-center gap-1 text-sm">
-                  <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                  </svg>
-                  <span class="text-[oklch(40%_0.02_250)]">{sellerRating.toFixed(1)}</span>
-                </div>
-              {/if}
+<Dialog 
+  {open} 
+  onOpenChange={handleOpenChange} 
+  class="!max-w-2xl w-full max-h-[90vh] h-full bundle-builder-dialog"
+>
+  {#snippet title()}
+    <div class="flex items-center gap-3">
+      <Avatar 
+        src={sellerAvatar} 
+        alt={sellerUsername}
+        size="md"
+        class="ring-2 ring-white shadow-sm"
+      />
+      <div class="flex-1">
+        <div class="flex items-center gap-2">
+          <span class="font-semibold text-[oklch(10%_0.02_250)]">@{sellerUsername}</span>
+          {#if sellerRating > 0}
+            <div class="flex items-center gap-1 text-sm">
+              <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
+              <span class="text-[oklch(40%_0.02_250)]">{sellerRating.toFixed(1)}</span>
             </div>
-            <p class="text-xs text-[oklch(40%_0.02_250)]">Купете повече артикули в една доставка</p>
-          </div>
+          {/if}
         </div>
-        
-        {#if bundleBenefit}
-          <div class="bg-[oklch(45%_0.15_145)]/10 border border-[oklch(45%_0.15_145)]/20 rounded-lg p-2 flex items-center justify-center">
-            <span class="text-sm font-medium text-[oklch(45%_0.15_145)]">
-              📦 Получете всички артикули в една доставка
-            </span>
-          </div>
-        {/if}
+        <p class="text-xs text-[oklch(40%_0.02_250)]">Купете повече артикули в една доставка</p>
       </div>
     </div>
     
-    <div class="flex-1 overflow-y-auto p-4 space-y-4">
+    {#if bundleBenefit}
+      <div class="bg-[oklch(45%_0.15_145)]/10 border border-[oklch(45%_0.15_145)]/20 rounded-lg p-2 flex items-center justify-center mt-3">
+        <span class="text-sm font-medium text-[oklch(45%_0.15_145)]">
+          📦 Получете всички артикули в една доставка
+        </span>
+      </div>
+    {/if}
+  {/snippet}
+
+  {#snippet children()}
+    <div class="bundle-builder-content flex-1 overflow-y-auto space-y-4 max-h-[50vh]">
       
       <!-- Selected Items -->
       <div class="bg-[oklch(98%_0.01_250)] rounded-lg p-4">
@@ -331,9 +341,11 @@
         </div>
       {/if}
     </div>
-    
-    <!-- Summary & Actions -->
-    <div class="sticky bottom-0 bg-white border-t border-[oklch(90%_0.02_250)] p-4 space-y-3">
+  {/snippet}
+
+  {#snippet actions()}
+    <!-- Summary -->
+    <div class="w-full space-y-3 mb-4">
       <div class="space-y-1.5">
         <div class="flex justify-between text-sm text-[oklch(40%_0.02_250)]">
           <span>Продукти ({selectedItems.length})</span>
@@ -357,7 +369,7 @@
         variant="primary"
         fullWidth
         size="lg"
-        class="min-h-11"
+        class="min-h-[44px]"
         disabled={selectedItems.length === 0}
       >
         {#if selectedItems.length === 1}
@@ -367,15 +379,20 @@
         {/if}
       </Button>
     </div>
-  </div>
-</Modal>
+  {/snippet}
+</Dialog>
 
 <style>
-  .bundle-builder {
-    display: flex;
-    flex-direction: column;
-    max-height: min(90vh, 800px);
-    height: 100%;
+  /* Custom styles for bundle builder dialog - override Dialog defaults */
+  :global(.bundle-builder-dialog) {
+    max-width: 672px !important; /* 2xl equivalent */
+    width: 100% !important;
+  }
+  
+  /* Ensure proper scrolling in content area */
+  .bundle-builder-content {
+    max-height: 50vh;
+    overflow-y: auto;
   }
   
   .no-scrollbar {
@@ -385,5 +402,24 @@
   
   .no-scrollbar::-webkit-scrollbar {
     display: none;
+  }
+  
+  /* Mobile-first responsive design */
+  @media (max-width: 640px) {
+    :global(.bundle-builder-dialog) {
+      width: calc(100vw - 1rem) !important;
+      max-width: calc(100vw - 1rem) !important;
+    }
+    
+    .bundle-builder-content {
+      max-height: 60vh;
+    }
+  }
+  
+  /* Ensure touch targets are properly sized on mobile */
+  @media (max-width: 640px) {
+    :global(.bundle-builder-dialog .btn) {
+      min-height: 44px;
+    }
   }
 </style>

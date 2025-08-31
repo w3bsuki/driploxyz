@@ -129,11 +129,27 @@ export { default as ImageUploaderSupabase } from './ImageUploaderSupabase.svelte
 export { default as PriceInput } from './PriceInput.svelte';
 export { default as TagInput } from './TagInput.svelte';
 
-// Toast components
+// Toast components - Legacy (maintained for backwards compatibility)
+// These exports maintain existing API but use new Melt UI system internally
 export { default as ToastContainer } from './ToastContainer.svelte';
 export { default as TutorialToast } from './TutorialToast.svelte';
 export { toasts } from './toast-store';
 export type { ToastMessage } from './toast-store';
+
+// Modern Toast System - Melt UI based (recommended for new code)
+export {
+  Toast,
+  ToastProvider,
+  ToastContainer as MeltToastContainer,
+  toastHelpers,
+  toastPatterns,
+  toastUtils
+} from './primitives';
+
+export { toasts as modernToasts } from './primitives/toast/store';
+
+// Convenience aliases for gradual migration
+export { toasts as legacyToasts } from './toast-store';
 
 // Pricing and subscription components
 export { default as PricingCard } from './PricingCard.svelte';
@@ -179,12 +195,18 @@ export { default as PromotedHighlights } from './PromotedHighlights.svelte';
 
 // Performance utilities
 
+// Import semantic CSS styles
+import '../styles/semantic.css';
+
 // Variant system utilities
-export * from './utils/variants.js';
+export * from './utils/variants';
 
 
 // Type definitions
-export * from './types/index.js';
+export * from './types/index';
 
 // Design tokens
-export * from './tokens.js';
+export * from './tokens';
+
+// Melt UI Primitives
+export * from './primitives';

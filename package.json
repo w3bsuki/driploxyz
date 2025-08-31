@@ -16,6 +16,7 @@
     "db:types:local": "npx supabase gen types typescript --local > packages/database/src/generated.ts"
   },
   "devDependencies": {
+    "@types/node": "22.17.2",
     "prettier": "^3.6.0",
     "prettier-plugin-svelte": "^3.4.0",
     "supabase": "^2.0.0",
@@ -30,6 +31,7 @@
   },
   "pnpm": {
     "overrides": {
+      "@types/node": "22.17.2",
       "vite": "^7.1.2",
       "@sveltejs/vite-plugin-svelte": "^6.1.2",
       "@testing-library/svelte": "^5.2.8",

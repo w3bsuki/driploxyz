@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals, parent }) => {
+export const load = (async ({ locals, parent }) => {
   // The parent layout already checks for admin access
   const parentData = await parent();
   
@@ -99,4 +99,4 @@ export const load: PageServerLoad = async ({ locals, parent }) => {
       }
     };
   }
-};
+}) satisfies PageServerLoad;

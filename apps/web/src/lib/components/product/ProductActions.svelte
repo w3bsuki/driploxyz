@@ -1,49 +1,31 @@
 <script lang="ts">
-  import { shareProduct } from './product-utils';
-  import { BUTTON_STYLES, COLORS } from './product-constants';
-  import * as i18n from '@repo/i18n';
-
   interface Props {
     isFavorited: boolean;
     isLiking: boolean;
     viewCount: number;
-    user: any;
-    productId: string;
-    showShareMenu: boolean;
+    hasUser: boolean;
     onFavorite: () => void;
     onMessage: () => void;
     onShare: () => void;
-    onBuyNow: () => void;
-    isProductSold?: boolean;
   }
 
   let { 
     isFavorited, 
     isLiking, 
     viewCount, 
-    user, 
-    productId,
-    showShareMenu,
+    hasUser,
     onFavorite, 
     onMessage, 
-    onShare,
-    onBuyNow,
-    isProductSold = false
+    onShare
   }: Props = $props();
 
-  async function handleFavorite() {
-    if (!user) {
-      window.location.href = '/login';
-      return;
-    }
+  function handleFavorite() {
+    if (!hasUser) return;
     onFavorite();
   }
 
   function handleMessage() {
-    if (!user) {
-      window.location.href = '/login';
-      return;
-    }
+    if (!hasUser) return;
     onMessage();
   }
 
@@ -52,63 +34,50 @@
   }
 </script>
 
-<!-- Modern Action Bar -->
-<div class="px-4 py-3">
-  <!-- Clean Action Row -->
-  <div class="flex items-center justify-between mb-3">
+<!-- Actions Row -->
+<div class="px-4 py-3 border-b border-gray-100">
+  <div class="flex items-center justify-between">
     <div class="flex items-center gap-4">
-      <!-- Like Button - 36px touch target -->
+      <!-- Like -->
       <button 
         onclick={handleFavorite}
-        disabled={!user || isLiking}
-        class="min-w-[36px] min-h-[36px] flex items-center justify-center {isLiking ? 'opacity-50' : ''}"
-        aria-label="{isFavorited ? i18n.product_favorite() : i18n.product_addToFavorites()}"
+        disabled={!hasUser || isLiking}
+        class="w-8 h-8 flex items-center justify-center {isLiking ? 'opacity-50' : ''}"
       >
         <svg 
           class="w-6 h-6 {isFavorited ? 'text-red-500' : 'text-gray-700'}" 
           fill={isFavorited ? 'currentColor' : 'none'} 
           stroke="currentColor" 
           viewBox="0 0 24 24"
-          stroke-width="{isFavorited ? '0' : '2'}"
+          stroke-width="1.5"
         >
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/>
         </svg>
       </button>
       
-      <!-- Message Button - 36px touch target -->
+      <!-- Message -->
       <button 
         onclick={handleMessage} 
-        class="min-w-[36px] min-h-[36px] flex items-center justify-center"
-        aria-label="{i18n.product_message()}"
+        class="w-8 h-8 flex items-center justify-center"
       >
-        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z"/>
+        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z"/>
         </svg>
       </button>
       
-      <!-- Share Button - 36px touch target -->
+      <!-- Share -->
       <button 
         onclick={handleShare} 
-        class="min-w-[36px] min-h-[36px] flex items-center justify-center relative"
-        aria-label="{i18n.product_share()}"
+        class="w-8 h-8 flex items-center justify-center"
       >
-        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/>
+        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0721.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/>
         </svg>
-        {#if showShareMenu}
-          <div class="absolute -top-10 left-1/2 -translate-x-1/2 bg-gray-900 text-white text-xs px-3 py-2 rounded-lg shadow-xl whitespace-nowrap">
-            {i18n.product_copyLink()}
-            <div class="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900"></div>
-          </div>
-        {/if}
       </button>
     </div>
+    
+    {#if viewCount > 0}
+      <span class="text-xs text-gray-500">{viewCount} views</span>
+    {/if}
   </div>
-  
-  <!-- View Count -->
-  {#if viewCount > 0}
-    <p class="text-sm font-medium text-gray-700">
-      {viewCount.toLocaleString()} {viewCount === 1 ? 'view' : 'views'}
-    </p>
-  {/if}
 </div>

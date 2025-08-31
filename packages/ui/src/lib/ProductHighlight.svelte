@@ -58,27 +58,27 @@
   class="relative shrink-0 group"
   aria-label="Product: {product.title}"
 >
-  <button 
-    onclick={handleClick}
-    onkeydown={handleKeyDown}
-    class="block w-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black/20 rounded-2xl transition-colors pt-2"
-    aria-label="View {product.title} - {formattedPrice}"
-    aria-describedby="product-{product.id}-info"
-    tabindex={index === 0 ? 0 : -1}
-  >
-    <div class="relative rounded-2xl shadow-sm bg-white p-1 group-hover:shadow-sm md:group-hover:shadow-lg transition-colors duration-200 group-hover:scale-[1.02]">
-      <!-- PRO Badge - Outside frame, top center -->
-      {#if product.is_promoted}
-        <div class="absolute -top-1.5 left-1/2 -translate-x-1/2 z-10">
-          <div class="bg-black text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm md:shadow-lg border border-white/20">
-            PRO
-          </div>
-        </div>
-      {/if}
+  <!-- Product Card -->
+  <div class="w-40 shrink-0">
+    <!-- Main Card Container -->
+    <div class="product-card cursor-pointer w-full">
       
-      <div class="bg-gray-50/60 relative rounded-xl border border-gray-200/60 overflow-hidden md:backdrop-blur-sm">
-        <!-- Product image -->
-        <figure class="w-[calc((100vw-4.8rem)/3)] h-[calc((100vw-4.8rem)/3)] sm:w-32 sm:h-32 lg:w-36 lg:h-36 relative max-w-32">
+      <!-- Main Product Button -->
+      <button 
+        onclick={handleClick}
+        onkeydown={handleKeyDown}
+        class="absolute inset-0 w-full h-full focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:ring-offset-1 z-10 min-h-[44px]"
+        aria-label="View {product.title} - {formattedPrice}"
+        aria-describedby="product-{product.id}-info"
+        tabindex={index === 0 ? 0 : -1}
+      >
+        <span class="sr-only">View product details</span>
+      </button>
+      
+      <!-- Image Container with overlays -->
+      <div class="relative w-full">
+        <!-- Product Image -->
+        <div class="aspect-square w-full overflow-hidden rounded-lg" style="background-color: oklch(0.96 0.005 270);">
           <img 
             src={imageUrl} 
             alt="{product.title} product image"
@@ -86,27 +86,71 @@
             loading="lazy"
             decoding="async"
           />
-        </figure>
+        </div>
+        
+        <!-- PRO Badge -->
+        {#if product.is_promoted}
+          <div class="absolute top-2 left-2 text-xs font-medium px-2 py-0.5 rounded uppercase tracking-wide" style="background-color: oklch(0.15 0.015 270); color: oklch(1 0 0);">
+            PRO
+          </div>
+        {/if}
       </div>
       
-      <!-- Price badge - Bottom center like PRO badge -->
-      <div class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 z-10">
-        <div 
-          class="bg-black text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm md:shadow-lg border border-white/20"
-          aria-label="Price"
-        >
-          {formattedPrice}
+      <!-- Content - EXACT copy from ProductCard -->
+      <div class="px-1 pt-1.5 pb-1.5 relative">
+        <!-- Favorite button positioned over content area -->
+        <div class="absolute top-1 right-1 z-10">
+          <button
+            onclick={(e) => { e.stopPropagation(); onToggleFavorite?.(product.id); }}
+            class="w-7 h-7 rounded-full bg-white/90 border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 pointer-events-auto"
+            aria-label={isFavorite ? 'Add to favorites' : 'Remove from favorites'}
+          >
+            <svg class="w-3 h-3 {isFavorite ? 'text-red-500' : 'text-gray-600'}" fill={isFavorite ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </button>
+        </div>
+        
+        <!-- Main Category (always show) -->
+        <div class="flex items-center justify-between gap-1.5 min-h-3.5 mb-0.5 pr-12">
+          {#if product.main_category_name || product.category_name}
+            <p class="text-xs font-medium text-gray-600 uppercase tracking-wider leading-none flex-1 truncate">
+              {product.main_category_name || product.category_name}
+            </p>
+          {/if}
+        </div>
+        
+        <!-- Title -->
+        <h3 class="text-sm font-medium text-gray-900 line-clamp-1 leading-none mb-0.5 pr-12">
+          {product.title}
+        </h3>
+        
+        <!-- Subcategory • Brand • Size -->
+        {#if product.subcategory_name || product.brand || product.size}
+          <p class="text-xs text-gray-500 line-clamp-1 leading-none mb-1">
+            {#if product.subcategory_name}
+              <span class="font-medium text-gray-600">{product.subcategory_name}</span>
+            {/if}
+            {#if product.subcategory_name && product.brand} • {/if}
+            {#if product.brand}
+              <span class="text-gray-600">{product.brand}</span>
+            {/if}
+            {#if (product.subcategory_name || product.brand) && product.size} • {/if}
+            {#if product.size}
+              <span class="text-gray-500">Size {product.size}</span>
+            {/if}
+          </p>
+        {/if}
+        
+        <!-- Price -->
+        <div class="-mt-0.5">
+          <div class="text-base font-semibold text-gray-900 leading-none">
+            {formattedPrice}
+          </div>
         </div>
       </div>
     </div>
-    
-    <!-- Title only (no avatar) -->
-    <div class="mt-2.5 px-1 w-[calc((100vw-4.8rem)/3)] sm:w-32 lg:w-36 max-w-32">
-      <h3 class="text-xs text-gray-700 truncate text-center">
-        {product.title}
-      </h3>
-    </div>
-  </button>
+  </div>
   
   <!-- Screen reader info -->
   <div id="product-{product.id}-info" class="sr-only">
@@ -123,4 +167,3 @@
     {/if}
   </div>
 </article>
-

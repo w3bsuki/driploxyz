@@ -119,35 +119,12 @@
   // Professional neutral background for all categories
   const categoryBgColor = 'bg-white';
   
-  let selectedSubcategory = $state<string | null>(null);
   let sortBy = $state('popular');
   let showFilters = $state(false);
   let searchQuery = $state('');
   let showMegaMenu = $state(false);
   
-  // Dynamic pills state for level 2 → level 3 drill-down
-  let selectedLevel2Category = $state<string | null>(null);
-  let pillsMode = $state<'level2' | 'level3'>('level2');
-  let selectedLevel3Category = $state<string | null>(null);
   
-  // Organize level 3 categories by their parent (level 2) category
-  const level3ByParent = $derived.by(() => {
-    const grouped: Record<string, any[]> = {};
-    level3Categories.forEach(l3cat => {
-      if (l3cat.parent_id) {
-        if (!grouped[l3cat.parent_id]) {
-          grouped[l3cat.parent_id] = [];
-        }
-        grouped[l3cat.parent_id].push(l3cat);
-      }
-    });
-    return grouped;
-  });
-  
-  // Get current level 3 categories based on selected level 2 category
-  const currentLevel3Categories = $derived(
-    selectedLevel2Category ? (level3ByParent[selectedLevel2Category] || []) : []
-  );
 
   
   // Seller quick view modal state
@@ -179,40 +156,10 @@
     { value: 'fair', label: i18n.condition_fair() }
   ];
   
-  // Filter products based on search query, category hierarchy and filters
+  // Simple client-side filtering for search and additional filters
+  // Category filtering is now handled server-side via hierarchical queries
   let filteredProducts = $derived(
     displayProducts.filter(p => {
-      // Category hierarchy filter (most important)
-      if (selectedLevel3Category) {
-        // Level 3 filter (e.g., T-shirts, Dresses)
-        const originalProduct = products.find(prod => prod.id === p.id);
-        if (!originalProduct) return false;
-        
-        const belongsToLevel3 = originalProduct.category_id === selectedLevel3Category;
-        if (!belongsToLevel3) return false;
-      } else if (selectedLevel2Category) {
-        // Level 2 filter (e.g., Clothing, Shoes)
-        const originalProduct = products.find(prod => prod.id === p.id);
-        if (!originalProduct) return false;
-        
-        // Check if product belongs to selected level 2 category or its children
-        const belongsToLevel2 = originalProduct.category_id === selectedLevel2Category ||
-                               (originalProduct.categories && originalProduct.categories.parent_id === selectedLevel2Category);
-        
-        if (!belongsToLevel2) return false;
-      }
-      
-      // Legacy support for old selectedSubcategory (can remove later)
-      if (selectedSubcategory && !selectedLevel2Category && !selectedLevel3Category) {
-        const originalProduct = products.find(prod => prod.id === p.id);
-        if (!originalProduct) return false;
-        
-        const belongsToSubcategory = originalProduct.category_id === selectedSubcategory ||
-                                   (originalProduct.categories && originalProduct.categories.parent_id === selectedSubcategory);
-        
-        if (!belongsToSubcategory) return false;
-      }
-      
       // Search filter
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase().trim();
@@ -222,7 +169,7 @@
         if (!matchesTitle && !matchesBrand && !matchesDescription) return false;
       }
       
-      // Other filters
+      // Additional filters (when filters panel is used)
       if (selectedSizes.length && !selectedSizes.includes(p.size)) return false;
       if (selectedBrands.length && !selectedBrands.includes(p.brand || '')) return false;
       if (selectedConditions.length && !selectedConditions.includes(p.condition)) return false;
@@ -231,52 +178,12 @@
     })
   );
   
-  // Dynamic pills interaction functions
-  function handleLevel2Select(categoryId: string) {
-    if (selectedLevel2Category === categoryId) {
-      // Clicking same category - deselect and return to level 2 view
-      selectedLevel2Category = null;
-      selectedLevel3Category = null;
-      pillsMode = 'level2';
-    } else {
-      // Select new level 2 category
-      selectedLevel2Category = categoryId;
-      selectedLevel3Category = null;
-      
-      // Check if this category has level 3 subcategories
-      const hasLevel3 = level3ByParent[categoryId] && level3ByParent[categoryId].length > 0;
-      
-      // Switch to level 3 view if there are level 3 categories for this parent
-      if (hasLevel3) {
-        pillsMode = 'level3';
-      } else {
-        // Stay in level 2 mode if no level 3 categories
-        pillsMode = 'level2';
-      }
-    }
-  }
-  
-  function handleLevel3Select(categoryId: string) {
-    if (selectedLevel3Category === categoryId) {
-      // Deselect level 3, stay in level 3 view but show all level 2 products
-      selectedLevel3Category = null;
-    } else {
-      // Select level 3 category
-      selectedLevel3Category = categoryId;
-    }
-  }
-  
-  function handleBackToLevel2() {
-    pillsMode = 'level2';
-    selectedLevel2Category = null;
-    selectedLevel3Category = null;
-  }
-  
-  function clearAllCategoryFilters() {
-    selectedLevel2Category = null;
-    selectedLevel3Category = null;
-    selectedSubcategory = null;
-    pillsMode = 'level2';
+  // Simple filter functions for additional filters (not category navigation)
+  function clearAllFilters() {
+    selectedSizes = [];
+    selectedBrands = [];
+    selectedConditions = [];
+    priceRange = { min: 0, max: 500 };
   }
 
   function toggleSize(size: string) {
@@ -296,7 +203,6 @@
   }
   
   function clearFilters() {
-    clearAllCategoryFilters();
     selectedSizes = [];
     selectedBrands = [];
     selectedConditions = [];
@@ -431,75 +337,33 @@
         </div>
       </div>
 
-      <!-- Dynamic Category Pills with Smooth Transitions -->
-      {#if subcategories.length > 0}
+      <!-- Simple Category Navigation Pills -->
+      {#if subcategories.length > 0 || level3Categories.length > 0}
         <div class="flex justify-center">
-          <div class="flex overflow-x-auto scrollbar-hide space-x-2 px-4 transition-transform duration-300">
-            {#if pillsMode === 'level2'}
-              <!-- Level 2 View: Show main categories (Clothing, Shoes, etc.) -->
-              <button
-                onclick={() => clearAllCategoryFilters()}
-                class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2
-                  {!selectedLevel2Category && !selectedLevel3Category
-                    ? 'bg-gray-900 text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-              >
-                <span>{i18n.category_all()}</span>
-                <span class="text-xs opacity-75">({products.length})</span>
-              </button>
+          <div class="flex overflow-x-auto scrollbar-hide space-x-2 px-4">
+            
+            {#if subcategories.length > 0}
+              <!-- Show Level 2 subcategories (e.g., Clothing, Shoes, Accessories) -->
               {#each subcategories.filter(s => s.productCount > 0) as subcat}
-                <button
-                  onclick={() => handleLevel2Select(subcat.id)}
-                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2
-                    {selectedLevel2Category === subcat.id
-                      ? 'bg-gray-900 text-white' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+                <a 
+                  href="/category/{subcat.slug}"
+                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 no-underline"
                 >
                   <span>{translateSubcategoryName(subcat.name)}</span>
                   <span class="text-xs opacity-75">({subcat.productCount})</span>
-                </button>
+                </a>
               {/each}
-            {:else if pillsMode === 'level3'}
-              <!-- Level 3 View: Show subcategories (T-shirts, Dresses, etc.) -->
-              <button
-                onclick={() => handleBackToLevel2()}
-                class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2 bg-gray-200 text-gray-600 hover:bg-gray-300"
-                title="Back to main categories"
-              >
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-                <span>Back</span>
-              </button>
               
-              <button
-                onclick={() => { selectedLevel3Category = null; }}
-                class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2
-                  {!selectedLevel3Category
-                    ? 'bg-gray-900 text-white' 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-              >
-                <span>{i18n.category_all()}</span>
-                <span class="text-xs opacity-75">
-                  ({filteredProducts.filter(p => {
-                    const orig = products.find(prod => prod.id === p.id);
-                    return orig && (orig.category_id === selectedLevel2Category || 
-                           (orig.categories && orig.categories.parent_id === selectedLevel2Category));
-                  }).length})
-                </span>
-              </button>
-              
-              {#each currentLevel3Categories as l3cat}
-                <button
-                  onclick={() => handleLevel3Select(l3cat.id)}
-                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2
-                    {selectedLevel3Category === l3cat.id
-                      ? 'bg-gray-900 text-white' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+            {:else if level3Categories.length > 0}
+              <!-- Show Level 3 subcategories (e.g., T-Shirts, Dresses, Sneakers) -->
+              {#each level3Categories.filter(l3cat => l3cat.productCount > 0) as l3cat}
+                <a 
+                  href="/category/{l3cat.slug}"
+                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 no-underline"
                 >
                   <span>{translateSubcategoryName(l3cat.name)}</span>
                   <span class="text-xs opacity-75">({l3cat.productCount})</span>
-                </button>
+                </a>
               {/each}
             {/if}
           </div>
@@ -762,7 +626,7 @@
     search: i18n.nav_search(),
     sell: i18n.nav_sell(),
     profile: i18n.nav_profile(),
-    wishlist: i18n.nav_wishlist()
+    messages: i18n.nav_messages()
   }}
 />
 

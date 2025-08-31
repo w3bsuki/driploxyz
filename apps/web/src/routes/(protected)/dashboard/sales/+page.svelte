@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Avatar, ProductCard, OrderStatus, TabGroup } from '@repo/ui';
+  import { Button, Avatar, ProductCard, OrderStatus, Tabs } from '@repo/ui';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   
@@ -8,8 +8,6 @@
   }
   
   let { data }: Props = $props();
-  
-  let activeTab = $state<'sold' | 'earnings' | 'analytics'>('sold');
   
   function formatDate(dateString: string) {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -105,25 +103,10 @@
 
     <!-- Tabs -->
     <div class="bg-white rounded-lg shadow-sm">
-      <div class="border-b border-gray-200">
-        <nav class="flex gap-6 px-6">
-          {#each tabs as tab}
-            <button
-              onclick={() => activeTab = tab.id}
-              class="py-4 px-1 border-b-2 font-medium text-sm transition-colors
-                {activeTab === tab.id 
-                  ? 'border-black text-gray-900' 
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}"
-            >
-              {tab.label}
-            </button>
-          {/each}
-        </nav>
-      </div>
-
-      <div class="p-6">
-        {#if activeTab === 'sold'}
-          <!-- Sold Items -->
+      <Tabs {tabs} value="sold" class="" panelClass="p-6">
+        {#snippet children(activeTab)}
+          {#if activeTab?.id === 'sold'}
+            <!-- Sold Items -->
           {#if data.soldProducts.length === 0}
             <div class="text-center py-12">
               <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -157,9 +140,8 @@
               {/each}
             </div>
           {/if}
-
-        {:else if activeTab === 'earnings'}
-          <!-- Earnings -->
+          {:else if activeTab?.id === 'earnings'}
+            <!-- Earnings -->
           <div class="space-y-6">
             <!-- Earnings Summary -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -219,9 +201,8 @@
               {/if}
             </div>
           </div>
-
-        {:else if activeTab === 'analytics'}
-          <!-- Analytics -->
+          {:else if activeTab?.id === 'analytics'}
+            <!-- Analytics -->
           <div class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div class="bg-white border border-gray-200 rounded-lg p-4">
@@ -285,8 +266,9 @@
               </div>
             </div>
           </div>
-        {/if}
-      </div>
+          {/if}
+        {/snippet}
+      </Tabs>
     </div>
   </div>
 </div>

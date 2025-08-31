@@ -1,51 +1,25 @@
 <script lang="ts">
-  import { ProductGallery, Avatar } from '@repo/ui';
-  import { getRelativeTime, getConditionLabel } from './product-utils';
-  import { formatPrice } from '$lib/utils/price';
-  import { BUTTON_STYLES } from './product-constants';
-  import SellerPreview from './SellerPreview.svelte';
-  import * as i18n from '@repo/i18n';
+  import { Avatar } from '@repo/ui';
+  import { getRelativeTime } from './product-utils';
 
   interface Props {
     product: any;
-    sellerProducts?: any[];
     onDoubleTap?: () => void;
-    onMessageSeller?: () => void;
   }
 
-  let { product, sellerProducts = [], onDoubleTap, onMessageSeller }: Props = $props();
+  let { product, onDoubleTap }: Props = $props();
 
   const productImages = $derived(product.images || []);
-  let showSellerPreview = $state(false);
 
   function handleDoubleTap(event: Event) {
     event.preventDefault();
     onDoubleTap?.(event);
   }
-
-  function handleSellerClick(event: Event) {
-    event.preventDefault();
-    showSellerPreview = true;
-  }
-
-  function handleViewProfile() {
-    showSellerPreview = false;
-    window.location.href = `/profile/${product.seller_username || product.seller_id}`;
-  }
-
-  function handleMessageSeller() {
-    showSellerPreview = false;
-    onMessageSeller?.();
-  }
 </script>
 
-<!-- Clean Seller Header -->
-<div class="p-4">
-  <button 
-    onclick={handleSellerClick}
-    class="flex items-center gap-3 w-full text-left hover:bg-gray-50 rounded-xl p-3 -m-3 transition-colors"
-    aria-label="View {product.seller_name}'s profile and listings"
-  >
+<!-- User Strip -->
+<div class="px-4 py-3 border-b border-gray-100">
+  <div class="flex items-center gap-3">
     <Avatar 
       src={product.seller_avatar} 
       alt={product.seller_name}
@@ -54,64 +28,41 @@
     />
     <div class="flex-1">
       <div class="flex items-center gap-2">
-        <p class="text-base font-semibold text-gray-900">{product.seller_name}</p>
+        <span class="text-sm font-semibold text-gray-900">{product.seller_name}</span>
         {#if product.seller_rating >= 4.5}
-          <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.238.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-          </svg>
+          <div class="w-4 h-4 bg-blue-600 rounded-full flex items-center justify-center">
+            <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+            </svg>
+          </div>
         {/if}
       </div>
-      <p class="text-sm text-gray-600">{product.location || 'Online'} • {getRelativeTime(product.created_at)}</p>
+      <span class="text-xs text-gray-500">{getRelativeTime(product.created_at)}</span>
     </div>
-    <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/>
-    </svg>
-  </button>
+  </div>
 </div>
 
 <!-- Product Image -->
-<div class="bg-white p-4" ondblclick={handleDoubleTap}>
-  <div class="aspect-square bg-gray-100 relative rounded-xl overflow-hidden">
-    <ProductGallery
-      images={productImages}
-      title={product.title}
-      class="w-full h-full object-cover"
-    />
-    
-    <!-- Price Tag Overlay -->
-    <div class="absolute bottom-4 right-4 bg-gray-900 text-white px-3 py-1.5 rounded-lg text-sm font-bold shadow-lg">
-      {formatPrice(product.price)}
-    </div>
-    
-    <!-- Status Badge -->
-    {#if product.is_sold}
-      <div class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm font-semibold shadow-lg">
-        {i18n.product_soldOut()}
+<div class="bg-gray-100 relative" ondblclick={handleDoubleTap}>
+  <div class="aspect-square relative">
+    {#if productImages.length > 0}
+      <img 
+        src={productImages[0] || '/placeholder-product.svg'} 
+        alt={product.title}
+        class="w-full h-full object-cover"
+      />
+    {:else}
+      <div class="w-full h-full flex items-center justify-center text-gray-400">
+        <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
       </div>
-    {:else if product.condition}
-      <div class="absolute top-4 left-4 bg-blue-600 text-white px-3 py-1.5 rounded-lg text-sm font-semibold shadow-lg">
-        {getConditionLabel(product.condition)}
+    {/if}
+    
+    {#if product.is_sold}
+      <div class="absolute top-4 left-4 bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold">
+        SOLD
       </div>
     {/if}
   </div>
 </div>
-
-<!-- Interactive Seller Preview -->
-<SellerPreview
-  seller={{
-    id: product.seller_id,
-    name: product.seller_name,
-    username: product.seller_username,
-    avatar: product.seller_avatar,
-    rating: product.seller_rating,
-    total_sales: product.seller_total_sales,
-    response_rate: product.seller_response_rate,
-    avg_ship_time: product.seller_avg_ship_time,
-    join_date: product.seller_join_date
-  }}
-  recentProducts={sellerProducts}
-  isOpen={showSellerPreview}
-  onClose={() => showSellerPreview = false}
-  onViewProfile={handleViewProfile}
-  onMessageSeller={handleMessageSeller}
-/>

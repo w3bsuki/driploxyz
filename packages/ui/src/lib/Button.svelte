@@ -27,7 +27,7 @@
     children
   }: Props = $props();
 
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-[var(--btn-radius)] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors duration-[var(--duration-fast)] relative select-none';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-[var(--btn-radius)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors duration-[var(--duration-fast)] relative select-none';
 
   const variantClasses = {
     primary: 'bg-gray-900 text-white focus-visible:ring-gray-700 hover:bg-gray-800 active:bg-gray-950',

@@ -49,7 +49,6 @@
   const supabase = browser ? createBrowserSupabaseClient() : null;
   
   let mobileMenuOpen = $state(false);
-  let userMenuOpen = $state(false);
   let signingOut = $state(false);
   let notificationService: RealtimeNotificationService | null = null;
   let NotificationPanel: any = null;
@@ -105,7 +104,6 @@
 
   function closeMenus() {
     mobileMenuOpen = false;
-    userMenuOpen = false;
   }
 
   // Initialize notification service when user logs in
@@ -217,9 +215,9 @@
       {/if}
       
       <!-- Right: Auth/Account -->
-      <div class="flex items-center gap-1.5 sm:gap-2">
+      <div class="flex items-center gap-1">
         <!-- Desktop Language Switcher -->
-        <div class="hidden sm:block mr-2">
+        <div class="hidden sm:block">
           <LanguageSwitcher
             currentLanguage={currentLang}
             {languages}
@@ -229,21 +227,6 @@
         </div>
         
         {#if isLoggedIn}
-          <!-- Messages -->
-          <div class="relative">
-            <a 
-              href="/messages"
-              class="flex items-center justify-center w-9 h-9 rounded-full hover:bg-gray-100 transition-colors relative"
-              aria-label="Messages"
-            >
-              <svg class="w-5 h-5 text-gray-600 hover:text-gray-900 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              <!-- Message badge (similar to notifications) -->
-              <span class="absolute -top-1 -right-1 h-2 w-2 bg-blue-500 rounded-full opacity-0"></span>
-            </a>
-          </div>
-          
           <!-- Notifications -->
           <div class="relative">
             <NotificationBell 
@@ -272,21 +255,17 @@
           </div>
 
           <!-- User Menu -->
-          <div class="relative">
-            <button
-              onclick={() => (userMenuOpen = !userMenuOpen)}
-              class="block rounded-full hover:ring-2 hover:ring-gray-200 transition-colors"
-              aria-label="User menu"
-            >
-              <Avatar 
-                name={userDisplayName} 
-                src={currentProfile?.avatar_url} 
-                size="sm"
-                fallback={initials}
-              />
-            </button>
-            
-          </div>
+          <HeaderUserMenu 
+            user={currentUser}
+            profile={currentProfile}
+            {userDisplayName}
+            {initials}
+            canSell={userCanSell}
+            onSignOut={handleSignOut}
+            onClose={closeMenus}
+            {signingOut}
+            translations={userMenuTranslations}
+          />
         {:else}
           <!-- Auth Buttons -->
           <div class="flex items-center gap-2">
@@ -327,29 +306,6 @@
   {/if}
 </header>
 
-<!-- User Menu Dropdown -->
-{#if userMenuOpen}
-  <!-- Click outside to close -->
-  <button 
-    class="fixed inset-0 z-40" 
-    onclick={closeMenus}
-    aria-label="Close menu"
-  ></button>
-  
-  <div class="fixed top-[72px] right-3 sm:right-6 lg:right-8 z-50">
-    <HeaderUserMenu 
-      user={currentUser}
-      profile={currentProfile}
-      {userDisplayName}
-      {initials}
-      canSell={userCanSell}
-      onSignOut={handleSignOut}
-      onClose={closeMenus}
-      {signingOut}
-      translations={userMenuTranslations}
-    />
-  </div>
-{/if}
 
 <!-- Message Toast Notifications -->
 {#each $messageToasts as toast (toast.id)}

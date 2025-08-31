@@ -1,6 +1,5 @@
 import { createServerClient } from '@supabase/ssr';
 import { env } from '$env/dynamic/public';
-import { env as privateEnv } from '$env/dynamic/private';
 import type { RequestEvent } from '@sveltejs/kit';
 
 // Service role client moved to separate .server.js file for security

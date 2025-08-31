@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { BadgeVariant, BadgeSize } from '../types.js';
+  import type { BadgeVariant, BadgeSize } from '../types';
 
   interface Props {
     variant?: BadgeVariant;

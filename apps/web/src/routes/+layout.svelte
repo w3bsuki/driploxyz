@@ -12,7 +12,7 @@
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications';
-  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer, Footer } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer, ToastProvider, Footer } from '@repo/ui';
   import OrderNotificationToast from '$lib/components/OrderNotificationToast.svelte';
   import RegionSwitchModal from '$lib/components/RegionSwitchModal.svelte';
   import TopProgress from '$lib/components/TopProgress.svelte';
@@ -215,16 +215,18 @@
   });
 </script>
 
-{#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
-  <div class="sticky top-0 z-50" bind:this={headerContainer}>
-    <Header user={data?.user} profile={data?.profile} />
+<ToastProvider>
+  {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
+    <div class="sticky top-0 z-50" bind:this={headerContainer}>
+      <Header user={data?.user} profile={data?.profile} />
+    </div>
+  {/if}
+  <!-- Route progress just below header -->
+  <TopProgress />
+  <div>
+    {@render children?.()}
   </div>
-{/if}
-<!-- Route progress just below header -->
-<TopProgress />
-<div>
-  {@render children?.()}
-</div>
+</ToastProvider>
 
 <!-- Footer -->
 {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}

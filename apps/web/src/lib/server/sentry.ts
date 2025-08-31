@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
 import type { RequestEvent } from '@sveltejs/kit';
 
@@ -10,53 +9,57 @@ try {
   // DSN not available - Sentry won't be initialized
 }
 
+let initialized = false;
+let initializing: Promise<void> | null = null;
+
 /**
- * Initialize Sentry error monitoring
- * Only initializes if DSN is present
+ * Initialize Sentry error monitoring lazily
+ * Only initializes if DSN is present and only once
  */
-export function initializeSentry(): void {
-  if (SENTRY_DSN) {
+export async function initializeSentry(): Promise<void> {
+  if (initialized || !SENTRY_DSN) return;
+  if (initializing) return initializing;
+
+  initializing = (async () => {
+    const Sentry = await import('@sentry/sveltekit');
     Sentry.init({
-      dsn: SENTRY_DSN,
+      dsn: SENTRY_DSN!,
       environment: dev ? 'development' : 'production',
       tracesSampleRate: dev ? 1.0 : 0.1,
       debug: dev,
-      integrations: [
-        // Basic integrations - avoid deprecated ones that might not be available
-      ],
+      integrations: [],
       beforeSend(event) {
-        // Don't send errors in development
         if (dev) return null;
-        
-        // Filter sensitive data
         if (event.exception) {
           const error = event.exception.values?.[0];
           if (error?.value?.includes('password') || error?.value?.includes('token')) {
-            return null; // Don't send sensitive auth errors
+            return null;
           }
         }
-        
         return event;
       }
     });
-  }
+    initialized = true;
+    initializing = null;
+  })();
+
+  return initializing;
 }
 
 /**
  * Setup Sentry for the request event
  * This is a no-op function since Sentry initialization happens at module load
  */
-export function setupSentry(event: RequestEvent): void {
-  // Sentry initialization happens at module load time
-  // This function exists for consistency with other setup functions
+export async function setupSentry(event?: RequestEvent): Promise<void> {
+  await initializeSentry();
 }
 
 /**
  * Check if Sentry is available
  */
 export function isSentryAvailable(): boolean {
-  return !!SENTRY_DSN;
+  // In dev on Windows, some transitive deps (glob/minimatch) can mis-resolve.
+  // Disable Sentry in dev unless explicitly enabled via env.
+  const enableInDev = process.env.SENTRY_ENABLE_DEV === 'true';
+  return !!SENTRY_DSN && (enableInDev ? true : !dev);
 }
-
-// Initialize Sentry when module is imported
-initializeSentry();
