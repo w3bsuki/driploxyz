@@ -5,7 +5,6 @@
 @plugin '@tailwindcss/typography';
 
 @source '../../../packages/ui/src/**/*.{html,js,svelte,ts}';
-@source '../../../packages/ui/dist/**/*.{html,js,svelte}';
 
 /*
   Driplo Web App Styles
@@ -217,7 +216,8 @@
   }
 
   .category-nav-pill:active {
-    opacity: 0.9;
+    opacity: 0.95;
+    transform: none;
   }
 
   /* Loading States - iOS Style */

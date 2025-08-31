@@ -55,7 +55,7 @@
   positioning="bottom-end"
   gutter={12}
   portal="body"
-  menuClass="menu w-auto sm:w-56 z-[60] bg-[color:var(--gray-0)] text-[color:var(--gray-900)] border border-[color:var(--border-subtle)]"
+  menuClass="menu w-auto sm:w-56 z-[60]"
   triggerClass="p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-0 outline-0 shadow-none rounded-full cursor-pointer inline-flex items-center justify-center"
 >
   {#snippet trigger()}
@@ -70,10 +70,10 @@
   
   {#snippet children()}
     <!-- User Info Header inside menu -->
-    <div class="px-4 py-3 border-b border-[color:var(--border-subtle)]">
+    <div class="px-4 py-3 border-b border-gray-200">
       <div class="flex-1 min-w-0">
-        <p class="font-semibold text-[color:var(--text-primary)] truncate text-sm">{userDisplayName}</p>
-        <p class="text-xs text-[color:var(--text-secondary)] truncate">{user?.email}</p>
+        <p class="font-semibold text-gray-900 truncate text-sm">{userDisplayName}</p>
+        <p class="text-xs text-gray-600 truncate">{user?.email}</p>
       </div>
     </div>
     
@@ -81,42 +81,42 @@
     <div class="py-1">
       <a 
         href="/profile" 
-        class="flex items-center px-4 py-2 text-sm text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] transition-colors min-h-[44px]" 
+        class="flex items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 transition-colors min-h-[44px]" 
         onclick={(e: MouseEvent) => {
           e.preventDefault();
           onClose();
           window.location.href = '/profile';
         }}
       >
-        <svg class="w-4 h-4 mr-3 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
         {translations.myProfile}
       </a>
       <a 
         href="/orders" 
-        class="flex items-center px-4 py-2 text-sm text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] transition-colors min-h-[44px]" 
+        class="flex items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 transition-colors min-h-[44px]" 
         onclick={(e: MouseEvent) => {
           e.preventDefault();
           onClose();
           window.location.href = '/orders';
         }}
       >
-        <svg class="w-4 h-4 mr-3 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
         {translations.orders}
       </a>
       <a 
         href="/favorites" 
-        class="flex items-center px-4 py-2 text-sm text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] transition-colors min-h-[44px]" 
+        class="flex items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 transition-colors min-h-[44px]" 
         onclick={(e: MouseEvent) => {
           e.preventDefault();
           onClose();
           window.location.href = '/favorites';
         }}
       >
-        <svg class="w-4 h-4 mr-3 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>
         {translations.favorites}
@@ -139,17 +139,17 @@
       {/if}
     </div>
     
-    <div class="border-t border-[color:var(--border-subtle)] pt-1">
+    <div class="border-t border-gray-200 pt-1">
       <a 
         href="/settings" 
-        class="flex items-center px-4 py-2 text-sm text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] transition-colors min-h-[44px]" 
+        class="flex items-center px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 transition-colors min-h-[44px]" 
         onclick={(e: MouseEvent) => {
           e.preventDefault();
           onClose();
           window.location.href = '/settings';
         }}
       >
-        <svg class="w-4 h-4 mr-3 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.50 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>

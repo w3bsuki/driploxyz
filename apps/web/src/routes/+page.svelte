@@ -495,7 +495,7 @@
 						aria-label={i18n.search_viewAll()}
 						aria-busy={loadingCategory === 'all'}
 						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
-						class="shrink-0 px-3 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
+						class="category-nav-pill shrink-0 px-3 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] min-w-[60px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
 					>
 						{#if loadingCategory === 'all'}
 							<LoadingSpinner size="sm" color="white" />
@@ -515,7 +515,7 @@
 							disabled={loadingCategory === category.slug}
 							aria-label={`${i18n.menu_browse()} ${i18n.category_women()}`}
 							aria-busy={loadingCategory === category.slug}
-							class="shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
+							class="category-nav-pill shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] min-w-[85px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
@@ -538,7 +538,7 @@
 							disabled={loadingCategory === category.slug}
 							aria-label={`${i18n.menu_browse()} ${i18n.category_men()}`}
 							aria-busy={loadingCategory === category.slug}
-							class="shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
+							class="category-nav-pill shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] min-w-[75px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
@@ -561,7 +561,7 @@
 							disabled={loadingCategory === category.slug}
 							aria-label={`${i18n.menu_browse()} ${i18n.category_kids()}`}
 							aria-busy={loadingCategory === category.slug}
-							class="shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
+							class="category-nav-pill shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] min-w-[75px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}

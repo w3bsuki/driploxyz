@@ -58,8 +58,8 @@
   [lang="bg"] .category-nav-pill,
   [lang="ru"] .category-nav-pill,
   [lang="ua"] .category-nav-pill {
-    font-size: 0.8125rem !important;
-    padding: 0.425rem 0.875rem !important; /* Slightly smaller on mobile */
+    font-size: 0.8125rem !important; /* keep same as desktop block above */
+    padding: 0.5rem 1rem !important; /* keep same as desktop block above */
   }
 }
 
