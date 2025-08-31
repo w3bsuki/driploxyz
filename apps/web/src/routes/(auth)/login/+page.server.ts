@@ -3,7 +3,7 @@ import { LoginSchema } from '$lib/validation/auth';
 import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async (event) => {
+export const load = (async (event) => {
   const { session } = await event.locals.safeGetSession();
   
   if (session) {
@@ -34,9 +34,9 @@ export const load: PageServerLoad = async (event) => {
   }
   
   return { errorMessage };
-};
+}) satisfies PageServerLoad;
 
-export const actions: Actions = {
+export const actions = {
   signin: async (event) => {
     const { request, locals: { supabase }, getClientAddress } = event;
     
@@ -109,4 +109,4 @@ export const actions: Actions = {
     // Redirect to homepage after successful login
     throw redirect(303, '/');
   }
-};
+} satisfies Actions;

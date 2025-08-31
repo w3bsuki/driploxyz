@@ -59,7 +59,7 @@
       placement: positioning,
       gutter,
       sameWidth: false,
-      offset: { mainAxis: 0, crossAxis: -8 }
+      offset: { mainAxis: 0, crossAxis: -20 }
     },
     loop,
     preventScroll: false,
@@ -153,18 +153,18 @@
 <style>
   /* Menu animations */
   :global([data-menu-content]) {
-    animation: menu-in 150ms cubic-bezier(0, 0, 0.2, 1);
-    transform-origin: var(--origin);
+    animation: menu-in 150ms cubic-bezier(0, 0, 0.2, 1) !important;
+    transform-origin: top center !important;
   }
 
   @keyframes menu-in {
-    from {
+    0% {
       opacity: 0;
-      transform: translateY(-8px);
+      transform: translateY(-12px) !important;
     }
-    to {
+    100% {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) !important;
     }
   }
 

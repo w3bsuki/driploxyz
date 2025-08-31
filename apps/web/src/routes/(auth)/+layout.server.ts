@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ locals: { safeGetSession }, route }) => {
+export const load = (async ({ locals: { safeGetSession }, route }) => {
   const { session } = await safeGetSession();
   
   // Allow verified email page even for authenticated users
@@ -15,4 +15,4 @@ export const load: LayoutServerLoad = async ({ locals: { safeGetSession }, route
   }
   
   return {};
-};
+}) satisfies LayoutServerLoad;

@@ -2,7 +2,7 @@ import { redirect, fail } from '@sveltejs/kit';
 import { CSRFProtection } from '$lib/server/csrf';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async (event) => {
+export const load = (async (event) => {
   const { session } = await event.locals.safeGetSession();
   
   if (session) {
@@ -13,9 +13,9 @@ export const load: PageServerLoad = async (event) => {
   const csrfToken = await CSRFProtection.getToken(event);
   
   return { csrfToken };
-};
+}) satisfies PageServerLoad;
 
-export const actions: Actions = {
+export const actions = {
   reset: async (event) => {
     // CSRF Protection - must be first
     const isValidCSRF = await CSRFProtection.check(event);
@@ -54,4 +54,4 @@ export const actions: Actions = {
       success: true
     };
   }
-};
+} satisfies Actions;
