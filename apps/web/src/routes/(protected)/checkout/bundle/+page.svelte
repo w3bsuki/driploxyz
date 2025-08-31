@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { getStripe } from '$lib/stripe/client.js';
+	import { getStripe } from '$lib/stripe/client';
 	import { CheckoutSummary, Button } from '@repo/ui';
 	import * as i18n from '@repo/i18n';
 

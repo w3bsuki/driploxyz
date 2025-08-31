@@ -89,7 +89,7 @@
 <div 
   class="product-card cursor-pointer transition-shadow duration-200 hover:shadow-md {highlighted ? 'highlighted' : ''} {className}"
   onclick={handleClick}
-  onkeydown={(e) => {
+  onkeydown={(e: KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       handleClick();

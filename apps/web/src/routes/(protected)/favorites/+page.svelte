@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ProductCard, Button, Avatar, type Product } from '@repo/ui';
+  import { ProductCard, Button, Avatar, Banner, type Product } from '@repo/ui';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   
@@ -183,20 +183,20 @@
 
     <!-- Price Alerts Banner -->
     {#if priceAlerts.length > 0}
-      <div class="bg-blue-50 rounded-lg p-4 mb-6">
+      <Banner variant="info" class="mb-6">
         <div class="flex items-center justify-between">
           <div class="flex items-center space-x-3">
             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
             <div>
-              <p class="text-sm font-medium text-blue-900">Price alerts active</p>
-              <p class="text-xs text-blue-700">You have {priceAlerts.length} price alerts set</p>
+              <p class="text-sm font-medium">Price alerts active</p>
+              <p class="text-xs opacity-75">You have {priceAlerts.length} price alerts set</p>
             </div>
           </div>
           <Button size="sm" variant="outline">Manage</Button>
         </div>
-      </div>
+      </Banner>
     {/if}
 
     <!-- Products Grid -->
@@ -226,7 +226,7 @@
             <!-- Quick Actions -->
             <div class="absolute top-2 right-2 flex flex-col space-y-1">
               <button
-                onclick={(e) => { e.stopPropagation(); toggleFavorite(product.id); }}
+                onclick={(e: MouseEvent) => { e.stopPropagation(); toggleFavorite(product.id); }}
                 class="p-1.5 bg-white rounded-full shadow-xs hover:shadow-md transition-shadow"
                 aria-label="Remove from favorites"
               >
@@ -236,7 +236,7 @@
               </button>
               {#if !priceAlerts.find(a => a.productId === product.id)}
                 <button
-                  onclick={(e) => { e.stopPropagation(); setPriceAlert(product.id); }}
+                  onclick={(e: MouseEvent) => { e.stopPropagation(); setPriceAlert(product.id); }}
                   class="p-1.5 bg-white rounded-full shadow-xs hover:shadow-md transition-shadow"
                   aria-label="Set price alert"
                 >

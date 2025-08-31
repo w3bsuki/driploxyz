@@ -179,7 +179,7 @@
   });
 </script>
 
-<header class="bg-white shadow-sm" style="box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);">
+<header class="bg-white shadow-sm border-b border-[color:var(--gray-200)]">
   <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <!-- Left: Mobile Menu + Logo -->

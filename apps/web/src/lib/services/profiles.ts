@@ -8,7 +8,12 @@ type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 export interface ProfileWithStats extends Profile {
   active_listings?: number;
   sold_listings?: number;
-  recent_reviews?: any[];
+  recent_reviews?: {
+    id: string;
+    rating: number;
+    comment: string | null;
+    created_at: string;
+  }[];
 }
 
 export interface SellerStats {
@@ -303,7 +308,7 @@ export class ProfileService {
   /**
    * Get top sellers based on active listings count
    */
-  async getTopSellers(limit = 10): Promise<{ data: any[]; error: string | null }> {
+  async getTopSellers(limit = 10): Promise<{ data: (Profile & { name: string | null; avatar: string | null; rating: number; product_count: number })[]; error: string | null }> {
     try {
       // Use direct query instead of RPC function that may not exist
       const { data, error } = await this.supabase
@@ -337,7 +342,12 @@ export class ProfileService {
    * Get user's activity feed
    */
   async getActivityFeed(userId: string, limit = 20): Promise<{ 
-    data: any[]; 
+    data: {
+      id: string;
+      type: 'order' | 'review' | 'message';
+      created_at: string;
+      data: Record<string, unknown>;
+    }[]; 
     error: string | null 
   }> {
     try {

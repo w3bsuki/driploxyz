@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
-import { stripe } from '$lib/stripe/server.js';
+import { stripe } from '$lib/stripe/server';
 
 export const GET: RequestHandler = async () => {
   try {

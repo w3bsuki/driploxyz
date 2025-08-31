@@ -1,9 +1,9 @@
 import { json } from '@sveltejs/kit';
-import { stripe } from '$lib/stripe/server.js';
+import { stripe } from '$lib/stripe/server';
 import { env } from '$env/dynamic/private';
-import type { RequestHandler } from './$types.js';
+import type { RequestHandler } from './$types';
 import { createServerClient } from '@supabase/ssr';
-import { TransactionService } from '$lib/services/transactions.js';
+import { TransactionService } from '$lib/services/transactions';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { paymentLogger } from '$lib/utils/log';
 

@@ -5,7 +5,7 @@ import type {
 	PaymentFormData,
 	PayoutMethod,
 	StripeError
-} from '$lib/stripe/types.js';
+} from '$lib/stripe/types';
 
 // =====================================
 // CURRENCY & FORMATTING
@@ -378,7 +378,11 @@ export function isRetryableError(error: StripeError | any): boolean {
 /**
  * Format payment method for display
  */
-export function formatPaymentMethod(method: any): string {
+export function formatPaymentMethod(method: {
+	type: string;
+	card?: { last4: string };
+	sepa_debit?: { last4: string };
+} | null): string {
 	if (!method) return 'Unknown payment method';
 
 	switch (method.type) {

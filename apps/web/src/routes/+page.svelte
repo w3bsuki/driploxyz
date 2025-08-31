@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { SearchBar, HeroSearchDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner } from '@repo/ui';
+	import { SearchBar, HeroSearchDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView } from '@repo/ui';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
@@ -23,7 +23,6 @@
 	let selectedSeller = $state<Seller | null>(null);
 	let showCategoryDropdown = $state(false);
 	let loadingCategory = $state<string | null>(null);
-	let QuickViewDialog = $state<any>(null);
 	let selectedPillIndex = $state(-1);
 	
 	// Lazy loaded components
@@ -483,7 +482,7 @@
 				<!-- Category Pills -->
 				<nav 
 					role="navigation"
-					aria-label="Browse categories"
+					aria-label={i18n.nav_browseCategories()}
 					class="flex items-center justify-center gap-2 overflow-x-auto scrollbar-hide"
 				>
 					<!-- All Categories -->
@@ -491,9 +490,9 @@
 						onmouseenter={() => preloadCode('/search')}
 						ontouchstart={() => preloadCode('/search')}
 						onclick={() => navigateToAllSearch()}
-						onkeydown={(e) => handlePillKeyNav(e, 0)}
+						onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 0)}
 						disabled={loadingCategory === 'all'}
-						aria-label="View all categories"
+						aria-label={i18n.search_viewAll()}
 						aria-busy={loadingCategory === 'all'}
 						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
 						class="shrink-0 px-3 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
@@ -512,9 +511,9 @@
 							onmouseenter={() => prefetchCategoryPath(`/category/${category.slug}`)}
 							ontouchstart={() => prefetchCategoryPath(`/category/${category.slug}`)}
 							onclick={() => navigateToCategory(category.slug)}
-							onkeydown={(e) => handlePillKeyNav(e, 1)}
+							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 1)}
 							disabled={loadingCategory === category.slug}
-							aria-label="Browse Women category"
+							aria-label={`${i18n.menu_browse()} ${i18n.category_women()}`}
 							aria-busy={loadingCategory === category.slug}
 							class="shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
 							data-prefetch="hover"
@@ -535,9 +534,9 @@
 							onmouseenter={() => prefetchCategoryPath(`/category/${category.slug}`)}
 							ontouchstart={() => prefetchCategoryPath(`/category/${category.slug}`)}
 							onclick={() => navigateToCategory(category.slug)}
-							onkeydown={(e) => handlePillKeyNav(e, 2)}
+							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 2)}
 							disabled={loadingCategory === category.slug}
-							aria-label="Browse Men category"
+							aria-label={`${i18n.menu_browse()} ${i18n.category_men()}`}
 							aria-busy={loadingCategory === category.slug}
 							class="shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
 							data-prefetch="hover"
@@ -558,9 +557,9 @@
 							onmouseenter={() => prefetchCategoryPath(`/category/${category.slug}`)}
 							ontouchstart={() => prefetchCategoryPath(`/category/${category.slug}`)}
 							onclick={() => navigateToCategory(category.slug)}
-							onkeydown={(e) => handlePillKeyNav(e, 3)}
+							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 3)}
 							disabled={loadingCategory === category.slug}
-							aria-label="Browse Kids category"
+							aria-label={`${i18n.menu_browse()} ${i18n.category_kids()}`}
 							aria-busy={loadingCategory === category.slug}
 							class="shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
 							data-prefetch="hover"
@@ -695,12 +694,12 @@
 	}}
 />
 
-<!-- Quick View Dialog for Premium Sellers (Lazy Loaded) -->
-{#if QuickViewDialog && selectedSeller}
-	<svelte:component 
-		this={QuickViewDialog}
+<!-- Quick View Dialog for Premium Sellers -->
+{#if selectedSeller}
+	<SellerQuickView
 		seller={selectedSeller} 
-		onclose={() => selectedSeller = null} 
+		onclose={() => selectedSeller = null}
+		onViewProfile={(sellerId) => goto(`/profile/${sellerId}`)}
 	/>
 {/if}
 

@@ -7,9 +7,10 @@
 		"dev": "vite dev",
 		"build": "svelte-kit sync && vite build",
 		"preview": "vite preview",
-		"test": "vitest run",
+		"test": "vitest run && playwright test",
 		"test:watch": "vitest",
 		"test:ui": "vitest --ui",
+		"test:e2e": "playwright test",
 		"check-types": "tsc --noEmit",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -33,7 +34,9 @@
 		"zod": "^3"
 	},
 	"devDependencies": {
+		"@axe-core/playwright": "^4.10.0",
 		"@inlang/paraglide-js": "2.2.0",
+		"@playwright/test": "^1.55.0",
 		"@repo/eslint-config": "workspace:*",
 		"@repo/typescript-config": "workspace:*",
 		"@sentry/vite-plugin": "^4.1.1",

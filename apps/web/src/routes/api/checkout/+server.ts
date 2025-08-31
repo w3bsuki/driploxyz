@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServices } from '$lib/services';
-import { stripe } from '$lib/stripe/server.js';
+import { stripe } from '$lib/stripe/server';
 import { paymentLogger } from '$lib/utils/log';
 
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession, country } }) => {
@@ -24,7 +24,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
     // Handle bundle checkout
     if (bundleItems && bundleItems.length > 0) {
       // Validate all items are from the same seller
-      const sellerIds = [...new Set(bundleItems.map((item: any) => item.seller_id))];
+      const sellerIds = [...new Set(bundleItems.map((item: { seller_id: string }) => item.seller_id))];
       if (sellerIds.length > 1) {
         return error(400, { message: 'All items must be from the same seller' });
       }
@@ -174,7 +174,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       });
       
       // Calculate bundle total (NO SHIPPING - paid on delivery)
-      const itemsTotal = bundleItems.reduce((sum: number, item: any) => sum + (item.price * 100), 0);
+      const itemsTotal = bundleItems.reduce((sum: number, item: { price: number }) => sum + (item.price * 100), 0);
       const serviceFee = Math.round(itemsTotal * 0.05) + 140; // 5% + 1.40 BGN (in cents)
       const totalAmount = itemsTotal + serviceFee;
       
@@ -184,7 +184,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
         .insert({
           buyer_id: session.user.id,
           seller_id: bundleItems[0].seller_id,
-          product_ids: bundleItems.map((item: any) => item.id),
+          product_ids: bundleItems.map((item: { id: string }) => item.id),
           expires_at: new Date(Date.now() + 30 * 60000).toISOString()
         })
         .select()
@@ -201,7 +201,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
         metadata: {
           isBundle: 'true',
           itemCount: bundleItems.length.toString(),
-          itemIds: bundleItems.map((item: any) => item.id).join(','),
+          itemIds: bundleItems.map((item: { id: string }) => item.id).join(','),
           bundleSessionId: bundleSession?.id || ''
         }
       });

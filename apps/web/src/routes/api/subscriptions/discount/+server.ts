@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServerSupabaseClient } from '$lib/supabase/server';
-import { SubscriptionService } from '$lib/services/subscriptions.js';
+import { SubscriptionService } from '$lib/services/subscriptions';
 import { env } from '$env/dynamic/private';
 
 const DEBUG = env.DEBUG === 'true';

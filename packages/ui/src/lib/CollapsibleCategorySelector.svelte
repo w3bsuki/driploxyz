@@ -282,7 +282,7 @@
               type="text"
               bind:value={customCategoryInput}
               placeholder="{typeCategoryPlaceholder}"
-              onkeydown={(e) => {
+              onkeydown={(e: KeyboardEvent) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
                   selectSpecific(customCategoryInput || '');

@@ -304,7 +304,7 @@
           <div class="sm:hidden">
             <select 
               value={currentLanguage}
-              onchange={(e) => onLanguageChange?.(e.currentTarget.value)}
+              onchange={(e: Event & { currentTarget: EventTarget & HTMLSelectElement }) => onLanguageChange?.(e.currentTarget.value)}
               class="text-sm border border-gray-300 rounded-lg px-3 py-1 bg-white
                      focus:ring-2 focus:ring-black focus:border-transparent"
             >

@@ -275,7 +275,7 @@ export class ProductService {
   }> {
     try {
       // Skip premium boost query - premium features not yet implemented
-      const boostedProducts: any[] = [];
+      const boostedProducts: ProductWithImages[] = [];
       const boostedError = null;
 
       // Get featured products (fallback since no boosted products exist)
@@ -303,12 +303,12 @@ export class ProductService {
       ];
       
       // Remove duplicates based on product ID
-      const uniqueProducts = allPromoted.reduce((acc: any[], product) => {
-        if (!acc.find((p: any) => p.id === product.id)) {
+      const uniqueProducts = allPromoted.reduce((acc: ProductWithImages[], product) => {
+        if (!acc.find((p) => p.id === product.id)) {
           acc.push(product);
         }
         return acc;
-      }, [] as any[]);
+      }, [] as ProductWithImages[]);
 
       let limitedProducts = uniqueProducts.slice(0, limit);
 
@@ -333,8 +333,8 @@ export class ProductService {
         if (newestError) {
         } else {
           // Add newest products that aren't already in promoted list
-          const promotedIds = new Set(limitedProducts.map((p: any) => p.id));
-          const filteredNewest = (newestProducts || []).filter((p: any) => !promotedIds.has(p.id));
+          const promotedIds = new Set(limitedProducts.map((p) => p.id));
+          const filteredNewest = (newestProducts || []).filter((p) => !promotedIds.has(p.id));
           limitedProducts = [...limitedProducts, ...filteredNewest];
         }
       }
@@ -344,7 +344,7 @@ export class ProductService {
       }
 
       // Transform the data
-      const products: ProductWithImages[] = limitedProducts.map((item: any) => ({
+      const products: ProductWithImages[] = limitedProducts.map((item) => ({
         ...item,
         images: item.product_images || [],
         category_name: item.categories?.name,
@@ -470,7 +470,23 @@ export class ProductService {
       }
 
       // Transform the data to match our interface
-      const products: ProductWithImages[] = (data || []).map((item: any) => ({
+      const products: ProductWithImages[] = (data || []).map((item: {
+        id: string;
+        title: string;
+        price: number;
+        condition: string;
+        size: string | null;
+        brand: string | null;
+        location: string | null;
+        created_at: string;
+        seller_id: string;
+        category_id: string | null;
+        country_code: string;
+        image_url: string;
+        category_name: string | null;
+        seller_name: string | null;
+        seller_rating: number | null;
+      }) => ({
         ...item,
         images: [{ image_url: item.image_url }],
         category_name: item.category_name,

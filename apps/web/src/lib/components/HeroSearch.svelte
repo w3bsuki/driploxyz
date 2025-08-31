@@ -96,7 +96,7 @@
         onmouseenter={() => preloadCode('/search')}
         ontouchstart={() => preloadCode('/search')}
         onclick={() => goto('/search')}
-        onkeydown={(e) => handleKeyNavigation(e, -1)}
+        onkeydown={(e: KeyboardEvent) => handleKeyNavigation(e, -1)}
         class="shrink-0 px-4 py-2 bg-black text-white rounded-full text-sm font-medium hover:bg-gray-900 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
         aria-label="View all categories"
       >
@@ -107,7 +107,7 @@
           onmouseenter={() => prefetchCategory(category.slug)}
           ontouchstart={() => prefetchCategory(category.slug)}
           onclick={() => navigateToCategory(category.slug)}
-          onkeydown={(e) => handleKeyNavigation(e, i)}
+          onkeydown={(e: KeyboardEvent) => handleKeyNavigation(e, i)}
           class="shrink-0 px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
           aria-label="Browse {category.name}"
         >

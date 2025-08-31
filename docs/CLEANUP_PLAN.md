@@ -73,3 +73,49 @@ Yes — combined with the playbooks and V1 plan:
 - UI migration fixes + token discipline stabilize UX and performance.
 - Playbooks ensure consistent refactors across TS/Svelte/SvelteKit/i18n/auth.
 - The final sweep plus QA gates (in docs/V1_driplo.md) push us to production readiness.
+
+---
+
+## Claude Code — Finalization Prompt (Copy/Paste)
+
+You are Claude Code. Execute the Finalization Sweep to close Tasks 0–8 without over‑engineering. Work in a separate terminal. Do NOT edit `docs/RUNBOOK.md`. Track plan/progress in `docs/CODEX_TASKLIST.md` (Next — Finalization) and summarize in `docs/CONTEXT.md`. Keep total diffs ≤ 300 LOC, Windows‑friendly.
+
+Objectives
+- Defensive i18n fallback (bg)
+- Token sweep for menu/high‑contrast CSS only
+- Ensure single semantic.css load
+- ESLint guardrail to prevent app‑level UI duplication
+- Dead files/backups cleanup
+- Validate and run existing smokes
+
+Scope (files only)
+- `apps/web/src/routes/+layout.server.ts`
+- `packages/ui/src/styles/semantic.css`
+- `apps/web/eslint.config.js`
+- `apps/web/src` (dead `service-worker.js`, any `*.bak` only)
+
+Steps
+1) i18n fallback defense
+   - In `+layout.server.ts`, set: `const language = locals.locale || 'bg'`
+2) Token sweep (menus/high‑contrast only)
+   - In `semantic.css`, replace `var(--fg)/var(--bg)` with `var(--text-primary)/var(--surface-base)` where used for menu and high‑contrast sections; keep borders on `--border-*`.
+   - Do not touch unrelated CSS/tokens/Tailwind config.
+3) Ensure single semantic.css load
+   - Verify UI barrel imports it (already present). If app.css duplicates exist, remove them.
+4) ESLint guardrail
+   - In `apps/web/eslint.config.js`, add a `no-restricted-imports` rule to block imports from `$lib/components/*` when an equivalent exists in `@repo/ui`.
+5) Dead files/backups
+   - Remove `apps/web/src/service-worker.js` (keep `.ts`).
+   - Remove any `*.bak` under `apps/web/src/**`.
+6) Validate (Windows)
+   - `pnpm -w turbo run check-types`
+   - `pnpm -w turbo run lint`
+   - `pnpm --filter web build`
+   - `pnpm --filter web test` (run Playwright smokes if configured)
+   - Manual: header menu, one dialog, and select work on mobile/desktop
+7) Docs
+   - Update `docs/CODEX_TASKLIST.md` (tick Finalization items) and add a 2–4 line entry to `docs/CONTEXT.md` (files changed, validation results).
+
+Constraints
+- No new dependencies. Do not modify Vite, Sentry, Tailwind config, or i18n adapter.
+- If scope risks exceeding limits or collides with in‑flight work, skip, add a 3‑line note in `docs/CODEX_TASKLIST.md`, and proceed to the next item.

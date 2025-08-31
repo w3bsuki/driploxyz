@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { getStripe } from '$lib/stripe/client.js';
+	import { getStripe } from '$lib/stripe/client';
 	import { CheckoutSummary, PaymentForm, Button } from '@repo/ui';
 	import type { Product, PaymentIntent } from '@repo/ui';
 	import * as i18n from '@repo/i18n';
@@ -182,7 +182,7 @@
 							</div>
 						{/if}
 
-						<form onsubmit={(e) => { e.preventDefault(); handleSubmit(e); }} class="space-y-6">
+						<form onsubmit={(e: SubmitEvent) => { e.preventDefault(); handleSubmit(e); }} class="space-y-6">
 							<div id="payment-element" class="p-4 border border-gray-200 rounded-lg">
 								<!-- Stripe Elements will be mounted here -->
 							</div>

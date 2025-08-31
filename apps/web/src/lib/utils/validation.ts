@@ -136,7 +136,7 @@ export function getValidationMessage(
  * Validation functions with localized error messages
  */
 export const validators = {
-  required: (value: any, locale?: string): string | null => {
+  required: (value: unknown, locale?: string): string | null => {
     if (!value || (typeof value === 'string' && value.trim() === '')) {
       return getValidationMessage('required', undefined, locale);
     }
@@ -277,7 +277,7 @@ export const validators = {
  */
 export interface ValidationRule {
   validator: keyof typeof validators;
-  params?: any[];
+  params?: unknown[];
   message?: string;
 }
 
@@ -291,7 +291,7 @@ export interface ValidationResult {
 }
 
 export function validateSchema(
-  data: Record<string, any>, 
+  data: Record<string, unknown>, 
   schema: ValidationSchema, 
   locale?: string
 ): ValidationResult {
@@ -301,7 +301,7 @@ export function validateSchema(
     const value = data[fieldName];
     
     for (const rule of rules) {
-      const validator = validators[rule.validator as keyof typeof validators] as any;
+      const validator = validators[rule.validator as keyof typeof validators] as (...args: unknown[]) => string | null;
       if (!validator) {
         console.warn(`Unknown validator: ${rule.validator}`);
         continue;
@@ -332,13 +332,13 @@ export function createValidator(locale: string) {
     getMessage: (key: MessageKey, params?: Record<string, string | number>) => 
       getValidationMessage(key, params, locale),
     
-    validate: (data: Record<string, any>, schema: ValidationSchema) => 
+    validate: (data: Record<string, unknown>, schema: ValidationSchema) => 
       validateSchema(data, schema, locale),
     
     validators: Object.fromEntries(
       Object.entries(validators).map(([key, validator]) => [
         key,
-        (...args: any[]) => (validator as any)(...args, locale)
+        (...args: unknown[]) => (validator as (...args: unknown[]) => string | null)(...args, locale)
       ])
     )
   };

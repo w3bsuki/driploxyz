@@ -179,7 +179,7 @@
   aria-expanded={$tooltipOpen}
   data-tooltip-trigger
   onclick={isTouchDevice || forceTouch ? handleTouchInteraction : undefined}
-  onkeydown={(e) => {
+  onkeydown={(e: KeyboardEvent) => {
     if ((e.key === 'Enter' || e.key === ' ') && (isTouchDevice || forceTouch)) {
       e.preventDefault();
       handleTouchInteraction(e);

@@ -1,5 +1,6 @@
 // Core UI components
 export { default as Badge } from './Badge.svelte';
+export { default as Banner } from './Banner.svelte';
 export { default as Button } from './Button.svelte';
 export { default as Input } from './Input.svelte';
 export { default as Card } from './Card.svelte';
@@ -201,9 +202,8 @@ import '../styles/semantic.css';
 // Variant system utilities
 export * from './utils/variants';
 
-
 // Type definitions
-export * from './types/index';
+export * from './types';
 
 // Design tokens
 export * from './tokens';

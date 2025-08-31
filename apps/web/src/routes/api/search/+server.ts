@@ -96,7 +96,7 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
     }
     if (condition && condition !== 'all') {
       const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'] as const;
-      if (validConditions.includes(condition as any)) {
+      if (validConditions.includes(condition as typeof validConditions[number])) {
         productsQuery = productsQuery.eq('condition', condition as typeof validConditions[number]);
       }
     }
@@ -120,7 +120,22 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
     productsQuery = productsQuery.range(offset, offset + pageSize - 1);
     const { data: products } = await productsQuery;
 
-    const transformed = (products || []).map((product: any) => {
+    const transformed = (products || []).map((product: {
+      id: string;
+      title: string;
+      price: number;
+      brand: string | null;
+      size: string | null;
+      condition: string;
+      location: string | null;
+      created_at: string;
+      seller_id: string;
+      category_id: string | null;
+      country_code: string;
+      product_images: { image_url: string }[] | null;
+      profiles: { username: string | null; avatar_url: string | null; account_type: string | null } | null;
+      categories: { id: string; name: string; slug: string; parent_id: string | null; level: number } | null;
+    }) => {
       let mainCategoryName = '';
       let subcategoryName = '';
       let specificCategoryName = '';
@@ -130,21 +145,21 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
           mainCategoryName = product.categories.name;
         } else if (product.categories.level === 2) {
           subcategoryName = product.categories.name;
-          const parentCat = cats.find((cat: any) => cat.id === product.categories.parent_id);
+          const parentCat = cats.find((cat) => cat.id === product.categories.parent_id);
           if (parentCat) mainCategoryName = parentCat.name;
         } else if (product.categories.level === 3) {
           specificCategoryName = product.categories.name;
           const parentCat = cats.find((cat: any) => cat.id === product.categories.parent_id);
           if (parentCat) {
             subcategoryName = parentCat.name;
-            const grandparentCat = cats.find((cat: any) => cat.id === parentCat.parent_id);
+            const grandparentCat = cats.find((cat) => cat.id === parentCat.parent_id);
             if (grandparentCat) mainCategoryName = grandparentCat.name;
           }
         }
       }
       return {
         ...product,
-        images: product.product_images?.map((img: any) => img.image_url) || [],
+        images: product.product_images?.map((img) => img.image_url) || [],
         seller: product.profiles ? {
           id: product.seller_id,
           username: product.profiles.username,

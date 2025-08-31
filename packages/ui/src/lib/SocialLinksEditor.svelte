@@ -78,7 +78,7 @@
               <select 
                 id={`platform-${index}`}
                 bind:value={link.type}
-                onchange={(e) => updateLink(index, 'type', e.target.value)}
+                onchange={(e: Event & { currentTarget: EventTarget & HTMLSelectElement }) => updateLink(index, 'type', e.currentTarget.value)}
                 class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white/80"
               >
                 {#each socialPlatforms as platform}

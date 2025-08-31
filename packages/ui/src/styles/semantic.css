@@ -54,7 +54,7 @@
 
 .btn-ghost:hover {
   background-color: var(--gray-50);
-  color: var(--fg);
+  color: var(--text-primary);
   border-color: var(--gray-200);
 }
 
@@ -64,7 +64,7 @@
 
 .btn-secondary {
   background-color: var(--gray-100);
-  color: var(--fg);
+  color: var(--text-primary);
   border: 1px solid var(--gray-200);
 }
 
@@ -84,7 +84,7 @@
   border: 1px solid var(--gray-200);
   background-color: var(--surface-base);
   padding: 0.5rem 0.75rem;
-  color: var(--fg);
+  color: var(--text-primary);
   min-height: var(--touch-standard);
   font-size: 16px; /* Prevent iOS zoom */
   line-height: 1.5;
@@ -132,7 +132,7 @@
   z-index: 50;
   min-width: 10rem;
   border-radius: 0.5rem;
-  border: 1px solid var(--gray-200);
+  border: 1px solid var(--border-subtle);
   background-color: var(--surface-base);
   padding: 0.25rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -154,20 +154,20 @@
   text-align: left;
   font-size: 16px;
   transition: background-color 150ms;
-  color: var(--fg);
+  color: var(--text-primary);
   min-height: var(--touch-standard);
   cursor: pointer;
   outline: none;
 }
 
 .menu-item:hover {
-  background-color: var(--gray-50);
-  color: var(--fg);
+  background-color: var(--surface-subtle);
+  color: var(--text-primary);
 }
 
 .menu-item:focus {
-  background-color: var(--gray-50);
-  color: var(--fg);
+  background-color: var(--surface-subtle);
+  color: var(--text-primary);
   outline: none;
 }
 
@@ -177,33 +177,33 @@
 }
 
 .menu-item[data-highlighted] {
-  background-color: var(--gray-50);
-  color: var(--fg);
+  background-color: var(--surface-subtle);
+  color: var(--text-primary);
 }
 
 .menu-item-danger {
-  color: var(--error);
+  color: var(--status-error-solid);
 }
 
 .menu-item-danger:hover {
-  background-color: var(--error);
+  background-color: var(--status-error-solid);
   color: white;
 }
 
 .menu-item-danger:focus {
-  background-color: var(--error);
+  background-color: var(--status-error-solid);
   color: white;
 }
 
 .menu-item-danger[data-highlighted] {
-  background-color: var(--error);
+  background-color: var(--status-error-solid);
   color: white;
 }
 
 .menu-separator {
   margin: 0.25rem -0.25rem;
   height: 1px;
-  background-color: var(--gray-200);
+  background-color: var(--border-subtle);
 }
 
 /* ▓▓▓ DIALOG STYLES ▓▓▓ */
@@ -240,7 +240,7 @@
 .dialog-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: var(--fg);
+  color: var(--text-primary);
   line-height: 1;
   letter-spacing: -0.025em;
 }
@@ -303,7 +303,7 @@
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   transition: all 150ms;
   background-color: var(--surface-base);
-  color: var(--fg);
+  color: var(--text-primary);
 }
 
 .toast-success {
@@ -385,7 +385,7 @@
 /* ▓▓▓ HIGH CONTRAST MODE SUPPORT ▓▓▓ */
 @media (prefers-contrast: high) {
   .btn-ghost {
-    border-color: var(--fg);
+    border-color: var(--text-primary);
   }
   
   .menu {
@@ -395,7 +395,65 @@
   .menu-item:hover,
   .menu-item:focus,
   .menu-item[data-highlighted] {
-    background-color: var(--fg);
-    color: var(--bg);
+    background-color: var(--text-primary);
+    color: var(--surface-base);
   }
+}
+
+/* ▓▓▓ BANNER STYLES ▓▓▓ */
+.banner {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  background-color: var(--surface-base);
+  color: var(--text-primary);
+}
+
+@media (min-width: 640px) {
+  .banner {
+    padding: var(--space-4);
+  }
+}
+
+.banner-info {
+  background-color: var(--status-info-bg);
+  border-color: var(--status-info-border);
+  color: var(--status-info-text);
+}
+
+.banner-success {
+  background-color: var(--status-success-bg);
+  border-color: var(--status-success-border);
+  color: var(--status-success-text);
+}
+
+.banner-warning {
+  background-color: var(--status-warning-bg);
+  border-color: var(--status-warning-border);
+  color: var(--status-warning-text);
+}
+
+.banner-danger {
+  background-color: var(--status-error-bg);
+  border-color: var(--status-error-border);
+  color: var(--status-error-text);
+}
+
+.banner-title {
+  font-weight: var(--font-semibold);
+  margin-bottom: var(--space-1);
+}
+
+.banner-body {
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+}
+
+.banner-action {
+  margin-left: auto;
+  flex-shrink: 0;
 }

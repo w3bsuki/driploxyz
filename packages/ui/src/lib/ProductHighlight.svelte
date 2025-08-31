@@ -101,7 +101,7 @@
         <!-- Favorite button positioned over content area -->
         <div class="absolute top-1 right-1 z-10">
           <button
-            onclick={(e) => { e.stopPropagation(); onToggleFavorite?.(product.id); }}
+            onclick={(e: MouseEvent) => { e.stopPropagation(); onToggleFavorite?.(product.id); }}
             class="w-7 h-7 rounded-full bg-white/90 border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 pointer-events-auto"
             aria-label={isFavorite ? 'Add to favorites' : 'Remove from favorites'}
           >

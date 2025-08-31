@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
-import { createStripeService } from './stripe.js';
-import type { SubscriptionCreateParams } from '$lib/stripe/types.js';
+import { createStripeService } from './stripe';
+import type { SubscriptionCreateParams } from '$lib/stripe/types';
 
 type Tables = Database['public']['Tables'];
 type SubscriptionPlan = Tables['subscription_plans']['Row'];

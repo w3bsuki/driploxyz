@@ -68,7 +68,8 @@
     portal: portalTarget,
     forceVisible: false,
     openFocus: undefined,
-    closeFocus: undefined
+    closeFocus: undefined,
+    disableTransition: true
   });
 
   // Sync bindable open state
@@ -154,21 +155,31 @@
 {/if}
 
 <style>
-  /* Target Melt UI data attributes directly for proper dropdown animation */
+  /* Perfect dropdown animation - clean slide down from top */
   :global([data-side="bottom"][data-align="end"]) {
-    animation: dropdown-slide-proper 200ms cubic-bezier(0.16, 1, 0.3, 1) !important;
     transform-origin: top right !important;
   }
 
-  @keyframes dropdown-slide-proper {
-    from {
+  /* Custom dropdown entrance animation */
+  :global(.menu[data-side="bottom"][data-align="end"]) {
+    animation: dropdown-slide-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  }
+
+  @keyframes dropdown-slide-in {
+    0% {
       opacity: 0;
-      transform: translateY(-12px);
+      transform: translateY(-12px) scale(0.95);
     }
-    to {
+    100% {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
+  }
+
+  /* Disable any conflicting Melt UI animations */
+  :global([data-side="bottom"][data-align="end"] > *) {
+    transition: none !important;
+    animation: none !important;
   }
 
   /* Menu item hover states */

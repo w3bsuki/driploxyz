@@ -178,7 +178,7 @@
                     </span>
                     <div class="flex space-x-2">
                       <button 
-                        onclick={(e) => { e.stopPropagation(); goto(`/product/${listing.id}/edit`); }} 
+                        onclick={(e: MouseEvent) => { e.stopPropagation(); goto(`/product/${listing.id}/edit`); }} 
                         class="text-blue-600 hover:text-blue-800"
                         type="button"
                       >

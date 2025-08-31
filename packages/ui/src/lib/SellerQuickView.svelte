@@ -1,7 +1,7 @@
 <script lang="ts">
   import Avatar from './Avatar.svelte';
-  // Seller quick preview component
-  interface SellerData {
+  // Seller quick preview component - supports both interfaces for compatibility
+  interface SellerDataNew {
     id: string;
     username: string;
     avatar_url: string;
@@ -18,55 +18,121 @@
       image: string;
     }>;
   }
+
+  // Legacy interface from QuickViewDialog
+  interface SellerDataLegacy {
+    id: number;
+    name: string;
+    avatar: string | null;
+    premium: boolean;
+    rating?: number;
+    itemCount?: number;
+    followers?: number;
+    description?: string;
+  }
+  
+  type SellerData = SellerDataNew | SellerDataLegacy;
   
   interface Props {
     seller: SellerData | null;
-    isOpen: boolean;
-    onClose: () => void;
-    onViewProfile: (sellerId: string) => void;
+    isOpen?: boolean; // Optional for backward compatibility
+    onClose?: () => void;
+    onclose?: () => void; // Legacy prop name
+    onViewProfile?: (sellerId: string) => void;
     onFollow?: (sellerId: string) => void;
     isFollowing?: boolean;
   }
   
   let { 
     seller = null, 
-    isOpen = $bindable(), 
+    isOpen = $bindable(false), 
     onClose,
+    onclose, // Legacy prop
     onViewProfile,
     onFollow,
     isFollowing = false
   }: Props = $props();
+
+  // Handle backward compatibility for callback props
+  const handleClose = () => {
+    onClose?.();
+    onclose?.(); // Support legacy prop name
+  };
+
+  const handleViewProfile = (sellerId: string) => {
+    if (onViewProfile) {
+      onViewProfile(sellerId);
+    } else {
+      // Fallback to basic navigation
+      console.warn('No onViewProfile handler provided');
+    }
+  };
+
+  // Normalize seller data for backward compatibility
+  const normalizedSeller = $derived.by(() => {
+    if (!seller) return null;
+    
+    // Check if it's legacy interface (has 'name' and number id)
+    const isLegacy = 'name' in seller && typeof seller.id === 'number';
+    
+    if (isLegacy) {
+      const legacy = seller as SellerDataLegacy;
+      return {
+        id: legacy.id.toString(),
+        username: legacy.name,
+        avatar_url: legacy.avatar || '',
+        itemCount: legacy.itemCount || 0,
+        created_at: undefined,
+        bio: legacy.description,
+        location: undefined,
+        totalSales: legacy.premium ? 6 : 0, // Assume premium = 5+ sales
+        rating: legacy.rating || 0,
+        recentProducts: [] // No recent products in legacy
+      } satisfies SellerDataNew;
+    }
+    
+    return seller as SellerDataNew;
+  });
+
+  // Auto-manage isOpen when seller changes (for legacy compatibility)
+  $effect(() => {
+    if (seller && isOpen === false) {
+      isOpen = true;
+    } else if (!seller && isOpen === true) {
+      isOpen = false;
+    }
+  });
   
-  // Show real products or empty array if none
-  const displayProducts = $derived(seller?.recentProducts || []);
+  // Show real products or empty array if none (using normalized seller)
+  const displayProducts = $derived(normalizedSeller?.recentProducts || []);
   
   function handleBackdropClick(e: MouseEvent) {
-    if (e.target === e.currentTarget) onClose();
+    if (e.target === e.currentTarget) handleClose();
   }
   
   function viewProfile() {
-    if (seller) {
-      onClose();
-      onViewProfile(seller.id);
+    if (normalizedSeller) {
+      handleClose();
+      handleViewProfile(normalizedSeller.id);
     }
   }
   
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Escape' && isOpen) {
-      onClose();
+      handleClose();
     }
   }
   
-  // Calculate member since
+  // Calculate member since (using normalized seller)
   const memberSince = $derived.by(() => {
-    if (!seller?.created_at) return 'New seller';
-    const date = new Date(seller.created_at);
+    if (!normalizedSeller?.created_at) return 'New seller';
+    const date = new Date(normalizedSeller.created_at);
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return `${months[date.getMonth()]} ${date.getFullYear()}`;
   });
 </script>
 
-{#if seller && isOpen}
+{#if normalizedSeller && isOpen}
   <!-- Backdrop -->
   <div 
     class="fixed inset-0 bg-black/50 md:backdrop-blur-xs z-50 flex items-center justify-center p-4 pb-24 sm:pb-4"
@@ -85,7 +151,7 @@
         
         <!-- Close Button -->
         <button
-          onclick={onClose}
+          onclick={handleClose}
           class="absolute top-3 right-3 p-2 bg-white/90 md:backdrop-blur-sm rounded-full"
           aria-label="Close"
         >
@@ -99,32 +165,32 @@
           <div class="flex items-end space-x-3">
             <div class="relative">
               <Avatar 
-                src={seller.avatar_url} 
-                name={seller.username} 
+                src={normalizedSeller.avatar_url} 
+                name={normalizedSeller.username} 
                 size="lg" 
-                premium={seller.totalSales && seller.totalSales > 5}
+                premium={normalizedSeller.totalSales && normalizedSeller.totalSales > 5}
               />
-              {#if seller.totalSales && seller.totalSales > 5}
+              {#if normalizedSeller.totalSales && normalizedSeller.totalSales > 5}
                 <span class="absolute -top-1 left-1/2 -translate-x-1/2 text-sm bg-white rounded-full p-0.5 shadow-sm">👑</span>
               {/if}
             </div>
             <div class="flex-1 pb-1">
-              <h2 class="text-lg sm:text-xl font-bold text-gray-900">{seller.username}</h2>
+              <h2 class="text-lg sm:text-xl font-bold text-gray-900">{normalizedSeller.username}</h2>
               <div class="flex items-center space-x-2 text-xs sm:text-sm text-gray-600">
                 <div class="flex items-center">
                   <svg class="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                   </svg>
-                  <span class="ml-1">{seller.rating || 0}</span>
+                  <span class="ml-1">{normalizedSeller.rating || 0}</span>
                 </div>
-                {#if seller.itemCount}<span>{seller.itemCount} items</span>{/if}
+                {#if normalizedSeller.itemCount}<span>{normalizedSeller.itemCount} items</span>{/if}
                 <span>Since {memberSince}</span>
               </div>
             </div>
           </div>
           
-          {#if seller.bio}
-            <p class="mt-2 text-xs sm:text-sm text-gray-600 line-clamp-2">{seller.bio}</p>
+          {#if normalizedSeller.bio}
+            <p class="mt-2 text-xs sm:text-sm text-gray-600 line-clamp-2">{normalizedSeller.bio}</p>
           {/if}
           
           <!-- Action Buttons -->
@@ -134,7 +200,7 @@
             </button>
             {#if onFollow}
               <button 
-                onclick={() => onFollow?.(seller.id)}
+                onclick={() => onFollow?.(normalizedSeller.id)}
                 class="flex-1 py-1.5 border border-gray-300 text-sm rounded-lg"
               >
                 {isFollowing ? 'Following' : 'Follow'}
@@ -158,7 +224,7 @@
                     class="w-full aspect-square object-cover rounded-lg"
                   />
                   <button 
-                    onclick={(e) => {
+                    onclick={(e: MouseEvent) => {
                       e.stopPropagation();
                       console.log('Add to wishlist:', product.id);
                     }}
@@ -185,12 +251,12 @@
         
         <!-- View All Link -->
         <div class="mt-3 text-center">
-          {#if seller.itemCount && seller.itemCount > 0}
+          {#if normalizedSeller.itemCount && normalizedSeller.itemCount > 0}
             <button 
               onclick={viewProfile}
               class="text-xs sm:text-sm text-gray-600 font-medium"
             >
-              View all {seller.itemCount}+ items →
+              View all {normalizedSeller.itemCount}+ items →
             </button>
           {/if}
         </div>
@@ -199,7 +265,7 @@
       <!-- Footer -->
       <div class="border-t px-4 py-2 bg-gray-50 shrink-0">
         <p class="text-xs sm:text-xs text-center text-gray-500">
-          {#if seller.totalSales && seller.totalSales > 5}
+          {#if normalizedSeller.totalSales && normalizedSeller.totalSales > 5}
             <span class="inline-flex items-center">
               <span class="text-yellow-500 mr-1">👑</span>
               Premium Seller

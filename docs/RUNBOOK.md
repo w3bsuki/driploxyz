@@ -4,9 +4,11 @@ Use this file to coordinate focused execution. Only one task is active at a time
 
 ## Current Task
 
-- Task 1 — TypeScript Audit
-  - Source: `docs/playbooks/typescript.md`
-  - Goal: Unify barrels to extensionless TS paths, ensure app.d.ts has precise types, replace implicit any handlers with typed signatures, add satisfies to server loads.
+- None (Task 7 completed)
+  - All major technical audits complete (Tasks 1-7: TypeScript, Svelte5, SvelteKit2, i18n, TailwindV4, MeltUI, Supabase)
+  - Core playbook executions finished successfully  
+  - Note: Task 8 (Playwright) was marked complete in upstream docs but Playwright setup may need validation
+  - Next: Continue with remaining UI/UX polish and V1 feature completions from CODEX_TASKLIST.md
 
 ## Rules
 
@@ -14,16 +16,22 @@ Use this file to coordinate focused execution. Only one task is active at a time
 - On start: read `CLAUDE.md` and the task’s source doc.
 - On completion: update this RUNBOOK (set Current Task to “None” or next), then update `docs/CODEX_TASKLIST.md` (In‑Progress → Done) and add a brief summary to `docs/CONTEXT.md`.
 
-## Next Tasks Queue
+## Completed Tasks Queue
 
-- Task 1 — TypeScript Audit (`docs/playbooks/typescript.md`)
-- Task 2 — Svelte 5 Audit (`docs/playbooks/svelte5.md`)
-- Task 3 — SvelteKit 2 Audit (`docs/playbooks/sveltekit2.md`)
-- Task 4 — Paraglide (i18n) (`docs/playbooks/paraglide.md`)
-- Task 5 — Tailwind v4 Tokens (`docs/playbooks/tailwindcss-v4.md`)
-- Task 6 — Melt UI Adoption (`docs/playbooks/melt-ui.md`)
-- Task 7 — Supabase Auth & Data (`docs/playbooks/supabase.md`)
-- Task 8 — Playwright Smokes (`docs/playbooks/playwright.md`)
+- [x] Task 1 — TypeScript Audit (`docs/playbooks/typescript.md`) 
+- [x] Task 2 — Svelte 5 Audit (`docs/playbooks/svelte5.md`)
+- [x] Task 3 — SvelteKit 2 Audit (`docs/playbooks/sveltekit2.md`)
+- [x] Task 4 — Paraglide (i18n) (`docs/playbooks/paraglide.md`)
+- [x] Task 5 — Tailwind v4 Tokens (`docs/playbooks/tailwindcss-v4.md`)
+- [x] Task 6 — Melt UI Adoption (`docs/playbooks/melt-ui.md`)
+- [x] Task 7 — Supabase Auth & Data (`docs/playbooks/supabase.md`)
+- [~] Task 8 — Playwright Smokes (`docs/playbooks/playwright.md`) — marked complete in upstream docs, may need validation
+
+## Next Focus Areas
+
+- UI/UX polish tasks from `docs/CODEX_TASKLIST.md`
+- V1 feature completions per `docs/V1_driplo.md`
+- Performance and accessibility optimizations
 
 ## Handoff Format (after each task)
 

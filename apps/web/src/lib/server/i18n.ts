@@ -27,6 +27,7 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   // HIGHEST PRIORITY: Detect language from URL path
   const pathname = event.url.pathname;
   let locale = 'bg'; // Default to Bulgarian
+  let localeExplicitlySet = false;
   
   // Check if path starts with a locale (e.g., /uk/, /bg/)
   const pathMatch = pathname.match(/^\/(uk|bg)(\/|$)/);
@@ -36,43 +37,41 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
     const mappedLocale = pathLocale === 'uk' ? 'en' : pathLocale;
     if (mappedLocale && i18n.isAvailableLanguageTag(mappedLocale)) {
       locale = mappedLocale;
-      // Path-based language detected
+      localeExplicitlySet = true;
     }
-  } else if (pathname === '/' || !pathname.startsWith('/uk') && !pathname.startsWith('/bg')) {
-    // Root or no locale prefix = Bulgarian (default)
-    locale = 'bg';
   }
   
-  // SECOND PRIORITY: Check URL parameter
-  if (locale === 'en') {
+  // SECOND PRIORITY: Check URL parameter (only if not explicitly set by path)
+  if (!localeExplicitlySet) {
     const urlLocale = event.url.searchParams.get('locale');
     if (urlLocale && i18n.isAvailableLanguageTag(urlLocale)) {
       locale = urlLocale;
+      localeExplicitlySet = true;
     }
   }
   
-  // Fallback to cookie if no domain or URL locale (third priority)
-  // ALWAYS try to get locale from cookie, regardless of consent
-  if (locale === 'en') { // Only check cookie if we're on default
-    // Try both cookie names (production and fallback)
+  // THIRD PRIORITY: Fallback to cookie if no explicit locale preference
+  if (!localeExplicitlySet) {
     const cookieLocale = event.cookies.get(COOKIES.LOCALE) || event.cookies.get('locale');
     if (cookieLocale && i18n.isAvailableLanguageTag(cookieLocale)) {
       locale = cookieLocale;
+      localeExplicitlySet = true;
     }
   }
   
   // Check functional consent status
   const hasFunctionalConsent = checkServerConsent(event.cookies, 'functional');
   
-  // Detect from headers if still on default (fourth priority)
-  if (locale === 'en') { // Only check headers if we're still on default
+  // FOURTH PRIORITY: Detect from headers if no explicit preference found
+  if (!localeExplicitlySet) {
     const acceptLang = event.request.headers.get('accept-language');
     if (acceptLang) {
       const browserLang = acceptLang.split(',')[0]?.split('-')[0]?.toLowerCase();
-      locale = (browserLang && i18n.isAvailableLanguageTag(browserLang)) ? browserLang : 'en';
-    } else {
-      locale = 'en';
+      if (browserLang && i18n.isAvailableLanguageTag(browserLang)) {
+        locale = browserLang;
+      }
     }
+    // If no valid header language found, keep default 'bg'
   }
   
   
@@ -101,15 +100,15 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
     if (locale && i18n.isAvailableLanguageTag(locale)) {
       i18n.setLocale(locale as any);
     } else {
-      i18n.setLocale('en');
+      i18n.setLocale('bg');
     }
   } catch (error) {
     console.error(`❌ Failed to set language tag '${locale}':`, error);
-    // Fallback to English if language setting fails
+    // Fallback to Bulgarian if language setting fails
     try {
-      i18n.setLocale('en');
+      i18n.setLocale('bg');
     } catch (fallbackError) {
-      console.error(`❌ Critical: Failed to set fallback language 'en':`, fallbackError);
+      console.error(`❌ Critical: Failed to set fallback language 'bg':`, fallbackError);
       throw new Error(`Language system failure: ${fallbackError}`);
     }
   }

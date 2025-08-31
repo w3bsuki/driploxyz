@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
-import { calculateCommission as calculateCommissionUtil } from '$lib/utils/payments.js';
+import { calculateCommission as calculateCommissionUtil } from '$lib/utils/payments';
 
 type Tables = Database['public']['Tables'];
 type Transaction = Tables['transactions']['Row'];

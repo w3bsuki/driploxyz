@@ -5,13 +5,13 @@
   
   interface Props {
     searchQuery?: string;
-    filters?: any;
+    filters?: Record<string, unknown>;
     onProductClick: (product: Product) => void;
     onFavorite: (product: Product) => void;
-    searchFunction: (params: any) => Promise<{ products: Product[]; totalCount: number; totalPages: number }>;
-    translations?: Record<string, any>;
-    loadComponent?: (importFn: () => Promise<{ default: any }>) => Promise<any>;
-    createLazyLoader?: (callback: () => void, options?: IntersectionObserverInit) => (node: Element) => any;
+    searchFunction: (params: { query?: string; page?: number; filters?: Record<string, unknown> }) => Promise<{ products: Product[]; totalCount: number; totalPages: number }>;
+    translations?: Record<string, string>;
+    loadComponent?: (importFn: () => Promise<{ default: unknown }>) => Promise<unknown>;
+    createLazyLoader?: (callback: () => void, options?: IntersectionObserverInit) => (node: Element) => { destroy?: () => void };
     class?: string;
   }
   
@@ -28,7 +28,7 @@
   }: Props = $props();
   
   let container: HTMLElement;
-  let ProductGrid: any;
+  let ProductGrid: unknown;
   let isLoaded = $state(false);
   let products = $state<Product[]>([]);
   let loading = $state(false);

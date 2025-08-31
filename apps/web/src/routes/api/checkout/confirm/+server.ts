@@ -1,7 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServices } from '$lib/services';
-import { stripe } from '$lib/stripe/server.js';
+import { stripe } from '$lib/stripe/server';
 
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
   try {

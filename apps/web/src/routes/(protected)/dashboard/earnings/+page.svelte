@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Button, Input } from '@repo/ui';
   import { onMount } from 'svelte';
-  import { PayoutService } from '$lib/services/payouts.js';
-  import { TransactionService } from '$lib/services/transactions.js';
+  import { PayoutService } from '$lib/services/payouts';
+  import { TransactionService } from '$lib/services/transactions';
   import type { PageData } from './$types';
 
   interface Props {

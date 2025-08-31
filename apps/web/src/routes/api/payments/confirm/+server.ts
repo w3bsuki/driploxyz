@@ -1,10 +1,10 @@
 import { json } from '@sveltejs/kit';
-import { createStripeService } from '$lib/services/stripe.js';
-import { stripe } from '$lib/stripe/server.js';
-import type { RequestHandler } from './$types.js';
+import { createStripeService } from '$lib/services/stripe';
+import { stripe } from '$lib/stripe/server';
+import type { RequestHandler } from './$types';
 import type { Database } from '@repo/database';
 import { sendEmail, emailTemplates } from '$lib/email/resend';
-import type { PaymentIntentConfirmParams } from '$lib/stripe/types.js';
+import type { PaymentIntentConfirmParams } from '$lib/stripe/types';
 import { paymentLogger } from '$lib/utils/log';
 
 export const POST: RequestHandler = async ({ request, locals }) => {

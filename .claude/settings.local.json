@@ -62,7 +62,8 @@
       "Bash(pnpm --filter web run build)",
       "WebFetch(domain:www.vinted.com)",
       "WebFetch(domain:www.instagram.com)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(pnpm:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

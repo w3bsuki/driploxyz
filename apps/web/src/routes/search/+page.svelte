@@ -759,17 +759,17 @@
                   <div class="flex items-center gap-1 shrink-0">
                     <input
                       type="number"
-                      placeholder="Min"
+                      placeholder={i18n.search_min()}
                       value={filters.minPrice}
-                      oninput={(e) => filterStore.updateFilter('minPrice', e.target.value)}
+                      oninput={(e: Event & { currentTarget: EventTarget & HTMLInputElement }) => filterStore.updateFilter('minPrice', e.currentTarget.value)}
                       class="w-16 px-2 py-1.5 border border-gray-200 rounded-full text-sm text-center"
                     />
                     <span class="text-gray-400 text-sm">-</span>
                     <input
                       type="number"
-                      placeholder="Max"
+                      placeholder={i18n.search_max()}
                       value={filters.maxPrice}
-                      oninput={(e) => filterStore.updateFilter('maxPrice', e.target.value)}
+                      oninput={(e: Event & { currentTarget: EventTarget & HTMLInputElement }) => filterStore.updateFilter('maxPrice', e.currentTarget.value)}
                       class="w-16 px-2 py-1.5 border border-gray-200 rounded-full text-sm text-center"
                     />
                   </div>
@@ -822,7 +822,7 @@
           <!-- Category Filter -->
           <select 
             value={filters.level1 || 'all'}
-            onchange={(e) => handleCategorySelect(e.currentTarget.value === 'all' ? null : e.currentTarget.value)}
+            onchange={(e: Event & { currentTarget: EventTarget & HTMLSelectElement }) => handleCategorySelect(e.currentTarget.value === 'all' ? null : e.currentTarget.value)}
             class="px-3 py-2 bg-gray-50 border-0 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors cursor-pointer"
           >
             <option value="all">All Categories</option>
@@ -834,7 +834,7 @@
           <!-- Condition Filter -->
           <select 
             value={filters.condition}
-            onchange={(e) => filterStore.updateFilter('condition', e.currentTarget.value)}
+            onchange={(e: Event & { currentTarget: EventTarget & HTMLSelectElement }) => filterStore.updateFilter('condition', e.currentTarget.value)}
             class="px-3 py-2 bg-gray-50 border-0 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors cursor-pointer"
           >
             <option value="all">All Conditions</option>
@@ -846,7 +846,7 @@
           <!-- Brand Filter -->
           <select 
             value={filters.brand}
-            onchange={(e) => filterStore.updateFilter('brand', e.currentTarget.value)}
+            onchange={(e: Event & { currentTarget: EventTarget & HTMLSelectElement }) => filterStore.updateFilter('brand', e.currentTarget.value)}
             class="px-3 py-2 bg-gray-50 border-0 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors cursor-pointer"
           >
             <option value="all">All Brands</option>
@@ -918,17 +918,17 @@
                   <div class="flex gap-2">
                     <input
                       type="number"
-                      placeholder="Min"
+                      placeholder={i18n.search_min()}
                       value={filters.minPrice}
-                      oninput={(e) => filterStore.updateFilter('minPrice', e.target.value)}
+                      oninput={(e: Event & { currentTarget: EventTarget & HTMLInputElement }) => filterStore.updateFilter('minPrice', e.currentTarget.value)}
                       class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent"
                     />
                     <span class="flex items-center text-gray-400">-</span>
                     <input
                       type="number"
-                      placeholder="Max"
+                      placeholder={i18n.search_max()}
                       value={filters.maxPrice}
-                      oninput={(e) => filterStore.updateFilter('maxPrice', e.target.value)}
+                      oninput={(e: Event & { currentTarget: EventTarget & HTMLInputElement }) => filterStore.updateFilter('maxPrice', e.currentTarget.value)}
                       class="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:border-transparent"
                     />
                   </div>

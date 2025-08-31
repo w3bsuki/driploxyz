@@ -81,7 +81,7 @@
       <a 
         href="/profile" 
         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors min-h-[44px]" 
-        onclick={(e) => {
+        onclick={(e: MouseEvent) => {
           e.preventDefault();
           onClose();
           window.location.href = '/profile';
@@ -95,7 +95,7 @@
       <a 
         href="/orders" 
         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors min-h-[44px]" 
-        onclick={(e) => {
+        onclick={(e: MouseEvent) => {
           e.preventDefault();
           onClose();
           window.location.href = '/orders';
@@ -109,7 +109,7 @@
       <a 
         href="/favorites" 
         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors min-h-[44px]" 
-        onclick={(e) => {
+        onclick={(e: MouseEvent) => {
           e.preventDefault();
           onClose();
           window.location.href = '/favorites';
@@ -124,7 +124,7 @@
         <a 
           href="/sell" 
           class="flex items-center px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 transition-colors min-h-[44px]" 
-          onclick={(e) => {
+          onclick={(e: MouseEvent) => {
             e.preventDefault();
             onClose();
             window.location.href = '/sell';
@@ -142,7 +142,7 @@
       <a 
         href="/settings" 
         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors min-h-[44px]" 
-        onclick={(e) => {
+        onclick={(e: MouseEvent) => {
           e.preventDefault();
           onClose();
           window.location.href = '/settings';
@@ -155,7 +155,7 @@
         {translations.settings}
       </a>
       <button
-        onclick={(e) => {
+        onclick={(e: MouseEvent) => {
           e.preventDefault();
           onSignOut();
         }}

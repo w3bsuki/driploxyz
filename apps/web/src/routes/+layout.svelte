@@ -1,3 +1,10 @@
+<svelte:head>
+  <link rel="canonical" href={data.seo?.canonicalHref} />
+  {#each data.seo?.hreflangs || [] as hreflang}
+    <link rel="alternate" hreflang={hreflang.hrefLang} href={hreflang.href} />
+  {/each}
+</svelte:head>
+
 <script lang="ts">
   import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
   import UnifiedCookieConsent from '$lib/components/UnifiedCookieConsent.svelte';

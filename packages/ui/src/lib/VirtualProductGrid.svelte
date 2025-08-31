@@ -3,11 +3,11 @@
   import ProductCard from './ProductCard.svelte';
   import { ProductCardSkeleton } from './skeleton/index';
   // Simple throttle implementation
-  function throttle(fn: Function, limit: number) {
+  function throttle<T extends unknown[]>(fn: (...args: T) => void, limit: number) {
     let inThrottle: boolean;
-    return function(this: any, ...args: any[]) {
+    return function(...args: T) {
       if (!inThrottle) {
-        fn.apply(this, args);
+        fn(...args);
         inThrottle = true;
         setTimeout(() => inThrottle = false, limit);
       }

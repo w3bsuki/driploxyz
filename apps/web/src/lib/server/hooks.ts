@@ -1,15 +1,15 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import type { Handle, HandleServerError } from '@sveltejs/kit';
 
-import { setupEnvironment } from './env.js';
-import { setupAuth } from './supabase-hooks.js';
-import { setupI18n, transformPageChunk } from './i18n.js';
-import { setupCountry } from './country.js';
-import { handleCountryRedirect } from './country-redirect.js';
-import { handleUnknownLocales } from './locale-redirect.js';
-import { setupAuthGuard } from './auth-guard.js';
-import { setupSentry, isSentryAvailable } from './sentry.js';
-import { createErrorHandler } from './error-handler.js';
+import { setupEnvironment } from './env';
+import { setupAuth } from './supabase-hooks';
+import { setupI18n, transformPageChunk } from './i18n';
+import { setupCountry } from './country';
+import { handleCountryRedirect } from './country-redirect';
+import { handleUnknownLocales } from './locale-redirect';
+import { setupAuthGuard } from './auth-guard';
+import { setupSentry, isSentryAvailable } from './sentry';
+import { createErrorHandler } from './error-handler';
 
 /**
  * Supabase authentication handler

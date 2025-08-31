@@ -13,7 +13,6 @@ export const reroute: Reroute = ({ url }) => {
   const match = pathname.match(/^\/(uk|bg)(\/.*)?$/);
   
   if (match) {
-    const localePrefix = match[1];
     const rest = match[2] || '/';
     
     // Strip the locale prefix from the path

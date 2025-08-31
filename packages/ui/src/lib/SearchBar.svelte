@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { Tooltip } from '@repo/ui';
+  
   interface Props {
     value?: string;
     placeholder?: string;
@@ -39,7 +41,7 @@
 <form 
   role="search"
   class="bg-white rounded-full border border-gray-200 p-1 shadow-sm hover:shadow-md focus-within:border-gray-400 focus-within:ring-2 focus-within:ring-gray-400/20 transition-colors {className}"
-  onsubmit={(e) => { e.preventDefault(); if (value.trim()) onSearch?.(value.trim()); }}
+  onsubmit={(e: SubmitEvent) => { e.preventDefault(); if (value.trim()) onSearch?.(value.trim()); }}
 >
   <div class="bg-gray-50 relative rounded-full overflow-hidden min-h-11 sm:min-h-12">
     <div class="relative flex items-center min-h-11 sm:min-h-12">
@@ -66,16 +68,25 @@
       
       <div class="flex items-center pr-2 gap-1">
         {#if value}
-          <button
-            type="button"
-            onclick={handleClear}
-            class="p-1.5 hover:bg-gray-200 rounded-full transition-colors mr-1 focus:outline-none focus:ring-2 focus:ring-gray-400"
-            aria-label="Clear search query"
+          <Tooltip 
+            content="Clear search"
+            positioning={{ side: 'top', align: 'center' }}
+            openDelay={500}
+            closeDelay={200}
           >
-            <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+            {#snippet trigger()}
+              <button
+                type="button"
+                onclick={handleClear}
+                class="p-1.5 hover:bg-gray-200 rounded-full transition-colors mr-1 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                aria-label="Clear search query"
+              >
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            {/snippet}
+          </Tooltip>
         {/if}
         
         {#if showCategoriesButton}

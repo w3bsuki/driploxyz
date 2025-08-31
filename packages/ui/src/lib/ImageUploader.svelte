@@ -302,7 +302,7 @@
       ondragover={handleDragOver}
       ondragleave={handleDragLeave}
       onclick={openFileDialog}
-      onkeydown={(e) => e.key === 'Enter' && openFileDialog()}
+      onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && openFileDialog()}
       aria-label="Upload images"
       {disabled}
     >

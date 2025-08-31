@@ -7,7 +7,7 @@
 
 import { browser } from '$app/environment';
 import type { User, Session } from '@supabase/supabase-js';
-import { setSentryUser, addSentryBreadcrumb, captureSentryError } from '$lib/server/sentry-config.js';
+import { setSentryUser, addSentryBreadcrumb, captureSentryError } from '$lib/server/sentry-config';
 
 /**
  * Track user login for Sentry context

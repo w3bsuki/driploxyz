@@ -1,8 +1,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { stripe } from '$lib/stripe/server.js';
+import { stripe } from '$lib/stripe/server';
 import { createServiceClient } from '$lib/server/supabase.server';
-import { SubscriptionService } from '$lib/services/subscriptions.js';
+import { SubscriptionService } from '$lib/services/subscriptions';
 import { env } from '$env/dynamic/private';
 const STRIPE_WEBHOOK_SECRET = env.STRIPE_WEBHOOK_SECRET;
 import { dev } from '$app/environment';

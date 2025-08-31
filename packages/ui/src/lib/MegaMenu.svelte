@@ -112,7 +112,7 @@
             {@const category = categories[cat.key]}
             {#if category}
               <button
-                onclick={(e) => {
+                onclick={(e: MouseEvent) => {
                   e.stopPropagation();
                   selectCategory(cat.key);
                 }}

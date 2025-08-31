@@ -2,6 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { LayoutServerLoad } from './$types';
 import { detectRegion } from '$lib/server/geo-detection';
+import { getCanonicalAndHreflang } from '$lib/seo';
 
 const REDIRECT_PATHS_TO_SKIP = [
   '/onboarding',
@@ -70,7 +71,7 @@ export const load = (async (event) => {
   }
 
   // Language is already set in locals by the i18n hook
-  const language = locals.locale || 'en';
+  const language = locals.locale || 'bg';
   
   // Get country from locals (set by server hooks)
   const country = locals.country || 'BG';
@@ -85,6 +86,9 @@ export const load = (async (event) => {
     !profile?.region && // User hasn't set a preference
     geoLocation.region !== userRegion;
   
+  // Generate SEO data
+  const seoData = getCanonicalAndHreflang(event);
+  
   return {
     session,
     user,
@@ -95,6 +99,7 @@ export const load = (async (event) => {
     region: userRegion,
     detectedRegion: geoLocation.region,
     shouldPromptRegionSwitch,
-    currency: geoLocation.currency
+    currency: geoLocation.currency,
+    seo: seoData
   };
 }) satisfies LayoutServerLoad;
