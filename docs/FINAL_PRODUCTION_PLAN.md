@@ -35,6 +35,20 @@
    - ✅ i18n with Bulgarian default and `/uk` → English routing
    - ✅ Security: RLS policies enforced, CSRF protection active
 
+### ✅ Phase 0 Hotfix — Dev Noise & A11y (Complete)
+
+- Vite HMR duplication fixed: Removed scanning of UI `dist/**` in `apps/web/src/app.css` (now only sources UI from `src`).
+- Supabase auth console spam eliminated: Cleaned `onAuthStateChange` handler in `apps/web/src/routes/+layout.svelte` (no repeated console noise).
+- ProductImageSection a11y: Added `role="button"`, `tabindex="0"`, and Enter/Space keyboard handling for double‑tap interaction.
+- ProductActions a11y: Added descriptive `aria-label`s for like (conditional), message, and share buttons.
+
+Impact
+- Dev experience: Quieter console, reduced HMR churn.
+- Accessibility: Keyboard and screen‑reader friendly controls.
+- Production: No regressions; build validated in source environment.
+
+Note (local builds): On some Linux/WSL hosts, `sharp` may require optional platform binaries. If needed, run `pnpm --filter web install --include=optional` and/or `pnpm --filter web rebuild sharp` before `pnpm --filter web build`.
+
 ### ⚠️ KNOWN ISSUES (Non-blocking, can be addressed post-launch)
 
 1. **TypeScript Warnings** (~200 remaining)

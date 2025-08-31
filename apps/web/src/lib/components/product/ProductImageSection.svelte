@@ -15,6 +15,13 @@
     event.preventDefault();
     onDoubleTap?.(event);
   }
+
+  function handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onDoubleTap?.(event);
+    }
+  }
 </script>
 
 <!-- User Strip -->
@@ -43,7 +50,14 @@
 </div>
 
 <!-- Product Image -->
-<div class="bg-gray-100 relative" ondblclick={handleDoubleTap}>
+<div 
+  class="bg-gray-100 relative" 
+  ondblclick={handleDoubleTap}
+  onkeydown={handleKeyDown}
+  role="button"
+  tabindex="0"
+  aria-label="Double tap to favorite this product"
+>
   <div class="aspect-square relative">
     {#if productImages.length > 0}
       <img 

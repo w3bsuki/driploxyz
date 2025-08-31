@@ -125,8 +125,6 @@
     
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       const sessionChanged = newSession?.expires_at !== session?.expires_at;
-      
-      // Auth state change tracked
 
       switch (event) {
         case 'INITIAL_SESSION':
@@ -134,38 +132,33 @@
           break;
           
         case 'SIGNED_IN':
-          // User successfully signed in
-          // User signed in, invalidating auth state
+          // User successfully signed in - invalidate to refresh data
           setTimeout(() => invalidate('supabase:auth'), 50);
           break;
           
         case 'SIGNED_OUT':
-          // User signed out - clear any cached data and invalidate
-          if (dev) console.log('🚪 User signed out, invalidating auth state');
+          // User signed out - clear cached data and invalidate
           setTimeout(() => invalidate('supabase:auth'), 50);
           break;
           
         case 'TOKEN_REFRESHED':
           // Session tokens were refreshed
           if (sessionChanged) {
-            if (dev) console.log('🔄 Session tokens refreshed, updating state');
             setTimeout(() => invalidate('supabase:auth'), 50);
           }
           break;
           
         case 'USER_UPDATED':
           // User metadata was updated
-          if (dev) console.log('👤 User data updated');
           setTimeout(() => invalidate('supabase:auth'), 50);
           break;
           
         case 'PASSWORD_RECOVERY':
           // Password recovery initiated - no action needed
-          if (dev) console.log('🔑 Password recovery initiated');
           break;
           
         default:
-          if (dev) console.log('❓ Unknown auth event:', event);
+          // Unknown auth event - no action needed
           break;
       }
     });
@@ -186,18 +179,14 @@
       const now = Date.now();
       const timeUntilExpiry = expiresAt - now;
       
-      // Warn if session expires in less than 5 minutes
+      // Warn if session expires in less than 5 minutes (single warning only)
       if (timeUntilExpiry > 0 && timeUntilExpiry < 5 * 60 * 1000 && !warningShown) {
         warningShown = true;
-        if (dev) {
-          console.warn('⚠️ Session expiring soon:', Math.floor(timeUntilExpiry / 1000 / 60), 'minutes remaining');
-        }
+        // Session expiring soon - auth listener will handle refresh
       }
       
-      // Session has expired
+      // Session has expired - auth listener will handle refresh/signout
       if (timeUntilExpiry <= 0) {
-        if (dev) console.warn('🚨 Session expired, should refresh');
-        // The onAuthStateChange listener will handle the refresh/signout
         return;
       }
     };

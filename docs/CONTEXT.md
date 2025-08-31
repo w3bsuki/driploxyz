@@ -62,3 +62,9 @@ Summary: Audited docs/state across CODEX_TASKLIST, CONTEXT, MELT_UI_MIGRATION, V
 Files: docs/CODEX_TASKLIST.md
 Validation: docs-only update (✓); no code changes
 Follow-ups: Start with 7.1 API helper and 7.2 CSRF/rate limit coverage; then 7.4 Lighthouse mobile budgets and 7.5 CI gates; parallelize 6.x E2Es after stabilizing flows
+
+Task: Phase 0 Hotfix - Dev Noise & A11y TODOs
+Summary: Completed 4 surgical production polish fixes with zero regressions. (1) Fixed Vite HMR duplication by removing dist/** scanning from apps/web/src/app.css:8, reducing dev churn. (2) Eliminated Supabase auth console spam by cleaning verbose debug logging in +layout.svelte while preserving auth functionality. (3) Enhanced ProductImageSection A11y with role="button", tabindex="0", and keyboard handlers for double-tap interaction. (4) Added comprehensive aria-labels to ProductActions icon buttons (like/message/share). Production build successful with proper asset optimization and code splitting.
+Files: apps/web/src/app.css, apps/web/src/routes/+layout.svelte, apps/web/src/lib/components/product/ProductImageSection.svelte, apps/web/src/lib/components/product/ProductActions.svelte
+Validation: Production build ✅, bundle analysis optimal, no new TypeScript/lint errors beyond expected pre-existing warnings
+Follow-ups: Application fully production-ready for deployment

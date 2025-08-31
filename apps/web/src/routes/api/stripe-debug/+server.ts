@@ -2,8 +2,13 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 import { stripe } from '$lib/stripe/server';
+import { dev } from '$app/environment';
 
 export const GET: RequestHandler = async () => {
+  // Disable in production unless explicitly enabled
+  if (!dev && env.ENABLE_DEBUG_ENDPOINTS !== 'true') {
+    return new Response('Not Found', { status: 404 });
+  }
   try {
     // Check environment variables
     const hasStripeKey = !!env.STRIPE_SECRET_KEY;
