@@ -110,6 +110,7 @@
   <div 
     use:menuElement
     class={menuClasses}
+    style="background-color: white !important;"
     role="menu"
     tabindex="-1"
   >

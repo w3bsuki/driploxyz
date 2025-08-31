@@ -54,7 +54,7 @@
   }}
   positioning="bottom-end"
   gutter={8}
-  menuClass="menu bg-white w-screen max-w-xs sm:max-w-sm mx-4 sm:mx-0 z-[60]"
+  menuClass="menu !bg-white w-screen max-w-xs sm:max-w-sm mx-4 sm:mx-0 z-[60]"
   triggerClass="p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-0 outline-0 shadow-none rounded-full cursor-pointer inline-flex items-center justify-center"
 >
   {#snippet trigger()}
@@ -70,17 +70,9 @@
   {#snippet children()}
     <!-- User Info Header inside menu -->
     <div class="px-4 py-3 border-b border-gray-100">
-      <div class="flex items-center space-x-3">
-        <Avatar 
-          name={userDisplayName} 
-          src={profile?.avatar_url} 
-          size="sm"
-          fallback={initials}
-        />
-        <div class="flex-1 min-w-0">
-          <p class="font-semibold text-gray-900 truncate text-sm">{userDisplayName}</p>
-          <p class="text-xs text-gray-500 truncate">{user?.email}</p>
-        </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-gray-900 truncate text-sm">{userDisplayName}</p>
+        <p class="text-xs text-gray-500 truncate">{user?.email}</p>
       </div>
     </div>
     

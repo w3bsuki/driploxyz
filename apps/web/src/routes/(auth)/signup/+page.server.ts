@@ -7,7 +7,7 @@ import { getUserCountry } from '$lib/country/detection';
 import { env } from '$env/dynamic/public';
 import { authLogger } from '$lib/utils/log';
 
-export const load: PageServerLoad = async (event) => {
+export const load = (async (event) => {
   const { session } = await event.locals.safeGetSession();
   
   if (session) {
@@ -15,9 +15,9 @@ export const load: PageServerLoad = async (event) => {
   }
   
   return {};
-};
+}) satisfies PageServerLoad;
 
-export const actions: Actions = {
+export const actions = {
   signup: async (event) => {
     const { request, locals: { supabase }, cookies, url, getClientAddress } = event;
 
@@ -183,4 +183,4 @@ export const actions: Actions = {
       email: normalizedEmail
     };
   }
-};
+} satisfies Actions;

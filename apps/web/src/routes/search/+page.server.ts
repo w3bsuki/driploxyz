@@ -86,7 +86,7 @@ function buildCategoryHierarchy(categories: Category[]) {
   return hierarchy;
 }
 
-export const load: PageServerLoad = async ({ url, locals, setHeaders }) => {
+export const load = (async ({ url, locals, setHeaders }) => {
   const country = locals.country || 'BG';
   
   // Set cache headers for better performance
@@ -477,4 +477,4 @@ export const load: PageServerLoad = async ({ url, locals, setHeaders }) => {
     if (dev) console.error('Search error:', err);
     throw error(500, 'Failed to load search results');
   }
-};
+}) satisfies PageServerLoad;
