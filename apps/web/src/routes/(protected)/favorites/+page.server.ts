@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { createServices } from '$lib/services';
 
-export const load: PageServerLoad = async ({ locals: { supabase, session } }) => {
+export const load = (async ({ locals: { supabase, session } }) => {
   if (!session?.user) {
     return {
       favoritedProducts: [],
@@ -70,4 +70,4 @@ export const load: PageServerLoad = async ({ locals: { supabase, session } }) =>
       error: 'An unexpected error occurred'
     };
   }
-};
+}) satisfies PageServerLoad;

@@ -2,7 +2,7 @@ import { redirect, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import { createServices } from '$lib/services';
 
-export const load: PageServerLoad = async ({ params, locals: { supabase, session } }) => {
+export const load = (async ({ params, locals: { supabase, session } }) => {
   if (!session) {
     throw redirect(303, `/login?redirect=/product/${params.id}/edit`);
   }
@@ -28,9 +28,9 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, session
     product,
     categories: categories || []
   };
-};
+}) satisfies PageServerLoad;
 
-export const actions: Actions = {
+export const actions = {
   update: async ({ request, params, locals: { supabase, session } }) => {
     if (!session) {
       return fail(401, { error: 'Not authenticated' });
@@ -80,4 +80,4 @@ export const actions: Actions = {
 
     throw redirect(303, '/dashboard');
   }
-};
+} satisfies Actions;

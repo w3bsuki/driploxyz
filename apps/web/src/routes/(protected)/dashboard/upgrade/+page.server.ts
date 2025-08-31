@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession } }) => {
+export const load = (async ({ locals: { supabase, safeGetSession } }) => {
   try {
     const { session, user } = await safeGetSession();
 
@@ -127,4 +127,4 @@ export const load: PageServerLoad = async ({ locals: { supabase, safeGetSession 
       discountInfo: { eligible: false, discountPercent: 0 }
     };
   }
-};
+}) satisfies PageServerLoad;

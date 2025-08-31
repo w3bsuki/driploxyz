@@ -59,7 +59,7 @@
       placement: positioning,
       gutter,
       sameWidth: false,
-      offset: { mainAxis: 0, crossAxis: -20 }
+      offset: { mainAxis: 0, crossAxis: -40 }
     },
     loop,
     preventScroll: false,
@@ -154,30 +154,21 @@
 {/if}
 
 <style>
-  /* Override Melt UI animations completely */
-  :global([data-melt-dropdown-menu-content]),
-  :global([data-menu-content]),
-  :global(.menu) {
-    animation: dropdown-slide 200ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+  /* Target Melt UI data attributes directly for proper dropdown animation */
+  :global([data-side="bottom"][data-align="end"]) {
+    animation: dropdown-slide-proper 200ms cubic-bezier(0.16, 1, 0.3, 1) !important;
     transform-origin: top right !important;
   }
 
-  @keyframes dropdown-slide {
+  @keyframes dropdown-slide-proper {
     from {
       opacity: 0;
-      transform: translateY(-8px) scale(0.98);
+      transform: translateY(-12px);
     }
     to {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0);
     }
-  }
-  
-  /* Disable any other animations */
-  :global([data-melt-dropdown-menu-content] *),
-  :global([data-menu-content] *) {
-    transition: none !important;
-    animation: none !important;
   }
 
   /* Menu item hover states */

@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { activateBrandStatus } from '$lib/services/brand-service';
 
-export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSession } }) => {
+export const load = (async ({ url, locals: { supabase, safeGetSession } }) => {
   const { session } = await safeGetSession();
   
   if (!session) {
@@ -44,4 +44,4 @@ export const load: PageServerLoad = async ({ url, locals: { supabase, safeGetSes
     brandActivated,
     planName
   };
-};
+}) satisfies PageServerLoad;

@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { ProfileService } from '$lib/services/profiles';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load = (async ({ locals }) => {
   const { user } = await locals.safeGetSession();
   
   if (!user) {
@@ -20,4 +20,4 @@ export const load: PageServerLoad = async ({ locals }) => {
 
   // Redirect to user's profile using their username
   throw redirect(302, `/profile/${profile.username}`);
-};
+}) satisfies PageServerLoad;

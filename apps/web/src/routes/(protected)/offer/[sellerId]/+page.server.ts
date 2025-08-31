@@ -2,7 +2,7 @@ import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { ProfileService } from '$lib/services/profiles';
 
-export const load: PageServerLoad = async ({ params, locals }) => {
+export const load = (async ({ params, locals }) => {
   const { session } = await locals.safeGetSession();
   
   if (!session?.user) {
@@ -53,4 +53,4 @@ export const load: PageServerLoad = async ({ params, locals }) => {
     products: productsWithImages,
     currentUser: session.user
   };
-};
+}) satisfies PageServerLoad;

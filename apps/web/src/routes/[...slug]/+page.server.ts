@@ -14,7 +14,7 @@ import type { PageServerLoad } from './$types';
  * 2. Handle direct UUID lookups 
  * 3. Redirect legacy /product/uuid URLs to SEO URLs
  */
-export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession, country }, url }) => {
+export const load = (async ({ params, locals: { supabase, safeGetSession, country }, url }) => {
   const { session } = await safeGetSession();
   const slug = params.slug;
 
@@ -97,8 +97,99 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
     throw error(404, 'Product not found');
   }
 
-  return product;
-};
+  // Get parent category if exists
+  let parentCategory = null;
+  if (product.categories && product.categories.parent_id) {
+    const { data: parent } = await supabase
+      .from('categories')
+      .select('name')
+      .eq('id', product.categories.parent_id)
+      .single();
+    parentCategory = parent;
+  }
+
+  // Check favorite status and fetch related data in parallel
+  const [favoriteResult, similarResult, sellerResult] = await Promise.allSettled([
+    // Check if user has favorited (only if authenticated)
+    session?.user ? supabase
+      .from('favorites')
+      .select('id')
+      .eq('user_id', session.user.id)
+      .eq('product_id', product.id)
+      .maybeSingle() : Promise.resolve({ data: null }),
+    
+    // Get similar products (same category, if category exists)
+    product.category_id 
+      ? supabase
+          .from('products')
+          .select(`
+            id,
+            title,
+            price,
+            condition,
+            slug,
+            product_images (
+              image_url
+            )
+          `)
+          .eq('category_id', product.category_id)
+          .eq('is_active', true)
+          .eq('is_sold', false)
+          .neq('id', product.id)
+          .limit(4)
+      : Promise.resolve({ data: [] }),
+
+    // Get other products from the same seller
+    supabase
+      .from('products')
+      .select(`
+        id,
+        title,
+        price,
+        condition,
+        slug,
+        product_images!product_id (
+          image_url
+        )
+      `)
+      .eq('seller_id', product.seller_id!)
+      .eq('is_active', true)
+      .eq('is_sold', false)
+      .neq('id', product.id)
+      .limit(4)
+  ]);
+
+  const isFavorited = favoriteResult.status === 'fulfilled' && !!favoriteResult.value.data;
+  const similarProducts = similarResult.status === 'fulfilled' ? similarResult.value.data || [] : [];
+  const sellerProducts = sellerResult.status === 'fulfilled' ? sellerResult.value.data || [] : [];
+  const isOwner = session?.user?.id === product.seller_id;
+
+  return {
+    product: {
+      ...product,
+      images: product.product_images?.map((img: { image_url: string }) => img.image_url) || [],
+      seller: product.profiles,
+      seller_name: product.profiles?.full_name || product.profiles?.username || 'Unknown Seller',
+      seller_username: product.profiles?.username,
+      seller_avatar: product.profiles?.avatar_url,
+      seller_rating: product.profiles?.rating,
+      seller_sales_count: product.profiles?.sales_count,
+      category_name: product.categories?.name,
+      parent_category: parentCategory
+    },
+    similarProducts: similarProducts.map((p: any) => ({
+      ...p,
+      images: p.product_images?.map((img: { image_url: string }) => img.image_url) || []
+    })),
+    sellerProducts: sellerProducts.map((p: any) => ({
+      ...p,
+      images: p.product_images?.map((img: { image_url: string }) => img.image_url) || []
+    })),
+    isOwner,
+    isFavorited,
+    user: session?.user || null
+  };
+}) satisfies PageServerLoad;
 
 /**
  * Check if a string is a valid UUID
@@ -146,12 +237,12 @@ async function getProductData(supabase: any, productId: string, session: any, co
       profiles!products_seller_id_fkey (
         id,
         username,
+        full_name,
         avatar_url,
         rating,
-        bio,
-        created_at,
         sales_count,
-        full_name
+        account_type,
+        created_at
       )
     `)
     .eq('id', productId)
@@ -163,96 +254,5 @@ async function getProductData(supabase: any, productId: string, session: any, co
     return null;
   }
 
-  // Get parent category for breadcrumb (Men/Women/Kids)
-  let parentCategory = null;
-  if (product.categories?.parent_id) {
-    const { data: parent } = await supabase
-      .from('categories')
-      .select('id, name')
-      .eq('id', product.categories.parent_id)
-      .single();
-    parentCategory = parent;
-  }
-
-  // Check favorite status and fetch related data in parallel
-  const [favoriteResult, similarResult, sellerResult] = await Promise.allSettled([
-    // Check if user has favorited (only if authenticated)
-    session?.user ? supabase
-      .from('favorites')
-      .select('id')
-      .eq('user_id', session.user.id)
-      .eq('product_id', productId)
-      .maybeSingle() : Promise.resolve({ data: null }),
-    
-    // Get similar products (same category, if category exists)
-    product.category_id 
-      ? supabase
-          .from('products')
-          .select(`
-            id,
-            title,
-            price,
-            condition,
-            slug,
-            product_images (
-              image_url
-            )
-          `)
-          .eq('category_id', product.category_id)
-          .eq('is_active', true)
-          .eq('is_sold', false)
-          .neq('id', productId)
-          .limit(6)
-      : Promise.resolve({ data: [] }),
-    
-    // Get other seller products
-    supabase
-      .from('products')
-      .select(`
-        id,
-        title,
-        price,
-        condition,
-        slug,
-        product_images!product_id (
-          image_url
-        )
-      `)
-      .eq('seller_id', product.seller_id!)
-      .eq('is_active', true)
-      .eq('is_sold', false)
-      .neq('id', productId)
-      .limit(4)
-  ]);
-
-  const isFavorited = favoriteResult.status === 'fulfilled' && !!favoriteResult.value.data;
-  const similarProducts = similarResult.status === 'fulfilled' ? similarResult.value.data || [] : [];
-  const sellerProducts = sellerResult.status === 'fulfilled' ? sellerResult.value.data || [] : [];
-  const isOwner = session?.user?.id === product.seller_id;
-
-  return {
-    product: {
-      ...product,
-      images: product.product_images?.map((img: { image_url: string }) => img.image_url) || [],
-      seller: product.profiles,
-      seller_name: product.profiles?.full_name || product.profiles?.username || 'Unknown Seller',
-      seller_username: product.profiles?.username,
-      seller_avatar: product.profiles?.avatar_url,
-      seller_rating: product.profiles?.rating,
-      seller_sales_count: product.profiles?.sales_count,
-      category_name: product.categories?.name,
-      parent_category: parentCategory
-    },
-    similarProducts: similarProducts.map((p: any) => ({
-      ...p,
-      images: p.product_images?.map((img: { image_url: string }) => img.image_url) || []
-    })),
-    sellerProducts: sellerProducts.map((p: any) => ({
-      ...p,
-      images: p.product_images?.map((img: { image_url: string }) => img.image_url) || []
-    })),
-    isOwner,
-    isFavorited,
-    user: session?.user || null
-  };
+  return product;
 }

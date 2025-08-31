@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
+export const load = (async ({ locals: { safeGetSession, supabase } }) => {
   const { session, user } = await safeGetSession();
   
   if (!session || !user) {
@@ -93,4 +93,4 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase 
     console.error('Error in sales page load:', err);
     throw error(500, 'Failed to load sales data');
   }
-};
+}) satisfies PageServerLoad;
