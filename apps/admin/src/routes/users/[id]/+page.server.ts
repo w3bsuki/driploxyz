@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ params, locals }) => {
+export const load = (async ({ params, locals }) => {
 	const userId = params.id;
 
 	// Get user details
@@ -109,4 +109,4 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			availableForPayout: (totalEarnings - totalPayouts - pendingPayouts).toFixed(2)
 		}
 	};
-};
+}) satisfies PageServerLoad;

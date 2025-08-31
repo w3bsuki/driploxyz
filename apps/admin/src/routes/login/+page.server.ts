@@ -1,7 +1,7 @@
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ url, locals }) => {
+export const load = (async ({ url, locals }) => {
 	const { user } = await locals.safeGetSession();
 	
 	// If already logged in and admin, redirect to dashboard
@@ -13,9 +13,9 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		expired: url.searchParams.get('expired') === 'true',
 		ip: locals.ipAddress
 	};
-};
+}) satisfies PageServerLoad;
 
-export const actions: Actions = {
+export const actions = {
 	default: async ({ request, locals }) => {
 		const formData = await request.formData();
 		const email = formData.get('email') as string;
@@ -46,4 +46,4 @@ export const actions: Actions = {
 		// If user is not admin, they'll be signed out and get an error there
 		throw redirect(303, '/');
 	}
-};
+} satisfies Actions;

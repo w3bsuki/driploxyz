@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load = (async ({ locals }) => {
 	// Fetch all subscription records
 	const { data: subscriptions, error } = await locals.supabase
 		.from('user_subscriptions')
@@ -60,4 +60,4 @@ export const load: PageServerLoad = async ({ locals }) => {
 			mrr: mrr.toFixed(2)
 		}
 	};
-};
+}) satisfies PageServerLoad;

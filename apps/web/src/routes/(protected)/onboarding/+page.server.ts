@@ -7,7 +7,7 @@ import type { Actions, PageServerLoad } from './$types';
  * Ensures users who have already completed onboarding are redirected to dashboard.
  * Provides necessary data for users still in onboarding process.
  */
-export const load: PageServerLoad = async ({ locals: { safeGetSession }, parent, url }) => {
+export const load = (async ({ locals: { safeGetSession }, parent, url }) => {
   const { session, user } = await safeGetSession();
   
   console.log('[ONBOARDING LOAD] Loading onboarding for user:', user?.email);
@@ -37,9 +37,9 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession }, parent,
     user,
     profile: parentData.profile
   };
-};
+}) satisfies PageServerLoad;
 
-export const actions: Actions = {
+export const actions = {
   complete: async ({ request, locals: { supabase, safeGetSession }, cookies }) => {
     const { session, user } = await safeGetSession();
     
@@ -259,4 +259,4 @@ export const actions: Actions = {
       return fail(500, { error: 'Something went wrong during onboarding. Please try again.' });
     }
   }
-};
+} satisfies Actions;

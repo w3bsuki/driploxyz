@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load = (async ({ locals }) => {
 	// Get admin users
 	const { data: adminUsers } = await locals.supabase
 		.from('profiles')
@@ -63,4 +63,4 @@ export const load: PageServerLoad = async ({ locals }) => {
 			suspiciousActivities: suspiciousActivities || 0
 		}
 	};
-};
+}) satisfies PageServerLoad;

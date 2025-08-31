@@ -1,7 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { fail } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load = (async ({ locals }) => {
 	// Fetch all orders with buyer and seller info
 	const { data: orders, error } = await locals.supabase
 		.from('orders')
@@ -74,7 +74,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			gmv: totalGMV.toFixed(2)
 		}
 	};
-};
+}) satisfies PageServerLoad;
 
 export const actions = {
 	resolveDispute: async ({ request, locals }) => {

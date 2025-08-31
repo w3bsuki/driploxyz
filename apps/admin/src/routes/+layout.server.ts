@@ -1,6 +1,6 @@
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ locals }) => {
+export const load = (async ({ locals }) => {
 	const { session, user } = await locals.safeGetSession();
 
 	return {
@@ -8,4 +8,4 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 		user,
 		isAdmin: locals.isAdmin || false
 	};
-};
+}) satisfies LayoutServerLoad;

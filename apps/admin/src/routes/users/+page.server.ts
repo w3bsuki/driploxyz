@@ -1,7 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { fail, error } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load = (async ({ locals, url }) => {
 	try {
 	// Get search params
 	const searchQuery = url.searchParams.get('q');
@@ -129,7 +129,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			details: err instanceof Error ? err.message : 'Unknown error'
 		});
 	}
-};
+}) satisfies PageServerLoad;
 
 export const actions = {
 	verifyUser: async ({ request, locals }) => {

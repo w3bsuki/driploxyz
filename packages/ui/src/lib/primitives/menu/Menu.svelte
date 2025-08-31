@@ -58,7 +58,8 @@
     positioning: {
       placement: positioning,
       gutter,
-      sameWidth: false
+      sameWidth: false,
+      offset: { mainAxis: 0, crossAxis: -8 }
     },
     loop,
     preventScroll: false,
@@ -159,11 +160,11 @@
   @keyframes menu-in {
     from {
       opacity: 0;
-      transform: scale(0.95) translateY(-4px);
+      transform: translateY(-8px);
     }
     to {
       opacity: 1;
-      transform: scale(1) translateY(0);
+      transform: translateY(0);
     }
   }
 

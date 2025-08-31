@@ -152,4 +152,4 @@ export const load = (async ({ locals }) => {
     favorites: favoritesWithImages,
     currentUser: session.user
   };
-};
+}) satisfies PageServerLoad;

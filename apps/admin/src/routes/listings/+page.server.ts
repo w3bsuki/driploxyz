@@ -1,7 +1,7 @@
 import type { PageServerLoad, Actions } from './$types';
 import { fail } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load = (async ({ locals }) => {
 	// Fetch all products with seller info
 	const { data: listings, error } = await locals.supabase
 		.from('products')
@@ -50,7 +50,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			reported: reportedListings || 0
 		}
 	};
-};
+}) satisfies PageServerLoad;
 
 export const actions = {
 	approveListing: async ({ request, locals }) => {

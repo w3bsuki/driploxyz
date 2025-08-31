@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ locals, url }) => {
+export const load = (async ({ locals, url }) => {
 	const searchParams = url.searchParams;
 	const page = parseInt(searchParams.get('page') || '1');
 	const limit = 50;
@@ -24,4 +24,4 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		eventStats,
 		eventTypes: uniqueEventTypes
 	};
-};
+}) satisfies PageServerLoad;

@@ -53,7 +53,7 @@
     }
   }}
   positioning="bottom-end"
-  gutter={8}
+  gutter={12}
   menuClass="menu !bg-white w-screen max-w-xs sm:max-w-sm mx-4 sm:mx-0 z-[60]"
   triggerClass="p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-0 outline-0 shadow-none rounded-full cursor-pointer inline-flex items-center justify-center"
 >

@@ -1,7 +1,7 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load = (async ({ locals }) => {
 	// Verify admin access
 	if (!locals.isAdmin) {
 		throw error(403, 'Admin access required');
@@ -27,9 +27,9 @@ export const load: PageServerLoad = async ({ locals }) => {
 		payouts: payouts || [],
 		stats: stats || {}
 	};
-};
+}) satisfies PageServerLoad;
 
-export const actions: Actions = {
+export const actions = {
 	approve: async ({ request, locals }) => {
 		if (!locals.isAdmin) {
 			return fail(403, { error: 'Admin access required' });
@@ -131,4 +131,4 @@ export const actions: Actions = {
 			message: 'Payout rejected and funds returned to user balance'
 		};
 	}
-};
+} satisfies Actions;

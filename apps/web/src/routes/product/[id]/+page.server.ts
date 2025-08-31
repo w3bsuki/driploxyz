@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async ({ params, locals: { supabase, safeGetSession, country } }) => {
+export const load = (async ({ params, locals: { supabase, safeGetSession, country } }) => {
   const { session } = await safeGetSession();
 
   // Get main product with optimized query including full seller info
@@ -147,4 +147,4 @@ export const load: PageServerLoad = async ({ params, locals: { supabase, safeGet
     isFavorited,
     user: session?.user || null
   };
-};
+}) satisfies PageServerLoad;
