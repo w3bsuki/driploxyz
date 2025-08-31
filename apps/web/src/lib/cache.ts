@@ -139,15 +139,15 @@ export const cacheWarming = {
  * Performance monitoring for cache effectiveness
  */
 export const cacheMonitoring = {
-  logCacheHit(key: string) {
+  logCacheHit(_key: string) {
     // Cache hit logged - monitoring data available via other means
   },
 
-  logCacheMiss(key: string) {
+  logCacheMiss(_key: string) {
     // Cache miss logged - monitoring data available via other means
   },
 
-  logCacheInvalidation(tags: string[]) {
+  logCacheInvalidation(_tags: string[]) {
     // Cache invalidation logged - monitoring data available via other means
   }
 };

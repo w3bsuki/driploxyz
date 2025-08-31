@@ -244,7 +244,7 @@
         </h3>
         <div class="space-y-1">
           {#if discountAmount > 0}
-            <p class="text-sm text-gray-600">
+            <p class="text-sm text-gray-500">
               <span class="line-through">{basePrice.toFixed(2)} BGN</span>
               <span class="text-green-600 font-semibold ml-2">{finalPrice.toFixed(2)} BGN/month</span>
             </p>
@@ -255,14 +255,14 @@
               {/if}
             </p>
           {:else}
-            <p class="text-sm text-gray-600">{basePrice} BGN/month subscription</p>
+            <p class="text-sm text-gray-500">{basePrice} BGN/month subscription</p>
           {/if}
         </div>
       </div>
 
       <!-- Discount Code Input -->
       <div class="mb-4">
-        <label for="discount-code" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="discount-code" class="block text-sm font-medium text-gray-900 mb-1">
           Discount Code
         </label>
         <input
@@ -271,7 +271,7 @@
           placeholder="Enter discount code (e.g. INDECISIVE)"
           bind:value={discountCode}
           disabled={loading}
-          class="w-full p-2.5 border border-gray-300 rounded-sm text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-gray-50 disabled:cursor-not-allowed"
+          class="w-full p-2.5 border border-gray-200 rounded-sm text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-white disabled:cursor-not-allowed"
         />
         {#if discountError}
           <p class="mt-1 text-xs text-red-600">{discountError}</p>
@@ -284,10 +284,10 @@
 
       <!-- Card Input -->
       <div class="mb-4" role="group" aria-labelledby="payment-details-label">
-        <div id="payment-details-label" class="block text-sm font-medium text-gray-700 mb-1">
+        <div id="payment-details-label" class="block text-sm font-medium text-gray-900 mb-1">
           Payment Details
         </div>
-        <div bind:this={cardContainer} class="p-2.5 border border-gray-300 rounded-sm bg-white text-sm"></div>
+        <div bind:this={cardContainer} class="p-2.5 border border-gray-200 rounded-sm bg-white text-sm"></div>
       </div>
 
       <!-- Error Message -->
@@ -302,7 +302,7 @@
         <button
           onclick={handleCancel}
           disabled={loading}
-          class="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-sm hover:bg-gray-200 transition-colors disabled:opacity-50"
+          class="px-3 py-1.5 text-sm text-gray-900 bg-white border border-gray-200 rounded-sm hover:bg-white transition-colors disabled:opacity-50"
         >
           Cancel
         </button>

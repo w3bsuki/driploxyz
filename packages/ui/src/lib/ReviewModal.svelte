@@ -90,7 +90,7 @@
 		<div class="space-y-4">
 			{#if orderDetails}
 				<div class="bg-gray-50 rounded-lg p-3 text-sm">
-					<p class="text-gray-600">
+					<p class="text-gray-500">
 						Reviewing: <span class="font-medium text-gray-900">
 							{userType === 'buyer' ? orderDetails.seller : orderDetails.buyer}
 						</span>
@@ -103,7 +103,7 @@
 			
 			<!-- Star Rating -->
 			<div>
-				<label class="block text-sm font-medium text-gray-700 mb-2">
+				<label class="block text-sm font-medium text-gray-900 mb-2">
 					Rating
 				</label>
 				<div class="flex space-x-1">
@@ -134,7 +134,7 @@
 			
 			<!-- Review Title -->
 			<div>
-				<label for="review-title" class="block text-sm font-medium text-gray-700 mb-1">
+				<label for="review-title" class="block text-sm font-medium text-gray-900 mb-1">
 					Title (optional)
 				</label>
 				<input
@@ -149,7 +149,7 @@
 			
 			<!-- Review Comment -->
 			<div>
-				<label for="review-comment" class="block text-sm font-medium text-gray-700 mb-1">
+				<label for="review-comment" class="block text-sm font-medium text-gray-900 mb-1">
 					Comment (optional)
 				</label>
 				<textarea

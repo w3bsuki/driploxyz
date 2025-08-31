@@ -167,7 +167,7 @@
             <button
               type="button"
               onclick={() => expandedMethod = null}
-              class="text-gray-400 hover:text-gray-600 transition-colors"
+              class="text-gray-400 hover:text-gray-500 transition-colors"
             >
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -176,7 +176,7 @@
           </div>
           
           <div>
-            <label for="payout-details" class="block text-sm font-medium text-gray-700 mb-2">
+            <label for="payout-details" class="block text-sm font-medium text-gray-900 mb-2">
               {currentMethod.name} Account <span class="text-red-500">*</span>
             </label>
             <Input
@@ -195,7 +195,7 @@
           </div>
 
           <div>
-            <label for="payout-name" class="block text-sm font-medium text-gray-700 mb-2">
+            <label for="payout-name" class="block text-sm font-medium text-gray-900 mb-2">
               Account Holder Name <span class="text-red-500">*</span>
             </label>
             <Input
@@ -239,7 +239,7 @@
             {/if}
           </div>
         </div>
-        <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 text-gray-400 group-hover:text-gray-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
@@ -256,7 +256,7 @@
       </div>
       <div class="flex-1">
         <p class="text-sm font-semibold text-gray-900">Secure & Private</p>
-        <p class="text-xs sm:text-sm text-gray-600 mt-0.5">Your payout information is encrypted and only used for processing payments to you.</p>
+        <p class="text-xs sm:text-sm text-gray-500 mt-0.5">Your payout information is encrypted and only used for processing payments to you.</p>
       </div>
     </div>
   </div>

@@ -6,14 +6,14 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import type { Database } from '@repo/database';
 
 /**
  * Initialize Supabase client with service role for background jobs
  */
-function createServiceClient() {
+function _createServiceClient() {
   if (!SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for background jobs');
   }
@@ -46,7 +46,7 @@ export async function processSlugQueue(): Promise<{
 /**
  * Generate slug for a specific product (manual trigger)
  */
-export async function generateProductSlug(productId: string): Promise<{
+export async function generateProductSlug(_productId: string): Promise<{
   success: boolean;
   slug?: string;
   error?: string;
@@ -73,7 +73,7 @@ export async function getQueueStatus(): Promise<{
  * Backfill slugs for existing products
  * This can be used for migration or when introducing the slug system
  */
-export async function backfillSlugs(batchSize = 50): Promise<{
+export async function backfillSlugs(_batchSize = 50): Promise<{
   queued: number;
   error?: string;
 }> {
@@ -84,7 +84,7 @@ export async function backfillSlugs(batchSize = 50): Promise<{
 /**
  * Clean up completed queue items (housekeeping)
  */
-export async function cleanupQueue(olderThanDays = 7): Promise<{
+export async function cleanupQueue(_olderThanDays = 7): Promise<{
   deleted: number;
   error?: string;
 }> {

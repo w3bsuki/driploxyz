@@ -173,11 +173,11 @@
     <h2 class="text-lg font-semibold text-[color:var(--fg)]">Migration Examples</h2>
     <div class="space-y-2 text-sm">
       <div class="p-3 bg-[color:var(--gray-50)] rounded-lg">
-        <p class="text-[color:var(--fg-muted)]">Legacy:</p>
+        <p class="text-gray-500">Legacy:</p>
         <code>toasts.success('Message');</code>
       </div>
       <div class="p-3 bg-[color:var(--gray-50)] rounded-lg">
-        <p class="text-[color:var(--fg-muted)]">Modern:</p>
+        <p class="text-gray-500">Modern:</p>
         <code>modernToasts.success('Message');</code>
       </div>
     </div>

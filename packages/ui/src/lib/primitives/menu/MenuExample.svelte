@@ -97,7 +97,7 @@
     <!-- Controlled Menu -->
     <div>
       <h3 class="text-lg font-medium mb-2">Controlled Menu</h3>
-      <p class="text-sm text-gray-600 mb-2">Open state: {isOpen}</p>
+      <p class="text-sm text-gray-500 mb-2">Open state: {isOpen}</p>
       
       <Menu 
         bind:open={isOpen}
@@ -109,7 +109,7 @@
         {/snippet}
         
         {#snippet children()}
-          <div class="px-4 py-2 text-sm text-gray-700">
+          <div class="px-4 py-2 text-sm text-gray-900">
             Use the items prop for actual menu items
           </div>
         {/snippet}

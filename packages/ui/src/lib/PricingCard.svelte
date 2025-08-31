@@ -23,7 +23,7 @@
 <div class="bg-white rounded-lg border p-6 {featured ? 'ring-2 ring-blue-500' : ''}">
   <h3 class="text-xl font-semibold mb-2">{title}</h3>
   <div class="text-3xl font-bold mb-4">{price}</div>
-  <p class="text-gray-600 mb-6">{description}</p>
+  <p class="text-gray-500 mb-6">{description}</p>
   
   {#if features.length > 0}
     <ul class="space-y-2 mb-6">

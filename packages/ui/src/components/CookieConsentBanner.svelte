@@ -77,7 +77,7 @@
           <h3 class="text-sm font-semibold text-gray-900 mb-1">
             🍪 We use cookies
           </h3>
-          <p class="text-sm text-gray-600">
+          <p class="text-sm text-gray-500">
             We use essential cookies to make our site work. We'd also like to set optional cookies to help us improve our website and analyze site usage. 
             <a href="/privacy" class="text-blue-600 hover:text-blue-800 underline">Learn more about cookies</a>
           </p>
@@ -86,7 +86,7 @@
         <div class="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <button
             onclick={handleDecline}
-            class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            class="px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Decline optional
           </button>
@@ -94,7 +94,7 @@
           {#if onCustomize}
             <button
               onclick={handleCustomize}
-              class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              class="px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Customize
             </button>

@@ -112,7 +112,7 @@
           />
         </svg>
         {#if showCount}
-          <span class="text-xs font-semibold transition-colors duration-200 {currentFavorited ? 'text-red-600' : 'text-gray-600'}">
+          <span class="text-xs font-semibold transition-colors duration-200 {currentFavorited ? 'text-red-600' : 'text-gray-500'}">
             {favoriteCount > 999 ? `${Math.floor(favoriteCount/1000)}k` : favoriteCount}
           </span>
         {/if}

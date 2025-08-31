@@ -96,17 +96,17 @@
   const variantClasses = {
     default: {
       container: 'border-b border-gray-200',
-      tab: 'border-b-2 border-transparent hover:border-gray-300 data-[state=active]:border-black data-[state=active]:text-black text-gray-600',
+      tab: 'border-b-2 border-transparent hover:border-gray-300 data-[state=active]:border-black data-[state=active]:text-black text-gray-500',
       list: 'flex'
     },
     pills: {
       container: 'p-1 bg-gray-100 rounded-lg',
-      tab: 'rounded-md hover:bg-white/50 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm text-gray-600',
+      tab: 'rounded-md hover:bg-white/50 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm text-gray-500',
       list: 'flex gap-1'
     },
     underline: {
       container: 'border-b border-gray-200',
-      tab: 'border-b-2 border-transparent hover:border-gray-300 data-[state=active]:border-primary data-[state=active]:text-primary text-gray-600 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-primary after:scale-x-0 after:transition-transform data-[state=active]:after:scale-x-100',
+      tab: 'border-b-2 border-transparent hover:border-gray-300 data-[state=active]:border-primary data-[state=active]:text-primary text-gray-500 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-primary after:scale-x-0 after:transition-transform data-[state=active]:after:scale-x-100',
       list: 'flex'
     }
   };
@@ -194,9 +194,9 @@
               class="tab-count ml-1.5 px-1.5 py-0.5 text-xs rounded-full font-medium
                 {isActive 
                   ? variant === 'pills' 
-                    ? 'bg-gray-200 text-gray-700' 
+                    ? 'bg-gray-200 text-gray-900' 
                     : 'bg-black/10 text-current'
-                  : 'bg-gray-200 text-gray-600'}"
+                  : 'bg-gray-200 text-gray-500'}"
               aria-label="{tab.count} items"
             >
               {tab.count}

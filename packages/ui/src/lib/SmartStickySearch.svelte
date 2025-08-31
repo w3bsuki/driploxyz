@@ -68,7 +68,7 @@
       case 'size':
         return `${baseClasses} bg-gray-100 text-gray-800 hover:bg-gray-200`;
       default:
-        return `${baseClasses} bg-gray-100 text-gray-600 hover:bg-gray-200`;
+        return `${baseClasses} bg-gray-100 text-gray-500 hover:bg-gray-200`;
     }
   }
 

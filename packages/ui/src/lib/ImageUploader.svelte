@@ -309,7 +309,7 @@
       {#if uploading}
         <div class="flex flex-col items-center">
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mb-2"></div>
-          <p class="text-sm text-gray-600">Uploading images...</p>
+          <p class="text-sm text-gray-500">Uploading images...</p>
         </div>
       {:else}
         <div class="flex flex-col items-center">
@@ -321,7 +321,7 @@
             {images.length === 0 ? 'Add photos' : 'Add more photos'}
           </h3>
           
-          <p class="text-sm text-gray-600 mb-4">
+          <p class="text-sm text-gray-500 mb-4">
             Drag & drop images here, or click to browse
           </p>
           
@@ -342,7 +342,7 @@
 
   <!-- Image Count -->
   {#if images.length > 0}
-    <div class="flex items-center justify-between mt-3 text-sm text-gray-600">
+    <div class="flex items-center justify-between mt-3 text-sm text-gray-500">
       <span>{images.length} of {maxImages} images</span>
       {#if images.length > 1}
         <span class="text-xs">Drag images to reorder</span>

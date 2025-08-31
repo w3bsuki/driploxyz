@@ -109,7 +109,7 @@
             <span class="text-green-600 mr-2">💰</span>
             {translations.salesActivity || 'Sales Activity'}
           </h3>
-          <div class="flex items-center space-x-4 text-xs text-gray-600 mt-1">
+          <div class="flex items-center space-x-4 text-xs text-gray-500 mt-1">
             {#if unreadCount > 0}
               <span>{unreadCount} {translations.newSales || 'new'}</span>
             {/if}
@@ -131,7 +131,7 @@
           {/if}
           <button 
             onclick={onClose}
-            class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100/50"
+            class="p-1 text-gray-400 hover:text-gray-500 rounded-lg hover:bg-gray-100/50"
             aria-label="Close panel"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,7 +161,7 @@
           <div class="p-8 text-center">
             <div class="text-4xl mb-2">🛍️</div>
             <h4 class="font-medium text-gray-900 mb-1">{translations.noSalesYet || 'No sales yet'}</h4>
-            <p class="text-sm text-gray-600">{translations.notifyWhenItemsSell || 'We\'ll notify you when items sell'}</p>
+            <p class="text-sm text-gray-500">{translations.notifyWhenItemsSell || 'We\'ll notify you when items sell'}</p>
           </div>
         {:else}
           <!-- Sold Items -->
@@ -203,7 +203,7 @@
                       </div>
                     </div>
                     
-                    <p class="text-sm text-gray-600 mt-0.5 truncate">
+                    <p class="text-sm text-gray-500 mt-0.5 truncate">
                       {notification.product.title}
                     </p>
 
@@ -215,7 +215,7 @@
                           name={notification.buyer.username} 
                           size="xs" 
                         />
-                        <span class="text-xs text-gray-600">
+                        <span class="text-xs text-gray-500">
                           {translations.soldTo || 'Sold to'} {notification.buyer.username}
                         </span>
                       </div>
@@ -246,14 +246,14 @@
       {#if notifications.length > 0}
         <div class="p-3 border-t border-gray-100/50 bg-white/50">
           <div class="flex items-center justify-between">
-            <div class="text-xs text-gray-600">
+            <div class="text-xs text-gray-500">
               {notifications.length} {notifications.length === 1 ? (translations.totalSales || 'total sale') : (translations.totalSalesPlural || 'total sales')}
             </div>
             <Button 
               variant="ghost" 
               size="sm" 
               href="/dashboard/sales"
-              class="text-xs text-gray-600"
+              class="text-xs text-gray-500"
             >
               {translations.viewAllSales || 'View all sales'}
             </Button>

@@ -70,7 +70,7 @@
     >
       <!-- Heart Icon -->
       <svg 
-        class="w-6 h-6 transition-colors duration-200 {isFavorited ? 'text-red-500 scale-110' : 'text-gray-700'}" 
+        class="w-6 h-6 transition-colors duration-200 {isFavorited ? 'text-red-500 scale-110' : 'text-gray-900'}" 
         fill={isFavorited ? 'currentColor' : 'none'}
         stroke="currentColor" 
         viewBox="0 0 24 24"
@@ -104,7 +104,7 @@
       class="relative w-12 h-12 bg-white rounded-full shadow-sm md:shadow-lg flex items-center justify-center transition-colors duration-200 hover:scale-110 active:scale-95 hover:shadow-sm md:hover:shadow-xl"
       in:fly={{ x: position === 'right' ? 20 : -20, duration: 300, delay: 100, easing: quintOut }}
     >
-      <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a9.001 9.001 0 01-7.432 0m9.032-4.026A9.001 9.001 0 0112 3c-4.474 0-8.268 3.12-9.032 7.326m0 0A9.001 9.001 0 0012 21c4.474 0 8.268-3.12 9.032-7.326"/>
       </svg>
 
@@ -131,7 +131,7 @@
             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
           </svg>
         {:else}
-          <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m4.5 8a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm9 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
           </svg>
         {/if}
@@ -146,7 +146,7 @@
         in:fly={{ x: position === 'right' ? 20 : -20, duration: 300, delay: 300, easing: quintOut }}
         aria-label="Message seller"
       >
-        <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
         </svg>
       </button>
@@ -155,7 +155,7 @@
     <!-- Labels (if enabled) -->
     {#if showLabels}
       <div 
-        class="space-y-2 text-xs font-medium text-gray-600 {position === 'right' ? 'text-right mr-16' : 'text-left ml-16'}"
+        class="space-y-2 text-xs font-medium text-gray-500 {position === 'right' ? 'text-right mr-16' : 'text-left ml-16'}"
         in:fade={{ duration: 200, delay: 400 }}
       >
         <div>Favorite</div>
@@ -174,7 +174,7 @@
     <button
       onclick={handleFavorite}
       class="relative p-2 rounded-full transition-colors duration-200 hover:bg-gray-100 active:scale-95
-             {isFavorited ? 'bg-red-50 text-red-500' : 'text-gray-600'}"
+             {isFavorited ? 'bg-red-50 text-red-500' : 'text-gray-500'}"
       title="Add to favorites"
     >
       <svg 
@@ -196,7 +196,7 @@
     <!-- Share -->
     <button
       onclick={handleShare}
-      class="p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors duration-200 active:scale-95"
+      class="p-2 rounded-full text-gray-500 hover:bg-gray-100 transition-colors duration-200 active:scale-95"
       title="Share product"
       aria-label="Share product"
     >
@@ -213,7 +213,7 @@
       <button
         onclick={onAddToCart}
         class="p-2 rounded-full transition-colors duration-200 active:scale-95
-               {isInCart ? 'bg-green-50 text-green-600' : 'text-gray-600 hover:bg-gray-100'}"
+               {isInCart ? 'bg-green-50 text-green-600' : 'text-gray-500 hover:bg-gray-100'}"
         title={isInCart ? 'In cart' : 'Add to cart'}
       >
         {#if isInCart}
@@ -232,7 +232,7 @@
     {#if onMessage}
       <button
         onclick={onMessage}
-        class="p-2 rounded-full text-gray-600 hover:bg-gray-100 transition-colors duration-200 active:scale-95"
+        class="p-2 rounded-full text-gray-500 hover:bg-gray-100 transition-colors duration-200 active:scale-95"
         title="Message seller"
         aria-label="Message seller"
       >

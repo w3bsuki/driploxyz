@@ -1,5 +1,4 @@
 // Clean product page design system
-import * as i18n from '@repo/i18n';
 
 // Clean button system - 44px primary, 36px secondary
 export const BUTTON_STYLES = {
@@ -111,69 +110,69 @@ export const SPACING = {
   topSmall: 'mt-2'
 } as const;
 
-// Category translation mapping
+// Category translation mapping (temporary fallbacks until proper i18n keys are added)
 export const CATEGORY_TRANSLATIONS: Record<string, () => string> = {
   // Level 1 - Gender categories
-  'Women': () => i18n.category_women(),
-  'Men': () => i18n.category_men(),
-  'Kids': () => i18n.category_kids(),
-  'Unisex': () => i18n.category_unisex(),
+  'Women': () => 'Жени',
+  'Men': () => 'Мъже',
+  'Kids': () => 'Деца',
+  'Unisex': () => 'Унисекс',
   
   // Level 2 - Product Types
-  'Clothing': () => i18n.category_clothing(),
-  'Shoes': () => i18n.category_shoesType(),
-  'Accessories': () => i18n.category_accessoriesType(),
-  'Bags': () => i18n.category_bagsType(),
+  'Clothing': () => 'Дрехи',
+  'Shoes': () => 'Обувки',
+  'Accessories': () => 'Аксесоари',
+  'Bags': () => 'Чанти',
   
   // Level 3 - Specific items
-  'Activewear': () => i18n.category_activewear(),
-  'Boots': () => i18n.category_boots(),
-  'Dresses': () => i18n.category_dresses(),
-  'Flats': () => i18n.category_flats(),
-  'Formal Shoes': () => i18n.category_formalShoes(),
-  'Heels': () => i18n.category_heels(),
-  'Hoodies': () => i18n.category_hoodies(),
-  'Jackets': () => i18n.category_jackets(),
-  'Jackets & Coats': () => i18n.category_jacketsCoats(),
-  'Jeans': () => i18n.category_jeans(),
-  'Jewelry': () => i18n.category_jewelry(),
-  'Lingerie & Underwear': () => i18n.category_lingerie(),
-  'Pants & Jeans': () => i18n.category_pantsJeans(),
-  'Pants & Trousers': () => i18n.category_pantsTrousers(),
-  'Sandals': () => i18n.category_sandals(),
-  'Sandals & Slides': () => i18n.category_sandalsSlides(),
-  'Shirts': () => i18n.category_shirts(),
-  'Shirts & Blouses': () => i18n.category_shirtsBlouses(),
-  'Shorts': () => i18n.category_shorts(),
-  'Skirts': () => i18n.category_skirts(),
-  'Sneakers': () => i18n.category_sneakers(),
-  'Suits & Blazers': () => i18n.category_suitsBlazers(),
-  'Sweaters & Hoodies': () => i18n.category_sweatersHoodies(),
-  'Swimwear': () => i18n.category_swimwear(),
-  'T-Shirts': () => i18n.category_tshirts(),
-  'Tops & T-Shirts': () => i18n.category_topsTshirts(),
-  'Underwear': () => i18n.category_underwear(),
-  'Watches': () => i18n.category_watches(),
+  'Activewear': () => 'Спортни дрехи',
+  'Boots': () => 'Ботуши',
+  'Dresses': () => 'Рокли',
+  'Flats': () => 'Равни обувки',
+  'Formal Shoes': () => 'Елегантни обувки',
+  'Heels': () => 'Обувки с ток',
+  'Hoodies': () => 'Суичъри',
+  'Jackets': () => 'Якета',
+  'Jackets & Coats': () => 'Якета и палта',
+  'Jeans': () => 'Дънки',
+  'Jewelry': () => 'Бижута',
+  'Lingerie & Underwear': () => 'Дамско бельо',
+  'Pants & Jeans': () => 'Панталони и дънки',
+  'Pants & Trousers': () => 'Панталони',
+  'Sandals': () => 'Сандали',
+  'Sandals & Slides': () => 'Сандали и чехли',
+  'Shirts': () => 'Ризи',
+  'Shirts & Blouses': () => 'Ризи и блузи',
+  'Shorts': () => 'Къси панталони',
+  'Skirts': () => 'Поли',
+  'Sneakers': () => 'Кецове',
+  'Suits & Blazers': () => 'Костюми и сака',
+  'Sweaters & Hoodies': () => 'Пуловери и суичъри',
+  'Swimwear': () => 'Бански',
+  'T-Shirts': () => 'Тениски',
+  'Tops & T-Shirts': () => 'Топове и тениски',
+  'Underwear': () => 'Бельо',
+  'Watches': () => 'Часовници',
   
   // Level 3 - Accessory subcategories
-  'Hats & Caps': () => i18n.category_hatsAndCaps(),
-  'Belts': () => i18n.category_belts(),
-  'Scarves': () => i18n.category_scarves(),
-  'Sunglasses': () => i18n.category_sunglasses(),
-  'Wallets': () => i18n.category_wallets(),
-  'Hair Accessories': () => i18n.category_hairAccessories(),
-  'Ties': () => i18n.category_ties(),
-  'Cufflinks': () => i18n.category_cufflinks(),
-  'Backpacks': () => i18n.category_backpacks()
+  'Hats & Caps': () => 'Шапки',
+  'Belts': () => 'Колани',
+  'Scarves': () => 'Шалове',
+  'Sunglasses': () => 'Слънчеви очила',
+  'Wallets': () => 'Портфейли',
+  'Hair Accessories': () => 'Аксесоари за коса',
+  'Ties': () => 'Вратовръзки',
+  'Cufflinks': () => 'Ръкавели',
+  'Backpacks': () => 'Раници'
 };
 
-// Condition translations (matching database values)
+// Condition translations (matching database values) - temporary fallbacks
 export const CONDITION_TRANSLATIONS = {
-  'brand_new_with_tags': () => i18n.product_newWithTags(),
-  'new': () => i18n.product_newWithTags(),
-  'like_new': () => i18n.product_likeNewCondition(),
-  'like-new': () => i18n.product_likeNewCondition(),
-  'good': () => i18n.product_goodCondition(),
-  'fair': () => i18n.product_fairCondition(),
-  'poor': () => i18n.product_fairCondition()
+  'brand_new_with_tags': () => 'Ново с етикети',
+  'new': () => 'Ново с етикети',
+  'like_new': () => 'Като ново',
+  'like-new': () => 'Като ново',
+  'good': () => 'Добро състояние',
+  'fair': () => 'Задоволително състояние',
+  'poor': () => 'Задоволително състояние'
 } as const;

@@ -64,11 +64,11 @@
       <div class="flex items-center justify-between p-3 border-b border-gray-100/50">
         <div class="flex items-center space-x-2">
           <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span class="text-xs font-medium text-gray-600">{translations.newMessage || 'New message'}</span>
+          <span class="text-xs font-medium text-gray-500">{translations.newMessage || 'New message'}</span>
         </div>
         <button 
           onclick={onDismiss}
-          class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100/50"
+          class="p-1 text-gray-400 hover:text-gray-500 rounded-lg hover:bg-gray-100/50"
           aria-label="Dismiss notification"
         >
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,7 +94,7 @@
               <span class="text-xs text-gray-500">{translations.now || 'now'}</span>
             </div>
             
-            <p class="text-sm text-gray-700 mb-3 line-clamp-3">
+            <p class="text-sm text-gray-900 mb-3 line-clamp-3">
               {message}
             </p>
 
@@ -106,7 +106,7 @@
                   alt={product.title}
                   class="w-6 h-6 rounded-sm object-cover"
                 />
-                <span class="text-xs text-gray-600 truncate">
+                <span class="text-xs text-gray-500 truncate">
                   {product.title}
                 </span>
               </div>
@@ -125,7 +125,7 @@
               {/if}
               <button
                 onclick={onDismiss}
-                class="px-3 py-2 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg 
+                class="px-3 py-2 bg-gray-100 text-gray-900 text-xs font-medium rounded-lg 
                   hover:bg-gray-200 transition-colors"
               >
 {translations.dismiss || 'Dismiss'}

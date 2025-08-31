@@ -130,28 +130,28 @@
           ></div>
           
           <div class="mb-8 flex items-center justify-between">
-            <div class="text-gray-600 flex items-center gap-2 text-sm font-medium">
+            <div class="text-gray-500 flex items-center gap-2 text-sm font-medium">
               <span class="text-lg">{accountType.icon}</span>
               <span>{accountType.title}</span>
             </div>
-            <span class="border-gray-200 text-gray-600 rounded-full border px-2 py-0.5 text-xs transition-colors {selected === accountType.value ? 'bg-gray-900 text-white border-gray-900' : 'hover:border-gray-300'}">
+            <span class="border-gray-200 text-gray-500 rounded-full border px-2 py-0.5 text-xs transition-colors {selected === accountType.value ? 'bg-gray-900 text-white border-gray-900' : 'hover:border-gray-300'}">
               {selected === accountType.value ? (translations.selected || 'Selected') : (translations.select || 'Select')}
             </span>
           </div>
           
           <div class="mb-3 flex items-end gap-1">
             <span class="text-3xl font-extrabold tracking-tight">{accountType.price}</span>
-            <span class="text-gray-700 pb-1 text-sm">{accountType.value === 'brand' ? (translations.perMonth || '/ month') : ''}</span>
+            <span class="text-gray-900 pb-1 text-sm">{accountType.value === 'brand' ? (translations.perMonth || '/ month') : ''}</span>
           </div>
           
-          <p class="text-gray-600 text-sm mb-4">{accountType.description}</p>
+          <p class="text-gray-500 text-sm mb-4">{accountType.description}</p>
         </div>
         
         <!-- Features -->
         <div class="space-y-6 p-3">
           <ul class="space-y-3">
             {#each accountType.features as feature}
-              <li class="text-gray-600 flex items-start gap-3 text-sm">
+              <li class="text-gray-500 flex items-start gap-3 text-sm">
                 <span class="mt-0.5">
                   <span class="inline-flex items-center justify-center w-4 h-4 text-white bg-black rounded-full text-xs">✓</span>
                 </span>
@@ -167,7 +167,7 @@
   
   {#if showDiscountCode && (selected === 'brand' || selected === 'premium')}
     <div class="max-w-md mx-auto p-4 bg-gray-50 rounded-lg border border-gray-200">
-      <label class="block text-sm font-medium text-gray-700 mb-2">
+      <label class="block text-sm font-medium text-gray-900 mb-2">
         {translations.haveDiscountCode || 'Have a discount code?'}
       </label>
       <div class="flex gap-2">

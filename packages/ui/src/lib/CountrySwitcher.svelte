@@ -75,7 +75,7 @@
   <div class="country-switcher relative">
     <button
       onclick={toggleDropdown}
-      class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
+      class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
       aria-expanded={isOpen}
       aria-haspopup="true"
     >
@@ -95,7 +95,7 @@
           {#each countries as country}
             <button
               onclick={() => switchCountry(country.code as CountryCode)}
-              class="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 {country.code === currentCountry ? 'bg-gray-50 font-medium' : ''}"
+              class="flex items-center gap-3 w-full px-4 py-2 text-sm text-gray-900 hover:bg-gray-100 {country.code === currentCountry ? 'bg-gray-50 font-medium' : ''}"
             >
               {#if showFlag}
                 <span class="text-lg">{country.flag}</span>
@@ -122,7 +122,7 @@
         class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors {
           country.code === currentCountry 
             ? 'bg-black text-white' 
-            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            : 'bg-gray-100 text-gray-900 hover:bg-gray-200'
         }"
       >
         {#if showFlag}
@@ -136,7 +136,7 @@
 {:else if variant === 'modal'}
   <button
     onclick={() => isOpen = true}
-    class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+    class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-900 hover:text-gray-900"
   >
     {#if showFlag}
       <span class="text-lg">{currentCountryData.flag}</span>
@@ -162,7 +162,7 @@
           </button>
         </div>
         
-        <p class="text-sm text-gray-600 mb-4">
+        <p class="text-sm text-gray-500 mb-4">
           Choose your country to see relevant products and prices in your local currency.
         </p>
         

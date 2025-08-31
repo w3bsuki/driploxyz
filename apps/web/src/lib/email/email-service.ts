@@ -59,7 +59,7 @@ class EmailService {
       // });
       
       // Verify connection
-      this.transporter.verify((error: any, success: any) => {
+      this.transporter.verify((error: any, _success: any) => {
         if (error) {
           console.error('SMTP connection error:', error);
         } else {
@@ -244,7 +244,7 @@ class EmailService {
       .trim();
   }
   
-  private async logEmailSent(data: any): Promise<void> {
+  private async logEmailSent(_data: any): Promise<void> {
     // Log to database or analytics service
     // Email sent (fallback mode)
   }

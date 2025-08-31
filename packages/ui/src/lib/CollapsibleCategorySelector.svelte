@@ -167,7 +167,7 @@
         {/if}
       </span>
       <div class="text-left">
-        <div class="text-sm font-medium text-gray-700">
+        <div class="text-sm font-medium text-gray-900">
           {whoIsItForLabel} & {categoryLabel} <span class="text-red-500">*</span>
         </div>
         <div class="text-xs {gender ? 'text-gray-900 font-medium' : 'text-gray-500'}">
@@ -191,7 +191,7 @@
       
       <!-- Step 1: Gender Selection -->
       <div>
-        <label class="block text-xs font-medium text-gray-600 mb-1.5">
+        <label class="block text-xs font-medium text-gray-500 mb-1.5">
           {whoIsItForLabel}
         </label>
         <div class="grid grid-cols-4 gap-1.5">
@@ -202,7 +202,7 @@
               class="px-2 py-2 text-xs font-medium rounded-md border transition-colors {
                 gender === category.id 
                   ? 'border-gray-900 bg-gray-50 text-gray-900 ring-2 ring-gray-900' 
-                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                  : 'border-gray-200 bg-white text-gray-900 hover:bg-gray-50'
               }"
             >
               <span class="block text-base mb-0.5">{categoryEmoji[category.name] || '📦'}</span>
@@ -215,7 +215,7 @@
       <!-- Step 2: Type Selection (slides in) -->
       {#if showTypeLevel && typeCategories.length > 0}
         <div class="animate-in fade-in slide-in-from-left-2 duration-200">
-          <label class="block text-xs font-medium text-gray-600 mb-1.5">
+          <label class="block text-xs font-medium text-gray-500 mb-1.5">
             {categoryLabel}
           </label>
           <div class="grid grid-cols-2 gap-1.5">
@@ -226,7 +226,7 @@
                 class="flex items-center gap-2 px-2.5 py-2 text-xs font-medium rounded-md border transition-colors text-left {
                   type === category.id 
                     ? 'border-gray-900 bg-gray-50 text-gray-900 ring-2 ring-gray-900' 
-                    : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                    : 'border-gray-200 bg-white text-gray-900 hover:bg-gray-50'
                 }"
               >
                 {#if categoryEmoji[category.name]}
@@ -243,7 +243,7 @@
           </div>
 
           {#if type && typeCategories.find(c => c.id === type)?.name === 'Accessories'}
-            <p class="mt-1.5 text-xs text-gray-600 bg-yellow-50 border border-yellow-200 rounded-md p-1.5">
+            <p class="mt-1.5 text-xs text-gray-500 bg-yellow-50 border border-yellow-200 rounded-md p-1.5">
               <strong>{includesText}</strong> {accessoriesListText}
             </p>
           {/if}
@@ -253,7 +253,7 @@
       <!-- Step 3: Specific Selection (optional, slides in) -->
       {#if showSpecificLevel && specificCategories.length > 0}
         <div class="animate-in fade-in slide-in-from-left-2 duration-200">
-          <label class="block text-xs font-medium text-gray-600 mb-1.5">
+          <label class="block text-xs font-medium text-gray-500 mb-1.5">
             {beMoreSpecificLabel} <span class="text-gray-400">{optionalText}</span>
           </label>
           
@@ -267,7 +267,7 @@
                   class="px-3 py-2.5 text-sm font-medium rounded border transition-colors text-left {
                     specific === category.id 
                       ? 'border-gray-900 bg-gray-50 text-gray-900 ring-1 ring-gray-900' 
-                      : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                      : 'border-gray-200 bg-white text-gray-900 hover:bg-gray-50'
                   }"
                 >
                   {translateCategory(category.name)}
@@ -288,7 +288,7 @@
                   selectSpecific(customCategoryInput || '');
                 }
               }}
-              class="w-full px-2.5 py-2 text-xs rounded-md border border-gray-200 bg-white text-gray-700 placeholder-gray-400 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none"
+              class="w-full px-2.5 py-2 text-xs rounded-md border border-gray-200 bg-white text-gray-900 placeholder-gray-400 focus:border-gray-900 focus:ring-1 focus:ring-gray-900 focus:outline-none"
             />
             <p class="mt-0.5 text-xs text-gray-500">Press Enter to confirm custom category</p>
           </div>

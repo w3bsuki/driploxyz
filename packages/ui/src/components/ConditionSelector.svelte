@@ -35,7 +35,7 @@
 
 <div class="w-full">
   {#if label}
-    <label class="block text-sm font-medium text-gray-700 mb-2">
+    <label class="block text-sm font-medium text-gray-900 mb-2">
       {label}{required ? '*' : ''}
     </label>
   {/if}
@@ -48,7 +48,7 @@
         class="relative rounded-md border p-2 text-center transition-colors cursor-pointer text-xs font-medium
           {value === condition.value 
             ? 'border-blue-500 bg-blue-50 text-blue-700' 
-            : 'border-gray-200 hover:border-gray-300 bg-white text-gray-700'}"
+            : 'border-gray-200 hover:border-gray-300 bg-white text-gray-900'}"
       >
         {condition.label}
         {#if value === condition.value}

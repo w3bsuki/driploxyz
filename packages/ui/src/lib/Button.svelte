@@ -31,9 +31,9 @@
 
   const variantClasses = {
     primary: 'bg-gray-900 text-white focus-visible:ring-gray-700 hover:bg-gray-800 active:bg-gray-950',
-    secondary: 'bg-gray-100 text-gray-900 focus-visible:ring-gray-400 hover:bg-gray-200 active:bg-gray-300',
-    outline: 'border-2 border-gray-200 bg-white text-gray-700 focus-visible:ring-gray-400 hover:bg-gray-50 active:bg-gray-100',
-    ghost: 'text-gray-700 focus-visible:ring-gray-400 hover:bg-gray-100 active:bg-gray-200',
+    secondary: 'bg-white text-gray-900 focus-visible:ring-gray-400 hover:bg-gray-50 active:bg-gray-100',
+    outline: 'border-2 border-gray-200 bg-white text-gray-900 focus-visible:ring-gray-400 hover:bg-gray-50 active:bg-gray-100',
+    ghost: 'text-gray-900 focus-visible:ring-gray-400 hover:bg-gray-50 active:bg-gray-100',
     danger: 'bg-red-600 text-white focus-visible:ring-red-500 hover:bg-red-700 active:bg-red-800'
   };
 

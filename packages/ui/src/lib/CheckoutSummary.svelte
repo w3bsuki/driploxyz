@@ -68,20 +68,20 @@
 		<!-- Costs breakdown -->
 		<div class="space-y-2">
 			<div class="flex justify-between text-sm">
-				<span class="text-gray-600">{translations.subtotal || 'Subtotal'}</span>
+				<span class="text-gray-500">{translations.subtotal || 'Subtotal'}</span>
 				<span class="text-gray-900">{formatAmount(subtotal, currency)}</span>
 			</div>
 			
 			{#if shippingCost > 0}
 				<div class="flex justify-between text-sm">
-					<span class="text-gray-600">{translations.shipping || 'Shipping'}</span>
+					<span class="text-gray-500">{translations.shipping || 'Shipping'}</span>
 					<span class="text-gray-900">{formatAmount(shippingCost, currency)}</span>
 				</div>
 			{/if}
 			
 			{#if serviceFee > 0}
 				<div class="flex justify-between text-sm">
-					<span class="text-gray-600">{translations.serviceFee || 'Service fee'}</span>
+					<span class="text-gray-500">{translations.serviceFee || 'Service fee'}</span>
 					<span class="text-gray-900">{formatAmount(serviceFee, currency)}</span>
 				</div>
 			{/if}

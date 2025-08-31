@@ -1,5 +1,4 @@
 // Product page utility functions
-import { formatPrice } from '$lib/utils/price';
 import * as i18n from '@repo/i18n';
 import { CATEGORY_TRANSLATIONS, CONDITION_TRANSLATIONS } from './product-constants';
 
@@ -53,7 +52,7 @@ export function formatHashtag(text: string): string {
  */
 export function createBreadcrumbItems(product: any) {
   const items = [
-    { label: i18n.nav_home(), href: '/' }
+    { label: i18n.nav_home?.() || 'Home', href: '/' }
   ];
   
   // Add parent category (Men/Women/Kids)
@@ -74,7 +73,8 @@ export function createBreadcrumbItems(product: any) {
   
   // Add product name (no href for current page)
   items.push({
-    label: product.title
+    label: product.title,
+    href: ''
   });
   
   return items;

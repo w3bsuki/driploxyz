@@ -105,7 +105,7 @@
             class="w-7 h-7 rounded-full bg-white/90 border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 pointer-events-auto"
             aria-label={isFavorite ? 'Add to favorites' : 'Remove from favorites'}
           >
-            <svg class="w-3 h-3 {isFavorite ? 'text-red-500' : 'text-gray-600'}" fill={isFavorite ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <svg class="w-3 h-3 {isFavorite ? 'text-red-500' : 'text-gray-500'}" fill={isFavorite ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
           </button>
@@ -114,7 +114,7 @@
         <!-- Main Category (always show) -->
         <div class="flex items-center justify-between gap-1.5 min-h-3.5 mb-0.5 pr-12">
           {#if product.main_category_name || product.category_name}
-            <p class="text-xs font-medium text-gray-600 uppercase tracking-wider leading-none flex-1 truncate">
+            <p class="text-xs font-medium text-gray-500 uppercase tracking-wider leading-none flex-1 truncate">
               {product.main_category_name || product.category_name}
             </p>
           {/if}
@@ -129,11 +129,11 @@
         {#if product.subcategory_name || product.brand || product.size}
           <p class="text-xs text-gray-500 line-clamp-1 leading-none mb-1">
             {#if product.subcategory_name}
-              <span class="font-medium text-gray-600">{product.subcategory_name}</span>
+              <span class="font-medium text-gray-500">{product.subcategory_name}</span>
             {/if}
             {#if product.subcategory_name && product.brand} • {/if}
             {#if product.brand}
-              <span class="text-gray-600">{product.brand}</span>
+              <span class="text-gray-500">{product.brand}</span>
             {/if}
             {#if (product.subcategory_name || product.brand) && product.size} • {/if}
             {#if product.size}

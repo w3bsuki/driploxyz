@@ -154,7 +154,7 @@
       <Button 
         variant="ghost" 
         size="lg" 
-        class="text-gray-600"
+        class="text-gray-500"
         onclick={onBrowseAll}
         aria-label="Browse all products"
       >

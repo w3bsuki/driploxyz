@@ -1,6 +1,8 @@
+import { z } from 'zod';
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServices } from '$lib/services';
+import { withAuth, withValidation, withCsrf, withRateLimit, respond, respondError, combine, commonSchemas } from '$lib/server/api';
 
 export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
   try {
@@ -44,42 +46,40 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
   }
 };
 
-export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
+// Validation schema for favorite operations
+const favoriteSchema = z.object({
+  productId: commonSchemas.id
+});
+
+export const POST: RequestHandler = combine(
+  withRateLimit('favorites', 50, 60000), // 50 requests per minute
+  withCsrf,
+  withAuth,
+  withValidation(favoriteSchema)
+)(async (event, auth, validatedData) => {
   try {
-    const { session } = await safeGetSession();
-    
-    if (!session?.user) {
-      return error(401, { message: 'Authentication required' });
-    }
-
-    const { productId } = await request.json();
-
-    if (!productId) {
-      return error(400, { message: 'Product ID is required' });
-    }
+    const { productId } = validatedData;
 
     // Verify product exists and is not user's own product
-    const { data: product, error: productError } = await supabase
+    const { data: product, error: productError } = await auth.supabase
       .from('products')
       .select('id, seller_id, title')
       .eq('id', productId)
       .single();
 
     if (productError || !product) {
-      return error(404, { message: 'Product not found' });
+      return respondError('Product not found', 404);
     }
 
-    if (product.seller_id === session.user.id) {
-      return error(400, { message: 'You cannot favorite your own product' });
+    if (product.seller_id === auth.user.id) {
+      return respondError('You cannot favorite your own product', 400);
     }
-
-    const services = createServices(supabase);
 
     // Check if already favorited
-    const { data: existingFavorite } = await supabase
+    const { data: existingFavorite } = await auth.supabase
       .from('favorites')
       .select('id')
-      .eq('user_id', session.user.id)
+      .eq('user_id', auth.user.id)
       .eq('product_id', productId)
       .single();
     
@@ -87,91 +87,94 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
     
     if (existingFavorite) {
       // Remove favorite
-      const { error: deleteError } = await supabase
+      const { error: deleteError } = await auth.supabase
         .from('favorites')
         .delete()
-        .eq('user_id', session.user.id)
+        .eq('user_id', auth.user.id)
         .eq('product_id', productId);
       
       if (deleteError) {
-        return error(500, { message: 'Failed to remove favorite' });
+        return respondError('Failed to remove favorite', 500);
       }
       
       isFavorited = false;
     } else {
       // Add favorite
-      const { error: insertError } = await supabase
+      const { error: insertError } = await auth.supabase
         .from('favorites')
         .insert({
-          user_id: session.user.id,
+          user_id: auth.user.id,
           product_id: productId
         });
       
       if (insertError) {
-        return error(500, { message: 'Failed to add favorite' });
+        return respondError('Failed to add favorite', 500);
       }
       
       isFavorited = true;
     }
 
-    // Get updated favorite count (trigger automatically handles count)
-    const { data: updatedProduct } = await supabase
+    // Get updated favorite count
+    const { data: updatedProduct } = await auth.supabase
       .from('products')
       .select('favorite_count')
       .eq('id', productId)
       .single();
 
-    return json({ 
-      success: true, 
+    return respond({ 
       isFavorited,
       favoriteCount: updatedProduct?.favorite_count || 0
     });
 
   } catch (err) {
     console.error('Favorites toggle API error:', err);
-    return error(500, { message: 'Internal server error' });
+    return respondError('Internal server error', 500);
   }
-};
+});
 
-export const DELETE: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
+// Schema for DELETE query params
+const deleteSchema = z.object({
+  productId: commonSchemas.id
+});
+
+export const DELETE: RequestHandler = combine(
+  withRateLimit('favorites', 50, 60000),
+  withCsrf,
+  withAuth
+)(async (event, auth) => {
   try {
-    const { session } = await safeGetSession();
+    const productId = event.url.searchParams.get('productId');
     
-    if (!session?.user) {
-      return error(401, { message: 'Authentication required' });
-    }
-
-    const productId = url.searchParams.get('productId');
-
-    if (!productId) {
-      return error(400, { message: 'Product ID is required' });
+    const result = deleteSchema.safeParse({ productId });
+    if (!result.success) {
+      return respondError('Product ID is required', 400);
     }
 
     // Remove from favorites
-    const { error: deleteError } = await supabase
+    const { error: deleteError } = await auth.supabase
       .from('favorites')
       .delete()
-      .eq('user_id', session.user.id)
-      .eq('product_id', productId);
+      .eq('user_id', auth.user.id)
+      .eq('product_id', result.data.productId);
 
     if (deleteError) {
-      return error(500, { message: 'Failed to remove favorite' });
+      return respondError('Failed to remove favorite', 500);
     }
 
-    // Get updated favorite count (trigger automatically handles count)
-    const { data: updatedProduct } = await supabase
+    // Get updated favorite count
+    const { data: updatedProduct } = await auth.supabase
       .from('products')
       .select('favorite_count')
-      .eq('id', productId)
+      .eq('id', result.data.productId)
       .single();
 
-    return json({ 
-      success: true, 
+    return respond({ 
+      success: true,
       favoriteCount: updatedProduct?.favorite_count || 0
     });
 
   } catch (err) {
     console.error('Favorites remove API error:', err);
-    return error(500, { message: 'Internal server error' });
+    return respondError('Internal server error', 500);
   }
-};
+});

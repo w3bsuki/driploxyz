@@ -45,7 +45,7 @@
         </svg>
       </button>
       {#if openItems.has(index)}
-        <div class="px-4 pb-4 text-gray-600">
+        <div class="px-4 pb-4 text-gray-500">
           {item.content}
         </div>
       {/if}

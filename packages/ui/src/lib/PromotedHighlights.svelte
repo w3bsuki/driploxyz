@@ -221,7 +221,7 @@
                               class="w-full h-full object-cover"
                             />
                           {:else}
-                            <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-600 font-semibold text-lg">
+                            <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500 font-semibold text-lg">
                               {seller.name?.charAt(0).toUpperCase() || 'S'}
                             </div>
                           {/if}
@@ -262,7 +262,7 @@
                               </svg>
                             {/each}
                           </div>
-                          <span class="text-xs text-gray-600 ml-1">{seller.rating.toFixed(1)}</span>
+                          <span class="text-xs text-gray-500 ml-1">{seller.rating.toFixed(1)}</span>
                         </div>
                       {/if}
                       

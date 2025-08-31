@@ -60,7 +60,7 @@
 
 <div class="w-full">
   {#if label}
-    <label class="block text-sm font-medium text-gray-700 mb-2">
+    <label class="block text-sm font-medium text-gray-900 mb-2">
       {label}
     </label>
   {/if}

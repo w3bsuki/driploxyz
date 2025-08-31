@@ -259,7 +259,7 @@
             class="px-3 py-1.5 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center gap-1 ring-1 ring-gray-200 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-gray-300"
           >
             <svg 
-              class="w-4 h-4 text-gray-600 shrink-0 transition-transform {showDropdown ? 'rotate-180' : ''}" 
+              class="w-4 h-4 text-gray-500 shrink-0 transition-transform {showDropdown ? 'rotate-180' : ''}" 
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"
@@ -267,7 +267,7 @@
             >
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
-            <span class="text-xs font-medium text-gray-600 hidden sm:inline">{categoriesText}</span>
+            <span class="text-xs font-medium text-gray-500 hidden sm:inline">{categoriesText}</span>
           </button>
         </div>
       </div>

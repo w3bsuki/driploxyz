@@ -211,7 +211,7 @@
         <div class="flex items-start justify-between mb-3">
           <div class="flex-1">
             {#if product.brand}
-              <p class="text-sm font-medium text-gray-600 uppercase tracking-wide">{product.brand}</p>
+              <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">{product.brand}</p>
             {/if}
             <h1 class="text-xl font-bold text-gray-900 leading-tight">{product.title}</h1>
           </div>
@@ -224,7 +224,7 @@
               {/if}
             </div>
             {#if product.shipping}
-              <p class="text-xs text-gray-600 mt-1">
+              <p class="text-xs text-gray-500 mt-1">
                 {product.shipping.price > 0 ? `+$${product.shipping.price} shipping` : 'Free shipping'}
               </p>
             {/if}
@@ -235,18 +235,18 @@
         <div class="grid grid-cols-3 gap-2 text-center">
           {#if product.size}
             <div class="bg-gray-50 rounded-lg p-2">
-              <p class="text-xs text-gray-600">Size</p>
+              <p class="text-xs text-gray-500">Size</p>
               <p class="text-sm font-semibold">{product.size}</p>
             </div>
           {/if}
           {#if product.color}
             <div class="bg-gray-50 rounded-lg p-2">
-              <p class="text-xs text-gray-600">Color</p>
+              <p class="text-xs text-gray-500">Color</p>
               <p class="text-sm font-semibold">{product.color}</p>
             </div>
           {/if}
           <div class="bg-gray-50 rounded-lg p-2">
-            <p class="text-xs text-gray-600">Condition</p>
+            <p class="text-xs text-gray-500">Condition</p>
             <p class="text-sm font-semibold capitalize">{product.condition}</p>
           </div>
         </div>
@@ -261,7 +261,7 @@
               class="flex-1 py-3 px-4 text-sm font-medium capitalize transition-colors
                      {currentSection === section 
                        ? 'text-black border-b-2 border-black' 
-                       : 'text-gray-600 hover:text-gray-900'}"
+                       : 'text-gray-500 hover:text-gray-900'}"
             >
               {section}
             </button>
@@ -303,7 +303,7 @@
             {#if product.description}
               <div>
                 <h3 class="font-semibold text-gray-900 mb-2">Description</h3>
-                <p class="text-gray-700 leading-relaxed">{product.description}</p>
+                <p class="text-gray-900 leading-relaxed">{product.description}</p>
               </div>
             {/if}
           </div>

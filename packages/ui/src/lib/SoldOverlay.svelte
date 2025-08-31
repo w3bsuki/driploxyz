@@ -31,7 +31,7 @@
       </div>
       <p class="text-sm sm:text-base font-semibold text-gray-900 mb-1">SOLD</p>
       {#if soldAt}
-        <p class="text-xs sm:text-sm text-gray-600">{formatSoldDate(soldAt)}</p>
+        <p class="text-xs sm:text-sm text-gray-500">{formatSoldDate(soldAt)}</p>
       {/if}
     </div>
   </div>

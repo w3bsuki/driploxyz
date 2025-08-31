@@ -261,7 +261,7 @@
           {#each selectedItems as item (item.id)}
             <div class="flex items-center gap-3 p-2 bg-white rounded-lg border border-[oklch(90%_0.02_250)]" 
                  class:border-[oklch(60%_0.2_250)]={item.id === initialItem.id}
-                 style:background-color={item.id === initialItem.id ? 'oklch(60% 0.2 250 / 0.05)' : undefined}>
+                 >
               <ImageOptimized
                 src={item.images?.[0] || item.first_image || '/placeholder-product.svg'} 
                 alt={item.title}
@@ -312,7 +312,7 @@
                 class="relative bg-white rounded-lg border-2 transition-colors overflow-hidden flex-shrink-0 w-32 scroll-snap-align-start"
                 class:border-[oklch(60%_0.2_250)]={isSelected}
                 class:border-[oklch(90%_0.02_250)]={!isSelected}
-                style:background-color={isSelected ? 'oklch(60% 0.2 250 / 0.05)' : undefined}
+                
               >
                 {#if isSelected}
                   <div class="absolute top-2 right-2 z-10 w-6 h-6 bg-[oklch(60%_0.2_250)] rounded-full flex items-center justify-center">

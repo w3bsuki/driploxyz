@@ -45,14 +45,14 @@
         class="flex items-center px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors scroll-snap-align-start min-h-[36px]
           {$value === tab.id 
             ? 'bg-black text-white' 
-            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
+            : 'bg-gray-100 text-gray-900 hover:bg-gray-200'}"
       >
         {tab.label}
         {#if tab.count !== undefined}
           <span class="ml-1.5 px-1.5 py-0.5 text-xs rounded-full
             {$value === tab.id 
               ? 'bg-white bg-opacity-20 text-white' 
-              : 'bg-gray-200 text-gray-600'}">
+              : 'bg-gray-200 text-gray-500'}">
             {tab.count}
           </span>
         {/if}

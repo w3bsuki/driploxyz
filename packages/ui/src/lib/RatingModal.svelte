@@ -95,7 +95,7 @@
   {#snippet children()}
     <!-- Overall Rating -->
     <div class="mb-6">
-      <label class="block text-sm font-medium text-gray-700 mb-2">
+      <label class="block text-sm font-medium text-gray-900 mb-2">
         Overall Rating <span class="text-red-500">*</span>
       </label>
       <div class="flex gap-2">
@@ -118,7 +118,7 @@
     <div class="space-y-4 mb-6">
       <!-- Communication -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <label class="block text-sm font-medium text-gray-900 mb-1">
           Communication
         </label>
         <div class="flex gap-1">
@@ -139,7 +139,7 @@
       
       <!-- Shipping Speed -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <label class="block text-sm font-medium text-gray-900 mb-1">
           Shipping Speed
         </label>
         <div class="flex gap-1">
@@ -160,7 +160,7 @@
       
       <!-- Product Quality -->
       <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">
+        <label class="block text-sm font-medium text-gray-900 mb-1">
           Product as Described
         </label>
         <div class="flex gap-1">
@@ -182,7 +182,7 @@
     
     <!-- Comment -->
     <div class="mb-6">
-      <label for="comment" class="block text-sm font-medium text-gray-700 mb-2">
+      <label for="comment" class="block text-sm font-medium text-gray-900 mb-2">
         Add a Comment (Optional)
       </label>
       <textarea

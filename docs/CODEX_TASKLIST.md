@@ -344,3 +344,156 @@ Quick prompts
   - Ran: `pnpm -w turbo run check-types`, `pnpm -w turbo run lint`, `pnpm --filter web build`
   - Build successful (pre-existing type/lint errors unrelated to finalization changes)
   - Manual verification: header menu and dialogs working on mobile/desktop
+
+### Hotfix — Dev Noise & Auth/A11y TODOs
+
+- [ ] Reduce terminal noise (dev‑only)
+  - Demote/restrict repeated console warnings about “Using user from getSession/onAuthStateChange…”. Keep a single dev‑only log or remove entirely.
+  - Reason: We already validate on server via `locals.safeGetSession()` → `supabase.auth.getUser()`.
+- [ ] Vite HMR duplication
+  - apps/web/src/app.css: review `@source` globs; drop `../../../packages/ui/dist/**/*` to avoid loading both src and dist for UI (causes extra HMR churn).
+- [ ] Supabase auth hygiene
+  - Server: continue using `locals.safeGetSession()` then `supabase.auth.getUser()` when asserting identity.
+  - Client: treat `onAuthStateChange` as invalidation only; for sensitive checks call `supabase.auth.getUser()` explicitly.
+- [ ] A11y fixes (reported by svelte plugin)
+  - `ProductImageSection.svelte`: convert dblclick handler element to `<button type="button">` or add `role="button"` + key handlers.
+  - `ProductActions.svelte`: add `aria-label` to icon‑only buttons/links (e.g., share, like, more actions).
+- [ ] Hardcoded colors sweep
+  - Remove `bg-white`/`!bg-white` and inline `background-color` in shared UI; rely on tokens (see TAILWIND_V4_FIX_PLAN.md).
+
+## Phase 6 — V1 Feature Completion (New)
+
+Focus: Close core product gaps to meet V1 scope in docs/V1_driplo.md.
+
+### 6.1 Authentication & Onboarding
+- [ ] SSR auth path audit: prefer `locals.safeGetSession()`; validate per-request cache
+  - apps/web/src/lib/server/supabase-hooks.ts
+- [ ] Ensure `depends('supabase:auth')` in root layout; invalidate on auth events
+  - apps/web/src/routes/+layout.server.ts: load; apps/web/src/routes/+layout.svelte
+- [ ] Resend verification endpoint: type-safe and rate-limited
+  - apps/web/src/routes/api/auth/resend-verification/+server.ts
+- [ ] Enforce logout as POST-only with origin check (already done; verify)
+  - apps/web/src/routes/logout/+server.ts
+- [ ] Onboarding action validates and updates profile (no inserts); sets payout flags
+  - apps/web/src/routes/(protected)/onboarding/+page.server.ts
+- [ ] E2E: signup → verify → onboarding → dashboard
+
+### 6.2 Listing & Selling (/sell)
+- [ ] Validate images: client compression + EXIF rotation; user-specific storage paths
+  - packages/ui/src/lib/ImageUploaderSupabase.svelte
+  - apps/web/src/lib/components/ImageUploader*.svelte
+- [ ] Confirm storage RLS for product images is user-scoped
+  - SUPABASE_POLICIES.sql
+- [ ] E2E: create listing, attach images, redirect to product detail
+  - apps/web/tests/sell.spec.ts
+
+### 6.3 Discovery & Search
+- [ ] Consolidate `LazySearchResults` usage to `@repo/ui` and remove local duplicates
+  - apps/web/src/lib/components/LazySearchResults.svelte (delete after migration)
+- [ ] Coalesce route queries; SSR loads not client fetch where possible
+  - apps/web/src/routes/search/+page.server.ts
+- [ ] E2E: search + filter + paginate; wishlist add/remove
+  - apps/web/tests/search.spec.ts
+
+### 6.4 Checkout & Payments (Stripe Connect)
+- [ ] Validate intent creation and confirm endpoints; no client secret leaks
+  - apps/web/src/routes/api/payments/create-intent/+server.ts
+  - apps/web/src/routes/api/payments/confirm/+server.ts
+- [ ] Webhooks signed; idempotent; update order status with transaction records
+  - apps/web/src/routes/api/webhooks/stripe/+server.ts
+- [ ] E2E: buy flow; order visible to buyer/seller; receipt view
+  - apps/web/tests/buy.spec.ts
+
+### 6.5 Orders, Shipping, Post‑Sale
+- [ ] Status transitions: created → paid → shipped → delivered → completed/cancelled
+  - apps/web/src/routes/api/orders/[id]/status/+server.ts
+- [ ] Notifications: in‑app toasts; optional email (Resend) on order events
+  - apps/web/src/lib/email/*
+- [ ] E2E: seller marks shipped; buyer marks received; timeline updates
+  - apps/web/tests/orders.spec.ts
+
+### 6.6 Reviews & Ratings
+- [ ] DB and RLS verified; one review per order; aggregate to profile
+  - apps/web/src/lib/server/reviews.ts
+- [ ] E2E: leave review only after delivery; profile rating updates
+  - apps/web/tests/reviews.spec.ts
+
+### 6.7 Messaging Hardening
+- [ ] Rate limit sends; debounce rapid inputs; ack IDs to dedupe
+  - apps/web/src/lib/components/MessageInput.svelte
+  - apps/web/src/lib/security/rate-limiter.ts
+- [ ] E2E: open thread, send/receive; offline/online indicators
+
+### 6.8 Notifications (In‑App + Email)
+- [ ] Mount ToastProvider/Container at root (verify) and standardize toasts
+  - apps/web/src/routes/+layout.svelte
+- [ ] Implement minimal email templates for key order events
+  - apps/web/src/lib/email/email-templates/*
+
+### 6.9 i18n & SEO
+- [ ] Confirm reroute unified (server+client), default bg, `/uk` → en (verify)
+  - apps/web/src/lib/server/hooks.ts; apps/web/src/hooks.reroute.ts
+- [ ] Canonical + hreflang set on product, search, home (verify in layout)
+  - apps/web/src/routes/+layout.svelte
+- [ ] Add product JSON‑LD and breadcrumbs
+  - apps/web/src/routes/product/[id]/+page.server.ts
+  - apps/web/src/routes/product/[id]/+page.svelte
+
+### 6.10 Admin & Ops
+- [ ] Admin auth guard, allowlist, and audit logs
+  - apps/admin/src/routes/**
+- [ ] `/api/health` returns db/storage/stripe status (verify)
+  - apps/web/src/routes/api/health/+server.ts
+
+## Phase 7 — Platform Hardening & Release (New)
+
+Focus: Security, observability, performance budgets, and CI/CD gates.
+
+### 7.1 API Abstraction & Safety
+- [ ] Add `apps/web/src/lib/server/api.ts` helper: withAuth, withValidation(zod), withCsrf, rateLimit, respond(json)
+- [ ] Migrate top endpoints to API helper: favorites, products, reviews, orders, profile, payments
+  - apps/web/src/routes/api/**
+
+### 7.2 CSRF + Rate Limit Coverage
+- [ ] Enforce CSRF on non‑action POST endpoints (skip webhooks/health)
+  - apps/web/src/lib/server/csrf.ts
+- [ ] Apply route‑level rate limiting to sensitive endpoints
+  - apps/web/src/lib/security/rate-limiter.ts
+
+### 7.3 Observability
+- [ ] Verify Sentry DSNs in env; enable prod only; confirm handleErrorWithSentry wiring
+  - apps/web/src/lib/server/hooks.ts; apps/web/src/hooks.client.ts
+- [ ] Add minimal structured logs for payments/orders/auth
+  - apps/web/src/lib/utils/log.ts
+
+### 7.4 Performance Budgets (Mobile)
+- [ ] Switch LHCI config to mobile preset and budgets: p75 ≥ 90; LCP ≤ 1.5s
+  - .lighthouserc.json
+- [ ] Add LHCI GitHub Action job (optional server token) or run locally in CI
+  - .github/workflows/ci-simple.yml
+
+### 7.5 CI/CD Gates
+- [ ] Update CI to run typecheck, lint, unit, component, and Playwright smokes on PR
+  - .github/workflows/ci-simple.yml
+- [ ] Gate production deploy on tests + budgets
+
+### 7.6 Secrets & Env Audit
+- [ ] Verify required secrets set in platform; add zod/env validation on boot (server‑only)
+  - .env.example; apps/web/src/lib/server/env.ts
+
+### 7.7 Docs Cleanup & Canonicalization
+- [ ] Archive/merge root docs per `docs/CLEANUP_PLAN.md`
+  - Create `docs/archive/` and git mv listed files
+- [ ] Add “Further Reading (Archive)” links to canonical docs
+- [ ] Tick `docs/playbooks/sveltekit2.md` after verifying reroute + canonical/hreflang
+
+## V1 Execution Prompts (New)
+
+- API helper
+  - “Create `apps/web/src/lib/server/api.ts` with wrappers: withAuth, withValidation(zod), withCsrf, rateLimit, respond(json). Migrate favorites and products endpoints first.”
+- CSRF coverage
+  - “Wire CSRFProtection.check in non‑action POSTs in `/routes/api/**`; skip `/api/webhooks/*` and `/api/health`.”
+- Lighthouse mobile
+  - “Update `.lighthouserc.json` to mobile preset with p75 ≥ 90 and LCP ≤ 1500ms. Add GH Action job to run lhci autorun on preview.”
+- SEO JSON‑LD
+  - “Add Product JSON‑LD and breadcrumbs on product detail: inject <script type='application/ld+json'> from server load.”

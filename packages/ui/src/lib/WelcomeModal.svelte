@@ -153,7 +153,7 @@
   {#snippet children()}
     <div class="text-center">
       <!-- Description -->
-      <p class="text-gray-600 text-base leading-relaxed mb-6">
+      <p class="text-gray-500 text-base leading-relaxed mb-6">
         {currentStepData.description}
       </p>
 
@@ -173,15 +173,15 @@
         <div class="grid grid-cols-3 gap-3 mb-6">
           <div class="bg-gray-50 rounded-xl p-3 text-center">
             <div class="text-lg mb-1">👗</div>
-            <div class="text-xs font-medium text-gray-700">{translations.designer || 'Designer'}</div>
+            <div class="text-xs font-medium text-gray-900">{translations.designer || 'Designer'}</div>
           </div>
           <div class="bg-gray-50 rounded-xl p-3 text-center">
             <div class="text-lg mb-1">♻️</div>
-            <div class="text-xs font-medium text-gray-700">{translations.vintage || 'Vintage'}</div>
+            <div class="text-xs font-medium text-gray-900">{translations.vintage || 'Vintage'}</div>
           </div>
           <div class="bg-gray-50 rounded-xl p-3 text-center">
             <div class="text-lg mb-1">⚡</div>
-            <div class="text-xs font-medium text-gray-700">{translations.trending || 'Trending'}</div>
+            <div class="text-xs font-medium text-gray-900">{translations.trending || 'Trending'}</div>
           </div>
         </div>
       {/if}
@@ -191,11 +191,11 @@
         <div class="grid grid-cols-2 gap-3 mb-6">
           <div class="bg-gray-50 rounded-xl p-4 text-center">
             <div class="text-lg font-bold text-green-600 mb-1">$2.5M+</div>
-            <div class="text-xs text-gray-600">{translations.totalSales || 'Total Sales'}</div>
+            <div class="text-xs text-gray-500">{translations.totalSales || 'Total Sales'}</div>
           </div>
           <div class="bg-gray-50 rounded-xl p-4 text-center">
             <div class="text-lg font-bold text-blue-600 mb-1">50K+</div>
-            <div class="text-xs text-gray-600">{translations.happySellers || 'Happy Sellers'}</div>
+            <div class="text-xs text-gray-500">{translations.happySellers || 'Happy Sellers'}</div>
           </div>
         </div>
       {/if}
@@ -207,7 +207,7 @@
       {#if !isFirstStep}
         <button
           onclick={onPrevious}
-          class="btn btn-ghost flex-1 min-h-[44px] px-6 py-3 text-gray-600 hover:text-gray-800 font-medium rounded-xl hover:bg-gray-100/50 transition-colors"
+          class="btn btn-ghost flex-1 min-h-[44px] px-6 py-3 text-gray-500 hover:text-gray-800 font-medium rounded-xl hover:bg-gray-100/50 transition-colors"
         >
           {translations.back || 'Back'}
         </button>
@@ -227,7 +227,7 @@
       {#if !isLastStep && onSkip}
         <button
           onclick={onSkip}
-          class="btn btn-ghost px-4 py-3 min-h-[44px] text-gray-500 hover:text-gray-700 text-sm font-medium rounded-xl hover:bg-gray-100/50 transition-colors"
+          class="btn btn-ghost px-4 py-3 min-h-[44px] text-gray-500 hover:text-gray-900 text-sm font-medium rounded-xl hover:bg-gray-100/50 transition-colors"
         >
           {translations.skip || 'Skip'}
         </button>

@@ -78,7 +78,7 @@
 
 <div>
   {#if label}
-    <label for={inputId} class="block text-sm font-medium text-gray-700 mb-1">
+    <label for={inputId} class="block text-sm font-medium text-gray-900 mb-1">
       {label}
       {#if required}
         <span class="text-red-500">*</span>
@@ -123,11 +123,11 @@
   {#if showCalculation && numericValue() > 0}
     <div class="mt-3 p-3 bg-gray-50 rounded-lg text-sm">
       <div class="space-y-1.5">
-        <div class="flex justify-between text-gray-600">
+        <div class="flex justify-between text-gray-500">
           <span>Item price</span>
           <span class="font-medium">{currency}{formatCurrency(numericValue())}</span>
         </div>
-        <div class="flex justify-between text-gray-600">
+        <div class="flex justify-between text-gray-500">
           <span>Platform fee ({feePercentage}%)</span>
           <span class="font-medium text-red-600">-{currency}{formatCurrency(platformFee)}</span>
         </div>

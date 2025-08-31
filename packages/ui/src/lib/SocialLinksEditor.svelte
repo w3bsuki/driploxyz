@@ -55,7 +55,7 @@
 <div class="space-y-6 {className}">
   <div class="text-center">
     <h3 class="text-lg font-semibold text-gray-900 mb-2">Connect Your Socials</h3>
-    <p class="text-sm text-gray-600">Let buyers discover more about your style and brand</p>
+    <p class="text-sm text-gray-500">Let buyers discover more about your style and brand</p>
   </div>
 
   <!-- Social Links List -->
@@ -74,7 +74,7 @@
           <!-- Input Fields -->
           <div class="flex-1 space-y-3">
             <div>
-              <label for={`platform-${index}`} class="block text-sm font-medium text-gray-700 mb-1">Platform</label>
+              <label for={`platform-${index}`} class="block text-sm font-medium text-gray-900 mb-1">Platform</label>
               <select 
                 id={`platform-${index}`}
                 bind:value={link.type}
@@ -88,7 +88,7 @@
             </div>
             
             <div>
-              <label for={`url-${index}`} class="block text-sm font-medium text-gray-700 mb-1">URL/Username</label>
+              <label for={`url-${index}`} class="block text-sm font-medium text-gray-900 mb-1">URL/Username</label>
               <Input
                 id={`url-${index}`}
                 bind:value={link.url}
@@ -154,7 +154,7 @@
             class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-white/70 hover:bg-white/90 border border-gray-200 rounded-lg transition-colors duration-200 text-sm"
           >
             <span>{platform.icon}</span>
-            <span class="font-medium text-gray-700">{platform.label}</span>
+            <span class="font-medium text-gray-900">{platform.label}</span>
           </button>
         {/each}
       </div>

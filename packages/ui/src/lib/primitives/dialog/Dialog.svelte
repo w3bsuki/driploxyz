@@ -99,7 +99,7 @@
         {#if description}
           <p 
             use:descriptionElement
-            class="mt-2 text-sm text-gray-600 leading-5"
+            class="mt-2 text-sm text-gray-500 leading-5"
           >
             {@render description()}
           </p>
@@ -118,7 +118,7 @@
         <!-- Default Cancel Button -->
         <button 
           use:close
-          class="btn btn-ghost min-h-[36px] px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400 rounded-lg transition-colors duration-200"
+          class="btn btn-ghost min-h-[36px] px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400 rounded-lg transition-colors duration-200"
         >
           Cancel
         </button>

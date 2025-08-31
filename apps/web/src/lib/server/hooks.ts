@@ -88,11 +88,9 @@ export const handle: Handle = async (args) => {
       countryRedirectHandler,
       authGuardHandler
     );
-    // @ts-expect-error - sequence returns a Handle-compatible fn
     return withSentry(args);
   }
 
-  // @ts-expect-error - sequence returns a Handle-compatible fn
   return base(args);
 };
 

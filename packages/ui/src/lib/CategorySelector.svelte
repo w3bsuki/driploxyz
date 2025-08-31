@@ -153,7 +153,7 @@
 <div class="space-y-4">
   <!-- Step 1: Gender - Compact horizontal pills -->
   <div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">
+    <label class="block text-sm font-medium text-gray-900 mb-2">
       {whoIsItForLabel} <span class="text-red-500">*</span>
     </label>
     <div class="grid grid-cols-4 gap-2">
@@ -164,7 +164,7 @@
           class="px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors {
             gender === category.id 
               ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
-              : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+              : 'border-gray-200 bg-white text-gray-900 hover:bg-white'
           }"
           aria-pressed={gender === category.id}
           aria-label="Select {category.name}"
@@ -179,7 +179,7 @@
   <!-- Step 2: Type - Scrollable grid with consistent sizing -->
   {#if gender && typeCategories.length > 0}
     <div class="animate-in fade-in slide-in-from-bottom-2 duration-200">
-      <label class="block text-sm font-medium text-gray-700 mb-2">
+      <label class="block text-sm font-medium text-gray-900 mb-2">
         {categoryLabel} <span class="text-red-500">*</span>
       </label>
       
@@ -194,7 +194,7 @@
               class="flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors text-left {
                 type === category.id 
                   ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
-                  : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                  : 'border-gray-200 bg-white text-gray-900 hover:bg-white'
               }"
               aria-pressed={type === category.id}
               aria-label="Select {category.name}"
@@ -217,7 +217,7 @@
 
       <!-- Help text for Accessories -->
       {#if type && typeCategories.find(c => c.id === type)?.name === 'Accessories'}
-        <p class="mt-2 text-xs text-gray-600 bg-yellow-50 border border-yellow-200 rounded-md p-2">
+        <p class="mt-2 text-xs text-gray-500 bg-yellow-50 border border-yellow-200 rounded-md p-2">
           <strong>{includesText}</strong> {accessoriesListText}
         </p>
       {/if}
@@ -227,7 +227,7 @@
   <!-- Step 3: Specific (if exists) - Beautiful button grid like Step 2 -->
   {#if type && specificCategories.length > 0}
     <div class="animate-in fade-in slide-in-from-bottom-2 duration-200">
-      <label class="block text-sm font-medium text-gray-700 mb-2">
+      <label class="block text-sm font-medium text-gray-900 mb-2">
         Be more specific <span class="text-gray-400">(optional - helps buyers find your item)</span>
       </label>
       
@@ -239,7 +239,7 @@
           class="w-full flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors text-left {
             specific === '' 
               ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
-              : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+              : 'border-gray-200 bg-white text-gray-900 hover:bg-white'
           }"
           aria-pressed={specific === ''}
           aria-label="Skip specific selection"
@@ -264,7 +264,7 @@
               class="flex items-center gap-2 px-3 py-2.5 text-sm font-medium rounded-lg border transition-colors text-left {
                 specific === category.id 
                   ? 'border-blue-500 bg-blue-50 text-blue-700 ring-2 ring-blue-500 ring-opacity-50' 
-                  : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                  : 'border-gray-200 bg-white text-gray-900 hover:bg-white'
               }"
               aria-pressed={specific === category.id}
               aria-label="Select {category.name}"
@@ -284,7 +284,7 @@
 
   <!-- Selection summary - Compact -->
   {#if gender && type}
-    <div class="text-xs text-gray-600 bg-gray-50 rounded-lg px-3 py-2">
+    <div class="text-xs text-gray-500 bg-white rounded-lg px-3 py-2">
       <span class="font-medium">{selectedText}</span>
       {genderCategories.find(c => c.id === gender)?.name}
       → {typeCategories.find(c => c.id === type)?.name}

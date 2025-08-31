@@ -80,7 +80,7 @@
 
 <div class={`brand-selector ${className}`}>
   {#if label}
-    <div class="block text-sm font-medium text-gray-700 mb-2">
+    <div class="block text-sm font-medium text-gray-900 mb-2">
       {label}
       {#if required}
         <span class="text-red-500">*</span>

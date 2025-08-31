@@ -6,7 +6,7 @@
 import type { ButtonVariant, ButtonSize, BadgeVariant, BadgeSize, AvatarSize, AvatarVariant } from '../../types';
 
 // Generic variant builder type
-type VariantConfig<TVariants extends Record<string, any>> = {
+type VariantConfig<TVariants extends Record<string, Record<string, string>>> = {
   base: string;
   variants: TVariants;
   compoundVariants?: Array<{
@@ -17,7 +17,7 @@ type VariantConfig<TVariants extends Record<string, any>> = {
 };
 
 // Variant builder function
-export function createVariants<TVariants extends Record<string, any>>(
+export function createVariants<TVariants extends Record<string, Record<string, string>>>(
   config: VariantConfig<TVariants>
 ) {
   return function (
@@ -133,9 +133,9 @@ export const avatarVariants = createVariants({
 });
 
 // Advanced: Responsive variant system
-export function createResponsiveVariants<T extends Record<string, any>>(
+export function createResponsiveVariants<T extends Record<string, Record<string, string>>>(
   baseVariants: T,
-  breakpoints: Record<string, string> = {
+  _breakpoints: Record<string, string> = {
     sm: '640px',
     md: '768px',
     lg: '1024px',
@@ -144,7 +144,7 @@ export function createResponsiveVariants<T extends Record<string, any>>(
 ) {
   return function (
     responsiveVariants: Partial<{
-      [K in keyof T | `${string & keyof typeof breakpoints}:${string & keyof T}`]: 
+      [K in keyof T | `${string & keyof typeof _breakpoints}:${string & keyof T}`]: 
         T extends Record<string, infer U> ? U : never;
     }> = {},
     className = ''
@@ -176,8 +176,8 @@ export function cx(...classes: (string | boolean | undefined | null)[]): string 
 }
 
 // Type-safe variant props helper
-export type VariantProps<T extends (...args: any) => any> = 
-  T extends (props: infer P, ...args: any) => any ? P : never;
+export type VariantProps<T extends (...args: unknown[]) => unknown> = 
+  T extends (props: infer P, ...args: unknown[]) => unknown ? P : never;
 
 // Example usage types:
 export type ButtonVariantProps = {

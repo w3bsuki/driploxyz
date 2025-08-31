@@ -123,7 +123,7 @@
 							{/if}
 						</div>
 						
-						<p class="text-sm {stepStatus === 'completed' ? 'text-gray-600' : 'text-gray-400'}">
+						<p class="text-sm {stepStatus === 'completed' ? 'text-gray-500' : 'text-gray-400'}">
 							{step.description}
 						</p>
 						

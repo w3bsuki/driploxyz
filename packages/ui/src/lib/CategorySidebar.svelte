@@ -101,7 +101,7 @@
           <h3 class="font-semibold text-gray-900">{translations.filters}</h3>
           <button
             onclick={onClearAll}
-            class="text-xs text-gray-500 hover:text-gray-700 transition-colors"
+            class="text-xs text-gray-500 hover:text-gray-900 transition-colors"
           >
             {translations.clearAll}
           </button>
@@ -110,7 +110,7 @@
         <div class="space-y-2">
           {#if selectedCategory}
             <div class="flex items-center justify-between py-1">
-              <span class="text-sm text-gray-700">
+              <span class="text-sm text-gray-900">
                 {categories[selectedCategory]?.name}
               </span>
               <button
@@ -127,7 +127,7 @@
           
           {#if selectedSubcategory}
             <div class="flex items-center justify-between py-1">
-              <span class="text-sm text-gray-700">{selectedSubcategory}</span>
+              <span class="text-sm text-gray-900">{selectedSubcategory}</span>
               <button
                 onclick={() => onSubcategorySelect?.(null, selectedCategory)}
                 class="p-1 hover:bg-gray-100 rounded-sm transition-colors"
@@ -143,7 +143,7 @@
           {#each Object.entries(appliedFilters) as [type, value]}
             {#if value && value !== 'all'}
               <div class="flex items-center justify-between py-1">
-                <span class="text-sm text-gray-700">
+                <span class="text-sm text-gray-900">
                   {translations[type]}: {formatFilterValue(type, value)}
                 </span>
                 <button
@@ -175,7 +175,7 @@
           class="w-full text-left px-3 py-2 rounded-lg transition-colors {
             !selectedCategory 
               ? 'bg-gray-100 text-gray-900 font-medium' 
-              : 'text-gray-700 hover:bg-gray-50'
+              : 'text-gray-900 hover:bg-gray-50'
           }"
         >
           {translations.allCategories}
@@ -189,7 +189,7 @@
               class="w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors {
                 selectedCategory === key 
                   ? 'bg-gray-100 text-gray-900 font-medium' 
-                  : 'text-gray-700 hover:bg-gray-50'
+                  : 'text-gray-900 hover:bg-gray-50'
               }"
             >
               <div class="flex items-center space-x-2">
@@ -223,7 +223,7 @@
                     class="w-full text-left px-3 py-1.5 text-sm rounded-lg transition-colors {
                       selectedSubcategory === subcat.name
                         ? 'bg-black text-white'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900'
                     }"
                   >
                     <span class="mr-1 text-xs">{subcat.icon}</span>

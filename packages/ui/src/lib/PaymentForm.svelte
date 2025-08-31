@@ -312,7 +312,7 @@
 	<!-- Payment Summary -->
 	<div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
 		<div class="flex justify-between items-center">
-			<span class="text-sm font-medium text-gray-600 dark:text-gray-300">
+			<span class="text-sm font-medium text-gray-500 dark:text-gray-300">
 				{translations.total || 'Total'}
 			</span>
 			<span class="text-lg font-bold text-gray-900 dark:text-gray-100">
@@ -324,7 +324,7 @@
 	<!-- Cardholder Name (if enabled) -->
 	{#if showCardholderName}
 		<div class="space-y-2">
-			<label for="cardholder-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+			<label for="cardholder-name" class="block text-sm font-medium text-gray-900 dark:text-gray-300">
 				{translations.cardholderName || 'Cardholder Name'}
 			</label>
 			<input
@@ -385,7 +385,7 @@
 				disabled={disabled || paymentProcessing}
 				class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
 			/>
-			<label for="save-card" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+			<label for="save-card" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
 				Save this payment method for future purchases
 			</label>
 		</div>

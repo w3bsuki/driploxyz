@@ -30,7 +30,7 @@ export function getSentryConfig(): SentryConfig {
     replaysSessionSampleRate: dev ? 0.1 : 0.01, // 10% in dev, 1% in prod
     replaysOnErrorSampleRate: 1.0, // 100% when errors occur
     debug: dev,
-    beforeSend: (event, hint) => {
+    beforeSend: (event, _hint) => {
       // Skip errors in development
       if (dev) return null;
       

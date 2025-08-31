@@ -58,8 +58,7 @@
     positioning: {
       placement: positioning,
       gutter,
-      sameWidth: false,
-      offset: { mainAxis: 0, crossAxis: -40 }
+      sameWidth: false
     },
     loop,
     preventScroll: false,
@@ -85,7 +84,7 @@
 
   const defaultTriggerClasses = 'btn btn-ghost min-h-[44px] px-4 py-2 font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400 transition-colors duration-200 inline-flex items-center justify-center';
   
-  const defaultMenuClasses = 'menu bg-white';
+  const defaultMenuClasses = 'menu';
   
   // If triggerClass is provided, use it directly without defaults to avoid btn styling conflicts
   const triggerClasses = $derived(triggerClass ? `${triggerClass} ${className}` : `${defaultTriggerClasses} ${className}`);
@@ -115,7 +114,6 @@
   <div 
     use:menuElement
     class={menuClasses}
-    style="background-color: white !important;"
     role="menu"
     tabindex="-1"
   >

@@ -80,7 +80,7 @@
               class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-colors
                 {isActive ? 'bg-blue-600 text-white' : 
                  isCompleted ? 'bg-green-500 text-white' : 
-                 isAccessible ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' : 
+                 isAccessible ? 'bg-gray-200 text-gray-900 hover:bg-gray-300' : 
                  'bg-gray-100 text-gray-400'}"
             >
               {#if isCompleted}

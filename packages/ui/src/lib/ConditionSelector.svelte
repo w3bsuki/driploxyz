@@ -94,7 +94,7 @@
 
 <div class={`condition-selector ${className}`}>
   {#if label}
-    <div class="block text-sm font-medium text-gray-700 mb-2" id="condition-label">
+    <div class="block text-sm font-medium text-gray-900 mb-2" id="condition-label">
       {label}
       {#if required}
         <span class="text-red-500">*</span>

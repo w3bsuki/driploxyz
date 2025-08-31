@@ -38,7 +38,7 @@
 
 <div class="w-full">
   {#if label}
-    <label class="block text-sm font-medium text-gray-700 mb-2">
+    <label class="block text-sm font-medium text-gray-900 mb-2">
       {label}{required ? '*' : ''}
     </label>
   {/if}
@@ -63,11 +63,11 @@
 
   {#if showCalculation && value > 0}
     <div class="mt-3 p-3 bg-gray-50 rounded-lg text-sm">
-      <div class="flex justify-between text-gray-600">
+      <div class="flex justify-between text-gray-500">
         <span>Listing price:</span>
         <span class="font-medium">{currency}{value.toFixed(2)}</span>
       </div>
-      <div class="flex justify-between text-gray-600 mt-1">
+      <div class="flex justify-between text-gray-500 mt-1">
         <span>Service fee ({feePercentage}%):</span>
         <span>-{currency}{fee.toFixed(2)}</span>
       </div>

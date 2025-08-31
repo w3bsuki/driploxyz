@@ -1,6 +1,6 @@
 import { page } from '$app/stores';
 import { derived } from 'svelte/store';
-import { COUNTRY_CONFIGS, type CountryCode, type CountryConfig } from '$lib/country/detection';
+import { COUNTRY_CONFIGS, type CountryCode } from '$lib/country/detection';
 
 /**
  * Client-side hook to access current country configuration

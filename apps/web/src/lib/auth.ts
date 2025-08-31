@@ -159,7 +159,7 @@ export async function updateUserProfile(
 /**
  * Signs out user and redirects
  */
-export async function signOut(supabase: SupabaseClient<Database>) {
+export async function signOut(_supabase: SupabaseClient<Database>) {
   // Call POST /logout to clear Supabase auth cookies on the server
   if (typeof window !== 'undefined') {
     try {

@@ -181,7 +181,7 @@
       </div>
 
       <!-- Quick Stats -->
-      <div class="space-y-1 text-sm text-gray-600">
+      <div class="space-y-1 text-sm text-gray-500">
         <!-- Rating -->
         <div class="flex items-center gap-1">
           <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -214,7 +214,7 @@
   <div class="grid grid-cols-2 gap-2 mb-3">
     <button
       onclick={onMessage}
-      class="flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+      class="flex items-center justify-center gap-2 px-3 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-900 hover:bg-gray-50 transition-colors"
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
@@ -226,7 +226,7 @@
       onclick={onFollow}
       class="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors
              {isFollowing 
-               ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
+               ? 'bg-gray-100 text-gray-900 hover:bg-gray-200' 
                : 'bg-black text-white hover:bg-gray-800'}"
     >
       {#if isFollowing}
@@ -264,7 +264,7 @@
       <div class="grid grid-cols-2 gap-4 text-xs">
         <div class="text-center p-2 bg-gray-50 rounded-lg">
           <div class="font-semibold text-gray-900">98%</div>
-          <div class="text-gray-600">{translations.positiveReviews || 'Positive reviews'}</div>
+          <div class="text-gray-500">{translations.positiveReviews || 'Positive reviews'}</div>
         </div>
         <div class="text-center p-2 bg-gray-50 rounded-lg">
           <div class="font-semibold text-gray-900">
@@ -274,12 +274,12 @@
               N/A
             {/if}
           </div>
-          <div class="text-gray-600">{translations.avgShipping || 'Avg shipping'}</div>
+          <div class="text-gray-500">{translations.avgShipping || 'Avg shipping'}</div>
         </div>
       </div>
 
       <!-- Recent Activity -->
-      <div class="text-xs text-gray-600">
+      <div class="text-xs text-gray-500">
         <div class="font-medium text-gray-900 mb-1">{translations.recentActivity || 'Recent activity'}</div>
         <div class="space-y-1">
           {#if stats.weeklySales > 0}

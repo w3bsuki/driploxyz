@@ -117,7 +117,7 @@
       {#each steps as step}
         {@const state = getStepState(step.id)}
         <div class="text-center flex-1 min-w-0">
-          <p class="font-medium truncate px-1 {state === 'current' ? 'text-gray-900' : 'text-gray-600'}">
+          <p class="font-medium truncate px-1 {state === 'current' ? 'text-gray-900' : 'text-gray-500'}">
             {#if variant === 'minimal'}
               <!-- Show abbreviated titles on mobile for minimal variant -->
               <span class="sm:hidden">

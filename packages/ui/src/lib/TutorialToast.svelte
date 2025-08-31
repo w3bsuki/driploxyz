@@ -103,7 +103,7 @@
       <!-- Content -->
       <div class="flex-1">
         <h4 class="font-semibold text-gray-900 mb-1">{title}</h4>
-        <p class="text-sm text-gray-600">{description}</p>
+        <p class="text-sm text-gray-500">{description}</p>
         
         <!-- Progress -->
         <div class="flex items-center justify-between mt-3">
@@ -119,7 +119,7 @@
           <div class="flex space-x-2">
             <button
               onclick={handleDismiss}
-              class="text-xs text-gray-500 hover:text-gray-700"
+              class="text-xs text-gray-500 hover:text-gray-900"
             >
               Skip all
             </button>
@@ -145,7 +145,7 @@
       <!-- Close button -->
       <button
         onclick={handleDismiss}
-        class="flex-shrink-0 text-gray-400 hover:text-gray-600"
+        class="flex-shrink-0 text-gray-400 hover:text-gray-500"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

@@ -93,7 +93,7 @@
                 />
               {:else}
                 <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-                  <span class="text-gray-600 text-xs font-bold">
+                  <span class="text-gray-500 text-xs font-bold">
                     {partner.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -139,7 +139,7 @@
                 />
               {:else}
                 <div class="w-16 h-16 bg-gray-300 rounded-full flex items-center justify-center">
-                  <span class="text-gray-600 text-lg font-bold">
+                  <span class="text-gray-500 text-lg font-bold">
                     {partner.name.charAt(0).toUpperCase()}
                   </span>
                 </div>

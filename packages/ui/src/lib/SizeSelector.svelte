@@ -54,7 +54,7 @@
     } else if (isHovered) {
       classes += 'border-gray-400 bg-gray-50 text-gray-900 scale-102 ';
     } else {
-      classes += 'border-gray-200 bg-white text-gray-700 hover:border-gray-300 ';
+      classes += 'border-gray-200 bg-white text-gray-900 hover:border-gray-300 ';
     }
     
     return classes;
@@ -66,7 +66,7 @@
   <div class="flex items-center justify-between">
     <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">Size</h3>
     {#if selectedSize}
-      <span class="text-sm text-gray-600">Selected: {selectedSize}</span>
+      <span class="text-sm text-gray-500">Selected: {selectedSize}</span>
     {/if}
   </div>
 
@@ -145,7 +145,7 @@
 
   <!-- Stock Summary -->
   {#if showStock}
-    <div class="text-xs text-gray-600 bg-gray-50 rounded-lg p-3">
+    <div class="text-xs text-gray-500 bg-gray-50 rounded-lg p-3">
       <div class="flex items-center justify-between">
         <span>Available sizes:</span>
         <span class="font-medium">{sizes.filter(s => s.available).length} of {sizes.length}</span>

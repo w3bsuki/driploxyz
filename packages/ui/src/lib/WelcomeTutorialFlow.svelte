@@ -88,14 +88,14 @@
       <div class="text-center mb-6">
         <div class="text-3xl mb-3">{currentTutorial.icon}</div>
         <h3 class="text-lg font-semibold text-gray-900 mb-2">{currentTutorial.title}</h3>
-        <p class="text-sm text-gray-600 leading-relaxed">{currentTutorial.content}</p>
+        <p class="text-sm text-gray-500 leading-relaxed">{currentTutorial.content}</p>
       </div>
 
       <!-- Actions -->
       <div class="flex gap-2">
         <button 
           onclick={skipTutorial}
-          class="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+          class="px-3 py-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors"
         >
           {translations.skip || 'Skip'}
         </button>

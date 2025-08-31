@@ -87,7 +87,7 @@
     const active = isActive(item);
     const isLoading = clickedItem === item.href || (isNavigating && navigatingTo === item.href);
     return `flex flex-col items-center py-2 px-1 min-h-11 transition-colors duration-200 ${
-      active ? 'text-gray-900' : isLoading ? 'text-gray-700 opacity-70' : 'text-gray-500 hover:text-gray-700'
+      active ? 'text-gray-900' : isLoading ? 'text-gray-900 opacity-70' : 'text-gray-500 hover:text-gray-900'
     }`;
   }
   

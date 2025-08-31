@@ -33,4 +33,6 @@ declare module '$env/static/public' {
 	export const PUBLIC_SITE_URL: string;
 }
 
+// Note: Paraglide module types are handled at the package level
+
 export {};

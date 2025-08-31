@@ -28,7 +28,7 @@
           </h1>
           
           {#if subtitle}
-            <p class="text-gray-600 text-sm">
+            <p class="text-gray-500 text-sm">
               {subtitle}
             </p>
           {/if}

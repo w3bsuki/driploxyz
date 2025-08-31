@@ -101,7 +101,7 @@
       'favorite': 'text-red-600',
       'offer': 'text-purple-600'
     };
-    return colors[type] || 'text-gray-600';
+    return colors[type] || 'text-gray-500';
   }
 
   const urgencyLevel = $derived(() => {
@@ -138,7 +138,7 @@
       {/if}
     </div>
 
-    <div class="text-gray-600">
+    <div class="text-gray-500">
       {totalViews} views • {totalFavorites} favorites
     </div>
   </div>
@@ -214,15 +214,15 @@
   <div class="grid grid-cols-3 gap-2 text-center">
     <div class="bg-white border rounded-lg p-2">
       <div class="text-lg font-bold text-gray-900">{totalViews}</div>
-      <div class="text-xs text-gray-600">Total views</div>
+      <div class="text-xs text-gray-500">Total views</div>
     </div>
     <div class="bg-white border rounded-lg p-2">
       <div class="text-lg font-bold text-gray-900">{totalFavorites}</div>
-      <div class="text-xs text-gray-600">Favorites</div>
+      <div class="text-xs text-gray-500">Favorites</div>
     </div>
     <div class="bg-white border rounded-lg p-2">
       <div class="text-lg font-bold text-gray-900">{recentActivity.length}</div>
-      <div class="text-xs text-gray-600">Recent activity</div>
+      <div class="text-xs text-gray-500">Recent activity</div>
     </div>
   </div>
 </div>

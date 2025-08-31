@@ -52,11 +52,11 @@
       <div class="flex items-center justify-between p-3 border-b border-gray-100/50">
         <div class="flex items-center space-x-2">
           <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span class="text-xs font-medium text-gray-600">Item sold!</span>
+          <span class="text-xs font-medium text-gray-500">Item sold!</span>
         </div>
         <button 
           onclick={onDismiss}
-          class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100/50"
+          class="p-1 text-gray-400 hover:text-gray-500 rounded-lg hover:bg-gray-100/50"
           aria-label="Dismiss notification"
         >
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,7 +99,7 @@
 
             <!-- Buyer Info if Available -->
             {#if buyer}
-              <p class="text-sm text-gray-600 mb-3">
+              <p class="text-sm text-gray-500 mb-3">
                 Sold to <span class="font-medium">{buyer.username}</span>
               </p>
             {/if}
@@ -117,7 +117,7 @@
               {/if}
               <button
                 onclick={onDismiss}
-                class="px-3 py-2 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg 
+                class="px-3 py-2 bg-gray-100 text-gray-900 text-xs font-medium rounded-lg 
                   hover:bg-gray-200 transition-colors"
               >
                 Dismiss

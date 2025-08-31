@@ -82,7 +82,7 @@
 <div class="space-y-6 {className}">
   <div class="text-center mb-6">
     <h3 class="text-2xl font-bold text-gray-900 mb-2">Choose Your Avatar</h3>
-    <p class="text-gray-600">Pick an avatar or upload your own photo</p>
+    <p class="text-gray-500">Pick an avatar or upload your own photo</p>
   </div>
 
   <!-- Selected Avatar Preview -->
@@ -129,10 +129,10 @@
         onclick={triggerUpload}
         class="aspect-square rounded-xl border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors flex flex-col items-center justify-center space-y-1 group hover:bg-gray-50"
       >
-        <svg class="w-6 h-6 text-gray-400 group-hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-6 h-6 text-gray-400 group-hover:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
         </svg>
-        <span class="text-xs text-gray-500 group-hover:text-gray-700 font-medium">Upload</span>
+        <span class="text-xs text-gray-500 group-hover:text-gray-900 font-medium">Upload</span>
       </button>
       
       <input

@@ -98,7 +98,7 @@
 
 <div>
   {#if label}
-    <label for={selectId} class="block text-sm font-medium text-gray-700 mb-1.5">
+    <label for={selectId} class="block text-sm font-medium text-gray-900 mb-1.5">
       {label}
       {#if required}
         <span class="text-red-500">*</span>

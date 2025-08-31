@@ -6,7 +6,7 @@
 
 <div class="p-8 space-y-8 max-w-4xl mx-auto">
   <div class="space-y-4">
-    <h2 class="text-2xl font-semibold text-[color:var(--text-primary)]">
+    <h2 class="text-2xl font-semibold text-gray-900">
       Tooltip Component Examples
     </h2>
     <p class="text-[color:var(--text-secondary)] text-base">
@@ -16,7 +16,7 @@
 
   <!-- Basic Usage -->
   <section class="space-y-4">
-    <h3 class="text-lg font-medium text-[color:var(--text-primary)]">Basic Usage</h3>
+    <h3 class="text-lg font-medium text-gray-900">Basic Usage</h3>
     <div class="flex items-center gap-4">
       <Tooltip content="This is a helpful tooltip">
         {#snippet trigger()}
@@ -38,7 +38,7 @@
 
   <!-- Positioning -->
   <section class="space-y-4">
-    <h3 class="text-lg font-medium text-[color:var(--text-primary)]">Positioning</h3>
+    <h3 class="text-lg font-medium text-gray-900">Positioning</h3>
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 p-8">
       <Tooltip content="Top tooltip" positioning={{ side: 'top' }}>
         {#snippet trigger()}
@@ -68,7 +68,7 @@
 
   <!-- Custom Delays -->
   <section class="space-y-4">
-    <h3 class="text-lg font-medium text-[color:var(--text-primary)]">Custom Delays</h3>
+    <h3 class="text-lg font-medium text-gray-900">Custom Delays</h3>
     <div class="flex items-center gap-4">
       <Tooltip 
         content="Appears quickly (100ms delay)" 
@@ -94,7 +94,7 @@
 
   <!-- Touch/Mobile Behavior -->
   <section class="space-y-4">
-    <h3 class="text-lg font-medium text-[color:var(--text-primary)]">Touch/Mobile Behavior</h3>
+    <h3 class="text-lg font-medium text-gray-900">Touch/Mobile Behavior</h3>
     <div class="flex items-center gap-4">
       <Tooltip 
         content="Tap to toggle on mobile devices" 
@@ -121,7 +121,7 @@
 
   <!-- Controlled State -->
   <section class="space-y-4">
-    <h3 class="text-lg font-medium text-[color:var(--text-primary)]">Controlled State</h3>
+    <h3 class="text-lg font-medium text-gray-900">Controlled State</h3>
     <div class="flex items-center gap-4">
       <Tooltip 
         content="This tooltip is controlled externally"
@@ -145,7 +145,7 @@
 
   <!-- Custom Styling -->
   <section class="space-y-4">
-    <h3 class="text-lg font-medium text-[color:var(--text-primary)]">Custom Styling</h3>
+    <h3 class="text-lg font-medium text-gray-900">Custom Styling</h3>
     <div class="flex items-center gap-4">
       <Tooltip 
         content="Custom styled tooltip with success colors"
@@ -171,7 +171,7 @@
 
   <!-- Disabled State -->
   <section class="space-y-4">
-    <h3 class="text-lg font-medium text-[color:var(--text-primary)]">Disabled State</h3>
+    <h3 class="text-lg font-medium text-gray-900">Disabled State</h3>
     <div class="flex items-center gap-4">
       <Tooltip 
         content="This tooltip won't show because it's disabled"
@@ -188,7 +188,7 @@
 
   <!-- Long Content -->
   <section class="space-y-4">
-    <h3 class="text-lg font-medium text-[color:var(--text-primary)]">Long Content</h3>
+    <h3 class="text-lg font-medium text-gray-900">Long Content</h3>
     <div class="flex items-center gap-4">
       <Tooltip content="This is a much longer tooltip that demonstrates how the component handles text wrapping and maintains readability even with more substantial amounts of content that need to be displayed to the user.">
         {#snippet trigger()}
@@ -200,7 +200,7 @@
 
   <!-- Accessibility Notes -->
   <section class="space-y-4">
-    <h3 class="text-lg font-medium text-[color:var(--text-primary)]">Accessibility Features</h3>
+    <h3 class="text-lg font-medium text-gray-900">Accessibility Features</h3>
     <ul class="text-[color:var(--text-secondary)] text-sm space-y-2 ml-4">
       <li>• Proper ARIA attributes (<code>role="tooltip"</code>, <code>aria-describedby</code>)</li>
       <li>• Keyboard navigation support (Enter/Space to toggle on touch devices)</li>

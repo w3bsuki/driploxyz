@@ -92,7 +92,7 @@
 
 <div class={`tag-input ${className}`}>
   {#if label}
-    <div class="block text-sm font-medium text-gray-700 mb-1">
+    <div class="block text-sm font-medium text-gray-900 mb-1">
       {label}
     </div>
   {/if}
@@ -106,14 +106,14 @@
       {disabled ? 'bg-gray-50 cursor-not-allowed' : 'bg-white'}">
       
       {#each tags as tag, index}
-        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-900
           {disabled ? 'opacity-60' : ''}">
           #{tag}
           {#if !disabled}
             <button
               type="button"
               onclick={() => removeTag(index)}
-              class="text-gray-500 hover:text-gray-700 focus:outline-none"
+              class="text-gray-500 hover:text-gray-900 focus:outline-none"
               aria-label="Remove tag {tag}"
             >
               <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

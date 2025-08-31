@@ -18,7 +18,7 @@
 
 <button 
   onclick={onclick}
-  class="relative p-1.5 text-gray-600 hover:text-gray-900 transition-colors duration-200 rounded-full hover:bg-gray-100 {className}"
+  class="relative p-1.5 text-gray-500 hover:text-gray-900 transition-colors duration-200 rounded-full hover:bg-gray-100 {className}"
   aria-label="Notifications"
 >
   <!-- Super Simple Bell Icon -->

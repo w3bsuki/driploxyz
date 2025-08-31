@@ -64,7 +64,7 @@
             <div class="flex items-center justify-between mb-1">
               <div class="flex items-center space-x-1">
                 <span class="text-lg">👥</span>
-                <span class="text-xs font-medium text-gray-600">New follower</span>
+                <span class="text-xs font-medium text-gray-500">New follower</span>
               </div>
               <span class="text-xs text-gray-500">now</span>
             </div>
@@ -73,7 +73,7 @@
               <h4 class="font-semibold text-gray-900 text-sm">
                 {followerName}
               </h4>
-              <p class="text-xs text-gray-600">
+              <p class="text-xs text-gray-500">
                 @{followerUsername} started following you
               </p>
             </div>
@@ -91,7 +91,7 @@
               {/if}
               <button
                 onclick={onDismiss}
-                class="px-3 py-2 bg-gray-100 text-gray-700 text-xs font-medium rounded-lg 
+                class="px-3 py-2 bg-gray-100 text-gray-900 text-xs font-medium rounded-lg 
                   hover:bg-gray-200 transition-colors"
               >
                 Dismiss
@@ -104,7 +104,7 @@
       <!-- Close button -->
       <button 
         onclick={onDismiss}
-        class="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+        class="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-500 transition-colors"
         aria-label="Close notification"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -104,7 +104,7 @@
     />
   {:else}
     <div class="flex items-center justify-center w-full h-full bg-gray-200">
-      <span class="font-semibold text-gray-600 {textSizes[size]}">{initial()}</span>
+      <span class="font-semibold text-gray-500 {textSizes[size]}">{initial()}</span>
     </div>
   {/if}
 </div>

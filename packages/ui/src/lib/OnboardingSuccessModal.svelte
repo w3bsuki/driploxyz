@@ -41,7 +41,7 @@
       <h2 class="text-2xl font-bold text-gray-900 mb-3">
         {isBrand ? (translations.welcomeBrand || 'Welcome to Driplo Business! 🏢') : (translations.welcomePersonal || 'Welcome to Driplo! 🎉')}
       </h2>
-      <p class="text-gray-600 mb-6 leading-relaxed">
+      <p class="text-gray-500 mb-6 leading-relaxed">
         {#if isBrand}
           {translations.brandProfileSetup || "Your brand profile is set up! To activate full brand features and verification badge, you'll need to subscribe to our Brand plan from your dashboard."}
         {:else}
@@ -54,11 +54,11 @@
         <div class="grid grid-cols-2 gap-4 text-center">
           <div>
             <div class="text-2xl font-bold text-black">✓</div>
-            <div class="text-xs text-gray-600">{isBrand ? (translations.profileCreated || 'Profile Created') : (translations.profileVerified || 'Profile Verified')}</div>
+            <div class="text-xs text-gray-500">{isBrand ? (translations.profileCreated || 'Profile Created') : (translations.profileVerified || 'Profile Verified')}</div>
           </div>
           <div>
             <div class="text-2xl font-bold text-black">{isBrand ? '🏢' : '💳'}</div>
-            <div class="text-xs text-gray-600">{isBrand ? (translations.brandPending || 'Brand Pending') : (translations.paymentReady || 'Payment Ready')}</div>
+            <div class="text-xs text-gray-500">{isBrand ? (translations.brandPending || 'Brand Pending') : (translations.paymentReady || 'Payment Ready')}</div>
           </div>
         </div>
       </div>
@@ -95,7 +95,7 @@
           </div>
           <button
             onclick={onClose}
-            class="w-full bg-gray-100 text-gray-700 font-semibold py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors"
+            class="w-full bg-gray-100 text-gray-900 font-semibold py-3 px-4 rounded-lg hover:bg-gray-200 transition-colors"
           >
             {translations.startExploring || 'Start Exploring'}
           </button>

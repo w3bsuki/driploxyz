@@ -130,21 +130,21 @@
         
         <!-- Quick Shopping Actions -->
         <div class="space-y-1">
-          <a href="/search" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-11" onclick={onClose}>
+          <a href="/search" class="flex items-center px-3 py-2.5 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors min-h-11" onclick={onClose}>
             <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <span class="font-medium text-sm">{translations.browseAll}</span>
           </a>
           
-          <a href="/brands" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-11" onclick={onClose}>
+          <a href="/brands" class="flex items-center px-3 py-2.5 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors min-h-11" onclick={onClose}>
             <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
             <span class="font-medium text-sm">{translations.popularBrands}</span>
           </a>
           
-          <a href="/new" class="flex items-center px-3 py-2.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-11" onclick={onClose}>
+          <a href="/new" class="flex items-center px-3 py-2.5 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors min-h-11" onclick={onClose}>
             <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
@@ -182,21 +182,21 @@
         <!-- Legal Links -->
         <div class="pt-2 border-t border-gray-200">
           <div class="space-y-1">
-            <a href="/help" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-sm" onclick={onClose}>
+            <a href="/help" class="flex items-center px-3 py-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors text-sm" onclick={onClose}>
               <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>{translations.help}</span>
             </a>
             
-            <a href="/privacy" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-sm" onclick={onClose}>
+            <a href="/privacy" class="flex items-center px-3 py-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors text-sm" onclick={onClose}>
               <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
               <span>{translations.privacy}</span>
             </a>
             
-            <a href="/terms" class="flex items-center px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors text-sm" onclick={onClose}>
+            <a href="/terms" class="flex items-center px-3 py-2 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors text-sm" onclick={onClose}>
               <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
@@ -209,7 +209,7 @@
         {#if !isLoggedIn}
           <div class="pt-2 border-t border-gray-200">
             <div class="grid grid-cols-2 gap-2">
-              <a href="/login" class="flex items-center justify-center px-3 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors min-h-11 border border-gray-200" onclick={onClose}>
+              <a href="/login" class="flex items-center justify-center px-3 py-3 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors min-h-11 border border-gray-200" onclick={onClose}>
                 <span class="font-semibold text-sm">{translations.signIn}</span>
               </a>
               <a href="/signup" class="flex items-center justify-center px-3 py-3 bg-black text-white rounded-lg font-bold hover:bg-gray-800 transition-colors min-h-11" onclick={onClose}>

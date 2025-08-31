@@ -67,7 +67,7 @@
       case 'size':
         return `${baseClasses} bg-gray-100 text-gray-800 hover:bg-gray-200`;
       default:
-        return `${baseClasses} bg-gray-100 text-gray-600 hover:bg-gray-200`;
+        return `${baseClasses} bg-gray-100 text-gray-500 hover:bg-gray-200`;
     }
   }
 </script>
@@ -164,7 +164,7 @@
                       class="w-full h-full object-cover"
                     />
                   {:else}
-                    <div class="w-full h-full flex items-center justify-center text-gray-600 font-bold text-sm">
+                    <div class="w-full h-full flex items-center justify-center text-gray-500 font-bold text-sm">
                       {(seller.name || seller.username || '?')[0].toUpperCase()}
                     </div>
                   {/if}

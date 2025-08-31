@@ -3,7 +3,7 @@ import type { Database } from '@repo/database';
 
 type ReviewInsert = Database['public']['Tables']['reviews']['Insert'];
 type ReviewRow = Database['public']['Tables']['reviews']['Row'];
-type ReviewUpdate = Database['public']['Tables']['reviews']['Update'];
+type _ReviewUpdate = Database['public']['Tables']['reviews']['Update'];
 
 export interface CreateReviewData {
   orderId: string;

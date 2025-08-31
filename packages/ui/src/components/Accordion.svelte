@@ -48,7 +48,7 @@
       </button>
       
       {#if openItems.has(index)}
-        <div class="px-6 pb-4 text-sm text-gray-600 border-t border-gray-100">
+        <div class="px-6 pb-4 text-sm text-gray-500 border-t border-gray-100">
           <div class="pt-4">
             {item.content}
           </div>

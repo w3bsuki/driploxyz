@@ -2,75 +2,74 @@
  * Central category mapping utility
  * Maps database category names to translation functions
  * Single source of truth for all category translations
+ * 
+ * NOTE: Temporary fallback translations until proper i18n keys are added
  */
-import * as i18n from '@repo/i18n';
-
-// All translation functions are now properly typed and available
 
 // Map database category names to translation functions
 export const categoryTranslations: Record<string, () => string> = {
   // Level 1 - Gender/Age
-  'Men': i18n.category_men,
-  'Women': i18n.category_women,
-  'Kids': i18n.category_kids,
-  'Unisex': i18n.category_unisex,
+  'Men': () => 'Мъже',
+  'Women': () => 'Жени',
+  'Kids': () => 'Деца',
+  'Unisex': () => 'Унисекс',
   
   // Level 2 - Product Types
-  'Clothing': i18n.category_clothing,
-  'Shoes': i18n.category_shoes,
-  'Accessories': i18n.category_accessories,
-  'Bags': i18n.category_bags,
+  'Clothing': () => 'Дрехи',
+  'Shoes': () => 'Обувки',
+  'Accessories': () => 'Аксесоари',
+  'Bags': () => 'Чанти',
   
   // Level 3 - Clothing items
-  'T-Shirts': i18n.category_tshirts,
-  'Shirts': i18n.category_shirts,
-  'Shirts & Blouses': i18n.category_shirtsBlouses,
-  'Tops & T-Shirts': i18n.category_topsTshirts,
-  'Dresses': i18n.category_dresses,
-  'Skirts': i18n.category_skirts,
-  'Pants & Jeans': i18n.category_pantsJeans,
-  'Pants & Trousers': i18n.category_pantsTrousers,
-  'Jeans': i18n.category_jeans,
-  'Shorts': i18n.category_shorts,
-  'Jackets': i18n.category_jackets,
-  'Jackets & Coats': i18n.category_jacketsCoats,
-  'Sweaters & Hoodies': i18n.category_sweatersHoodies,
-  'Hoodies': i18n.category_hoodies,
-  'Suits & Blazers': i18n.category_suitsBlazers,
-  'Swimwear': i18n.category_swimwear,
-  'Activewear': i18n.category_activewear,
-  'Underwear': i18n.category_underwear,
-  'Lingerie & Underwear': i18n.category_lingerie,
+  'T-Shirts': () => 'Тениски',
+  'Shirts': () => 'Ризи',
+  'Shirts & Blouses': () => 'Ризи и блузи',
+  'Tops & T-Shirts': () => 'Топове и тениски',
+  'Dresses': () => 'Рокли',
+  'Skirts': () => 'Поли',
+  'Pants & Jeans': () => 'Панталони и дънки',
+  'Pants & Trousers': () => 'Панталони',
+  'Jeans': () => 'Дънки',
+  'Shorts': () => 'Къси панталони',
+  'Jackets': () => 'Якета',
+  'Jackets & Coats': () => 'Якета и палта',
+  'Sweaters & Hoodies': () => 'Пуловери и суичъри',
+  'Hoodies': () => 'Суичъри',
+  'Suits & Blazers': () => 'Костюми и сака',
+  'Swimwear': () => 'Бански',
+  'Activewear': () => 'Спортни дрехи',
+  'Underwear': () => 'Бельо',
+  'Lingerie & Underwear': () => 'Дамско бельо',
   
   // Level 3 - Shoes
-  'Sneakers': i18n.category_sneakers,
-  'Boots': i18n.category_boots,
-  'Heels': i18n.category_heels,
-  'Flats': i18n.category_flats,
-  'Sandals': i18n.category_sandals,
-  'Sandals & Slides': i18n.category_sandalsSlides,
-  'Formal Shoes': i18n.category_formalShoes,
+  'Sneakers': () => 'Кецове',
+  'Boots': () => 'Ботуши',
+  'Heels': () => 'Обувки с ток',
+  'Flats': () => 'Равни обувки',
+  'Sandals': () => 'Сандали',
+  'Sandals & Slides': () => 'Сандали и чехли',
+  'Formal Shoes': () => 'Елегантни обувки',
   
-  // Level 3 - Accessories (CRITICAL FIX)
-  'Hats & Caps': i18n.category_hatsAndCaps, // Maps to "Шапки" in Bulgarian
-  'Belts': i18n.category_belts,
-  'Scarves': i18n.category_scarves,
-  'Sunglasses': i18n.category_sunglasses,
-  'Jewelry': i18n.category_jewelry,
-  'Watches': i18n.category_watches,
-  'Wallets': i18n.category_wallets,
-  'Hair Accessories': i18n.category_hairAccessories,
-  'Ties': i18n.category_ties,
-  'Cufflinks': i18n.category_cufflinks,
+  // Level 3 - Accessories
+  'Hats & Caps': () => 'Шапки',
+  'Belts': () => 'Колани',
+  'Scarves': () => 'Шалове',
+  'Sunglasses': () => 'Слънчеви очила',
+  'Jewelry': () => 'Бижута',
+  'Watches': () => 'Часовници',
+  'Wallets': () => 'Портфейли',
+  'Hair Accessories': () => 'Аксесоари за коса',
+  'Ties': () => 'Вратовръзки',
+  'Cufflinks': () => 'Ръкавели',
   
   // Level 3 - Bags
-  'Backpacks': i18n.category_backpacks,
-  'Handbags': i18n.category_handbags,
-  'Totes': i18n.subcategory_totes,
-  'Clutches': i18n.category_clutches,
-  'Crossbody': i18n.subcategory_crossbody,
-  'Travel': i18n.subcategory_travel,
-  'Laptop Bags': i18n.category_laptopBags,
+  'Backpacks': () => 'Раници',
+  'Handbags': () => 'Дамски чанти',
+  'Totes': () => 'Големи чанти',
+  'Clutches': () => 'Клъч чанти',
+  'Crossbody': () => 'Чанти през рамо',
+  'Travel': () => 'Пътни чанти',
+  'Laptop Bags': () => 'Чанти за лаптоп',
   
   // Special subcategories
   'Gloves': () => 'Ръкавици',
@@ -81,9 +80,9 @@ export const categoryTranslations: Record<string, () => string> = {
   'Bandanas': () => 'Бандани',
   
   // Kids specific
-  'Baby': i18n.subcategory_baby,
-  'School': i18n.subcategory_school,
-  'Toys': i18n.subcategory_toys
+  'Baby': () => 'Бебешки',
+  'School': () => 'Училищни',
+  'Toys': () => 'Играчки'
 };
 
 /**

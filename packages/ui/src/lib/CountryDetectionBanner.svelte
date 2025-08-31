@@ -44,7 +44,7 @@
 <div class="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white border border-gray-200 rounded-lg shadow-sm md:shadow-lg p-4 z-50 animate-slide-up">
   <button
     onclick={onDismiss}
-    class="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+    class="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-500 transition-colors"
     aria-label="Dismiss"
   >
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,7 +59,7 @@
         <h3 class="font-semibold text-gray-900">
           Shopping from {countryNames[detectedCountry]}?
         </h3>
-        <p class="text-sm text-gray-600">
+        <p class="text-sm text-gray-500">
           Switch to see local products and prices
         </p>
       </div>
@@ -75,7 +75,7 @@
       
       <button
         onclick={onDismiss}
-        class="flex-1 px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 transition-colors"
+        class="flex-1 px-4 py-2 bg-gray-100 text-gray-900 text-sm font-medium rounded-md hover:bg-gray-200 transition-colors"
       >
         Keep {countryNames[currentCountry]}
       </button>

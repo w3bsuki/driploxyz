@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 
-type Tables = Database['public']['Tables'];
+type _Tables = Database['public']['Tables'];
 
 export interface AdminNotification {
   id: string;
@@ -63,7 +63,7 @@ export class AdminNotificationService {
   /**
    * Get all admin notifications with filtering
    */
-  async getNotifications(filters?: {
+  async getNotifications(_filters?: {
     type?: string;
     priority?: string;
     country?: string;
@@ -121,7 +121,7 @@ export class AdminNotificationService {
   /**
    * Mark notification as read
    */
-  async markAsRead(notificationId: string): Promise<boolean> {
+  async markAsRead(_notificationId: string): Promise<boolean> {
     try {
       return true;
     } catch (error) {
@@ -365,7 +365,7 @@ export class AdminNotificationService {
   /**
    * Example: Send notification to Slack webhook
    */
-  private async sendSlackNotification(notification: AdminNotification): Promise<void> {
+  private async _sendSlackNotification(notification: AdminNotification): Promise<void> {
     try {
       const webhookUrl = process.env.SLACK_WEBHOOK_URL;
       if (!webhookUrl) return;

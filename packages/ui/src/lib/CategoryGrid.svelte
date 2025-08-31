@@ -40,7 +40,7 @@
       onclick={() => onCategoryClick(category.key)}
     >
       <span class="text-lg mb-0.5">{category.emoji}</span>
-      <span class="text-xs font-medium text-gray-700">{category.label}</span>
+      <span class="text-xs font-medium text-gray-900">{category.label}</span>
     </a>
   {/each}
 </div>

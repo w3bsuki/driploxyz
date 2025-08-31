@@ -170,7 +170,7 @@
         </svg>
       </div>
       <h3 class="text-lg font-medium text-gray-900 mb-2">Search Error</h3>
-      <p class="text-gray-600 mb-4">{error}</p>
+      <p class="text-gray-500 mb-4">{error}</p>
       <button 
         onclick={() => loadSearchResults()}
         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -188,13 +188,13 @@
         </svg>
       </div>
       <h3 class="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-      <p class="text-gray-600">Try adjusting your search or filters</p>
+      <p class="text-gray-500">Try adjusting your search or filters</p>
     </div>
   {:else}
     <!-- Results -->
     <div class="space-y-4">
       <!-- Results count -->
-      <div class="text-sm text-gray-600">
+      <div class="text-sm text-gray-500">
         {totalCount} {totalCount === 1 ? 'product' : 'products'} found
       </div>
       
@@ -253,7 +253,7 @@
           {:else}
             <button 
               onclick={loadMore}
-              class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              class="px-6 py-3 border border-gray-300 rounded-lg text-gray-900 hover:bg-gray-50 transition-colors"
             >
               Load More
             </button>

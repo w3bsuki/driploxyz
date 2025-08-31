@@ -62,12 +62,12 @@
     
     <!-- Plan Info -->
     <div class="mb-8 flex items-center justify-between">
-      <div class="text-gray-600 flex items-center gap-2 text-sm font-medium">
+      <div class="text-gray-500 flex items-center gap-2 text-sm font-medium">
         <span class="text-lg">{planIcon}</span>
         <span>{planName}</span>
       </div>
       {#if badge}
-        <span class="border-gray-300 text-gray-700 rounded-full border px-2 py-0.5 text-xs">
+        <span class="border-gray-300 text-gray-900 rounded-full border px-2 py-0.5 text-xs">
           {badge}
         </span>
       {/if}
@@ -76,7 +76,7 @@
     <!-- Price -->
     <div class="mb-3 flex items-end gap-1">
       <span class="text-3xl font-extrabold tracking-tight">${price}</span>
-      <span class="text-gray-700 pb-1 text-sm">{period}</span>
+      <span class="text-gray-900 pb-1 text-sm">{period}</span>
       {#if originalPrice}
         <span class="text-gray-500 mr-1 ml-auto text-lg line-through">
           ${originalPrice}
@@ -98,7 +98,7 @@
     <!-- Features List -->
     <ul class="space-y-3">
       {#each features as feature}
-        <li class="text-gray-600 flex items-start gap-3 text-sm">
+        <li class="text-gray-500 flex items-start gap-3 text-sm">
           <span class="mt-0.5">
             <span class="inline-flex items-center justify-center w-4 h-4 text-white bg-black rounded-full text-xs">✓</span>
           </span>
@@ -118,7 +118,7 @@
       <!-- Locked Features -->
       <ul class="space-y-3">
         {#each lockedFeatures as feature}
-          <li class="text-gray-600 flex items-start gap-3 text-sm opacity-75">
+          <li class="text-gray-500 flex items-start gap-3 text-sm opacity-75">
             <span class="mt-0.5">
               <span class="inline-flex items-center justify-center w-4 h-4 text-white bg-gray-400 rounded-full text-xs">✕</span>
             </span>

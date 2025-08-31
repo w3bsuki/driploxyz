@@ -108,7 +108,7 @@
         <div>
           <h3 class="font-semibold text-gray-900">{translations.title || 'Notifications'}</h3>
           {#if unreadCount > 0}
-            <p class="text-xs text-gray-600">{unreadCount} {translations.unread || 'unread'}</p>
+            <p class="text-xs text-gray-500">{unreadCount} {translations.unread || 'unread'}</p>
           {/if}
         </div>
         <div class="flex items-center space-x-2">
@@ -124,7 +124,7 @@
           {/if}
           <button 
             onclick={onClose}
-            class="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100/50"
+            class="p-1 text-gray-400 hover:text-gray-500 rounded-lg hover:bg-gray-100/50"
             aria-label="Close notifications"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,7 +154,7 @@
           <div class="p-8 text-center">
             <div class="text-4xl mb-2">🔔</div>
             <h4 class="font-medium text-gray-900 mb-1">{translations.noNotifications || 'No notifications'}</h4>
-            <p class="text-sm text-gray-600">{translations.notifyWhenSomethingHappens || "We'll notify you when something happens"}</p>
+            <p class="text-sm text-gray-500">{translations.notifyWhenSomethingHappens || "We'll notify you when something happens"}</p>
           </div>
         {:else}
           <!-- Notifications -->
@@ -195,7 +195,7 @@
                       </span>
                     </div>
                     
-                    <p class="text-sm text-gray-600 mt-0.5 line-clamp-2">
+                    <p class="text-sm text-gray-500 mt-0.5 line-clamp-2">
                       {notification.message}
                     </p>
 
@@ -207,7 +207,7 @@
                           alt={notification.product.title}
                           class="w-6 h-6 rounded-sm object-cover"
                         />
-                        <span class="text-xs text-gray-600 truncate">
+                        <span class="text-xs text-gray-500 truncate">
                           {notification.product.title}
                         </span>
                       </div>
@@ -232,7 +232,7 @@
             variant="ghost" 
             size="sm" 
             href="/notifications"
-            class="w-full text-xs text-gray-600"
+            class="w-full text-xs text-gray-500"
           >
 {translations.viewAll || 'View all notifications'}
           </Button>

@@ -144,7 +144,7 @@
                 class="w-full h-full object-cover"
               />
             {:else}
-              <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-600 font-semibold">
+              <div class="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-gray-500 font-semibold">
                 {sellerInitial}
               </div>
             {/if}
@@ -161,14 +161,14 @@
                     <svg class="w-3 h-3 text-yellow-500 fill-current" viewBox="0 0 20 20" aria-hidden="true">
                       <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
                     </svg>
-                    <span class="text-xs text-gray-600" aria-label="Rating: {product.seller_rating} stars">
+                    <span class="text-xs text-gray-500" aria-label="Rating: {product.seller_rating} stars">
                       {product.seller_rating}
                     </span>
                   </div>
                 {/if}
               </div>
             {:else}
-              <span class="text-xs text-gray-700 font-medium whitespace-nowrap">{product.seller_name}</span>
+              <span class="text-xs text-gray-900 font-medium whitespace-nowrap">{product.seller_name}</span>
             {/if}
           </div>
         </button>
@@ -199,7 +199,7 @@
     <!-- Size selector -->
     {#if requiresSizeSelection}
       <fieldset class="mb-3">
-        <legend class="text-xs text-gray-600 mb-1.5">
+        <legend class="text-xs text-gray-500 mb-1.5">
           Size {hasMultipleSizes ? '(required)' : ''}
         </legend>
         <div class="flex gap-1 flex-wrap" role="radiogroup" aria-required="true">

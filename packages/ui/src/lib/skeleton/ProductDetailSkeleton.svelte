@@ -15,8 +15,8 @@
       
       <!-- Thumbnail Grid -->
       <div class="grid grid-cols-4 gap-2">
-        {#each Array(4) as _}
-          <div class="relative aspect-square bg-gray-200 rounded-md"></div>
+        {#each Array(4) as _, i}
+          <div class="relative aspect-square bg-gray-200 rounded-md" data-thumbnail={i}></div>
         {/each}
       </div>
     </div>
@@ -88,9 +88,9 @@
   <div class="mt-12 pt-8 border-t">
     <div class="h-6 bg-gray-200 rounded w-40 mb-6"></div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {#each Array(4) as _}
+      {#each Array(4) as _, i}
         <div class="space-y-2">
-          <div class="relative aspect-square bg-gray-200 rounded-lg"></div>
+          <div class="relative aspect-square bg-gray-200 rounded-lg" data-related={i}></div>
           <div class="h-3 bg-gray-200 rounded w-3/4"></div>
           <div class="h-4 bg-gray-200 rounded w-1/2"></div>
         </div>

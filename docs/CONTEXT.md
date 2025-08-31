@@ -54,3 +54,11 @@ Use this file to log short summaries after each task. Keep entries concise and a
 Resume Plan (no over‑engineering)
 - Finalization order: i18n fallback (defensive), tokens sweep (menus/high‑contrast), ESLint guardrail, dead files, verify single semantic.css load, run types/lint/build + smokes.
 - Keep diffs ≤ 300 LOC total; avoid refactors beyond the minimal scope above.
+
+—
+
+Task: V1 Audit & Tasklist Update
+Summary: Audited docs/state across CODEX_TASKLIST, CONTEXT, MELT_UI_MIGRATION, V1_driplo, and playbooks. Added Phase 6 (V1 Feature Completion) and Phase 7 (Platform Hardening & Release) to CODEX_TASKLIST, covering API helper + CSRF/rate-limit coverage, checkout/webhooks validation, mobile Lighthouse budgets, CI gates, SEO JSON-LD/breadcrumbs, notifications/emails, and docs cleanup.
+Files: docs/CODEX_TASKLIST.md
+Validation: docs-only update (✓); no code changes
+Follow-ups: Start with 7.1 API helper and 7.2 CSRF/rate limit coverage; then 7.4 Lighthouse mobile budgets and 7.5 CI gates; parallelize 6.x E2Es after stabilizing flows
