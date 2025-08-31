@@ -65,7 +65,10 @@
     preventScroll: false,
     escapeBehavior: 'close',
     closeOnOutsideClick: true,
-    portal: portalTarget
+    portal: portalTarget,
+    forceVisible: false,
+    openFocus: undefined,
+    closeFocus: undefined
   });
 
   // Sync bindable open state
@@ -151,21 +154,30 @@
 {/if}
 
 <style>
-  /* Menu animations */
-  :global([data-menu-content]) {
-    animation: menu-in 150ms cubic-bezier(0, 0, 0.2, 1) !important;
-    transform-origin: top center !important;
+  /* Override Melt UI animations completely */
+  :global([data-melt-dropdown-menu-content]),
+  :global([data-menu-content]),
+  :global(.menu) {
+    animation: dropdown-slide 200ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+    transform-origin: top right !important;
   }
 
-  @keyframes menu-in {
-    0% {
+  @keyframes dropdown-slide {
+    from {
       opacity: 0;
-      transform: translateY(-12px) !important;
+      transform: translateY(-8px) scale(0.98);
     }
-    100% {
+    to {
       opacity: 1;
-      transform: translateY(0) !important;
+      transform: translateY(0) scale(1);
     }
+  }
+  
+  /* Disable any other animations */
+  :global([data-melt-dropdown-menu-content] *),
+  :global([data-menu-content] *) {
+    transition: none !important;
+    animation: none !important;
   }
 
   /* Menu item hover states */

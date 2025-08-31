@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
-export const load: PageServerLoad = async () => {
+export const load = (async () => {
   // Redirect to consolidated sales page with earnings tab
   throw redirect(301, '/dashboard/sales?tab=earnings');
-};
+}) satisfies PageServerLoad;

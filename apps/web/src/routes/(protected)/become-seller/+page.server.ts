@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { canSell, getCannotSellReason } from '$lib/auth';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load = (async ({ locals }) => {
   const { supabase, session } = locals;
   
   if (!session) {
@@ -29,4 +29,4 @@ export const load: PageServerLoad = async ({ locals }) => {
     reason,
     needsOnboarding: !profile?.onboarding_completed
   };
-};
+}) satisfies PageServerLoad;

@@ -30,4 +30,4 @@ export const load = (async ({ locals: { session, user, supabase }, url }) => {
     user,
     profile
   };
-};
+}) satisfies LayoutServerLoad;
