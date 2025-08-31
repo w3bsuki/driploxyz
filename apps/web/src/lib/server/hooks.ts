@@ -73,7 +73,8 @@ export const handle: Handle = async (args) => {
     localeRedirectHandler,
     supabaseHandler,
     languageHandler,
-    countryRedirectHandler,
+    // Temporarily disable country redirect handler - it's causing performance issues
+    // countryRedirectHandler,
     authGuardHandler
   );
 
@@ -85,7 +86,8 @@ export const handle: Handle = async (args) => {
       localeRedirectHandler,
       supabaseHandler,
       languageHandler,
-      countryRedirectHandler,
+      // Temporarily disable country redirect handler - it's causing performance issues
+      // countryRedirectHandler,
       authGuardHandler
     );
     return withSentry(args);

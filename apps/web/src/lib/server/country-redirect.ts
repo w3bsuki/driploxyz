@@ -11,8 +11,23 @@ export async function handleCountryRedirect(event: RequestEvent): Promise<void> 
   // Skip redirects in development
   if (dev) return;
   
-  // Skip for API routes and static assets
-  if (event.route.id?.startsWith('/api/') || event.url.pathname.startsWith('/_app/')) {
+  // Skip for API routes, static assets, and auth pages
+  const pathname = event.url.pathname;
+  if (
+    event.route.id?.startsWith('/api/') || 
+    pathname.startsWith('/_app/') ||
+    pathname.startsWith('/auth/') ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/signup') ||
+    pathname.startsWith('/forgot-password')
+  ) {
+    return;
+  }
+  
+  // Only check country redirects on navigation to main pages, not every request
+  // Skip if we've already checked this session
+  const hasCheckedCountry = event.cookies.get('country_checked');
+  if (hasCheckedCountry) {
     return;
   }
   
@@ -22,6 +37,15 @@ export async function handleCountryRedirect(event: RequestEvent): Promise<void> 
       // No user, no redirect needed
       return;
     }
+    
+    // Set a cookie to avoid checking on every request for this session
+    event.cookies.set('country_checked', 'true', {
+      path: '/',
+      httpOnly: true,
+      secure: !dev,
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 // 24 hours
+    });
     
     // Get user's profile country
     const { data: profile } = await event.locals.supabase

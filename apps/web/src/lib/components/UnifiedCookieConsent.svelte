@@ -161,7 +161,7 @@
     const pendingLang = sessionStorage.getItem('pendingLanguageSwitch');
     
     // Save language preference if language selector was shown or there's a pending switch
-    if (showLanguageSelector && selectedLocale || pendingLang) {
+    if ((showLanguageSelector && selectedLocale) || pendingLang) {
       const targetLang = pendingLang || selectedLocale;
       try {
         // Set cookie first
@@ -232,7 +232,7 @@
     const pendingLang = sessionStorage.getItem('pendingLanguageSwitch');
     
     // Save language if functional cookies enabled
-    if (preferences.functional && (showLanguageSelector && selectedLocale || pendingLang)) {
+    if (preferences.functional && ((showLanguageSelector && selectedLocale) || pendingLang)) {
       const targetLang = pendingLang || selectedLocale;
       try {
         // Set cookie first
