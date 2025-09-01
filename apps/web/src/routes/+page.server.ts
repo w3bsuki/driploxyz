@@ -111,9 +111,6 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
     const categories = categoriesResult.status === 'fulfilled' ? (categoriesResult.value.data || []) : [];
     const topSellers = topSellersResult.status === 'fulfilled' ? (topSellersResult.value.data || []) : [];
     
-    // DEBUG: Log what categories we actually have
-    console.log('🔍 CATEGORIES FROM SUPABASE:', JSON.stringify(categories, null, 2));
-    
     let featuredProducts: Array<{
       id: string;
       title: string;

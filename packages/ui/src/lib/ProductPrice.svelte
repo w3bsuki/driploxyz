@@ -10,7 +10,7 @@
     price,
     currency = '$',
     formatPrice,
-    class: className = 'text-sm font-semibold text-gray-900'
+    class: className = 'text-sm font-semibold text-[color:var(--text-primary)]'
   }: Props = $props();
 
   const formattedPrice = $derived(

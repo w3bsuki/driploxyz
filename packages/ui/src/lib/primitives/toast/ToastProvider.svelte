@@ -3,8 +3,8 @@
   Mobile-first toast container with positioning and limits
 -->
 <script lang="ts">
-  import { createToaster, melt } from '@melt-ui/svelte';
-  import { fly, scale } from 'svelte/transition';
+  import { createToaster } from '@melt-ui/svelte';
+  import { fly } from 'svelte/transition';
   import Toast from './Toast.svelte';
   import type { ToastProviderProps, Toast as ToastData } from './types';
   
@@ -22,9 +22,6 @@
   }: Props = $props();
   
   const {
-    elements: { content, title, description, close },
-    helpers: { addToast, removeToast },
-    states: { toasts },
     actions: { portal }
   } = createToaster({
     closeDelay: duration

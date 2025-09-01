@@ -163,10 +163,24 @@ export async function signOut(_supabase: SupabaseClient<Database>) {
   // Call POST /logout to clear Supabase auth cookies on the server
   if (typeof window !== 'undefined') {
     try {
-      await fetch('/logout', { method: 'POST', credentials: 'include' });
-    } catch {}
-    const { goto } = await import('$app/navigation');
-    await goto('/', { replaceState: true });
+      // Add timeout to prevent hanging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      
+      await fetch('/logout', { 
+        method: 'POST', 
+        credentials: 'include',
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+    } catch (error) {
+      // Log error but continue with logout
+      console.warn('Logout request failed:', error);
+    }
+    
+    // Use window.location for immediate redirect instead of awaiting import
+    window.location.href = '/';
   }
 }
 

@@ -2,6 +2,7 @@
   import Avatar from './Avatar.svelte';
   import CategoryGrid from './CategoryGrid.svelte';
   import LanguageSwitcher from './LanguageSwitcher.svelte';
+  import ThemeToggle from './ThemeToggle.svelte';
 
   interface Props {
     isOpen: boolean;
@@ -92,7 +93,14 @@
 
 {#if isOpen}
   <!-- Backdrop overlay -->
-  <div class="sm:hidden fixed inset-0 bg-black/20 z-40" onclick={onClose}></div>
+  <div 
+    class="sm:hidden fixed inset-0 bg-black/20 z-40" 
+    onclick={onClose}
+    onkeydown={(e) => e.key === 'Escape' && onClose()}
+    role="button"
+    tabindex="0"
+    aria-label="Close menu"
+  ></div>
   
   <!-- Compact dropdown menu -->
   <div class="sm:hidden absolute top-full left-2 right-2 bg-white rounded-xl shadow-xl z-50 border border-gray-200 mt-2">
@@ -168,15 +176,18 @@
           {/if}
         </div>
         
-        <!-- Language Switcher -->
+        <!-- Language & Theme -->
         <div class="pt-2 border-t border-gray-200">
-          <LanguageSwitcher
-            currentLanguage={currentLanguage}
-            {languages}
-            onLanguageChange={onLanguageChange}
-            variant="inline"
-            class="w-full"
-          />
+          <div class="flex items-center gap-2">
+            <LanguageSwitcher
+              currentLanguage={currentLanguage}
+              {languages}
+              onLanguageChange={onLanguageChange}
+              variant="inline"
+              class="flex-1"
+            />
+            <ThemeToggle size="sm" tooltip="Toggle theme" />
+          </div>
         </div>
 
         <!-- Legal Links -->

@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 
-type _Tables = Database['public']['Tables'];
+// Database tables type reserved for future functionality
 
 export interface AdminNotification {
   id: string;
@@ -365,6 +365,7 @@ export class AdminNotificationService {
   /**
    * Example: Send notification to Slack webhook
    */
+  // Slack notification sender - reserved for future integration
   private async _sendSlackNotification(notification: AdminNotification): Promise<void> {
     try {
       const webhookUrl = process.env.SLACK_WEBHOOK_URL;

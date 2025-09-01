@@ -8,6 +8,7 @@ export { default as Modal } from './Modal.svelte';
 export { default as ProductCard } from './ProductCard.svelte';
 export { default as SearchBar } from './SearchBar.svelte';
 export { default as CategoryDropdown } from './CategoryDropdown.svelte';
+export { default as CategoryBottomSheet } from './CategoryBottomSheet.svelte';
 export { default as Avatar } from './Avatar.svelte';
 export { default as Breadcrumb } from './Breadcrumb.svelte';
 export { default as ErrorBoundary } from './ErrorBoundary.svelte';
@@ -25,10 +26,20 @@ export { default as SellerCard } from './SellerCard.svelte';
 // export { default as ProductSheet } from './ProductSheet.svelte';
 export { default as QuickActions } from './QuickActions.svelte';
 export { default as TabGroup } from './TabGroup.svelte';
+export { default as Tabs } from './primitives/tabs/Tabs.svelte';
 
 // Payment components
 export { default as PaymentForm } from './PaymentForm.svelte';
 export { default as CheckoutSummary } from './CheckoutSummary.svelte';
+
+// Filter components
+export { default as FilterPillGroup } from './FilterPillGroup.svelte';
+export { default as CategoryFilterDropdown } from './CategoryFilterDropdown.svelte';
+export { default as FilterModal } from './FilterModal.svelte';
+export { default as StickyFilterModal } from './StickyFilterModal.svelte';
+export { default as AppliedFilters } from './AppliedFilters.svelte';
+export { default as AppliedFilterPills } from './AppliedFilterPills.svelte';
+export { default as FilterResultsAnnouncer } from './FilterResultsAnnouncer.svelte';
 
 // Rating components
 export { default as RatingModal } from './RatingModal.svelte';
@@ -152,6 +163,8 @@ export { toasts as modernToasts } from './primitives/toast/store';
 // Convenience aliases for gradual migration
 export { toasts as legacyToasts } from './toast-store';
 
+// Filter components - accessibility-first filtering system (deduplicated)
+
 // Pricing and subscription components
 export { default as PricingCard } from './PricingCard.svelte';
 export { default as Accordion } from './Accordion.svelte';
@@ -183,6 +196,7 @@ export { default as PartnerShowcase } from './PartnerShowcase.svelte';
 export { default as PartnerBanner } from './PartnerBanner.svelte';
 export { default as ProductHighlight } from './ProductHighlight.svelte';
 export { default as TrendingSection } from './TrendingSection.svelte';
+export { default as ThemeToggle } from './ThemeToggle.svelte';
 
 // Product display components
 export { default as FavoriteButton } from './FavoriteButton.svelte';

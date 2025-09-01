@@ -8,14 +8,18 @@ import { writable } from 'svelte/store';
 import type { Toast, ToastType, ToastStore, ToastStoreOptions } from './types';
 
 // Global toast provider instance
-let toastProvider: any = null;
+let toastProvider: {
+  addToastData?: (toast: Toast) => string;
+  removeToastData?: (id: string) => void;
+  clearAllToasts?: () => void;
+} | null = null;
 
-export function setToastProvider(provider: any) {
+export function setToastProvider(provider: typeof toastProvider) {
   toastProvider = provider;
 }
 
 function createToastStore(): ToastStore {
-  const { subscribe, update } = writable<Toast[]>([]);
+  const { update } = writable<Toast[]>([]);
   
   // Generate unique toast ID
   function generateId(): string {
@@ -174,7 +178,7 @@ export const toastHelpers = {
     messages: {
       loading: string;
       success: string | ((data: T) => string);
-      error: string | ((error: any) => string);
+      error: string | ((error: unknown) => string);
     },
     options: ToastStoreOptions = {}
   ): Promise<T> {
@@ -202,7 +206,7 @@ export const toastHelpers = {
 
 // Legacy compatibility - extend window object for existing components
 if (typeof window !== 'undefined') {
-  // @ts-ignore - Legacy global support
+  // @ts-expect-error - Legacy global support
   window.showToast = (message: string, type: ToastType = 'info', duration = 3000) => {
     return toasts.show(message, type, { duration });
   };

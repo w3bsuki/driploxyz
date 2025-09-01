@@ -20,14 +20,18 @@
   <div
     class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
     onclick={handleBackdropClick}
-    role="button"
+    onkeydown={(e) => e.key === 'Escape' && onClose()}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="auth-popup-title"
     tabindex="-1"
   >
     <div class="bg-white rounded-xl w-full max-w-sm p-6 shadow-sm md:shadow-xl animate-in fade-in-0 scale-in-95 duration-200">
       <!-- Close button -->
       <button
         onclick={onClose}
-        class="absolute top-4 right-4 p-1 text-gray-400 hover:text-gray-500 rounded-full hover:bg-gray-100"
+        class="absolute top-4 right-4 p-1 min-h-[var(--touch-standard)] min-w-[var(--touch-standard)] text-[color:var(--text-disabled)] hover:text-[color:var(--text-muted)] rounded-full hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
+        aria-label="Close dialog"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -37,7 +41,7 @@
       <!-- Icon -->
       <div class="flex justify-center mb-4">
         <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-          <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-8 h-8 text-[color:var(--text-link)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </div>
@@ -45,8 +49,8 @@
 
       <!-- Content -->
       <div class="text-center mb-6">
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">Sign in required</h3>
-        <p class="text-gray-500 text-sm">
+        <h3 class="text-lg font-semibold text-[color:var(--text-primary)] mb-2">Sign in required</h3>
+        <p class="text-[color:var(--text-muted)] text-sm">
           Please sign in to {action}. It's quick and free!
         </p>
       </div>
@@ -55,20 +59,20 @@
       <div class="space-y-3">
         <button
           onclick={onSignIn}
-          class="w-full bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-900 transition-colors"
+          class="w-full min-h-[var(--touch-primary)] bg-black text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white"
         >
           Sign In
         </button>
         <button
           onclick={onSignUp}
-          class="w-full border border-gray-300 text-gray-900 py-3 px-4 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+          class="w-full min-h-[var(--touch-primary)] border border-gray-300 text-[color:var(--text-primary)] py-3 px-4 rounded-lg font-medium hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
         >
           Create Account
         </button>
       </div>
 
       <!-- Footer -->
-      <p class="text-center text-xs text-gray-500 mt-4">
+      <p class="text-center text-xs text-[color:var(--text-muted)] mt-4">
         Join thousands of users buying and selling on Driplo
       </p>
     </div>
@@ -97,5 +101,12 @@
 
   .scale-in-95 {
     animation-name: scale-in-95;
+  }
+
+  /* Respect reduced motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-in {
+      animation: none;
+    }
   }
 </style>

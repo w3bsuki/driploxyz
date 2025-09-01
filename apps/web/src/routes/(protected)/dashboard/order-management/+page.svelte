@@ -204,15 +204,6 @@
   });
 </script>
 
-<style>
-  :global(.hide-scrollbar) {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  :global(.hide-scrollbar::-webkit-scrollbar) {
-    display: none;
-  }
-</style>
 
 <svelte:head>
   <title>Order Management - Dashboard</title>
@@ -263,8 +254,8 @@
             <p class="text-3xl font-bold text-gray-900 mt-1">{actionCounts().incoming}</p>
             <p class="text-xs text-gray-500 mt-1">On the way</p>
           </div>
-          <div class="bg-blue-50 rounded-full p-3">
-            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="bg-[color:var(--status-info-bg)] rounded-full p-3">
+            <svg class="w-6 h-6 text-[color:var(--primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
             </svg>
           </div>
@@ -358,7 +349,7 @@
               </svg>
               <span class="block">{i18n.orders_myOrders()}</span>
               {#if actionCounts().incoming > 0}
-                <span class="absolute -top-1 -right-1 {activeTab === 'incoming' ? 'bg-white text-gray-900' : 'bg-blue-500 text-white'} text-xs rounded-full px-1.5 py-0.5 font-bold min-w-[18px] text-center">
+                <span class="absolute -top-1 -right-1 {activeTab === 'incoming' ? 'bg-white text-gray-900' : 'bg-[color:var(--primary)] text-white'} text-xs rounded-full px-1.5 py-0.5 font-bold min-w-[18px] text-center">
                   {actionCounts().incoming}
                 </span>
               {/if}
@@ -420,7 +411,7 @@
                   {#if order.is_bundle && order.items_count > 1}
                     <!-- Bundle display -->
                     <div class="relative w-24 h-24">
-                      <div class="w-24 h-24 bg-gradient-to-br from-purple-100 to-blue-100 rounded-xl flex items-center justify-center shadow-sm">
+                      <div class="w-24 h-24 bg-gradient-to-br from-purple-100 to-[color:var(--status-info-bg)] rounded-xl flex items-center justify-center shadow-sm">
                         <span class="text-3xl">📦</span>
                       </div>
                       <span class="absolute -top-2 -right-2 bg-primary-500 text-white text-xs font-bold rounded-full w-7 h-7 flex items-center justify-center shadow-sm">
@@ -461,13 +452,13 @@
                           </span>
                           <span class="text-sm text-gray-600">
                             {isSeller ? 'To' : 'From'}: 
-                            <a href="/user/{isSeller ? order.buyer?.username : order.seller?.username}" class="font-medium text-gray-900 hover:text-blue-600 transition-colors">
+                            <a href="/user/{isSeller ? order.buyer?.username : order.seller?.username}" class="link font-medium text-gray-900">
                               @{isSeller ? order.buyer?.username : order.seller?.username}
                             </a>
                           </span>
                         </div>
                         {#if order.tracking_number}
-                          <div class="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-blue-50 text-blue-700 rounded-md text-xs font-medium">
+                          <div class="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-[color:var(--status-info-bg)] text-[color:var(--status-info-fg)] rounded-md text-xs font-medium">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                             </svg>

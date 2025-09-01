@@ -71,15 +71,15 @@
 <div class="space-y-4">
 
   {#if data.errorMessage}
-    <div class="bg-red-50 border border-red-200 rounded-md p-4">
+    <div class="bg-[color:var(--status-error-bg)] border border-[color:var(--status-error-border)] rounded-md p-4">
       <div class="flex">
         <div class="shrink-0">
-          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+          <svg class="h-5 w-5 text-[color:var(--status-error-text)]" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-red-800">{data.errorMessage}</p>
+          <p class="text-sm text-[color:var(--status-error-text)]">{data.errorMessage}</p>
         </div>
       </div>
     </div>
@@ -88,15 +88,15 @@
 
 
   {#if form?.errors?._form}
-    <div class="bg-red-50 border border-red-200 rounded-md p-4">
+    <div class="bg-[color:var(--status-error-bg)] border border-[color:var(--status-error-border)] rounded-md p-4">
       <div class="flex">
         <div class="shrink-0">
-          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+          <svg class="h-5 w-5 text-[color:var(--status-error-text)]" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
           </svg>
         </div>
         <div class="ml-3">
-          <p class="text-sm text-red-800">{form.errors._form}</p>
+          <p class="text-sm text-[color:var(--status-error-text)]">{form.errors._form}</p>
         </div>
       </div>
     </div>
@@ -120,7 +120,7 @@
     
     <div class="space-y-1">
       <div>
-        <label for="email" class="block text-sm font-semibold text-gray-700 mb-1 pl-1">
+        <label for="email" class="block text-sm font-semibold text-[color:var(--text-primary)] mb-1 pl-1">
           {i18n.auth_email()}
         </label>
         <div class="p-1">
@@ -131,14 +131,14 @@
           autocomplete="email"
           required
           bind:value={formData.email}
-          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border border-[color:var(--border-default)] rounded-lg placeholder:text-[color:var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[color:var(--state-focus)] focus:border-[color:var(--state-focus)] transition-colors text-base sm:text-sm"
           placeholder="Enter your email"
           />
         </div>
       </div>
 
       <div>
-        <label for="password" class="block text-sm font-semibold text-gray-700 mb-1 pl-1">
+        <label for="password" class="block text-sm font-semibold text-[color:var(--text-primary)] mb-1 pl-1">
           {i18n.auth_password()}
         </label>
         <div class="p-1">
@@ -149,7 +149,7 @@
           autocomplete="current-password"
           required
           bind:value={formData.password}
-          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-base sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border border-[color:var(--border-default)] rounded-lg placeholder:text-[color:var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[color:var(--state-focus)] focus:border-[color:var(--state-focus)] transition-colors text-base sm:text-sm"
           placeholder="Enter your password"
           />
         </div>
@@ -157,7 +157,7 @@
 
       <div class="flex items-center justify-between">
         <div class="text-sm">
-          <a href="/forgot-password" class="font-medium text-blue-600 hover:text-blue-500">
+          <a href="/forgot-password" class="link font-medium">
             {i18n.auth_forgotPassword()}
           </a>
         </div>
@@ -167,7 +167,7 @@
         <button
           type="submit"
           disabled={submitting}
-          class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-blue-600 hover:bg-blue-700 text-white focus-visible:ring-blue-500 px-4 py-2.5 text-sm transition-colors duration-200"
+          class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-[color:var(--primary)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-fg)] focus-visible:ring-[color:var(--state-focus)] px-4 py-2.5 text-sm transition-colors duration-200"
         >
           {#if submitting}
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -186,17 +186,17 @@
   <!-- Divider -->
   <div class="relative">
     <div class="absolute inset-0 flex items-center">
-      <div class="w-full border-t border-gray-300"></div>
+      <div class="w-full border-t border-[color:var(--border-default)]"></div>
     </div>
     <div class="relative flex justify-center text-sm">
-      <span class="px-2 bg-white text-gray-500">{i18n.auth_orContinueWith()}</span>
+      <span class="px-2 bg-[color:var(--surface-base)] text-[color:var(--text-muted)]">{i18n.auth_orContinueWith()}</span>
     </div>
   </div>
 
   <!-- Social Login Options -->
   <div class="grid grid-cols-2 gap-3">
     <button
-      class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-300 bg-white text-gray-700 focus-visible:ring-gray-500 px-4 py-2 text-sm"
+      class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-[color:var(--border-default)] bg-[color:var(--surface-base)] text-[color:var(--text-primary)] focus-visible:ring-[color:var(--state-focus)] px-4 py-2 text-sm"
       disabled
     >
       <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -208,7 +208,7 @@
       Google
     </button>
     <button
-      class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-gray-300 bg-white text-gray-700 focus-visible:ring-gray-500 px-4 py-2 text-sm"
+      class="w-full inline-flex items-center justify-center font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-[color:var(--border-default)] bg-[color:var(--surface-base)] text-[color:var(--text-primary)] focus-visible:ring-[color:var(--state-focus)] px-4 py-2 text-sm"
       disabled
     >
       <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
@@ -219,8 +219,8 @@
   </div>
 
   <div class="text-center text-sm">
-    <span class="text-gray-500">{i18n.auth_dontHaveAccount()} </span>
-    <a href="/signup" class="font-medium text-blue-600 hover:text-blue-500">
+    <span class="text-[color:var(--text-muted)]">{i18n.auth_dontHaveAccount()} </span>
+    <a href="/signup" class="link font-medium">
       {i18n.auth_signUp()}
     </a>
   </div>

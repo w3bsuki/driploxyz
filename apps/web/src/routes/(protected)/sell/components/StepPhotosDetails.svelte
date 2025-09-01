@@ -170,7 +170,7 @@
       placeholder="{i18n.sell_addDetailsPlaceholder()}"
       rows="3"
       maxlength="500"
-      class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+      class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[color:var(--state-focus)] focus:border-[color:var(--state-focus)] resize-none"
     />
     <p class="text-xs text-gray-500 mt-1">{formData.description.length}/500</p>
   </div>

@@ -19,8 +19,8 @@
     class?: string;
     id?: string;
     name?: string;
-    onchange?: (event: Event) => void;
-    onblur?: (event: Event) => void;
+    onChange?: (event: Event) => void;
+    onBlur?: (event: Event) => void;
     children?: Snippet;
   }
 
@@ -35,8 +35,8 @@
     class: className = '',
     id,
     name,
-    onchange,
-    onblur,
+    onChange,
+    onBlur,
     children
   }: Props = $props();
 
@@ -66,42 +66,42 @@
     primitiveValue = newValue;
     
     // Create synthetic events for backward compatibility
-    if (onchange) {
+    if (onChange) {
       const changeEvent = new Event('change', { bubbles: true });
       Object.defineProperty(changeEvent, 'target', {
         value: { value: stringValue },
         enumerable: true
       });
-      onchange(changeEvent);
+      onChange(changeEvent);
     }
   }
 
   // Handle blur event for backward compatibility
   function handleBlur() {
-    if (onblur) {
+    if (onBlur) {
       const blurEvent = new Event('blur', { bubbles: true });
       Object.defineProperty(blurEvent, 'target', {
         value: { value: value || '' },
         enumerable: true
       });
-      onblur(blurEvent);
+      onBlur(blurEvent);
     }
   }
 
   // Error state classes for the trigger
   const errorClasses = $derived(error 
-    ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' 
-    : 'border-gray-300 focus:ring-gray-500/20 focus:border-gray-500');
+    ? 'border-[color:var(--status-error-border)] focus:ring-[color:var(--status-error-solid)] focus:border-[color:var(--status-error-solid)]' 
+    : 'border-[color:var(--input-border)] focus:ring-[color:var(--input-focus-ring)] focus:border-[color:var(--input-focus-border)]');
   
-  const triggerClasses = $derived(`block w-full rounded-lg border px-3 py-2 pr-10 min-h-[44px] text-base bg-white transition-colors duration-200 focus:outline-none focus:ring-2 appearance-none cursor-pointer ${errorClasses} ${className}`);
+  const triggerClasses = $derived(`block w-full rounded-[var(--input-radius)] border px-[var(--input-padding)] py-2 pr-10 min-h-[var(--input-height)] text-[var(--input-font)] bg-[color:var(--input-bg)] transition-colors duration-[var(--duration-base)] focus:outline-none focus:ring-2 appearance-none cursor-pointer ${errorClasses} ${className}`);
 </script>
 
 <div>
   {#if label}
-    <label for={selectId} class="block text-sm font-medium text-gray-900 mb-1.5">
+    <label for={selectId} class="block text-sm font-medium text-[color:var(--text-primary)] mb-1.5">
       {label}
       {#if required}
-        <span class="text-red-500">*</span>
+        <span class="text-[color:var(--status-error-solid)]">*</span>
       {/if}
     </label>
   {/if}
@@ -118,8 +118,8 @@
     onBlur={handleBlur}
     triggerClass={triggerClasses}
     class=""
-    menuClass="z-50 max-h-60 w-full overflow-auto rounded-lg bg-white border border-gray-200 shadow-lg py-1 focus:outline-none"
-    optionClass="relative w-full cursor-pointer select-none px-3 py-2 text-sm text-gray-900 hover:bg-gray-50 focus:bg-gray-100 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed min-h-[36px] flex items-center transition-colors duration-200"
+    menuClass="z-50 max-h-60 w-full overflow-auto rounded-[var(--radius-lg)] bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] shadow-[var(--shadow-lg)] py-1 focus:outline-none"
+    optionClass="relative w-full cursor-pointer select-none px-3 py-2 text-sm text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] focus:bg-[color:var(--surface-muted)] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed min-h-[var(--touch-standard)] flex items-center transition-colors duration-[var(--duration-base)]"
   >
     {#if children}
       {@render children()}
@@ -127,6 +127,6 @@
   </MeltSelect>
   
   {#if error}
-    <p class="text-sm text-red-600 mt-1">{error}</p>
+    <p class="text-sm text-[color:var(--status-error-text)] mt-1">{error}</p>
   {/if}
 </div>

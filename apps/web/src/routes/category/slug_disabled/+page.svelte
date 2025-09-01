@@ -449,7 +449,7 @@
                       type="checkbox" 
                       checked={selectedConditions.includes(condition.value)}
                       onchange={() => toggleCondition(condition.value)}
-                      class="mr-2 rounded-sm text-blue-600"
+                      class="mr-2 rounded-sm text-[color:var(--primary)]"
                     />
                     <span class="text-sm text-gray-700">{condition.label}</span>
                   </label>

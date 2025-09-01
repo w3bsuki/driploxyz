@@ -37,7 +37,7 @@
 <div use:root class="tabgroup-root">
   <div 
     use:list 
-    class="flex space-x-1 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory pb-2 {className}"
+    class="flex space-x-1 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory pb-2 scrollbar-hide {className}"
   >
     {#each tabs as tab (tab.id)}
       <button
@@ -82,13 +82,11 @@
     z-index: 1;
   }
   
-  /* Improved scrollbar styling */
-  .tabgroup-root > div {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+  /* Respect prefers-reduced-motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .tabgroup-root button {
+      transition: none;
+    }
   }
   
-  .tabgroup-root > div::-webkit-scrollbar {
-    display: none;
-  }
 </style>

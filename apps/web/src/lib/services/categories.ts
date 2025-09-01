@@ -558,7 +558,8 @@ export class CategoryService {
     // Level 2: women-clothing, men-shoes (gender + type)
     if (parts.length === 2) {
       const [gender, type] = parts;
-      if (['women', 'men', 'kids', 'unisex'].includes(gender) &&
+      if (gender && type &&
+          ['women', 'men', 'kids', 'unisex'].includes(gender) &&
           ['clothing', 'shoes', 'accessories', 'bags'].includes(type)) {
         return 2;
       }

@@ -30,11 +30,11 @@
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-[var(--btn-radius)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors duration-[var(--duration-fast)] relative select-none';
 
   const variantClasses = {
-    primary: 'bg-gray-900 text-white focus-visible:ring-gray-700 hover:bg-gray-800 active:bg-gray-950',
-    secondary: 'bg-white text-gray-900 focus-visible:ring-gray-400 hover:bg-gray-50 active:bg-gray-100',
-    outline: 'border-2 border-gray-200 bg-white text-gray-900 focus-visible:ring-gray-400 hover:bg-gray-50 active:bg-gray-100',
-    ghost: 'text-gray-900 focus-visible:ring-gray-400 hover:bg-gray-50 active:bg-gray-100',
-    danger: 'bg-red-600 text-white focus-visible:ring-red-500 hover:bg-red-700 active:bg-red-800'
+    primary: 'bg-black text-white focus-visible:ring-[color:var(--state-focus)] hover:bg-gray-800 active:bg-gray-900',
+    secondary: 'bg-white text-gray-900 focus-visible:ring-gray-900 hover:bg-gray-50 active:bg-gray-100',
+    outline: 'border-2 border-gray-200 bg-white text-gray-900 focus-visible:ring-gray-900 hover:bg-gray-50 active:bg-gray-100',
+    ghost: 'text-gray-900 focus-visible:ring-gray-900 hover:bg-gray-50 active:bg-gray-100',
+    danger: 'bg-red-500 text-white focus-visible:ring-red-500 hover:bg-red-700 active:bg-red-800'
   };
 
   const sizeClasses = {
@@ -53,7 +53,7 @@
 </script>
 
 {#if href}
-  <a {href} class={classes} role="button" aria-busy={loading}>
+  <a {href} class={classes} aria-busy={loading}>
     {#if loading}
       <svg class="{spinnerSizes[size]} mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>

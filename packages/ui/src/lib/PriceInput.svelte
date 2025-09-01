@@ -16,8 +16,8 @@
     class?: string;
     id?: string;
     name?: string;
-    oninput?: (event: Event) => void;
-    onchange?: (event: Event) => void;
+    onInput?: (event: Event) => void;
+    onChange?: (event: Event) => void;
   }
 
   let { 
@@ -37,8 +37,8 @@
     class: className = '',
     id,
     name,
-    oninput,
-    onchange
+    onInput,
+    onChange
   }: Props = $props();
 
   const inputId = $derived(id || `price-${Math.random().toString(36).substr(2, 9)}`);
@@ -58,7 +58,7 @@
     // Allow empty string or valid number format
     if (inputValue === '' || /^\d*\.?\d{0,2}$/.test(inputValue)) {
       value = inputValue;
-      oninput?.(e);
+      onInput?.(e);
     } else {
       // Reset to previous valid value
       target.value = value;
@@ -105,7 +105,7 @@
       id={inputId}
       class={classes}
       oninput={handleInput}
-      {onchange}
+      onchange={onChange}
       aria-invalid={error ? 'true' : undefined}
       aria-describedby={error ? `${inputId}-error` : helpText ? `${inputId}-help` : undefined}
       />

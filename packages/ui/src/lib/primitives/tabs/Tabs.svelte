@@ -8,7 +8,7 @@
     count?: number;
     disabled?: boolean;
     badge?: string;
-    icon?: string;
+    icon?: string; // WARNING: Raw HTML - ensure trusted content only
   }
 
   interface Props {
@@ -95,18 +95,18 @@
   // Variant styles
   const variantClasses = {
     default: {
-      container: 'border-b border-gray-200',
-      tab: 'border-b-2 border-transparent hover:border-gray-300 data-[state=active]:border-black data-[state=active]:text-black text-gray-500',
+      container: 'border-b border-[color:var(--border-subtle)]',
+      tab: 'border-b-2 border-transparent hover:border-[color:var(--border-default)] data-[state=active]:border-[color:var(--text-primary)] data-[state=active]:text-[color:var(--text-primary)] text-[color:var(--text-secondary)]',
       list: 'flex'
     },
     pills: {
-      container: 'p-1 bg-gray-100 rounded-lg',
-      tab: 'rounded-md hover:bg-white/50 data-[state=active]:bg-white data-[state=active]:text-black data-[state=active]:shadow-sm text-gray-500',
+      container: 'p-1 bg-[color:var(--surface-muted)] rounded-lg',
+      tab: 'rounded-md hover:bg-[color:var(--surface-base)]/50 data-[state=active]:bg-[color:var(--surface-base)] data-[state=active]:text-[color:var(--text-primary)] data-[state=active]:shadow-sm text-[color:var(--text-secondary)]',
       list: 'flex gap-1'
     },
     underline: {
-      container: 'border-b border-gray-200',
-      tab: 'border-b-2 border-transparent hover:border-gray-300 data-[state=active]:border-primary data-[state=active]:text-primary text-gray-500 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-primary after:scale-x-0 after:transition-transform data-[state=active]:after:scale-x-100',
+      container: 'border-b border-[color:var(--border-subtle)]',
+      tab: 'border-b-2 border-transparent hover:border-[color:var(--border-default)] data-[state=active]:border-primary data-[state=active]:text-primary text-[color:var(--text-secondary)] relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-primary after:scale-x-0 after:transition-transform data-[state=active]:after:scale-x-100',
       list: 'flex'
     }
   };
@@ -117,7 +117,7 @@
   );
 
   const listClasses = $derived(
-    `tabs-list ${variantClasses[variant].list} ${orientation === 'horizontal' && scrollable ? 'overflow-x-auto scrollbar-hide' : ''} ${orientation === 'vertical' ? 'flex-col min-w-[200px] border-r border-gray-200' : ''} ${tabListClass}`
+    `tabs-list ${variantClasses[variant].list} ${orientation === 'horizontal' && scrollable ? 'overflow-x-auto scrollbar-hide' : ''} ${orientation === 'vertical' ? 'flex-col min-w-[200px] border-r border-[color:var(--border-subtle)]' : ''} ${tabListClass}`
   );
 
   const getTabClasses = (tab: TabData, isActive: boolean) => {
@@ -137,8 +137,10 @@
     
     const activeElement = tabListElement.querySelector('[data-state="active"]') as HTMLElement;
     if (activeElement) {
+      // Respect user's motion preferences
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       activeElement.scrollIntoView({
-        behavior: 'smooth',
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
         block: 'nearest',
         inline: 'center'
       });
@@ -153,7 +155,7 @@
   });
 </script>
 
-<div use:root class={containerClasses} data-orientation={orientation}>
+<div use:root class={containerClasses} data-orientation={orientation} data-variant={variant}>
   <!-- Tab List -->
   <div 
     use:list 
@@ -168,6 +170,7 @@
         use:trigger={tab.id}
         class={getTabClasses(tab, isActive)}
         data-value={tab.id}
+        data-state={isActive ? 'active' : 'inactive'}
         disabled={tab.disabled}
         role="tab"
         aria-selected={isActive}
@@ -178,10 +181,10 @@
         {#if tabContent}
           {@render tabContent({ tab, isActive })}
         {:else}
-          <!-- Icon -->
+          <!-- Icon (safe rendering - no raw HTML) -->
           {#if tab.icon}
-            <span class="tab-icon w-4 h-4" aria-hidden="true">
-              {@html tab.icon}
+            <span class="tab-icon w-4 h-4" aria-hidden="true" title="Icon: {tab.icon}">
+              <!-- Raw HTML disabled for security - use icon components instead -->
             </span>
           {/if}
           
@@ -194,9 +197,9 @@
               class="tab-count ml-1.5 px-1.5 py-0.5 text-xs rounded-full font-medium
                 {isActive 
                   ? variant === 'pills' 
-                    ? 'bg-gray-200 text-gray-900' 
-                    : 'bg-black/10 text-current'
-                  : 'bg-gray-200 text-gray-500'}"
+                    ? 'bg-[color:var(--surface-muted)] text-[color:var(--text-primary)]' 
+                    : 'bg-[color:var(--text-primary)]/10 text-current'
+                  : 'bg-[color:var(--surface-muted)] text-[color:var(--text-secondary)]'}"
               aria-label="{tab.count} items"
             >
               {tab.count}
@@ -206,7 +209,7 @@
           <!-- Badge -->
           {#if tab.badge}
             <span 
-              class="tab-badge ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-red-100 text-red-600 font-medium"
+              class="tab-badge ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-[color:var(--status-error-bg)] text-[color:var(--status-error-text)] font-medium"
               aria-label="Badge: {tab.badge}"
             >
               {tab.badge}
@@ -233,40 +236,28 @@
 </div>
 
 <style>
-  /* Base styles using OKLCH colors */
+  /* Base styles using semantic tokens */
   .tabs-root {
-    --primary: oklch(60% 0.2 250);
-    --surface: oklch(98% 0.01 250);
-    --text: oklch(10% 0.02 250);
-    --muted: oklch(50% 0.02 250);
+    /* Using semantic tokens from the design system */
   }
 
-  /* Scrollbar hiding for horizontal scroll */
-  .scrollbar-hide {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
 
-  /* Smooth scrolling for tab navigation */
+  /* Auto scrolling by default, respecting user preferences */
   .tabs-list {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
     scroll-padding: 1rem;
   }
 
   /* Focus styles for accessibility */
   .tabs-trigger:focus-visible {
-    outline: 2px solid var(--primary);
+    outline: 2px solid var(--state-focus);
     outline-offset: 2px;
     z-index: 1;
   }
 
   /* Hover states */
   .tabs-trigger:hover:not(:disabled) {
-    background-color: oklch(96% 0.01 250);
+    background-color: var(--surface-muted);
   }
 
   /* Active state animations */
@@ -319,8 +310,8 @@
   /* High contrast mode support */
   @media (prefers-contrast: high) {
     .tabs-trigger[data-state="active"] {
-      background-color: oklch(85% 0.05 250);
-      color: oklch(10% 0.02 250);
+      background-color: var(--surface-subtle);
+      color: var(--text-primary);
     }
     
     .tabs-trigger:focus-visible {
@@ -341,17 +332,10 @@
     }
   }
 
-  /* Dark mode support (optional) */
+  /* Dark mode support handled by semantic tokens */
   @media (prefers-color-scheme: dark) {
-    .tabs-root {
-      --primary: oklch(70% 0.2 250);
-      --surface: oklch(15% 0.02 250);
-      --text: oklch(95% 0.01 250);
-      --muted: oklch(65% 0.02 250);
-    }
-    
     .tabs-trigger:hover:not(:disabled) {
-      background-color: oklch(20% 0.02 250);
+      background-color: var(--surface-muted);
     }
   }
 
@@ -363,7 +347,7 @@
   
   .tabs-root[data-orientation="vertical"] .tabs-list {
     flex-direction: column;
-    border-right: 1px solid oklch(90% 0.02 250);
+    border-right: 1px solid var(--border-subtle);
     border-bottom: none;
     min-width: 200px;
     padding: 8px;

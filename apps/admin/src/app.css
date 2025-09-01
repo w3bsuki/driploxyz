@@ -1,12 +1,19 @@
 @reference;
 @import 'tailwindcss';
 @import '../../../packages/ui/src/styles/tokens.css';
+@import '../../../packages/ui/src/styles/semantic.css';
 
 @theme {
   /* Admin app-specific color mappings for Tailwind classes */
   /* These map to the core tokens from tokens.css */
   --color-white: var(--gray-0);
   --color-black: var(--gray-950);
+  /* Semantic one-offs for Tailwind v4 color utilities */
+  --color-primary: var(--brand-primary);
+  --color-success: var(--status-success-solid);
+  --color-warning: var(--status-warning-solid);
+  --color-error: var(--status-error-solid);
+  --color-info: var(--status-info-solid);
   
   /* Map gray scale for Tailwind utilities */
   --color-gray-50: var(--gray-50);

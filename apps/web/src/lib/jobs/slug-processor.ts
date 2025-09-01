@@ -13,6 +13,7 @@ import type { Database } from '@repo/database';
 /**
  * Initialize Supabase client with service role for background jobs
  */
+// Service client creation - reserved for future background job processing
 function _createServiceClient() {
   if (!SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY is required for background jobs');

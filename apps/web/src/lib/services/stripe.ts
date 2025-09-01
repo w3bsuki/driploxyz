@@ -3,11 +3,10 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 import { paymentLogger } from '$lib/utils/log';
 
-type Transaction = Database['public']['Tables']['transactions']['Row'];
-type Product = Database['public']['Tables']['products']['Row'];
-type Order = Database['public']['Tables']['orders']['Row'];
-
+// Database types
 type Tables = Database['public']['Tables'];
+type Transaction = Tables['transactions']['Row'];
+type Order = Tables['orders']['Row'];
 
 export interface PaymentCreateParams {
 	productId: string;
@@ -41,7 +40,7 @@ export interface PaymentIntentResult {
 	error?: Error;
 }
 
-interface TransactionResult {
+interface _TransactionResult { // Future transaction result type
 	transaction?: Transaction;
 	order?: Order;
 	error?: Error;
@@ -582,7 +581,7 @@ export class StripeService {
 	 * Handle subscription update
 	 */
 	private async handleSubscriptionUpdate(subscription: Stripe.Subscription): Promise<void> {
-		const { metadata } = subscription;
+		const { metadata: _metadata } = subscription; // Future metadata processing
 		
 		await this.supabase
 			.from('user_subscriptions')
@@ -663,7 +662,7 @@ export class StripeService {
 	/**
 	 * Create transaction record
 	 */
-	private async createTransaction(params: {
+	private async _createTransaction(params: { // Future transaction creation
 		orderId: string;
 		sellerId: string;
 		buyerId: string;

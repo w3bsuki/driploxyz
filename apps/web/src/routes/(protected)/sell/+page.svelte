@@ -14,6 +14,7 @@
   import { onMount } from 'svelte';
   import * as i18n from '@repo/i18n';
   import { analyzeImageForCategories, mergeSuggestions, type CategorySuggestion } from '$lib/utils/imageAnalysis';
+  import { scrollIntoView, focusWithAnnouncement } from '$lib/utils/navigation';
 
   interface Props {
     data: PageData;
@@ -31,6 +32,7 @@
   let validationMessage = $state<string | null>(null);
   let showValidationPopup = $state(false);
   let isProgressing = $state(false);
+  let stepContainer = $state<HTMLElement>();
   
   // Show validation message with auto-hide
   function showValidation(message: string) {
@@ -281,10 +283,45 @@
     formData.shipping_cost >= 0
   );
 
-  // Auto-scroll to top when step changes
-  function scrollToTop() {
-    // Instant jump to top
-    window.scrollTo(0, 0);
+  // Helper function to get step titles for accessibility announcements
+  function getStepTitle(stepNumber: number): string {
+    switch (stepNumber) {
+      case 1: return i18n.sell_step1();
+      case 2: return i18n.sell_step2();
+      case 3: return i18n.sell_step3();
+      case 4: return i18n.sell_step4();
+      case 5: return i18n.sell_step4(); // Review step shares title with pricing
+      default: return '';
+    }
+  }
+
+  // Better navigation with accessibility considerations
+  function navigateToStep() {
+    if (stepContainer) {
+      // Focus management for screen readers with step announcement
+      focusWithAnnouncement(
+        stepContainer, 
+        `Step ${currentStep} of 5: ${getStepTitle(currentStep)}`
+      );
+    } else {
+      // Fallback: scroll to top of content area with motion preference support
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const contentArea = document.querySelector('.overflow-y-auto');
+      
+      if (contentArea) {
+        // Scroll within the content container
+        contentArea.scrollTo({ 
+          top: 0, 
+          behavior: prefersReducedMotion ? 'auto' : 'smooth' 
+        });
+      } else {
+        // Final fallback: window scroll
+        window.scrollTo({ 
+          top: 0, 
+          behavior: prefersReducedMotion ? 'auto' : 'smooth' 
+        });
+      }
+    }
   }
 </script>
 
@@ -353,7 +390,7 @@
       <!-- Progress bar -->
       <div class="w-full bg-gray-100 rounded-full h-1 overflow-hidden">
         <div 
-          class="h-full bg-black rounded-full transition-all duration-300 ease-out {isProgressing ? 'animate-pulse' : ''}"
+          class="h-full bg-[color:var(--primary)] rounded-full transition-all duration-300 ease-out {isProgressing ? 'animate-pulse' : ''}"
           style="width: {((currentStep - 1) / 4) * 100}%"
         ></div>
       </div>
@@ -451,65 +488,68 @@
       >
         <!-- Step 1: Photos Only -->
         {#if currentStep === 1}
-          <StepPhotosOnly
-            bind:formData
-            bind:uploadedImages
-            bind:isUploadingImages
-            onImageUpload={handleImageUpload}
-            onImageDelete={handleImageDelete}
-            onFieldChange={(field, value) => {
-              // Could add validation here if needed
-            }}
-          />
+          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 1 of 5: {i18n.sell_step1()}">
+            <StepPhotosOnly
+              bind:formData
+              bind:uploadedImages
+              bind:isUploadingImages
+              onImageUpload={handleImageUpload}
+              onImageDelete={handleImageDelete}
+              onFieldChange={(field, value) => {
+                // Could add validation here if needed
+              }}
+            />
+          </div>
         {/if}
 
         <!-- Step 2: Category Selection -->
         {#if currentStep === 2}
-          <StepCategory
-            categories={data.categories}
-            bind:formData
-            suggestions={categorySuggestions}
-            showSuggestions={showSuggestions}
-            onFieldChange={(field, value) => {
-              // Update category fields
-              if (field === 'gender') formData.gender_category_id = value;
-              if (field === 'type') formData.type_category_id = value;
-              if (field === 'specific') formData.category_id = value;
-              if (field === 'condition') formData.condition = value;
-            }}
-            onDismissSuggestions={() => showSuggestions = false}
-            onApplySuggestions={() => {
-              if (categorySuggestions) {
-                // Map suggestion to actual category IDs
-                if (categorySuggestions.gender) {
-                  const genderCat = genderCategories.find(c => c.name === categorySuggestions.gender);
-                  if (genderCat) {
-                    formData.gender_category_id = genderCat.id;
+          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 2 of 5: {i18n.sell_step2()}">
+            <StepCategory
+              categories={data.categories}
+              bind:formData
+              suggestions={categorySuggestions}
+              showSuggestions={showSuggestions}
+              onFieldChange={(field, value) => {
+                // Update category fields
+                if (field === 'gender') formData.gender_category_id = value;
+                if (field === 'type') formData.type_category_id = value;
+                if (field === 'specific') formData.category_id = value;
+                if (field === 'condition') formData.condition = value;
+              }}
+              onDismissSuggestions={() => showSuggestions = false}
+              onApplySuggestions={() => {
+                if (categorySuggestions) {
+                  // Map suggestion to actual category IDs
+                  if (categorySuggestions.gender) {
+                    const genderCat = genderCategories.find(c => c.name === categorySuggestions.gender);
+                    if (genderCat) {
+                      formData.gender_category_id = genderCat.id;
+                    }
                   }
-                }
-                if (categorySuggestions.type && formData.gender_category_id) {
-                  const typeCat = typeCategories.find(c => c.name === categorySuggestions.type);
-                  if (typeCat) {
-                    formData.type_category_id = typeCat.id;
+                  if (categorySuggestions.type && formData.gender_category_id) {
+                    const typeCat = typeCategories.find(c => c.name === categorySuggestions.type);
+                    if (typeCat) {
+                      formData.type_category_id = typeCat.id;
+                    }
                   }
-                }
-                if (categorySuggestions.specific && formData.type_category_id) {
-                  const specificCat = specificCategories.find(c => c.name === categorySuggestions.specific);
-                  if (specificCat) {
-                    formData.category_id = specificCat.id;
+                  if (categorySuggestions.specific && formData.type_category_id) {
+                    const specificCat = specificCategories.find(c => c.name === categorySuggestions.specific);
+                    if (specificCat) {
+                      formData.category_id = specificCat.id;
+                    }
                   }
+                  showSuggestions = false;
+                  toasts.success('Applied category suggestions!');
                 }
-                showSuggestions = false;
-                toasts.success('Applied category suggestions!');
-              }
-            }}
-          />
+              }}
+            />
+          </div>
         {/if}
         
         <!-- Step 3: Product Details -->
         {#if currentStep === 3}
-          <div class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
-            
+          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 3 of 5: {i18n.sell_step3()}" class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
             <StepProductInfo
               bind:formData
               sizeOptions={sizeOptions}
@@ -527,8 +567,7 @@
         
         <!-- Step 4: Pricing -->
         {#if currentStep === 4}
-          <div class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
-            
+          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 4 of 5: {i18n.sell_step4()}" class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
             <StepPricing
               bind:formData
               profile={data.profile}
@@ -547,7 +586,7 @@
         
         <!-- Step 5: Review -->
         {#if currentStep === 5}
-          <div class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
+          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 5 of 5: Review listing" class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
             <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
               <div class="text-center mb-6">
                 <h2 class="text-lg font-semibold text-gray-900 mb-1">{i18n.sell_reviewListing()}</h2>
@@ -565,7 +604,7 @@
                       class="w-full h-56 object-cover"
                     />
                     {#if uploadedImages.length > 1}
-                      <div class="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                      <div class="absolute top-2 right-2 bg-[color:var(--primary)]/70 text-[color:var(--primary-fg)] text-xs px-2 py-1 rounded-full">
                         1/{uploadedImages.length}
                       </div>
                     {/if}
@@ -690,7 +729,7 @@
               publishError = null;
               setTimeout(() => {
                 currentStep--;
-                scrollToTop();
+                navigateToStep();
                 isProgressing = false;
               }, 150);
             }}
@@ -717,7 +756,7 @@
                 publishError = null;
                 setTimeout(() => {
                   currentStep++;
-                  scrollToTop();
+                  navigateToStep();
                   isProgressing = false;
                 }, 150);
               } else {
@@ -799,8 +838,8 @@
       <div class="text-center px-6 py-12 max-w-md mx-auto w-full">
         <!-- Clean Success Icon -->
         <div class="mb-6">
-          <div class="w-24 h-24 mx-auto bg-black rounded-full flex items-center justify-center">
-            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <div class="w-24 h-24 mx-auto bg-[color:var(--primary)] rounded-full flex items-center justify-center">
+            <svg class="w-12 h-12 text-[color:var(--primary-fg)]" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
@@ -829,7 +868,7 @@
         <div class="space-y-2">
           <button
             onclick={() => goto('/')}
-            class="w-full px-4 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
+            class="w-full px-4 py-3 bg-[color:var(--primary)] text-[color:var(--primary-fg)] rounded-lg font-medium hover:bg-[color:var(--primary-600)] transition-colors"
           >
             {i18n.sell_viewListing()}
           </button>

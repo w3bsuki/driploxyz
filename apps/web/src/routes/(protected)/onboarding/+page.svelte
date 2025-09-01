@@ -21,6 +21,7 @@
   import { uploadImage } from '$lib/supabase/storage';
   import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
+  import { scrollIntoView, focusWithAnnouncement } from '$lib/utils/navigation';
   import type { PageData } from './$types';
 
   interface Props {
@@ -49,6 +50,7 @@
   let languageInitialized = $state(false);
   let completionInProgress = $state(false);
   let showValidationError = $state(false);
+  let stepContainer = $state<HTMLElement>();
 
   const totalSteps = 4;
 
@@ -159,15 +161,44 @@
     showValidationError = false;
     if (step < totalSteps) {
       step++;
-      // Jump to top instantly
-      window.scrollTo(0, 0);
+      
+      // Better navigation with accessibility considerations
+      if (stepContainer) {
+        // Focus management for screen readers
+        focusWithAnnouncement(
+          stepContainer, 
+          `Step ${step} of ${totalSteps}: ${getStepTitle(step)}`
+        );
+      } else {
+        // Fallback: scroll to top of page with motion preference support
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ 
+          top: 0, 
+          behavior: prefersReducedMotion ? 'auto' : 'smooth' 
+        });
+      }
     }
   }
 
   function prevStep() {
     if (step > 1) {
       step--;
-      window.scrollTo(0, 0);
+      
+      // Better navigation with accessibility considerations
+      if (stepContainer) {
+        // Focus management for screen readers
+        focusWithAnnouncement(
+          stepContainer, 
+          `Step ${step} of ${totalSteps}: ${getStepTitle(step)}`
+        );
+      } else {
+        // Fallback: scroll to top of page with motion preference support
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ 
+          top: 0, 
+          behavior: prefersReducedMotion ? 'auto' : 'smooth' 
+        });
+      }
     }
   }
 
@@ -244,6 +275,17 @@
     return true;
   }
 
+  // Helper function to get step titles for accessibility announcements
+  function getStepTitle(stepNumber: number): string {
+    switch (stepNumber) {
+      case 1: return m.onboarding_chooseAccountType();
+      case 2: return m.onboarding_createProfile();
+      case 3: return m.onboarding_setupPayouts();
+      case 4: return m.onboarding_connectSocials();
+      default: return '';
+    }
+  }
+
   const canProceed = $derived(() => {
     // GLOBAL CHECK: Brand/Premium must have paid to proceed at ANY step
     if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
@@ -300,10 +342,11 @@
 
 <!-- Step 1: Account Type -->
 {#if step === 1}
-  <OnboardingStep
-    title={m.onboarding_chooseAccountType()}
-    subtitle={m.onboarding_selectPerfectPlan()}
-  >
+  <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 1 of {totalSteps}: {m.onboarding_chooseAccountType()}">
+    <OnboardingStep
+      title={m.onboarding_chooseAccountType()}
+      subtitle={m.onboarding_selectPerfectPlan()}
+    >
     {#snippet children()}
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
@@ -366,13 +409,15 @@
       </div>
     {/snippet}
   </OnboardingStep>
+  </div>
 
 <!-- Step 2: Profile Setup & Avatar -->
 {:else if step === 2}
-  <OnboardingStep
-    title={m.onboarding_createProfile()}
-    subtitle={m.onboarding_tellAboutYourself()}
-  >
+  <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 2 of {totalSteps}: {m.onboarding_createProfile()}">
+    <OnboardingStep
+      title={m.onboarding_createProfile()}
+      subtitle={m.onboarding_tellAboutYourself()}
+    >
     {#snippet children()}
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
@@ -445,13 +490,15 @@
       </div>
     {/snippet}
   </OnboardingStep>
+  </div>
 
 <!-- Step 3: Payout Method -->
 {:else if step === 3}
-  <OnboardingStep
-    title={m.onboarding_setupPayouts()}
-    subtitle={m.onboarding_choosePaymentMethod()}
-  >
+  <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 3 of {totalSteps}: {m.onboarding_setupPayouts()}">
+    <OnboardingStep
+      title={m.onboarding_setupPayouts()}
+      subtitle={m.onboarding_choosePaymentMethod()}
+    >
     {#snippet children()}
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
@@ -487,13 +534,15 @@
       </div>
     {/snippet}
   </OnboardingStep>
+  </div>
 
 <!-- Step 4: Social Links -->
 {:else if step === 4}
-  <OnboardingStep
-    title={m.onboarding_connectSocials()}
-    subtitle={m.onboarding_helpBuyersDiscover()}
-  >
+  <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 4 of {totalSteps}: {m.onboarding_connectSocials()}">
+    <OnboardingStep
+      title={m.onboarding_connectSocials()}
+      subtitle={m.onboarding_helpBuyersDiscover()}
+    >
     {#snippet children()}
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
@@ -595,6 +644,7 @@
       </div>
     {/snippet}
   </OnboardingStep>
+  </div>
 {/if}
 
 <!-- Success Modal -->

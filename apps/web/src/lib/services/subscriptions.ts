@@ -3,10 +3,8 @@ import type { Database } from '@repo/database';
 import { createStripeService } from './stripe';
 import type { SubscriptionCreateParams } from '$lib/stripe/types';
 
-type Tables = Database['public']['Tables'];
-type SubscriptionPlan = Tables['subscription_plans']['Row'];
-type UserSubscription = Tables['user_subscriptions']['Row'];
-type UserSubscriptionInsert = Tables['user_subscriptions']['Insert'];
+// type Tables = Database['public']['Tables']; // Future database type usage
+// Database types reserved for future subscription features
 
 export class SubscriptionService {
 	constructor(private supabase: SupabaseClient<Database>) {}
@@ -61,7 +59,7 @@ export class SubscriptionService {
 		planId: string,
 		stripeInstance: any,
 		discountAmount: number = 0,
-		discountCode: string = ''
+		_discountCode: string = '' // Future discount code validation
 	): Promise<{ subscriptionId?: string; clientSecret?: string; error?: Error }> {
 		try {
 			if (!stripeInstance) {
@@ -195,7 +193,7 @@ export class SubscriptionService {
 	/**
 	 * Apply discount campaign (e.g., 50% off for first 100 users)
 	 */
-	async applyEarlyBirdDiscount(userId: string): Promise<{ eligible: boolean; discountPercent: number }> {
+	async applyEarlyBirdDiscount(_userId: string): Promise<{ eligible: boolean; discountPercent: number }> { // Future user validation
 		// Check how many users have used the early bird discount
 		const { count } = await this.supabase
 			.from('user_subscriptions')

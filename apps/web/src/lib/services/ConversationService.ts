@@ -41,7 +41,7 @@ export class ConversationService {
   private reconnectAttempts = 0;
   private readonly MAX_RECONNECT_ATTEMPTS = 5;
   private updateQueue = new Map<string, any>();
-  private lastUpdateTime = 0;
+  private __lastUpdateTime = 0; // Future use for performance tracking
 
   constructor(
     private supabase: SupabaseClient,
@@ -380,9 +380,10 @@ export class ConversationService {
         
         // Mark as delivered if we received it (non-blocking)
         if (newMessage.receiver_id === this.userId && newMessage.sender_id !== this.userId) {
-          this.supabase.rpc('mark_message_delivered' as any, {
+          // Fire and forget - no await needed
+          void this.supabase.rpc('mark_message_delivered' as any, {
             p_message_id: newMessage.id
-          }).then(() => undefined).catch(() => undefined); // Fire and forget
+          });
         }
       }
     } catch (error) {
@@ -475,7 +476,7 @@ export class ConversationService {
       this.callbacks.clear();
       this.updateQueue.clear();
       this.reconnectAttempts = 0;
-      this.lastUpdateTime = 0;
+      this._lastUpdateTime = 0;
     } catch (error) {
       messagingLogger.error('Error during cleanup', error, {
         userId: this.userId

@@ -10,9 +10,11 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
   const query = url.searchParams.get('q') || '';
   const page = parseInt(url.searchParams.get('page') || '1', 10);
   const pageSize = parseInt(url.searchParams.get('pageSize') || '50', 10);
-  const level1 = url.searchParams.get('category') || url.searchParams.get('level1') || '';
-  const level2 = url.searchParams.get('subcategory') || url.searchParams.get('level2') || '';
-  const level3 = url.searchParams.get('specific') || url.searchParams.get('level3') || '';
+  
+  // Handle both canonical and legacy parameter names
+  const category = url.searchParams.get('category') || url.searchParams.get('level1') || '';
+  const subcategory = url.searchParams.get('subcategory') || url.searchParams.get('level2') || '';
+  const specific = url.searchParams.get('specific') || url.searchParams.get('level3') || '';
   const minPrice = url.searchParams.get('min_price');
   const maxPrice = url.searchParams.get('max_price');
   const condition = url.searchParams.get('condition');
@@ -31,33 +33,35 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
     let categoryIds: string[] = [];
 
     const findByName = (name: string) => allCategories?.find((c) => c.name?.toLowerCase() === name.toLowerCase());
+    const findBySlug = (slug: string) => allCategories?.find((c) => c.slug?.toLowerCase() === slug.toLowerCase());
     const childrenOf = (id: string) => allCategories?.filter((c) => c.parent_id === id) || [];
 
-    if (level1 && level1 !== 'all') {
-      const l1 = findByName(level1);
+    if (category && category !== 'all') {
+      // Try finding by slug first (more reliable), fallback to name
+      const l1 = findBySlug(category) || findByName(category);
       if (l1) {
-        if (level2 && level2 !== 'all') {
-          const l2 = childrenOf(l1.id).find((c) => c.name?.toLowerCase() === level2.toLowerCase());
+        if (subcategory && subcategory !== 'all') {
+          const l2 = childrenOf(l1.id).find((c) => c.slug?.toLowerCase() === subcategory.toLowerCase() || c.name?.toLowerCase() === subcategory.toLowerCase());
           if (l2) {
-            if (level3 && level3 !== 'all') {
-              const l3 = childrenOf(l2.id).find((c) => c.name?.toLowerCase() === level3.toLowerCase());
+            if (specific && specific !== 'all') {
+              const l3 = childrenOf(l2.id).find((c) => c.slug?.toLowerCase() === specific.toLowerCase() || c.name?.toLowerCase() === specific.toLowerCase());
               categoryIds = l3 ? [l3.id] : childrenOf(l2.id).map((c) => c.id);
             } else {
               categoryIds = [l2.id, ...childrenOf(l2.id).map((c) => c.id)];
             }
           } else {
-            categoryIds = [l1.id, ...childrenOf(l1.id).map((c) => c.id), ...childrenOf(childrenOf(l1.id)[0]?.id || '').map((c) => c.id)].filter(Boolean);
+            categoryIds = [l1.id, ...childrenOf(l1.id).flatMap(child => [child.id, ...childrenOf(child.id).map(c => c.id)])];
           }
         } else {
-          categoryIds = [l1.id, ...childrenOf(l1.id).map((c) => c.id), ...childrenOf(childrenOf(l1.id)[0]?.id || '').map((c) => c.id)].filter(Boolean);
+          categoryIds = [l1.id, ...childrenOf(l1.id).flatMap(child => [child.id, ...childrenOf(child.id).map(c => c.id)])];
         }
       }
-    } else if (level2 && level2 !== 'all') {
-      const l2s = allCategories?.filter((c) => c.level === 2 && c.name?.toLowerCase() === level2.toLowerCase()) || [];
+    } else if (subcategory && subcategory !== 'all') {
+      const l2s = allCategories?.filter((c) => c.level === 2 && (c.slug?.toLowerCase() === subcategory.toLowerCase() || c.name?.toLowerCase() === subcategory.toLowerCase())) || [];
       const all = l2s.flatMap((l2) => [l2.id, ...childrenOf(l2.id).map((c) => c.id)]);
       categoryIds = Array.from(new Set(all));
-    } else if (level3 && level3 !== 'all') {
-      const l3s = allCategories?.filter((c) => c.level === 3 && c.name?.toLowerCase() === level3.toLowerCase()) || [];
+    } else if (specific && specific !== 'all') {
+      const l3s = allCategories?.filter((c) => c.level === 3 && (c.slug?.toLowerCase() === specific.toLowerCase() || c.name?.toLowerCase() === specific.toLowerCase())) || [];
       categoryIds = l3s.map((c) => c.id);
     }
 
@@ -120,22 +124,7 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
     productsQuery = productsQuery.range(offset, offset + pageSize - 1);
     const { data: products } = await productsQuery;
 
-    const transformed = (products || []).map((product: {
-      id: string;
-      title: string;
-      price: number;
-      brand: string | null;
-      size: string | null;
-      condition: string;
-      location: string | null;
-      created_at: string;
-      seller_id: string;
-      category_id: string | null;
-      country_code: string;
-      product_images: { image_url: string }[] | null;
-      profiles: { username: string | null; avatar_url: string | null; account_type: string | null } | null;
-      categories: { id: string; name: string; slug: string; parent_id: string | null; level: number } | null;
-    }) => {
+    const transformed = (products || []).map((product: any) => {
       let mainCategoryName = '';
       let subcategoryName = '';
       let specificCategoryName = '';
@@ -159,7 +148,7 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
       }
       return {
         ...product,
-        images: product.product_images?.map((img) => img.image_url) || [],
+        images: product.product_images?.map((img: { image_url: string }) => img.image_url) || [],
         seller: product.profiles ? {
           id: product.seller_id,
           username: product.profiles.username,

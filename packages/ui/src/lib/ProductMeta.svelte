@@ -29,19 +29,19 @@
 </script>
 
 {#if translatedCategory}
-  <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">
+  <p class="text-xs font-medium text-[color:var(--text-muted)] uppercase tracking-wide">
     {translatedCategory}
   </p>
 {/if}
 
-<p class="text-xs text-gray-500">
+<p class="text-xs text-[color:var(--text-muted)]">
   {#if subcategoryName}
-    <span class="font-medium text-gray-500">{subcategoryName}</span>
+    <span class="font-medium text-[color:var(--text-muted)]">{subcategoryName}</span>
   {/if}
   {#if subcategoryName && size} / {/if}
   {#if size}{sizeText} {size}{/if}
   {#if (subcategoryName || size) && brand} / {/if}
   {#if brand}
-    <span class="text-gray-500">{brand}</span>
+    <span class="text-[color:var(--text-muted)]">{brand}</span>
   {/if}
 </p>

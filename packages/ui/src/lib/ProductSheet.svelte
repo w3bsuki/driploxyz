@@ -131,7 +131,7 @@
 {#if isVisible}
   <div 
     bind:this={sheetRef}
-    class="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-sm md:shadow-2xl z-50 lg:hidden {sheetHeight} {className}"
+    class="fixed bottom-0 left-0 right-0 bg-[color:var(--surface-base)] rounded-t-3xl shadow-sm md:shadow-2xl z-50 lg:hidden {sheetHeight} {className}"
     style={transformStyle}
     ontouchstart={handleTouchStart}
     ontouchmove={handleTouchMove}
@@ -140,8 +140,8 @@
     out:slide={{ duration: 200, easing: cubicOut }}
   >
     <!-- Drag Handle -->
-    <div class="flex justify-center py-3 border-b border-gray-100">
-      <div class="w-12 h-1 bg-gray-300 rounded-full"></div>
+    <div class="flex justify-center py-3 border-b border-[color:var(--border-subtle)]">
+      <div class="w-12 h-1 bg-[color:var(--border-default)] rounded-full"></div>
     </div>
 
     <!-- Sheet Header -->
@@ -150,7 +150,7 @@
         <div class="flex items-center gap-3">
           <button
             onclick={onClose}
-            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+            class="w-8 h-8 rounded-full bg-[color:var(--surface-muted)] flex items-center justify-center"
             aria-label="Close product details"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,7 +162,7 @@
           <div class="flex items-center gap-2">
             <button
               onclick={onShare}
-              class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+              class="w-8 h-8 rounded-full bg-[color:var(--surface-muted)] flex items-center justify-center"
               aria-label="Share product"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,7 +172,7 @@
             
             <button
               onclick={onFavorite}
-              class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+              class="w-8 h-8 rounded-full bg-[color:var(--surface-muted)] flex items-center justify-center"
               aria-label="Add to favorites"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -186,14 +186,14 @@
         <div class="flex items-center gap-2">
           <button
             onclick={toggleExpanded}
-            class="text-sm text-blue-600 font-medium"
+            class="text-sm text-primary font-medium"
           >
             {isExpanded ? 'Collapse' : 'Expand'}
           </button>
           
           <button
             onclick={toggleFullscreen}
-            class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+            class="w-8 h-8 rounded-full bg-[color:var(--surface-muted)] flex items-center justify-center"
             aria-label="Toggle fullscreen"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -207,13 +207,13 @@
     <!-- Sheet Content -->
     <div class="flex-1 overflow-y-auto">
       <!-- Product Header -->
-      <div class="p-4 border-b border-gray-100">
+      <div class="p-4 border-b border-[color:var(--border-subtle)]">
         <div class="flex items-start justify-between mb-3">
           <div class="flex-1">
             {#if product.brand}
-              <p class="text-sm font-medium text-gray-500 uppercase tracking-wide">{product.brand}</p>
+              <p class="text-sm font-medium text-[color:var(--text-secondary)] uppercase tracking-wide">{product.brand}</p>
             {/if}
-            <h1 class="text-xl font-bold text-gray-900 leading-tight">{product.title}</h1>
+            <h1 class="text-xl font-bold text-[color:var(--text-primary)] leading-tight">{product.title}</h1>
           </div>
           
           <div class="text-right ml-4">
@@ -234,14 +234,14 @@
         <!-- Quick Info Grid -->
         <div class="grid grid-cols-3 gap-2 text-center">
           {#if product.size}
-            <div class="bg-gray-50 rounded-lg p-2">
-              <p class="text-xs text-gray-500">Size</p>
+            <div class="bg-[color:var(--surface-subtle)] rounded-lg p-2">
+              <p class="text-xs text-[color:var(--text-secondary)]">Size</p>
               <p class="text-sm font-semibold">{product.size}</p>
             </div>
           {/if}
           {#if product.color}
-            <div class="bg-gray-50 rounded-lg p-2">
-              <p class="text-xs text-gray-500">Color</p>
+            <div class="bg-[color:var(--surface-subtle)] rounded-lg p-2">
+              <p class="text-xs text-[color:var(--text-secondary)]">Color</p>
               <p class="text-sm font-semibold">{product.color}</p>
             </div>
           {/if}
@@ -253,15 +253,15 @@
       </div>
 
       <!-- Section Navigation -->
-      <div class="sticky top-16 bg-white z-10 border-b border-gray-100">
+      <div class="sticky top-16 bg-[color:var(--surface-base)] z-10 border-b border-[color:var(--border-subtle)]">
         <div class="flex">
           {#each ['info', 'condition', 'seller'] as section}
             <button
               onclick={() => currentSection = section}
               class="flex-1 py-3 px-4 text-sm font-medium capitalize transition-colors
                      {currentSection === section 
-                       ? 'text-black border-b-2 border-black' 
-                       : 'text-gray-500 hover:text-gray-900'}"
+                       ? 'text-[color:var(--text-primary)] border-b-2 border-[color:var(--text-primary)]' 
+                       : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}"
             >
               {section}
             </button>
@@ -302,8 +302,8 @@
             <!-- Description -->
             {#if product.description}
               <div>
-                <h3 class="font-semibold text-gray-900 mb-2">Description</h3>
-                <p class="text-gray-900 leading-relaxed">{product.description}</p>
+                <h3 class="font-semibold text-[color:var(--text-primary)] mb-2">Description</h3>
+                <p class="text-[color:var(--text-primary)] leading-relaxed">{product.description}</p>
               </div>
             {/if}
           </div>
@@ -340,12 +340,12 @@
     </div>
 
     <!-- Fixed Action Buttons -->
-    <div class="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4">
+    <div class="absolute bottom-0 left-0 right-0 bg-[color:var(--surface-base)] border-t border-[color:var(--border-default)] p-4">
       <div class="flex gap-3">
         <!-- Make Offer Button -->
         <button
           onclick={onMakeOffer}
-          class="flex-1 bg-gray-100 text-gray-900 font-semibold py-3 px-4 rounded-xl transition-colors hover:bg-gray-200"
+          class="flex-1 bg-[color:var(--surface-muted)] text-[color:var(--text-primary)] font-semibold py-3 px-4 rounded-xl transition-colors hover:bg-[color:var(--surface-emphasis)]"
         >
           Make Offer
         </button>
@@ -353,7 +353,7 @@
         <!-- Buy Now Button -->
         <button
           onclick={onBuyNow}
-          class="flex-2 bg-black text-white font-semibold py-3 px-6 rounded-xl transition-colors hover:bg-gray-800 disabled:opacity-50"
+          class="flex-2 bg-primary text-white font-semibold py-3 px-6 rounded-xl transition-colors hover:bg-[color:var(--primary-600)] disabled:opacity-50"
           disabled={sizes.length > 0 && !selectedSize}
         >
           {sizes.length > 0 && !selectedSize ? 'Select Size' : `Buy • $${product.price}`}
@@ -362,7 +362,7 @@
 
       <!-- Size Warning -->
       {#if sizes.length > 0 && !selectedSize}
-        <p class="text-xs text-orange-600 mt-2 text-center">Please select a size to continue</p>
+        <p class="text-xs text-[color:var(--status-warning-text)] mt-2 text-center">Please select a size to continue</p>
       {/if}
     </div>
   </div>

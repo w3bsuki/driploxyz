@@ -74,11 +74,13 @@
   <!-- Description -->
   {#if product.description}
     <div class="mb-4">
-      <p class="text-sm text-gray-700 leading-relaxed">{truncatedDescription}</p>
+      <div class="text-sm text-gray-600 leading-relaxed">
+        <p>{truncatedDescription}</p>
+      </div>
       {#if product.description.length > 120}
         <button 
           onclick={onToggleDescription}
-          class="text-blue-600 hover:text-blue-700 font-medium mt-2 text-sm"
+          class="link font-medium mt-2 text-sm"
         >
           {showFullDescription ? 'Show less' : 'Read more'}
         </button>
@@ -89,7 +91,7 @@
   <!-- Protection -->
   <div class="border-t border-gray-200 pt-4">
     <div class="flex items-center gap-2 mb-2">
-      <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg class="w-4 h-4 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
       </svg>
       <span class="text-sm font-medium text-gray-900">Driplo Protection</span>
@@ -140,13 +142,13 @@
       </div>
       <div class="p-4 space-y-4 text-sm">
         <div class="bg-blue-50 rounded-lg p-3">
-          <h4 class="font-medium text-blue-900 mb-2 flex items-center gap-2">
+          <h4 class="font-medium text-blue-700 mb-2 flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
             </svg>
             {i18n.product_driploProtection()}
           </h4>
-          <p class="text-blue-800 text-sm">All purchases are protected by Driplo. Your money is secure until you confirm receipt.</p>
+          <p class="text-blue-700 text-sm">All purchases are protected by Driplo. Your money is secure until you confirm receipt.</p>
         </div>
         
         <div>

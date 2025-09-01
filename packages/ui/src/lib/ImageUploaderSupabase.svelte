@@ -430,16 +430,15 @@
 
     <!-- Upload area -->
     {#if canUploadMore}
-      <div
-        role="button"
-        tabindex="0"
+      <button
+        type="button"
         class="aspect-square border-2 border-dashed rounded-lg flex flex-col items-center justify-center 
-               cursor-pointer transition-colors duration-200 
+               cursor-pointer transition-colors duration-200 w-full
                {isDragging 
                  ? 'border-blue-500 bg-blue-50 scale-105' 
                  : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'}"
         onclick={triggerFileInput}
-        onkeydown={handleKeyDown}
+        aria-label={addPhotoText}
       >
         <div class="flex flex-col items-center space-y-1">
           {#if isDragging}
@@ -455,7 +454,7 @@
             <span class="text-xs text-gray-500 text-center px-1">{addPhotoText}</span>
           {/if}
         </div>
-      </div>
+      </button>
     {/if}
   </div>
 

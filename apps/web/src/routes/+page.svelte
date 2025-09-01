@@ -21,6 +21,9 @@
 
 	let searchQuery = $state('');
 	let selectedSeller = $state<Seller | null>(null);
+	let selectedPartner = $state<any>(null);
+	let showSellerModal = $state(false);
+	let showPartnerModal = $state(false);
 	let showCategoryDropdown = $state(false);
 	let loadingCategory = $state<string | null>(null);
 	let selectedPillIndex = $state(-1);
@@ -188,6 +191,18 @@
 		}))
 	);
 
+	// Partners data
+	const partners = $derived([
+		{
+			id: 'indecisive-wear',
+			name: 'Indecisive Wear',
+			logo: 'https://via.placeholder.com/80x80/000000/FFFFFF?text=IW',
+			instagram: 'https://instagram.com/indecisivewear',
+			website: 'https://indecisivewear.com',
+			description: 'Unique statement pieces for the fashion-forward'
+		}
+	]);
+
 	function handleSearch(query: string) {
 		if (query.trim()) {
 			goto(`/search?q=${encodeURIComponent(query)}`);
@@ -299,10 +314,63 @@
 		if (seller.premium) {
 			// Open quick view for premium sellers
 			selectedSeller = seller;
+			showSellerModal = true;
 		} else {
 			// Navigate directly to profile for non-premium
 			goto(`/profile/${seller.username || seller.id}`);
 		}
+	}
+
+	function handlePartnerClick(partner: any) {
+		// Transform partner to seller format for the SellerQuickView component
+		selectedPartner = {
+			id: partner.id,
+			username: partner.name,
+			avatar_url: partner.logo,
+			itemCount: 12, // Mock item count
+			created_at: '2023-01-01', // Mock creation date
+			bio: partner.description,
+			location: 'Fashion District',
+			totalSales: 8,
+			rating: 4.9,
+			recentProducts: [
+				{
+					id: 'p1',
+					title: 'Vintage Leather Jacket',
+					price: 85,
+					image: 'https://via.placeholder.com/200x200/FFA500/FFFFFF?text=Jacket'
+				},
+				{
+					id: 'p2',
+					title: 'Designer Sunglasses',
+					price: 45,
+					image: 'https://via.placeholder.com/200x200/FF69B4/FFFFFF?text=Shades'
+				},
+				{
+					id: 'p3',
+					title: 'Statement Necklace',
+					price: 32,
+					image: 'https://via.placeholder.com/200x200/9932CC/FFFFFF?text=Necklace'
+				},
+				{
+					id: 'p4',
+					title: 'Silk Scarf',
+					price: 28,
+					image: 'https://via.placeholder.com/200x200/FF4500/FFFFFF?text=Scarf'
+				}
+			]
+		};
+		showPartnerModal = true;
+	}
+
+	function closePartnerModal() {
+		showPartnerModal = false;
+		selectedPartner = null;
+	}
+
+	function closeSellerModal() {
+		showSellerModal = false;
+		selectedSeller = null;
 	}
 
 	function handleFilter() {
@@ -310,12 +378,15 @@
 		showCategoryDropdown = !showCategoryDropdown;
 	}
 
-	async function prefetchCategoryPath(path: string) {
+	async function prefetchCategoryPage(categorySlug: string) {
 		try {
-			await preloadCode(path);
-			preloadData(path).catch(() => {});
+			// Preload the category page
+			await preloadCode(`/category/${categorySlug}`);
+			// Preload category page data
+			await preloadData(`/category/${categorySlug}`);
 		} catch (e) {
-			// ignore
+			// Preload failed, but continue navigation
+			console.warn('Preload failed:', e);
 		}
 	}
 	
@@ -350,8 +421,8 @@
 	async function navigateToCategory(categorySlug: string) {
 		loadingCategory = categorySlug;
 		
-		
 		try {
+			// Navigate to dedicated category page
 			await goto(`/category/${categorySlug}`);
 		} finally {
 			loadingCategory = null;
@@ -439,7 +510,7 @@
 
 
 {#key currentLang}
-<div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
+<div class="min-h-screen bg-[color:var(--surface-subtle)] pb-20 sm:pb-0">
 	<main class="max-w-6xl mx-auto">
 		<!-- Hero Search -->
 		<div class="bg-white border-b border-gray-200">
@@ -508,8 +579,8 @@
 					{#if mainCategories.find(c => c.slug === 'women')}
 						{@const category = mainCategories.find(c => c.slug === 'women')}
 						<button 
-							onmouseenter={() => prefetchCategoryPath(`/category/${category.slug}`)}
-							ontouchstart={() => prefetchCategoryPath(`/category/${category.slug}`)}
+							onmouseenter={() => prefetchCategoryPage(category.slug)}
+							ontouchstart={() => prefetchCategoryPage(category.slug)}
 							onclick={() => navigateToCategory(category.slug)}
 							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 1)}
 							disabled={loadingCategory === category.slug}
@@ -531,8 +602,8 @@
 					{#if mainCategories.find(c => c.slug === 'men')}
 						{@const category = mainCategories.find(c => c.slug === 'men')}
 						<button 
-							onmouseenter={() => prefetchCategoryPath(`/category/${category.slug}`)}
-							ontouchstart={() => prefetchCategoryPath(`/category/${category.slug}`)}
+							onmouseenter={() => prefetchCategoryPage(category.slug)}
+							ontouchstart={() => prefetchCategoryPage(category.slug)}
 							onclick={() => navigateToCategory(category.slug)}
 							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 2)}
 							disabled={loadingCategory === category.slug}
@@ -554,8 +625,8 @@
 					{#if mainCategories.find(c => c.slug === 'kids')}
 						{@const category = mainCategories.find(c => c.slug === 'kids')}
 						<button 
-							onmouseenter={() => prefetchCategoryPath(`/category/${category.slug}`)}
-							ontouchstart={() => prefetchCategoryPath(`/category/${category.slug}`)}
+							onmouseenter={() => prefetchCategoryPage(category.slug)}
+							ontouchstart={() => prefetchCategoryPage(category.slug)}
 							onclick={() => navigateToCategory(category.slug)}
 							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 3)}
 							disabled={loadingCategory === category.slug}
@@ -586,8 +657,10 @@
 						sizes: product.size ? [product.size] : ['S', 'M', 'L']
 					}))}
 					{sellers}
+					{partners}
 					onSellerSelect={(seller) => selectedSeller = seller}
 					onSellerClick={handleSellerClick}
+					onPartnerClick={handlePartnerClick}
 					onProductClick={handleProductClick}
 					onProductBuy={handlePurchase}
 					onToggleFavorite={handleFavorite}
@@ -601,7 +674,8 @@
 						common_currency: i18n.common_currency(),
 						ui_scroll: i18n.ui_scroll(),
 						promoted_hotPicks: i18n.promoted_hotPicks(),
-						promoted_premiumSellers: i18n.promoted_premiumSellers()
+						promoted_premiumSellers: i18n.promoted_premiumSellers(),
+						categoryTranslation: translateCategory
 					}}
 				/>
 			{:else if highlightsInView}
@@ -623,6 +697,7 @@
 			<FeaturedProducts
 				{products}
 				errors={data.errors}
+				sectionTitle={i18n.home_newestListings()}
 				onProductClick={handleProductClick}
 				onFavorite={handleFavorite}
 				onBrowseAll={handleBrowseAll}
@@ -698,8 +773,19 @@
 {#if selectedSeller}
 	<SellerQuickView
 		seller={selectedSeller} 
-		onclose={() => selectedSeller = null}
+		bind:isOpen={showSellerModal}
+		onClose={closeSellerModal}
 		onViewProfile={(sellerId) => goto(`/profile/${sellerId}`)}
+	/>
+{/if}
+
+<!-- Partner Quick View Dialog -->
+{#if selectedPartner}
+	<SellerQuickView
+		seller={selectedPartner}
+		bind:isOpen={showPartnerModal}
+		onClose={closePartnerModal}
+		onViewProfile={(partnerId) => window.open(partners.find(p => p.id === partnerId)?.instagram || '#', '_blank')}
 	/>
 {/if}
 

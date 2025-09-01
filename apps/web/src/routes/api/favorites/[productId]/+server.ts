@@ -55,13 +55,27 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	// Create the processing promise
 	const processRequest = async () => {
 		try {
+			// Check if product exists and if it's sold
+			const { data: product, error: productError } = await locals.supabase
+				.from('products')
+				.select('id, is_sold')
+				.eq('id', productId)
+				.single();
+			
+			if (productError || !product) {
+				console.error('Product not found or error:', productError);
+				return json({ error: 'Product not found' }, { status: 404 });
+			}
+			
 			// Check if already favorited
-			const { data: existingFavorite } = await locals.supabase
+			const { data: existingFavorite, error: favoriteError } = await locals.supabase
 				.from('favorites')
 				.select('id')
 				.eq('user_id', session.user.id)
 				.eq('product_id', productId)
 				.single();
+
+			// Note: favoriteError is expected when no favorite exists (PGRST116)
 			
 			if (existingFavorite) {
 				// Remove favorite
@@ -72,7 +86,8 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					.eq('product_id', productId);
 				
 				if (deleteError) {
-					throw new Error('Failed to remove favorite');
+					console.error('Failed to remove favorite:', deleteError);
+					return json({ error: 'Failed to remove favorite', details: deleteError.message }, { status: 500 });
 				}
 				
 				// Get updated count (trigger automatically decrements)
@@ -90,6 +105,14 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					favoriteCount: updatedProduct?.favorite_count || 0
 				});
 			} else {
+				// Prevent adding favorite to sold products
+				if (product.is_sold) {
+					return json({ 
+						error: 'Cannot favorite sold items',
+						message: 'This item has been sold and cannot be favorited'
+					}, { status: 409 });
+				}
+				
 				// Add favorite
 				const { error: insertError } = await locals.supabase
 					.from('favorites')
@@ -99,7 +122,8 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					});
 				
 				if (insertError) {
-					throw new Error('Failed to add favorite');
+					console.error('Failed to add favorite:', insertError);
+					return json({ error: 'Failed to add favorite', details: insertError.message }, { status: 500 });
 				}
 				
 				// Get updated count (trigger automatically increments)
@@ -117,6 +141,12 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					favoriteCount: updatedProduct?.favorite_count || 1
 				});
 			}
+		} catch (error) {
+			console.error('Favorites API error:', error);
+			return json({ 
+				error: 'Internal server error', 
+				message: 'An error occurred while processing your request' 
+			}, { status: 500 });
 		} finally {
 			// Clean up the request cache
 			processingRequests.delete(requestKey);

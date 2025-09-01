@@ -65,7 +65,7 @@ export const actions = {
     const { request, locals: { supabase, session } } = event;
     if (!session) {
       return fail(401, { 
-        errors: { _form: i18n.error_notAuthenticated() }
+        errors: { _form: 'Not authenticated' }
       });
     }
 
@@ -153,7 +153,7 @@ export const actions = {
       // CRITICAL: Ensure category is NEVER null
       if (!category_id) {
         return fail(400, {
-          errors: { category_id: i18n.error_categoryRequired() },
+          errors: { category_id: 'Category is required' },
           values: {
             title, description, gender_category_id, type_category_id, category_id, brand, size, 
             condition, color, material, price, shipping_cost, tags, use_premium_boost
@@ -263,7 +263,7 @@ export const actions = {
       }
       
       return fail(500, {
-        errors: { _form: error instanceof Error ? error.message : i18n.error_failedToCreateProduct() },
+        errors: { _form: error instanceof Error ? error.message : 'Failed to create product' },
         values: {
           title, description, gender_category_id, type_category_id, category_id, brand, size, 
           condition, color, material, price, shipping_cost, tags, use_premium_boost

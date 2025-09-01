@@ -1,7 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
-import { createStripeService } from './stripe';
-import { validatePayoutMethod, validatePayoutAmount } from '$lib/utils/payments';
+import { validatePayoutMethod } from '$lib/utils/payments';
 import type { PayoutMethod } from '$lib/stripe/types';
 
 type Tables = Database['public']['Tables'];

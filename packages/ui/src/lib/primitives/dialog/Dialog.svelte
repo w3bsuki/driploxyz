@@ -63,7 +63,7 @@
 {#if trigger}
   <button 
     use:triggerElement
-    class="btn btn-primary min-h-[44px] px-6 py-3 font-medium rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 transition-colors duration-200"
+    class="btn btn-primary min-h-[var(--touch-primary)] px-6 py-3 font-medium rounded-[var(--radius-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:ring-offset-2 transition-colors duration-[var(--duration-base)]"
   >
     {@render trigger()}
   </button>
@@ -74,7 +74,7 @@
   <!-- Backdrop/Overlay -->
   <div 
     use:overlay 
-    class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+    class="fixed inset-0 z-50 bg-[color:var(--modal-overlay)] backdrop-blur-sm"
     style="z-index: 9999;"
   ></div>
 
@@ -84,13 +84,13 @@
     class="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform px-4 focus:outline-none {className}"
     style="z-index: 10000;"
   >
-    <div class="bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden">
+    <div class="bg-[color:var(--modal-bg)] rounded-[var(--modal-radius)] shadow-[var(--modal-shadow)] border border-[color:var(--border-subtle)] overflow-hidden">
       <!-- Header Section -->
       <div class="px-6 pt-6 pb-4">
         {#if title}
           <h2 
             use:titleElement
-            class="text-lg font-semibold text-gray-900 leading-6"
+            class="text-lg font-semibold text-[color:var(--text-primary)] leading-6"
           >
             {@render title()}
           </h2>
@@ -99,7 +99,7 @@
         {#if description}
           <p 
             use:descriptionElement
-            class="mt-2 text-sm text-gray-500 leading-5"
+            class="mt-2 text-sm text-[color:var(--text-secondary)] leading-5"
           >
             {@render description()}
           </p>
@@ -114,11 +114,11 @@
       {/if}
 
       <!-- Actions Section -->
-      <div class="bg-gray-50 px-6 py-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:gap-2">
+      <div class="bg-[color:var(--surface-subtle)] px-6 py-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:gap-2">
         <!-- Default Cancel Button -->
         <button 
           use:close
-          class="btn btn-ghost min-h-[36px] px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-400 rounded-lg transition-colors duration-200"
+          class="btn btn-ghost min-h-[var(--touch-standard)] px-4 py-2 text-sm font-medium text-[color:var(--text-primary)] hover:bg-[color:var(--surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--state-focus)] rounded-[var(--radius-md)] transition-colors duration-[var(--duration-base)]"
         >
           Cancel
         </button>
@@ -175,7 +175,7 @@
     }
     
     .flex-col-reverse button {
-      min-height: 44px; /* Ensure 44px touch targets on mobile */
+      min-height: var(--touch-primary); /* Ensure 44px touch targets on mobile */
     }
   }
 </style>

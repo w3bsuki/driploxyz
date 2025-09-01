@@ -43,9 +43,9 @@
   
 
   // Use text-base (16px) to prevent mobile zoom on focus
-  const baseClasses = 'block w-full rounded-[var(--input-radius)] border-2 border-[var(--input-border)] px-[var(--input-padding)] py-2 min-h-[var(--input-height)] text-[var(--input-font)] placeholder-gray-500 transition-colors duration-[var(--duration-base)] focus:outline-none focus:ring-2 focus:ring-[var(--input-focus-ring)] focus:border-[var(--input-focus-border)]';
+  const baseClasses = 'block w-full rounded-[var(--input-radius)] border-2 border-gray-300 px-[var(--input-padding)] py-2 min-h-[var(--input-height)] text-[var(--input-font)] placeholder-gray-500 transition-colors duration-[var(--duration-base)] focus:outline-none focus:ring-2 focus:ring-gray-900/20 focus:border-gray-900';
   const stateClasses = $derived(error 
-    ? 'border-red-300 focus:ring-red-500/20 focus:border-red-500' 
+    ? 'border-red-200 focus:ring-red-500/20 focus:border-red-500' 
     : '');
   const classes = $derived(`${baseClasses} ${stateClasses} ${className}`);
 </script>
@@ -80,6 +80,6 @@
   </div>
   
   {#if error}
-    <p class="text-sm text-red-600">{error}</p>
+    <p class="text-sm text-red-700">{error}</p>
   {/if}
 </div>

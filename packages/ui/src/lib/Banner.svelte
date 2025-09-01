@@ -3,7 +3,7 @@
     variant?: 'info' | 'success' | 'warning' | 'danger';
     title?: string;
     class?: string;
-    children?: any;
+    children?: import('svelte').Snippet;
   }
   
   let { 

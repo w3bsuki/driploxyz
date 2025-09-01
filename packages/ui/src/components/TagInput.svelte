@@ -2,6 +2,7 @@
   interface Props {
     tags?: string[];
     label?: string;
+    name?: string;
     placeholder?: string;
     suggestions?: string[];
     error?: string;
@@ -12,6 +13,7 @@
   let {
     tags = $bindable([]),
     label = 'Tags',
+    name,
     placeholder = 'Add a tag...',
     suggestions = [],
     error,
@@ -21,7 +23,7 @@
 
   let inputValue = $state('');
   let showSuggestions = $state(false);
-  let inputElement: HTMLInputElement;
+  let inputElement = $state<HTMLInputElement>();
 
   const filteredSuggestions = $derived(
     suggestions.filter(s => 
@@ -60,7 +62,7 @@
 
 <div class="w-full">
   {#if label}
-    <label class="block text-sm font-medium text-gray-900 mb-2">
+    <label for="tag-input" class="block text-sm font-medium text-gray-900 mb-2">
       {label}
     </label>
   {/if}
@@ -72,8 +74,6 @@
           ? 'border-red-300 focus-within:border-red-500 focus-within:ring-1 focus-within:ring-red-500' 
           : 'border-gray-300 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500'}"
       onclick={() => inputElement?.focus()}
-      role="button"
-      tabindex="0"
     >
       {#each tags as tag, index}
         <span class="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 rounded text-sm">
@@ -95,6 +95,7 @@
         <input
           bind:this={inputElement}
           bind:value={inputValue}
+          id="tag-input"
           type="text"
           {placeholder}
           class="flex-1 min-w-[120px] outline-none text-sm"
@@ -112,6 +113,7 @@
             type="button"
             onclick={() => selectSuggestion(suggestion)}
             class="w-full px-3 py-2 text-left text-sm hover:bg-gray-50 focus:bg-gray-50 focus:outline-none"
+            aria-label="Add tag {suggestion}"
           >
             {suggestion}
           </button>
@@ -119,6 +121,11 @@
       </div>
     {/if}
   </div>
+
+  <!-- Hidden input for form association -->
+  {#if name}
+    <input type="hidden" {name} value={JSON.stringify(tags)} />
+  {/if}
 
   <div class="mt-2 flex items-center justify-between">
     <div>

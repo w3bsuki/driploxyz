@@ -155,12 +155,12 @@ export function createResponsiveVariants<T extends Record<string, Record<string,
     Object.entries(responsiveVariants).forEach(([key, value]) => {
       if (!key.includes(':')) {
         // Base variant
-        const variantClass = baseVariants[key]?.[value];
+        const variantClass = baseVariants[key]?.[value as string];
         if (variantClass) classes.push(variantClass);
       } else {
         // Responsive variant: "md:variant"
         const [breakpoint, variantKey] = key.split(':');
-        const variantClass = baseVariants[variantKey]?.[value as keyof typeof baseVariants[keyof typeof baseVariants]];
+        const variantClass = variantKey ? baseVariants[variantKey]?.[value as string] : undefined;
         if (variantClass) classes.push(`${breakpoint}:${variantClass}`);
       }
     });

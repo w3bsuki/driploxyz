@@ -3,7 +3,7 @@
 </script>
 
 <a href="/" class="flex items-center">
-  <span class="text-xl sm:text-2xl font-bold text-gray-900">Driplo</span>
+  <span class="text-xl sm:text-2xl font-bold text-[color:var(--text-primary)]">Driplo</span>
   <span class="emoji-carousel text-xl sm:text-2xl ml-0.5">
     <span class="emoji-track">
       <span>👗</span>

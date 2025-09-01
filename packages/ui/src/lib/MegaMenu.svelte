@@ -80,23 +80,24 @@
   <!-- Dropdown menu ABOVE the backdrop -->
   <div class="absolute top-full left-0 right-0 mt-2 z-50">
     <div 
-      class="bg-white rounded-xl shadow-sm md:shadow-2xl border border-gray-200 max-h-[calc(100vh-200px)] sm:max-h-[70vh] overflow-y-auto {className}">
+      class="bg-[color:var(--surface-base)] rounded-xl shadow-sm md:shadow-2xl border border-[color:var(--border-subtle)] max-h-[calc(100vh-200px)] sm:max-h-[70vh] overflow-y-auto {className}">
       <div class="p-4">
         <!-- Header with clear button -->
         <div class="flex items-center justify-between mb-3">
-          <h3 class="font-semibold text-gray-900">Shop by Category</h3>
+          <h3 class="font-semibold text-[color:var(--text-primary)]">Shop by Category</h3>
           <div class="flex gap-2">
             {#if selectedCategory}
               <button
                 onclick={clearAll}
-                class="text-xs px-2 py-1 text-gray-500 hover:text-gray-900"
+                class="text-xs px-2 py-1 min-h-[var(--touch-standard)] text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary rounded-lg"
+                aria-label="Clear all selections"
               >
                 Clear
               </button>
             {/if}
             <button
               onclick={onClose}
-              class="p-1 hover:bg-gray-100 rounded-lg"
+              class="p-1 min-h-[var(--touch-standard)] min-w-[var(--touch-standard)] hover:bg-[color:var(--surface-muted)] rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
               aria-label="Close menu"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,11 +117,12 @@
                   e.stopPropagation();
                   selectCategory(cat.key);
                 }}
-                class="flex flex-col items-center p-3 rounded-lg transition-colors {
+                class="flex flex-col items-center p-3 min-h-[var(--touch-primary)] rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary {
                   selectedCategory === cat.key 
                     ? 'bg-black text-white' 
-                    : 'bg-gray-50 hover:bg-gray-100'
+                    : 'bg-[color:var(--surface-subtle)] hover:bg-[color:var(--surface-muted)]'
                 }"
+                aria-label="Select {category.name} category"
               >
                 <span class="text-2xl mb-1">{cat.icon}</span>
                 <span class="text-xs font-medium">{category.name}</span>
@@ -132,28 +134,30 @@
         <!-- Subcategories for selected category -->
         {#if selectedCategory && categories[selectedCategory]?.subcategories}
           <div class="border-t pt-3">
-            <p class="text-xs text-gray-500 font-medium mb-2 uppercase">
+            <p class="text-xs text-[color:var(--text-muted)] font-medium mb-2 uppercase">
               {categories[selectedCategory].name} Categories
             </p>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
               <button
                 onclick={() => selectSubcategory(null, selectedCategory)}
-                class="px-3 py-2 text-sm rounded-lg {
+                class="px-3 py-2 min-h-[var(--touch-standard)] text-sm rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary {
                   !selectedSubcategory 
                     ? 'bg-black text-white' 
-                    : 'bg-gray-100 hover:bg-gray-200'
+                    : 'bg-[color:var(--surface-muted)] hover:bg-[color:var(--surface-emphasis)]'
                 }"
+                aria-label="View all {categories[selectedCategory].name}"
               >
                 All {categories[selectedCategory].name}
               </button>
               {#each categories[selectedCategory].subcategories as subcat}
                 <button
                   onclick={() => selectSubcategory(subcat.name, selectedCategory)}
-                  class="px-3 py-2 text-sm rounded-lg truncate {
+                  class="px-3 py-2 min-h-[var(--touch-standard)] text-sm rounded-lg truncate focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary {
                     selectedSubcategory === subcat.name
                       ? 'bg-black text-white'
-                      : 'bg-gray-100 hover:bg-gray-200'
+                      : 'bg-[color:var(--surface-muted)] hover:bg-[color:var(--surface-emphasis)]'
                   }"
+                  aria-label="Select {subcat.name} subcategory"
                 >
                   {subcat.name}
                 </button>
@@ -170,7 +174,8 @@
               onSubcategorySelect?.(null, 'sale');
               onClose?.(); 
             }}
-            class="flex-1 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600"
+            class="flex-1 py-2 min-h-[var(--touch-standard)] bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white"
+            aria-label="Shop on sale items"
           >
             🔥 {translations.onSale}
           </button>
@@ -180,7 +185,8 @@
               onSubcategorySelect?.(null, 'new');
               onClose?.(); 
             }}
-            class="flex-1 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600"
+            class="flex-1 py-2 min-h-[var(--touch-standard)] bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white"
+            aria-label="Shop new items"
           >
             ✨ {translations.newItems}
           </button>
@@ -190,7 +196,8 @@
               onSubcategorySelect?.(null, 'trending');
               onClose?.(); 
             }}
-            class="flex-1 py-2 bg-purple-500 text-white rounded-lg text-sm font-medium hover:bg-purple-600"
+            class="flex-1 py-2 min-h-[var(--touch-standard)] bg-purple-500 text-white rounded-lg text-sm font-medium hover:bg-purple-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white"
+            aria-label="Shop trending items"
           >
             📈 {translations.trending}
           </button>

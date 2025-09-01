@@ -214,7 +214,7 @@
           <div 
             class="w-full aspect-square rounded-lg border-2 transition-colors {
               formData.color === color.name 
-                ? 'border-blue-500 ring-2 ring-blue-500 ring-opacity-50' 
+                ? 'border-[color:var(--state-focus)] ring-2 ring-[color:var(--state-focus)] ring-opacity-50' 
                 : 'border-gray-200 hover:border-gray-300'
             }"
             style="background: {color.hex}; {color.hex === '#FFFFFF' ? 'box-shadow: inset 0 0 0 1px #e5e7eb;' : ''}"
@@ -254,7 +254,7 @@
           onclick={() => { formData.material = material; onFieldChange('material', material); }}
           class="flex items-center justify-center px-2.5 py-2.5 text-xs font-medium rounded-lg border transition-colors {
             formData.material === material 
-              ? 'border-blue-500 bg-blue-50 text-blue-700' 
+              ? 'border-[color:var(--state-focus)] bg-[color:var(--status-info-bg)] text-[color:var(--status-info-text)]' 
               : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
           }"
         >

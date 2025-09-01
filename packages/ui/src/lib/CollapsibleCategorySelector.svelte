@@ -191,9 +191,9 @@
       
       <!-- Step 1: Gender Selection -->
       <div>
-        <label class="block text-xs font-medium text-gray-500 mb-1.5">
+        <div class="block text-xs font-medium text-gray-500 mb-1.5" role="group" aria-label="{whoIsItForLabel}">
           {whoIsItForLabel}
-        </label>
+        </div>
         <div class="grid grid-cols-4 gap-1.5">
           {#each genderCategories as category}
             <button
@@ -215,9 +215,9 @@
       <!-- Step 2: Type Selection (slides in) -->
       {#if showTypeLevel && typeCategories.length > 0}
         <div class="animate-in fade-in slide-in-from-left-2 duration-200">
-          <label class="block text-xs font-medium text-gray-500 mb-1.5">
+          <div class="block text-xs font-medium text-gray-500 mb-1.5" role="group" aria-label="{categoryLabel}">
             {categoryLabel}
-          </label>
+          </div>
           <div class="grid grid-cols-2 gap-1.5">
             {#each typeCategories as category}
               <button
@@ -253,9 +253,9 @@
       <!-- Step 3: Specific Selection (optional, slides in) -->
       {#if showSpecificLevel && specificCategories.length > 0}
         <div class="animate-in fade-in slide-in-from-left-2 duration-200">
-          <label class="block text-xs font-medium text-gray-500 mb-1.5">
+          <div class="block text-xs font-medium text-gray-500 mb-1.5" role="group" aria-label="{beMoreSpecificLabel}">
             {beMoreSpecificLabel} <span class="text-gray-400">{optionalText}</span>
-          </label>
+          </div>
           
           <!-- Specific options in compact grid FIRST -->
           <div class="max-h-32 overflow-y-auto border border-gray-200 rounded-md p-1.5 mb-2">
@@ -346,5 +346,14 @@
   
   .slide-in-from-left-2 {
     animation: slideInFromLeft 0.2s ease-out;
+  }
+
+  /* Respect reduced motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in,
+    .slide-in-from-top-2,
+    .slide-in-from-left-2 {
+      animation: none;
+    }
   }
 </style>

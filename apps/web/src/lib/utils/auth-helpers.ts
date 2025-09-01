@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { redirect, type Redirect } from '@sveltejs/kit';
+// import { redirect, type Redirect } from '@sveltejs/kit'; // Future auth redirect handling
 
 interface RetryOptions {
   maxAttempts?: number;

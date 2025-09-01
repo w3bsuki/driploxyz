@@ -63,7 +63,10 @@
       "WebFetch(domain:www.vinted.com)",
       "WebFetch(domain:www.instagram.com)",
       "Bash(curl:*)",
-      "Bash(pnpm:*)"
+      "Bash(pnpm:*)",
+      "WebFetch(domain:melt-ui.com)",
+      "WebFetch(domain:web.dev)",
+      "WebFetch(domain:www.smashingmagazine.com)"
     ]
   },
   "enableAllProjectMcpServers": true,

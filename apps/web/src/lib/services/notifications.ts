@@ -119,9 +119,9 @@ export class NotificationService {
 		title: string,
 		message: string,
 		type: string,
-		priority: 'low' | 'medium' | 'high' | 'urgent' = 'medium',
+		_priority: 'low' | 'medium' | 'high' | 'urgent' = 'medium',
 		relatedId?: string,
-		relatedTable?: string
+		_relatedTable?: string
 	) {
 		return await this.supabase
 			.from('notifications')
@@ -142,10 +142,10 @@ export class NotificationService {
 		recipient: string,
 		subject: string,
 		message: string,
-		metadata: Record<string, any> = {}
+		_metadata: Record<string, any> = {}
 	) {
 		// Log the notification attempt
-		const { data: log } = await this.supabase
+		const { data: _log } = await this.supabase
 			.from('notifications')
 			.insert({
 				user_id: recipient,

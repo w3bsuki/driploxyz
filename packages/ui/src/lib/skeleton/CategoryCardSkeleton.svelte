@@ -8,10 +8,10 @@
 
 <div class="category-card-skeleton {className}">
   <!-- Image skeleton -->
-  <div class="relative aspect-square bg-gray-200 rounded-lg"></div>
+  <div class="relative aspect-square bg-[color:var(--surface-emphasis)] rounded-lg"></div>
   
   <!-- Title skeleton -->
-  <div class="mt-2 h-4 bg-gray-200 rounded w-3/4"></div>
+  <div class="mt-2 h-4 bg-[color:var(--surface-emphasis)] rounded w-3/4"></div>
 </div>
 
 <style>

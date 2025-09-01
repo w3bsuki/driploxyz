@@ -12,25 +12,25 @@ export const POST: RequestHandler = async ({ locals, request, cookies }) => {
       return json({ error: 'Product IDs array is required' }, { status: 400 });
     }
 
-    // Get favorite counts for all products
-    const { data: favoriteCounts, error: countError } = await supabase
-      .from('favorites')
-      .select('product_id')
-      .in('product_id', productIds);
+    // Get favorite counts from products table (maintained by triggers)
+    const { data: products, error: countError } = await supabase
+      .from('products')
+      .select('id, favorite_count')
+      .in('id', productIds);
 
     if (countError) {
       console.error('Error getting favorite counts:', countError);
       return json({ error: 'Database error' }, { status: 500 });
     }
 
-    // Count favorites per product
+    // Map product IDs to their favorite counts
     const counts: Record<string, number> = {};
     productIds.forEach(id => {
       counts[id] = 0;
     });
 
-    favoriteCounts?.forEach(favorite => {
-      counts[favorite.product_id] = (counts[favorite.product_id] || 0) + 1;
+    products?.forEach(product => {
+      counts[product.id] = product.favorite_count || 0;
     });
 
     // Get user's favorite status if authenticated

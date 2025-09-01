@@ -123,16 +123,15 @@
   {/if}
 
   {#if images.length < maxImages}
-    <div
-      role="button"
-      tabindex="0"
-      class="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
+    <button
+      type="button"
+      class="w-full border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
         {isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}"
       onclick={() => fileInput.click()}
-      onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && fileInput.click()}
       ondrop={handleDrop}
       ondragover={handleDragOver}
       ondragleave={handleDragLeave}
+      aria-label="Upload images"
     >
       <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
@@ -144,7 +143,7 @@
       <p class="text-xs text-gray-500 mt-1">
         {images.length}/{maxImages} images • JPG, PNG up to 5MB
       </p>
-    </div>
+    </button>
   {/if}
 
   <input

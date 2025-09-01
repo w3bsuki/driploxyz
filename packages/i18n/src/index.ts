@@ -1,4 +1,4 @@
-// Re-export generated Paraglide functions
+// Re-export generated Paraglide functions from lib (built files)
 export * from '../lib/paraglide/messages.js';
 export * from '../lib/paraglide/runtime.js';
 

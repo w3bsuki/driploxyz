@@ -77,4 +77,45 @@ test.describe('Search flow', () => {
     await expect(page).toHaveURL(/search/)
     await expect(page).toHaveURL(/q=shoes/)
   })
+  
+  test('legacy URLs redirect to canonical with identical results', async ({ page }) => {
+    // Test legacy URL with level1 parameter
+    const response = await page.goto('/search?level1=women')
+    
+    // Should redirect to canonical URL (301)
+    expect(response?.status()).toBe(200) // After redirect completes
+    await expect(page).toHaveURL(/search\?category=women/)
+    
+    // Capture results from canonical URL
+    const canonicalProducts = await page.locator('[data-testid="product-card"]').or(page.locator('.product-card'))
+    const canonicalCount = await canonicalProducts.count()
+    const canonicalFirstTitle = canonicalCount > 0 ? await canonicalProducts.first().textContent() : null
+    
+    // Test legacy URL with multiple parameters
+    await page.goto('/search?level1=women&level2=clothing&q=dress')
+    // Parameter order may vary, so check individual params exist
+    await expect(page).toHaveURL(/search\?/)
+    await expect(page).toHaveURL(/category=women/)
+    await expect(page).toHaveURL(/subcategory=clothing/)
+    await expect(page).toHaveURL(/q=dress/)
+    
+    // Test mixed legacy and canonical parameters (canonical should win)
+    await page.goto('/search?level1=men&category=women')
+    await expect(page).toHaveURL(/search\?category=women/)
+    
+    // Verify API endpoint handles legacy parameters
+    const apiResponse = await page.request.get('/api/search?level1=women&pageSize=5')
+    expect(apiResponse.ok()).toBe(true)
+    const legacyApiData = await apiResponse.json()
+    
+    const canonicalApiResponse = await page.request.get('/api/search?category=women&pageSize=5')
+    expect(canonicalApiResponse.ok()).toBe(true)
+    const canonicalApiData = await canonicalApiResponse.json()
+    
+    // Results should be identical for legacy vs canonical API calls
+    expect(legacyApiData.products?.length).toBe(canonicalApiData.products?.length)
+    if (legacyApiData.products?.length > 0) {
+      expect(legacyApiData.products[0].id).toBe(canonicalApiData.products[0].id)
+    }
+  })
 })

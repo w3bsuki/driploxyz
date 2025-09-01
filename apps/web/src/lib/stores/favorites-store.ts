@@ -160,50 +160,11 @@ export const favoritesActions = {
   },
 
   /**
-   * Remove a product from favorites
+   * Remove a product from favorites (uses same toggle endpoint)
    */
   async removeFavorite(productId: string): Promise<boolean> {
-    favoritesStore.update(state => ({
-      ...state,
-      isLoading: true,
-      error: null
-    }));
-
-    try {
-      const response = await fetch(`/api/favorites?productId=${productId}`, {
-        method: 'DELETE'
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to remove favorite');
-      }
-
-      // Update store state
-      favoritesStore.update(state => ({
-        ...state,
-        isLoading: false,
-        favorites: {
-          ...state.favorites,
-          [productId]: false
-        },
-        favoriteCounts: {
-          ...state.favoriteCounts,
-          [productId]: data.favoriteCount
-        }
-      }));
-
-      return true;
-
-    } catch (error) {
-      favoritesStore.update(state => ({
-        ...state,
-        isLoading: false,
-        error: error instanceof Error ? error.message : 'Failed to remove favorite'
-      }));
-      return false;
-    }
+    // Use the same toggle endpoint - it will remove if already favorited
+    return await this.toggleFavorite(productId);
   },
 
   /**

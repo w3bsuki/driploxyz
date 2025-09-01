@@ -3,7 +3,7 @@ import type { Database } from '@repo/database';
 import { browser } from '$app/environment';
 import { notificationActions, showBrowserNotification, playNotificationSound } from '$lib/stores/notifications';
 
-type Tables = Database['public']['Tables'];
+// Database tables type reserved for future functionality
 
 export class RealtimeNotificationService {
 	private supabase: SupabaseClient<Database>;

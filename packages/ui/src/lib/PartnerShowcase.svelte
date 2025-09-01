@@ -170,11 +170,19 @@
 {/if}
 
 <style>
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+  /* Respect prefers-reduced-motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .group img,
+    .group button,
+    .group div {
+      transition: none !important;
+      transform: none !important;
+    }
+    
+    /* Remove smooth scrolling for reduced motion users */
+    :global(.scroll-smooth) {
+      scroll-behavior: auto !important;
+    }
   }
 </style>
+

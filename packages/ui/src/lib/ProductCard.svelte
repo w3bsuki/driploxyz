@@ -86,8 +86,96 @@
   );
 </script>
 
+{#snippet conditionBadgeWithTooltip(condition: string)}
+  <Tooltip 
+    content={getConditionTooltip(condition)}
+    positioning={{ side: 'bottom', align: 'start' }}
+    openDelay={600}
+    closeDelay={200}
+    triggerClass="absolute top-2 left-2 z-20"
+  >
+    {#snippet trigger()}
+      <ConditionBadge 
+        condition={condition}
+        translations={{
+          brandNewWithTags: translations.brandNewWithTags,
+          newWithoutTags: translations.newWithoutTags || translations.new,
+          likeNew: translations.likeNew,
+          good: translations.good,
+          worn: translations.worn,
+          fair: translations.fair
+        }}
+      />
+    {/snippet}
+  </Tooltip>
+{/snippet}
+
+{#snippet titleWithTooltip(title: string, showTooltip: boolean)}
+  {#if showTooltip}
+    <Tooltip 
+      content={title}
+      positioning={{ side: 'top', align: 'start' }}
+      openDelay={800}
+      closeDelay={200}
+      triggerClass="block pr-12"
+    >
+      {#snippet trigger()}
+        <h3 class="text-sm font-medium text-gray-900 line-clamp-1 leading-none mb-0.5 cursor-help">
+          {title}
+        </h3>
+      {/snippet}
+    </Tooltip>
+  {:else}
+    <h3 class="text-sm font-medium text-gray-900 line-clamp-1 leading-none mb-0.5 pr-12">
+      {title}
+    </h3>
+  {/if}
+{/snippet}
+
+{#snippet productDetailsText(fullText: string, showTooltip: boolean)}
+  {#if showTooltip}
+    <Tooltip 
+      content={fullText}
+      positioning={{ side: 'top', align: 'start' }}
+      openDelay={800}
+      closeDelay={200}
+      triggerClass="block"
+    >
+      {#snippet trigger()}
+        <p class="text-xs text-gray-700 line-clamp-1 leading-none mb-1 cursor-help">
+          {#if product.subcategory_name}
+            <span class="font-medium text-gray-700">{translations.categoryTranslation ? translations.categoryTranslation(product.subcategory_name) : product.subcategory_name}</span>
+          {/if}
+          {#if product.subcategory_name && product.brand} • {/if}
+          {#if product.brand}
+            <span class="text-gray-700">{product.brand}</span>
+          {/if}
+          {#if (product.subcategory_name || product.brand) && product.size} • {/if}
+          {#if product.size}
+            <span class="text-gray-700">{translations.size} {product.size}</span>
+          {/if}
+        </p>
+      {/snippet}
+    </Tooltip>
+  {:else}
+    <p class="text-xs text-gray-700 line-clamp-1 leading-none mb-1">
+      {#if product.subcategory_name}
+        <span class="font-medium text-gray-700">{translations.categoryTranslation ? translations.categoryTranslation(product.subcategory_name) : product.subcategory_name}</span>
+      {/if}
+      {#if product.subcategory_name && product.brand} • {/if}
+      {#if product.brand}
+        <span class="text-gray-700">{product.brand}</span>
+      {/if}
+      {#if (product.subcategory_name || product.brand) && product.size} • {/if}
+      {#if product.size}
+        <span class="text-gray-700">{translations.size} {product.size}</span>
+      {/if}
+    </p>
+  {/if}
+{/snippet}
+
 <div 
-  class="product-card cursor-pointer transition-shadow duration-200 hover:shadow-md {highlighted ? 'highlighted' : ''} {className}"
+  class="product-card cursor-pointer transition-shadow duration-[var(--duration-base)] hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:ring-offset-2 rounded-[var(--radius-md)] {highlighted ? 'highlighted' : ''} {className}"
   onclick={handleClick}
   onkeydown={(e: KeyboardEvent) => {
     if (e.key === 'Enter' || e.key === ' ') {
@@ -108,29 +196,9 @@
       {priority}
     />
     
-    <!-- Condition badge with tooltip -->
+      <!-- Condition badge with tooltip -->
     {#if product.condition}
-      <Tooltip 
-        content={getConditionTooltip(product.condition)}
-        positioning={{ side: 'bottom', align: 'start' }}
-        openDelay={600}
-        closeDelay={200}
-        triggerClass="absolute top-2 left-2 z-20"
-      >
-        {#snippet trigger()}
-          <ConditionBadge 
-            condition={product.condition}
-            translations={{
-              brandNewWithTags: translations.brandNewWithTags,
-              newWithoutTags: translations.newWithoutTags || translations.new,
-              likeNew: translations.likeNew,
-              good: translations.good,
-              worn: translations.worn,
-              fair: translations.fair
-            }}
-          />
-        {/snippet}
-      </Tooltip>
+      {@render conditionBadgeWithTooltip(product.condition)}
     {/if}
   </div>
   
@@ -146,38 +214,20 @@
       removeFromFavoritesText={translations.removeFromFavorites}
       absolute={true}
       showCount={true}
-      customPosition="absolute top-1 right-1 z-10"
+      customPosition="absolute top-2 right-2 z-10"
     />
     
     <!-- Main Category (always show) -->
     <div class="flex items-center justify-between gap-1.5 min-h-3.5 mb-0.5 pr-12">
       {#if product.main_category_name || product.category_name}
-        <p class="text-xs font-medium text-gray-500 uppercase tracking-wider leading-none flex-1 truncate">
+        <p class="text-xs font-medium text-gray-600 uppercase tracking-wider leading-none flex-1 truncate">
           {translations.categoryTranslation ? translations.categoryTranslation(product.main_category_name || product.category_name || '') : (product.main_category_name || product.category_name)}
         </p>
       {/if}
     </div>
     
     <!-- Title with tooltip for truncated text -->
-    {#if shouldShowTitleTooltip}
-      <Tooltip 
-        content={product.title}
-        positioning={{ side: 'top', align: 'start' }}
-        openDelay={800}
-        closeDelay={200}
-        triggerClass="block pr-12"
-      >
-        {#snippet trigger()}
-          <h3 class="text-sm font-medium text-gray-900 line-clamp-1 leading-none mb-0.5 cursor-help">
-            {product.title}
-          </h3>
-        {/snippet}
-      </Tooltip>
-    {:else}
-      <h3 class="text-sm font-medium text-gray-900 line-clamp-1 leading-none mb-0.5 pr-12">
-        {product.title}
-      </h3>
-    {/if}
+    {@render titleWithTooltip(product.title, shouldShowTitleTooltip)}
     
     <!-- Subcategory • Brand • Size with tooltip for truncated text -->
     {#if product.subcategory_name || product.brand || product.size}
@@ -187,45 +237,7 @@
         product.size ? `${translations.size} ${product.size}` : null
       ].filter(Boolean).join(' • ')}
       
-      {#if shouldShowCategoryTooltip}
-        <Tooltip 
-          content={fullDetailsText}
-          positioning={{ side: 'top', align: 'start' }}
-          openDelay={800}
-          closeDelay={200}
-          triggerClass="block"
-        >
-          {#snippet trigger()}
-            <p class="text-xs text-gray-500 line-clamp-1 leading-none mb-1 cursor-help">
-              {#if product.subcategory_name}
-                <span class="font-medium text-gray-500">{translations.categoryTranslation ? translations.categoryTranslation(product.subcategory_name) : product.subcategory_name}</span>
-              {/if}
-              {#if product.subcategory_name && product.brand} • {/if}
-              {#if product.brand}
-                <span class="text-gray-500">{product.brand}</span>
-              {/if}
-              {#if (product.subcategory_name || product.brand) && product.size} • {/if}
-              {#if product.size}
-                <span class="text-gray-500">{translations.size} {product.size}</span>
-              {/if}
-            </p>
-          {/snippet}
-        </Tooltip>
-      {:else}
-        <p class="text-xs text-gray-500 line-clamp-1 leading-none mb-1">
-          {#if product.subcategory_name}
-            <span class="font-medium text-gray-500">{translations.categoryTranslation ? translations.categoryTranslation(product.subcategory_name) : product.subcategory_name}</span>
-          {/if}
-          {#if product.subcategory_name && product.brand} • {/if}
-          {#if product.brand}
-            <span class="text-gray-500">{product.brand}</span>
-          {/if}
-          {#if (product.subcategory_name || product.brand) && product.size} • {/if}
-          {#if product.size}
-            <span class="text-gray-500">{translations.size} {product.size}</span>
-          {/if}
-        </p>
-      {/if}
+      {@render productDetailsText(fullDetailsText, shouldShowCategoryTooltip)}
     {/if}
     
     <!-- Price -->
@@ -245,7 +257,7 @@
   }
   
   .product-card.highlighted {
-    border-color: oklch(0.8 0.12 85);
+    border-color: var(--status-warning-solid);
     border-width: 2px;
   }
 </style>

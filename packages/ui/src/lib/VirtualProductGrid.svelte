@@ -68,10 +68,16 @@
   }: Props = $props();
 
   let containerElement: HTMLDivElement;
+  let sentinelElement: HTMLDivElement;
   let scrollTop = $state(0);
   let containerWidth = $state(0);
   let mounted = $state(false);
   let viewportHeightState = $state(containerHeight);
+  
+  // Pre-DOM measurement state
+  let previousScrollHeight = $state(0);
+  let previousViewportHeight = $state(0);
+  let previousContainerWidth = $state(0);
   
   // Simple performance monitoring (optional)
   const perf = null;
@@ -120,7 +126,7 @@
     return items.slice(startIndex, endIndex + 1).map((item, index) => ({
       ...item,
       virtualIndex: startIndex + index
-    }));
+    })) as (Product & { virtualIndex: number })[];
   });
 
   // Calculate total height
@@ -145,28 +151,11 @@
       updateScrollTopFromWindow();
     }
     perf?.endTiming('virtual-scroll');
-    maybeReachEnd();
   }, 16); // ~60fps
 
   function handleResize() {
     if (containerElement) {
       containerWidth = containerElement.clientWidth;
-    }
-    maybeReachEnd();
-  }
-
-  function maybeReachEnd() {
-    if (!containerElement || !onEndReached) return;
-    if (loading) return;
-    if (scrollParent === 'self') {
-      const nearEnd = containerElement.scrollTop + containerElement.clientHeight >= (containerElement.scrollHeight - endThreshold);
-      if (nearEnd) onEndReached?.();
-    } else {
-      const rect = containerElement.getBoundingClientRect();
-      const containerTop = rect.top + window.scrollY;
-      const totalH = totalHeight();
-      const viewportBottom = window.scrollY + window.innerHeight - bottomOffset;
-      if (viewportBottom >= (containerTop + totalH - endThreshold)) onEndReached?.();
     }
   }
 
@@ -179,38 +168,89 @@
     scrollTop = Math.max(0, y);
   }
 
+  // $effect.pre() for DOM measurements before updates
+  $effect.pre(() => {
+    // Capture dimensions before any DOM changes from reactive updates
+    if (containerElement) {
+      previousScrollHeight = containerElement.scrollHeight;
+      previousContainerWidth = containerElement.clientWidth;
+    }
+    
+    // Capture viewport height before window resize effects
+    if (browser && scrollParent === 'window') {
+      previousViewportHeight = window.innerHeight;
+    }
+  });
+
   // Use $effect for lifecycle management
   $effect(() => {
     if (!browser || !containerElement) return;
     mounted = true;
+    
+    // Check if we need to preserve scroll position after layout changes
+    if (previousScrollHeight > 0 && containerElement.scrollHeight !== previousScrollHeight) {
+      // Maintain relative scroll position when content height changes
+      const scrollRatio = scrollTop / previousScrollHeight;
+      const newScrollTop = scrollRatio * containerElement.scrollHeight;
+      if (Math.abs(newScrollTop - scrollTop) > 10) { // Only adjust if significant change
+        requestAnimationFrame(() => {
+          if (containerElement) {
+            containerElement.scrollTop = newScrollTop;
+            scrollTop = newScrollTop;
+          }
+        });
+      }
+    }
+    
     handleResize();
     const resizeObserver = new ResizeObserver(throttle(handleResize, 100));
     resizeObserver.observe(containerElement);
 
-    const onWindowScroll = throttle(() => {
+    const onWindowResize = throttle(() => {
       if (scrollParent === 'window') {
         // Compute viewport height minus offsets
         viewportHeightState = Math.max(0, window.innerHeight - topOffset - bottomOffset);
         updateScrollTopFromWindow();
-        maybeReachEnd();
       }
     }, 16);
+
 
     if (scrollParent === 'window') {
       viewportHeightState = Math.max(0, window.innerHeight - topOffset - bottomOffset);
       updateScrollTopFromWindow();
-      window.addEventListener('scroll', onWindowScroll, { passive: true });
-      window.addEventListener('resize', onWindowScroll);
-      window.addEventListener('orientationchange', onWindowScroll);
+      window.addEventListener('resize', onWindowResize);
     }
 
     return () => {
       resizeObserver.disconnect();
       if (scrollParent === 'window') {
-        window.removeEventListener('scroll', onWindowScroll as any);
-        window.removeEventListener('resize', onWindowScroll as any);
-        window.removeEventListener('orientationchange', onWindowScroll as any);
+        window.removeEventListener('resize', onWindowResize as any);
       }
+    };
+  });
+
+  // IntersectionObserver for end-reached detection
+  $effect(() => {
+    if (!browser || !sentinelElement || !onEndReached || loading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry?.isIntersecting) {
+          onEndReached();
+        }
+      },
+      {
+        root: scrollParent === 'self' ? containerElement : null,
+        rootMargin: `0px 0px ${endThreshold}px 0px`,
+        threshold: 0
+      }
+    );
+
+    observer.observe(sentinelElement);
+
+    return () => {
+      observer.disconnect();
     };
   });
 
@@ -229,6 +269,58 @@
   }
 </script>
 
+{#snippet loadingState()}
+  <div class="absolute inset-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
+    {#each Array(20) as _}
+      <ProductCardSkeleton />
+    {/each}
+  </div>
+{/snippet}
+
+{#snippet visibleItemsGrid()}
+  <div 
+    class="absolute w-full"
+    style="transform: translateY({offsetY}px);"
+  >
+    {#each visibleItems() as item (item.id)}
+      {@render virtualizedProductItem(item)}
+    {/each}
+  </div>
+{/snippet}
+
+{#snippet virtualizedProductItem(item: Product & { virtualIndex: number })}
+  {@const position = getItemPosition(item.virtualIndex % responsiveItemsPerRow())}
+  <div
+    class="absolute"
+    style="
+      left: {position.x}px;
+      top: {(Math.floor(item.virtualIndex / responsiveItemsPerRow()) - visibleRange().startRow) * (itemHeight + gap)}px;
+      width: {position.width}px;
+      height: {itemHeight}px;
+    "
+  >
+    <ProductCard
+      product={item}
+      onclick={() => onProductClick?.(item)}
+      onFavorite={() => onFavorite?.(item)}
+      {translations}
+      class="h-full"
+    />
+  </div>
+{/snippet}
+
+{#snippet emptyState()}
+  <div class="absolute inset-0 flex items-center justify-center">
+    <div class="text-center">
+      <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">No products found</h3>
+      <p class="text-gray-500">Try adjusting your search or filters</p>
+    </div>
+  </div>
+{/snippet}
+
 <div 
   bind:this={containerElement}
   class="virtual-grid-container {className}"
@@ -238,53 +330,23 @@
   <!-- Total height spacer -->
   <div style="height: {totalHeight}px; position: relative;">
     
-    <!-- Loading state -->
+    <!-- Grid Content States -->
     {#if loading}
-      <div class="absolute inset-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-4">
-        {#each Array(20) as _}
-          <ProductCardSkeleton />
-        {/each}
-      </div>
-    
-    <!-- Visible items -->
-    {:else if visibleItems.length > 0}
-      <div 
-        class="absolute w-full"
-        style="transform: translateY({offsetY}px);"
-      >
-        {#each visibleItems as item (item.id)}
-          {@const position = getItemPosition(item.virtualIndex % responsiveItemsPerRow())}
-          <div
-            class="absolute"
-            style="
-              left: {position.x}px;
-              top: {(Math.floor(item.virtualIndex / responsiveItemsPerRow()) - visibleRange().startRow) * (itemHeight + gap)}px;
-              width: {position.width}px;
-              height: {itemHeight}px;
-            "
-          >
-            <ProductCard
-              product={item}
-              onclick={() => onProductClick?.(item)}
-              onFavorite={() => onFavorite?.(item)}
-              {translations}
-              class="h-full"
-            />
-          </div>
-        {/each}
-      </div>
-    
-    <!-- Empty state -->
+      {@render loadingState()}
+    {:else if visibleItems().length > 0}
+      {@render visibleItemsGrid()}
     {:else}
-      <div class="absolute inset-0 flex items-center justify-center">
-        <div class="text-center">
-          <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <h3 class="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-          <p class="text-gray-500">Try adjusting your search or filters</p>
-        </div>
-      </div>
+      {@render emptyState()}
+    {/if}
+    
+    <!-- Sentinel element for end-reached detection -->
+    {#if items.length > 0 && onEndReached}
+      <div
+        bind:this={sentinelElement}
+        class="absolute bottom-0 left-0 w-full h-px"
+        style="transform: translateY(-{endThreshold}px);"
+        aria-hidden="true"
+      ></div>
     {/if}
   </div>
 </div>
@@ -312,10 +374,7 @@
     background: #a0aec0;
   }
 
-  /* Performance optimizations */
-  .virtual-grid-container * {
-    contain: layout style paint;
-  }
+  /* Performance optimizations - container-level containment only */
 
   /* Reduced motion support */
   @media (prefers-reduced-motion: reduce) {

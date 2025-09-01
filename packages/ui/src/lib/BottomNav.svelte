@@ -82,12 +82,12 @@
   
   function getItemClasses(item: NavItem): string {
     if (item.isSpecial) {
-      return 'flex items-center justify-center py-1.5 min-h-11';
+      return 'flex items-center justify-center py-1.5 min-h-[var(--touch-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary rounded-lg';
     }
     const active = isActive(item);
     const isLoading = clickedItem === item.href || (isNavigating && navigatingTo === item.href);
-    return `flex flex-col items-center py-2 px-1 min-h-11 transition-colors duration-200 ${
-      active ? 'text-gray-900' : isLoading ? 'text-gray-900 opacity-70' : 'text-gray-500 hover:text-gray-900'
+    return `flex flex-col items-center py-2 px-1 min-h-[var(--touch-primary)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary rounded-lg ${
+      active ? 'text-[color:var(--text-primary)]' : isLoading ? 'text-[color:var(--text-primary)] opacity-70' : 'text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)]'
     }`;
   }
   
@@ -102,7 +102,7 @@
   });
 </script>
 
-<nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-white shadow-sm md:shadow-lg pb-safe sm:hidden z-50 before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-gray-200 before:to-transparent">
+<nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-white shadow-sm md:shadow-lg pb-safe sm:hidden z-50 before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-[color:var(--border-subtle)] before:to-transparent">
   <div class="grid grid-cols-5">
     {#each navItems as item}
       {@const isLoading = clickedItem === item.href || (isNavigating && navigatingTo === item.href)}
@@ -115,7 +115,7 @@
         data-sveltekit-preload-code="hover"
       >
         {#if item.isSpecial}
-          <div class="bg-gray-900 text-white rounded-full p-2.5 shadow-sm md:shadow-lg {isActive(item) ? 'scale-105' : ''} transition-colors duration-200 hover:bg-gray-800 relative">
+          <div class="bg-gray-900 text-white rounded-full p-2.5 shadow-sm md:shadow-lg {isActive(item) ? 'scale-105' : ''} transition-colors duration-200 hover:bg-gray-800 relative focus:ring-2 focus:ring-offset-2 focus:ring-primary">
             <svg class="w-5 h-5 {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
             </svg>

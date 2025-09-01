@@ -304,7 +304,7 @@
           </h3>
           
           <!-- Horizontal scrollable products -->
-          <div class="flex gap-3 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory pb-2 no-scrollbar -mx-4 px-4">
+          <div class="flex gap-3 overflow-x-auto scroll-snap-type-x scroll-snap-type-mandatory pb-2 scrollbar-hide -mx-4 px-4">
             {#each sellerProducts as product (product.id)}
               {@const isSelected = selectedItems.some(item => item.id === product.id)}
               <button
@@ -395,14 +395,6 @@
     overflow-y: auto;
   }
   
-  .no-scrollbar {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
   
   /* Mobile-first responsive design */
   @media (max-width: 640px) {

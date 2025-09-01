@@ -153,9 +153,9 @@
 <div class="space-y-4">
   <!-- Step 1: Gender - Compact horizontal pills -->
   <div>
-    <label class="block text-sm font-medium text-gray-900 mb-2">
+    <div class="block text-sm font-medium text-gray-900 mb-2" role="group" aria-label="{whoIsItForLabel}">
       {whoIsItForLabel} <span class="text-red-500">*</span>
-    </label>
+    </div>
     <div class="grid grid-cols-4 gap-2">
       {#each genderCategories as category}
         <button
@@ -179,9 +179,9 @@
   <!-- Step 2: Type - Scrollable grid with consistent sizing -->
   {#if gender && typeCategories.length > 0}
     <div class="animate-in fade-in slide-in-from-bottom-2 duration-200">
-      <label class="block text-sm font-medium text-gray-900 mb-2">
+      <div class="block text-sm font-medium text-gray-900 mb-2" role="group" aria-label="{categoryLabel}">
         {categoryLabel} <span class="text-red-500">*</span>
-      </label>
+      </div>
       
       <!-- Scrollable container for many categories -->
       <div class="max-h-64 overflow-y-auto border border-gray-200 rounded-lg p-2">
@@ -227,9 +227,9 @@
   <!-- Step 3: Specific (if exists) - Beautiful button grid like Step 2 -->
   {#if type && specificCategories.length > 0}
     <div class="animate-in fade-in slide-in-from-bottom-2 duration-200">
-      <label class="block text-sm font-medium text-gray-900 mb-2">
+      <div class="block text-sm font-medium text-gray-900 mb-2" role="group" aria-label="Be more specific">
         Be more specific <span class="text-gray-400">(optional - helps buyers find your item)</span>
-      </label>
+      </div>
       
       <!-- Skip option first -->
       <div class="mb-3">

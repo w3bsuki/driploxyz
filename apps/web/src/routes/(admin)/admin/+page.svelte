@@ -32,10 +32,10 @@
   function getStatusColor(status: string) {
     switch (status) {
       case 'paid': return 'bg-green-100/70 text-green-700';
-      case 'shipped': return 'bg-blue-100/70 text-blue-700';
+      case 'shipped': return 'bg-blue-100/70 text-[color:var(--status-info-text)]';
       case 'delivered': return 'bg-purple-100/70 text-purple-700';
       case 'cancelled': return 'bg-red-100/70 text-red-700';
-      default: return 'bg-gray-100/70 text-gray-700';
+      default: return 'bg-gray-100/70 text-[color:var(--text-secondary)]';
     }
   }
 </script>
@@ -43,8 +43,8 @@
 <div class="space-y-6">
   <!-- Page Header -->
   <div>
-    <h1 class="text-2xl font-bold text-gray-900">{i18n.admin_dashboard()}</h1>
-    <p class="mt-1 text-sm text-gray-600">{i18n.admin_monitorMetrics()}</p>
+    <h1 class="text-2xl font-bold text-[color:var(--text-primary)]">{i18n.admin_dashboard()}</h1>
+    <p class="mt-1 text-sm text-[color:var(--text-tertiary)]">{i18n.admin_monitorMetrics()}</p>
   </div>
 
   <!-- Stats Grid -->
@@ -52,13 +52,13 @@
     <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-transform hover:scale-105">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-medium text-gray-600">{i18n.admin_totalUsers()}</p>
+          <p class="text-sm font-medium text-[color:var(--text-tertiary)]">{i18n.admin_totalUsers()}</p>
           <p class="mt-2 text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             {stats.totalUsers.toLocaleString()}
           </p>
         </div>
         <div class="p-3 bg-gradient-to-br from-blue-100/50 to-indigo-100/50 rounded-xl backdrop-blur-sm">
-          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6 text-[color:var(--text-link)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
         </div>
@@ -68,7 +68,7 @@
     <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-transform hover:scale-105">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-medium text-gray-600">{i18n.admin_totalProducts()}</p>
+          <p class="text-sm font-medium text-[color:var(--text-tertiary)]">{i18n.admin_totalProducts()}</p>
           <p class="mt-2 text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
             {stats.totalProducts.toLocaleString()}
           </p>
@@ -84,7 +84,7 @@
     <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-transform hover:scale-105">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-medium text-gray-600">{i18n.admin_totalOrders()}</p>
+          <p class="text-sm font-medium text-[color:var(--text-tertiary)]">{i18n.admin_totalOrders()}</p>
           <p class="mt-2 text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
             {stats.totalOrders.toLocaleString()}
           </p>
@@ -100,7 +100,7 @@
     <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-transform hover:scale-105">
       <div class="flex items-center justify-between">
         <div>
-          <p class="text-sm font-medium text-gray-600">{i18n.admin_totalRevenue()}</p>
+          <p class="text-sm font-medium text-[color:var(--text-tertiary)]">{i18n.admin_totalRevenue()}</p>
           <p class="mt-2 text-3xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">
             {formatCurrency(stats.totalRevenue)}
           </p>
@@ -118,7 +118,7 @@
   <div class="backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg overflow-hidden">
     <div class="px-6 py-4 bg-gradient-to-r from-gray-50/50 to-transparent">
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-semibold text-gray-900">{i18n.admin_recentOrders()}</h2>
+        <h2 class="text-lg font-semibold text-[color:var(--text-primary)]">{i18n.admin_recentOrders()}</h2>
       </div>
     </div>
     <div class="overflow-x-auto">
@@ -137,16 +137,16 @@
           {#if recentOrders.length > 0}
             {#each recentOrders as order}
               <tr class="hover:bg-gray-50/50 transition-colors">
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
                   #{order.id.slice(0, 8)}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
                   {order.buyer?.username || 'Unknown'}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-[color:var(--text-primary)]">
                   {order.seller?.username || 'Unknown'}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[color:var(--text-primary)]">
                   {formatCurrency(order.total_amount / 100)}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -184,7 +184,7 @@
     
     <a href="/" class="group backdrop-blur-xl bg-white/60 rounded-2xl shadow-lg p-6 hover:shadow-xl transition-transform hover:scale-105 flex items-center justify-center space-x-3">
       <div class="p-3 bg-gradient-to-br from-blue-100/50 to-cyan-100/50 rounded-xl backdrop-blur-sm group-hover:scale-110 transition-transform">
-        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-6 h-6 text-[color:var(--text-link)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
         </svg>
       </div>

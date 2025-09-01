@@ -12,6 +12,7 @@
     formatPrice?: (price: number) => string;
     index?: number;
     totalCount?: number;
+    categoryTranslation?: (category: string) => string;
   }
 
   let { 
@@ -24,7 +25,8 @@
     currency = '$', 
     formatPrice = (price: number) => `${currency}${price.toFixed(2)}`,
     index = 0,
-    totalCount = 1
+    totalCount = 1,
+    categoryTranslation = (category: string) => category
   }: Props = $props();
   
   // Derived states
@@ -115,7 +117,7 @@
         <div class="flex items-center justify-between gap-1.5 min-h-3.5 mb-0.5 pr-12">
           {#if product.main_category_name || product.category_name}
             <p class="text-xs font-medium text-gray-500 uppercase tracking-wider leading-none flex-1 truncate">
-              {product.main_category_name || product.category_name}
+              {categoryTranslation(product.main_category_name || product.category_name)}
             </p>
           {/if}
         </div>
@@ -129,7 +131,7 @@
         {#if product.subcategory_name || product.brand || product.size}
           <p class="text-xs text-gray-500 line-clamp-1 leading-none mb-1">
             {#if product.subcategory_name}
-              <span class="font-medium text-gray-500">{product.subcategory_name}</span>
+              <span class="font-medium text-gray-500">{categoryTranslation(product.subcategory_name)}</span>
             {/if}
             {#if product.subcategory_name && product.brand} • {/if}
             {#if product.brand}

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Avatar } from '@repo/ui';
+  import { Tabs } from '@repo/ui';
   import * as i18n from '@repo/i18n';
   import type { Conversation } from '$lib/services/ConversationService';
 
@@ -48,43 +49,74 @@
     if (diffMinutes < 1440) return `${Math.floor(diffMinutes / 60)}h`;
     return `${Math.floor(diffMinutes / 1440)}d`;
   };
+  
+  // Prepare tab data for Melt UI Tabs
+  const messageTabData = $derived([
+    { 
+      id: 'all', 
+      label: i18n.messages_all(), 
+      count: conversations.length,
+      icon: '💬'
+    },
+    { 
+      id: 'unread', 
+      label: i18n.messages_unread(), 
+      count: conversations.filter(c => c.unread).length,
+      icon: '🔴'
+    },
+    { 
+      id: 'buying', 
+      label: i18n.messages_buying(), 
+      count: conversations.filter(c => c.isProductConversation).length,
+      icon: '🛍️'
+    },
+    { 
+      id: 'selling', 
+      label: i18n.messages_selling(), 
+      count: conversations.filter(c => !c.isProductConversation).length,
+      icon: '🏪'
+    }
+  ]);
+  
+  // Handle tab changes
+  function handleTabChange(tabId: string) {
+    onTabChange?.(tabId);
+  }
 </script>
 
 <div class="bg-white border-r border-gray-100 flex flex-col h-full {showOnMobile ? 'block' : 'hidden'} sm:block">
-  <!-- Header -->
-  <div class="px-4 py-3 border-b border-gray-100">
-    <h1 class="text-xl font-bold text-gray-900">{i18n.messages_inbox()}</h1>
-  </div>
-
-  <!-- Tab Navigation - Instagram style -->
-  <div class="flex-none px-2 py-3 border-b border-gray-100">
-    <div class="flex space-x-2 overflow-x-auto scrollbar-hide">
-      {#each [
-        { key: 'all', label: i18n.messages_all(), icon: '💬' },
-        { key: 'unread', label: i18n.messages_unread(), icon: '🔴' },
-        { key: 'buying', label: i18n.messages_buying(), icon: '🛍️' },
-        { key: 'selling', label: i18n.messages_selling(), icon: '🏪' }
-      ] as tab}
-        <button
-          onclick={() => onTabChange?.(tab.key)}
-          class="min-h-[36px] px-4 py-2 text-sm font-semibold rounded-full whitespace-nowrap transition-all duration-200
-            {activeTab === tab.key 
-              ? 'bg-black text-white shadow-lg' 
-              : 'text-gray-700 hover:text-black hover:bg-gray-100 active:bg-gray-200'
-            }"
-        >
-          <span class="mr-1.5">{tab.icon}</span>
-          {tab.label}
-          {#if tab.key === 'unread'}
-            {#if conversations.filter(c => c.unread).length > 0}
-              <span class="ml-2 px-2 py-0.5 text-xs bg-red-500 text-white rounded-full font-bold">
-                {conversations.filter(c => c.unread).length}
-              </span>
-            {/if}
-          {/if}
-        </button>
-      {/each}
-    </div>
+  <!-- Mobile-First Tab Navigation using Melt UI -->
+  <div class="flex-none border-b" style="border-color: oklch(0.92 0.01 270);">
+    <Tabs
+      tabs={messageTabData}
+      bind:value={activeTab}
+      onTabChange={handleTabChange}
+      variant="pills"
+      size="lg"
+      scrollable={true}
+      class="p-2 sm:p-3"
+      tabListClass="gap-1 sm:gap-1.5"
+      tabClass="min-h-[44px] sm:min-h-[40px] text-sm font-medium transition-all duration-200 touch-manipulation"
+    >
+      {#snippet tabContent({ tab, isActive })}
+        <span class="mr-1 sm:mr-1.5 text-base" role="img" aria-hidden="true">{tab.icon}</span>
+        <!-- Mobile: shorter labels for better fit -->
+        <span class="text-sm sm:text-sm font-medium">{tab.label}</span>
+        {#if tab.count !== undefined && tab.count > 0}
+          <span 
+            class="ml-1 sm:ml-1.5 px-1.5 py-0.5 text-xs rounded-full font-bold min-w-[18px] text-center
+              {isActive 
+                ? 'bg-[color:var(--surface-base)]/20 text-current shadow-sm' 
+                : tab.id === 'unread' 
+                  ? 'bg-[color:var(--status-error)] text-[color:var(--status-error-contrast)] shadow-sm' 
+                  : 'bg-[color:var(--surface-muted)] text-[color:var(--text-secondary)]'}"
+            aria-label="{tab.count} {tab.label.toLowerCase()}"
+          >
+            {tab.count}
+          </span>
+        {/if}
+      {/snippet}
+    </Tabs>
   </div>
 
   <!-- Conversations List - Instagram style -->
@@ -154,12 +186,3 @@
   </div>
 </div>
 
-<style>
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-</style>

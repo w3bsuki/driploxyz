@@ -102,7 +102,7 @@
       <div class="flex items-center space-x-3">
         <button
           onclick={() => onBackToList()}
-          class="sm:hidden -ml-2"
+          class="sm:hidden -ml-2 p-2 min-h-[var(--touch-standard)] min-w-[var(--touch-standard)] hover:bg-gray-100 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
           aria-label="Back to conversations"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,12 +116,12 @@
         </div>
       </div>
       <div class="flex items-center space-x-1">
-        <button class="p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100" aria-label="Call">
+        <button class="p-2 min-h-[var(--touch-standard)] min-w-[var(--touch-standard)] text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary" aria-label="Call">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
           </svg>
         </button>
-        <button class="p-2 text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100" aria-label="Info">
+        <button class="p-2 min-h-[var(--touch-standard)] min-w-[var(--touch-standard)] text-gray-600 hover:text-gray-900 rounded-full hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary" aria-label="Info">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -146,7 +146,7 @@
           <span class="text-xs font-semibold text-blue-900 uppercase tracking-wide">Product Conversation</span>
           <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-sm font-medium">Active</span>
         </div>
-        <a href="/product/{conversation.productId}" class="flex items-center space-x-3 p-2 bg-white rounded-lg hover:bg-gray-50 transition-colors">
+        <a href="/product/{conversation.productId}" class="flex items-center space-x-3 p-2 min-h-[var(--touch-standard)] bg-white rounded-lg hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary">
           <img src={conversation.productImage} alt={conversation.productTitle} class="w-12 h-12 rounded-lg object-cover shadow-xs" />
           <div class="flex-1">
             <p class="text-sm font-medium text-gray-900 truncate">{conversation.productTitle}</p>

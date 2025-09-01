@@ -270,7 +270,7 @@
   }
   
   .product-item {
-    contain: layout style paint;
+    contain: layout style;
   }
   
   .line-clamp-2 {

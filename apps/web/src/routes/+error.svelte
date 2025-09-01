@@ -33,23 +33,23 @@
 	<div class="max-w-max mx-auto">
 		<main class="sm:flex">
 			<!-- Status Code -->
-			<p class="text-4xl font-extrabold text-blue-600 sm:text-5xl">{status}</p>
+			<p class="text-4xl font-extrabold text-[color:var(--text-link)] sm:text-5xl">{status}</p>
 			
 			<div class="sm:ml-6">
 				<div class="sm:border-l sm:border-gray-200 sm:pl-6">
 					<!-- Error Title -->
-					<h1 class="text-4xl font-extrabold text-gray-900 tracking-tight sm:text-5xl">
+					<h1 class="text-4xl font-extrabold text-[color:var(--text-primary)] tracking-tight sm:text-5xl">
 						{errorTitle}
 					</h1>
 					
 					<!-- Error Message -->
-					<p class="mt-1 text-base text-gray-500">
+					<p class="mt-1 text-base text-[color:var(--text-secondary)]">
 						{errorMessage}
 					</p>
 					
 					<!-- Error ID (for support) -->
 					{#if error?.id}
-						<p class="mt-2 text-sm text-gray-400">
+						<p class="mt-2 text-sm text-[color:var(--text-muted)]">
 							Error ID: <code class="font-mono">{error.id}</code>
 						</p>
 					{/if}
@@ -102,20 +102,20 @@
 		
 		<!-- Additional Help -->
 		<div class="mt-16 text-center">
-			<p class="text-sm text-gray-500">
+			<p class="text-sm text-[color:var(--text-secondary)]">
 				{#if status === 404}
 					If you think this is a mistake, please 
-					<a href="/support" class="font-medium text-blue-600 hover:text-blue-500">
+					<a href="/support" class="font-medium text-[color:var(--text-link)] hover:text-[color:var(--text-link-hover)]">
 						contact support
 					</a>.
 				{:else if status >= 500}
 					Our team has been notified. If the problem persists, please 
-					<a href="/support" class="font-medium text-blue-600 hover:text-blue-500">
+					<a href="/support" class="font-medium text-[color:var(--text-link)] hover:text-[color:var(--text-link-hover)]">
 						contact support
 					</a>.
 				{:else}
 					Need help? 
-					<a href="/support" class="font-medium text-blue-600 hover:text-blue-500">
+					<a href="/support" class="font-medium text-[color:var(--text-link)] hover:text-[color:var(--text-link-hover)]">
 						Contact support
 					</a>.
 				{/if}

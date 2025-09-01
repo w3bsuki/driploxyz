@@ -127,11 +127,10 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
   }
 
   // Update user's last active time (non-blocking)
-  supabase
+  void supabase
     .from('profiles')
     .update({ last_active_at: new Date().toISOString() })
-    .eq('id', user.id)
-    .then(() => undefined).catch(() => undefined); // Fire and forget
+    .eq('id', user.id); // Fire and forget
 
   // Mark conversation as read if viewing specific conversation
   if (conversationParam && messages.length > 0) {
@@ -139,11 +138,11 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
     const [otherUserId, productId] = parts.length >= 2 ? parts : [parts[0], 'general'];
     
     // Use optimized function to mark conversation as read (non-blocking)
-    supabase.rpc('mark_conversation_read' as any, {
+    void supabase.rpc('mark_conversation_read' as any, {
       p_user_id: user.id,
       p_other_user_id: otherUserId,
       p_product_id: productId === 'general' ? null : productId
-    }).then(() => {}).catch(() => {}); // Fire and forget
+    }); // Fire and forget
   }
 
   // Get total unread count efficiently

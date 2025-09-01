@@ -5,149 +5,89 @@
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 */
 
-/* ▓▓▓ BUTTON STYLES ▓▓▓ */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border-radius: 0.5rem;
-  padding: 0 1rem;
-  font-weight: 500;
-  transition: all 150ms;
-  outline: none;
-  min-height: var(--touch-standard);
-  font-size: 16px; /* Prevent iOS zoom */
-  line-height: 1.5;
+/* ▓▓▓ MELT UI BUTTON ENHANCEMENTS ▓▓▓ */
+/* Base button styles are in app.css - these are Melt-specific enhancements */
+
+.melt-button {
+  /* Melt UI specific button styling that works with triggers */
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.btn:focus-visible {
-  outline: 2px solid var(--primary);
+.melt-button[data-melt-button][data-disabled] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.melt-button[data-melt-button]:focus-visible {
+  outline: 2px solid var(--state-focus);
   outline-offset: 2px;
 }
 
-.btn:disabled {
-  opacity: 0.5;
-  pointer-events: none;
+/* ▓▓▓ MELT UI INPUT ENHANCEMENTS ▓▓▓ */
+/* Base input styles are in app.css - these are Melt-specific patterns */
+
+.melt-input {
+  /* Melt UI specific input styling */
+  transition: border-color var(--duration-fast) var(--ease-out),
+              box-shadow var(--duration-fast) var(--ease-out);
 }
 
-.btn-primary {
-  background-color: var(--primary);
-  color: var(--primary-fg);
-  font-weight: 600;
-  min-height: var(--touch-primary);
-}
-
-.btn-primary:hover {
-  background-color: var(--primary-600, var(--primary));
-}
-
-.btn-primary:active {
-  background-color: var(--primary-700, var(--primary));
-}
-
-.btn-ghost {
-  background-color: transparent;
-  color: var(--fg-muted);
-  border: 1px solid transparent;
-}
-
-.btn-ghost:hover {
-  background-color: var(--gray-50);
-  color: var(--text-primary);
-  border-color: var(--gray-200);
-}
-
-.btn-ghost:active {
-  background-color: var(--gray-100);
-}
-
-.btn-secondary {
-  background-color: var(--gray-100);
-  color: var(--text-primary);
-  border: 1px solid var(--gray-200);
-}
-
-.btn-secondary:hover {
-  background-color: var(--gray-200);
-  border-color: var(--gray-300);
-}
-
-.btn-secondary:active {
-  background-color: var(--gray-300);
-}
-
-/* ▓▓▓ INPUT STYLES ▓▓▓ */
-.input {
-  width: 100%;
-  border-radius: 0.5rem;
-  border: 1px solid var(--gray-200);
-  background-color: var(--surface-base);
-  padding: 0.5rem 0.75rem;
-  color: var(--text-primary);
-  min-height: var(--touch-standard);
-  font-size: 16px; /* Prevent iOS zoom */
-  line-height: 1.5;
-  outline: none;
-}
-
-.input::placeholder {
-  color: var(--fg-muted);
-}
-
-.input:focus-visible {
-  outline: 2px solid var(--primary);
-  border-color: var(--primary);
-}
-
-.input:disabled {
-  opacity: 0.5;
-  pointer-events: none;
-  background-color: var(--gray-50);
-}
-
-.input-select {
+.melt-select-trigger {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
+  width: 100%;
+  min-height: var(--input-height);
+  padding: var(--input-padding);
+  border-radius: var(--input-radius);
+  border: 1px solid var(--input-border);
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  font-size: var(--input-font);
   cursor: pointer;
+  user-select: none;
 }
 
-.input-select::after {
-  content: '▾';
-  color: var(--fg-muted);
-  margin-left: 0.5rem;
+.melt-select-trigger:focus-visible {
+  outline: none;
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 3px var(--input-focus-ring);
+}
+
+.melt-select-trigger[data-placeholder] {
+  color: var(--text-muted);
+}
+
+.melt-select-trigger[data-disabled] {
+  opacity: 0.5;
   pointer-events: none;
-}
-
-.input-error {
-  border-color: var(--error);
-}
-
-.input-error:focus-visible {
-  outline-color: var(--error);
-  border-color: var(--error);
+  background-color: var(--surface-subtle);
+  color: var(--text-disabled);
 }
 
 /* ▓▓▓ MENU STYLES ▓▓▓ */
 .menu {
-  z-index: 50;
-  min-width: 10rem;
-  max-width: 20rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--gray-200);
-  background-color: var(--gray-50);
-  color: var(--gray-900);
-  padding: 0.25rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  z-index: var(--z-50);
+  min-width: var(--space-40);
+  max-width: var(--space-80);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  background-color: var(--surface-base);
+  color: var(--text-primary);
+  padding: var(--space-1);
+  box-shadow: var(--shadow-lg);
 }
 
 .menu-item {
   width: 100%;
   user-select: none;
-  border-radius: 0.375rem;
-  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
   text-align: left;
-  font-size: 16px;
-  transition: background-color 150ms;
+  font-size: var(--text-base);
+  transition: background-color var(--duration-fast) var(--ease-out);
   color: var(--text-primary);
   min-height: var(--touch-standard);
   cursor: pointer;
@@ -181,21 +121,21 @@
 
 .menu-item-danger:hover {
   background-color: var(--status-error-solid);
-  color: white;
+  color: var(--text-inverse);
 }
 
 .menu-item-danger:focus {
   background-color: var(--status-error-solid);
-  color: white;
+  color: var(--text-inverse);
 }
 
 .menu-item-danger[data-highlighted] {
   background-color: var(--status-error-solid);
-  color: white;
+  color: var(--text-inverse);
 }
 
 .menu-separator {
-  margin: 0.25rem -0.25rem;
+  margin: var(--space-1) calc(-1 * var(--space-1));
   height: 1px;
   background-color: var(--border-subtle);
 }
@@ -204,8 +144,8 @@
 .dialog-overlay {
   position: fixed;
   inset: 0;
-  z-index: 50;
-  background-color: rgba(0, 0, 0, 0.5);
+  z-index: var(--z-50);
+  background-color: var(--modal-overlay);
   backdrop-filter: blur(4px);
 }
 
@@ -213,16 +153,16 @@
   position: fixed;
   left: 50%;
   top: 50%;
-  z-index: 50;
+  z-index: var(--z-50);
   width: 100%;
   max-width: 32rem;
   transform: translate(-50%, -50%);
-  border-radius: 0.5rem;
-  border: 1px solid var(--gray-200);
-  background-color: var(--surface-base);
-  padding: 1.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  margin: 1rem;
+  border-radius: var(--modal-radius);
+  border: 1px solid var(--border-subtle);
+  background-color: var(--modal-bg);
+  padding: var(--modal-padding);
+  box-shadow: var(--modal-shadow);
+  margin: var(--space-4);
 }
 
 @media (min-width: 640px) {
@@ -232,26 +172,26 @@
 }
 
 .dialog-title {
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
   color: var(--text-primary);
-  line-height: 1;
-  letter-spacing: -0.025em;
+  line-height: var(--leading-none);
+  letter-spacing: var(--tracking-tight);
 }
 
 .dialog-description {
-  font-size: 0.875rem;
-  color: var(--fg-muted);
-  margin-top: 0.5rem;
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin-top: var(--space-2);
 }
 
 .dialog-close {
   position: absolute;
-  right: 1rem;
-  top: 1rem;
-  border-radius: 0.125rem;
+  right: var(--space-4);
+  top: var(--space-4);
+  border-radius: var(--radius-sm);
   opacity: 0.7;
-  transition: opacity 150ms;
+  transition: opacity var(--duration-fast) var(--ease-out);
   min-height: var(--touch-standard);
   min-width: var(--touch-standard);
 }
@@ -262,7 +202,7 @@
 
 .dialog-close:focus {
   outline: none;
-  box-shadow: 0 0 0 2px var(--primary);
+  box-shadow: 0 0 0 2px var(--state-focus);
 }
 
 .dialog-close:disabled {
@@ -271,14 +211,14 @@
 
 /* ▓▓▓ TOOLTIP STYLES ▓▓▓ */
 .tooltip {
-  z-index: 50;
+  z-index: var(--z-50);
   overflow: hidden;
-  border-radius: 0.375rem;
-  background-color: var(--gray-900);
-  padding: 0.375rem 0.75rem;
-  font-size: 0.75rem;
-  color: white;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface-inverse);
+  padding: var(--space-1-5) var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-lg);
 }
 
 /* ▓▓▓ TOAST STYLES ▓▓▓ */
@@ -289,53 +229,53 @@
   width: 100%;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-4);
   overflow: hidden;
-  border-radius: 0.375rem;
-  border: 1px solid var(--gray-200);
-  padding: 1.5rem 2rem 1.5rem 1.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  transition: all 150ms;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  padding: var(--space-6) var(--space-8) var(--space-6) var(--space-6);
+  box-shadow: var(--shadow-2xl);
+  transition: all var(--duration-fast) var(--ease-out);
   background-color: var(--surface-base);
   color: var(--text-primary);
 }
 
 .toast-success {
-  border-color: var(--success);
-  color: var(--success-fg);
-  background-color: var(--success-bg);
+  border-color: var(--status-success-border);
+  color: var(--status-success-text);
+  background-color: var(--status-success-bg);
 }
 
 .toast-error {
-  border-color: var(--error);
-  color: var(--error-fg);
-  background-color: var(--error-bg);
+  border-color: var(--status-error-border);
+  color: var(--status-error-text);
+  background-color: var(--status-error-bg);
 }
 
 .toast-warning {
-  border-color: var(--warning);
-  color: var(--warning-fg);
-  background-color: var(--warning-bg);
+  border-color: var(--status-warning-border);
+  color: var(--status-warning-text);
+  background-color: var(--status-warning-bg);
 }
 
 /* ▓▓▓ MOBILE-FIRST RESPONSIVE UTILITIES ▓▓▓ */
 @media (max-width: 640px) {
   
   .dialog-content {
-    margin: 1rem;
-    max-height: calc(100vh - 4rem);
+    margin: var(--space-4);
+    max-height: calc(100vh - var(--space-16));
   }
   
   /* Stack buttons vertically on mobile for better touch targets */
   .btn-group-mobile-stack {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-2);
   }
   
   .btn-group-mobile-stack .btn {
     width: 100%;
-    min-height: var(--touch-primary);
+    min-height: var(--btn-height-lg);
   }
   
   @media (min-width: 640px) {
@@ -445,4 +385,16 @@
 .banner-action {
   margin-left: auto;
   flex-shrink: 0;
+}
+
+/* ▓▓▓ UTILITY CLASSES ▓▓▓ */
+.scrollbar-hide {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }

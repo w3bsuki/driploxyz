@@ -276,8 +276,8 @@
   --text-muted: var(--gray-500);
   --text-disabled: var(--gray-400);
   --text-inverse: var(--gray-0);
-  --text-link: var(--blue-500);
-  --text-link-hover: var(--blue-600);
+  --text-link: var(--primary);
+  --text-link-hover: var(--primary-600);
   
   /* Border Colors */
   --border-subtle: var(--gray-200);
@@ -288,7 +288,7 @@
   /* Interactive States */
   --state-hover: oklch(0.98 0.005 270 / 0.5);
   --state-active: oklch(0.96 0.005 270 / 0.7);
-  --state-focus: var(--blue-500);
+  --state-focus: var(--primary);
   --state-disabled: var(--gray-300);
   
   /* Status Colors */
@@ -336,7 +336,7 @@
   --input-font: var(--text-base);
   --input-bg: var(--surface-base);
   --input-focus-border: var(--state-focus);
-  --input-focus-ring: oklch(0.58 0.14 240 / 0.2);
+  --input-focus-ring: oklch(0.15 0.015 270 / 0.2);
   
   /* Card Component */
   --card-padding-sm: var(--space-3);
@@ -391,31 +391,69 @@
   --category-men: var(--blue-500);
   --category-women: var(--pink-500);
   --category-kids: var(--orange-500);
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     ALIAS TOKENS — Bridge for semantic.css and utilities
+     These aliases map older semantic names to the canonical tokens above.
+     Keep component code clean by relying on these instead of hardcoding.
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+  /* Brand aliases */
+  --primary: var(--gray-900);
+  --primary-600: var(--gray-800);
+  --primary-700: var(--gray-950);
+  --primary-fg: var(--gray-0);
+
+  /* Status aliases (for toasts, badges, etc.) */
+  --success: var(--status-success-solid);
+  --success-bg: var(--status-success-bg);
+  --success-fg: var(--status-success-text);
+
+  --warning: var(--status-warning-solid);
+  --warning-bg: var(--status-warning-bg);
+  --warning-fg: var(--status-warning-text);
+
+  --error: var(--status-error-solid);
+  --error-bg: var(--status-error-bg);
+  --error-fg: var(--status-error-text);
+
+  --info: var(--status-info-solid);
+  --info-bg: var(--status-info-bg);
+  --info-fg: var(--status-info-text);
+
+  /* Text aliases */
+  --fg-muted: var(--text-muted);
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   DARK MODE TOKENS (Optional/Future)
+   DARK MODE TOKENS — Attribute-based (explicit toggle)
+   Safe override using plain CSS vars (no nested @theme).
+   Apply by setting data-theme="dark" on <html>.
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-@media (prefers-color-scheme: dark) {
-  @theme {
-    /* Override semantic tokens for dark mode */
-    --surface-base: var(--gray-900);
-    --surface-subtle: var(--gray-800);
-    --surface-muted: var(--gray-700);
-    --surface-emphasis: var(--gray-600);
-    --surface-inverse: var(--gray-0);
-    
-    --text-primary: var(--gray-50);
-    --text-secondary: var(--gray-200);
-    --text-tertiary: var(--gray-300);
-    --text-muted: var(--gray-400);
-    --text-disabled: var(--gray-500);
-    --text-inverse: var(--gray-900);
-    
-    --border-subtle: var(--gray-700);
-    --border-default: var(--gray-600);
-    --border-emphasis: var(--gray-500);
-    --border-inverse: var(--gray-200);
-  }
+[data-theme="dark"] {
+  /* Override semantic tokens for dark mode */
+  --surface-base: var(--gray-900);
+  --surface-subtle: var(--gray-800);
+  --surface-muted: var(--gray-700);
+  --surface-emphasis: var(--gray-600);
+  --surface-inverse: var(--gray-0);
+
+  --text-primary: var(--gray-50);
+  --text-secondary: var(--gray-200);
+  --text-tertiary: var(--gray-300);
+  --text-muted: var(--gray-400);
+  --text-disabled: var(--gray-500);
+  --text-inverse: var(--gray-900);
+
+  --border-subtle: var(--gray-700);
+  --border-default: var(--gray-600);
+  --border-emphasis: var(--gray-500);
+  --border-inverse: var(--gray-200);
+
+  /* Override brand tokens for dark mode contrast */
+  --primary: var(--gray-50);
+  --primary-600: var(--gray-200);
+  --primary-700: var(--gray-100);
+  --primary-fg: var(--gray-900);
 }

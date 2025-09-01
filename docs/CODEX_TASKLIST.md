@@ -16,6 +16,13 @@ Use this file to track progress with checkmarks. Keep it updated as you work.
 
 ## Current In‑Progress (Claude‑code)
 
+- [x] Task 15 — Category Navigation Reactivity Fix
+  - Fixed category navigation issue where URL updates didn't trigger content refresh
+  - Added $effect to watch URL parameter changes in category/[...segments]/+page.svelte
+  - Implemented invalidateAll() calls to trigger server data refresh on navigation
+  - Converted category button clicks to proper <a> tags with SvelteKit preload
+  - Added loading states for better UX during navigation transitions
+  - Navigation now properly refreshes from /category/men to /category/men/clothing
 - [x] Task 14 — Finalization Sweep
   - i18n fallback already correctly set to 'bg' in +layout.server.ts:74
   - Token sweep completed: replaced 4 var(--fg) references with var(--text-primary) in semantic.css

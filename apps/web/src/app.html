@@ -11,13 +11,21 @@
 		<link rel="manifest" href="%sveltekit.assets%/manifest.json" />
 		
 		<!-- Performance optimizations -->
-		<link rel="dns-prefetch" href="https://fonts.gstatic.com">
-		<link rel="dns-prefetch" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://supabase.co" crossorigin>
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		
-		<!-- Preload critical fonts -->
-		<link rel="preload" as="font" type="font/woff2" href="%sveltekit.assets%/fonts/inter-var.woff2" crossorigin>
+
+		<!-- Inter Variable Font - Self-Hosted with Cyrillic support -->
+		<link rel="stylesheet" href="%sveltekit.assets%/fonts/inter.css">
+
+		<!-- Early theme init: apply saved theme before CSS paints -->
+		<script>
+			(function(){
+				try {
+					var t = localStorage.getItem('theme');
+					if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+					else document.documentElement.removeAttribute('data-theme');
+				} catch(e){}
+			})();
+		</script>
 		
 		<!-- Resource hints for better Core Web Vitals -->
 		<meta name="theme-color" content="#3b82f6">

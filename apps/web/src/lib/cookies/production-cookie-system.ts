@@ -104,7 +104,7 @@ export class ProductionCookieManager {
   private consent: ConsentState | null = null;
   private readonly CONSENT_VERSION = '2.0.0';
   private readonly CONSENT_MAX_AGE = 365 * 24 * 60 * 60; // 1 year
-  private _blockedScripts = new Set<string>();
+  private __blockedScripts = new Set<string>(); // Blocked scripts for GDPR compliance (future use)
   private scriptQueue = new Map<string, () => void>();
   
   private constructor() {
@@ -593,7 +593,7 @@ export class ProductionLocaleManager {
    */
   getLocale(): string {
     if (browser) {
-      const _cookieManager = ProductionCookieManager.getInstance();
+      // Cookie manager available if needed for future functionality
       const match = document.cookie.match(new RegExp(`(^| )${COOKIES.LOCALE}=([^;]+)`));
       const locale = match ? match[2] : null;
       

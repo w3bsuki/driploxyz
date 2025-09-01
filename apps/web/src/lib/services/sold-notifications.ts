@@ -160,7 +160,7 @@ export class SoldNotificationService {
   /**
    * Get unread sold notifications count
    */
-  async getUnreadCount(sellerId: string): Promise<number> {
+  async getUnreadCount(_sellerId: string): Promise<number> {
     // This would query a notifications table
     // For now, return 0
     return 0;

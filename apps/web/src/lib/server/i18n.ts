@@ -4,7 +4,7 @@ import * as i18n from '@repo/i18n';
 import { checkServerConsent, COOKIES } from '$lib/cookies/production-cookie-system';
 
 // Debug flag for controlled logging
-const _isDebug = false; // Disabled to reduce console spam
+// Debug flag available for future i18n debugging - currently disabled to reduce console spam
 
 /**
  * Setup internationalization for the request event

@@ -44,7 +44,7 @@
           <!-- Mobile menu button -->
           <button
             onclick={toggleMobileMenu}
-            class="lg:hidden p-2 rounded-xl text-gray-600 hover:bg-gray-100/50 transition-colors"
+            class="lg:hidden p-2 rounded-xl text-[color:var(--text-tertiary)] hover:bg-gray-100/50 transition-colors"
           >
             <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               {#if mobileMenuOpen}
@@ -64,7 +64,7 @@
         </div>
         
         <div class="flex items-center space-x-2 sm:space-x-4">
-          <span class="hidden sm:inline text-sm text-gray-600">
+          <span class="hidden sm:inline text-sm text-[color:var(--text-tertiary)]">
             {data.profile?.username}
           </span>
           <Button href="/" variant="outline" size="sm" class="rounded-xl">
@@ -87,7 +87,7 @@
             class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
                    {$page.url.pathname === item.href 
                      ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md' 
-                     : 'text-gray-700 hover:bg-gray-100/50'}"
+                     : 'text-[color:var(--text-secondary)] hover:bg-gray-100/50'}"
           >
             <span class="text-lg">{item.icon}</span>
             <span>{item.label}</span>
@@ -109,7 +109,7 @@
                 class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
                        {$page.url.pathname === item.href 
                          ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md transform scale-105' 
-                         : 'text-gray-700 hover:bg-gray-100/50 hover:scale-102'}"
+                         : 'text-[color:var(--text-secondary)] hover:bg-gray-100/50 hover:scale-102'}"
               >
                 <span class="text-lg">{item.icon}</span>
                 <span>{item.label}</span>

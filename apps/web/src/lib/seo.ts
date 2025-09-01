@@ -22,7 +22,7 @@ export function getCanonicalAndHreflang(eventOrUrl: RequestEvent | URL): SeoData
   
   // Extract locale prefix if present
   const match = pathname.match(/^\/(uk|bg)(\/.*)?$/);
-  const _localePrefix = match?.[1];
+  const localePrefix = match?.[1]; // Store for potential future use
   const cleanPath = match ? (match[2] || '/') : pathname;
   
   // Base URL without locale prefix

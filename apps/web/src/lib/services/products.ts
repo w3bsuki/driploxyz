@@ -6,6 +6,13 @@ type ProductInsert = Database['public']['Tables']['products']['Insert'];
 type ProductUpdate = Database['public']['Tables']['products']['Update'];
 type ProductImage = Database['public']['Tables']['product_images']['Row'];
 
+// Type for raw product data from Supabase with joined relations
+interface ProductWithJoinedData extends Product {
+  product_images: ProductImage[] | null;
+  categories: { name: string | null } | null;
+  profiles: { username: string | null; rating: number | null; avatar_url: string | null } | null;
+}
+
 export interface ProductWithImages extends Product {
   images: ProductImage[];
   category_name?: string;
@@ -275,8 +282,8 @@ export class ProductService {
   }> {
     try {
       // Skip premium boost query - premium features not yet implemented
-      const boostedProducts: ProductWithImages[] = [];
-      const boostedError = null;
+      const boostedProducts: ProductWithJoinedData[] = [];
+      const __boostedError = null; // Future premium boost error tracking
 
       // Get featured products (fallback since no boosted products exist)
       const { data: manuallyPromoted, error: manualError } = await this.supabase
@@ -303,12 +310,12 @@ export class ProductService {
       ];
       
       // Remove duplicates based on product ID
-      const uniqueProducts = allPromoted.reduce((acc: ProductWithImages[], product) => {
+      const uniqueProducts = allPromoted.reduce((acc: ProductWithJoinedData[], product) => {
         if (!acc.find((p) => p.id === product.id)) {
           acc.push(product);
         }
         return acc;
-      }, [] as ProductWithImages[]);
+      }, [] as ProductWithJoinedData[]);
 
       let limitedProducts = uniqueProducts.slice(0, limit);
 
@@ -344,13 +351,16 @@ export class ProductService {
       }
 
       // Transform the data
-      const products: ProductWithImages[] = limitedProducts.map((item) => ({
-        ...item,
-        images: item.product_images || [],
-        category_name: item.categories?.name,
-        seller_name: item.profiles?.username,
-        seller_rating: item.profiles?.rating
-      }));
+      const products: ProductWithImages[] = limitedProducts.map((item) => {
+        const { product_images, categories, profiles, ...productData } = item;
+        return {
+          ...productData,
+          images: product_images || [],
+          category_name: categories?.name || undefined,
+          seller_name: profiles?.username || undefined,
+          seller_rating: profiles?.rating || undefined
+        };
+      });
 
       return { data: products, error: null };
     } catch (error) {
@@ -470,29 +480,59 @@ export class ProductService {
       }
 
       // Transform the data to match our interface
-      const products: ProductWithImages[] = (data || []).map((item: {
-        id: string;
-        title: string;
-        price: number;
-        condition: string;
-        size: string | null;
-        brand: string | null;
-        location: string | null;
-        created_at: string;
-        seller_id: string;
-        category_id: string | null;
-        country_code: string;
-        image_url: string;
-        category_name: string | null;
-        seller_name: string | null;
-        seller_rating: number | null;
-      }) => ({
-        ...item,
-        images: [{ image_url: item.image_url }],
-        category_name: item.category_name,
-        seller_name: item.seller_name,
-        seller_rating: item.seller_rating
-      }));
+      const products: ProductWithImages[] = (data || []).map((item: any) => {
+        // Extract the properties that should become images and transform the product
+        return {
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          price: item.price,
+          condition: item.condition as any,
+          size: item.size,
+          brand: item.brand,
+          color: item.color,
+          material: item.material,
+          location: item.location,
+          is_active: item.is_active !== false,
+          is_sold: item.is_sold === true,
+          is_featured: item.is_featured === true,
+          view_count: item.view_count || 0,
+          created_at: item.created_at,
+          updated_at: item.updated_at || item.created_at,
+          seller_id: item.seller_id,
+          category_id: item.category_id,
+          country_code: item.country_code,
+          // Required fields from database schema with defaults
+          archived_at: null,
+          auto_archive_after_days: null,
+          boost_type: null,
+          boosted_until: null,
+          commission_rate: null,
+          favorite_count: item.like_count || 0,
+          is_boosted: false,
+          net_earnings: null,
+          platform_fee: null,
+          region: null,
+          search_vector: null,
+          shipping_cost: null,
+          slug: null,
+          sold_at: null,
+          status: null,
+          tags: null,
+          images: item.image_url ? [{ 
+            id: '', 
+            image_url: item.image_url, 
+            alt_text: null, 
+            display_order: null, 
+            created_at: null, 
+            product_id: item.id, 
+            sort_order: null 
+          }] : [],
+          category_name: item.category_name || undefined,
+          seller_name: item.seller_name || undefined,
+          seller_rating: item.seller_rating || undefined
+        };
+      });
 
       return { data: products, error: null };
     } catch (error) {

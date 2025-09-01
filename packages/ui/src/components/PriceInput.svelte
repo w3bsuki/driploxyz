@@ -38,7 +38,7 @@
 
 <div class="w-full">
   {#if label}
-    <label class="block text-sm font-medium text-gray-900 mb-2">
+    <label for="price-input" class="block text-sm font-medium text-gray-900 mb-2">
       {label}{required ? '*' : ''}
     </label>
   {/if}
@@ -48,6 +48,7 @@
       {currency}
     </span>
     <input
+      id="price-input"
       type="number"
       value={value || ''}
       oninput={handleInput}

@@ -1,5 +1,4 @@
 // Product page utility functions
-import * as i18n from '@repo/i18n';
 import { CATEGORY_TRANSLATIONS, CONDITION_TRANSLATIONS } from './product-constants';
 
 /**
@@ -52,7 +51,7 @@ export function formatHashtag(text: string): string {
  */
 export function createBreadcrumbItems(product: any) {
   const items = [
-    { label: i18n.nav_home?.() || 'Home', href: '/' }
+    { label: 'Home', href: '/' }
   ];
   
   // Add parent category (Men/Women/Kids)

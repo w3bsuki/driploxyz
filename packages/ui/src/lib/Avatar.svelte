@@ -92,7 +92,7 @@
       onclick();
     }
   }}
-  class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} {onclick ? 'cursor-pointer' : 'cursor-default'} {className} overflow-hidden"
+  class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} {onclick ? 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary' : 'cursor-default'} {className} overflow-hidden"
 >
   {#if src && !imageError}
     <img 
@@ -103,8 +103,8 @@
       class="w-full h-full object-cover"
     />
   {:else}
-    <div class="flex items-center justify-center w-full h-full bg-gray-200">
-      <span class="font-semibold text-gray-500 {textSizes[size]}">{initial()}</span>
+    <div class="flex items-center justify-center w-full h-full bg-[color:var(--surface-muted)]">
+      <span class="font-semibold text-[color:var(--text-muted)] {textSizes[size]}">{initial()}</span>
     </div>
   {/if}
 </div>

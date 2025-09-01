@@ -36,6 +36,8 @@
     translations: Translations;
     sectionTitle?: string;
     favoritesState?: any;
+    showQuickFilters?: boolean;
+    onQuickFilter?: (condition: string) => void;
   }
 
   let { 
@@ -48,8 +50,10 @@
     onSellClick,
     formatPrice = (price: number) => `$${price.toFixed(2)}`,
     translations,
-    sectionTitle = 'Featured Products',
-    favoritesState
+    sectionTitle = 'Newest listings', // Will be overridden by parent with proper translation
+    favoritesState,
+    showQuickFilters = false,
+    onQuickFilter
   }: Props = $props();
   
   // Derived states
@@ -64,10 +68,96 @@
   aria-label={sectionTitle}
   role="region"
 >
-  <!-- Section Header -->
-  <div class="mb-4">
-    <h2 class="text-lg font-semibold text-gray-900">{sectionTitle}</h2>
+  <!-- Enhanced Section Header - Mobile-First -->
+  <div class="mb-4 sm:mb-6">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-lg sm:text-xl font-bold text-[color:var(--text-primary)] tracking-tight leading-tight">
+        {sectionTitle}
+      </h2>
+      {#if onBrowseAll}
+        <button
+          onclick={onBrowseAll}
+          class="min-h-[36px] px-3 sm:px-4 py-1.5 sm:py-2 
+                 text-sm font-medium rounded-lg transition-all duration-200 
+                 bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)]
+                 hover:bg-[color:var(--surface-muted)] hover:text-[color:var(--text-primary)]
+                 active:bg-[color:var(--surface-base)] active:scale-95
+                 focus:outline-none focus:ring-2 focus:ring-[color:var(--primary)]/20 focus:ring-offset-1"
+          aria-label="View all {sectionTitle.toLowerCase()}"
+        >
+          {translations.home_browseAll || 'View All'}
+        </button>
+      {/if}
+    </div>
+    
+    <!-- Subtitle with product count -->
+    {#if hasProducts}
+      <p class="text-sm text-[color:var(--text-tertiary)] font-medium">
+        {products.length} fresh items • Updated moments ago
+      </p>
+    {/if}
   </div>
+  
+  <!-- Quick Filter Pills - Mobile-First -->
+  {#if showQuickFilters && hasProducts}
+    <div class="mb-4 sm:mb-5">
+      <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
+        <button
+          onclick={() => onQuickFilter?.('new')}
+          class="min-h-[32px] shrink-0 px-3 py-1.5 
+                 rounded-full text-xs font-semibold transition-all duration-200
+                 bg-[color:var(--success-subtle)] text-[color:var(--success-text)]
+                 border border-[color:var(--success-border)]
+                 hover:bg-[color:var(--success-muted)] active:scale-95
+                 focus:outline-none focus:ring-2 focus:ring-[color:var(--success)]/20"
+        >
+          <span class="mr-1" role="img" aria-hidden="true">✨</span>
+          {translations.condition_new}
+        </button>
+        
+        <button
+          onclick={() => onQuickFilter?.('like-new')}
+          class="min-h-[32px] shrink-0 px-3 py-1.5 
+                 rounded-full text-xs font-semibold transition-all duration-200
+                 bg-[color:var(--info-subtle)] text-[color:var(--info-text)]
+                 border border-[color:var(--info-border)]
+                 hover:bg-[color:var(--info-muted)] active:scale-95
+                 focus:outline-none focus:ring-2 focus:ring-[color:var(--info)]/20"
+        >
+          <span class="mr-1" role="img" aria-hidden="true">💎</span>
+          {translations.condition_likeNew}
+        </button>
+        
+        <button
+          onclick={() => onQuickFilter?.('good')}
+          class="min-h-[32px] shrink-0 px-3 py-1.5 
+                 rounded-full text-xs font-semibold transition-all duration-200
+                 bg-[color:var(--surface-muted)] text-[color:var(--text-secondary)]
+                 border border-[color:var(--border-subtle)]
+                 hover:bg-[color:var(--surface-subtle)] hover:text-[color:var(--text-primary)]
+                 active:scale-95
+                 focus:outline-none focus:ring-2 focus:ring-[color:var(--primary)]/20"
+        >
+          <span class="mr-1" role="img" aria-hidden="true">👍</span>
+          {translations.condition_good}
+        </button>
+        
+        <button
+          onclick={() => onQuickFilter?.('fair')}
+          class="min-h-[32px] shrink-0 px-3 py-1.5 
+                 rounded-full text-xs font-semibold transition-all duration-200
+                 bg-[color:var(--surface-muted)] text-[color:var(--text-secondary)]
+                 border border-[color:var(--border-subtle)]
+                 hover:bg-[color:var(--surface-subtle)] hover:text-[color:var(--text-primary)]
+                 active:scale-95
+                 focus:outline-none focus:ring-2 focus:ring-[color:var(--primary)]/20"
+        >
+          <span class="mr-1" role="img" aria-hidden="true">👌</span>
+          {translations.condition_fair}
+        </button>
+      </div>
+    </div>
+  {/if}
   
   <!-- Loading State -->
   {#if loading}
@@ -132,11 +222,11 @@
       role="status"
       aria-label="No products available"
     >
-      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+      <svg class="mx-auto h-12 w-12 text-[color:var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H5m14 14H5" />
       </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900">{translations.empty_noProducts}</h3>
-      <p class="mt-1 text-sm text-gray-500">{translations.empty_startBrowsing}</p>
+      <h3 class="mt-2 text-sm font-medium text-[color:var(--text-primary)]">{translations.empty_noProducts}</h3>
+      <p class="mt-1 text-sm text-[color:var(--text-secondary)]">{translations.empty_startBrowsing}</p>
       <div class="mt-6">
         <Button 
           variant="primary" 
@@ -154,7 +244,7 @@
       <Button 
         variant="ghost" 
         size="lg" 
-        class="text-gray-500"
+        class="text-[color:var(--text-secondary)]"
         onclick={onBrowseAll}
         aria-label="Browse all products"
       >
@@ -166,11 +256,11 @@
   <!-- Error Messages -->
   {#if hasErrors}
     <div 
-      class="mt-4 p-4 bg-red-50 border border-red-200 rounded-md"
+      class="mt-4 p-4 rounded-md bg-[color:var(--status-error-bg)] border border-[color:var(--status-error-border)]"
       role="alert"
       aria-live="assertive"
     >
-      <p class="text-sm text-red-800">
+      <p class="text-sm" style="color: var(--status-error-text)">
         <span class="sr-only">Error: </span>
         {errors.products}
       </p>

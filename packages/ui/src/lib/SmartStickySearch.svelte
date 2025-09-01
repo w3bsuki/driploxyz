@@ -163,12 +163,3 @@
   <div class="h-16 bg-transparent"></div>
 {/if}
 
-<style>
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-</style>

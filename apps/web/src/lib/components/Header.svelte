@@ -9,7 +9,8 @@
     HeaderUserMenu,
     HeaderNav,
     HeaderSearch,
-    MobileNavigation
+    MobileNavigation,
+    ThemeToggle
   } from '@repo/ui';
   import type { User, Profile } from '@repo/ui/types';
   import * as i18n from '@repo/i18n';
@@ -179,7 +180,7 @@
   });
 </script>
 
-<header class="bg-white shadow-sm border-b border-[color:var(--gray-200)]">
+<header class="bg-[color:var(--surface-base)] shadow-[var(--shadow-sm)] border-b border-[color:var(--border-subtle)]">
   <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <!-- Left: Mobile Menu + Logo -->
@@ -187,8 +188,9 @@
         <!-- Mobile Menu Button -->
         <button
           onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
-          class="sm:hidden p-1 text-gray-700 hover:text-gray-900 transition-colors rounded-lg hover:bg-gray-50"
+          class="sm:hidden p-1 text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] transition-colors duration-[var(--duration-fast)] rounded-[var(--radius-md)] hover:bg-[color:var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] min-h-[var(--touch-standard)] min-w-[var(--touch-standard)]" 
           aria-label="Toggle menu"
+          aria-expanded={mobileMenuOpen}
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             {#if mobileMenuOpen}
@@ -217,14 +219,16 @@
       <!-- Right: Auth/Account -->
       <div class="flex items-center gap-1">
         <!-- Desktop Language Switcher -->
-        <div class="hidden sm:block">
+        <div class="hidden sm:flex items-center gap-1">
           <LanguageSwitcher
             currentLanguage={currentLang}
             {languages}
             onLanguageChange={switchLanguage}
             variant="dropdown"
           />
+          <ThemeToggle size="sm" tooltip="Toggle theme" />
         </div>
+        <!-- Mobile theme toggle moved into hamburger menu -->
         
         {#if isLoggedIn}
           <!-- Notifications -->
@@ -269,7 +273,10 @@
         {:else}
           <!-- Auth Buttons -->
           <div class="flex items-center gap-2">
-            <a href="/login" class="text-gray-700 hover:text-gray-900 font-medium text-sm sm:text-base">
+            <a 
+              href="/login" 
+              class="text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] font-medium text-sm sm:text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] rounded-[var(--radius-md)] px-2 py-1 transition-colors duration-[var(--duration-fast)]"
+            >
               {i18n.auth_signIn()}
             </a>
             <Button href="/signup" variant="primary" size="sm">

@@ -330,18 +330,18 @@
         
         {#if showLanguageSelector && !hasExistingConsent}
           <!-- Language Selection (First Time Visitors) -->
-          <div class="p-6 border-b border-gray-100 bg-gradient-to-r from-blue-50 to-purple-50">
+          <div class="p-6 border-b border-gray-100 bg-gradient-to-r from-[color:var(--status-info-bg)] to-purple-50">
             <div class="text-center mb-4">
               <h3 class="text-lg font-bold text-gray-900">Welcome to Driplo! 🌍</h3>
               <p class="text-sm text-gray-600 mt-1">
                 {#if detectedCountryName}
-                  <span class="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-2">
+                  <span class="inline-flex items-center gap-1 bg-[color:var(--status-info-bg)] text-[color:var(--status-info-fg)] px-3 py-1 rounded-full text-sm font-medium mb-2">
                     📍 We detected you're visiting from <strong>{detectedCountryName}</strong>
                   </span>
                   <br>
                   Choose your preferred language:
                 {:else if detectedCountry}
-                  <span class="inline-flex items-center gap-1 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium mb-2">
+                  <span class="inline-flex items-center gap-1 bg-[color:var(--status-info-bg)] text-[color:var(--status-info-fg)] px-3 py-1 rounded-full text-sm font-medium mb-2">
                     📍 We detected you're visiting from <strong>{detectedCountry}</strong>
                   </span>
                   <br>
@@ -358,7 +358,7 @@
                   onclick={() => selectedLocale = lang.code}
                   class="flex-1 min-h-[44px] p-3 rounded-lg border-2 transition-all duration-200 hover:scale-105
                     {selectedLocale === lang.code 
-                      ? 'border-blue-500 bg-blue-50 shadow-md' 
+                      ? 'border-[color:var(--primary)] bg-[color:var(--primary-50)] shadow-md' 
                       : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'}"
                   title={lang.name}
                 >
@@ -393,7 +393,7 @@
                   <p class="text-sm text-gray-600 leading-relaxed">
                     We use cookies to provide essential features, remember your preferences, 
                     and analyze how you use our platform. You control what we collect.
-                    <a href="/privacy/cookies" class="text-blue-600 hover:underline ml-1 font-medium">
+                    <a href="/privacy/cookies" class="link ml-1 font-medium">
                       Learn more
                     </a>
                   </p>
@@ -442,7 +442,7 @@
                       <input 
                         type="checkbox" 
                         bind:checked={preferences.functional}
-                        class="mt-0.5 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        class="mt-0.5 w-5 h-5 rounded border-gray-300 text-[color:var(--primary)] focus:ring-[color:var(--state-focus)]"
                       />
                       <div class="flex-1">
                         <div class="font-semibold text-sm text-gray-900">Functional</div>
@@ -459,7 +459,7 @@
                       <input 
                         type="checkbox" 
                         bind:checked={preferences.analytics}
-                        class="mt-0.5 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        class="mt-0.5 w-5 h-5 rounded border-gray-300 text-[color:var(--primary)] focus:ring-[color:var(--state-focus)]"
                       />
                       <div class="flex-1">
                         <div class="font-semibold text-sm text-gray-900">Analytics</div>
@@ -476,7 +476,7 @@
                       <input 
                         type="checkbox" 
                         bind:checked={preferences.marketing}
-                        class="mt-0.5 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        class="mt-0.5 w-5 h-5 rounded border-gray-300 text-[color:var(--primary)] focus:ring-[color:var(--state-focus)]"
                       />
                       <div class="flex-1">
                         <div class="font-semibold text-sm text-gray-900">Marketing</div>
@@ -520,7 +520,7 @@
               {:else}
                 <button
                   onclick={savePreferences}
-                  class="min-h-[44px] px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 
+                  class="min-h-[44px] px-4 py-3 bg-gradient-to-r from-[color:var(--primary)] to-purple-600 
                          text-white rounded-xl font-semibold hover:shadow-lg transition-all text-sm"
                 >
                   Save My Choices

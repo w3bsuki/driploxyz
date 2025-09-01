@@ -89,21 +89,21 @@
 	{#snippet children()}
 		<div class="space-y-4">
 			{#if orderDetails}
-				<div class="bg-gray-50 rounded-lg p-3 text-sm">
-					<p class="text-gray-500">
-						Reviewing: <span class="font-medium text-gray-900">
+				<div class="bg-[color:var(--surface-subtle)] rounded-lg p-3 text-sm">
+					<p class="text-[color:var(--text-muted)]">
+						Reviewing: <span class="font-medium text-[color:var(--text-primary)]">
 							{userType === 'buyer' ? orderDetails.seller : orderDetails.buyer}
 						</span>
 					</p>
 					{#if orderDetails.product}
-						<p class="text-gray-500 mt-1">For: {orderDetails.product}</p>
+						<p class="text-[color:var(--text-muted)] mt-1">For: {orderDetails.product}</p>
 					{/if}
 				</div>
 			{/if}
 			
 			<!-- Star Rating -->
 			<div>
-				<label class="block text-sm font-medium text-gray-900 mb-2">
+				<label class="block text-sm font-medium text-[color:var(--text-primary)] mb-2">
 					Rating
 				</label>
 				<div class="flex space-x-1">
@@ -115,7 +115,7 @@
 							disabled={loading}
 						>
 							<svg
-								class="w-8 h-8 {star <= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}"
+								class="w-8 h-8 {star <= rating ? 'text-yellow-400 fill-current' : 'text-[color:var(--border-subtle)]'}"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -134,7 +134,7 @@
 			
 			<!-- Review Title -->
 			<div>
-				<label for="review-title" class="block text-sm font-medium text-gray-900 mb-1">
+				<label for="review-title" class="block text-sm font-medium text-[color:var(--text-primary)] mb-1">
 					Title (optional)
 				</label>
 				<input
@@ -143,13 +143,13 @@
 					bind:value={title}
 					disabled={loading}
 					placeholder="Summarize your experience"
-					class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
+					class="w-full px-3 py-2 border border-[color:var(--border-default)] rounded-lg focus:ring-2 focus:ring-black focus:border-transparent bg-[color:var(--surface-base)]"
 				/>
 			</div>
 			
 			<!-- Review Comment -->
 			<div>
-				<label for="review-comment" class="block text-sm font-medium text-gray-900 mb-1">
+				<label for="review-comment" class="block text-sm font-medium text-[color:var(--text-primary)] mb-1">
 					Comment (optional)
 				</label>
 				<textarea
@@ -158,13 +158,13 @@
 					disabled={loading}
 					rows="4"
 					placeholder="Share details about your experience..."
-					class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent resize-none"
+					class="w-full px-3 py-2 border border-[color:var(--border-default)] rounded-lg focus:ring-2 focus:ring-black focus:border-transparent resize-none bg-[color:var(--surface-base)]"
 				/>
 			</div>
 			
 			{#if error}
-				<div class="p-3 bg-red-50 border border-red-200 rounded-lg">
-					<p class="text-sm text-red-600">{error}</p>
+				<div class="p-3 bg-[color:var(--surface-error-subtle)] border border-[color:var(--border-error)] rounded-lg">
+					<p class="text-sm text-[color:var(--text-error)]">{error}</p>
 				</div>
 			{/if}
 		</div>

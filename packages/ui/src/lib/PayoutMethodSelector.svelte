@@ -285,4 +285,12 @@
   .duration-300 {
     animation-duration: 300ms;
   }
+
+  /* Respect reduced motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-in,
+    .slide-in-from-top-2 {
+      animation: none;
+    }
+  }
 </style>

@@ -33,12 +33,11 @@ pnpm dev --filter web  # Opens at http://localhost:5173
 
 | Document | Description |
 |----------|-------------|
-| [PROJECT.md](./PROJECT.md) | Complete project specification, architecture, features |
-| [DEVELOPMENT.md](./DEVELOPMENT.md) | Development workflow, standards, API docs |
-| [ROADMAP.md](./ROADMAP.md) | Priorities, bugs, technical debt, feature pipeline |
-| [OPERATIONS.md](./OPERATIONS.md) | Deployment, monitoring, scaling, incident response |
+| [PROJECT.md](./docs/00-PROJECT.md) | Complete project specification, architecture, features |
+| [OPERATIONS.md](./docs/40-OPERATIONS.md) | Deployment, monitoring, scaling, incident response |
 | [CLAUDE.md](./CLAUDE.md) | AI assistant context and rules |
 | [CLAUDE_HOOKS.md](./docs/CLAUDE_HOOKS.md) | Claude‑code hooks & execution protocol |
+| [All docs/](./docs/) | Complete technical documentation |
 
 ## 🧭 Execution Workflow (Claude‑code)
 
@@ -110,8 +109,8 @@ Do a light pre‑cleanup to reduce noise, then a final sweep after audits.
 
 ## 🤝 **Contributing**
 
-1. Read [DEVELOPMENT.md](./DEVELOPMENT.md) for setup
-2. Check [ROADMAP.md](./ROADMAP.md) for priorities
+1. Read [docs/](./docs/) for project setup and architecture
+2. Check [RUNBOOK.md](./docs/RUNBOOK.md) for current priorities
 3. Follow mobile-first principles in [CLAUDE.md](./CLAUDE.md)
 4. Test at 375px viewport always
 

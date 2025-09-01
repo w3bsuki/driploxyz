@@ -47,7 +47,12 @@ test.describe('Orders flow', () => {
     
     // Now simulate buyer receiving the order
     // Create new context for buyer
-    const buyerContext = await context.browser().newContext({
+    const browser = context.browser()
+    if (!browser) {
+      throw new Error('Browser context not available')
+    }
+    
+    const buyerContext = await browser.newContext({
       storageState: {
         cookies: [],
         origins: [

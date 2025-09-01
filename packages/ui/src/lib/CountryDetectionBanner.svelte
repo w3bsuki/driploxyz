@@ -98,4 +98,11 @@
   .animate-slide-up {
     animation: slide-up 0.3s ease-out;
   }
+
+  /* Respect reduced motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-slide-up {
+      animation: none;
+    }
+  }
 </style>

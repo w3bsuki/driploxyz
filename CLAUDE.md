@@ -4,13 +4,13 @@ Mobile‑first C2C marketplace. Act as a senior SvelteKit engineer. Follow these
 
 ## Ground Truth (Read First, Always)
 
-- Context: `docs/END_GOAL.md`, `docs/00-PROJECT.md`
-- Execution plan: `docs/CODEX_TASKLIST.md` (update as you work)
-- Architecture/UI/Ops: `docs/10-ARCHITECTURE.md`, `docs/20-UI-UX.md`, `docs/30-STANDARDS.md`, `docs/40-OPERATIONS.md`
-- UI migration: `docs/MELT_UI_MIGRATION.md`, `docs/REPO_UI_CLEANUP.md`
-- V1 scope: `docs/V1_driplo.md`
+Use the three primary sources to avoid context overload:
 
-If a conflict arises, align with these docs. Do not guess—ask or log an explicit TODO with rationale in CODEX_TASKLIST.
+- Standards: `docs/STANDARDS_INDEX.md`
+- Product: `docs/PRODUCT_INDEX.md`
+- Specs: `docs/SPECS_INDEX.md`
+
+Then open the specific linked spec/playbook you need. If a conflict arises, align with the indexes and linked sources. Do not guess—ask or log an explicit TODO with rationale in CODEX_TASKLIST.
 
 ## Mode of Work
 

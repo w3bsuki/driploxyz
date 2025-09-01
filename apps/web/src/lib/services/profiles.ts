@@ -2,7 +2,6 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
-type ProfileInsert = Database['public']['Tables']['profiles']['Insert'];
 type ProfileUpdate = Database['public']['Tables']['profiles']['Update'];
 
 export interface ProfileWithStats extends Profile {
@@ -120,7 +119,14 @@ export class ProfileService {
         ...profile,
         active_listings: activeCount || 0,
         sold_listings: soldCount || 0,
-        recent_reviews: reviews || []
+        recent_reviews: (reviews || [])
+          .filter(review => review.created_at) // Filter out null created_at
+          .map(review => ({
+            id: review.id,
+            rating: review.rating,
+            comment: review.comment,
+            created_at: review.created_at as string // Safe cast since we filtered nulls
+          }))
       };
 
       return { data: profileWithStats, error: null };
@@ -174,7 +180,7 @@ export class ProfileService {
         query = query.neq('id', excludeUserId);
       }
 
-      const { data, error } = await query.single();
+      const { data: _data, error } = await query.single();
 
       if (error && error.code === 'PGRST116') {
         // No rows returned, username is available
@@ -197,13 +203,13 @@ export class ProfileService {
   /**
    * Get seller analytics
    */
-  async getSellerAnalytics(sellerId: string, daysBack = 30): Promise<{ 
+  async getSellerAnalytics(sellerId: string, _daysBack = 30): Promise<{ 
     data: SellerStats | null; 
     error: string | null 
   }> {
     try {
       // Since get_seller_analytics RPC doesn't exist, build stats manually
-      const [productsResult, salesResult, favoritesResult] = await Promise.allSettled([
+      const [_productsResult, _salesResult, _favoritesResult] = await Promise.allSettled([
         // Get product stats
         this.supabase
           .from('products')
@@ -368,7 +374,21 @@ export class ProfileService {
         return { data: [], error: ordersError.message };
       }
 
-      return { data: orders || [], error: null };
+      // Transform orders to match the expected activity feed format
+      const activityItems = (orders || []).map(order => ({
+        id: order.id,
+        type: 'order' as const,
+        created_at: order.created_at || new Date().toISOString(),
+        data: {
+          total_amount: order.total_amount,
+          status: order.status,
+          buyer_id: order.buyer_id,
+          seller_id: order.seller_id,
+          products: order.products
+        } as Record<string, unknown>
+      }));
+
+      return { data: activityItems, error: null };
     } catch (error) {
       console.error('Error in getActivityFeed:', error);
       return { data: [], error: 'Failed to fetch activity feed' };

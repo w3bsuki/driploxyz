@@ -11,13 +11,13 @@
  * - Reduces server load by 60%+
  */
 
-import type { Product } from '@repo/ui';
+// import type { Product } from '@repo/ui'; // Removed as not used directly in this file
 
 export interface FilterState {
   // Category filters (3-level hierarchy)
-  level1: string | null; // Gender: women/men/kids/unisex
-  level2: string | null; // Type: clothing/shoes/bags/accessories  
-  level3: string | null; // Specific: t-shirts/dresses/sneakers
+  category: string | null; // Gender: women/men/kids/unisex
+  subcategory: string | null; // Type: clothing/shoes/bags/accessories  
+  specific: string | null; // Specific: t-shirts/dresses/sneakers
   
   // Product attributes
   size: string;
@@ -35,36 +35,56 @@ export interface ProductFilterStore {
   // Raw products from server
   allProducts: any[];
   
-  // Current filter state
+  // Current filter state (applied to results)
   filters: FilterState;
   
-  // Derived filtered products
+  // Pending filter state (being edited in modal)
+  pendingFilters: FilterState;
+  
+  // Derived filtered products (based on applied filters)
   filteredProducts: any[];
+  
+  // Preview filtered products (based on pending filters)
+  previewFilteredProducts: any[];
   
   // Loading state
   isFiltering: boolean;
   
+  // Sticky state management
+  hasPersistentFilters: boolean;
+  
   // Methods
   updateFilter: (key: keyof FilterState, value: string | null) => void;
+  updatePendingFilter: (key: keyof FilterState, value: string | null) => void;
   updateMultipleFilters: (updates: Partial<FilterState>) => void;
+  updateMultiplePendingFilters: (updates: Partial<FilterState>) => void;
+  applyPendingFilters: () => void;
+  resetPendingFilters: () => void;
   resetFilters: () => void;
   setProducts: (products: any[]) => void;
   appendProducts: (products: any[]) => void;
+  loadPersistedFilters: () => void;
+  persistFilters: () => void;
+  clearPersistedFilters: () => void;
 }
 
 /**
  * Create a product filter store with Svelte 5 runes
+ * Enhanced with pending/applied state separation and persistence
  */
 export function createProductFilter(initialProducts: any[] = []): ProductFilterStore {
   // Core state with $state rune
-  let allProducts = $state(initialProducts);
+  // Use $state.raw() for performance optimization on large product arrays
+  // This prevents reactivity on array mutations, only triggers on reassignment
+  let allProducts = $state.raw(initialProducts);
   let isFiltering = $state(false);
+  let hasPersistentFilters = $state(false);
   
-  // Filter state
-  let filters = $state<FilterState>({
-    level1: null,
-    level2: null,
-    level3: null,
+  // Default filter state
+  const defaultFilters: FilterState = {
+    category: null,
+    subcategory: null,
+    specific: null,
     size: 'all',
     brand: 'all',
     condition: 'all',
@@ -72,16 +92,21 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
     maxPrice: '',
     query: '',
     sortBy: 'relevance'
-  });
+  };
   
-  // Derived filtered products - recalculates automatically when dependencies change
-  let filteredProducts = $derived.by(() => {
-    // Start with all products
-    let result = [...allProducts];
+  // Applied filter state (affects results)
+  let filters = $state<FilterState>({ ...defaultFilters });
+  
+  // Pending filter state (being edited in modal)
+  let pendingFilters = $state<FilterState>({ ...defaultFilters });
+  
+  // Helper function to apply filters to products
+  function applyFiltersToProducts(products: any[], filterState: FilterState) {
+    let result = [...products];
     
     // Apply search query
-    if (filters.query && filters.query.trim()) {
-      const searchTerm = filters.query.toLowerCase();
+    if (filterState.query && filterState.query.trim()) {
+      const searchTerm = filterState.query.toLowerCase();
       result = result.filter(product => 
         product.title?.toLowerCase().includes(searchTerm) ||
         product.description?.toLowerCase().includes(searchTerm) ||
@@ -90,56 +115,56 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
     }
     
     // Apply category filters
-    if (filters.level1 || filters.level2 || filters.level3) {
+    if (filterState.category || filterState.subcategory || filterState.specific) {
       result = result.filter(product => {
         // Check category hierarchy
-        if (filters.level3 && product.specific_category_name) {
-          return product.specific_category_name.toLowerCase() === filters.level3.toLowerCase();
+        if (filterState.specific && product.specific_category_name) {
+          return product.specific_category_name.toLowerCase() === filterState.specific.toLowerCase();
         }
-        if (filters.level2 && product.subcategory_name) {
-          return product.subcategory_name.toLowerCase() === filters.level2.toLowerCase();
+        if (filterState.subcategory && product.subcategory_name) {
+          return product.subcategory_name.toLowerCase() === filterState.subcategory.toLowerCase();
         }
-        if (filters.level1 && product.main_category_name) {
-          return product.main_category_name.toLowerCase() === filters.level1.toLowerCase();
+        if (filterState.category && product.main_category_name) {
+          return product.main_category_name.toLowerCase() === filterState.category.toLowerCase();
         }
         return true;
       });
     }
     
     // Apply size filter
-    if (filters.size && filters.size !== 'all') {
-      result = result.filter(product => product.size === filters.size);
+    if (filterState.size && filterState.size !== 'all') {
+      result = result.filter(product => product.size === filterState.size);
     }
     
     // Apply brand filter
-    if (filters.brand && filters.brand !== 'all') {
+    if (filterState.brand && filterState.brand !== 'all') {
       result = result.filter(product => 
-        product.brand?.toLowerCase() === filters.brand.toLowerCase()
+        product.brand?.toLowerCase() === filterState.brand.toLowerCase()
       );
     }
     
     // Apply condition filter
-    if (filters.condition && filters.condition !== 'all') {
-      result = result.filter(product => product.condition === filters.condition);
+    if (filterState.condition && filterState.condition !== 'all') {
+      result = result.filter(product => product.condition === filterState.condition);
     }
     
     // Apply price range filter
-    if (filters.minPrice) {
-      const min = parseFloat(filters.minPrice);
+    if (filterState.minPrice) {
+      const min = parseFloat(filterState.minPrice);
       if (!isNaN(min)) {
         result = result.filter(product => product.price >= min);
       }
     }
     
-    if (filters.maxPrice) {
-      const max = parseFloat(filters.maxPrice);
+    if (filterState.maxPrice) {
+      const max = parseFloat(filterState.maxPrice);
       if (!isNaN(max)) {
         result = result.filter(product => product.price <= max);
       }
     }
     
     // Apply sorting
-    switch (filters.sortBy) {
+    switch (filterState.sortBy) {
       case 'price-low':
         result.sort((a, b) => (a.price || 0) - (b.price || 0));
         break;
@@ -160,23 +185,35 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
     }
     
     return result;
-  });
+  }
   
-  // Methods to update filters
+  // Derived filtered products (based on applied filters) - recalculates automatically when dependencies change
+  let filteredProducts = $derived.by(() => applyFiltersToProducts(allProducts, filters));
+  
+  // Preview filtered products (based on pending filters)
+  let previewFilteredProducts = $derived.by(() => applyFiltersToProducts(allProducts, pendingFilters));
+  
+  // Methods to update applied filters (immediate effect)
   function updateFilter(key: keyof FilterState, value: string | null) {
     // Use type assertion since we know the structure
     (filters as any)[key] = value;
+    // Also update pending filters to keep in sync
+    (pendingFilters as any)[key] = value;
     
     // Briefly show filtering state for UX feedback
     isFiltering = true;
     setTimeout(() => {
       isFiltering = false;
     }, 50);
+    
+    // Persist filters after applying
+    persistFilters();
   }
   
   function updateMultipleFilters(updates: Partial<FilterState>) {
     Object.entries(updates).forEach(([key, value]) => {
       (filters as any)[key] = value;
+      (pendingFilters as any)[key] = value;
     });
     
     // Briefly show filtering state
@@ -184,21 +221,97 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
     setTimeout(() => {
       isFiltering = false;
     }, 50);
+    
+    // Persist filters after applying
+    persistFilters();
+  }
+  
+  // Methods to update pending filters (for modal editing)
+  function updatePendingFilter(key: keyof FilterState, value: string | null) {
+    (pendingFilters as any)[key] = value;
+  }
+  
+  function updateMultiplePendingFilters(updates: Partial<FilterState>) {
+    Object.entries(updates).forEach(([key, value]) => {
+      (pendingFilters as any)[key] = value;
+    });
+  }
+  
+  // Apply pending filters to actual filters
+  function applyPendingFilters() {
+    filters = { ...pendingFilters };
+    
+    // Show filtering state
+    isFiltering = true;
+    setTimeout(() => {
+      isFiltering = false;
+    }, 50);
+    
+    // Persist applied filters
+    persistFilters();
+  }
+  
+  // Reset pending filters to match applied filters
+  function resetPendingFilters() {
+    pendingFilters = { ...filters };
   }
   
   function resetFilters() {
-    filters = {
-      level1: null,
-      level2: null,
-      level3: null,
-      size: 'all',
-      brand: 'all',
-      condition: 'all',
-      minPrice: '',
-      maxPrice: '',
-      query: '',
-      sortBy: 'relevance'
-    };
+    filters = { ...defaultFilters };
+    pendingFilters = { ...defaultFilters };
+    clearPersistedFilters();
+  }
+  
+  // Sticky filter persistence
+  function loadPersistedFilters() {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const stored = localStorage.getItem('driplo_applied_filters');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        filters = { ...defaultFilters, ...parsed };
+        pendingFilters = { ...filters };
+        hasPersistentFilters = true;
+      }
+    } catch (error) {
+      console.warn('Failed to load persisted filters:', error);
+    }
+  }
+  
+  function persistFilters() {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      // Only persist non-default filter values
+      const toPersist: Partial<FilterState> = {};
+      Object.entries(filters).forEach(([key, value]) => {
+        const defaultValue = (defaultFilters as any)[key];
+        if (value !== defaultValue && value !== '' && value !== null) {
+          (toPersist as any)[key] = value;
+        }
+      });
+      
+      if (Object.keys(toPersist).length > 0) {
+        localStorage.setItem('driplo_applied_filters', JSON.stringify(toPersist));
+        hasPersistentFilters = true;
+      } else {
+        clearPersistedFilters();
+      }
+    } catch (error) {
+      console.warn('Failed to persist filters:', error);
+    }
+  }
+  
+  function clearPersistedFilters() {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      localStorage.removeItem('driplo_applied_filters');
+      hasPersistentFilters = false;
+    } catch (error) {
+      console.warn('Failed to clear persisted filters:', error);
+    }
   }
   
   function setProducts(products: any[]) {
@@ -223,13 +336,23 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
   return {
     get allProducts() { return allProducts; },
     get filters() { return filters; },
+    get pendingFilters() { return pendingFilters; },
     get filteredProducts() { return filteredProducts; }, // $derived is already reactive
+    get previewFilteredProducts() { return previewFilteredProducts; },
     get isFiltering() { return isFiltering; },
+    get hasPersistentFilters() { return hasPersistentFilters; },
     updateFilter,
+    updatePendingFilter,
     updateMultipleFilters,
+    updateMultiplePendingFilters,
+    applyPendingFilters,
+    resetPendingFilters,
     resetFilters,
     setProducts,
-    appendProducts
+    appendProducts,
+    loadPersistedFilters,
+    persistFilters,
+    clearPersistedFilters
   };
 }
 
@@ -248,9 +371,9 @@ export function syncFiltersToUrl(filters: FilterState, replaceState = true) {
   
   // Add non-default filters to URL
   if (filters.query) params.set('q', filters.query);
-  if (filters.level1) params.set('category', filters.level1);
-  if (filters.level2) params.set('subcategory', filters.level2);
-  if (filters.level3) params.set('specific', filters.level3);
+  if (filters.category) params.set('category', filters.category);
+  if (filters.subcategory) params.set('subcategory', filters.subcategory);
+  if (filters.specific) params.set('specific', filters.specific);
   if (filters.size && filters.size !== 'all') params.set('size', filters.size);
   if (filters.brand && filters.brand !== 'all') params.set('brand', filters.brand);
   if (filters.condition && filters.condition !== 'all') params.set('condition', filters.condition);
@@ -275,9 +398,10 @@ export function getFiltersFromUrl(): Partial<FilterState> {
   
   return {
     query: params.get('q') || '',
-    level1: params.get('category') || null,
-    level2: params.get('subcategory') || null,
-    level3: params.get('specific') || null,
+    // Handle both canonical and legacy parameter names
+    category: params.get('category') || params.get('level1') || null,
+    subcategory: params.get('subcategory') || params.get('level2') || null,
+    specific: params.get('specific') || params.get('level3') || null,
     size: params.get('size') || 'all',
     brand: params.get('brand') || 'all',
     condition: params.get('condition') || 'all',

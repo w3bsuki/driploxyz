@@ -2,6 +2,7 @@
   interface Props {
     value?: string;
     label?: string;
+    name?: string;
     error?: string;
     required?: boolean;
   }
@@ -9,6 +10,7 @@
   let {
     value = $bindable(),
     label = 'Condition',
+    name,
     error,
     required = false
   }: Props = $props();
@@ -35,12 +37,12 @@
 
 <div class="w-full">
   {#if label}
-    <label class="block text-sm font-medium text-gray-900 mb-2">
+    <div id="condition-selector-label" class="block text-sm font-medium text-gray-900 mb-2">
       {label}{required ? '*' : ''}
-    </label>
+    </div>
   {/if}
 
-  <div class="grid grid-cols-4 gap-1.5">
+  <div id="condition-selector" class="grid grid-cols-4 gap-1.5" role="group" aria-labelledby="condition-selector-label">
     {#each conditions as condition}
       <button
         type="button"
@@ -59,6 +61,9 @@
       </button>
     {/each}
   </div>
+
+  <!-- Hidden input for form association -->
+  <input type="hidden" {name} {value} />
 
   {#if error}
     <p class="mt-2 text-sm text-red-600">{error}</p>

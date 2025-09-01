@@ -41,7 +41,8 @@ const languageHandler: Handle = async ({ event, resolve }) => {
  * Country redirect handler
  * Must come after auth setup to access user data
  */
-const countryRedirectHandler: Handle = async ({ event, resolve }) => {
+// Country redirect handler for future geo-routing
+const _countryRedirectHandler: Handle = async ({ event, resolve }) => {
   await handleCountryRedirect(event);
   return resolve(event);
 };

@@ -32,7 +32,7 @@
         hasConsent = true;
         show = false;
       }
-    } catch (e) {
+    } catch {
       // Cookie check failed
     }
   }

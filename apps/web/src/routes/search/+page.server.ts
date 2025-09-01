@@ -1,7 +1,8 @@
 import type { PageServerLoad } from './$types';
-import { error } from '@sveltejs/kit';
+import { error, redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { Database } from '@repo/database';
+import { canonicalizeFilterUrl, buildCanonicalUrl, searchParamsToSegments } from '$lib/utils/filter-url';
 
 type Category = Database['public']['Tables']['categories']['Row'];
 
@@ -89,6 +90,26 @@ function buildCategoryHierarchy(categories: Category[]) {
 export const load = (async ({ url, locals, setHeaders }) => {
   const country = locals.country || 'BG';
   
+  // Check if this is a legacy category hierarchy pattern in search
+  const searchParams = url.searchParams;
+  const hasLegacyCategoryParams = searchParams.has('category') && (searchParams.has('subcategory') || searchParams.has('specific'));
+  
+  if (hasLegacyCategoryParams) {
+    // Convert to new hierarchical route
+    const result = searchParamsToSegments(searchParams);
+    if (result.needsRedirect && result.canonicalPath) {
+      const newUrl = result.canonicalPath + (result.searchParams.toString() ? `?${result.searchParams.toString()}` : '');
+      throw redirect(301, newUrl);
+    }
+  }
+  
+  // Handle other legacy URL parameters and redirect if needed
+  const urlResult = canonicalizeFilterUrl(url);
+  if (urlResult.needsRedirect) {
+    const canonicalUrl = buildCanonicalUrl(url, urlResult.canonical);
+    throw redirect(301, canonicalUrl);
+  }
+  
   // Set cache headers for better performance
   setHeaders({
     'cache-control': 'public, max-age=60, s-maxage=120' // Cache for 1 min client, 2 min CDN
@@ -99,13 +120,13 @@ export const load = (async ({ url, locals, setHeaders }) => {
   const page = parseInt(url.searchParams.get('page') || '1', 10);
   const pageSize = 50; // Reasonable page size
   
-  // Category hierarchy parameters - support both old and new param names
+  // Category hierarchy parameters - canonical names only
   // Level 1: Gender (women/men/kids/unisex)
-  const level1 = url.searchParams.get('category') || url.searchParams.get('level1') || '';
+  const category = url.searchParams.get('category') || '';
   // Level 2: Product Type (clothing/shoes/bags/accessories)
-  const level2 = url.searchParams.get('subcategory') || url.searchParams.get('level2') || '';
+  const subcategory = url.searchParams.get('subcategory') || '';
   // Level 3: Specific Item (t-shirts/dresses/sneakers/etc)
-  const level3 = url.searchParams.get('specific') || url.searchParams.get('level3') || '';
+  const specific = url.searchParams.get('specific') || '';
   
   // Other filters
   const minPrice = url.searchParams.get('min_price');
@@ -127,24 +148,24 @@ export const load = (async ({ url, locals, setHeaders }) => {
     let categoryIds: string[] = [];
     
     // Build category filter using proper 3-level hierarchy with bulletproof error handling
-    if (level1 && level1 !== 'all') {
+    if (category && category !== 'all') {
       // First try to find Level 1 category by slug
       const { data: l1Cat, error: l1Error } = await locals.supabase
         .from('categories')
         .select('*')
-        .eq('slug', level1)
+        .eq('slug', category)
         .eq('level', 1)
         .eq('is_active', true)
         .single();
       
       // If not found as Level 1, check if it's a Level 2 category name (like 'accessories')
-      if (!l1Cat && !l1Error && (level1 === 'accessories' || level1 === 'clothing' || level1 === 'shoes' || level1 === 'bags')) {
+      if (!l1Cat && !l1Error && (category === 'accessories' || category === 'clothing' || category === 'shoes' || category === 'bags')) {
         // Cross-gender Level 2 search - capitalize first letter to match database
-        const capitalizedLevel1 = level1.charAt(0).toUpperCase() + level1.slice(1);
+        const capitalizedCategory = category.charAt(0).toUpperCase() + category.slice(1);
         const { data: l2Cats } = await locals.supabase
           .from('categories')
           .select('id')
-          .eq('name', capitalizedLevel1)
+          .eq('name', capitalizedCategory)
           .eq('level', 2)
           .eq('is_active', true);
         
@@ -160,26 +181,26 @@ export const load = (async ({ url, locals, setHeaders }) => {
       }
       
       else if (l1Cat) {
-        if (level2 && level2 !== 'all') {
+        if (subcategory && subcategory !== 'all') {
           // Find Level 2 under Level 1 by slug pattern
-          const level2Slug = `${level1}-${level2}`;
+          const subcategorySlug = `${category}-${subcategory}`;
           const { data: l2Cat } = await locals.supabase
             .from('categories')
             .select('*')
-            .or(`slug.eq.${level2Slug},slug.eq.${level1}-${level2}-new`)
+            .or(`slug.eq.${subcategorySlug},slug.eq.${category}-${subcategory}-new`)
             .eq('parent_id', l1Cat.id)
             .eq('level', 2)
             .eq('is_active', true)
             .single();
           
           if (l2Cat) {
-            if (level3 && level3 !== 'all') {
+            if (specific && specific !== 'all') {
               // Find specific Level 3 category by slug
-              const level3Slug = `${level1}-${level3}`;
+              const specificSlug = `${category}-${specific}`;
               const { data: l3Cats } = await locals.supabase
                 .from('categories')
                 .select('id')
-                .or(`slug.ilike.%${level3}%,name.ilike.%${level3.replace(/-/g, ' ')}%,name.eq.${level3.replace(/-/g, ' ').charAt(0).toUpperCase() + level3.replace(/-/g, ' ').slice(1)}`)
+                .or(`slug.ilike.%${specific}%,name.ilike.%${specific.replace(/-/g, ' ')}%,name.eq.${specific.replace(/-/g, ' ').charAt(0).toUpperCase() + specific.replace(/-/g, ' ').slice(1)}`)
                 .eq('parent_id', l2Cat.id)
                 .eq('level', 3)
                 .eq('is_active', true);
@@ -196,11 +217,11 @@ export const load = (async ({ url, locals, setHeaders }) => {
             }
           } else {
             // Level 2 not found, try direct match by name under Level 1
-            const capitalizedLevel2Name = level2.replace(/-/g, ' ').charAt(0).toUpperCase() + level2.replace(/-/g, ' ').slice(1);
+            const capitalizedSubcategoryName = subcategory.replace(/-/g, ' ').charAt(0).toUpperCase() + subcategory.replace(/-/g, ' ').slice(1);
             const { data: l2CatByName } = await locals.supabase
               .from('categories')
               .select('*')
-              .eq('name', capitalizedLevel2Name)
+              .eq('name', capitalizedSubcategoryName)
               .eq('parent_id', l1Cat.id)
               .eq('level', 2)
               .eq('is_active', true)
@@ -218,13 +239,13 @@ export const load = (async ({ url, locals, setHeaders }) => {
           categoryIds = await getCategoryWithDescendants(locals.supabase, l1Cat.id);
         }
       }
-    } else if (level2 && level2 !== 'all') {
+    } else if (subcategory && subcategory !== 'all') {
       // Cross-gender Level 2 search (e.g., all "Clothing" across all genders)
-      const capitalizedLevel2 = level2.replace(/-/g, ' ').charAt(0).toUpperCase() + level2.replace(/-/g, ' ').slice(1);
+      const capitalizedSubcategory = subcategory.replace(/-/g, ' ').charAt(0).toUpperCase() + subcategory.replace(/-/g, ' ').slice(1);
       const { data: l2Cats } = await locals.supabase
         .from('categories')
         .select('id')
-        .eq('name', capitalizedLevel2)
+        .eq('name', capitalizedSubcategory)
         .eq('level', 2)
         .eq('is_active', true);
       
@@ -238,11 +259,11 @@ export const load = (async ({ url, locals, setHeaders }) => {
         categoryIds = [...new Set(allCatIds)]; // Remove duplicates
         
         // If Level 3 is specified, filter further
-        if (level3 && level3 !== 'all') {
+        if (specific && specific !== 'all') {
           const { data: l3Cats } = await locals.supabase
             .from('categories')
             .select('id')
-            .or(`name.ilike.%${level3.replace(/-/g, ' ')}%,name.eq.${level3.replace(/-/g, ' ').charAt(0).toUpperCase() + level3.replace(/-/g, ' ').slice(1)}`)
+            .or(`name.ilike.%${specific.replace(/-/g, ' ')}%,name.eq.${specific.replace(/-/g, ' ').charAt(0).toUpperCase() + specific.replace(/-/g, ' ').slice(1)}`)
             .in('parent_id', l2Cats.map(c => c.id))
             .eq('level', 3)
             .eq('is_active', true);
@@ -252,12 +273,12 @@ export const load = (async ({ url, locals, setHeaders }) => {
           }
         }
       }
-    } else if (level3 && level3 !== 'all') {
+    } else if (specific && specific !== 'all') {
       // Direct Level 3 search across all categories
       const { data: l3Cats } = await locals.supabase
         .from('categories')
         .select('id')
-        .or(`name.ilike.%${level3.replace(/-/g, ' ')}%,name.eq.${level3.replace(/-/g, ' ').charAt(0).toUpperCase() + level3.replace(/-/g, ' ').slice(1)}`)
+        .or(`name.ilike.%${specific.replace(/-/g, ' ')}%,name.eq.${specific.replace(/-/g, ' ').charAt(0).toUpperCase() + specific.replace(/-/g, ' ').slice(1)}`)
         .eq('level', 3)
         .eq('is_active', true);
       
@@ -372,9 +393,9 @@ export const load = (async ({ url, locals, setHeaders }) => {
         total: 0,
         error: 'Search failed. Please try again.',
         filters: {
-          category: level1,
-          subcategory: level2,
-          specific: level3,
+          category: category,
+          subcategory: subcategory,
+          specific: specific,
           minPrice,
           maxPrice,
           condition,
@@ -461,9 +482,9 @@ export const load = (async ({ url, locals, setHeaders }) => {
       currentPage: page,
       pageSize,
       filters: {
-        category: level1,
-        subcategory: level2,
-        specific: level3,
+        category: category,
+        subcategory: subcategory,
+        specific: specific,
         minPrice,
         maxPrice,
         condition,

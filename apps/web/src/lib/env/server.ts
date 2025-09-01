@@ -29,7 +29,6 @@ function validateServerEnv(): ServerEnv {
 		return serverEnvSchema.parse(process.env);
 	} catch (error) {
 		if (error instanceof z.ZodError) {
-			const _missingVars = error.errors.map(e => e.path.join('.')).join(', ');
 			throw new Error(
 				`❌ Invalid server environment variables:\n${error.errors.map(e => `  - ${e.path.join('.')}: ${e.message}`).join('\n')}`
 			);

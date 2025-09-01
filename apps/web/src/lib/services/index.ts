@@ -75,23 +75,23 @@ export class ServiceManager {
   public favorites: FavoriteService;
   public stripe: StripeService | null;
 
-  constructor(private supabase: SupabaseClient<Database>, private stripeInstance?: Stripe | null) {
-    this.products = new ProductService(supabase);
-    this.categories = new CategoryService(supabase);
-    this.profiles = new ProfileService(supabase);
-    this.subscriptions = new SubscriptionService(supabase);
-    this.transactions = new TransactionService(supabase);
-    this.payouts = new PayoutService(supabase);
-    this.favorites = new FavoriteService(supabase);
-    this.stripe = stripeInstance ? createStripeService(supabase, stripeInstance) : null;
+  constructor(private _supabase: SupabaseClient<Database>, private _stripeInstance?: Stripe | null) {
+    this.products = new ProductService(_supabase);
+    this.categories = new CategoryService(_supabase);
+    this.profiles = new ProfileService(_supabase);
+    this.subscriptions = new SubscriptionService(_supabase);
+    this.transactions = new TransactionService(_supabase);
+    this.payouts = new PayoutService(_supabase);
+    this.favorites = new FavoriteService(_supabase);
+    this.stripe = _stripeInstance ? createStripeService(_supabase, _stripeInstance) : null;
   }
 
   /**
    * Update the Supabase client for all services
    */
   updateClient(supabase: SupabaseClient<Database>, stripeInstance?: Stripe | null) {
-    this.supabase = supabase;
-    this.stripeInstance = stripeInstance;
+    this._supabase = supabase;
+    this._stripeInstance = stripeInstance;
     this.products = new ProductService(supabase);
     this.categories = new CategoryService(supabase);
     this.profiles = new ProfileService(supabase);

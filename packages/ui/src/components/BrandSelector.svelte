@@ -3,6 +3,7 @@
     value?: string;
     popularBrands?: string[];
     label?: string;
+    name?: string;
     error?: string;
     required?: boolean;
   }
@@ -11,6 +12,7 @@
     value = $bindable(''),
     popularBrands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Uniqlo', 'Gucci', 'Prada', 'Versace'],
     label = 'Brand',
+    name,
     error,
     required = false
   }: Props = $props();
@@ -38,15 +40,15 @@
 
 <div class="w-full">
   {#if label}
-    <label class="block text-sm font-medium text-gray-900 mb-2">
+    <div id="brand-selector-label" class="block text-sm font-medium text-gray-900 mb-2">
       {label}{required ? '*' : ''}
-    </label>
+    </div>
   {/if}
 
   {#if !showCustomInput}
     <div class="space-y-3">
       <!-- Popular brands grid -->
-      <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+      <div id="brand-selector" class="grid grid-cols-3 sm:grid-cols-4 gap-2" role="group" aria-labelledby="brand-selector-label">
         {#each popularBrands as brand}
           <button
             type="button"
@@ -77,6 +79,7 @@
           type="text"
           bind:value={customBrand}
           placeholder="Enter brand name"
+          aria-label="Custom brand name"
           class="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1
             {error 
               ? 'border-red-300 focus:border-red-500 focus:ring-red-500' 
@@ -86,6 +89,7 @@
           type="button"
           onclick={() => { showCustomInput = false; customBrand = ''; value = ''; }}
           class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-500"
+          aria-label="Clear custom brand input"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -102,6 +106,9 @@
       </button>
     </div>
   {/if}
+
+  <!-- Hidden input for form association -->
+  <input type="hidden" {name} {value} />
 
   {#if error}
     <p class="mt-2 text-sm text-red-600">{error}</p>

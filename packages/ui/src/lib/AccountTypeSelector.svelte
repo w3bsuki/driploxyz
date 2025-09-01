@@ -109,7 +109,8 @@
     {#each accountTypes as accountType}
       <button
         onclick={() => handleSelect(accountType.value)}
-        class="w-full text-left max-w-xs relative"
+        class="w-full text-left max-w-xs relative min-h-[var(--touch-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary rounded-xl"
+        aria-label="Select {accountType.title}"
       >
         <div class="bg-white/90 md:backdrop-blur-md rounded-xl border p-1.5 shadow-sm transition-colors {selected === accountType.value ? 'border-gray-300 shadow-md ring-1 ring-gray-300/50' : 'border-gray-200/60 hover:border-gray-300/80 hover:shadow-md'}">
         <!-- Popular badge -->
@@ -167,21 +168,22 @@
   
   {#if showDiscountCode && (selected === 'brand' || selected === 'premium')}
     <div class="max-w-md mx-auto p-4 bg-gray-50 rounded-lg border border-gray-200">
-      <label class="block text-sm font-medium text-gray-900 mb-2">
+      <label for="discount-code-input" class="block text-sm font-medium text-gray-900 mb-2">
         {translations.haveDiscountCode || 'Have a discount code?'}
       </label>
       <div class="flex gap-2">
         <input
+          id="discount-code-input"
           type="text"
           bind:value={localDiscountCode}
           placeholder={translations.enterCode || 'Enter code'}
-          class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          class="flex-1 px-3 py-2 min-h-[var(--touch-standard)] border border-gray-300 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary focus:border-primary"
           onblur={handleDiscountCodeChange}
         />
         <button
           type="button"
           onclick={handleDiscountCodeChange}
-          class="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+          class="px-4 py-2 min-h-[var(--touch-standard)] bg-black text-white rounded-lg hover:bg-gray-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white"
         >
           Apply
         </button>

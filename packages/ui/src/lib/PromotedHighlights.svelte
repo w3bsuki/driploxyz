@@ -13,6 +13,7 @@
     ui_scroll?: string;
     promoted_hotPicks?: string;
     promoted_premiumSellers?: string;
+    categoryTranslation?: (category: string) => string;
   }
 
   interface FavoriteState {
@@ -22,11 +23,22 @@
     favoriteCounts: Record<string, number>;
   }
 
+  interface Partner {
+    id: string;
+    name: string;
+    logo: string;
+    website?: string;
+    instagram?: string;
+    description?: string;
+  }
+
   interface Props {
     promotedProducts: Product[];
     sellers: Seller[];
+    partners?: Partner[];
     onSellerSelect: (seller: Seller) => void;
     onSellerClick: (seller: Seller) => void;
+    onPartnerClick?: (partner: Partner) => void;
     onProductClick?: (product: Product) => void;
     onProductBuy?: (productId: string, selectedSize?: string) => void;
     onToggleFavorite?: (productId: string) => void;
@@ -38,8 +50,10 @@
   let { 
     promotedProducts = [], 
     sellers = [], 
+    partners = [],
     onSellerSelect, 
     onSellerClick,
+    onPartnerClick,
     onProductClick,
     onProductBuy,
     onToggleFavorite,
@@ -114,12 +128,6 @@
 </script>
 
 <style>
-  /* Hide scrollbars for a cleaner look */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scroll-snap-x { scroll-snap-type: x mandatory; }
   .snap-start { scroll-snap-align: start; }
 </style>
@@ -132,16 +140,49 @@
   role="region"
 >
   
-  <!-- Section Header -->
+  <!-- Section Header with Partners -->
   <div class="px-4 sm:px-6 pt-4 pb-3">
-    <div class="flex items-center gap-2">
-      <h2 class="text-sm font-semibold" style="color: oklch(0.15 0.015 270);">
-        {hasProducts ? (translations.promoted_hotPicks || 'Горещи предложения') : (translations.promoted_premiumSellers || 'Премиум продавачи')}
-      </h2>
-      <div class="text-xs font-medium px-2 py-0.5 rounded" style="background-color: oklch(0.94 0.04 85); color: oklch(0.28 0.12 85);">
-        Спонсорирано
+    <!-- Show partners if available, otherwise show traditional header -->
+    {#if partners.length > 0}
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Partners</span>
+        <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+          {#each partners as partner}
+            <button
+              onclick={() => onPartnerClick?.(partner)}
+              class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400/40 focus:ring-offset-1 shrink-0"
+              title="{partner.name}{partner.description ? ` - ${partner.description}` : ''}"
+            >
+              <div class="w-4 h-4 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+                <img 
+                  src={partner.logo} 
+                  alt={partner.name} 
+                  class="w-full h-full object-contain"
+                />
+              </div>
+              <span>{partner.name}</span>
+              {#if partner.instagram}
+                <svg class="w-3 h-3 text-pink-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12.017 0C8.396 0 7.929.013 6.71.072 5.493.131 4.73.33 4.058.63c-.692.3-1.281.72-1.866 1.305-.585.585-1.006 1.174-1.305 1.866-.3.672-.499 1.435-.558 2.652C.013 7.929 0 8.396 0 12.017s.013 4.088.072 5.307c.059 1.217.258 1.98.558 2.652.3.692.72 1.281 1.305 1.866.585.585 1.174 1.006 1.866 1.305.672.3 1.435.499 2.652.558 1.219.059 1.686.072 5.307.072s4.088-.013 5.307-.072c1.217-.059 1.98-.258 2.652-.558.692-.3 1.281-.72 1.866-1.305.585-.585 1.006-1.174 1.305-1.866.3-.672.499-1.435.558-2.652.059-1.219.072-1.686.072-5.307s-.013-4.088-.072-5.307c-.059-1.217-.258-1.98-.558-2.652C21.36 2.437 20.94 1.848 20.355 1.263S18.462.632 17.77.33c-.672-.3-1.435-.499-2.652-.558C13.899.013 13.432 0 12.017 0zm0 2.167c3.555 0 3.977.012 5.378.07 1.297.059 2.001.277 2.47.46.62.24 1.062.527 1.527.992.465.465.752.907.992 1.527.183.469.401 1.173.46 2.47.058 1.401.07 1.823.07 5.378s-.012 3.977-.07 5.378c-.059 1.297-.277 2.001-.46 2.47-.24.62-.527 1.062-.992 1.527-.465.465-.907.752-1.527.992-.469.183-1.173.401-2.47.46-1.401.058-1.823.07-5.378.07s-3.977-.012-5.378-.07c-1.297-.059-2.001-.277-2.47-.46-.62-.24-1.062-.527-1.527-.992-.465-.465-.752-.907-.992-1.527-.183-.469-.401-1.173-.46-2.47C2.179 15.994 2.167 15.572 2.167 12.017s.012-3.977.07-5.378c.059-1.297.277-2.001.46-2.47.24-.62.527-1.062.992-1.527.465-.465.907-.752 1.527-.992.469-.183 1.173-.401 2.47-.46 1.401-.058 1.823-.07 5.378-.07z"/>
+                  <path d="M12.017 5.838a6.179 6.179 0 100 12.358 6.179 6.179 0 000-12.358zm0 10.191a4.012 4.012 0 110-8.024 4.012 4.012 0 010 8.024z"/>
+                  <circle cx="18.406" cy="5.594" r="1.444"/>
+                </svg>
+              {/if}
+            </button>
+          {/each}
+        </div>
       </div>
-    </div>
+    {:else}
+      <!-- Traditional header when no partners -->
+      <div class="flex items-center gap-2">
+        <h2 class="text-sm font-semibold" style="color: oklch(0.15 0.015 270);">
+          {hasProducts ? (translations.promoted_hotPicks || 'Горещи предложения') : (translations.promoted_premiumSellers || 'Премиум продавачи')}
+        </h2>
+        <div class="text-xs font-medium px-2 py-0.5 rounded" style="background-color: oklch(0.94 0.04 85); color: oklch(0.28 0.12 85);">
+          Спонсорирано
+        </div>
+      </div>
+    {/if}
   </div>
   
   <div class="px-4 sm:px-6 pb-4">
@@ -156,7 +197,6 @@
       aria-label="Promoted products carousel"
       class="relative overflow-x-auto scrollbar-hide pb-2"
       onkeydown={handleKeyNavigation}
-      style="scrollbar-width: none; -ms-overflow-style: none;"
     >
       <div 
         class="flex flex-nowrap gap-3 sm:gap-4 scroll-snap-x"
@@ -178,6 +218,7 @@
                 isLoadingFavorite={getFavoriteData(product.id).isLoading}
                 {index}
                 totalCount={promotedProducts.length}
+                categoryTranslation={translations.categoryTranslation || ((category: string) => category)}
               />
             </div>
           {/each}

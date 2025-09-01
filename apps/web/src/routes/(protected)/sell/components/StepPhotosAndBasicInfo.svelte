@@ -79,7 +79,7 @@
         maxlength="50"
         name="title"
         required
-        class="w-full px-3 py-2 text-base sm:text-sm border border-gray-200 focus:ring-2 focus:ring-blue-500 rounded-md"
+        class="w-full px-3 py-2 text-base sm:text-sm border border-gray-200 focus:ring-2 focus:ring-[color:var(--state-focus)] rounded-md"
       />
       <div class="flex items-center justify-between mt-1.5">
         <div class="text-xs">

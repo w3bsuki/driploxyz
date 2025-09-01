@@ -178,15 +178,3 @@
   </div>
 </div>
 
-<style>
-  .scrollbar-hide {
-    /* Hide scrollbar for Chrome, Safari, and Opera */
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE and Edge */
-  }
-
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
-  }
-</style>

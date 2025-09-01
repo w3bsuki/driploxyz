@@ -111,7 +111,7 @@ class ErrorReportingService {
 	/**
 	 * Set user context for error reporting
 	 */
-	setUser(user: Partial<User> | null) {
+	setUser(_user: Partial<User> | null) {
 		if (!this.config.enabled || !this.isInitialized) return;
 		
 		// Future: Set Sentry user context

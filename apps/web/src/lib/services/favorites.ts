@@ -3,7 +3,6 @@ import type { Database } from '@repo/database';
 
 type Tables = Database['public']['Tables'];
 type Favorite = Tables['favorites']['Row'];
-type FavoriteInsert = Tables['favorites']['Insert'];
 
 export interface FavoriteWithProduct extends Favorite {
   products?: {
@@ -229,7 +228,7 @@ export class FavoriteService {
       // Remove favorites for products sold more than 1 hour ago
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 
-      const { data, error } = await this.supabase
+      const { data: _data, error } = await this.supabase
         .from('favorites')
         .delete()
         .eq('products.is_sold', true)

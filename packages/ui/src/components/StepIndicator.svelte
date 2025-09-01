@@ -42,7 +42,7 @@
         <div 
           class="bg-blue-600 h-2 rounded-full"
           style="width: {(currentStep / steps.length) * 100}%"
-        />
+        ></div>
       </div>
     </div>
     
@@ -112,7 +112,7 @@
                 class="h-0.5
                   {completedSteps.includes(step.id) ? 'bg-green-500' : 'bg-gray-200'}"
                 style="width: {completedSteps.includes(step.id) ? '100%' : '0%'}"
-              />
+              ></div>
             </div>
           </div>
         {/if}

@@ -78,7 +78,7 @@
 		translations?: Translations;
 		
 		// Callbacks
-		onPaymentSuccess?: (result: { paymentIntent: any; order?: any }) => void;
+		onPaymentSuccess?: (result: { paymentIntent: any; order?: any }) => Promise<void>;
 		onPaymentError?: (error: string) => void;
 		onValidationError?: (errors: Record<string, string>) => void;
 		onProcessingChange?: (processing: boolean) => void;
@@ -312,10 +312,10 @@
 	<!-- Payment Summary -->
 	<div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
 		<div class="flex justify-between items-center">
-			<span class="text-sm font-medium text-gray-500 dark:text-gray-300">
+			<span class="text-sm font-medium text-[color:var(--text-muted)] dark:text-gray-300">
 				{translations.total || 'Total'}
 			</span>
-			<span class="text-lg font-bold text-gray-900 dark:text-gray-100">
+			<span class="text-lg font-bold text-[color:var(--text-primary)] dark:text-gray-100">
 				{formatCurrency(amount / 100, currency)}
 			</span>
 		</div>
@@ -324,7 +324,7 @@
 	<!-- Cardholder Name (if enabled) -->
 	{#if showCardholderName}
 		<div class="space-y-2">
-			<label for="cardholder-name" class="block text-sm font-medium text-gray-900 dark:text-gray-300">
+			<label for="cardholder-name" class="block text-sm font-medium text-[color:var(--text-primary)] dark:text-gray-300">
 				{translations.cardholderName || 'Cardholder Name'}
 			</label>
 			<input
@@ -334,7 +334,7 @@
 				placeholder="Enter cardholder name"
 				disabled={disabled || paymentProcessing}
 				class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
-				       bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100
+				       bg-white dark:bg-gray-700 text-[color:var(--text-primary)] dark:text-gray-100
 				       focus:ring-2 focus:ring-blue-500 focus:border-transparent
 				       disabled:opacity-50 disabled:cursor-not-allowed"
 			/>
@@ -354,7 +354,7 @@
 			{#if !mounted && stripe}
 				<div class="flex items-center justify-center h-full">
 					<div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-					<span class="ml-2 text-sm text-gray-500 dark:text-gray-400">
+					<span class="ml-2 text-sm text-[color:var(--text-muted)] dark:text-gray-400">
 						Loading payment form...
 					</span>
 				</div>
@@ -383,9 +383,9 @@
 				type="checkbox"
 				bind:checked={saveCard}
 				disabled={disabled || paymentProcessing}
-				class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+				class="h-4 w-4 text-[color:var(--text-link)] focus:ring-blue-500 border-gray-300 rounded"
 			/>
-			<label for="save-card" class="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+			<label for="save-card" class="ml-2 block text-sm text-[color:var(--text-primary)] dark:text-gray-300">
 				Save this payment method for future purchases
 			</label>
 		</div>
@@ -409,7 +409,7 @@
 	</Button>
 
 	<!-- Security Notice -->
-	<div class="flex items-center justify-center text-xs text-gray-500 dark:text-gray-400">
+	<div class="flex items-center justify-center text-xs text-[color:var(--text-muted)] dark:text-gray-400">
 		<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
 			      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />

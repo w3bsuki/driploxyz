@@ -33,7 +33,7 @@ export function validateEnvironment(): void {
  * Setup environment validation for the request event
  * This is a no-op function that runs validation at module load
  */
-export function setupEnvironment(event: RequestEvent): void {
+export function setupEnvironment(_event: RequestEvent): void {
   // Environment validation happens at module load time
   // This function exists for consistency with other setup functions
 }

@@ -28,13 +28,50 @@
   let messageText = $state('');
   let isSending = $state(false);
   let messagesContainer: HTMLDivElement | null = $state(null);
+  
+  // Pre-DOM measurement state for smooth scrolling
+  let previousScrollHeight = $state(0);
+  let previousScrollTop = $state(0);
+  let wasAtBottom = $state(false);
+
+  // $effect.pre() for DOM measurements before message updates
+  $effect.pre(() => {
+    // Capture scroll state before any DOM changes from new messages
+    if (messagesContainer) {
+      previousScrollHeight = messagesContainer.scrollHeight;
+      previousScrollTop = messagesContainer.scrollTop;
+      
+      // Check if user is at the bottom (within 10px threshold)
+      const threshold = 10;
+      wasAtBottom = (messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight) <= threshold;
+    }
+  });
 
   // Auto-scroll to bottom when new messages arrive
   let previousMessageCount = 0;
   $effect(() => {
     if (conversation.messages.length > previousMessageCount) {
+      const newMessageAdded = conversation.messages.length > previousMessageCount;
       previousMessageCount = conversation.messages.length;
-      scrollToBottom();
+      
+      if (newMessageAdded && messagesContainer) {
+        // Use pre-measured state to make intelligent scrolling decisions
+        if (wasAtBottom) {
+          // User was at bottom, auto-scroll to new bottom
+          scrollToBottom();
+        } else {
+          // User was scrolled up, maintain their position relative to old content
+          // This prevents the jarring jump when new messages arrive
+          requestAnimationFrame(() => {
+            if (messagesContainer && previousScrollHeight > 0) {
+              const heightDifference = messagesContainer.scrollHeight - previousScrollHeight;
+              if (heightDifference > 0) {
+                messagesContainer.scrollTop = previousScrollTop + heightDifference;
+              }
+            }
+          });
+        }
+      }
     }
   });
 
@@ -341,12 +378,3 @@
   </div>
 </div>
 
-<style>
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-</style>

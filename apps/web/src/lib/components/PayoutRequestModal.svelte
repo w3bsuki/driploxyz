@@ -139,7 +139,7 @@ Creates payout requests via Supabase RPC calls
 					<span class="currency-symbol">{currency}</span>
 				</div>
 				{#if amount > 0}
-					<p class="text-xs text-gray-500 mt-1">
+					<p class="text-xs text-[color:var(--text-muted)] mt-1">
 						{#if amount < minAmount}
 							Minimum payout is {formatCurrency(minAmount)}
 						{:else if amount > maxAmount}
@@ -186,7 +186,7 @@ Creates payout requests via Supabase RPC calls
 							placeholder="your@email.com"
 						/>
 					</div>
-					<p class="text-xs text-gray-500">
+					<p class="text-xs text-[color:var(--text-muted)]">
 						Provide either phone number or email for Revolut transfer
 					</p>
 				</div>
@@ -253,7 +253,7 @@ Creates payout requests via Supabase RPC calls
 	}
 
 	.form-group label {
-		@apply block text-sm font-medium text-gray-700;
+		@apply block text-sm font-medium text-[color:var(--text-primary)];
 	}
 
 	.amount-input-wrapper {
@@ -261,7 +261,7 @@ Creates payout requests via Supabase RPC calls
 	}
 
 	.currency-symbol {
-		@apply absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500;
+		@apply absolute right-3 top-1/2 transform -translate-y-1/2 text-[color:var(--text-muted)];
 	}
 
 	.form-row {
@@ -269,11 +269,11 @@ Creates payout requests via Supabase RPC calls
 	}
 
 	.payout-details {
-		@apply border-t pt-4 space-y-4;
+		@apply border-t border-[color:var(--border-subtle)] pt-4 space-y-4;
 	}
 
 	.payout-details h4 {
-		@apply font-medium text-gray-900;
+		@apply font-medium text-[color:var(--text-primary)];
 	}
 
 	/* Modal actions now handled by Dialog primitive's actions section */

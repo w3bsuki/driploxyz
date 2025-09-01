@@ -9,7 +9,7 @@
     placeholder?: string;
     class?: string;
     name?: string;
-    onchange?: (value: string) => void;
+    onChange?: (value: string) => void;
   }
 
   let { 
@@ -25,7 +25,7 @@
     placeholder = 'Enter brand name',
     class: className = '',
     name,
-    onchange
+    onChange
   }: Props = $props();
 
   let showCustomInput = $state(false);
@@ -52,14 +52,14 @@
       showCustomInput = false;
       customBrand = '';
     }
-    onchange?.(value);
+    onChange?.(value);
   }
 
   function handleCustomInput(e: Event) {
     const target = e.target as HTMLInputElement;
     customBrand = target.value;
     value = target.value;
-    onchange?.(value);
+    onChange?.(value);
   }
 
   function getButtonClasses(brand: string) {
