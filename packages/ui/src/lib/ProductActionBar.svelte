@@ -1,4 +1,7 @@
 <script lang="ts">
+  import Button from './Button.svelte';
+  import * as i18n from '@repo/i18n';
+
   interface Props {
     price: number
     currency?: string
@@ -31,47 +34,63 @@
     onMakeOffer
   }: Props = $props()
 
-  const formattedPrice = $derived(
-    !price || price <= 0 
-      ? '€0' 
-      : new Intl.NumberFormat('bg-BG', {
+  const formattedPrice = $derived.by(() => {
+    if (!price || price <= 0) return '€0';
+    
+    const locale = i18n.getLocale();
+    
+    // For Bulgarian, use simple format: "5лв"
+    if (locale === 'bg') {
+      const roundedPrice = price % 1 === 0 ? Math.round(price) : price.toFixed(2);
+      return `${roundedPrice}лв`;
+    }
+    
+    // For UK/English, use British pounds  
+    if (locale === 'en') {
+      try {
+        return new Intl.NumberFormat('en-GB', {
           style: 'currency',
-          currency: currency || 'EUR',
-          minimumFractionDigits: 0,
+          currency: 'GBP',
+          minimumFractionDigits: price % 1 === 0 ? 0 : 2,
           maximumFractionDigits: 2
-        }).format(price)
-  );
+        }).format(price);
+      } catch (error) {
+        return `£${price}`;
+      }
+    }
+    
+    // Fallback
+    return `€${price}`;
+  });
 </script>
 
 {#if !isOwner}
   <div class="action-bar">
     <!-- Product Preview Section -->
     {#if productTitle || productImage}
-      <div class="product-preview-section">
-        <div class="product-preview-card">
-          {#if productImage}
-            <div class="product-preview-image">
-              <img 
-                src={productImage} 
-                alt={productTitle || 'Product'}
-                class="preview-image"
-              />
-            </div>
-          {/if}
-          <div class="product-preview-info">
-            {#if productTitle}
-              <h3 class="product-preview-title">{productTitle}</h3>
-            {/if}
-            <p class="product-preview-price">{formattedPrice}</p>
+      <div class="product-preview-card">
+        {#if productImage}
+          <div class="product-preview-image">
+            <img 
+              src={productImage} 
+              alt={productTitle || 'Product'}
+              class="preview-image"
+            />
           </div>
+        {/if}
+        <div class="product-preview-info">
+          {#if productTitle}
+            <h3 class="product-preview-title">{productTitle}</h3>
+          {/if}
+          <p class="product-preview-price">{formattedPrice}</p>
         </div>
       </div>
     {/if}
     
-    <div class="action-bar-content">
+    <div class="action-buttons">
       <!-- Favorite Button -->
       <button
-        class="favorite-btn {isFavorited ? 'favorited' : ''} {isProcessing ? 'processing' : ''}"
+        class="favorite-btn {isFavorited ? 'favorited' : ''}" 
         onclick={onFavorite}
         disabled={isProcessing}
         type="button"
@@ -89,47 +108,48 @@
       </button>
 
       <!-- Message Button -->
-      <button
-        class="message-btn {isProcessing ? 'processing' : ''}"
-        onclick={onMessage}
+      <Button
+        variant="outline"
+        size="md"
         disabled={isProcessing}
-        type="button"
+        onclick={onMessage}
+        class="message-btn"
       >
         <svg class="message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a9.863 9.863 0 01-4.255-.949L5 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 3.582-8 8-8s8 3.582 8 8z" />
         </svg>
         Message
-      </button>
+      </Button>
 
       <!-- Primary Action -->
       {#if isSold}
-        <div class="sold-btn">
+        <Button variant="secondary" size="lg" disabled class="flex-1">
           SOLD OUT
-        </div>
+        </Button>
       {:else}
-        <button
-          class="buy-btn {isProcessing ? 'processing' : ''}"
-          onclick={onBuyNow}
+        <Button
+          variant="primary"
+          size="lg"
           disabled={isProcessing}
-          type="button"
+          onclick={onBuyNow}
+          class="flex-1"
         >
           {isProcessing ? 'Processing...' : `Buy Now • ${formattedPrice}`}
-        </button>
+        </Button>
       {/if}
     </div>
 
     <!-- Make Offer Option -->
     {#if !isSold && onMakeOffer}
-      <div class="offer-section">
-        <button
-          class="offer-btn {isProcessing ? 'processing' : ''}"
-          onclick={onMakeOffer}
-          disabled={isProcessing}
-          type="button"
-        >
-          Make an Offer
-        </button>
-      </div>
+      <Button
+        variant="ghost"
+        size="sm"
+        disabled={isProcessing}
+        onclick={onMakeOffer}
+        class="offer-btn-clean"
+      >
+        Make an Offer
+      </Button>
     {/if}
   </div>
 
@@ -148,11 +168,8 @@
     z-index: var(--z-50);
     padding: var(--space-4);
     padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
-  }
-
-  .product-preview-section {
     max-width: 28rem;
-    margin: 0 auto var(--space-3) auto;
+    margin: 0 auto;
   }
 
   .product-preview-card {
@@ -163,6 +180,7 @@
     background: var(--surface-subtle);
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-subtle);
+    margin-bottom: var(--space-3);
   }
 
   .product-preview-image {
@@ -202,32 +220,10 @@
     margin: 0;
   }
 
-  @media (max-width: 480px) {
-    .product-preview-card {
-      gap: var(--space-2);
-      padding: var(--space-2);
-    }
-    
-    .product-preview-image {
-      width: 40px;
-      height: 40px;
-    }
-    
-    .product-preview-title {
-      font-size: var(--text-xs);
-    }
-    
-    .product-preview-price {
-      font-size: var(--text-base);
-    }
-  }
-  
-  .action-bar-content {
+  .action-buttons {
     display: flex;
-    max-width: 28rem; /* 448px - md breakpoint */
-    margin-left: auto;
-    margin-right: auto;
     gap: var(--space-3);
+    align-items: center;
   }
   
   .favorite-btn {
@@ -239,8 +235,8 @@
     border: 2px solid var(--border-default);
     border-radius: var(--radius-xl);
     transition: border-color var(--duration-fast);
-    width: var(--touch-icon);
-    height: var(--touch-icon);
+    width: var(--touch-standard);
+    height: var(--touch-standard);
     cursor: pointer;
   }
 
@@ -258,14 +254,10 @@
     border-color: var(--status-error-border);
   }
   
-  .favorite-btn.processing {
-    opacity: 0.5;
-  }
-  
   .favorite-icon {
     color: var(--text-muted);
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.25rem;
+    height: 1.25rem;
     transition: color var(--duration-fast);
   }
   
@@ -277,113 +269,48 @@
     color: var(--text-secondary);
   }
   
-  .message-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  :global(.message-btn) {
     flex-shrink: 0;
-    background-color: var(--surface-base);
-    border: 2px solid var(--border-default);
-    color: var(--text-primary);
-    border-radius: var(--radius-xl);
-    font-weight: var(--font-semibold);
-    transition: border-color var(--duration-fast);
-    height: var(--touch-standard);
-    padding: 0 var(--space-4);
-    cursor: pointer;
-  }
-
-  .message-btn:hover {
-    border-color: var(--border-emphasis);
-  }
-
-  .message-btn:focus {
-    outline: none;
-    border-color: var(--state-focus);
   }
   
-  .message-btn.processing {
-    opacity: 0.5;
-  }
-  
-  .message-icon {
-    width: 1.25rem;
-    height: 1.25rem;
+  :global(.message-btn .message-icon) {
+    width: 1.125rem;
+    height: 1.125rem;
     margin-right: var(--space-2);
   }
   
-  .sold-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--surface-muted);
-    color: var(--text-disabled);
-    border: 2px solid var(--border-subtle);
-    border-radius: var(--radius-xl);
-    font-weight: var(--font-bold);
-    height: var(--touch-primary);
-  }
-  
-  .buy-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--primary);
-    color: var(--primary-fg);
-    border: none;
-    border-radius: var(--radius-xl);
-    font-weight: var(--font-bold);
-    transition: background-color var(--duration-fast);
-    height: var(--touch-primary);
-    cursor: pointer;
-  }
-
-  .buy-btn:hover {
-    background-color: var(--primary-600);
-  }
-
-  .buy-btn:focus {
-    outline: none;
-    background-color: var(--primary-700);
-  }
-  
-  .buy-btn.processing {
-    opacity: 0.5;
-  }
-  
-  .offer-section {
-    text-align: center;
-    margin-top: var(--space-3);
-  }
-  
-  .offer-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-md);
-    transition: color var(--duration-fast);
-    cursor: pointer;
-  }
-
-  .offer-btn:hover {
-    color: var(--text-primary);
-  }
-
-  .offer-btn:focus {
-    outline: none;
-    color: var(--text-primary);
-  }
-  
-  .offer-btn.processing {
-    opacity: 0.5;
+  :global(.offer-btn-clean) {
+    margin-top: var(--space-2);
+    width: 100%;
   }
   
   .action-bar-spacer {
     height: var(--space-20);
+  }
+
+  @media (max-width: 480px) {
+    .action-bar {
+      left: var(--space-2);
+      right: var(--space-2);
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    }
+    
+    .product-preview-card {
+      gap: var(--space-2);
+      padding: var(--space-2);
+    }
+    
+    .product-preview-image {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .product-preview-title {
+      font-size: var(--text-xs);
+    }
+    
+    .product-preview-price {
+      font-size: var(--text-base);
+    }
   }
 </style>
