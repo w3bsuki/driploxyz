@@ -13,6 +13,14 @@ export { default as Avatar } from './Avatar.svelte';
 export { default as Breadcrumb } from './Breadcrumb.svelte';
 export { default as ErrorBoundary } from './ErrorBoundary.svelte';
 
+// Enhanced product components
+export { default as BuyBox } from './BuyBox.svelte';
+export { default as ShippingEstimator } from './ShippingEstimator.svelte';
+export { default as TrustBadges } from './TrustBadges.svelte';
+
+// Performance utilities
+export * from './utils';
+
 // Loading components
 export { default as LoadingSpinner } from './LoadingSpinner.svelte';
 
@@ -21,6 +29,19 @@ export { default as ProductGallery } from './ProductGallery.svelte';
 export { default as SizeSelector } from './SizeSelector.svelte';
 export { default as ConditionReport } from './ConditionReport.svelte';
 export { default as SellerCard } from './SellerCard.svelte';
+
+// Main Product Page Component (replaces old modular components)
+export { default as ProductPage } from './ProductPage.svelte';
+export { default as ProductBreadcrumb } from './ProductBreadcrumb.svelte';
+
+// Product page component modules (for demo pages)
+export { default as ProductImageGallery } from './ProductImageGallery.svelte';
+export { default as ProductHero } from './ProductHero.svelte';
+export { default as ProductActionBar } from './ProductActionBar.svelte';
+export { default as ProductDetails } from './ProductDetails.svelte';
+export { default as ProductPageLayout } from './ProductPageLayout.svelte';
+export { default as ProductRecommendations } from './ProductRecommendations.svelte';
+export { default as SellerProfile } from './SellerProfile.svelte';
 // MOVED TO EXPERIMENTAL - Unused components
 // export { default as LiveActivity } from './LiveActivity.svelte';
 // export { default as ProductSheet } from './ProductSheet.svelte';
@@ -82,6 +103,9 @@ export { default as OrderStatus } from './OrderStatus.svelte';
 export { default as OrderTimeline } from './OrderTimeline.svelte';
 export { default as OrderActions } from './OrderActions.svelte';
 export { default as ReviewModal } from './ReviewModal.svelte';
+export { default as ReviewDisplay } from './ReviewDisplay.svelte';
+export { default as RatingSummary } from './RatingSummary.svelte';
+export { default as ReviewPrompt } from './ReviewPrompt.svelte';
 
 // Product sold status components
 export { default as SoldOverlay } from './SoldOverlay.svelte';
@@ -116,10 +140,18 @@ export {
 // Language switcher
 export { default as LanguageSwitcher } from './LanguageSwitcher.svelte';
 
-// Cookie consent
-
-// Locale detection
+// Cookie consent and locale detection
+export { default as UnifiedCookieConsent } from './UnifiedCookieConsent.svelte';
 export { default as LocaleDetectionBanner } from './LocaleDetectionBanner.svelte';
+
+// SEO and meta components
+export { default as SEOMetaTags } from './SEOMetaTags.svelte';
+
+// Navigation progress
+export { default as TopProgress } from './TopProgress.svelte';
+
+// Order management toasts
+export { default as OrderNotificationToast } from './OrderNotificationToast.svelte';
 
 // Navigation components
 // MOVED TO EXPERIMENTAL - Navigation components (unused)
@@ -209,6 +241,7 @@ export { default as FeaturedProducts } from './FeaturedProducts.svelte';
 export { default as PromotedHighlights } from './PromotedHighlights.svelte';
 
 // Performance utilities
+export * from './utils';
 
 // Import semantic CSS styles
 import '../styles/semantic.css';
