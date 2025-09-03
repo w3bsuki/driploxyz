@@ -486,21 +486,6 @@
 
     <!-- Enhanced Mobile-First Seller Section -->
     <div class="seller-products-container">
-      <!-- Product Preview Card -->
-      <div class="product-preview-card">
-        <div class="product-preview-image">
-          <img 
-            src={product?.images?.[0] || '/placeholder-product.png'} 
-            alt={product?.title || 'Product'}
-            class="preview-image"
-          />
-        </div>
-        <div class="product-preview-info">
-          <h2 class="product-preview-title">{product?.title || ''}</h2>
-          <p class="product-preview-price">{formatPrice(product?.price || 0)}</p>
-        </div>
-      </div>
-
       {#if !isOwner}
         <SellerCard 
           id={product?.seller?.id || ''}
@@ -670,6 +655,8 @@
   isOwner={isOwner}
   isAuthenticated={isAuthenticated}
   isFavorited={isLiked}
+  productTitle={product?.title}
+  productImage={product?.images?.[0]}
   onBuyNow={handleBuyNow}
   onMessage={onMessage}
   onFavorite={toggleLike}
@@ -1504,80 +1491,6 @@
     padding: var(--space-4);
     border-radius: var(--radius-xl);
     border: 1px solid var(--border-subtle);
-  }
-
-  /* Product Preview Card */
-  .product-preview-card {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    padding: var(--space-4);
-    background: var(--surface-subtle);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-subtle);
-    margin-bottom: var(--space-6);
-  }
-
-  .product-preview-image {
-    width: 64px;
-    height: 64px;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-
-  .preview-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: var(--radius-lg);
-  }
-
-  .product-preview-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-
-  .product-preview-title {
-    font-size: var(--text-lg);
-    font-weight: var(--font-bold);
-    color: var(--text-primary);
-    margin: 0;
-    line-height: var(--leading-tight);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .product-preview-price {
-    font-size: var(--text-xl);
-    font-weight: var(--font-bold);
-    color: var(--primary);
-    margin: 0;
-  }
-
-  @media (max-width: 640px) {
-    .product-preview-card {
-      padding: var(--space-3);
-      gap: var(--space-3);
-      margin-bottom: var(--space-4);
-    }
-    
-    .product-preview-image {
-      width: 56px;
-      height: 56px;
-    }
-    
-    .product-preview-title {
-      font-size: var(--text-base);
-    }
-    
-    .product-preview-price {
-      font-size: var(--text-lg);
-    }
   }
   
   /* Owner view styling */
