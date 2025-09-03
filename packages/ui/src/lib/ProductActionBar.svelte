@@ -1,15 +1,12 @@
 <script lang="ts">
   import Button from './Button.svelte';
-  import * as i18n from '@repo/i18n';
+  import { getLocale, buyNow, message, soldOut, makeOffer, addFavorite, removeFavorite } from '@repo/i18n';
 
   interface Props {
     price: number
-    currency?: string
     isSold?: boolean
     isOwner?: boolean
-    isAuthenticated?: boolean
     isFavorited?: boolean
-    isProcessing?: boolean
     productTitle?: string
     productImage?: string
     onBuyNow?: () => void
@@ -20,12 +17,9 @@
 
   let { 
     price,
-    currency = 'EUR',
     isSold = false,
     isOwner = false,
-    isAuthenticated = false,
     isFavorited = false,
-    isProcessing = false,
     productTitle,
     productImage,
     onBuyNow,
@@ -34,18 +28,18 @@
     onMakeOffer
   }: Props = $props()
 
+  let showSheet = $state(false);
+
   const formattedPrice = $derived.by(() => {
     if (!price || price <= 0) return '€0';
     
-    const locale = i18n.getLocale();
+    const locale = getLocale();
     
-    // For Bulgarian, use simple format: "5лв"
     if (locale === 'bg') {
       const roundedPrice = price % 1 === 0 ? Math.round(price) : price.toFixed(2);
       return `${roundedPrice}лв`;
     }
     
-    // For UK/English, use British pounds  
     if (locale === 'en') {
       try {
         return new Intl.NumberFormat('en-GB', {
@@ -54,107 +48,101 @@
           minimumFractionDigits: price % 1 === 0 ? 0 : 2,
           maximumFractionDigits: 2
         }).format(price);
-      } catch (error) {
+      } catch {
         return `£${price}`;
       }
     }
     
-    // Fallback
     return `€${price}`;
   });
+
+  function openSheet() {
+    showSheet = true;
+  }
+
+  function closeSheet() {
+    showSheet = false;
+  }
+
+  function handleBuy() {
+    onBuyNow?.();
+    closeSheet();
+  }
+
+  function handleOffer() {
+    onMakeOffer?.();
+    closeSheet();
+  }
 </script>
 
 {#if !isOwner}
   <div class="action-bar">
-    <!-- Product Preview Section -->
-    {#if productTitle || productImage}
-      <div class="product-preview-card">
-        {#if productImage}
-          <div class="product-preview-image">
-            <img 
-              src={productImage} 
-              alt={productTitle || 'Product'}
-              class="preview-image"
-            />
-          </div>
-        {/if}
-        <div class="product-preview-info">
-          {#if productTitle}
-            <h3 class="product-preview-title">{productTitle}</h3>
-          {/if}
-          <p class="product-preview-price">{formattedPrice}</p>
-        </div>
-      </div>
-    {/if}
-    
-    <div class="action-buttons">
-      <!-- Favorite Button -->
+    <div class="actions">
+      <!-- Favorite -->
       <button
-        class="favorite-btn {isFavorited ? 'favorited' : ''}" 
+        class="fav-btn {isFavorited ? 'active' : ''}" 
         onclick={onFavorite}
-        disabled={isProcessing}
-        type="button"
-        aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+        aria-label={isFavorited ? removeFavorite() : addFavorite()}
       >
-        <svg 
-          class="favorite-icon" 
-          fill={isFavorited ? 'currentColor' : 'none'} 
-          stroke="currentColor" 
-          viewBox="0 0 24 24"
-          stroke-width="2"
-        >
-          <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        <svg class="heart" fill={isFavorited ? 'currentColor' : 'none'} viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
         </svg>
       </button>
 
-      <!-- Message Button -->
-      <Button
-        variant="outline"
-        size="md"
-        disabled={isProcessing}
-        onclick={onMessage}
-        class="message-btn"
-      >
-        <svg class="message-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a9.863 9.863 0 01-4.255-.949L5 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 3.582-8 8-8s8 3.582 8 8z" />
+      <!-- Message -->
+      <Button variant="outline" onclick={onMessage}>
+        <svg class="icon" viewBox="0 0 24 24" fill="none">
+          <path stroke="currentColor" stroke-width="2" d="M21 12c0 4.418-3.582 8-8 8a9.863 9.863 0 01-4.255-.949L5 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 3.582-8 8-8s8 3.582 8 8z" />
         </svg>
-        Message
+        {message()}
       </Button>
 
-      <!-- Primary Action -->
+      <!-- Buy Now -->
       {#if isSold}
-        <Button variant="secondary" size="lg" disabled class="flex-1">
-          SOLD OUT
+        <Button variant="secondary" disabled class="flex-1">
+          {soldOut()}
         </Button>
       {:else}
-        <Button
-          variant="primary"
-          size="lg"
-          disabled={isProcessing}
-          onclick={onBuyNow}
-          class="flex-1"
-        >
-          {isProcessing ? 'Processing...' : `Buy Now • ${formattedPrice}`}
-        </Button>
+        <button class="buy-btn" onclick={openSheet}>
+          {buyNow()} • {formattedPrice}
+        </button>
       {/if}
     </div>
-
-    <!-- Make Offer Option -->
-    {#if !isSold && onMakeOffer}
-      <Button
-        variant="ghost"
-        size="sm"
-        disabled={isProcessing}
-        onclick={onMakeOffer}
-        class="offer-btn-clean"
-      >
-        Make an Offer
-      </Button>
-    {/if}
   </div>
 
-  <!-- Safe area spacer -->
-  <div class="action-bar-spacer"></div>
+  <!-- Bottom Sheet -->
+  {#if showSheet}
+    <div class="sheet-backdrop" onclick={closeSheet}></div>
+    <div class="sheet" class:open={showSheet}>
+      <div class="handle"></div>
+      
+      {#if productTitle || productImage}
+        <div class="product-preview">
+          {#if productImage}
+            <img src={productImage} alt={productTitle || 'Product'} class="preview-img" />
+          {/if}
+          <div class="preview-info">
+            {#if productTitle}
+              <h3 class="preview-title">{productTitle}</h3>
+            {/if}
+            <p class="preview-price">{formattedPrice}</p>
+          </div>
+        </div>
+      {/if}
+
+      <div class="sheet-actions">
+        <Button variant="primary" size="lg" onclick={handleBuy} class="w-full">
+          {buyNow()} • {formattedPrice}
+        </Button>
+        
+        {#if onMakeOffer}
+          <Button variant="outline" size="lg" onclick={handleOffer} class="w-full">
+            {makeOffer()}
+          </Button>
+        {/if}
+      </div>
+    </div>
+  {/if}
 {/if}
 
 <style>
@@ -163,154 +151,152 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: var(--surface-base);
+    background: var(--surface-base);
     border-top: 1px solid var(--border-subtle);
-    z-index: var(--z-50);
     padding: var(--space-4);
     padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+    z-index: 50;
+  }
+
+  .actions {
+    display: flex;
+    gap: var(--space-3);
     max-width: 28rem;
     margin: 0 auto;
   }
 
-  .product-preview-card {
+  .fav-btn {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-3);
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--border-default);
+    border-radius: 12px;
+    background: var(--surface-base);
+    color: var(--text-muted);
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .fav-btn:hover {
+    border-color: var(--border-emphasis);
+    color: var(--text-secondary);
+  }
+
+  .fav-btn.active {
+    background: var(--status-error-bg);
+    border-color: var(--status-error-border);
+    color: var(--status-error-solid);
+  }
+
+  .heart {
+    width: 20px;
+    height: 20px;
+  }
+
+  :global(.actions .icon) {
+    width: 18px;
+    height: 18px;
+    margin-right: var(--space-1);
+  }
+
+  .buy-btn {
+    flex: 1;
+    height: 40px;
+    background: var(--primary);
+    color: var(--primary-fg);
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .buy-btn:hover {
+    background: var(--primary-hover);
+  }
+
+  .sheet-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+  }
+
+  .sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--surface-base);
+    border-radius: 24px 24px 0 0;
+    padding: var(--space-6);
+    padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
+    z-index: 101;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+  }
+
+  .sheet.open {
+    transform: translateY(0);
+  }
+
+  .handle {
+    width: 40px;
+    height: 4px;
+    background: var(--border-default);
+    border-radius: 2px;
+    margin: 0 auto var(--space-6) auto;
+  }
+
+  .product-preview {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
+    padding: var(--space-4);
     background: var(--surface-subtle);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-subtle);
-    margin-bottom: var(--space-3);
+    border-radius: 16px;
   }
 
-  .product-preview-image {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-
-  .preview-image {
-    width: 100%;
-    height: 100%;
+  .preview-img {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
     object-fit: cover;
   }
 
-  .product-preview-info {
+  .preview-info {
     flex: 1;
-    min-width: 0;
   }
 
-  .product-preview-title {
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
+  .preview-title {
+    font-size: var(--text-base);
+    font-weight: 600;
     color: var(--text-primary);
     margin: 0 0 var(--space-1) 0;
-    line-height: var(--leading-tight);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 
-  .product-preview-price {
-    font-size: var(--text-lg);
-    font-weight: var(--font-bold);
+  .preview-price {
+    font-size: var(--text-xl);
+    font-weight: 700;
     color: var(--primary);
     margin: 0;
   }
 
-  .action-buttons {
+  .sheet-actions {
     display: flex;
+    flex-direction: column;
     gap: var(--space-3);
-    align-items: center;
-  }
-  
-  .favorite-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    background-color: var(--surface-base);
-    border: 2px solid var(--border-default);
-    border-radius: var(--radius-xl);
-    transition: border-color var(--duration-fast);
-    width: var(--touch-standard);
-    height: var(--touch-standard);
-    cursor: pointer;
   }
 
-  .favorite-btn:hover {
-    border-color: var(--border-emphasis);
-  }
-
-  .favorite-btn:focus {
-    outline: none;
-    border-color: var(--state-focus);
-  }
-  
-  .favorite-btn.favorited {
-    background-color: var(--status-error-bg);
-    border-color: var(--status-error-border);
-  }
-  
-  .favorite-icon {
-    color: var(--text-muted);
-    width: 1.25rem;
-    height: 1.25rem;
-    transition: color var(--duration-fast);
-  }
-  
-  .favorite-btn.favorited .favorite-icon {
-    color: var(--status-error-solid);
-  }
-  
-  .favorite-btn:hover .favorite-icon {
-    color: var(--text-secondary);
-  }
-  
-  :global(.message-btn) {
-    flex-shrink: 0;
-  }
-  
-  :global(.message-btn .message-icon) {
-    width: 1.125rem;
-    height: 1.125rem;
-    margin-right: var(--space-2);
-  }
-  
-  :global(.offer-btn-clean) {
-    margin-top: var(--space-2);
-    width: 100%;
-  }
-  
-  .action-bar-spacer {
-    height: var(--space-20);
-  }
-
-  @media (max-width: 480px) {
+  @media (max-width: 640px) {
     .action-bar {
-      left: var(--space-2);
-      right: var(--space-2);
-      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: var(--space-3);
     }
     
-    .product-preview-card {
-      gap: var(--space-2);
-      padding: var(--space-2);
-    }
-    
-    .product-preview-image {
-      width: 40px;
-      height: 40px;
-    }
-    
-    .product-preview-title {
-      font-size: var(--text-xs);
-    }
-    
-    .product-preview-price {
-      font-size: var(--text-base);
+    .sheet {
+      padding: var(--space-5);
     }
   }
 </style>
