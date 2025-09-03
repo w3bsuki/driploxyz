@@ -2,6 +2,7 @@
   import { Button, Avatar, OrderStatus, OrderTimeline, OrderActions, ReviewModal } from '@repo/ui';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
+  import { getProductUrl } from '$lib/utils/seo-urls';
   
   interface Props {
     data: PageData;
@@ -245,7 +246,7 @@
                   </Button>
                 {/if}
                 
-                <Button href={`/product/${order.product?.id}`} variant="secondary">
+                <Button href={order.product ? getProductUrl({ id: order.product.id, slug: order.product.slug }) : `/product/${order.product?.id}`} variant="secondary">
                   {i18n.orders_viewProduct()}
                 </Button>
               </div>

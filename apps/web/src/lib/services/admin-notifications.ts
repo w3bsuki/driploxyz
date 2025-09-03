@@ -364,47 +364,47 @@ export class AdminNotificationService {
 
   /**
    * Example: Send notification to Slack webhook
+   * Slack notification sender - reserved for future integration
    */
-  // Slack notification sender - reserved for future integration
-  private async _sendSlackNotification(notification: AdminNotification): Promise<void> {
-    try {
-      const webhookUrl = process.env.SLACK_WEBHOOK_URL;
-      if (!webhookUrl) return;
+  // private async _sendSlackNotification(notification: AdminNotification): Promise<void> {
+  //   try {
+  //     const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+  //     if (!webhookUrl) return;
 
-      const payload = {
-        text: `🚨 ${notification.title}`,
-        attachments: [
-          {
-            color: notification.priority === 'urgent' ? 'danger' : 'warning',
-            fields: [
-              {
-                title: 'Message',
-                value: notification.message,
-                short: false
-              },
-              {
-                title: 'Country',
-                value: notification.country_code || 'Unknown',
-                short: true
-              },
-              {
-                title: 'Priority',
-                value: notification.priority.toUpperCase(),
-                short: true
-              }
-            ],
-            footer: 'Driplo Admin',
-            ts: Math.floor(new Date(notification.created_at).getTime() / 1000)
-          }
-        ]
-      };
+  //     const payload = {
+  //       text: `🚨 ${notification.title}`,
+  //       attachments: [
+  //         {
+  //           color: notification.priority === 'urgent' ? 'danger' : 'warning',
+  //           fields: [
+  //             {
+  //               title: 'Message',
+  //               value: notification.message,
+  //               short: false
+  //             },
+  //             {
+  //               title: 'Country',
+  //               value: notification.country_code || 'Unknown',
+  //               short: true
+  //             },
+  //             {
+  //               title: 'Priority',
+  //               value: notification.priority.toUpperCase(),
+  //               short: true
+  //             }
+  //           ],
+  //           footer: 'Driplo Admin',
+  //           ts: Math.floor(new Date(notification.created_at).getTime() / 1000)
+  //         }
+  //       ]
+  //     };
 
-      await fetch(webhookUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-    } catch (error) {
-    }
-  }
+  //     await fetch(webhookUrl, {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(payload)
+  //     });
+  //   } catch (error) {
+  //   }
+  // }
 }

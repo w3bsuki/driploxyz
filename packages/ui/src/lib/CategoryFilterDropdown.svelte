@@ -2,6 +2,39 @@
   import { createSelect } from '@melt-ui/svelte';
   import type { Snippet } from 'svelte';
   import { tick } from 'svelte';
+  import * as i18n from '@repo/i18n';
+  
+  // Enhanced category translation with fallback system
+  function translateCategoryName(categoryName: string | undefined | null, categoryId?: string): string {
+    if (!categoryName) return '';
+    
+    // Try i18n key first
+    const messageKey = 'category_' + categoryName
+      .replace(/[&+]/g, '') // Remove & and + symbols
+      .replace(/[^a-zA-Z0-9]/g, ' ') // Replace special chars with spaces
+      .trim()
+      .split(/\s+/)
+      .map((word, index) => index === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join('');
+    
+    try {
+      if (messageKey in i18n) {
+        const translationFunction = (i18n as any)[messageKey];
+        if (typeof translationFunction === 'function') {
+          return translationFunction();
+        }
+      }
+    } catch (error) {
+      // i18n key doesn't exist or function call failed
+    }
+    
+    // Fallback to cleaned category name
+    return categoryName
+      .replace(/([a-z])([A-Z])/g, '$1 $2') // Add spaces between camelCase
+      .replace(/[_-]/g, ' ') // Replace underscores/hyphens with spaces
+      .replace(/\s+/g, ' ') // Normalize multiple spaces
+      .trim();
+  }
 
   interface CategoryOption {
     key: string;
@@ -37,7 +70,7 @@
     selectedCategory = $bindable(null),
     selectedSubcategory = $bindable(null),
     selectedSpecific = $bindable(null),
-    placeholder = 'All Categories',
+    placeholder = i18n.category_dropdown_allCategories(),
     disabled = false,
     class: className = '',
     onCategorySelect,
@@ -50,8 +83,8 @@
   let currentLevel = $state(1); // 1=gender, 2=type, 3=specific
   let isOpen = $state(false);
   let focusedIndex = $state(-1);
-  let dropdownRef: HTMLDivElement;
-  let triggerRef: HTMLButtonElement;
+  let dropdownRef = $state<HTMLDivElement>();
+  let triggerRef = $state<HTMLButtonElement>();
   let announcement = $state('');
   
   // Track the original focus for restoration
@@ -104,9 +137,9 @@
     // Announce selection
     if (announceChanges) {
       if (category && categoryItem) {
-        announcement = `Selected category: ${categoryItem.name}`;
+        announcement = i18n.category_dropdown_selectedCategory({ name: categoryItem.name });
       } else {
-        announcement = 'All categories selected';
+        announcement = i18n.category_dropdown_allCategoriesSelected();
       }
     }
     
@@ -141,12 +174,12 @@
     // Announce selection
     if (announceChanges) {
       if (subcategory && subcategoryItem) {
-        announcement = `Selected subcategory: ${subcategoryItem.name}`;
+        announcement = i18n.category_dropdown_selectedSubcategory({ name: subcategoryItem.name });
       } else {
         const categoryName = selectedCategory 
           ? categoryHierarchy.categories.find(cat => cat.key === selectedCategory)?.name 
           : 'category';
-        announcement = `All ${categoryName} selected`;
+        announcement = i18n.category_dropdown_allSubcategorySelected({ category: categoryName });
       }
     }
     
@@ -169,12 +202,12 @@
     // Announce selection
     if (announceChanges) {
       if (specific && specificItem) {
-        announcement = `Selected: ${specificItem.name}`;
+        announcement = i18n.category_dropdown_selectedSpecific({ name: specificItem.name });
       } else {
         const subcategoryName = selectedSubcategory && selectedCategory
           ? categoryHierarchy.subcategories[selectedCategory]?.find(cat => cat.key === selectedSubcategory)?.name
           : 'items';
-        announcement = `All ${subcategoryName} selected`;
+        announcement = i18n.category_dropdown_allSpecificSelected({ subcategory: subcategoryName });
       }
     }
     
@@ -215,7 +248,7 @@
     
     // Announce clearing
     if (announceChanges) {
-      announcement = 'All category filters cleared';
+      announcement = i18n.category_dropdown_allFiltersCleared();
     }
     
     onCategorySelect?.(null, null, null);
@@ -388,7 +421,7 @@
            min-w-0 flex-shrink-0"
     aria-expanded={isOpen}
     aria-haspopup="listbox"
-    aria-label="Category filter: {selectedText}. Press Enter or Arrow Down to open."
+    aria-label={i18n.category_dropdown_ariaLabel({ selectedText })}
   >
     {#if trigger}
       {@render trigger({ selectedText, isOpen })}
@@ -432,7 +465,7 @@
              rounded-[var(--radius-xl)] shadow-[var(--shadow-lg)] border border-[color:var(--border-subtle)] 
              z-40 max-h-[360px] overflow-hidden"
       role="listbox"
-      aria-label="Category options. Use arrow keys to navigate, Enter to select, Escape to close."
+      aria-label={i18n.category_dropdown_listboxAriaLabel()}
       onkeydown={handleDropdownKeydown}
       tabindex="-1"
     >
@@ -441,7 +474,7 @@
       {#if currentLevel === 1}
         <div class="p-2">
           <div class="text-xs font-semibold text-[color:var(--text-tertiary)] uppercase tracking-wide px-3 py-2 border-b border-[color:var(--border-subtle)] mb-1">
-            Categories
+            {i18n.category_dropdown_categories()}
           </div>
           <div class="space-y-0.5 overflow-y-auto max-h-72">
             <button
@@ -456,7 +489,7 @@
               tabindex="-1"
             >
               <span class="text-base" aria-hidden="true">🌍</span>
-              <span class="text-sm font-medium text-[color:var(--text-primary)]">All Categories</span>
+              <span class="text-sm font-medium text-[color:var(--text-primary)]">{i18n.category_dropdown_allCategories()}</span>
             </button>
             
             {#each categoryHierarchy.categories as category, index (category.key)}
@@ -515,7 +548,7 @@
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
-            Back to Categories
+{i18n.category_dropdown_backToCategories()}
           </button>
           
           <div class="text-xs font-semibold text-[color:var(--text-tertiary)] uppercase tracking-wide px-3 py-2 border-b border-[color:var(--border-subtle)] mb-1">

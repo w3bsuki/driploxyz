@@ -25,7 +25,7 @@ export const GET: RequestHandler = async () => {
     if (stripe) {
       try {
         // Try to list products (lightweight operation)
-        const products = await stripe.products.list({ limit: 1 });
+        await stripe.products.list({ limit: 1 });
         stripeWorks = true;
       } catch (err: any) {
         stripeError = err.message || 'Unknown Stripe error';

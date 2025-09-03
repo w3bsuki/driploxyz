@@ -210,7 +210,21 @@
 	}
 
 	function handleProductClick(product: Product) {
+		// Safety check: if product doesn't have required fields, fallback to legacy URL
+		if (!product.slug || (!product.seller_username && !product.profiles?.username)) {
+			goto(`/product/${product.id}`);
+			return;
+		}
 		goto(getProductUrl(product));
+	}
+	
+	function handleSearchResultClick(result: any) {
+		// Safety check: if result doesn't have required fields, fallback to legacy URL
+		if (!result.slug || (!result.seller_username && !result.profiles?.username)) {
+			goto(`/product/${result.id}`);
+			return;
+		}
+		goto(getProductUrl(result));
 	}
 
 	async function handleFavorite(productId: string) {
@@ -327,38 +341,40 @@
 			id: partner.id,
 			username: partner.name,
 			avatar_url: partner.logo,
-			itemCount: 12, // Mock item count
+			itemCount: 12, // Mock item count - will be real when they have a profile
 			created_at: '2023-01-01', // Mock creation date
 			bio: partner.description,
-			location: 'Fashion District',
-			totalSales: 8,
-			rating: 4.9,
+			location: 'Sofia, Bulgaria',
+			totalSales: 28,
+			rating: 4.8,
 			recentProducts: [
 				{
 					id: 'p1',
-					title: 'Vintage Leather Jacket',
-					price: 85,
-					image: 'https://via.placeholder.com/200x200/FFA500/FFFFFF?text=Jacket'
+					title: 'Minimalist Oversized Hoodie',
+					price: 89,
+					image: 'https://via.placeholder.com/200x200/2C2C2C/FFFFFF?text=HOODIE'
 				},
 				{
 					id: 'p2',
-					title: 'Designer Sunglasses',
-					price: 45,
-					image: 'https://via.placeholder.com/200x200/FF69B4/FFFFFF?text=Shades'
+					title: 'Cropped Wide Leg Jeans',
+					price: 67,
+					image: 'https://via.placeholder.com/200x200/6B73FF/FFFFFF?text=JEANS'
 				},
 				{
 					id: 'p3',
-					title: 'Statement Necklace',
-					price: 32,
-					image: 'https://via.placeholder.com/200x200/9932CC/FFFFFF?text=Necklace'
+					title: 'Statement Chain Necklace',
+					price: 34,
+					image: 'https://via.placeholder.com/200x200/FFD700/000000?text=CHAIN'
 				},
 				{
 					id: 'p4',
-					title: 'Silk Scarf',
-					price: 28,
-					image: 'https://via.placeholder.com/200x200/FF4500/FFFFFF?text=Scarf'
+					title: 'Vintage Band T-Shirt',
+					price: 45,
+					image: 'https://via.placeholder.com/200x200/8B4513/FFFFFF?text=VINTAGE'
 				}
-			]
+			],
+			// Store partner-specific data for enhanced actions
+			_partnerData: partner
 		};
 		showPartnerModal = true;
 	}
@@ -526,6 +542,7 @@
 						topSellers={sellers}
 						quickFilters={heroQuickFilters}
 						onProductClick={handleProductClick}
+						onSearchResultClick={handleSearchResultClick}
 						onSellerClick={handleSellerClick}
 						onFilterClick={handleHeroFilterClick}
 						{formatPrice}
@@ -552,9 +569,8 @@
 				
 				<!-- Category Pills -->
 				<nav 
-					role="navigation"
 					aria-label={i18n.nav_browseCategories()}
-					class="flex items-center justify-center gap-2 overflow-x-auto scrollbar-hide"
+					class="flex items-center justify-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide px-2 sm:px-4"
 				>
 					<!-- All Categories -->
 					<button 
@@ -566,7 +582,7 @@
 						aria-label={i18n.search_viewAll()}
 						aria-busy={loadingCategory === 'all'}
 						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
-						class="category-nav-pill shrink-0 px-3 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] min-w-[60px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
+						class="category-nav-pill shrink-0 px-2.5 sm:px-3 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors whitespace-nowrap"
 					>
 						{#if loadingCategory === 'all'}
 							<LoadingSpinner size="sm" color="white" />
@@ -586,7 +602,7 @@
 							disabled={loadingCategory === category.slug}
 							aria-label={`${i18n.menu_browse()} ${i18n.category_women()}`}
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] min-w-[85px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
+							class="category-nav-pill shrink-0 px-2.5 sm:px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors whitespace-nowrap"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
@@ -609,7 +625,7 @@
 							disabled={loadingCategory === category.slug}
 							aria-label={`${i18n.menu_browse()} ${i18n.category_men()}`}
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] min-w-[75px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
+							class="category-nav-pill shrink-0 px-2.5 sm:px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors whitespace-nowrap"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
@@ -632,7 +648,7 @@
 							disabled={loadingCategory === category.slug}
 							aria-label={`${i18n.menu_browse()} ${i18n.category_kids()}`}
 							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] min-w-[75px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors"
+							class="category-nav-pill shrink-0 px-2.5 sm:px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors whitespace-nowrap"
 							data-prefetch="hover"
 						>
 							{#if loadingCategory === category.slug}
@@ -650,8 +666,7 @@
 		<!-- Lazy load PromotedHighlights with skeleton -->
 		<div id="highlights-trigger">
 			{#if PromotedHighlights}
-				<svelte:component
-					this={PromotedHighlights}
+				<PromotedHighlights
 					promotedProducts={promotedProducts.map(product => ({
 						...product,
 						sizes: product.size ? [product.size] : ['S', 'M', 'L']
@@ -709,6 +724,8 @@
 					empty_startBrowsing: i18n.empty_startBrowsing(),
 					nav_sell: i18n.nav_sell(),
 					home_browseAll: i18n.home_browseAll(),
+					home_itemCount: i18n.home_itemCount(),
+					home_updatedMomentsAgo: i18n.home_updatedMomentsAgo(),
 					product_size: i18n.product_size(),
 					trending_newSeller: i18n.trending_newSeller(),
 					seller_unknown: i18n.seller_unknown(),
@@ -760,6 +777,7 @@
 	isNavigating={!!$navigating}
 	navigatingTo={$navigating?.to?.url.pathname}
 	unreadMessageCount={$unreadMessageCount}
+	profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
 	labels={{
 		home: i18n.nav_home(),
 		search: i18n.nav_search(),
@@ -785,7 +803,18 @@
 		seller={selectedPartner}
 		bind:isOpen={showPartnerModal}
 		onClose={closePartnerModal}
-		onViewProfile={(partnerId) => window.open(partners.find(p => p.id === partnerId)?.instagram || '#', '_blank')}
+		onViewProfile={(partnerId) => {
+			// When they get a real profile, this will navigate to their profile
+			// For now, show a notice and optionally link to their Instagram
+			const partner = partners.find(p => p.id === partnerId);
+			if (partner?.instagram) {
+				if (confirm(`${partner.name} will have a full profile soon! Would you like to visit their Instagram in the meantime?`)) {
+					window.open(partner.instagram, '_blank');
+				}
+			} else {
+				alert(`${partner?.name || 'This partner'} will have a full profile available very soon!`);
+			}
+		}}
 	/>
 {/if}
 

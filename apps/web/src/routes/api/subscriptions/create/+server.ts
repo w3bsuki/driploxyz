@@ -7,17 +7,6 @@ import { env } from '$env/dynamic/private';
 
 const DEBUG = env.DEBUG === 'true';
 
-function getPlanTypeFromId(planId: string): string {
-  // Map plan IDs to plan types
-  const planMap: Record<string, string> = {
-    'c0587696-cbcd-4e6b-b6bc-ba84fb47ddce': 'premium',
-    '989b722e-4050-4c63-ac8b-ab105f14027c': 'brand',
-    '6ac0c16b-f873-41e6-beb1-1f5540f5c535': 'basic',
-    '9af2e506-8bed-4630-9f34-2ebb64c763a3': 'free'
-  };
-  return planMap[planId] || '';
-}
-
 export const POST: RequestHandler = async (event) => {
   try {
     const { planId, discountCode = '' } = await event.request.json();
@@ -59,8 +48,8 @@ export const POST: RequestHandler = async (event) => {
     if (discountCode) {
       // Handle INDECISIVE test discount code directly
       if (discountCode.toUpperCase() === 'INDECISIVE') {
-        discountAmount = plan.price_monthly * 0.99; // 99% off
-        finalAmount = plan.price_monthly * 0.01; // 1% of original price
+        discountAmount = plan.price_monthly * 0.90; // 90% off
+        finalAmount = plan.price_monthly * 0.10; // 10% of original price
         validatedDiscountCode = 'INDECISIVE';
         console.log('[Subscription] INDECISIVE discount applied:', { 
           original: plan.price_monthly, 

@@ -15,7 +15,7 @@
   import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import * as m from '@repo/i18n';
-  import { initializeLanguage } from '$lib/utils/language';
+  import { initializeLanguage } from '$lib/utils/language-switcher';
   import { page } from '$app/stores';
   import { toasts } from '@repo/ui';
   import { uploadImage } from '$lib/supabase/storage';
@@ -36,7 +36,7 @@
   let showSuccessModal = $state(false);
   let showBrandPayment = $state(false);
   let brandPaid = $state(false);
-  let accountType = $state<'personal' | 'premium' | 'brand'>('personal');
+  let accountType = $state<'personal' | 'pro' | 'brand'>('personal');
   let discountCode = $state('');
   let username = $state('');
   let fullName = $state('');
@@ -124,7 +124,7 @@
 
   function nextStep() {
     // STRICT CHECK: Block brand/premium users without payment at ANY step
-    if ((accountType === 'premium' || accountType === 'brand') && !brandPaid) {
+    if ((accountType === 'pro' || accountType === 'brand') && !brandPaid) {
       toasts.error('Payment is required for ' + accountType + ' accounts. Please complete payment to continue.', {
         duration: 5000
       });
@@ -202,7 +202,7 @@
     }
   }
 
-  function handleAccountTypeSelect(type: 'personal' | 'premium' | 'brand') {
+  function handleAccountTypeSelect(type: 'personal' | 'pro' | 'brand') {
     accountType = type;
     // Don't show payment modal immediately - wait for user to click continue
     if (type === 'personal') {
@@ -264,7 +264,7 @@
     if (!data.user || !username.trim()) return false;
     
     // FINAL CHECK: Absolutely no completing without payment for brand/premium
-    if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
+    if ((accountType === 'brand' || accountType === 'pro') && !brandPaid) {
       toasts.error('Payment is required to complete ' + accountType + ' account setup!', {
         duration: 5000
       });
@@ -288,7 +288,7 @@
 
   const canProceed = $derived(() => {
     // GLOBAL CHECK: Brand/Premium must have paid to proceed at ANY step
-    if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
+    if ((accountType === 'brand' || accountType === 'pro') && !brandPaid) {
       return false;
     }
     
@@ -392,7 +392,7 @@
         <Button
           onclick={() => {
             // For premium/brand, always require payment first
-            if ((accountType === 'brand' || accountType === 'premium') && !brandPaid) {
+            if ((accountType === 'brand' || accountType === 'pro') && !brandPaid) {
               // Show payment modal
               showBrandPayment = true;
             } else {
@@ -402,7 +402,7 @@
           disabled={!accountType}
           class="flex-1 bg-black text-white hover:bg-gray-800"
         >
-          {accountType === 'brand' || accountType === 'premium' ? 
+          {accountType === 'brand' || accountType === 'pro' ? 
             (brandPaid ? m.onboarding_continue() : 'Proceed to Payment') : 
             m.onboarding_continue()}
         </Button>

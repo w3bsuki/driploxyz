@@ -30,7 +30,7 @@ export class TransactionService {
 		stripePaymentIntentId: string;
 	}): Promise<{ transaction: Transaction | null; error: Error | null }> {
 		try {
-			const { totalAmount, commissionAmount, sellerAmount, commissionRate } = 
+			const { totalAmount, commissionAmount, sellerAmount } = 
 				this.calculateCommission(params.productPrice, params.shippingCost || 0);
 
 			const transactionData: TransactionInsert = {

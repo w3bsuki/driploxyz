@@ -67,18 +67,24 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 				return json({ error: 'Product not found' }, { status: 404 });
 			}
 			
+			// Prevent adding favorite to sold products
+			if (product.is_sold) {
+				return json({ 
+					error: 'Cannot favorite sold items',
+					message: 'This item has been sold and cannot be favorited'
+				}, { status: 409 });
+			}
+			
 			// Check if already favorited
-			const { data: existingFavorite, error: favoriteError } = await locals.supabase
+			const { data: existingFavorite } = await locals.supabase
 				.from('favorites')
 				.select('id')
 				.eq('user_id', session.user.id)
 				.eq('product_id', productId)
 				.single();
-
-			// Note: favoriteError is expected when no favorite exists (PGRST116)
 			
 			if (existingFavorite) {
-				// Remove favorite
+				// Remove favorite - atomic operation
 				const { error: deleteError } = await locals.supabase
 					.from('favorites')
 					.delete()
@@ -90,14 +96,13 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					return json({ error: 'Failed to remove favorite', details: deleteError.message }, { status: 500 });
 				}
 				
-				// Get updated count (trigger automatically decrements)
+				// Get updated count
 				const { data: updatedProduct } = await locals.supabase
 					.from('products')
 					.select('favorite_count')
 					.eq('id', productId)
 					.single();
 				
-					
 				return json({ 
 					favorited: false,
 					action: 'removed',
@@ -105,15 +110,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					favoriteCount: updatedProduct?.favorite_count || 0
 				});
 			} else {
-				// Prevent adding favorite to sold products
-				if (product.is_sold) {
-					return json({ 
-						error: 'Cannot favorite sold items',
-						message: 'This item has been sold and cannot be favorited'
-					}, { status: 409 });
-				}
-				
-				// Add favorite
+				// Add favorite - use insert and handle unique constraint violation
 				const { error: insertError } = await locals.supabase
 					.from('favorites')
 					.insert({
@@ -121,19 +118,19 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 						product_id: productId
 					});
 				
-				if (insertError) {
+				// If duplicate key error (23505), it's already favorited - ignore it
+				if (insertError && insertError.code !== '23505') {
 					console.error('Failed to add favorite:', insertError);
 					return json({ error: 'Failed to add favorite', details: insertError.message }, { status: 500 });
 				}
 				
-				// Get updated count (trigger automatically increments)
+				// Get updated count
 				const { data: updatedProduct } = await locals.supabase
 					.from('products')
 					.select('favorite_count')
 					.eq('id', productId)
 					.single();
 				
-					
 				return json({ 
 					favorited: true,
 					action: 'added',

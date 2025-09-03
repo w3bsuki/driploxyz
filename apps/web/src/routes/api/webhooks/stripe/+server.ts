@@ -4,6 +4,8 @@ import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 import { createServerClient } from '@supabase/ssr';
 import { TransactionService } from '$lib/services/transactions';
+import { OrderService } from '$lib/services/OrderService';
+import { ConversationService } from '$lib/services/ConversationService';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { paymentLogger } from '$lib/utils/log';
 
@@ -87,14 +89,14 @@ async function handlePaymentSuccess(paymentIntent: any) {
 			);
 
 			// Get order details to extract amounts
-			const { data: order, error: orderError } = await supabase
+			const { data: order, error: orderError1 } = await supabase
 				.from('orders')
 				.select('total_amount, shipping_cost')
 				.eq('id', orderId)
 				.single();
 
-			if (orderError || !order) {
-				paymentLogger.error('Failed to get order details', orderError, {
+			if (orderError1 || !order) {
+				paymentLogger.error('Failed to get order details', orderError1, {
 					orderId,
 					paymentIntentId: paymentIntent.id
 				});
@@ -102,9 +104,10 @@ async function handlePaymentSuccess(paymentIntent: any) {
 			}
 
 			const transactionService = new TransactionService(supabase);
+			const orderService = new OrderService(supabase);
 			
 			// Create transaction record with commission calculation
-			const { transaction, error } = await transactionService.createTransaction({
+			const { transaction, error: transactionError } = await transactionService.createTransaction({
 				orderId,
 				sellerId,
 				buyerId,
@@ -114,8 +117,8 @@ async function handlePaymentSuccess(paymentIntent: any) {
 				stripePaymentIntentId: paymentIntent.id
 			});
 
-			if (error) {
-				paymentLogger.error('Error creating transaction', error, {
+			if (transactionError) {
+				paymentLogger.error('Error creating transaction', transactionError, {
 					orderId,
 					paymentIntentId: paymentIntent.id,
 					productId,
@@ -125,16 +128,22 @@ async function handlePaymentSuccess(paymentIntent: any) {
 				return;
 			}
 
-			// Update order status to paid
-			await supabase
-				.from('orders')
-				.update({ 
-					status: 'paid',
-					updated_at: new Date().toISOString()
-				})
-				.eq('id', orderId);
+			// Update order status to paid using OrderService (handles inventory and notifications)
+			const { error: orderError2 } = await orderService.updateOrderStatus({
+				orderId,
+				status: 'paid',
+				userId: sellerId // System update, use seller as the updating user
+			});
 
-			// Mark product as sold
+			if (orderError2) {
+				paymentLogger.error('Error updating order to paid status', orderError2, {
+					orderId,
+					paymentIntentId: paymentIntent.id
+				});
+				return;
+			}
+
+			// Mark product as sold (inventory management)
 			const { data: product } = await supabase
 				.from('products')
 				.update({ 
@@ -146,37 +155,52 @@ async function handlePaymentSuccess(paymentIntent: any) {
 				.select('title')
 				.single();
 
-			// Insert sale notification for seller
-			await supabase
-				.from('notifications')
-				.insert({
+			// Create comprehensive notifications
+			const notifications = [
+				// Seller notification
+				{
 					user_id: sellerId,
 					type: 'sale',
 					title: 'New sale! 🎉',
-					message: `Your listing "${product?.title || 'Item'}" was purchased`,
+					message: `Your listing "${product?.title || 'Item'}" was purchased for ${order.total_amount} BGN`,
 					order_id: orderId,
-					metadata: {
+					category: 'sales',
+					priority: 'normal',
+					data: {
 						product_id: productId,
 						buyer_id: buyerId,
-						amount: transaction?.seller_earnings
+						amount: transaction?.seller_earnings,
+						commission: transaction?.commission_amount
 					}
-				});
-
-			// Insert purchase confirmation for buyer
-			await supabase
-				.from('notifications')
-				.insert({
+				},
+				// Buyer notification
+				{
 					user_id: buyerId,
 					type: 'purchase',
 					title: 'Purchase confirmed ✅',
-					message: `You bought "${product?.title || 'Item'}"`,
+					message: `You successfully purchased "${product?.title || 'Item'}". The seller will ship it soon.`,
 					order_id: orderId,
-					metadata: {
+					category: 'purchases',
+					priority: 'normal',
+					data: {
 						product_id: productId,
 						seller_id: sellerId,
 						amount: order.total_amount
 					}
-				});
+				}
+			];
+
+			await supabase.from('notifications').insert(notifications);
+
+			// Create order conversation for buyer-seller communication
+			const conversationService = new ConversationService(supabase, sellerId);
+			const conversationCreated = await conversationService.createOrderConversation({
+				orderId,
+				buyerId,
+				sellerId,
+				productId,
+				initialMessage: `Order #${orderId.slice(-8)} has been created! Please coordinate shipping and delivery details here. 📦`
+			});
 
 			paymentLogger.info('Payment processing completed successfully', {
 				transactionId: transaction?.id,
@@ -184,7 +208,9 @@ async function handlePaymentSuccess(paymentIntent: any) {
 				sellerEarnings: transaction?.seller_earnings,
 				orderId,
 				productId,
-				notificationsSent: 'true'
+				productTitle: product?.title,
+				notificationsSent: 'true',
+				conversationCreated: conversationCreated ? 'true' : 'false'
 			});
 			
 		} catch (error) {
@@ -227,7 +253,7 @@ async function handlePaymentFailed(paymentIntent: any) {
 				}
 			);
 
-			// Update order status to failed
+			// Update order status to failed (this will restore product availability)
 			await supabase
 				.from('orders')
 				.update({ 
@@ -246,24 +272,66 @@ async function handlePaymentFailed(paymentIntent: any) {
 				})
 				.eq('stripe_payment_intent_id', paymentIntent.id);
 
-			// Notify buyer of failure
+			// Restore product availability
+			await supabase
+				.from('products')
+				.update({
+					is_sold: false,
+					sold_at: null,
+					status: 'active'
+				})
+				.eq('id', productId);
+
+			// Get product details for notification
+			const { data: product } = await supabase
+				.from('products')
+				.select('title')
+				.eq('id', productId)
+				.single();
+
+			// Notify buyer of failure with actionable message
 			await supabase
 				.from('notifications')
 				.insert({
 					user_id: buyerId,
-					title: 'Payment Failed',
-					message: 'Your payment could not be processed. Please try again or contact support.',
 					type: 'payment_failed',
-					metadata: {
+					title: 'Payment Failed',
+					message: `Your payment for "${product?.title || 'Item'}" could not be processed. The item is still available for purchase.`,
+					order_id: orderId,
+					category: 'purchases',
+					priority: 'high',
+					action_required: true,
+					data: {
 						product_id: productId,
-						order_id: orderId
+						order_id: orderId,
+						failure_reason: paymentIntent.last_payment_error?.message || 'Payment processing failed'
+					}
+				});
+
+			// Notify seller that sale fell through
+			await supabase
+				.from('notifications')
+				.insert({
+					user_id: sellerId,
+					type: 'sale_failed',
+					title: 'Sale Payment Failed',
+					message: `Payment for your listing "${product?.title || 'Item'}" failed. The item is available again.`,
+					order_id: orderId,
+					category: 'sales',
+					priority: 'normal',
+					data: {
+						product_id: productId,
+						order_id: orderId,
+						buyer_id: buyerId
 					}
 				});
 
 			paymentLogger.info('Successfully processed payment failure', {
 				paymentIntentId: paymentIntent.id,
 				orderId,
-				productId
+				productId,
+				productRestored: 'true',
+				notificationsSent: 'true'
 			});
 		} catch (error) {
 			paymentLogger.error('Error processing payment failure', error, {

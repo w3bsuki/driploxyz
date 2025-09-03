@@ -124,6 +124,6 @@ export function buildProductListSelect(includeImages = true, includeSeller = tru
 }
 
 // Helper for counting without fetching data
-export function buildCountQuery(table: string) {
+export function buildCountQuery() {
   return `id`; // Only select id for counting
 }

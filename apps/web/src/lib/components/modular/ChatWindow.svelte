@@ -84,16 +84,31 @@
     });
   }
 
-  // Handle scroll to load older messages
+  // Enhanced scroll handling for progressive message loading
+  let loadMoreThreshold = 50; // pixels from top
+  let scrollDebounceTimer: number | null = null;
+  
   function handleScroll() {
     if (!messagesContainer || isLoadingOlder || !hasMoreMessages || !onLoadOlder) return;
     
-    const { scrollTop } = messagesContainer;
+    // Debounce scroll events for better performance
+    if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer);
     
-    // If scrolled near the top (within 100px), load older messages
-    if (scrollTop < 100) {
-      onLoadOlder();
-    }
+    scrollDebounceTimer = setTimeout(() => {
+      const { scrollTop, scrollHeight, clientHeight } = messagesContainer;
+      
+      // Load older messages when scrolled near the top (like Messenger/WhatsApp)
+      if (scrollTop < loadMoreThreshold) {
+        onLoadOlder();
+      }
+      
+      // Update threshold based on scroll behavior for better UX
+      if (scrollTop < 20) {
+        loadMoreThreshold = 80; // Increase threshold if user is actively scrolling up
+      } else {
+        loadMoreThreshold = 50; // Reset to default
+      }
+    }, 100); // 100ms debounce
   }
 
   // Send message handler
@@ -121,6 +136,35 @@
       e.preventDefault();
       sendMessage();
     }
+  }
+
+  // Quick action handlers
+  function handleMakeOffer() {
+    if (conversation.isProductConversation && conversation.productPrice) {
+      const offerMessage = `💰 I'd like to make an offer of €${Math.floor(conversation.productPrice * 0.8)} for "${conversation.productTitle}". Let me know what you think!`;
+      messageText = offerMessage;
+      // Focus the input for user to modify if needed
+      const input = document.getElementById('message-input') as HTMLInputElement;
+      if (input) {
+        input.focus();
+        input.setSelectionRange(offerMessage.length, offerMessage.length);
+      }
+    } else {
+      messageText = "💰 I'm interested in making an offer. What's your asking price?";
+    }
+  }
+
+  function handleBundle() {
+    messageText = "📦 Would you be interested in bundling this with other items for a better deal?";
+  }
+
+  function handleLocation() {
+    messageText = "📍 Where would you like to meet for pickup/delivery?";
+  }
+
+  function handlePhoto() {
+    // For now, suggest uploading photos
+    messageText = "📸 Could you share more photos of the item?";
   }
 
   // Get user online status
@@ -210,14 +254,16 @@
     {#if conversation.isProductConversation && conversation.productTitle}
       <div class="mt-3 bg-gray-50 rounded-lg p-4 border border-gray-200">
         <div class="flex items-center space-x-2 mb-3">
-          <span class="text-xs font-semibold text-gray-700 bg-gray-200 px-3 py-1 rounded-full">🛍️ Product</span>
+          <span class="text-xs font-semibold text-gray-700 bg-gray-200 px-3 py-1 rounded-full">Product</span>
         </div>
         <div class="flex items-center space-x-4 p-3 bg-white rounded-lg shadow-sm border border-gray-100">
           {#if conversation.productImage}
             <img src={conversation.productImage} alt={conversation.productTitle} class="w-12 h-12 rounded-lg object-cover" />
           {:else}
             <div class="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-              <span class="text-lg">👕</span>
+              <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
             </div>
           {/if}
           <div class="flex-1 min-w-0">
@@ -232,7 +278,9 @@
     {:else}
       <div class="mt-3 bg-gray-50 rounded-lg p-4 border border-gray-200">
         <div class="flex items-center justify-center space-x-2">
-          <span class="text-lg">💬</span>
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
           <span class="text-sm text-gray-600 font-semibold">General Chat</span>
         </div>
       </div>
@@ -246,66 +294,72 @@
       class="h-full overflow-y-auto px-4 py-6 space-y-4"
       onscroll={handleScroll}
     >
-      <!-- Loading indicator for older messages -->
+      <!-- Modern loading indicator for older messages -->
       {#if isLoadingOlder}
-        <div class="flex items-center justify-center py-3">
-          <div class="flex items-center space-x-3 text-gray-600 bg-white px-4 py-2 rounded-full shadow-sm border">
-            <svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            <span class="text-sm font-semibold">Loading...</span>
+        <div class="flex items-center justify-center py-4">
+          <div class="flex items-center space-x-2 text-gray-600 bg-gray-100 px-4 py-2 rounded-full text-sm">
+            <div class="w-4 h-4 border-2 border-gray-400 border-t-gray-600 rounded-full animate-spin"></div>
+            <span>Loading messages...</span>
           </div>
         </div>
-      {:else if !hasMoreMessages && conversation.messages.length > 5}
-        <div class="flex items-center justify-center py-3">
-          <div class="flex items-center space-x-2 text-gray-400 bg-gray-50 px-4 py-2 rounded-full">
-            <span class="text-lg">🎉</span>
-            <span class="text-sm font-semibold">This is where it all started</span>
+      {:else if !hasMoreMessages && conversation.messages.length > 10}
+        <div class="flex items-center justify-center py-4">
+          <div class="flex items-center space-x-2 text-gray-500 bg-gray-100 px-4 py-2 rounded-full text-sm">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4" />
+            </svg>
+            <span>This is where your conversation began</span>
+          </div>
+        </div>
+      {:else if hasMoreMessages && conversation.messages.length > 0}
+        <div class="flex items-center justify-center py-2">
+          <div class="text-xs text-gray-400 font-semibold bg-gray-100/50 px-3 py-1 rounded-full">
+            Scroll up to load more messages
           </div>
         </div>
       {/if}
       
-      <!-- Messages - Professional bubble style -->
+      <!-- Messages - Clean Messenger Style -->
       {#each conversation.messages as message (message.id)}
-        <div class="flex {message.sender_id === currentUserId ? 'justify-end' : 'justify-start'}">
-          <div class="max-w-[80%] sm:max-w-[75%]">
-            <div class="{message.sender_id === currentUserId 
-              ? 'bg-black text-white rounded-2xl rounded-br-md shadow-sm' 
-              : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm border border-gray-200'
-            } px-4 py-3 relative">
-              <p class="text-sm leading-relaxed">{message.content}</p>
-              
-              <!-- Professional message tail -->
-              <div class="absolute bottom-0 {message.sender_id === currentUserId 
-                ? '-right-1 w-3 h-3 bg-black transform rotate-45' 
-                : '-left-1 w-3 h-3 bg-white transform rotate-45 border-l border-b border-gray-200'
-              }"></div>
+        <div class="flex {message.sender_id === currentUserId ? 'justify-end' : 'justify-start'} group">
+          <div class="max-w-[85%] sm:max-w-[70%]">
+            <!-- Message bubble -->
+            <div class="relative {message.sender_id === currentUserId ? 'ml-8' : 'mr-8'}">
+              <div class="{message.sender_id === currentUserId 
+                ? 'bg-blue-500 text-white rounded-2xl rounded-br-md shadow-sm' 
+                : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm border border-gray-200'
+              } px-4 py-2.5 relative">
+                <p class="text-[15px] leading-relaxed">{message.content}</p>
+              </div>
             </div>
             
             <!-- Message metadata -->
-            <div class="flex items-center {message.sender_id === currentUserId ? 'justify-end space-x-2 mr-2' : 'ml-2'} mt-1">
-              <p class="text-xs text-gray-500 font-medium">
+            <div class="flex items-center {message.sender_id === currentUserId ? 'justify-end space-x-2 mr-1 mt-1' : 'ml-1 mt-1'} opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <p class="text-[11px] text-gray-400 font-semibold">
                 {timeAgo(message.created_at)}
               </p>
               
-              <!-- Instagram-style read status -->
+              <!-- Modern read status indicators -->
               {#if message.sender_id === currentUserId}
                 <div class="flex items-center">
                   {#if message.status === 'sending'}
-                    <div class="w-3 h-3 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                    <div class="w-3 h-3 border-2 border-blue-300 border-t-blue-500 rounded-full animate-spin"></div>
                   {:else if message.status === 'sent' || (!message.status && !message.delivered_at)}
-                    <svg class="w-3 h-3 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
+                    <div class="w-3 h-3 rounded-full bg-gray-300 flex items-center justify-center">
+                      <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
                   {:else if message.status === 'delivered' || message.delivered_at}
-                    <svg class="w-3 h-3 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
-                    <svg class="w-3 h-3 text-gray-500 -ml-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                    </svg>
+                    <div class="w-3 h-3 rounded-full bg-gray-500 flex items-center justify-center">
+                      <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
                   {:else if message.status === 'read' || message.is_read}
-                    <Avatar src={conversation.userAvatar} name={conversation.userName} size="xs" class="w-3 h-3" />
+                    <div class="w-3 h-3 rounded-full overflow-hidden ring-1 ring-blue-500 shadow-sm">
+                      <Avatar src={conversation.userAvatar} name={conversation.userName} size="xs" class="w-full h-full" />
+                    </div>
                   {/if}
                 </div>
               {/if}
@@ -316,51 +370,80 @@
     </div>
   </div>
 
-  <!-- Message Input - Instagram style -->
-  <div class="flex-none border-t border-gray-100 p-4 bg-white">
-    <!-- Quick Actions - Professional style -->
-    <div class="flex gap-3 mb-4 overflow-x-auto scrollbar-hide">
-      <button class="min-h-[36px] flex items-center space-x-2 px-4 py-2 bg-green-100 hover:bg-green-200 text-green-800 rounded-lg transition-all active:scale-95 whitespace-nowrap border border-green-200">
-        <span class="text-base">💰</span>
-        <span class="text-sm font-semibold">{i18n.messages_makeOffer()}</span>
+  <!-- Message Input - Modern Messenger Style -->
+  <div class="flex-none bg-white border-t border-gray-100 p-4">
+    <!-- Quick Actions - Clean pill style -->
+    <div class="flex gap-2 mb-4 overflow-x-auto scrollbar-hide">
+      <button 
+        onclick={handleMakeOffer}
+        class="flex items-center space-x-2 px-3 py-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-full transition-all active:scale-95 whitespace-nowrap text-sm border border-green-200"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+        </svg>
+        <span>{i18n.messages_makeOffer()}</span>
       </button>
-      <button class="min-h-[36px] flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-all active:scale-95 whitespace-nowrap border border-gray-200">
-        <span class="text-base">📦</span>
-        <span class="text-sm font-semibold">{i18n.messages_bundle()}</span>
+      <button 
+        onclick={handleBundle}
+        class="flex items-center space-x-2 px-3 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-full transition-all active:scale-95 whitespace-nowrap text-sm border border-purple-200"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+        </svg>
+        <span>{i18n.messages_bundle()}</span>
       </button>
-      <button class="min-h-[36px] flex items-center space-x-2 px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-800 rounded-lg transition-all active:scale-95 whitespace-nowrap border border-blue-200">
-        <span class="text-base">📍</span>
-        <span class="text-sm font-semibold">{i18n.messages_location()}</span>
+      <button 
+        onclick={handleLocation}
+        class="flex items-center space-x-2 px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-full transition-all active:scale-95 whitespace-nowrap text-sm border border-blue-200"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span>{i18n.messages_location()}</span>
       </button>
-      <button class="min-h-[36px] flex items-center space-x-2 px-4 py-2 bg-orange-100 hover:bg-orange-200 text-orange-800 rounded-lg transition-all active:scale-95 whitespace-nowrap border border-orange-200">
-        <span class="text-base">📸</span>
-        <span class="text-sm font-semibold">{i18n.messages_photo()}</span>
+      <button 
+        onclick={handlePhoto}
+        class="flex items-center space-x-2 px-3 py-2 bg-orange-50 hover:bg-orange-100 text-orange-700 rounded-full transition-all active:scale-95 whitespace-nowrap text-sm border border-orange-200"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span>{i18n.messages_photo()}</span>
       </button>
     </div>
     
-    <!-- Input Row - Professional style -->
+    <!-- Input Row - Clean Messenger Style -->
     <div class="flex items-end space-x-3">
       <div class="flex-1 relative">
-        <input
-          id="message-input"
-          type="text"
-          bind:value={messageText}
-          onkeydown={handleKeydown}
-          placeholder={i18n.messages_messageInput()}
-          aria-label="Type a message"
-          class="w-full min-h-[44px] px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent focus:bg-white transition-all"
-        />
-        
-        <!-- Emoji button -->
-        <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-lg hover:scale-110 transition-transform text-gray-500">
-          😊
-        </button>
+        <div class="relative bg-gray-50 rounded-full border border-gray-200 focus-within:border-blue-400 transition-colors">
+          <input
+            id="message-input"
+            type="text"
+            bind:value={messageText}
+            onkeydown={handleKeydown}
+            placeholder={i18n.messages_messageInput()}
+            aria-label="Type a message"
+            class="w-full px-4 py-3 bg-transparent text-[15px] placeholder-gray-500 focus:outline-none pr-12"
+          />
+          
+          <!-- Emoji button -->
+          <button 
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 w-6 h-6 flex items-center justify-center text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-200"
+            aria-label="Add emoji"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+        </div>
       </div>
       
       <button 
         onclick={sendMessage}
-        class="min-w-[44px] min-h-[44px] bg-black text-white rounded-lg hover:bg-gray-800 active:scale-95 transition-all flex items-center justify-center shadow-sm
-          {messageText.trim() && !isSending ? 'hover:shadow-md' : 'opacity-70 cursor-not-allowed'}"
+        class="min-w-[44px] min-h-[44px] bg-blue-500 text-white rounded-full hover:bg-blue-600 active:scale-95 transition-all flex items-center justify-center shadow-sm 
+          {messageText.trim() && !isSending ? '' : 'opacity-70 cursor-not-allowed'}"
         disabled={!messageText.trim() || isSending}
         aria-label="Send message"
       >
@@ -369,8 +452,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
         {:else}
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
           </svg>
         {/if}
       </button>

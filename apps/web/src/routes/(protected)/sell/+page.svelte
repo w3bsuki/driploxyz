@@ -4,12 +4,13 @@
   import { SIZE_CATEGORIES } from '$lib/validation/product';
   import type { PageData, ActionData } from './$types';
   import { enhance } from '$app/forms';
-  import { Button, toasts } from '@repo/ui';
+  import { Button, toasts, ErrorBoundary } from '@repo/ui';
   import { uploadImages, deleteImage } from '$lib/supabase/storage';
-  import StepPhotosOnly from './components/StepPhotosOnly.svelte';
-  import StepCategory from './components/StepCategory.svelte';
-  import StepProductInfo from './components/StepProductInfo.svelte';
-  import StepPricing from './components/StepPricing.svelte';
+  // Dynamic imports for code-splitting - components loaded only when needed
+  let StepPhotosOnly: any = $state(null);
+  let StepCategory: any = $state(null);
+  let StepProductInfo: any = $state(null);
+  let StepPricing: any = $state(null);
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import { onMount } from 'svelte';
   import * as i18n from '@repo/i18n';
@@ -41,6 +42,36 @@
     setTimeout(() => {
       showValidationPopup = false;
     }, 3000);
+  }
+  
+  // Dynamic component loading functions for code-splitting
+  async function loadStepComponent(step: number) {
+    switch (step) {
+      case 1:
+        if (!StepPhotosOnly) {
+          const module = await import('./components/StepPhotosOnly.svelte');
+          StepPhotosOnly = module.default;
+        }
+        break;
+      case 2:
+        if (!StepCategory) {
+          const module = await import('./components/StepCategory.svelte');
+          StepCategory = module.default;
+        }
+        break;
+      case 3:
+        if (!StepProductInfo) {
+          const module = await import('./components/StepProductInfo.svelte');
+          StepProductInfo = module.default;
+        }
+        break;
+      case 4:
+        if (!StepPricing) {
+          const module = await import('./components/StepPricing.svelte');
+          StepPricing = module.default;
+        }
+        break;
+    }
   }
   let formElement = $state<HTMLFormElement>();
   let isDraftSaved = $state(false);
@@ -184,7 +215,10 @@
     }
   }
 
-  onMount(() => {
+  onMount(async () => {
+    // Load initial step component
+    await loadStepComponent(currentStep);
+    
     // Clear any old draft with wrong values
     const saved = localStorage.getItem('sell-form-draft');
     if (saved) {
@@ -489,98 +523,158 @@
         <!-- Step 1: Photos Only -->
         {#if currentStep === 1}
           <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 1 of 5: {i18n.sell_step1()}">
-            <StepPhotosOnly
-              bind:formData
-              bind:uploadedImages
-              bind:isUploadingImages
-              onImageUpload={handleImageUpload}
-              onImageDelete={handleImageDelete}
-              onFieldChange={(field, value) => {
-                // Could add validation here if needed
+            <ErrorBoundary
+              resetKeys={[currentStep]}
+              onError={(error) => {
+                console.error('Error in Step 1 (Photos):', error);
+                toasts.error('An error occurred while loading photos step. Please try again.');
               }}
-            />
+            >
+              {#if StepPhotosOnly}
+                <svelte:component
+                  this={StepPhotosOnly}
+                  bind:formData
+                  bind:uploadedImages
+                  bind:isUploadingImages
+                  onImageUpload={handleImageUpload}
+                  onImageDelete={handleImageDelete}
+                  onFieldChange={(field, value) => {
+                    // Could add validation here if needed
+                  }}
+                />
+              {:else}
+                <div class="flex items-center justify-center py-8">
+                  <div class="text-sm text-gray-500">{i18n.loading()}</div>
+                </div>
+              {/if}
+            </ErrorBoundary>
           </div>
         {/if}
 
         <!-- Step 2: Category Selection -->
         {#if currentStep === 2}
           <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 2 of 5: {i18n.sell_step2()}">
-            <StepCategory
-              categories={data.categories}
-              bind:formData
-              suggestions={categorySuggestions}
-              showSuggestions={showSuggestions}
-              onFieldChange={(field, value) => {
-                // Update category fields
-                if (field === 'gender') formData.gender_category_id = value;
-                if (field === 'type') formData.type_category_id = value;
-                if (field === 'specific') formData.category_id = value;
-                if (field === 'condition') formData.condition = value;
+            <ErrorBoundary
+              resetKeys={[currentStep]}
+              onError={(error) => {
+                console.error('Error in Step 2 (Category):', error);
+                toasts.error('An error occurred while loading category step. Please try again.');
               }}
-              onDismissSuggestions={() => showSuggestions = false}
-              onApplySuggestions={() => {
-                if (categorySuggestions) {
-                  // Map suggestion to actual category IDs
-                  if (categorySuggestions.gender) {
-                    const genderCat = genderCategories.find(c => c.name === categorySuggestions.gender);
-                    if (genderCat) {
-                      formData.gender_category_id = genderCat.id;
+            >
+              {#if StepCategory}
+                <svelte:component
+                  this={StepCategory}
+                  categories={data.categories}
+                  bind:formData
+                  suggestions={categorySuggestions}
+                  showSuggestions={showSuggestions}
+                  onFieldChange={(field, value) => {
+                    // Update category fields
+                    if (field === 'gender') formData.gender_category_id = value;
+                    if (field === 'type') formData.type_category_id = value;
+                    if (field === 'specific') formData.category_id = value;
+                    if (field === 'condition') formData.condition = value;
+                  }}
+                  onDismissSuggestions={() => showSuggestions = false}
+                  onApplySuggestions={() => {
+                    if (categorySuggestions) {
+                      // Map suggestion to actual category IDs
+                      if (categorySuggestions.gender) {
+                        const genderCat = genderCategories.find(c => c.name === categorySuggestions.gender);
+                        if (genderCat) {
+                          formData.gender_category_id = genderCat.id;
+                        }
+                      }
+                      if (categorySuggestions.type && formData.gender_category_id) {
+                        const typeCat = typeCategories.find(c => c.name === categorySuggestions.type);
+                        if (typeCat) {
+                          formData.type_category_id = typeCat.id;
+                        }
+                      }
+                      if (categorySuggestions.specific && formData.type_category_id) {
+                        const specificCat = specificCategories.find(c => c.name === categorySuggestions.specific);
+                        if (specificCat) {
+                          formData.category_id = specificCat.id;
+                        }
+                      }
+                      showSuggestions = false;
+                      toasts.success('Applied category suggestions!');
                     }
-                  }
-                  if (categorySuggestions.type && formData.gender_category_id) {
-                    const typeCat = typeCategories.find(c => c.name === categorySuggestions.type);
-                    if (typeCat) {
-                      formData.type_category_id = typeCat.id;
-                    }
-                  }
-                  if (categorySuggestions.specific && formData.type_category_id) {
-                    const specificCat = specificCategories.find(c => c.name === categorySuggestions.specific);
-                    if (specificCat) {
-                      formData.category_id = specificCat.id;
-                    }
-                  }
-                  showSuggestions = false;
-                  toasts.success('Applied category suggestions!');
-                }
-              }}
-            />
+                  }}
+                />
+              {:else}
+                <div class="flex items-center justify-center py-8">
+                  <div class="text-sm text-gray-500">{i18n.loading()}</div>
+                </div>
+              {/if}
+            </ErrorBoundary>
           </div>
         {/if}
         
         <!-- Step 3: Product Details -->
         {#if currentStep === 3}
           <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 3 of 5: {i18n.sell_step3()}" class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
-            <StepProductInfo
-              bind:formData
-              sizeOptions={sizeOptions}
-              errors={{}}
-              touched={{}}
-              onFieldChange={(field, value) => {
-                // Trigger validation if needed
+            <ErrorBoundary
+              resetKeys={[currentStep]}
+              onError={(error) => {
+                console.error('Error in Step 3 (Product Info):', error);
+                toasts.error('An error occurred while loading product details step. Please try again.');
               }}
-              onFieldBlur={(field) => {
-                // Mark field as touched
-              }}
-            />
+            >
+              {#if StepProductInfo}
+                <svelte:component
+                  this={StepProductInfo}
+                  bind:formData
+                  sizeOptions={sizeOptions}
+                  errors={{}}
+                  touched={{}}
+                  onFieldChange={(field, value) => {
+                    // Trigger validation if needed
+                  }}
+                  onFieldBlur={(field) => {
+                    // Mark field as touched
+                  }}
+                />
+              {:else}
+                <div class="flex items-center justify-center py-8">
+                  <div class="text-sm text-gray-500">{i18n.loading()}</div>
+                </div>
+              {/if}
+            </ErrorBoundary>
           </div>
         {/if}
         
         <!-- Step 4: Pricing -->
         {#if currentStep === 4}
           <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 4 of 5: {i18n.sell_step4()}" class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
-            <StepPricing
-              bind:formData
-              profile={data.profile}
-              {priceSuggestion}
-              errors={{}}
-              touched={{}}
-              onFieldChange={(field, value) => {
-                // Could trigger price suggestion update here
+            <ErrorBoundary
+              resetKeys={[currentStep]}
+              onError={(error) => {
+                console.error('Error in Step 4 (Pricing):', error);
+                toasts.error('An error occurred while loading pricing step. Please try again.');
               }}
-              onFieldBlur={(field) => {
-                // Mark field as touched
-              }}
-            />
+            >
+              {#if StepPricing}
+                <svelte:component
+                  this={StepPricing}
+                  bind:formData
+                  profile={data.profile}
+                  {priceSuggestion}
+                  errors={{}}
+                  touched={{}}
+                  onFieldChange={(field, value) => {
+                    // Could trigger price suggestion update here
+                  }}
+                  onFieldBlur={(field) => {
+                    // Mark field as touched
+                  }}
+                />
+              {:else}
+                <div class="flex items-center justify-center py-8">
+                  <div class="text-sm text-gray-500">{i18n.loading()}</div>
+                </div>
+              {/if}
+            </ErrorBoundary>
           </div>
         {/if}
         
@@ -727,8 +821,9 @@
             onclick={() => {
               isProgressing = true;
               publishError = null;
-              setTimeout(() => {
+              setTimeout(async () => {
                 currentStep--;
+                await loadStepComponent(currentStep);
                 navigateToStep();
                 isProgressing = false;
               }, 150);
@@ -754,8 +849,9 @@
                   (currentStep === 4 && canProceedStep4)) {
                 isProgressing = true;
                 publishError = null;
-                setTimeout(() => {
+                setTimeout(async () => {
                   currentStep++;
+                  await loadStepComponent(currentStep);
                   navigateToStep();
                   isProgressing = false;
                 }, 150);
@@ -942,9 +1038,6 @@
     }
   }
   
-  .animate-bounce-in {
-    animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  }
   
   @keyframes check-mark {
     0% {
@@ -955,11 +1048,6 @@
     }
   }
   
-  .animate-check-mark {
-    stroke-dasharray: 100;
-    stroke-dashoffset: 100;
-    animation: check-mark 0.8s ease-out 0.3s forwards;
-  }
   
   @keyframes spin {
     to {

@@ -1,5 +1,6 @@
 import { goto, invalidate } from '$app/navigation';
 import * as i18n from '@repo/i18n';
+import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
 
 export async function switchLanguage(lang: string) {
   console.log('Switching language to:', lang);
@@ -10,56 +11,52 @@ export async function switchLanguage(lang: string) {
   }
   
   try {
-    // For localhost or dev, we still need to handle cookies
-    if (window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1')) {
-      const { ProductionCookieManager } = await import('$lib/cookies/production-cookie-system');
-      const cookieManager = ProductionCookieManager.getInstance();
-      
-      if (!cookieManager.hasConsent('functional')) {
-        sessionStorage.setItem('pendingLanguageSwitch', lang);
-        
-        window.dispatchEvent(new CustomEvent('requestCookieConsent', {
-          detail: { 
-            reason: 'language_switch', 
-            targetLanguage: lang,
-            message: `To switch to ${languages.find(l => l.code === lang)?.name || lang}, please enable functional cookies.`
-          }
-        }));
-        return;
-      }
-      
+    const cookieManager = ProductionCookieManager.getInstance();
+
+    // If functional consent is missing, remember intent and prompt for consent
+    if (!cookieManager.hasConsent('functional')) {
+      sessionStorage.setItem('pendingLanguageSwitch', lang);
+      window.dispatchEvent(new CustomEvent('requestCookieConsent', {
+        detail: {
+          reason: 'language_switch',
+          targetLanguage: lang,
+          message: `To switch to ${languages.find(l => l.code === lang)?.name || lang}, please enable functional cookies.`
+        }
+      }));
+      // Proceed with a soft switch using explicit query so SSR renders desired locale
+      // Cookie will be persisted once consent is granted later
+    } else {
+      // Persist preference when allowed
       cookieManager.setCookie('locale', lang, {
         maxAge: 365 * 24 * 60 * 60,
         sameSite: 'lax',
         secure: location.protocol === 'https:'
       });
     }
-    
-    // Store selection in sessionStorage for cross-domain state
+
+    // Store selection on client; used to complete switch post-consent too
     sessionStorage.setItem('selectedLocale', lang);
-    
-    // Update runtime locale
+
+    // Update runtime locale immediately
     i18n.setLocale(lang as any);
     document.documentElement.lang = lang;
-    
-    // Navigate to the language-specific path using SvelteKit navigation
-    // Map internal locale to URL path
-    const currentPath = window.location.pathname.replace(/^\/(uk|bg)/, '');
-    let newPath: string;
-    
-    if (lang === 'en') {
-      // English uses /uk path
-      newPath = `/uk${currentPath}`;
-    } else if (lang === 'bg') {
-      // Bulgarian is default, no prefix needed
-      newPath = currentPath || '/';
-    } else {
-      newPath = `/${lang}${currentPath}`;
-    }
-    
-    // Use goto with invalidateAll to ensure fresh data
-    await goto(newPath, { invalidateAll: true });
-    
+
+    // Normalize path (strip any existing locale prefix)
+    const currentPath = window.location.pathname.replace(/^\/(uk|bg)(?=\/|$)/, '');
+
+    // Build explicit locale routing + query to ensure SSR honors choice
+    // English uses /uk prefix; Bulgarian uses no prefix (root)
+    const isEn = lang === 'en';
+    const prefix = isEn ? '/uk' : '';
+    const search = new URLSearchParams(window.location.search);
+    search.set('locale', lang);
+    const query = search.toString();
+
+    const newPath = `${prefix}${currentPath || '/'}`.replace(/\/+$/, '/');
+    const target = `${newPath}${query ? `?${query}` : ''}`;
+
+    await goto(target, { invalidateAll: true });
+
   } catch (error) {
     console.error('Language switch failed:', error);
     
@@ -75,3 +72,48 @@ export const languages = [
   // { code: 'ru', name: 'Русский', flag: '🇷🇺', domain: 'ru.driplo.com' },
   // { code: 'ua', name: 'Українська', flag: '🇺🇦', domain: 'ua.driplo.com' }
 ];
+
+/**
+ * Initialize language from server-provided data
+ * NEVER override server-set language
+ */
+export function initializeLanguage(serverLanguage?: string) {
+  if (typeof window === 'undefined') return;
+  
+  // Use server language if provided (SSR first)
+  if (serverLanguage && i18n.isAvailableLanguageTag(serverLanguage)) {
+    i18n.setLocale(serverLanguage as any);
+    document.documentElement.lang = serverLanguage;
+    return;
+  }
+  
+  // Fallback to stored preference
+  let storedLang: string | null = null;
+  try {
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === 'locale') {
+        storedLang = decodeURIComponent(value || '');
+        break;
+      }
+    }
+  } catch (e) {
+    // Cookie reading failed
+  }
+  if (storedLang && i18n.isAvailableLanguageTag(storedLang)) {
+    i18n.setLocale(storedLang as any);
+    document.documentElement.lang = storedLang;
+  } else {
+    // Last resort: browser language detection
+    let browserLang = 'en';
+    if (typeof navigator !== 'undefined' && navigator.language) {
+      const parts = navigator.language.split('-');
+      browserLang = parts[0]?.toLowerCase() || 'en';
+    }
+    
+    const finalLang = i18n.isAvailableLanguageTag(browserLang) ? browserLang : 'en';
+    i18n.setLocale(finalLang as any);
+    document.documentElement.lang = finalLang;
+  }
+}

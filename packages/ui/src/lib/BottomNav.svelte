@@ -4,6 +4,7 @@
     currentPath: string;
     isNavigating?: boolean;
     navigatingTo?: string;
+    profileHref?: string;
     labels?: {
       home: string;
       search: string;
@@ -18,6 +19,7 @@
     currentPath, 
     isNavigating = false, 
     navigatingTo = '',
+    profileHref = '/account',
     labels = {
       home: 'Home',
       search: 'Search', 
@@ -67,10 +69,10 @@
       showBadge: true
     },
     {
-      href: '/account',
+      href: profileHref,
       label: labels.profile,
       icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
-      matchPath: '/account'
+      matchPath: profileHref.startsWith('/profile/') ? '/profile' : profileHref
     }
   ];
   

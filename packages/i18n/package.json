@@ -3,17 +3,17 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "pnpm run compile && pnpm run types",
-    "compile": "paraglide-js compile --project ./project.inlang --outdir ./lib/paraglide",
+    "build": "pnpm run clean && pnpm run compile && pnpm run types",
+    "compile": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
     "types": "tsc",
-    "dev": "paraglide-js compile --project ./project.inlang --outdir ./lib/paraglide",
-    "clean": "rm -rf lib dist"
+    "dev": "pnpm run compile",
+    "clean": "rm -rf lib dist src/paraglide"
   },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "exports": {
     ".": {
-      "types": "./lib/index.d.ts",
+      "types": "./lib/index.d.ts", 
       "import": "./lib/index.js",
       "default": "./lib/index.js"
     }

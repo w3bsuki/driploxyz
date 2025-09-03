@@ -15,7 +15,11 @@ export const load = (async ({ locals }) => {
 		.select(`
 			*,
 			category:categories(
-				name
+				name,
+				slug
+			),
+			profiles!products_seller_id_fkey (
+				username
 			)
 		`)
 		.eq('seller_id', session.user.id)

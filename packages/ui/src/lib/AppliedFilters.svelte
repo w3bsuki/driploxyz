@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
+  import * as i18n from '@repo/i18n';
 
   interface AppliedFilter {
     key: string;
@@ -32,8 +33,8 @@
     onClearAll,
     class: className = '',
     showClearAll = true,
-    clearAllLabel = 'Clear all',
-    ariaLabel = 'Applied filters',
+    clearAllLabel = i18n.filter_applied_clearAll(),
+    ariaLabel = i18n.filter_applied_ariaLabel(),
     filterItem,
     announceChanges = true,
     announcementTemplate
@@ -65,7 +66,7 @@
       if (announcementTemplate) {
         announcement = announcementTemplate(removedFilter);
       } else {
-        announcement = `${removedFilter.label} filter removed`;
+        announcement = i18n.filter_applied_filterRemoved({ label: removedFilter.label });
       }
     }
   }
@@ -78,7 +79,7 @@
     
     // Announce clearing all
     if (announceChanges) {
-      announcement = `All ${activeCount} filter${activeCount !== 1 ? 's' : ''} cleared`;
+      announcement = i18n.filter_applied_allFiltersCleared({ count: activeCount });
     }
   }
   
@@ -94,7 +95,7 @@
 
   // Generate accessible label for filter
   function getFilterAriaLabel(filter: AppliedFilter): string {
-    return `Remove ${filter.label}: ${filter.displayValue} filter`;
+    return i18n.filter_applied_removeFilter({ label: filter.label, value: filter.displayValue });
   }
 </script>
 
@@ -102,7 +103,7 @@
   <div class="applied-filters {className}" role="region" aria-label={ariaLabel}>
     <!-- Summary for screen readers -->
     <div class="sr-only" aria-live="polite">
-      {activeFilters.length} active filter{activeFilters.length !== 1 ? 's' : ''}: {activeFilters.map(f => `${f.label}: ${f.displayValue}`).join(', ')}
+      {i18n.filter_applied_activeFiltersCount({ count: activeFilters.length })}: {activeFilters.map(f => `${f.label}: ${f.displayValue}`).join(', ')}
     </div>
     
     <div class="flex items-center gap-2 flex-wrap">
@@ -220,11 +221,11 @@
     
     <!-- Hidden help text -->
     <div id="filter-removal-help" class="sr-only">
-      Press Enter or Space to remove this filter, or Delete/Backspace as shortcuts
+      {i18n.filter_ui_filterRemovalHelp()}
     </div>
     
     <div id="clear-all-help" class="sr-only">
-      Press Enter or Space to clear all filters, or Delete/Backspace as shortcuts
+      {i18n.filter_ui_clearAllHelp()}
     </div>
   </div>
 {/if}

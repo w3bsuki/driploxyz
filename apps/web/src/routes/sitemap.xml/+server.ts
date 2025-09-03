@@ -23,12 +23,19 @@ export const GET: RequestHandler = async ({ locals }) => {
 		.select('id, name, updated_at')
 		.order('name');
 	
-	// Fetch recent products (limit to most recent 1000 for performance)
+	// Fetch recent products with seller and category data for canonical URLs
 	const { data: products } = await supabase
 		.from('products')
-		.select('id, updated_at')
+		.select(`
+			id,
+			slug,
+			updated_at,
+			profiles!products_seller_id_fkey (username),
+			categories (slug)
+		`)
 		.eq('is_sold', false)
 		.eq('is_active', true)
+		.not('slug', 'is', null)
 		.order('updated_at', { ascending: false })
 		.limit(1000);
 	
@@ -48,10 +55,15 @@ export const GET: RequestHandler = async ({ locals }) => {
 			...c,
 			updated_at: c.updated_at!
 		})),
-		products: (products || []).filter(p => p.updated_at).map(p => ({
-			...p,
-			updated_at: p.updated_at!
-		})),
+		products: (products || [])
+			.filter(p => p.updated_at && p.slug && p.profiles?.username)
+			.map(p => ({
+				id: p.id,
+				slug: p.slug!,
+				seller_username: p.profiles!.username!,
+				category_slug: p.categories?.slug || null,
+				updated_at: p.updated_at!
+			})),
 		sellers: (sellers || [])
 			.filter(s => s.updated_at && s.username)
 			.map(s => ({
@@ -78,7 +90,7 @@ function generateSitemap({
 	baseUrl: string;
 	staticPages: Array<{ url: string; priority: number; changefreq: string }>;
 	categories: Array<{ id: string; name: string; updated_at: string }>;
-	products: Array<{ id: string; updated_at: string }>;
+	products: Array<{ id: string; slug: string; seller_username: string; category_slug: string | null; updated_at: string }>;
 	sellers: Array<{ username: string; updated_at: string }>;
 }) {
 	const urls: string[] = [];
@@ -105,14 +117,18 @@ function generateSitemap({
 		</url>`);
 	});
 	
-	// Add product pages
+	// Add product pages with canonical URLs
 	products.forEach(product => {
+		const productUrl = product.category_slug 
+			? `/products/${product.seller_username}/${product.category_slug}/${product.slug}`
+			: `/products/${product.seller_username}/${product.slug}`;
+			
 		urls.push(`
 		<url>
-			<loc>${baseUrl}/product/${product.id}</loc>
+			<loc>${baseUrl}${productUrl}</loc>
 			<lastmod>${new Date(product.updated_at).toISOString().split('T')[0]}</lastmod>
 			<changefreq>weekly</changefreq>
-			<priority>0.7</priority>
+			<priority>0.8</priority>
 		</url>`);
 	});
 	

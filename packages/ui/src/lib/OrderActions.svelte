@@ -1,165 +1,395 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	
-	interface Order {
-		id: string;
-		status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'disputed';
-		buyer_id: string;
-		seller_id: string;
-		tracking_number?: string;
-	}
+	import { createEventDispatcher } from 'svelte';
 
 	interface Props {
-		order: Order;
-		userType: 'buyer' | 'seller';
-		userId: string;
-		onStatusChange?: (newStatus: string) => void;
+		orderId: string;
+		status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'disputed' | 'failed' | 'completed';
+		userRole: 'buyer' | 'seller';
+		trackingNumber?: string;
+		isLoading?: boolean;
 		className?: string;
 	}
 
 	let { 
-		order, 
-		userType, 
-		userId,
-		onStatusChange,
+		orderId,
+		status, 
+		userRole, 
+		trackingNumber,
+		isLoading = false,
 		className = ''
 	}: Props = $props();
 
-	let isLoading = $state(false);
-	let trackingNumber = $state(order.tracking_number || '');
+	const dispatch = createEventDispatcher<{
+		markShipped: { orderId: string; trackingNumber?: string };
+		markDelivered: { orderId: string };
+		cancelOrder: { orderId: string; reason?: string };
+		disputeOrder: { orderId: string; reason?: string };
+		contactOtherParty: { orderId: string };
+		leaveReview: { orderId: string };
+	}>();
+
 	let showTrackingInput = $state(false);
+	let trackingInput = $state('');
+	let showCancelForm = $state(false);
+	let cancelReason = $state('');
+	let showDisputeForm = $state(false);
+	let disputeReason = $state('');
 
-	const canMarkAsShipped = $derived(
-		userType === 'seller' && 
-		userId === order.seller_id && 
-		order.status === 'paid'
-	);
+	const handleMarkShipped = () => {
+		dispatch('markShipped', { 
+			orderId, 
+			trackingNumber: trackingInput.trim() || undefined 
+		});
+		showTrackingInput = false;
+		trackingInput = '';
+	};
 
-	const canMarkAsDelivered = $derived(
-		userType === 'buyer' && 
-		userId === order.buyer_id && 
-		order.status === 'shipped'
-	);
+	const handleMarkDelivered = () => {
+		dispatch('markDelivered', { orderId });
+	};
 
-	const updateOrderStatus = async (newStatus: string, extraData: any = {}) => {
-		isLoading = true;
-		
-		try {
-			const response = await fetch(`/api/orders/${order.id}/status`, {
-				method: 'PATCH',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					status: newStatus,
-					...extraData
-				})
-			});
+	const handleCancelOrder = () => {
+		dispatch('cancelOrder', { 
+			orderId, 
+			reason: cancelReason.trim() || undefined 
+		});
+		showCancelForm = false;
+		cancelReason = '';
+	};
 
-			if (!response.ok) {
-				throw new Error('Failed to update order status');
-			}
+	const handleDisputeOrder = () => {
+		dispatch('disputeOrder', { 
+			orderId, 
+			reason: disputeReason.trim() || undefined 
+		});
+		showDisputeForm = false;
+		disputeReason = '';
+	};
 
-			const result = await response.json();
-			
-			if (result.success) {
-				onStatusChange?.(newStatus);
-				showTrackingInput = false;
-			}
-		} catch (error) {
-			console.error('Error updating order status:', error);
-			alert('Failed to update order status. Please try again.');
-		} finally {
-			isLoading = false;
+	const handleContactOtherParty = () => {
+		dispatch('contactOtherParty', { orderId });
+	};
+
+	const handleLeaveReview = () => {
+		dispatch('leaveReview', { orderId });
+	};
+
+	// Determine available actions based on status and user role
+	const availableActions = $derived(() => {
+		const actions: string[] = [];
+
+		// Always available: contact the other party
+		actions.push('contact');
+
+		switch (status) {
+			case 'pending':
+				// Both can cancel during pending
+				actions.push('cancel');
+				break;
+
+			case 'paid':
+				if (userRole === 'seller') {
+					actions.push('markShipped');
+				}
+				if (userRole === 'buyer') {
+					actions.push('cancel'); // Buyer can still cancel after payment
+				}
+				actions.push('dispute');
+				break;
+
+			case 'shipped':
+				if (userRole === 'buyer') {
+					actions.push('markDelivered');
+				}
+				actions.push('dispute');
+				break;
+
+			case 'delivered':
+				// Both can leave reviews after delivery
+				actions.push('leaveReview');
+				actions.push('dispute');
+				break;
+
+			case 'completed':
+				actions.push('leaveReview');
+				break;
+
+			case 'cancelled':
+			case 'failed':
+				// No actions available for cancelled/failed orders
+				break;
+
+			case 'disputed':
+				// Only contact support/other party during disputes
+				break;
 		}
-	};
 
-	const handleMarkAsShipped = () => {
-		if (showTrackingInput) {
-			updateOrderStatus('shipped', { tracking_number: trackingNumber });
-		} else {
-			showTrackingInput = true;
-		}
-	};
-
-	const handleMarkAsDelivered = () => {
-		updateOrderStatus('delivered');
-	};
+		return actions;
+	});
 </script>
 
-<div class={`space-y-3 ${className}`}>
-	{#if canMarkAsShipped}
-		{#if !showTrackingInput}
-			<button
-				onclick={handleMarkAsShipped}
-				disabled={isLoading}
-				class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-			>
-				{#if isLoading}
-					<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-				{:else}
-					<span>📦</span>
+<div class={`order-actions ${className}`}>
+	{#if availableActions.length > 0}
+		<div class="flex flex-col sm:flex-row gap-3">
+			{#each availableActions as action}
+				{#if action === 'markShipped'}
+					{#if showTrackingInput}
+						<div class="flex flex-col gap-2 p-3 bg-[color:var(--surface-muted)] rounded-lg">
+							<label for="tracking" class="text-sm font-medium text-[color:var(--text-primary)]">
+								Add tracking number (optional):
+							</label>
+							<div class="flex gap-2">
+								<input
+									id="tracking"
+									type="text"
+									bind:value={trackingInput}
+									placeholder="Enter tracking number"
+									class="input flex-1"
+									disabled={isLoading}
+								/>
+								<button
+									onclick={handleMarkShipped}
+									disabled={isLoading}
+									class="btn btn-primary"
+								>
+									{isLoading ? 'Updating...' : 'Confirm'}
+								</button>
+								<button
+									onclick={() => showTrackingInput = false}
+									disabled={isLoading}
+									class="btn btn-secondary"
+								>
+									Cancel
+								</button>
+							</div>
+						</div>
+					{:else}
+						<button
+							onclick={() => showTrackingInput = true}
+							disabled={isLoading}
+							class="btn btn-primary"
+						>
+							📦 Mark as Shipped
+						</button>
+					{/if}
+
+				{:else if action === 'markDelivered'}
+					<button
+						onclick={handleMarkDelivered}
+						disabled={isLoading}
+						class="btn btn-primary"
+					>
+						✅ Mark as Delivered
+					</button>
+
+				{:else if action === 'cancel'}
+					{#if showCancelForm}
+						<div class="flex flex-col gap-2 p-3 bg-[color:var(--surface-muted)] rounded-lg">
+							<label for="cancelReason" class="text-sm font-medium text-[color:var(--text-primary)]">
+								Cancellation reason (optional):
+							</label>
+							<div class="flex flex-col gap-2">
+								<textarea
+									id="cancelReason"
+									bind:value={cancelReason}
+									placeholder="Why are you cancelling this order?"
+									class="input min-h-[80px] resize-none"
+									disabled={isLoading}
+								></textarea>
+								<div class="flex gap-2">
+									<button
+										onclick={handleCancelOrder}
+										disabled={isLoading}
+										class="btn btn-error flex-1"
+									>
+										{isLoading ? 'Cancelling...' : 'Confirm Cancellation'}
+									</button>
+									<button
+										onclick={() => showCancelForm = false}
+										disabled={isLoading}
+										class="btn btn-secondary"
+									>
+										Back
+									</button>
+								</div>
+							</div>
+						</div>
+					{:else}
+						<button
+							onclick={() => showCancelForm = true}
+							disabled={isLoading}
+							class="btn btn-error"
+						>
+							❌ Cancel Order
+						</button>
+					{/if}
+
+				{:else if action === 'dispute'}
+					{#if showDisputeForm}
+						<div class="flex flex-col gap-2 p-3 bg-[color:var(--surface-muted)] rounded-lg">
+							<label for="disputeReason" class="text-sm font-medium text-[color:var(--text-primary)]">
+								Dispute reason:
+							</label>
+							<div class="flex flex-col gap-2">
+								<textarea
+									id="disputeReason"
+									bind:value={disputeReason}
+									placeholder="Please describe the issue with this order..."
+									class="input min-h-[80px] resize-none"
+									disabled={isLoading}
+									required
+								></textarea>
+								<div class="flex gap-2">
+									<button
+										onclick={handleDisputeOrder}
+										disabled={isLoading || !disputeReason.trim()}
+										class="btn btn-warning flex-1"
+									>
+										{isLoading ? 'Submitting...' : 'Submit Dispute'}
+									</button>
+									<button
+										onclick={() => showDisputeForm = false}
+										disabled={isLoading}
+										class="btn btn-secondary"
+									>
+										Back
+									</button>
+								</div>
+							</div>
+						</div>
+					{:else}
+						<button
+							onclick={() => showDisputeForm = true}
+							disabled={isLoading}
+							class="btn btn-warning"
+						>
+							⚠️ Dispute Order
+						</button>
+					{/if}
+
+				{:else if action === 'contact'}
+					<button
+						onclick={handleContactOtherParty}
+						disabled={isLoading}
+						class="btn btn-secondary"
+					>
+						💬 Contact {userRole === 'buyer' ? 'Seller' : 'Buyer'}
+					</button>
+
+				{:else if action === 'leaveReview'}
+					<button
+						onclick={handleLeaveReview}
+						disabled={isLoading}
+						class="btn btn-primary"
+					>
+						⭐ Leave Review
+					</button>
 				{/if}
-				Mark as Shipped
-			</button>
-		{:else}
-			<div class="space-y-2">
-				<label for="tracking-number" class="block text-sm font-medium text-gray-900">
-					Tracking Number (optional)
-				</label>
-				<input
-					id="tracking-number"
-					type="text"
-					bind:value={trackingNumber}
-					placeholder="Enter tracking number"
-					class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-				/>
-				<div class="flex gap-2">
-					<button
-						onclick={handleMarkAsShipped}
-						disabled={isLoading}
-						class="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-					>
-						{#if isLoading}
-							<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-						{:else}
-							<span>✅</span>
-						{/if}
-						Confirm Shipped
-					</button>
-					<button
-						onclick={() => showTrackingInput = false}
-						disabled={isLoading}
-						class="px-4 py-2 border border-gray-300 rounded-lg text-gray-900 hover:bg-gray-50 transition-colors"
-					>
-						Cancel
-					</button>
-				</div>
+			{/each}
+		</div>
+
+		{#if trackingNumber && (status === 'shipped' || status === 'delivered')}
+			<div class="mt-4 p-3 bg-[color:var(--surface-muted)] rounded-lg">
+				<p class="text-sm text-[color:var(--text-secondary)] mb-1">Tracking Number:</p>
+				<p class="text-sm font-mono text-[color:var(--text-primary)]">{trackingNumber}</p>
 			</div>
 		{/if}
-	{/if}
-
-	{#if canMarkAsDelivered}
-		<button
-			onclick={handleMarkAsDelivered}
-			disabled={isLoading}
-			class="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
-		>
-			{#if isLoading}
-				<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+	{:else}
+		<div class="text-center text-[color:var(--text-secondary)] py-4">
+			{#if status === 'cancelled'}
+				This order has been cancelled.
+			{:else if status === 'failed'}
+				This order payment failed.
+			{:else if status === 'disputed'}
+				This order is under dispute. Please contact support.
 			{:else}
-				<span>✅</span>
+				No actions available for this order.
 			{/if}
-			Mark as Received
-		</button>
-	{/if}
-
-	{#if order.status === 'delivered'}
-		<div class="text-center py-4">
-			<span class="inline-flex items-center gap-2 text-green-600 font-medium">
-				<span>🎉</span>
-				Order completed successfully!
-			</span>
 		</div>
 	{/if}
 </div>
+
+<style>
+	.order-actions {
+		border-top: 1px solid var(--border-subtle);
+		padding-top: var(--space-4);
+		margin-top: var(--space-4);
+	}
+
+	.btn {
+		padding: var(--space-2) var(--space-4);
+		border-radius: var(--radius-lg);
+		font-weight: var(--font-medium);
+		font-size: var(--text-sm);
+		transition: background-color var(--duration-base) var(--ease-out), border-color var(--duration-base) var(--ease-out);
+		min-height: 40px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-2);
+		border: 1px solid transparent;
+		cursor: pointer;
+	}
+
+	.btn-primary {
+		background: var(--primary);
+		color: var(--primary-fg);
+	}
+
+	.btn-primary:hover:not(:disabled) {
+		background: var(--primary-600);
+	}
+
+	.btn-secondary {
+		background: var(--surface-muted);
+		color: var(--text-primary);
+		border: 1px solid var(--border-subtle);
+	}
+
+	.btn-secondary:hover:not(:disabled) {
+		background: var(--surface-emphasis);
+	}
+
+	.btn-error {
+		background: var(--status-error-bg);
+		color: var(--status-error-text);
+		border: 1px solid var(--status-error-border);
+	}
+
+	.btn-error:hover:not(:disabled) {
+		background: var(--red-600);
+		color: var(--text-inverse);
+	}
+
+	.btn-warning {
+		background: var(--status-warning-bg);
+		color: var(--status-warning-text);
+		border: 1px solid var(--status-warning-border);
+	}
+
+	.btn-warning:hover:not(:disabled) {
+		background: var(--yellow-600);
+		color: var(--text-inverse);
+	}
+
+	.btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.input {
+		width: 100%;
+		padding: var(--space-3);
+		border: 1px solid var(--border-subtle);
+		border-radius: var(--radius-lg);
+		background: var(--surface-base);
+		color: var(--text-primary);
+		font-size: var(--text-base);
+	}
+
+	.input:focus {
+		outline: none;
+		border-color: var(--primary);
+		box-shadow: 0 0 0 3px var(--input-focus-ring);
+	}
+</style>

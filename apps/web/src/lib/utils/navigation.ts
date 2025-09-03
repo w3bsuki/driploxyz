@@ -7,7 +7,6 @@
  * @param container - Optional container element to scroll within
  */
 export function scrollToTop(container?: Element) {
-  const target = container || document.documentElement;
   
   // Check if user prefers reduced motion
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

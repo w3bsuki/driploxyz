@@ -120,14 +120,6 @@
           >
             Edit Profile
           </Button>
-          <Button 
-            onclick={() => goto('/dashboard')}
-            variant="outline" 
-            size="sm" 
-            class="flex-1 text-sm"
-          >
-            Account
-          </Button>
         </div>
       </div>
     </div>
@@ -165,36 +157,28 @@
         class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'posts' ? 'border-black' : 'border-transparent'}"
         aria-label="Posts"
       >
-        <svg class="w-6 h-6 mx-auto {activeTab === 'posts' ? 'text-black' : 'text-gray-400'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-        </svg>
+        <div class="text-2xl {activeTab === 'posts' ? 'grayscale-0' : 'grayscale opacity-60'}">🛍️</div>
       </button>
       <button
         onclick={() => activeTab = 'orders'}
         class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'orders' ? 'border-black' : 'border-transparent'}"
         aria-label="Orders"
       >
-        <svg class="w-6 h-6 mx-auto {activeTab === 'orders' ? 'text-black' : 'text-gray-400'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-        </svg>
+        <div class="text-2xl {activeTab === 'orders' ? 'grayscale-0' : 'grayscale opacity-60'}">📦</div>
       </button>
       <button
         onclick={() => activeTab = 'sales'}
         class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'sales' ? 'border-black' : 'border-transparent'}"
         aria-label="Sales"
       >
-        <svg class="w-6 h-6 mx-auto {activeTab === 'sales' ? 'text-black' : 'text-gray-400'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-        </svg>
+        <div class="text-2xl {activeTab === 'sales' ? 'grayscale-0' : 'grayscale opacity-60'}">💰</div>
       </button>
       <button
         onclick={() => activeTab = 'likes'}
         class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'likes' ? 'border-black' : 'border-transparent'}"
         aria-label="Likes"
       >
-        <svg class="w-6 h-6 mx-auto {activeTab === 'likes' ? 'text-black' : 'text-gray-400'}" fill="{activeTab === 'likes' ? 'currentColor' : 'none'}" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-        </svg>
+        <div class="text-2xl {activeTab === 'likes' ? 'grayscale-0' : 'grayscale opacity-60'}">❤️</div>
       </button>
     </div>
   </div>
@@ -342,6 +326,7 @@
   isNavigating={!!$navigating}
   navigatingTo={$navigating?.to?.url.pathname}
   unreadMessageCount={$unreadMessageCount}
+  profileHref={`/profile/${data.profile.username || data.profile.id}`}
   labels={{
     home: i18n.nav_home(),
     search: i18n.nav_search(),

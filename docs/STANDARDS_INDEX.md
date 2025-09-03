@@ -12,13 +12,14 @@ Authoritative standards and engineering practices for Claude-code. Read this fir
 
 ## Canonical References
 
-- Architecture: docs/10-ARCHITECTURE.md
-- Standards: docs/30-STANDARDS.md
+- Architecture: docs/10-ARCHITECTURE.md, docs/PROJECT_STRUCTURE.md
+- Standards: docs/30-STANDARDS.md, docs/CONTRIBUTING.md
 - Operations: docs/40-OPERATIONS.md
-- UI system: docs/MELT_UI_MIGRATION.md, docs/MELT_UI_FIX_PLAN.md, docs/REPO_UI_CLEANUP.md
+- UI system: docs/UI_LIBRARY.md, docs/MELT_UI_MIGRATION.md, docs/MELT_UI_FIX_PLAN.md
 - Tailwind: docs/TAILWIND_V4_FIX_PLAN.md, docs/playbooks/tailwindcss-v4.md
 - SvelteKit/Svelte: docs/playbooks/sveltekit2.md, docs/playbooks/svelte5.md
 - i18n (Paraglide): docs/playbooks/paraglide.md; packages/i18n/
+- Decisions: docs/adr/0001-ui-source-of-truth.md
 
 ## Non‑Negotiables (Enforced)
 
@@ -43,4 +44,3 @@ Authoritative standards and engineering practices for Claude-code. Read this fir
 ---
 
 Keep this file concise. Spread details into linked docs and playbooks.
-

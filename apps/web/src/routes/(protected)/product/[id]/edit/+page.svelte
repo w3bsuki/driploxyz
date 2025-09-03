@@ -2,6 +2,7 @@
   import { Button } from '@repo/ui';
   import { enhance } from '$app/forms';
   import type { PageData, ActionData } from './$types';
+  import { getProductUrl } from '$lib/utils/seo-urls';
   
   interface Props {
     data: PageData;
@@ -55,7 +56,7 @@
           <h1 class="text-2xl font-bold text-gray-900">Edit Product</h1>
           <p class="text-sm text-gray-600 mt-1">Update your product listing details</p>
         </div>
-        <a href="/product/{data.product.id}" class="text-sm text-gray-600 hover:text-gray-900">
+        <a href={getProductUrl(data.product)} class="text-sm text-gray-600 hover:text-gray-900">
           View Product →
         </a>
       </div>
@@ -269,7 +270,7 @@
         </Button>
         
         <div class="flex space-x-3">
-          <a href="/product/{data.product.id}">
+          <a href={getProductUrl(data.product)}>
             <Button variant="outline">Cancel</Button>
           </a>
           <Button type="submit">Save Changes</Button>

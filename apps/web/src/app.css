@@ -1,8 +1,14 @@
 @reference;
 @import 'tailwindcss';
-@import '../../../packages/ui/src/styles/tokens.css';
-@import '../../../packages/ui/src/styles/semantic.css';
+@import '@repo/ui/styles/tokens.css';
+@import '@repo/ui/styles/semantic.css';
 @plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+/* Ensure base utilities are generated */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @source '../../../packages/ui/src/**/*.{html,js,svelte,ts}';
 

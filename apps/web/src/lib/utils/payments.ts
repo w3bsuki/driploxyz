@@ -113,8 +113,7 @@ export function calculatePayment(
 	const {
 		serviceFeeRate = 0.03, // 3%
 		shippingCost = 5.00,   // €5.00
-		taxRate = 0,           // 0% (can be configured by region)
-		currency = 'eur'
+		taxRate = 0           // 0% (can be configured by region)
 	} = options;
 
 	const serviceFee = Math.round(productPrice * serviceFeeRate * 100) / 100;

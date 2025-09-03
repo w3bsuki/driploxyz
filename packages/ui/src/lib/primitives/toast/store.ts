@@ -14,8 +14,17 @@ let toastProvider: {
   clearAllToasts?: () => void;
 } | null = null;
 
+// Deduplication cache to prevent duplicate toasts
+const activeToasts = new Set<string>();
+const TOAST_DEDUP_WINDOW = 100; // ms - prevent rapid duplicates
+
 export function setToastProvider(provider: typeof toastProvider) {
   toastProvider = provider;
+}
+
+// Generate unique content hash for deduplication
+function getToastHash(description: string, type: ToastType): string {
+  return `${type}:${description.trim()}`;
 }
 
 function createToastStore(): ToastStore {
@@ -28,6 +37,22 @@ function createToastStore(): ToastStore {
   
   // Add toast to provider if available, otherwise fallback to store
   function addToast(toast: Toast): string {
+    // Deduplication check
+    const toastHash = getToastHash(toast.description, toast.type);
+    
+    if (activeToasts.has(toastHash)) {
+      // Duplicate detected - return existing ID without creating new toast
+      return toast.id;
+    }
+    
+    // Mark as active
+    activeToasts.add(toastHash);
+    
+    // Auto-cleanup from dedup cache
+    setTimeout(() => {
+      activeToasts.delete(toastHash);
+    }, TOAST_DEDUP_WINDOW);
+    
     if (toastProvider && typeof toastProvider.addToastData === 'function') {
       return toastProvider.addToastData(toast);
     }

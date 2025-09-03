@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { Button, OrderStatus, Input, toasts, RatingModal } from '@repo/ui';
+  import { Button, OrderStatus, Input, toasts, ReviewModal, ReviewPrompt } from '@repo/ui';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { subscribeToOrderUpdates, orderUpdates, clearOrderUpdates } from '$lib/stores/orderSubscription';
+  import { getProductUrl } from '$lib/utils/seo-urls';
   
   interface Props {
     data: PageData;
@@ -19,8 +20,8 @@
   let selectedOrder = $state<any>(null);
   let trackingNumber = $state('');
   let showTrackingModal = $state(false);
-  let showRatingModal = $state(false);
-  let ratingOrder = $state<any>(null);
+  let showReviewModal = $state(false);
+  let reviewOrder = $state<any>(null);
   let loading = $state(false);
   
   // Filter orders based on tab and user role
@@ -138,21 +139,73 @@
   async function confirmDelivery(order: any) {
     if (confirm('Confirm that you have received this order?')) {
       await updateOrderStatus(order.id, 'delivered');
-      // Show rating modal after confirming delivery
-      ratingOrder = order;
-      showRatingModal = true;
+      // Show review modal after confirming delivery
+      reviewOrder = order;
+      showReviewModal = true;
     }
   }
   
-  function openRatingModal(order: any) {
-    ratingOrder = order;
-    showRatingModal = true;
+  function openReviewModal(order: any) {
+    reviewOrder = order;
+    showReviewModal = true;
   }
   
-  async function handleRatingSuccess() {
+  function closeReviewModal() {
+    showReviewModal = false;
+    reviewOrder = null;
+  }
+  
+  async function handleReviewSubmit(data: {
+    rating: number;
+    title: string;
+    comment: string;
+    imageUrls: string[];
+  }) {
+    if (!reviewOrder) return;
+    
+    try {
+      const response = await fetch('/api/reviews', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          order_id: reviewOrder.id,
+          rating: data.rating,
+          title: data.title || null,
+          comment: data.comment || null,
+          image_urls: data.imageUrls.length > 0 ? data.imageUrls : null
+        })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to submit review');
+      }
+      
+      toasts.success('Thank you for your review!');
+      // Update the order in local state
+      if (data.orders) {
+        const orderIndex = data.orders.findIndex(o => o.id === reviewOrder.id);
+        if (orderIndex !== -1) {
+          data.orders[orderIndex].buyer_rated = true;
+        }
+      }
+      closeReviewModal();
+      
+    } catch (error) {
+      toasts.error(error instanceof Error ? error.message : 'Failed to submit review');
+      throw error;
+    }
+  }
+  
+  function handleReviewPromptSubmit(orderId: string) {
+    // Update the order in local state to reflect that review was submitted
+    if (data.orders) {
+      const orderIndex = data.orders.findIndex(o => o.id === orderId);
+      if (orderIndex !== -1) {
+        data.orders[orderIndex].buyer_rated = true;
+      }
+    }
     toasts.success('Thank you for your review!');
-    // Reload orders to update the buyer_rated status
-    location.reload();
   }
   
   function formatDate(date: string) {
@@ -295,6 +348,34 @@
           </div>
         </div>
       </div>
+    </div>
+    
+    <!-- Review Prompts - Show at the top for delivered but unreviewed orders -->
+    <div class="mb-6">
+      <ReviewPrompt
+        orders={data.orders
+          ?.filter(order => 
+            order.buyer_id === data.user?.id && 
+            order.status === 'delivered' && 
+            !order.buyer_rated
+          )
+          .map(order => ({
+            id: order.id,
+            product: {
+              id: order.product?.id || '',
+              title: order.product?.title || 'Product',
+              image_url: order.product?.first_image || order.product?.images?.[0]
+            },
+            seller: {
+              id: order.seller_id,
+              username: order.seller?.username || 'Seller'
+            },
+            delivered_at: order.delivered_at || order.updated_at,
+            buyer_rated: order.buyer_rated || false
+          })) || []
+        }
+        onReviewSubmit={handleReviewPromptSubmit}
+      />
     </div>
     
     <!-- Tabs - Mobile Optimized -->
@@ -521,7 +602,7 @@
                         </Button>
                       {:else if activeTab === 'completed' && !isSeller && order.status === 'delivered' && !order.buyer_rated}
                         <Button
-                          onclick={() => openRatingModal(order)}
+                          onclick={() => openReviewModal(order)}
                           size="sm"
                           variant="primary"
                         >
@@ -530,7 +611,7 @@
                       {/if}
                       
                       <Button
-                        href="/product/{order.product?.id}"
+                        href={getProductUrl({ id: order.product?.id!, slug: order.product?.slug })}
                         size="sm"
                         variant="outline"
                       >
@@ -617,13 +698,18 @@
   </div>
 {/if}
 
-<!-- Rating Modal -->
-{#if showRatingModal && ratingOrder}
-  <RatingModal
-    bind:open={showRatingModal}
-    orderId={ratingOrder.id}
-    sellerName={ratingOrder.seller?.username || 'Seller'}
-    productTitle={ratingOrder.product?.title || 'Product'}
-    onsuccess={handleRatingSuccess}
+<!-- Review Modal -->
+{#if reviewOrder}
+  <ReviewModal
+    isOpen={showReviewModal}
+    onClose={closeReviewModal}
+    onSubmit={handleReviewSubmit}
+    orderDetails={{
+      orderId: reviewOrder.id,
+      seller: reviewOrder.seller?.username || 'Seller',
+      product: reviewOrder.product?.title || 'Product',
+      productImage: reviewOrder.product?.first_image || reviewOrder.product?.images?.[0]
+    }}
+    userType="buyer"
   />
 {/if}

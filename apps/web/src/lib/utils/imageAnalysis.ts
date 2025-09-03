@@ -192,8 +192,8 @@ export function mergeSuggestions(suggestions: CategorySuggestion[]): CategorySug
  * Future enhancement: Use AI service for better analysis
  */
 export async function analyzeWithAI(
-  imageUrl: string,
-  apiKey?: string
+  _imageUrl: string,
+  _apiKey?: string
 ): Promise<CategorySuggestion> {
   // This would call an AI service like OpenAI Vision, Google Vision, etc.
   // For now, return a placeholder

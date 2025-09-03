@@ -40,11 +40,12 @@ export interface PaymentIntentResult {
 	error?: Error;
 }
 
-interface _TransactionResult { // Future transaction result type
-	transaction?: Transaction;
-	order?: Order;
-	error?: Error;
-}
+// Future transaction result type
+// interface _TransactionResult {
+// 	transaction?: Transaction;
+// 	order?: Order;
+// 	error?: Error;
+// }
 
 /**
  * Factory function to create Stripe service
@@ -660,36 +661,36 @@ export class StripeService {
 	}
 
 	/**
-	 * Create transaction record
+	 * Create transaction record - Future transaction creation
 	 */
-	private async _createTransaction(params: { // Future transaction creation
-		orderId: string;
-		sellerId: string;
-		buyerId: string;
-		productPrice: number;
-		shippingCost: number;
-		stripePaymentIntentId: string;
-	}): Promise<{ transaction: Transaction | null; error: Error | null }> {
-		const totalAmount = params.productPrice + params.shippingCost;
-		const { data, error } = await this.supabase
-			.from('transactions')
-			.insert({
-				order_id: params.orderId,
-				seller_id: params.sellerId,
-				buyer_id: params.buyerId,
-				amount_total: totalAmount,
-				commission_amount: Math.round(totalAmount * 0.05),
-				seller_earnings: Math.round(totalAmount * 0.95),
-				currency: 'BGN',
-				status: 'pending',
-				payment_status: 'pending',
-				stripe_payment_intent_id: params.stripePaymentIntentId
-			})
-			.select()
-			.single();
+	// private async _createTransaction(params: {
+	// 	orderId: string;
+	// 	sellerId: string;
+	// 	buyerId: string;
+	// 	productPrice: number;
+	// 	shippingCost: number;
+	// 	stripePaymentIntentId: string;
+	// }): Promise<{ transaction: Transaction | null; error: Error | null }> {
+	// 	const totalAmount = params.productPrice + params.shippingCost;
+	// 	const { data, error } = await this.supabase
+	// 		.from('transactions')
+	// 		.insert({
+	// 			order_id: params.orderId,
+	// 			seller_id: params.sellerId,
+	// 			buyer_id: params.buyerId,
+	// 			amount_total: totalAmount,
+	// 			commission_amount: Math.round(totalAmount * 0.05),
+	// 			seller_earnings: Math.round(totalAmount * 0.95),
+	// 			currency: 'BGN',
+	// 			status: 'pending',
+	// 			payment_status: 'pending',
+	// 			stripe_payment_intent_id: params.stripePaymentIntentId
+	// 		})
+	// 		.select()
+	// 		.single();
 
-		return { transaction: data, error };
-	}
+	// 	return { transaction: data, error };
+	// }
 
 	/**
 	 * Update transaction status

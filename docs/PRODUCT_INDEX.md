@@ -14,7 +14,7 @@ Single entry point for product vision, scope, architecture, and roadmap.
 
 ## Scope & Roadmap
 
-- V1 scope: docs/V1_driplo.md
+- V1 scope: docs/V1_driplo.md, docs/FEATURES_V1_CHECKLIST.md
 - Final production plan: docs/FINAL_PRODUCTION_PLAN.md
 - UX finalization: docs/UX_FINALIZATION_PLAN.md
 - Category routing & SEO: docs/CATEGORY_ROUTING_SEO_FINALIZATION.md
@@ -27,4 +27,3 @@ Single entry point for product vision, scope, architecture, and roadmap.
 - Debloat/refactor plan: docs/CODEBASE_DEBLOAT_AND_REFACTOR_PLAN.md
 
 Keep this concise. Treat linked files as sources of truth for product-facing choices.
-

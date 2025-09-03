@@ -122,11 +122,11 @@
 <div class="space-y-4">
   <!-- Brand Section -->
   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
-    <label class="text-sm font-medium text-gray-700 mb-2 block">
+    <div id="brand-label" class="text-sm font-medium text-gray-700 mb-2 block">
       {i18n.sell_brand()} <span class="text-red-500">*</span>
-    </label>
+    </div>
     
-    <div class="grid grid-cols-3 gap-2 sm:gap-1.5">
+    <div class="grid grid-cols-3 gap-2 sm:gap-1.5" role="group" aria-labelledby="brand-label">
       {#each POPULAR_BRANDS as brand}
         <button
           type="button"
@@ -164,11 +164,11 @@
 
   <!-- Size Section -->
   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
-    <label class="text-sm font-medium text-gray-700 mb-2 block">
+    <div id="size-label" class="text-sm font-medium text-gray-700 mb-2 block">
       {i18n.sell_size()} <span class="text-red-500">*</span>
-    </label>
+    </div>
     
-    <div class="space-y-2">
+    <div class="space-y-2" role="group" aria-labelledby="size-label">
       {#each sizeGroups() as [group, sizes]}
         <div>
           <span class="text-xs uppercase tracking-wider text-gray-500 font-semibold">{group === 'XS-XL' ? i18n.sell_sizeGroupXSXL() : group === 'Numbers' ? i18n.sell_sizeGroupNumbers() : group === 'UK/EU' ? i18n.sell_sizeGroupUKEU() : i18n.sell_sizeGroupOther()}</span>
@@ -199,7 +199,7 @@
 
   <!-- Step 4: Color (optional) - Visual color picker + custom -->
   <div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">
+    <label for="color-input" class="block text-sm font-medium text-gray-700 mb-2">
       {i18n.sell_color()} <span class="text-gray-400 text-xs">{i18n.sell_optional()}</span>
     </label>
     
@@ -232,6 +232,7 @@
     
     <!-- Custom color input -->
     <input
+      id="color-input"
       type="text"
       placeholder={i18n.sell_colorCustomPlaceholder()}
       bind:value={formData.color}
@@ -243,7 +244,7 @@
 
   <!-- Step 5: Material (optional) - Common materials -->
   <div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">
+    <label for="material-input" class="block text-sm font-medium text-gray-700 mb-2">
       {i18n.sell_material()} <span class="text-gray-400 text-xs">{i18n.sell_optional()}</span>
     </label>
     
@@ -265,6 +266,7 @@
     
     <!-- Custom material input -->
     <input
+      id="material-input"
       type="text"
       placeholder={i18n.sell_materialCustomPlaceholder()}
       bind:value={formData.material}

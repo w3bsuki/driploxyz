@@ -1,9 +1,10 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { SignupSchema } from '$lib/validation/auth';
-import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
+import { checkRateLimit } from '$lib/security/rate-limiter';
 import type { Actions, PageServerLoad } from './$types';
-import { detectLanguage } from '@repo/i18n';
-import { getUserCountry } from '$lib/country/detection';
+// Future enhancement imports for locale/country detection
+// import { detectLanguage } from '@repo/i18n';
+// import { getUserCountry } from '$lib/country/detection';
 import { env } from '$env/dynamic/public';
 import { authLogger } from '$lib/utils/log';
 
@@ -19,7 +20,7 @@ export const load = (async (event) => {
 
 export const actions = {
   signup: async (event) => {
-    const { request, locals: { supabase }, cookies, url, getClientAddress } = event;
+    const { request, locals: { supabase }, url, getClientAddress } = event;
 
     // Get PUBLIC_SITE_URL from SvelteKit env (typed and consistent)
     const PUBLIC_SITE_URL = env.PUBLIC_SITE_URL;
@@ -67,13 +68,11 @@ export const actions = {
       });
     }
     
-    // Get user's locale from cookie or Accept-Language header
-    const localeCookie = cookies.get('locale');
-    const acceptLanguage = request.headers.get('accept-language') || '';
-    const userLocale = localeCookie || detectLanguage(acceptLanguage);
-
-    // Get user's country for multi-tenancy
-    const userCountry = await getUserCountry(event);
+    // Future enhancement: Get user's locale and country for personalization
+    // const localeCookie = cookies.get('locale');
+    // const acceptLanguage = request.headers.get('accept-language') || '';
+    // const userLocale = localeCookie || detectLanguage(acceptLanguage);
+    // const userCountry = await getUserCountry(event);
     
     // Determine redirect URL with fallback
     const redirectOrigin = PUBLIC_SITE_URL || url.origin;
@@ -113,8 +112,8 @@ export const actions = {
         });
       }
       if (error.message.includes('Database error') || error.message.includes('database error')) {
-        // Check if user actually exists in auth.users
-        const { data: existingUser } = await supabase.auth.getUser();
+        // Future: Check if user actually exists in auth.users
+        // const { data: existingUser } = await supabase.auth.getUser();
         
         return fail(500, { 
           errors: { _form: 'A temporary issue occurred. Please try again in a moment.' }, 

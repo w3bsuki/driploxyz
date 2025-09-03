@@ -7,7 +7,14 @@
     id: string;
     title: string;
     price: number;
-    image: string | null;
+    slug?: string | null;
+    images?: string[];
+    profiles?: {
+      username: string;
+    };
+    categories?: {
+      slug: string;
+    };
   }
 
   interface Seller {
@@ -32,6 +39,7 @@
     topSellers?: Seller[];
     quickFilters?: QuickFilter[];
     onProductClick?: (product: Product) => void;
+    onSearchResultClick?: (product: SearchResult) => void;
     onSellerClick?: (seller: Seller) => void;
     onFilterClick?: (filter: string) => void;
     formatPrice?: (price: number) => string;
@@ -65,6 +73,7 @@
     topSellers = [],
     quickFilters = [],
     onProductClick,
+    onSearchResultClick,
     onSellerClick,
     onFilterClick,
     formatPrice = (price: number) => `$${price}`,
@@ -169,7 +178,12 @@
 
   function navigateToProduct(product: SearchResult) {
     showDropdown = false;
-    goto(`/product/${product.id}`);
+    if (onSearchResultClick) {
+      onSearchResultClick(product);
+    } else {
+      // Fallback to old URL format if no callback provided
+      goto(`/product/${product.id}`);
+    }
   }
 
   function handleProductClick(product: Product) {

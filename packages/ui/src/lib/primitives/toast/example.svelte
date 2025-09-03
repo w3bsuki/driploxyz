@@ -199,6 +199,10 @@
   }
   
   code {
-    @apply bg-[color:var(--gray-100)] px-2 py-1 rounded text-sm font-mono;
+    background: var(--gray-100);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-family: var(--font-mono);
   }
 </style>

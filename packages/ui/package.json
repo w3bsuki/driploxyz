@@ -43,6 +43,7 @@
     "svelte": "^5.0.0"
   },
   "devDependencies": {
+    "@melt-ui/pp": "^0.3.2",
     "@sveltejs/adapter-auto": "^3.2.0",
     "@sveltejs/kit": "^2.0.0",
     "@sveltejs/package": "^2.3.0",
@@ -64,7 +65,11 @@
   },
   "dependencies": {
     "@melt-ui/svelte": "^0.86.6",
+    "@repo/i18n": "workspace:*",
+    "@stripe/stripe-js": "^7.8.0",
     "@supabase/supabase-js": "^2.56.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.3.1",
     "tslib": "^2.7.0"
   }
 }

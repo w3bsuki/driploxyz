@@ -2,6 +2,7 @@
   import { createToggleGroup } from '@melt-ui/svelte';
   import type { Snippet } from 'svelte';
   import { tick } from 'svelte';
+  import * as i18n from '@repo/i18n';
 
   interface FilterOption {
     value: string;
@@ -52,9 +53,11 @@
   // Create Melt UI toggle group with proper accessibility
   const {
     elements: { root, item },
-    helpers: { isPressed }
+    helpers: { isPressed },
+    states: { value: toggleValue }
   } = createToggleGroup({
     multiple,
+    defaultValue: value,
     onValueChange: ({ next }) => {
       const newValue = next || null;
       const changedOption = options.find(opt => opt.value === newValue);
@@ -68,7 +71,8 @@
         if (announcementTemplate) {
           announcement = announcementTemplate(changedOption, isActive);
         } else {
-          announcement = `${changedOption.label} filter ${isActive ? 'applied' : 'removed'}`;
+          const statusText = isActive ? i18n.filter_ui_applied() : i18n.filter_ui_removed();
+          announcement = `${changedOption.label} ${i18n.filter_modal_filter()} ${statusText}`;
         }
       }
       
@@ -79,9 +83,9 @@
   
   // Sync external value with internal toggle group state  
   $effect(() => {
-    if (value) {
-      // Programmatically set the pressed state when value changes externally
-      // This ensures the toggle group reflects the current filter state
+    // When value changes externally, update the toggle group's internal state
+    if ($toggleValue !== value) {
+      toggleValue.set(value);
     }
   });
 
@@ -133,7 +137,8 @@
             if (announcementTemplate) {
               announcement = announcementTemplate(option, newValue !== null);
             } else {
-              announcement = `${option.label} filter ${newValue !== null ? 'applied' : 'removed'}`;
+              const statusText = newValue !== null ? i18n.filter_ui_applied() : i18n.filter_ui_removed();
+              announcement = `${option.label} ${i18n.filter_modal_filter()} ${statusText}`;
             }
           }
         }
@@ -193,7 +198,7 @@
   use:root 
   class="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1 {className}"
   role="toolbar"
-  aria-label={label || 'Filter options'}
+  aria-label={label || i18n.filter_ui_filterOptionsAriaLabel()}
   aria-orientation="horizontal"
   tabindex="-1"
   onkeydown={handleKeydown}
@@ -214,7 +219,7 @@
       role="button"
       tabindex={focusedIndex === index ? '0' : '-1'}
       aria-pressed={isActive}
-      aria-label="{option.label} filter {isActive ? 'applied' : 'not applied'}"
+      aria-label="{option.label} {i18n.filter_modal_filter()} {isActive ? i18n.filter_ui_applied() : i18n.filter_ui_removed()}"
       aria-describedby={`filter-help-${option.value}`}
       onfocus={() => handleButtonFocus(index)}
     >
@@ -245,7 +250,7 @@
       id="filter-help-{option.value}"
       class="sr-only"
     >
-      Use arrow keys to navigate, Enter or Space to toggle, Home/End to jump to first/last option
+{i18n.filter_ui_keyboardNavHelp()}
     </span>
   {/each}
 </div>

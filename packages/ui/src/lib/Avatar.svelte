@@ -26,7 +26,7 @@
   }: Props = $props();
 
   let imageError = $state(false);
-  let isLoading = $state(true);
+  let isLoading = $state(false);
 
   const sizeClasses = {
     xs: 'w-8 h-8',
@@ -82,17 +82,18 @@
   // Clean up - removed unused premium classes
 </script>
 
+{#if onclick}
 <div
-  role={onclick ? "button" : undefined}
-  tabindex={onclick ? 0 : undefined}
+  role="button"
+  tabindex="0"
   onclick={onclick}
   onkeydown={(e: KeyboardEvent) => {
-    if (onclick && (e.key === 'Enter' || e.key === ' ')) {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       onclick();
     }
   }}
-  class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} {onclick ? 'cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary' : 'cursor-default'} {className} overflow-hidden"
+  class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary {className} overflow-hidden"
 >
   {#if src && !imageError}
     <img 
@@ -108,3 +109,22 @@
     </div>
   {/if}
 </div>
+{:else}
+<div
+  class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} cursor-default {className} overflow-hidden"
+>
+  {#if src && !imageError}
+    <img 
+      {src} 
+      {alt}
+      onerror={handleImageError}
+      onload={handleImageLoad}
+      class="w-full h-full object-cover"
+    />
+  {:else}
+    <div class="flex items-center justify-center w-full h-full bg-[color:var(--surface-muted)]">
+      <span class="font-semibold text-[color:var(--text-muted)] {textSizes[size]}">{initial()}</span>
+    </div>
+  {/if}
+</div>
+{/if}

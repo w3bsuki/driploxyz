@@ -1,41 +1,32 @@
 {
-  "name": "with-svelte",
+  "name": "driplo-turbo",
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
-    "dev:web": "turbo run dev --filter web",
-    "lint": "turbo run lint",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "check-types": "turbo run check-types",
-    "test": "turbo run test",
-    "test:watch": "turbo run test:watch",
-    "check": "turbo run check",
-    "db:types": "npx supabase gen types typescript --project-id koowfhsaqmarfdkwsfiz --schema public > packages/database/src/generated.ts",
-    "db:types:local": "npx supabase gen types typescript --local > packages/database/src/generated.ts"
+    "dev": "turbo run dev --ui=tui",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "test": "turbo test",
+    "test:performance": "playwright test performance-tests/ --config=playwright.config.performance.ts",
+    "lighthouse": "lhci autorun",
+    "bundle-analysis": "node performance-tests/bundle-analysis.js",
+    "performance-audit": "npm run lighthouse && npm run bundle-analysis && npm run test:performance",
+    "check-types": "turbo run check-types"
   },
   "devDependencies": {
-    "@types/node": "22.17.2",
-    "prettier": "^3.6.0",
-    "prettier-plugin-svelte": "^3.4.0",
-    "supabase": "^2.0.0",
-    "turbo": "2.5.4"
+    "@lhci/cli": "^0.12.0",
+    "@playwright/test": "^1.40.0",
+    "prettier": "^3.0.0",
+    "turbo": "2.5.4",
+    "typescript": "^5.0.0",
+    "web-vitals": "^3.5.0"
   },
-  "packageManager": "pnpm@10.0.0",
+  "packageManager": "pnpm@8.15.6",
   "engines": {
     "node": ">=18"
   },
-  "dependencies": {
-    "@stripe/stripe-js": "^7.8.0"
-  },
-  "pnpm": {
-    "overrides": {
-      "@types/node": "22.17.2",
-      "vite": "^7.1.2",
-      "@sveltejs/vite-plugin-svelte": "^6.1.2",
-      "@testing-library/svelte": "^5.2.8",
-      "vitest": "^3.2.4"
-    }
-  }
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }

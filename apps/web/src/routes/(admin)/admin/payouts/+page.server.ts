@@ -2,10 +2,9 @@ import type { PageServerLoad } from './$types';
 
 export const load = (async ({ locals, parent }) => {
   // The parent layout already checks for admin access
-  const parentData = await parent();
+  await parent();
   
   try {
-    const { session, user, profile } = parentData;
     const supabase = locals.supabase;
 
   // Get pending payouts (delivered orders that haven't been paid out yet)
@@ -82,14 +81,12 @@ export const load = (async ({ locals, parent }) => {
   };
 
   return {
-    user,
     pendingPayouts: enrichedPayouts,
     stats
   };
   } catch (error) {
     // Admin payouts page error - return safe defaults
     return {
-      user: parentData?.user || null,
       pendingPayouts: [],
       stats: {
         totalPending: 0,

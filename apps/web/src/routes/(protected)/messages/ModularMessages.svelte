@@ -151,8 +151,14 @@
           unread: false,
           lastActiveAt: data.conversationUser?.last_active_at,
           isProductConversation: productId !== 'general',
+          isOrderConversation: false,
           messageCache: new Set((data.messages || []).map(m => m.id))
         };
+        
+        // Add to ConversationService first
+        if (conversationService) {
+          conversationService.addConversation(newConversation);
+        }
         
         activeConversation = newConversation;
         // Add to conversations list if not already there
@@ -254,7 +260,7 @@
   <title>Messages - Driplo</title>
 </svelte:head>
 
-<div class="h-screen bg-gray-50 flex flex-col overflow-hidden">
+<div class="h-screen bg-white flex flex-col overflow-hidden">
   <!-- Connection Status -->
   <ConnectionStatus 
     status={connectionStatus}
@@ -267,15 +273,15 @@
   <div class="flex-1 overflow-hidden">
     {#if isInitializing}
       <!-- Loading State -->
-      <div class="h-full flex items-center justify-center bg-gray-50">
+      <div class="h-full flex items-center justify-center bg-white">
         <div class="text-center">
-          <div class="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-black mx-auto mb-4"></div>
-          <p class="text-gray-600">Loading messages...</p>
+          <div class="animate-spin rounded-full h-10 w-10 border-3 border-gray-100 border-t-black mx-auto mb-4"></div>
+          <p class="text-gray-800 font-medium">Loading messages...</p>
         </div>
       </div>
     {:else}
-      <div class="h-full max-w-7xl mx-auto sm:px-6 lg:px-8 flex">
-        <div class="flex-1 sm:grid sm:grid-cols-3 lg:grid-cols-4 overflow-hidden h-full bg-white sm:rounded-lg sm:shadow-sm">
+      <div class="h-full max-w-7xl mx-auto sm:px-4 lg:px-6 flex">
+        <div class="flex-1 sm:grid sm:grid-cols-3 lg:grid-cols-4 overflow-hidden h-full bg-white sm:rounded-xl sm:shadow-xl sm:border sm:border-gray-200/50">
           
           <!-- Conversations Sidebar -->
           <div class="sm:col-span-1 {activeConversation ? 'hidden sm:block' : ''}">
@@ -303,13 +309,15 @@
             />
           {:else}
             <!-- No Conversation Selected (Desktop) -->
-            <div class="hidden sm:flex items-center justify-center h-full">
+            <div class="hidden sm:flex items-center justify-center h-full bg-gray-50/30 border-l border-gray-200/50">
               <div class="text-center">
-                <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-                <h3 class="text-lg font-medium text-gray-900 mb-2">{i18n.messages_selectConversation()}</h3>
-                <p class="text-gray-600">{i18n.messages_chooseMessage()}</p>
+                <div class="w-20 h-20 mx-auto mb-6 bg-black/5 rounded-full flex items-center justify-center">
+                  <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </div>
+                <h3 class="text-lg font-bold text-black mb-2">{i18n.messages_selectConversation()}</h3>
+                <p class="text-gray-500 text-sm">{i18n.messages_chooseMessage()}</p>
               </div>
             </div>
           {/if}
@@ -326,6 +334,7 @@
       <BottomNav 
         currentPath={$page.url.pathname}
         unreadMessageCount={$unreadMessageCount}
+        profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
         labels={{
           home: i18n.nav_home(),
           search: i18n.nav_search(),

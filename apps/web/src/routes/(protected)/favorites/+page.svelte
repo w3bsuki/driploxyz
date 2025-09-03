@@ -2,6 +2,7 @@
   import { ProductCard, Button, Avatar, Banner, type Product } from '@repo/ui';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
+  import { getProductUrl } from '$lib/utils/seo-urls';
   
   interface Props {
     data: PageData;
@@ -219,7 +220,7 @@
               {product}
               favorited={true}
               onFavorite={(p) => toggleFavorite(p.id)}
-              onclick={() => !isSelecting && goto(`/product/${product.id}`)}
+              onclick={() => !isSelecting && goto(getProductUrl(product))}
               class={isSelecting && selectedItems.has(product.id) ? 'ring-2 ring-black' : ''}
             />
             

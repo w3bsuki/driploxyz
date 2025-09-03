@@ -3,6 +3,7 @@
   import type { Snippet } from 'svelte';
   import { tick } from 'svelte';
   import FilterPillGroup from './FilterPillGroup.svelte';
+  import * as i18n from '@repo/i18n';
 
   interface FilterOption {
     value: string;
@@ -80,7 +81,7 @@
   let triggerElement: HTMLElement | null = null;
   let firstFocusableElement: HTMLElement | null = null;
   let lastFocusableElement: HTMLElement | null = null;
-  let modalContentRef: HTMLDivElement;
+  let modalContentRef = $state<HTMLDivElement>();
   let announcement = $state('');
 
   // Create dialog with proper accessibility
@@ -419,7 +420,7 @@
             <div class="px-4">
               <FilterPillGroup
                 bind:value={localFilters[section.key]}
-                options={[{ value: 'all', label: `All ${section.label}` }, ...section.options]}
+                options={[{ value: 'all', label: i18n.category_all() }, ...section.options]}
                 onValueChange={(value) => handleFilterChange(section.key, value)}
                 announceChanges={false}
                 class="flex-wrap gap-2"

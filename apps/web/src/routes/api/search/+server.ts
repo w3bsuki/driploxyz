@@ -80,6 +80,7 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
         seller_id,
         category_id,
         country_code,
+        slug,
         product_images ( image_url ),
         profiles!products_seller_id_fkey ( username, avatar_url, account_type ),
         categories!inner ( id, name, slug, parent_id, level )

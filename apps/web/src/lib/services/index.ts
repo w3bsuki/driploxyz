@@ -75,7 +75,10 @@ export class ServiceManager {
   public favorites: FavoriteService;
   public stripe: StripeService | null;
 
-  constructor(private _supabase: SupabaseClient<Database>, private _stripeInstance?: Stripe | null) {
+  constructor(
+    _supabase: SupabaseClient<Database>, 
+    _stripeInstance?: Stripe | null
+  ) {
     this.products = new ProductService(_supabase);
     this.categories = new CategoryService(_supabase);
     this.profiles = new ProfileService(_supabase);
@@ -90,8 +93,6 @@ export class ServiceManager {
    * Update the Supabase client for all services
    */
   updateClient(supabase: SupabaseClient<Database>, stripeInstance?: Stripe | null) {
-    this._supabase = supabase;
-    this._stripeInstance = stripeInstance;
     this.products = new ProductService(supabase);
     this.categories = new CategoryService(supabase);
     this.profiles = new ProfileService(supabase);

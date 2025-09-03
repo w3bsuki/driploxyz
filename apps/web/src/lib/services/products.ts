@@ -283,7 +283,6 @@ export class ProductService {
     try {
       // Skip premium boost query - premium features not yet implemented
       const boostedProducts: ProductWithJoinedData[] = [];
-      const __boostedError = null; // Future premium boost error tracking
 
       // Get featured products (fallback since no boosted products exist)
       const { data: manuallyPromoted, error: manualError } = await this.supabase
@@ -508,7 +507,7 @@ export class ProductService {
           boost_type: null,
           boosted_until: null,
           commission_rate: null,
-          favorite_count: item.like_count || 0,
+          favorite_count: item.favorite_count || 0,
           is_boosted: false,
           net_earnings: null,
           platform_fee: null,
@@ -519,18 +518,11 @@ export class ProductService {
           sold_at: null,
           status: null,
           tags: null,
-          images: item.image_url ? [{ 
-            id: '', 
-            image_url: item.image_url, 
-            alt_text: null, 
-            display_order: null, 
-            created_at: null, 
-            product_id: item.id, 
-            sort_order: null 
-          }] : [],
-          category_name: item.category_name || undefined,
-          seller_name: item.seller_name || undefined,
-          seller_rating: item.seller_rating || undefined
+          images: item.product_images || [],
+          category_name: item.categories?.name || undefined,
+          seller_username: item.profiles?.username || undefined,
+          seller_name: item.profiles?.full_name || item.profiles?.username || undefined,
+          seller_rating: item.profiles?.rating || undefined
         };
       });
 

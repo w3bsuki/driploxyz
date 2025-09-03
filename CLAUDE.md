@@ -12,6 +12,51 @@ Use the three primary sources to avoid context overload:
 
 Then open the specific linked spec/playbook you need. If a conflict arises, align with the indexes and linked sources. Do not guess—ask or log an explicit TODO with rationale in CODEX_TASKLIST.
 
+## Workspace Map & Aliases
+
+- Monorepo: Turborepo + pnpm workspaces
+- Apps: `apps/web` (SvelteKit), `apps/admin`, `apps/docs`
+- Packages: `packages/ui` (single source of truth for UI), `packages/utils`, `packages/database`, `packages/i18n`, `packages/typescript-config`, `packages/eslint-config`
+- Path aliases (dev):
+  - `@repo/ui` → `packages/ui/src/lib/index.ts` (named exports)
+  - `@repo/ui/types` → `packages/ui/src/types`
+  - `@repo/ui/primitives` → `packages/ui/src/lib/primitives`
+  - `@repo/ui/styles/*` → `packages/ui/src/styles/*`
+  - Do not import from `apps/web/src/lib/components/*` if an equivalent exists in `@repo/ui`.
+
+## UI Import Rules (No Duplicates)
+
+- Source of truth: All shared components live in `packages/ui/src/lib/*`.
+- Import from `@repo/ui` named exports. Allowed deep imports only:
+  - `@repo/ui/types`, `@repo/ui/primitives`, `@repo/ui/styles/*`
+- Promotion rule (“Rule of 2”): If a component is used in 2+ places, promote it to `@repo/ui` and delete app-local copies.
+- Duplicate prevention protocol (follow in order):
+  1) Open `packages/ui/src/lib/index.ts` and search for an equivalent
+  2) If missing, create it in `packages/ui/src/lib/`, add export to `index.ts`
+  3) Replace app-level imports with `@repo/ui` and remove duplicates
+  4) Add an entry in `docs/CODEX_TASKLIST.md` (In-Progress → Done)
+
+## Tailwind v4 Guardrails
+
+- Load once in app CSS: `@import '@repo/ui/styles/tokens.css'` and `@import '@repo/ui/styles/semantic.css'`
+- Use tokens via `@theme` and semantic utilities; avoid raw color literals
+- Replace `outline-hidden` with `outline-none`; ensure 44px/36–40px tap targets
+- Use component-layer utilities from `semantic.css` for menus, dialogs, banners, buttons
+
+## V1 Scope Snapshot (for quick alignment)
+
+- Must: Auth + onboarding; list products; discovery/search/filter; wishlist; real-time messaging; checkout (Stripe); orders/receipts; profiles; PWA
+- Should: Reviews/ratings; promotions; payouts; admin moderation; i18n; SEO canonicals/hreflang
+- Non-functional: 0 TS errors; a11y AA; LCP ≤ 1.5s p75 mobile; secure SSR-first
+
+## What Docs To Use For Context
+
+- Project structure & UI: `docs/PROJECT_STRUCTURE.md`, `docs/UI_LIBRARY.md`
+- Tailwind v4 usage: `docs/TAILWIND_V4_FIX_PLAN.md`, `docs/playbooks/tailwindcss-v4.md`
+- V1 functionality & acceptance: `docs/FEATURES_V1_CHECKLIST.md`
+- Standards & operations: `docs/STANDARDS_INDEX.md`, `docs/40-OPERATIONS.md`
+- Decisions: `docs/adr/0001-ui-source-of-truth.md` (and future ADRs)
+
 ## Mode of Work
 
 - Plan → Implement → Validate → Update tasklist.

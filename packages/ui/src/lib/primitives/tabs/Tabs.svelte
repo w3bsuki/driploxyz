@@ -64,7 +64,7 @@
     elements: { root, list, content, trigger },
     states: { value: tabValue }
   } = createTabs({
-    value,
+    defaultValue: value,
     onValueChange: ({ next }) => {
       value = next;
       onTabChange?.(next);

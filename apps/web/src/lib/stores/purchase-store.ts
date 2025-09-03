@@ -1,6 +1,5 @@
 import { writable } from 'svelte/store';
 import { goto } from '$app/navigation';
-import type { Stripe, StripeElements } from '@stripe/stripe-js';
 
 interface PurchaseState {
   isLoading: boolean;
@@ -31,9 +30,7 @@ export const purchaseActions = {
    */
   async initiatePurchase(
     productId: string, 
-    selectedSize?: string,
-    stripe?: Stripe,
-    elements?: StripeElements
+    selectedSize?: string
   ): Promise<void> {
     purchaseStore.update(state => ({
       ...state,
@@ -106,7 +103,7 @@ export const purchaseActions = {
         throw new Error(data.message || 'Payment confirmation failed');
       }
 
-      purchaseStore.update(state => ({
+      purchaseStore.update(() => ({
         ...initialState // Reset state on success
       }));
 

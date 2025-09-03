@@ -1,6 +1,6 @@
 <script lang="ts">
   interface AccountType {
-    value: 'personal' | 'premium' | 'brand';
+    value: 'personal' | 'pro' | 'brand';
     title: string;
     description: string;
     features: string[];
@@ -10,8 +10,8 @@
   }
 
   interface Props {
-    selected?: 'personal' | 'premium' | 'brand';
-    onSelect?: (type: 'personal' | 'premium' | 'brand') => void;
+    selected?: 'personal' | 'pro' | 'brand';
+    onSelect?: (type: 'personal' | 'pro' | 'brand') => void;
     class?: string;
     showDiscountCode?: boolean;
     onDiscountCodeChange?: (code: string) => void;
@@ -20,9 +20,9 @@
       personalTitle?: string;
       personalDescription?: string;
       personalFeatures?: string[];
-      premiumTitle?: string;
-      premiumDescription?: string;
-      premiumFeatures?: string[];
+      proTitle?: string;
+      proDescription?: string;
+      proFeatures?: string[];
       brandTitle?: string;
       brandDescription?: string;
       brandFeatures?: string[];
@@ -63,10 +63,10 @@
       icon: '👤'
     },
     {
-      value: 'premium',
-      title: translations.premiumTitle || 'Premium Account',
-      description: translations.premiumDescription || 'Boost your visibility and sales',
-      features: translations.premiumFeatures || [
+      value: 'pro',
+      title: translations.proTitle || 'Pro Account',
+      description: translations.proDescription || 'Boost your visibility and sales',
+      features: translations.proFeatures || [
         '10 boosted ads per month',
         '3-7 days homepage visibility',
         'Priority customer support',
@@ -93,7 +93,7 @@
     }
   ];
 
-  function handleSelect(type: 'personal' | 'premium' | 'brand') {
+  function handleSelect(type: 'personal' | 'pro' | 'brand') {
     selected = type;
     onSelect?.(type);
   }
@@ -166,7 +166,7 @@
   {/each}
   </div>
   
-  {#if showDiscountCode && (selected === 'brand' || selected === 'premium')}
+  {#if showDiscountCode && (selected === 'brand' || selected === 'pro')}
     <div class="max-w-md mx-auto p-4 bg-gray-50 rounded-lg border border-gray-200">
       <label for="discount-code-input" class="block text-sm font-medium text-gray-900 mb-2">
         {translations.haveDiscountCode || 'Have a discount code?'}

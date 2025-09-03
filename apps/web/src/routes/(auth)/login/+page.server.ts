@@ -1,4 +1,4 @@
-import { redirect, fail, error } from '@sveltejs/kit';
+import { redirect, fail } from '@sveltejs/kit';
 import { LoginSchema } from '$lib/validation/auth';
 import { checkRateLimit, rateLimiter } from '$lib/security/rate-limiter';
 import type { Actions, PageServerLoad } from './$types';

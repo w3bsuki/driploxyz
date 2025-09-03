@@ -7,9 +7,8 @@
 
 <script lang="ts">
   import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
-  import UnifiedCookieConsent from '$lib/components/UnifiedCookieConsent.svelte';
+  import { UnifiedCookieConsent } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
-  import GeoLocaleSuggestion from '$lib/components/GeoLocaleSuggestion.svelte';
   import '../app.css';
   // Deploy to driplo.xyz
   import '$lib/styles/cyrillic-typography.css';
@@ -19,17 +18,14 @@
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications';
-  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer, ToastProvider, Footer } from '@repo/ui';
-  import OrderNotificationToast from '$lib/components/OrderNotificationToast.svelte';
+  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer, ToastProvider, Footer, ErrorBoundary, OrderNotificationToast, TopProgress } from '@repo/ui';
   import RegionSwitchModal from '$lib/components/RegionSwitchModal.svelte';
-  import TopProgress from '$lib/components/TopProgress.svelte';
   import { page } from '$app/stores';
-  import { initializeLanguage } from '$lib/utils/language';
-  import { switchLanguage } from '$lib/utils/language-switcher';
+  import { initializeLanguage, switchLanguage } from '$lib/utils/language-switcher';
   import * as i18n from '@repo/i18n';
   import type { LayoutData } from './$types';
   import type { Snippet } from 'svelte';
-  let headerContainer: HTMLDivElement | null = null;
+  let headerContainer: HTMLDivElement | null = $state(null);
 
   let { data, children }: { data: LayoutData; children?: Snippet } = $props();
   
@@ -219,9 +215,11 @@
   {/if}
   <!-- Route progress just below header -->
   <TopProgress />
-  <div>
-    {@render children?.()}
-  </div>
+  <ErrorBoundary>
+    <div>
+      {@render children?.()}
+    </div>
+  </ErrorBoundary>
 </ToastProvider>
 
 <!-- Footer -->
@@ -256,8 +254,7 @@
   />
 {/if}
 
-<!-- Toast Container -->
-<ToastContainer />
+<!-- Note: ToastProvider above already handles all notifications -->
 
 <!-- Unified Cookie & Language Consent (handles everything) -->
 <UnifiedCookieConsent />
@@ -322,4 +319,4 @@
 />
 
 <!-- Geo-based Locale Suggestion -->
-<GeoLocaleSuggestion />
+<!-- GeoLocaleSuggestion removed - using LocaleDetectionBanner via LocaleDetector instead -->

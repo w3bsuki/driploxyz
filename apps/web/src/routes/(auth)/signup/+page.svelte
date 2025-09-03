@@ -20,55 +20,78 @@
   });
 
   let lastSuccessEmail = $state('');
+  
+  // Track previous form state to prevent duplicate notifications
+  let prevFormKey = $state('');
 
-  // Handle success and error messages
+  // Handle success and error messages - prevent infinite loops
   $effect(() => {
-    if (form?.success && form?.message) {
-      toasts.success(form.message, {
-        duration: 8000, // Show for 8 seconds
-        important: true
-      });
-      // Store email before clearing form
-      lastSuccessEmail = form.email || formData.email || '';
-      // Clear form on success - do this outside the effect to avoid loops
-      setTimeout(() => {
-        formData = {
-          fullName: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-          terms: false
-        };
-      }, 100);
-    } else if (form?.errors) {
-      // Show error toast for form-level errors
-      if (form.errors._form) {
-        toasts.error(form.errors._form, {
-          duration: 6000
+    // Create a unique key from current form state to detect actual changes
+    const currentFormKey = JSON.stringify({
+      success: form?.success,
+      message: form?.message,
+      email: form?.email,
+      errors: form?.errors ? {
+        _form: form.errors._form,
+        email: form.errors.email,
+        password: form.errors.password,
+        fullName: form.errors.fullName,
+        terms: form.errors.terms
+      } : null
+    });
+    
+    // Only process if form state actually changed
+    if (currentFormKey !== prevFormKey) {
+      if (form?.success && form?.message) {
+        toasts.success(form.message, {
+          duration: 8000, // Show for 8 seconds
+          important: true
         });
+        // Store email before clearing form
+        lastSuccessEmail = form.email || formData.email || '';
+        // Clear form on success - do this outside the effect to avoid loops
+        setTimeout(() => {
+          formData = {
+            fullName: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+            terms: false
+          };
+        }, 100);
+      } else if (form?.errors) {
+        // Show error toasts for form-level errors
+        if (form.errors._form) {
+          toasts.error(form.errors._form, {
+            duration: 6000
+          });
+        }
+        // Show toast for email errors (like "user already exists")
+        if (form.errors.email) {
+          toasts.error(form.errors.email, {
+            duration: 6000
+          });
+        }
+        // Show toast for other field errors
+        if (form.errors.password) {
+          toasts.error(`Password: ${form.errors.password}`, {
+            duration: 6000
+          });
+        }
+        if (form.errors.fullName) {
+          toasts.error(`Name: ${form.errors.fullName}`, {
+            duration: 6000
+          });
+        }
+        if (form.errors.terms) {
+          toasts.error(form.errors.terms, {
+            duration: 6000
+          });
+        }
       }
-      // Show toast for email errors (like "user already exists")
-      if (form.errors.email) {
-        toasts.error(form.errors.email, {
-          duration: 6000
-        });
-      }
-      // Show toast for other field errors
-      if (form.errors.password) {
-        toasts.error(`Password: ${form.errors.password}`, {
-          duration: 6000
-        });
-      }
-      if (form.errors.fullName) {
-        toasts.error(`Name: ${form.errors.fullName}`, {
-          duration: 6000
-        });
-      }
-      if (form.errors.terms) {
-        toasts.error(form.errors.terms, {
-          duration: 6000
-        });
-      }
+      
+      // Update the previous key after processing
+      prevFormKey = currentFormKey;
     }
   });
 </script>
@@ -100,20 +123,7 @@
     </div>
   {/if}
 
-  {#if form?.errors?._form}
-    <div class="bg-[color:var(--status-error-bg)] border border-[color:var(--status-error-border)] rounded-md p-4">
-      <div class="flex">
-        <div class="shrink-0">
-          <svg class="h-5 w-5 text-[color:var(--status-error-text)]" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <p class="text-sm text-[color:var(--status-error-text)]">{form.errors._form}</p>
-        </div>
-      </div>
-    </div>
-  {/if}
+  <!-- Form errors now handled by toast system only -->
 
   <!-- Signup Form -->
   <form 

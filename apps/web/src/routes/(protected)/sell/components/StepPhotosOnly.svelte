@@ -65,16 +65,17 @@
       </div>
     
       <div>
-        <label class="block text-sm font-medium text-gray-900 mb-2">
+        <label for="product-description" class="block text-sm font-medium text-gray-900 mb-2">
           {i18n.sell_description()}
         </label>
         <textarea
+          id="product-description"
           bind:value={formData.description}
           placeholder={i18n.sell_descriptionPlaceholder()}
           rows="4"
           maxlength="500"
           class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black/10 focus:border-gray-400 resize-none text-base transition-colors"
-        />
+        ></textarea>
         <div class="text-xs text-gray-400 mt-1 text-right">
           {formData.description.length}/500
         </div>

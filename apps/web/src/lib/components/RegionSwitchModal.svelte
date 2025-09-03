@@ -77,10 +77,12 @@
 {#if show}
   <div class="fixed inset-0 z-50 overflow-y-auto">
     <!-- Backdrop -->
-    <div 
+    <button 
       class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
       onclick={() => onClose()}
-    />
+      onkeydown={(e) => e.key === 'Escape' && onClose()}
+      aria-label="Close modal"
+    ></button>
     
     <!-- Modal -->
     <div class="flex min-h-full items-center justify-center p-4">
@@ -89,6 +91,7 @@
         <button
           onclick={() => onClose()}
           class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+          aria-label="Close modal"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

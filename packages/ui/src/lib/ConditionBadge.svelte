@@ -35,15 +35,15 @@
   };
   
   const conditionColors = {
-    'brand_new_with_tags': 'bg-[color:var(--condition-new)] text-[color:var(--text-inverse)] md:backdrop-blur-sm',
-    'new_without_tags': 'bg-[color:var(--condition-new)] text-[color:var(--text-inverse)] md:backdrop-blur-sm',
-    'like_new': 'bg-[color:var(--condition-like-new)] text-[color:var(--text-inverse)] md:backdrop-blur-sm',
-    'good': 'bg-[color:var(--condition-good)] text-[color:var(--text-inverse)] md:backdrop-blur-sm',
-    'worn': 'bg-[color:var(--condition-fair)] text-[color:var(--text-inverse)] md:backdrop-blur-sm',
-    'fair': 'bg-[color:var(--status-error-solid)] text-[color:var(--text-inverse)] md:backdrop-blur-sm'
+    'brand_new_with_tags': 'bg-emerald-500 text-white',
+    'new_without_tags': 'bg-emerald-500 text-white',
+    'like_new': 'bg-cyan-500 text-white',
+    'good': 'bg-amber-500 text-white',
+    'worn': 'bg-orange-500 text-white', 
+    'fair': 'bg-red-500 text-white'
   };
 </script>
 
-<div class="px-1.5 py-0.5 {conditionColors[condition]} text-xs font-medium rounded uppercase tracking-wider">
+<span class="inline-flex items-center px-1.5 py-0.5 {conditionColors[condition]} text-xs font-medium rounded uppercase tracking-wide">
   {conditionLabels[condition]}
-</div>
+</span>

@@ -21,13 +21,14 @@
   const classes = $derived(`${baseClasses} ${paddingClasses} ${hoverClasses} ${className}`);
 </script>
 
+{#if onclick}
 <div 
   class={classes} 
   {onclick}
-  role={onclick ? "button" : undefined}
-  tabindex={onclick ? 0 : undefined}
+  role="button"
+  tabindex="0"
   onkeydown={(e: KeyboardEvent) => {
-    if (onclick && (e.key === 'Enter' || e.key === ' ')) {
+    if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       onclick();
     }
@@ -35,3 +36,8 @@
 >
   {@render children?.()}
 </div>
+{:else}
+<div class={classes}>
+  {@render children?.()}
+</div>
+{/if}

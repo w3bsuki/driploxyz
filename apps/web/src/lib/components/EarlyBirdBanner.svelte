@@ -1,11 +1,13 @@
 <script lang="ts">
   import { browser } from '$app/environment';
   import * as i18n from '@repo/i18n';
+  import { getProductUrl } from '$lib/utils/seo-urls';
   
   interface Listing {
     user: string;
     title: string;
     id: string;
+    slug?: string;
   }
   
   const DISMISS_DURATION = 43200000; // 12 hours
@@ -122,7 +124,7 @@
             <span class="text-white font-medium">{current.user}</span>
             <span class="mx-1.5 text-gray-400">{i18n.banner_justAdded()}</span>
             <a 
-              href="/product/{current.id}"
+              href={getProductUrl(current)}
               class="text-white font-medium underline decoration-dotted underline-offset-4 decoration-gray-500 hover:decoration-solid hover:decoration-white transition-colors focus:outline-none focus:ring-2 focus:ring-white/20 rounded"
               aria-label="{i18n.banner_viewProduct()} {current.title} {i18n.banner_by()} {current.user}"
             >

@@ -32,7 +32,7 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
         p_user_id: user.id,
         p_other_user_id: otherUserId,
         p_product_id: productId === 'general' ? null : productId,
-        p_limit: 30
+        p_limit: 10  // Load only 10 most recent messages initially for better performance
       });
       
       // Transform the function result to match expected format
@@ -41,14 +41,17 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
         sender_id: msg.sender_id,
         receiver_id: msg.receiver_id,
         product_id: msg.product_id,
+        order_id: msg.order_id,
         content: msg.content,
         created_at: msg.created_at,
         is_read: msg.is_read,
         status: msg.status,
         delivered_at: msg.delivered_at,
         read_at: msg.read_at,
+        message_type: msg.message_type,
         sender: msg.sender_info,
-        receiver: msg.receiver_info
+        receiver: msg.receiver_info,
+        order: msg.order_info
       })) : [];
       
       messagesError = error;
@@ -71,10 +74,14 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
       productTitle: conv.product_title,
       productPrice: conv.product_price,
       productImage: conv.product_image,
+      orderId: conv.order_id,
+      orderStatus: conv.order_status,
+      orderTotal: conv.order_total,
       lastMessage: conv.last_message,
       lastMessageTime: conv.last_message_time,
       unreadCount: conv.unread_count,
-      isProductConversation: conv.is_product_conversation
+      isProductConversation: conv.is_product_conversation,
+      isOrderConversation: !!conv.order_id
     })) : [];
     
     messagesError = error;
@@ -182,6 +189,7 @@ export const actions = {
     const message = formData.get('message') as string;
     const receiverId = formData.get('receiverId') as string;
     const productId = formData.get('productId') as string;
+    const orderId = formData.get('orderId') as string;
 
     if (!message?.trim()) {
       return fail(400, { error: 'Message cannot be empty' });
@@ -198,7 +206,8 @@ export const actions = {
         sender_id: user.id,
         receiver_id: receiverId,
         content: message.trim(),
-        product_id: productId || null
+        product_id: productId || null,
+        order_id: orderId || null
       });
 
     if (error) {

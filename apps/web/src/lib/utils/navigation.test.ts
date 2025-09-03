@@ -123,7 +123,7 @@ describe('Navigation utilities', () => {
       });
     });
 
-    it('focuses element when focus option is true', (done) => {
+    it('focuses element when focus option is true', async () => {
       const mockElement = {
         scrollIntoView: vi.fn(),
         focus: vi.fn()
@@ -137,10 +137,12 @@ describe('Navigation utilities', () => {
       expect(mockElement.scrollIntoView).toHaveBeenCalled();
       
       // Focus should be called after timeout
-      setTimeout(() => {
-        expect(mockElement.focus).toHaveBeenCalledWith({ preventScroll: true });
-        done();
-      }, 350);
+      await new Promise(resolve => {
+        setTimeout(() => {
+          expect(mockElement.focus).toHaveBeenCalledWith({ preventScroll: true });
+          resolve(undefined);
+        }, 350);
+      });
     });
   });
 
@@ -155,7 +157,7 @@ describe('Navigation utilities', () => {
       expect(mockElement.focus).toHaveBeenCalledWith({ preventScroll: false });
     });
 
-    it('creates live region for announcement', (done) => {
+    it('creates live region for announcement', async () => {
       const mockElement = {
         focus: vi.fn()
       } as any;
@@ -181,10 +183,12 @@ describe('Navigation utilities', () => {
       expect(document.body.appendChild).toHaveBeenCalledWith(mockLiveRegion);
       
       // Check cleanup after timeout
-      setTimeout(() => {
-        expect(document.body.removeChild).toHaveBeenCalledWith(mockLiveRegion);
-        done();
-      }, 1100);
+      await new Promise(resolve => {
+        setTimeout(() => {
+          expect(document.body.removeChild).toHaveBeenCalledWith(mockLiveRegion);
+          resolve(undefined);
+        }, 1100);
+      });
     });
   });
 });

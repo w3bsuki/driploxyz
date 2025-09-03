@@ -12,7 +12,7 @@ import type { LayoutServerLoad } from './$types';
  * - Let individual routes handle onboarding requirements
  * - Don't redirect to onboarding here (causes loops)
  */
-export const load = (async ({ locals: { session, user, supabase }, url }) => {
+export const load = (async ({ locals: { session, user, supabase } }) => {
   // Redirect to login if not authenticated
   if (!session || !user) {
     throw redirect(303, '/login');

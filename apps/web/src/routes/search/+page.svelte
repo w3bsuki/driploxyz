@@ -11,9 +11,11 @@
   import { createProductFilter, syncFiltersToUrl } from '$lib/stores/product-filter.svelte';
   import { browser } from '$app/environment';
   import { debounce } from '$lib/utils/debounce';
+  import { untrack } from 'svelte';
+  import { getProductUrl } from '$lib/utils/seo-urls';
   
   // Infinite scroll sentinel
-  let loadMoreTrigger: HTMLDivElement | null = null;
+  let loadMoreTrigger = $state<HTMLDivElement | null>(null);
   $effect(() => {
     if (!browser || !loadMoreTrigger) return;
     const io = new IntersectionObserver(([entry]) => {
@@ -34,12 +36,10 @@
   
   // Core UI state
   let showStickyFilterModal = $state(false);
-  let showCategoryDropdown = $state(false);
   let showCategoryBottomSheet = $state(false);
   let isSearching = $state(false);
   let isFilterLoading = $state(false);
   let searchInput = $state('');
-  let categoryLevel = $state(1); // 1=gender, 2=type, 3=specific
   let ariaLiveMessage = $state('');
   
   // Single derived filter state for performance
@@ -146,11 +146,11 @@
   // Initialize from server data and load persisted filters
   $effect(() => {
     if (data.products) {
-      filterStore.setProducts(data.products);
+      untrack(() => filterStore.setProducts(data.products));
     }
     
-    // Load persisted filters first
-    filterStore.loadPersistedFilters();
+    // Load persisted filters first (untracked to prevent circular dependencies)
+    untrack(() => filterStore.loadPersistedFilters());
     
     // Then apply server-provided filters (URL params override persisted)
     if (data.filters) {
@@ -175,7 +175,7 @@
       });
       
       if (hasUrlFilters) {
-        filterStore.updateMultipleFilters(serverFilters);
+        untrack(() => filterStore.updateMultipleFilters(serverFilters));
       }
       
       searchInput = data.searchQuery || '';
@@ -348,7 +348,7 @@
         ? categoryHierarchy.subcategories[path.category || '']?.find(s => s.key === path.subcategory)?.name
         : path.category
           ? categoryHierarchy.categories.find(c => c.key === path.category)?.name
-          : 'All categories';
+          : i18n.category_all();
           
     ariaLiveMessage = `Selected: ${categoryName}`;
     
@@ -426,15 +426,6 @@
     }
   }
   
-  // Close dropdown when clicking outside (desktop only, bottom sheet handles its own backdrop)
-  function handleClickOutside(e: MouseEvent) {
-    if (showCategoryDropdown) {
-      const target = e.target as HTMLElement;
-      if (!target.closest('.category-dropdown')) {
-        showCategoryDropdown = false;
-      }
-    }
-  }
   
   // Product category translations
   function getCategoryTranslation(categoryName: string): string {
@@ -456,7 +447,7 @@
   <title>Search - Driplo</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gray-50 pb-20 sm:pb-0" onclick={handleClickOutside}>
+<div class="min-h-screen bg-gray-50 pb-20 sm:pb-0">
   
   <!-- ARIA Live Region for announcements -->
   <div aria-live="polite" aria-atomic="true" class="sr-only">
@@ -470,61 +461,40 @@
       <!-- Search Container -->
       <div class="py-3">
         <div class="bg-gray-50 rounded-xl flex items-center relative category-dropdown">
-          <!-- Category Dropdown/Bottom Sheet Button -->
-          <!-- Mobile: Bottom Sheet Trigger -->
-          <div class="sm:hidden">
-            <CategoryBottomSheet
-              bind:open={showCategoryBottomSheet}
-              {categoryHierarchy}
-              selectedPath={currentCategoryPath}
-              onCategorySelect={handleBottomSheetCategorySelect}
-              allCategoriesLabel={i18n.search_categories()}
-              backLabel={i18n.common_back()}
-              allLabel={i18n.category_all()}
-            >
-              {#snippet trigger()}
-                <span class="text-base">
-                  {filters.category ? 
-                    categoryHierarchy.categories.find(cat => cat.key === filters.category)?.icon || '📁' : 
-                    '📁'
-                  }
-                </span>
-                <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              {/snippet}
-            </CategoryBottomSheet>
-          </div>
-          
-          <!-- Desktop: Traditional Dropdown -->
-          <button
-            onclick={() => {
-              showCategoryDropdown = !showCategoryDropdown;
-              categoryLevel = 1;
-            }}
-            class="hidden sm:flex items-center gap-2 h-12 px-3 sm:px-4 hover:bg-gray-100 rounded-l-xl text-sm font-medium transition-colors border-0 focus:ring-2 focus:ring-black"
+          <!-- Category Dropdown -->
+          <CategoryBottomSheet
+            bind:open={showCategoryBottomSheet}
+            {categoryHierarchy}
+            selectedPath={currentCategoryPath}
+            onCategorySelect={handleBottomSheetCategorySelect}
+            allCategoriesLabel={i18n.search_categories()}
+            backLabel={i18n.common_back()}
+            allLabel={i18n.category_all()}
+            class="h-12 rounded-l-xl border-0"
           >
-            <span class="text-base">
-              {filters.category ? 
-                categoryHierarchy.categories.find(cat => cat.key === filters.category)?.icon || '📁' : 
-                '📁'
-              }
-            </span>
-            <span>
-              {filters.specific ? 
-                categoryHierarchy.specifics[`${filters.category}-${filters.subcategory}`]?.find(cat => cat.key === filters.specific)?.name || 
-                (filters.subcategory ? categoryHierarchy.subcategories[filters.category]?.find(cat => cat.key === filters.subcategory)?.name : i18n.category_all()) :
-                filters.subcategory ? 
-                  categoryHierarchy.subcategories[filters.category]?.find(cat => cat.key === filters.subcategory)?.name :
-                  filters.category ? 
-                    categoryHierarchy.categories.find(cat => cat.key === filters.category)?.name : 
-                    i18n.category_all()
-              }
-            </span>
-            <svg class="w-4 h-4 transition-transform {showCategoryDropdown ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
+            {#snippet trigger()}
+              <span class="text-base">
+                {filters.category ? 
+                  categoryHierarchy.categories.find(cat => cat.key === filters.category)?.icon || '📁' : 
+                  '📁'
+                }
+              </span>
+              <span>
+                {filters.specific ? 
+                  categoryHierarchy.specifics[`${filters.category}-${filters.subcategory}`]?.find(cat => cat.key === filters.specific)?.name || 
+                  (filters.subcategory ? categoryHierarchy.subcategories[filters.category]?.find(cat => cat.key === filters.subcategory)?.name : i18n.category_all()) :
+                  filters.subcategory ? 
+                    categoryHierarchy.subcategories[filters.category]?.find(cat => cat.key === filters.subcategory)?.name :
+                    filters.category ? 
+                      categoryHierarchy.categories.find(cat => cat.key === filters.category)?.name : 
+                      i18n.category_all()
+                }
+              </span>
+              <svg class="w-4 h-4 transition-transform {showCategoryBottomSheet ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            {/snippet}
+          </CategoryBottomSheet>
 
           <!-- Vertical Separator -->
           <div class="w-px h-6 bg-gray-300"></div>
@@ -544,164 +514,6 @@
             
           </div>
           
-          <!-- Desktop Category Dropdown Menu -->
-          {#if showCategoryDropdown}
-            <div class="absolute top-full left-0 mt-1 w-72 sm:w-80 bg-white rounded-xl shadow-lg border border-gray-200/60 z-40 max-h-[360px] overflow-hidden">
-                
-                <!-- Level 1: Gender Categories -->
-                {#if categoryLevel === 1}
-                  <div class="p-2">
-                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2 border-b border-gray-100 mb-1">
-{i18n.search_categories()}
-                    </div>
-                    <div class="space-y-0.5 overflow-y-auto max-h-72">
-                      <button
-                        onclick={() => {
-                          filterStore.updateMultipleFilters({ category: null, subcategory: null, specific: null });
-                          showCategoryDropdown = false;
-                        }}
-                        class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-gray-50 text-left transition-colors
-                          {!filters.category ? 'bg-gray-100' : ''}"
-                      >
-                        <span class="text-base">🌍</span>
-                        <span class="text-sm font-medium text-gray-900">{i18n.category_all()}</span>
-                      </button>
-                      {#each categoryHierarchy.categories as category}
-                        <button
-                          onclick={() => {
-                            // First, set the filter
-                            filterStore.updateMultipleFilters({ category: category.key, subcategory: null, specific: null });
-                            
-                            // Then navigate to next level if subcategories exist
-                            if (categoryHierarchy.subcategories[category.key]?.length > 0) {
-                              categoryLevel = 2;
-                            } else {
-                              // No subcategories, close dropdown
-                              showCategoryDropdown = false;
-                            }
-                          }}
-                          class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50 text-left transition-colors group
-                            {filters.category === category.key ? 'bg-blue-50 text-blue-700' : ''}"
-                        >
-                          <div class="flex items-center gap-2.5">
-                            <span class="text-base">{category.icon}</span>
-                            <span class="text-sm font-medium text-gray-900 {filters.category === category.key ? 'text-blue-700' : ''}">{category.name}</span>
-                          </div>
-                          {#if categoryHierarchy.subcategories[category.key]?.length > 0}
-                            <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                          {/if}
-                        </button>
-                      {/each}
-                    </div>
-                  </div>
-                {/if}
-                
-                <!-- Level 2: Product Types -->
-                {#if categoryLevel === 2 && filters.category && categoryHierarchy.subcategories[filters.category]}
-                  <div class="p-2">
-                    <button
-                      onclick={() => categoryLevel = 1}
-                      class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors mb-1"
-                    >
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                      </svg>
-{i18n.common_back()} {i18n.search_categories()}
-                    </button>
-                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2 border-b border-gray-100 mb-1">
-                      {categoryHierarchy.categories.find(cat => cat.key === filters.category)?.name}
-                    </div>
-                    <div class="space-y-0.5 overflow-y-auto max-h-72">
-                      <button
-                        onclick={() => {
-                          filterStore.updateMultipleFilters({ subcategory: null, specific: null });
-                          showCategoryDropdown = false;
-                        }}
-                        class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-gray-50 text-left transition-colors
-                          {!filters.subcategory ? 'bg-gray-100' : ''}"
-                      >
-                        <span class="text-base">📦</span>
-                        <span class="text-sm font-medium text-gray-900">All {categoryHierarchy.categories.find(cat => cat.key === filters.category)?.name}</span>
-                      </button>
-                      {#each categoryHierarchy.subcategories[filters.category] as subcategory}
-                        <button
-                          onclick={() => {
-                            // First, set the subcategory filter
-                            filterStore.updateMultipleFilters({ subcategory: subcategory.key, specific: null });
-                            
-                            // Then check if we need to go to level 3
-                            if (categoryHierarchy.specifics[`${filters.category}-${subcategory.key}`]?.length > 0) {
-                              categoryLevel = 3;
-                            } else {
-                              // No level 3 subcategories, close dropdown
-                              showCategoryDropdown = false;
-                            }
-                          }}
-                          class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50 text-left transition-colors group
-                            {filters.subcategory === subcategory.key ? 'bg-blue-50 text-blue-700' : ''}"
-                        >
-                          <div class="flex items-center gap-2.5">
-                            <span class="text-base">{subcategory.icon}</span>
-                            <span class="text-sm font-medium text-gray-900 {filters.subcategory === subcategory.key ? 'text-blue-700' : ''}">{subcategory.name}</span>
-                          </div>
-                          {#if categoryHierarchy.specifics[`${filters.category}-${subcategory.key}`]?.length > 0}
-                            <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                          {/if}
-                        </button>
-                      {/each}
-                    </div>
-                  </div>
-                {/if}
-                
-                <!-- Level 3: Specific Items -->
-                {#if categoryLevel === 3 && filters.category && filters.subcategory && categoryHierarchy.specifics[`${filters.category}-${filters.subcategory}`]}
-                  <div class="p-2">
-                    <button
-                      onclick={() => categoryLevel = 2}
-                      class="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors mb-1"
-                    >
-                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                      </svg>
-                      Back to {categoryHierarchy.subcategories[filters.category]?.find(cat => cat.key === filters.subcategory)?.name}
-                    </button>
-                    <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide px-3 py-2 border-b border-gray-100 mb-1">
-                      {categoryHierarchy.subcategories[filters.category]?.find(cat => cat.key === filters.subcategory)?.name}
-                    </div>
-                    <div class="space-y-0.5 overflow-y-auto max-h-72">
-                      <button
-                        onclick={() => {
-                          filterStore.updateFilter('specific', null);
-                          showCategoryDropdown = false;
-                        }}
-                        class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-gray-50 text-left transition-colors
-                          {!filters.specific ? 'bg-gray-100' : ''}"
-                      >
-                        <span class="text-base">📄</span>
-                        <span class="text-sm font-medium text-gray-900">All {categoryHierarchy.subcategories[filters.category]?.find(cat => cat.key === filters.subcategory)?.name}</span>
-                      </button>
-                      {#each categoryHierarchy.specifics[`${filters.category}-${filters.subcategory}`] as specific}
-                        <button
-                          onclick={() => {
-                            filterStore.updateFilter('specific', specific.key);
-                            showCategoryDropdown = false;
-                          }}
-                          class="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-gray-50 text-left transition-colors group
-                            {filters.specific === specific.key ? 'bg-blue-50 text-blue-700' : ''}"
-                        >
-                          <span class="text-base">{specific.icon}</span>
-                          <span class="text-sm font-medium text-gray-900 {filters.specific === specific.key ? 'text-blue-700' : ''}">{specific.name}</span>
-                        </button>
-                      {/each}
-                    </div>
-                  </div>
-                {/if}
-              </div>
-            {/if}
         </div>
       </div>
       
@@ -766,7 +578,7 @@
             onclick={clearAllFilters}
             class="shrink-0 px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
           >
-            Clear all
+            {i18n.search_clearAll()}
           </button>
         {/if}
       </div>
@@ -777,39 +589,59 @@
   <div class="bg-white border-b border-gray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
       
-      <!-- Mobile Layout - Results Count + Filter Button -->
-      <div class="sm:hidden mb-3 flex items-center justify-between">
-        <span class="text-sm font-medium text-gray-900">
-          {displayProducts.length} items
-        </span>
+      <!-- Mobile Layout - Results Count + Filter Button + Filter Pills -->
+      <div class="sm:hidden mb-3 flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="text-sm font-medium text-gray-900">
+            {displayProducts.length} items
+          </span>
+          <!-- Applied Filter Pills (mobile - inline) -->
+          {#if activeFilterCount > 0}
+            <AppliedFilterPills
+              filters={filters}
+              categoryLabels={{
+                women: i18n.category_women(),
+                men: i18n.category_men(),
+                kids: i18n.category_kids(),
+                unisex: i18n.category_unisex()
+              }}
+              onRemoveFilter={handleRemoveAppliedFilter}
+              onClearAll={handleClearFilters}
+              clearAllLabel={i18n.search_clearAllFilters()}
+              class="justify-start"
+              maxDisplay={3}
+              showMore={false}
+            />
+          {/if}
+        </div>
         <!-- Mobile Sticky Filter Modal -->
-          <StickyFilterModal 
+        <StickyFilterModal 
             bind:open={showStickyFilterModal}
             sections={[
               {
                 key: 'size',
-                label: 'Size',
+                label: i18n.filter_size(),
                 type: 'pills',
                 value: pendingFilters.size,
                 options: currentSizes.map(size => ({ value: size, label: size }))
               },
               {
                 key: 'condition', 
-                label: 'Condition',
+                label: i18n.filter_condition(),
                 type: 'pills',
                 value: pendingFilters.condition,
                 options: conditions.map(c => ({ value: c.key, label: c.label, icon: c.emoji }))
               },
               {
                 key: 'brand',
-                label: 'Brand', 
+                label: i18n.filter_brand(), 
                 type: 'pills',
                 value: pendingFilters.brand,
                 options: currentBrands.map(brand => ({ value: brand, label: brand }))
               },
               {
                 key: 'price',
-                label: 'Price Range',
+                label: i18n.filter_priceRange(),
                 type: 'range',
                 minValue: pendingFilters.minPrice,
                 maxValue: pendingFilters.maxPrice,
@@ -817,14 +649,14 @@
               },
               {
                 key: 'sortBy',
-                label: 'Sort By',
+                label: i18n.filter_sortBy(),
                 type: 'pills', 
                 value: pendingFilters.sortBy,
                 options: [
-                  { value: 'relevance', label: 'Relevance' },
-                  { value: 'newest', label: 'Newest' },
-                  { value: 'price-low', label: 'Price: Low to High' },
-                  { value: 'price-high', label: 'Price: High to Low' }
+                  { value: 'relevance', label: i18n.search_relevance() },
+                  { value: 'newest', label: i18n.filter_newest() },
+                  { value: 'price-low', label: i18n.filter_priceLowToHigh() },
+                  { value: 'price-high', label: i18n.filter_priceHighToLow() }
                 ]
               }
             ]}
@@ -832,11 +664,11 @@
             pendingFilters={pendingFilters}
             previewResultCount={previewFilteredProducts.length}
             totalResultCount={filterStore.allProducts.length}
-            title="Filter Products"
-            applyLabel="Apply Filters"
-            cancelLabel="Cancel"
-            clearLabel="Clear All"
-            closeLabel="Close"
+            title={i18n.search_filters()}
+            applyLabel={i18n.filter_apply()}
+            cancelLabel={i18n.common_cancel()}
+            clearLabel={i18n.filter_reset()}
+            closeLabel={i18n.common_close()}
             minPriceLabel={i18n.search_min()}
             maxPriceLabel={i18n.search_max()}
             onPendingFilterChange={handlePendingFilterChange}
@@ -849,31 +681,33 @@
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
               </svg>
-              <span>Filter</span>
+{i18n.search_filters()}
             {/snippet}
           </StickyFilterModal>
       </div>
       
-      <!-- Applied Filter Pills (shows for both mobile and desktop) -->
-      {#if activeFilterCount > 0}
-        <div class="mt-3 px-1">
-          <AppliedFilterPills
-            filters={filters}
-            categoryLabels={{
-              women: i18n.category_women(),
-              men: i18n.category_men(),
-              kids: i18n.category_kids(),
-              unisex: i18n.category_unisex()
-            }}
-            onRemoveFilter={handleRemoveAppliedFilter}
-            onClearAll={handleClearFilters}
-            clearAllLabel="Clear All Filters"
-            class="justify-start sm:justify-center"
-            maxDisplay={8}
-            showMore={false}
-          />
-        </div>
-      {/if}
+      <!-- Applied Filter Pills (desktop only) -->
+      <div class="hidden sm:block">
+        {#if activeFilterCount > 0}
+          <div class="flex items-center gap-2 flex-wrap px-1">
+            <AppliedFilterPills
+              filters={filters}
+              categoryLabels={{
+                women: i18n.category_women(),
+                men: i18n.category_men(),
+                kids: i18n.category_kids(),
+                unisex: i18n.category_unisex()
+              }}
+              onRemoveFilter={handleRemoveAppliedFilter}
+              onClearAll={handleClearFilters}
+              clearAllLabel={i18n.search_clearAllFilters()}
+              class="justify-center"
+              maxDisplay={8}
+              showMore={false}
+            />
+          </div>
+        {/if}
+      </div>
       
       <!-- Desktop Layout -->
       <div class="hidden sm:flex items-center justify-between">
@@ -889,10 +723,10 @@
             onchange={handleSortChange}
             class="px-3 py-2 bg-gray-50 border-0 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors cursor-pointer"
           >
-            <option value="relevance">Best Match</option>
-            <option value="newest">Newest First</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
+            <option value="relevance">{i18n.search_relevance()}</option>
+            <option value="newest">{i18n.filter_newest()}</option>
+            <option value="price-low">{i18n.filter_priceLowToHigh()}</option>
+            <option value="price-high">{i18n.filter_priceHighToLow()}</option>
           </select>
           
           <!-- Desktop Filter Modal Trigger -->
@@ -906,7 +740,7 @@
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
-            Filters
+{i18n.search_filters()}
             {#if activeFilterCount > 0}
               <span class="bg-white text-[color:var(--primary)] text-xs px-1.5 py-0.5 rounded-full font-semibold">{activeFilterCount}</span>
             {/if}
@@ -923,7 +757,7 @@
         {#each displayProductsWithCategory as product}
           <ProductCard 
             {product}
-            onclick={() => goto(`/product/${product.id}`)}
+            onclick={() => goto(getProductUrl(product))}
             translations={{
               size: i18n.product_size(),
               newSeller: i18n.trending_newSeller(),
@@ -996,7 +830,7 @@
         <p class="text-gray-600 text-sm">{i18n.search_adjustFilters()}</p>
         {#if activeFilterCount > 0}
           <Button onclick={clearAllFilters} variant="outline" size="sm" class="mt-4">
-            Clear all filters
+            {i18n.search_clearAllFilters()}
           </Button>
         {/if}
       </div>
@@ -1010,6 +844,7 @@
   isNavigating={!!$navigating}
   navigatingTo={$navigating?.to?.url.pathname}
   unreadMessageCount={$unreadMessageCount}
+  profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
   labels={{
     home: i18n.nav_home(),
     search: i18n.nav_search(),

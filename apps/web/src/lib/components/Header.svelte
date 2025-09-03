@@ -52,7 +52,7 @@
   let mobileMenuOpen = $state(false);
   let signingOut = $state(false);
   let notificationService: RealtimeNotificationService | null = null;
-  let NotificationPanel: any = null;
+  let NotificationPanel: any = $state(null);
   let notificationPanelLoaded = $state(false);
   
   // Use props data directly
@@ -134,7 +134,7 @@
   });
   
   const userMenuTranslations = $derived({
-    myProfile: i18n.nav_profile(),
+    myProfile: i18n.nav_account(),
     orders: i18n.nav_orders(),
     favorites: i18n.nav_favorites(),
     startSelling: i18n.nav_startSelling(),
@@ -246,8 +246,7 @@
             />
             
             {#if notificationPanelLoaded && NotificationPanel}
-              <svelte:component 
-                this={NotificationPanel}
+              <NotificationPanel
                 notifications={$notifications}
                 show={$notificationPanelOpen}
                 onMarkAsRead={notificationActions.markAsRead}

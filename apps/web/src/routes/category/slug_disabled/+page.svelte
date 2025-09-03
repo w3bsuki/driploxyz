@@ -621,6 +621,7 @@
   isNavigating={!!$navigating}
   navigatingTo={$navigating?.to?.url.pathname}
   unreadMessageCount={$unreadMessageCount}
+  profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
   labels={{
     home: i18n.nav_home(),
     search: i18n.nav_search(),

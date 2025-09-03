@@ -1,6 +1,6 @@
 <script lang="ts">
 	interface Props {
-		status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'disputed';
+		status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'disputed' | 'failed' | 'completed';
 		showIcon?: boolean;
 		size?: 'sm' | 'md' | 'lg';
 		className?: string;
@@ -55,6 +55,20 @@
 			bgColor: 'bg-[color:var(--status-error-bg)]',
 			textColor: 'text-[color:var(--status-error-text)]',
 			borderColor: 'border-[color:var(--status-error-border)]'
+		},
+		failed: {
+			label: 'Failed',
+			icon: '💥',
+			bgColor: 'bg-[color:var(--status-error-bg)]',
+			textColor: 'text-[color:var(--status-error-text)]',
+			borderColor: 'border-[color:var(--status-error-border)]'
+		},
+		completed: {
+			label: 'Completed',
+			icon: '🎉',
+			bgColor: 'bg-[color:var(--status-success-bg)]',
+			textColor: 'text-[color:var(--status-success-text)]',
+			borderColor: 'border-[color:var(--status-success-border)]'
 		}
 	};
 

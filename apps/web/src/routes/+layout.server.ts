@@ -14,7 +14,7 @@ const REDIRECT_PATHS_TO_SKIP = [
 ];
 
 export const load = (async (event) => {
-  const { url, cookies, depends, locals, fetch } = event;
+  const { url, cookies, depends, locals } = event;
   // CRITICAL: Only depend on auth - other deps cause unnecessary reloads
   depends('supabase:auth');
   

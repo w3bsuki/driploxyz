@@ -6,7 +6,7 @@ import type { PageServerLoad } from './$types';
  * Welcome page after successful onboarding
  * This page verifies the profile is complete and redirects to the dashboard
  */
-export const load = (async ({ locals: { supabase, safeGetSession }, parent }) => {
+export const load = (async ({ locals: { safeGetSession }, parent }) => {
   const { session, user } = await safeGetSession();
   
   if (!session || !user) {

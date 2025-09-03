@@ -7,6 +7,7 @@
   import { formatPrice } from '$lib/utils/price';
   import type { PageData } from './$types';
   import { invalidateAll } from '$app/navigation';
+  import { getProductUrl } from '$lib/utils/seo-urls';
   
   interface Props {
     data: PageData;
@@ -526,7 +527,7 @@
           {#each filteredProducts as product}
             <ProductCard 
               {product}
-              onclick={() => goto(`/product/${product.id}`)}
+              onclick={() => goto(getProductUrl(product))}
               translations={{
                 size: i18n.product_size(),
                 newSeller: i18n.trending_newSeller(),
@@ -683,6 +684,7 @@
   isNavigating={!!$navigating}
   navigatingTo={$navigating?.to?.url.pathname}
   unreadMessageCount={$unreadMessageCount}
+  profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
   labels={{
     home: i18n.nav_home(),
     search: i18n.nav_search(),

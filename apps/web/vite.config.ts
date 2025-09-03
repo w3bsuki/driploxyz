@@ -1,7 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { enhancedImages } from '@sveltejs/enhanced-img';
 import { defineConfig } from 'vite';
-import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defineConfig as defineVitestConfig } from 'vitest/config';
 import tailwindcss from '@tailwindcss/vite';
@@ -12,11 +11,10 @@ export default defineConfig(
 		const plugins = [
 			tailwindcss(),
 			enhancedImages(),
-			// Disable experimental locale splitting to avoid runtime dependency
-			// on globalThis.__paraglide_ssr (was causing client crash)
+			// Native Paraglide v2+ zero-bundle approach
 			paraglideVitePlugin({
 				project: '../../packages/i18n/project.inlang',
-				outdir: '../../packages/i18n/lib/paraglide'
+				outdir: '../../packages/i18n/src/paraglide'
 			}),
 			sveltekit()
 		];
@@ -50,7 +48,7 @@ export default defineConfig(
 				rollupOptions: {
 					output: {
 						// Split i18n messages into separate chunks per language
-						manualChunks(id) {
+						manualChunks(id: string) {
 							// Split individual message files by language
 							if (id.includes('paraglide/messages/') && id.endsWith('/en.js')) return 'i18n-en';
 							if (id.includes('paraglide/messages/') && id.endsWith('/bg.js')) return 'i18n-bg';

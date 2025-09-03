@@ -3,6 +3,7 @@
   import type { Snippet } from 'svelte';
   import { tick } from 'svelte';
   import FilterPillGroup from './FilterPillGroup.svelte';
+  import * as i18n from '@repo/i18n';
 
   interface FilterOption {
     value: string;
@@ -51,12 +52,12 @@
     sections,
     activeFilterCount = 0,
     class: className = '',
-    title = 'Filters',
-    applyLabel = 'Apply Filters',
-    clearLabel = 'Clear All',
-    closeLabel = 'Close',
-    minPriceLabel = 'Min',
-    maxPriceLabel = 'Max',
+    title = i18n.filter_modal_title(),
+    applyLabel = i18n.filter_modal_applyFilters(),
+    clearLabel = i18n.filter_modal_clearAll(),
+    closeLabel = i18n.filter_modal_close(),
+    minPriceLabel = i18n.filter_modal_minPrice(),
+    maxPriceLabel = i18n.filter_modal_maxPrice(),
     onApply,
     onClear,
     onFilterChange,
@@ -70,7 +71,7 @@
   let triggerElement: HTMLElement | null = null;
   let firstFocusableElement: HTMLElement | null = null;
   let lastFocusableElement: HTMLElement | null = null;
-  let modalContentRef: HTMLDivElement;
+  let modalContentRef = $state<HTMLDivElement>();
   let announcement = $state('');
 
   // Create dialog with proper accessibility
@@ -240,7 +241,8 @@
     
     // Announce application
     if (announceChanges) {
-      announcement = `Applied ${activeCount} filter${activeCount !== 1 ? 's' : ''}`;
+      const filterText = activeCount === 1 ? i18n.filter_modal_filter() : i18n.filter_modal_filters();
+      announcement = `${i18n.filter_modal_applied()} ${activeCount} ${filterText}`;
     }
     
     open = false;
@@ -259,7 +261,7 @@
     
     // Announce clearing
     if (announceChanges) {
-      announcement = 'All filters cleared';
+      announcement = i18n.filter_ui_allFiltersCleared();
     }
     
     onClear?.();
@@ -335,7 +337,7 @@
           {title}
         </h2>
         <p id="filter-modal-description" class="text-sm text-[color:var(--text-secondary)] mt-1">
-          Use Tab to navigate between filters, Space/Enter to select, Escape to close
+          {i18n.filter_modal_modalDescription()}
         </p>
       </div>
       

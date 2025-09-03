@@ -1,15 +1,14 @@
-import { redirect } from '@sveltejs/kit';
+// import { redirect } from '@sveltejs/kit'; // For future auth redirect
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ locals: { supabase, safeGetSession } }) => {
   try {
-    const { session, user } = await safeGetSession();
+    const { user } = await safeGetSession();
 
     // For testing - allow access without authentication
-    // In production, uncomment the redirect below
-    // if (!session) {
-    //   throw redirect(303, '/auth/login');
-    // }
+    // In production, add proper auth check
+    // const { session } = await safeGetSession();
+    // if (!session) throw redirect(303, '/auth/login');
 
     // Get available subscription plans
     const { data: plans, error: plansError } = await supabase

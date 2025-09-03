@@ -83,7 +83,12 @@
     /**
      * Trigger content (button, icon, etc.)
      */
-    trigger: Snippet;
+    trigger?: Snippet;
+    
+    /**
+     * Children content for slot-based usage
+     */
+    children?: Snippet;
   }
 
   let {
@@ -100,7 +105,8 @@
     tooltipClass = '',
     arrowClass = '',
     forceTouch = false,
-    trigger
+    trigger,
+    children
   }: Props = $props();
 
   // Build proper placement string for Melt UI
@@ -140,14 +146,8 @@
     open = $tooltipOpen;
   });
 
-  // Check if we're on a touch device
-  let isTouchDevice = $state(false);
-  
-  $effect(() => {
-    if (typeof window !== 'undefined') {
-      isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    }
-  });
+  // Check if we're on a touch device (initialize once, browser-only)
+  let isTouchDevice = $state(typeof window !== 'undefined' && ('ontouchstart' in window || navigator.maxTouchPoints > 0));
 
   // Default styling classes following design system
   const defaultTriggerClasses = 'inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--primary)] focus-visible:ring-offset-2 transition-all duration-150';
@@ -186,7 +186,11 @@
     }
   }}
 >
-  {@render trigger()}
+  {#if trigger}
+    {@render trigger()}
+  {:else if children}
+    {@render children()}
+  {/if}
 </span>
 
 <!-- Tooltip Content -->

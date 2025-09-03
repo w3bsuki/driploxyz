@@ -1,8 +1,6 @@
-import { z } from 'zod';
 import { json, error } from '@sveltejs/kit';
-import type { RequestHandler, RequestEvent } from '@sveltejs/kit';
+import type { RequestHandler } from '@sveltejs/kit';
 import { createServices } from '$lib/services';
-import { withAuth, withValidation, withCsrf, withRateLimit, respond, respondError, combine, commonSchemas, type AuthContext } from '$lib/server/api';
 
 export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
   try {

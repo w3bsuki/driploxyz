@@ -27,21 +27,10 @@ export interface ToastMessage {
 function createToastStore() {
   const { subscribe, update } = writable<ToastMessage[]>([]);
 
-  // Bridge between legacy and modern toast systems
+  // Bridge between legacy and modern toast systems - FIXED to prevent duplicates
   function addLegacyToast(message: string, type: ToastMessage['type'] = 'info', duration = 5000): string {
-    // Use modern toast system internally
-    const id = modernToasts.show(message, type, { duration });
-    
-    // Also update the legacy store for components still subscribing to it
-    const legacyToast: ToastMessage = { id, message, type, duration };
-    update(toasts => [...toasts, legacyToast]);
-    
-    // Auto-remove from legacy store after duration
-    setTimeout(() => {
-      update(toasts => toasts.filter(t => t.id !== id));
-    }, duration);
-    
-    return id;
+    // Use modern toast system ONLY - no more legacy store updates
+    return modernToasts.show(message, type, { duration });
   }
 
   return {

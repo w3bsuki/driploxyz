@@ -12,7 +12,7 @@
 	<div class="max-w-4xl mx-auto">
 		<h1 class="text-3xl font-bold text-gray-900 mb-8">Trust & Safety</h1>
 		
-		<div class="bg-white shadow-sm rounded-lg p-6 space-y-8">
+		<div class="bg-white shadow-sm rounded-lg p-6 space-y-8 prose prose-gray max-w-none">
 			<div class="bg-[color:var(--status-info-bg)] border border-[color:var(--status-info-border)] rounded-lg p-4">
 				<p class="text-sm text-[color:var(--status-info-fg)]">
 					<strong>Last updated:</strong> {new Date().toLocaleDateString()}
@@ -28,7 +28,7 @@
 			</div>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">How We Keep You Safe</h2>
+				<h2>How We Keep You Safe</h2>
 				<div class="grid md:grid-cols-2 gap-6">
 					<div class="space-y-4">
 						<div class="border border-gray-200 rounded-lg p-4">
@@ -85,14 +85,14 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Community Guidelines</h2>
-				<p class="text-gray-600 mb-4">
+				<h2>Community Guidelines</h2>
+				<p>
 					Our community thrives when everyone follows these essential guidelines:
 				</p>
 				
 				<div class="space-y-6">
 					<div>
-						<h3 class="text-lg font-semibold text-gray-900 mb-3">✅ What We Encourage</h3>
+						<h3>✅ What We Encourage</h3>
 						<div class="grid md:grid-cols-2 gap-4">
 							<ul class="list-disc pl-6 text-gray-600 space-y-2 text-sm">
 								<li>Honest, detailed item descriptions</li>
@@ -114,7 +114,7 @@
 					</div>
 
 					<div>
-						<h3 class="text-lg font-semibold text-gray-900 mb-3">🚫 What's Not Allowed</h3>
+						<h3>🚫 What's Not Allowed</h3>
 						<div class="bg-red-50 border border-red-200 rounded-lg p-4">
 							<div class="grid md:grid-cols-2 gap-4">
 								<ul class="list-disc pl-6 text-red-700 space-y-2 text-sm">
@@ -140,7 +140,7 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Reporting & Support</h2>
+				<h2>Reporting & Support</h2>
 				
 				<div class="space-y-6">
 					<div>
@@ -194,7 +194,7 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Safe Shopping Tips</h2>
+				<h2>Safe Shopping Tips</h2>
 				
 				<div class="grid md:grid-cols-2 gap-6">
 					<div>
@@ -284,7 +284,7 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Red Flags to Watch For</h2>
+				<h2>Red Flags to Watch For</h2>
 				<div class="bg-red-50 border border-red-200 rounded-lg p-4">
 					<h3 class="font-semibold text-red-800 mb-3">⚠️ Warning Signs</h3>
 					<div class="grid md:grid-cols-2 gap-4">
@@ -307,9 +307,9 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Get Help</h2>
+				<h2>Get Help</h2>
 				<div class="bg-gray-50 rounded-lg p-6">
-					<p class="text-gray-600 mb-4">
+					<p>
 						Our Trust & Safety team is here to help 24/7. Don't hesitate to reach out if you feel unsafe or encounter any issues.
 					</p>
 					<div class="grid md:grid-cols-2 gap-4">

@@ -4,7 +4,7 @@
   interface Props {
     show: boolean;
     stripePublishableKey?: string;
-    accountType?: 'premium' | 'brand';
+    accountType?: 'pro' | 'brand';
     initialDiscountCode?: string;
     onSuccess?: () => void;
     onCancel?: () => void;
@@ -23,23 +23,25 @@
 
   let loading = $state(false);
   let error = $state('');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let stripe: any = $state(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let elements: any = $state(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let cardElement: any = $state(null);
   let cardContainer: HTMLDivElement | undefined = $state();
   let discountCode = $state('');
   let discountAmount = $state(0);
   let finalPrice = $state(0);
-  let validatingDiscount = $state(false);
   let discountError = $state('');
 
   // Set correct price and plan ID based on account type
-  const basePrice = accountType === 'premium' ? 25 : 50;
+  const basePrice = accountType === 'pro' ? 25 : 50;
   
   // Use correct plan ID based on account type
   let actualPlanId = $state(
-    accountType === 'premium' 
-      ? 'c0587696-cbcd-4e6b-b6bc-ba84fb47ddce' // Premium plan ID
+    accountType === 'pro' 
+      ? 'c0587696-cbcd-4e6b-b6bc-ba84fb47ddce' // Pro plan ID
       : '989b722e-4050-4c63-ac8b-ab105f14027c'  // Brand plan ID
   );
   
@@ -63,7 +65,7 @@
   $effect(() => {
     if (discountCode && discountCode.trim()) {
       if (discountCode.trim().toUpperCase() === 'INDECISIVE') {
-        discountAmount = basePrice * 0.98; // 98% off (leaves 50 cents minimum)
+        discountAmount = basePrice * 0.90; // 90% off
         discountError = '';
       } else {
         // Don't set an error here - let the server validate other codes
@@ -77,10 +79,10 @@
     }
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function validateDiscountCode(code: string) {
     if (!code || !actualPlanId) return;
     
-    validatingDiscount = true;
     discountError = '';
     
     try {
@@ -106,8 +108,6 @@
       console.error('Discount validation failed:', err);
       discountAmount = 0;
       discountError = 'Failed to validate discount code';
-    } finally {
-      validatingDiscount = false;
     }
   }
 
@@ -147,7 +147,7 @@
         });
         cardElement.mount(cardContainer);
       }
-    } catch (err) {
+    } catch {
       error = 'Failed to load payment form';
     }
   }
@@ -240,7 +240,7 @@
       <!-- Header -->
       <div class="text-center mb-4">
         <h3 class="text-lg font-semibold text-gray-900 mb-1">
-          {accountType === 'premium' ? 'Premium Account' : 'Brand Account'}
+          {accountType === 'pro' ? 'Pro Account' : 'Brand Account'}
         </h3>
         <div class="space-y-1">
           {#if discountAmount > 0}
@@ -277,7 +277,7 @@
           <p class="mt-1 text-xs text-red-600">{discountError}</p>
         {:else if discountAmount > 0}
           <p class="mt-1 text-xs text-green-600">
-            ✓ {discountAmount.toFixed(2)} BGN discount applied (98% off)
+            ✓ {discountAmount.toFixed(2)} BGN discount applied (90% off)
           </p>
         {/if}
       </div>

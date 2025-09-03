@@ -12,7 +12,7 @@ if (!STRIPE_SECRET_KEY) {
 // account's default API version. Pinning avoids unexpected behavior changes.
 export const stripe = STRIPE_SECRET_KEY
   ? new Stripe(STRIPE_SECRET_KEY, {
-      apiVersion: '2025-07-30.basil'
+      apiVersion: '2025-08-27.basil'
     })
   : null;
 

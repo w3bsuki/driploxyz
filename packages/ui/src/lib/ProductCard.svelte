@@ -87,27 +87,28 @@
 </script>
 
 {#snippet conditionBadgeWithTooltip(condition: string)}
-  <Tooltip 
-    content={getConditionTooltip(condition)}
-    positioning={{ side: 'bottom', align: 'start' }}
-    openDelay={600}
-    closeDelay={200}
-    triggerClass="absolute top-2 left-2 z-20"
-  >
-    {#snippet trigger()}
-      <ConditionBadge 
-        condition={condition}
-        translations={{
-          brandNewWithTags: translations.brandNewWithTags,
-          newWithoutTags: translations.newWithoutTags || translations.new,
-          likeNew: translations.likeNew,
-          good: translations.good,
-          worn: translations.worn,
-          fair: translations.fair
-        }}
-      />
-    {/snippet}
-  </Tooltip>
+  <div class="absolute top-0 left-1 z-20">
+    <Tooltip 
+      content={getConditionTooltip(condition)}
+      positioning={{ side: 'bottom', align: 'start' }}
+      openDelay={600}
+      closeDelay={200}
+    >
+      {#snippet trigger()}
+        <ConditionBadge 
+          condition={condition}
+          translations={{
+            brandNewWithTags: translations.brandNewWithTags,
+            newWithoutTags: translations.newWithoutTags || translations.new,
+            likeNew: translations.likeNew,
+            good: translations.good,
+            worn: translations.worn,
+            fair: translations.fair
+          }}
+        />
+      {/snippet}
+    </Tooltip>
+  </div>
 {/snippet}
 
 {#snippet titleWithTooltip(title: string, showTooltip: boolean)}

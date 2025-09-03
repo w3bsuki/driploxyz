@@ -26,7 +26,7 @@
 
   let show = $state(true);
   let targetRect = $state<DOMRect | null>(null);
-  let toastElement: HTMLDivElement;
+  let toastElement: HTMLDivElement = $state();
 
   onMount(() => {
     if (targetElement) {

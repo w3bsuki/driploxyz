@@ -114,29 +114,6 @@
 		}
 	});
 	
-	// Default fallback UI
-	const defaultFallback: Snippet<[Error, () => void]> = (error, retry) => {
-		return {
-			render: () => `
-				<div class="error-boundary-fallback">
-					<div class="error-content">
-						<svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<circle cx="12" cy="12" r="10"></circle>
-							<line x1="12" y1="8" x2="12" y2="12"></line>
-							<line x1="12" y1="16" x2="12.01" y2="16"></line>
-						</svg>
-						<h2 class="error-title">Something went wrong</h2>
-						<p class="error-message">${error.message || 'An unexpected error occurred'}</p>
-						<div class="error-actions">
-							<button onclick="${retry}" class="retry-button">
-								Try again
-							</button>
-						</div>
-					</div>
-				</div>
-			`
-		};
-	};
 </script>
 
 {#if error}

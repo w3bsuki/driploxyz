@@ -196,7 +196,6 @@ export const load = (async ({ url, locals, setHeaders }) => {
           if (l2Cat) {
             if (specific && specific !== 'all') {
               // Find specific Level 3 category by slug
-              const specificSlug = `${category}-${specific}`;
               const { data: l3Cats } = await locals.supabase
                 .from('categories')
                 .select('id')
@@ -302,6 +301,7 @@ export const load = (async ({ url, locals, setHeaders }) => {
         seller_id,
         category_id,
         country_code,
+        slug,
         product_images (
           image_url
         ),

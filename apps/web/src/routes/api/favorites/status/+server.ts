@@ -1,8 +1,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createServerSupabaseClient } from '$lib/supabase/server';
+// import { createServerSupabaseClient } from '$lib/supabase/server'; // Unused - using locals.supabase
 
-export const POST: RequestHandler = async ({ locals, request, cookies }) => {
+export const POST: RequestHandler = async ({ locals, request }) => {
   try {
     const supabase = locals.supabase;
     const body = await request.json();

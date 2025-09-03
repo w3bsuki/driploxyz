@@ -3,6 +3,7 @@ export { default as Menu } from './menu/Menu.svelte';
 export { default as Select } from './select/Select.svelte';
 export { default as Tabs } from './tabs/Tabs.svelte';
 export { default as Tooltip } from './tooltip/Tooltip.svelte';
+export { Accordion } from './accordion/index';
 
 // Toast System - Comprehensive mobile-first toast components
 export { 

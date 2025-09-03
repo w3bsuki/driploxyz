@@ -30,7 +30,14 @@ export const load = (async ({ locals }) => {
       is_sold,
       status,
       created_at,
-      images:product_images!product_id(image_url)
+      slug,
+      images:product_images!product_id(image_url),
+      profiles!products_seller_id_fkey (
+        username
+      ),
+      categories (
+        slug
+      )
     `)
     .eq('seller_id', session.user.id)
     .eq('is_active', true)

@@ -62,7 +62,7 @@ export interface Seller extends Profile {
   verification_status?: 'unverified' | 'pending' | 'verified';
   shop_name?: string;
   shop_banner?: string;
-  premium?: boolean;
+  pro?: boolean;
   itemCount?: number;
   followers?: number;
   description?: string;

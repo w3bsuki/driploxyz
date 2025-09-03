@@ -5,7 +5,7 @@ import { setupEnvironment } from './env';
 import { setupAuth } from './supabase-hooks';
 import { setupI18n, transformPageChunk } from './i18n';
 import { setupCountry } from './country';
-import { handleCountryRedirect } from './country-redirect';
+// import { handleCountryRedirect } from './country-redirect'; // Currently disabled for performance
 import { handleUnknownLocales } from './locale-redirect';
 import { setupAuthGuard } from './auth-guard';
 import { setupSentry, isSentryAvailable } from './sentry';
@@ -40,12 +40,12 @@ const languageHandler: Handle = async ({ event, resolve }) => {
 /**
  * Country redirect handler
  * Must come after auth setup to access user data
+ * Currently disabled for performance reasons
  */
-// Country redirect handler for future geo-routing
-const _countryRedirectHandler: Handle = async ({ event, resolve }) => {
-  await handleCountryRedirect(event);
-  return resolve(event);
-};
+// const _countryRedirectHandler: Handle = async ({ event, resolve }) => {
+//   await handleCountryRedirect(event);
+//   return resolve(event);
+// };
 
 /**
  * Unknown locale redirect handler

@@ -7,6 +7,7 @@
   import * as i18n from '@repo/i18n';
   import { tutorial } from '$lib/tutorial/manager';
   import { TutorialToast } from '@repo/ui';
+  import { getProductUrl } from '$lib/utils/seo-urls';
   
   interface Props {
     data: PageData;
@@ -354,7 +355,7 @@
       {:else}
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {#each activeListings() as product}
-            <a href="/product/{product.id}" class="group cursor-pointer">
+            <a href={getProductUrl(product)} class="group cursor-pointer">
               <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
                 <img src={product.images[0]} alt={product.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform" />
               </div>

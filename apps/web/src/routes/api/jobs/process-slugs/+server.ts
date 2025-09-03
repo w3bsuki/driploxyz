@@ -11,7 +11,7 @@ import { processSlugQueue, getQueueStatus, backfillSlugs, cleanupQueue } from '$
  * - Health check systems
  */
 
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ url }) => {
   const action = url.searchParams.get('action') || 'process';
   
   try {
@@ -70,7 +70,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
   }
 };
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET: RequestHandler = async () => {
   // GET request returns queue status
   try {
     const status = await getQueueStatus();

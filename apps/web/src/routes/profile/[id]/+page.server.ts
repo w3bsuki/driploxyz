@@ -106,24 +106,58 @@ export const load = (async ({ params, locals }) => {
     .eq('country_code', locals.country || 'BG')
     .order('created_at', { ascending: false });
 
-  // Get user's reviews
-  const { data: reviews } = await locals.supabase
+  // Get user's reviews with full details
+  const { data: reviews, count: totalReviewCount } = await locals.supabase
     .from('reviews')
     .select(`
       id,
       rating,
+      title,
       comment,
+      image_urls,
       created_at,
       reviewer:profiles!reviewer_id(
         id,
         username,
+        full_name,
         avatar_url
+      ),
+      product:products(
+        id,
+        title,
+        product_images(image_url)
+      ),
+      order:orders(
+        id,
+        created_at,
+        total_amount
       )
-    `)
+    `, { count: 'exact' })
     .eq('reviewee_id', profile.id)
     .eq('is_public', true)
     .order('created_at', { ascending: false })
-    .limit(5);
+    .limit(10);
+
+  // Get rating distribution for statistics
+  const { data: ratingDistribution } = await locals.supabase
+    .from('reviews')
+    .select('rating')
+    .eq('reviewee_id', profile.id)
+    .eq('is_public', true);
+
+  // Calculate rating stats
+  const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  ratingDistribution?.forEach(review => {
+    if (review.rating >= 1 && review.rating <= 5) {
+      distribution[review.rating as keyof typeof distribution]++;
+    }
+  });
+
+  const reviewStats = {
+    averageRating: profile.rating || 0,
+    totalReviews: profile.review_count || 0,
+    distribution
+  };
 
   // Transform products to include first image URL
   const productsWithImages = products?.map(product => ({
@@ -164,6 +198,8 @@ export const load = (async ({ params, locals }) => {
     },
     products: productsWithImages,
     reviews: reviews || [],
+    reviewStats,
+    totalReviewCount: totalReviewCount || 0,
     favorites,
     isOwnProfile,
     currentUser: session?.user || null,

@@ -98,6 +98,9 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
             username,
             avatar_url,
             account_type
+          ),
+          categories (
+            slug
           )
         `)
         .eq('is_active', true)
@@ -128,6 +131,11 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       category_name?: string;
       subcategory_name?: string;
       seller?: { username: string | null };
+      // Required for getProductUrl compatibility
+      seller_username?: string | null;
+      slug?: string | null;
+      profiles?: { username?: string | null };
+      categories?: { slug?: string | null };
     }> = [];
     if (featuredResult.status === 'fulfilled') {
       const { data: rawProducts } = featuredResult.value;
@@ -180,12 +188,18 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
             main_category_name,
             category_name,
             subcategory_name,
-            // Seller info
+            // Seller info - include both formats for compatibility
             seller_name: item.profiles?.username,
+            seller_username: item.profiles?.username, // Required for getProductUrl
             seller_avatar: item.profiles?.avatar_url,
             sellerAccountType: item.profiles?.account_type === 'brand' ? 'brand' : 
                               item.profiles?.account_type === 'pro' || item.profiles?.account_type === 'premium' ? 'pro' :
-                              'new_seller'
+                              'new_seller',
+            // Include slug for SEO URLs
+            slug: item.slug,
+            // Include profiles format for getProductUrl compatibility
+            profiles: { username: item.profiles?.username },
+            categories: { slug: item.categories?.slug }
           };
         }));
       }

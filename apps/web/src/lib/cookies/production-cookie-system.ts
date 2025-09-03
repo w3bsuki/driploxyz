@@ -104,7 +104,6 @@ export class ProductionCookieManager {
   private consent: ConsentState | null = null;
   private readonly CONSENT_VERSION = '2.0.0';
   private readonly CONSENT_MAX_AGE = 365 * 24 * 60 * 60; // 1 year
-  private __blockedScripts = new Set<string>(); // Blocked scripts for GDPR compliance (future use)
   private scriptQueue = new Map<string, () => void>();
   
   private constructor() {

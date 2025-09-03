@@ -1,9 +1,9 @@
 import { redirect, fail } from '@sveltejs/kit';
 import { ProductSchema } from '$lib/validation/product';
 import type { PageServerLoad, Actions } from './$types';
-import { createServices, serviceUtils } from '$lib/services';
+import { createServices } from '$lib/services';
 import { getUserCountry } from '$lib/country/detection';
-import * as i18n from '@repo/i18n';
+import { generateUniqueSlug, validateSlug } from '$lib/utils/slug';
 
 export const load = (async ({ locals }) => {
   // Get the session from locals 
@@ -18,7 +18,7 @@ export const load = (async ({ locals }) => {
 
   try {
     // Get user profile
-    const { data: profile, error: profileError } = await supabase
+    const { data: profile } = await supabase
       .from('profiles')
       .select('account_type, subscription_tier, premium_boosts_remaining, role, username')
       .eq('id', session.user.id)
@@ -31,10 +31,10 @@ export const load = (async ({ locals }) => {
     }
 
     // Get ALL categories for the 3-tier selection system
-    const { data: allCategories, error: categoriesError } = await services.categories.getCategories();
+    const { data: allCategories } = await services.categories.getCategories();
 
     // Get available subscription plans for upgrade prompt
-    const { data: plans, error: plansError } = await supabase
+    const { data: plans } = await supabase
       .from('subscription_plans')
       .select('*')
       .eq('is_active', true)
@@ -69,8 +69,7 @@ export const actions = {
       });
     }
 
-    // Create services for slug generation
-    const services = createServices(supabase, null);
+    // Services created at the top of the function are reused here
     
     const formData = await request.formData();
     
@@ -161,7 +160,25 @@ export const actions = {
         });
       }
       
-      // Phase 1: Create product in database with country code (without slug for speed)
+      // Generate unique slug before creating product
+      const slugResult = await generateUniqueSlug(supabase, title.trim(), {
+        maxLength: 60,
+        collisionSuffixLength: 6
+      });
+
+      // Validate the generated slug (additional safety check)
+      const slugValidation = validateSlug(slugResult.slug);
+      if (!slugValidation.valid) {
+        return fail(400, {
+          errors: { title: 'Unable to generate a valid URL slug from the product title' },
+          values: {
+            title, description, gender_category_id, type_category_id, category_id, brand, size, 
+            condition, color, material, price, shipping_cost, tags, use_premium_boost
+          }
+        });
+      }
+
+      // Create product in database with generated slug
       const { data: product, error: productError } = await supabase
         .from('products')
         .insert({
@@ -184,7 +201,7 @@ export const actions = {
           view_count: 0,
           favorite_count: 0,
           country_code: userCountry, // Add country code for multi-tenancy
-          slug: serviceUtils.slugify(title.trim()) // Generate slug immediately
+          slug: slugResult.slug // Use generated unique slug
         })
         .select()
         .single();
@@ -193,7 +210,6 @@ export const actions = {
         throw new Error(`Failed to create product: ${productError.message}`);
       }
 
-      // Slug is now generated synchronously during product creation
 
       // Add product images with error handling
       if (photo_urls && photo_urls.length > 0) {

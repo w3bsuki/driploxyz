@@ -4,7 +4,6 @@ export interface ImageProcessingOptions {
   maxWidth?: number;
   maxHeight?: number;
   quality?: number;
-  format?: 'webp' | 'jpeg' | 'png';
 }
 
 export async function processImageToWebP(
@@ -14,8 +13,7 @@ export async function processImageToWebP(
   const {
     maxWidth = 1200,
     maxHeight = 1200,
-    quality = 85,
-    format = 'webp'
+    quality = 85
   } = options;
 
   // Convert File to Buffer

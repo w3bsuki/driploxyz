@@ -1,12 +1,75 @@
 /**
- * Central category mapping utility
+ * Central category mapping utility with robust fallback system
  * Maps database category names to translation functions
- * Single source of truth for all category translations
+ * Single source of truth for all category translations with comprehensive fallback hierarchy
  * 
- * NOTE: Temporary fallback translations until proper i18n keys are added
+ * Fallback hierarchy:
+ * 1. i18n message key (category_<slugified_name>)
+ * 2. Direct mapping translation
+ * 3. Database category name (cleaned)
+ * 4. Category slug as last resort
  */
 
-// Map database category names to translation functions
+import * as i18n from '@repo/i18n';
+
+// Development mode flag for logging missing translations
+const isDevelopment = typeof process !== 'undefined' && process.env?.NODE_ENV === 'development';
+
+// Track missing translations to avoid duplicate logs
+const missingTranslations = new Set<string>();
+
+/**
+ * Log missing category translation for development feedback
+ */
+function logMissingTranslation(categoryName: string, fallbackUsed: string) {
+  if (isDevelopment && !missingTranslations.has(categoryName)) {
+    console.warn(
+      `[Category Translation] Missing translation for "${categoryName}", using fallback: "${fallbackUsed}"`
+    );
+    missingTranslations.add(categoryName);
+  }
+}
+
+/**
+ * Generate i18n message key from category name
+ * Converts "Shirts & Blouses" -> "category_shirtsBlouses"
+ */
+function getCategoryMessageKey(categoryName: string): string {
+  return 'category_' + categoryName
+    .replace(/[&+]/g, '') // Remove & and + symbols
+    .replace(/[^a-zA-Z0-9]/g, ' ') // Replace special chars with spaces
+    .trim()
+    .split(/\s+/)
+    .map((word, index) => index === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join('');
+}
+
+/**
+ * Clean category name for display
+ * Handles case variations and special characters
+ */
+function cleanCategoryName(name: string): string {
+  return name
+    .replace(/([a-z])([A-Z])/g, '$1 $2') // Add spaces between camelCase
+    .replace(/[_-]/g, ' ') // Replace underscores/hyphens with spaces
+    .replace(/\s+/g, ' ') // Normalize multiple spaces
+    .trim();
+}
+
+/**
+ * Generate slug from category name
+ * Converts "Shirts & Blouses" -> "shirts-blouses"
+ */
+function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[&+]/g, '') // Remove & and + symbols
+    .replace(/[^a-z0-9]/g, '-') // Replace non-alphanumeric with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+}
+
+// Legacy direct mapping translations (fallback level 2)
 export const categoryTranslations: Record<string, () => string> = {
   // Level 1 - Gender/Age
   'Men': () => 'Мъже',
@@ -86,14 +149,109 @@ export const categoryTranslations: Record<string, () => string> = {
 };
 
 /**
- * Get translation for a category name
- * Falls back to the original name if no translation exists
+ * Get translation for a category name with robust fallback hierarchy
+ * 
+ * Fallback hierarchy:
+ * 1. Primary: i18n message key (category_<slugified_name>)
+ * 2. Secondary: Direct mapping translation
+ * 3. Tertiary: Cleaned database name
+ * 4. Last resort: Generated slug
+ * 
+ * @param categoryName - Raw category name from database
+ * @param slug - Optional category slug from database
+ * @param options - Translation options
  */
-export function translateCategory(categoryName: string | undefined | null): string {
+export function translateCategory(
+  categoryName: string | undefined | null, 
+  slug?: string | null,
+  options: {
+    logMissing?: boolean;
+    fallbackToSlug?: boolean;
+  } = {}
+): string {
+  const { logMissing = true, fallbackToSlug = true } = options;
+  
   if (!categoryName) return '';
   
+  // 1. Try i18n message key first (Primary)
+  try {
+    const messageKey = getCategoryMessageKey(categoryName);
+    if (messageKey in i18n) {
+      const translationFunction = (i18n as any)[messageKey];
+      if (typeof translationFunction === 'function') {
+        return translationFunction();
+      }
+    }
+  } catch (error) {
+    // i18n key doesn't exist or function call failed
+  }
+  
+  // 2. Try direct mapping translation (Secondary)
   const translator = categoryTranslations[categoryName];
-  return translator ? translator() : categoryName;
+  if (translator) {
+    try {
+      return translator();
+    } catch (error) {
+      // Translation function failed
+    }
+  }
+  
+  // 3. Use cleaned category name (Tertiary)
+  const cleanedName = cleanCategoryName(categoryName);
+  if (cleanedName !== categoryName) {
+    if (logMissing) {
+      logMissingTranslation(categoryName, cleanedName);
+    }
+    return cleanedName;
+  }
+  
+  // 4. Last resort: use slug or generate one
+  if (fallbackToSlug) {
+    const fallbackSlug = slug || generateSlug(categoryName);
+    const slugDisplay = fallbackSlug.replace(/-/g, ' ');
+    
+    if (logMissing) {
+      logMissingTranslation(categoryName, slugDisplay);
+    }
+    
+    return slugDisplay;
+  }
+  
+  // Final fallback: return original name
+  if (logMissing) {
+    logMissingTranslation(categoryName, categoryName);
+  }
+  
+  return categoryName;
+}
+
+/**
+ * Validate category translation coverage
+ * Returns missing translations for development feedback
+ */
+export function validateCategoryTranslations(categories: Array<{name: string, slug?: string}>): {
+  missing: Array<{name: string, suggestedKey: string, slug?: string}>;
+  coverage: number;
+} {
+  const missing: Array<{name: string, suggestedKey: string, slug?: string}> = [];
+  
+  for (const category of categories) {
+    const messageKey = getCategoryMessageKey(category.name);
+    const hasI18nKey = messageKey in i18n;
+    const hasDirectMapping = category.name in categoryTranslations;
+    
+    if (!hasI18nKey && !hasDirectMapping) {
+      missing.push({
+        name: category.name,
+        suggestedKey: messageKey,
+        slug: category.slug
+      });
+    }
+  }
+  
+  const coverage = ((categories.length - missing.length) / categories.length) * 100;
+  
+  return { missing, coverage };
 }
 
 /**
@@ -169,7 +327,7 @@ export function buildCategoryHierarchy(categories: any[]): Record<string, Catego
     const item: CategoryHierarchyItem = {
       id: cat.id,
       name: cat.name,
-      translatedName: translateCategory(cat.name),
+      translatedName: translateCategory(cat.name, cat.slug),
       icon: getCategoryIcon(cat.name),
       slug: cat.slug || cat.name.toLowerCase(),
       level: 1,
@@ -184,7 +342,7 @@ export function buildCategoryHierarchy(categories: any[]): Record<string, Catego
       const l2Item: CategoryHierarchyItem = {
         id: l2.id,
         name: l2.name,
-        translatedName: translateCategory(l2.name),
+        translatedName: translateCategory(l2.name, l2.slug),
         icon: getCategoryIcon(l2.name),
         slug: l2.slug || l2.name.toLowerCase(),
         level: 2,
@@ -198,7 +356,7 @@ export function buildCategoryHierarchy(categories: any[]): Record<string, Catego
       l2Item.children = level3Children.map(l3 => ({
         id: l3.id,
         name: l3.name,
-        translatedName: translateCategory(l3.name),
+        translatedName: translateCategory(l3.name, l3.slug),
         icon: getCategoryIcon(l3.name),
         slug: l3.slug || l3.name.toLowerCase(),
         level: 3,

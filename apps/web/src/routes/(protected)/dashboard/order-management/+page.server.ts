@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 
-export const load = (async ({ locals, url }) => {
+export const load = (async ({ locals }) => {
   const { safeGetSession, supabase } = locals;
   const { session, user } = await safeGetSession();
   

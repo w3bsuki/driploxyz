@@ -9,6 +9,8 @@
     empty_startBrowsing: string;
     nav_sell: string;
     home_browseAll: string;
+    home_itemCount: string;
+    home_updatedMomentsAgo: string;
     product_size: string;
     trending_newSeller: string;
     seller_unknown: string;
@@ -70,32 +72,18 @@
 >
   <!-- Enhanced Section Header - Mobile-First -->
   <div class="mb-4 sm:mb-6">
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="text-lg sm:text-xl font-bold text-[color:var(--text-primary)] tracking-tight leading-tight">
-        {sectionTitle}
-      </h2>
-      {#if onBrowseAll}
-        <button
-          onclick={onBrowseAll}
-          class="min-h-[36px] px-3 sm:px-4 py-1.5 sm:py-2 
-                 text-sm font-medium rounded-lg transition-all duration-200 
-                 bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)]
-                 hover:bg-[color:var(--surface-muted)] hover:text-[color:var(--text-primary)]
-                 active:bg-[color:var(--surface-base)] active:scale-95
-                 focus:outline-none focus:ring-2 focus:ring-[color:var(--primary)]/20 focus:ring-offset-1"
-          aria-label="View all {sectionTitle.toLowerCase()}"
-        >
-          {translations.home_browseAll || 'View All'}
-        </button>
-      {/if}
+    <div class="flex items-start justify-between">
+      <div class="flex-1">
+        <h2 class="text-lg sm:text-xl font-medium text-gray-900 tracking-tight leading-tight">
+          {sectionTitle}
+        </h2>
+        {#if hasProducts}
+          <p class="text-xs sm:text-sm text-gray-500 font-normal mt-0.5" style="letter-spacing: -0.01em;">
+            {products.length} {translations.home_itemCount} • {translations.home_updatedMomentsAgo}
+          </p>
+        {/if}
+      </div>
     </div>
-    
-    <!-- Subtitle with product count -->
-    {#if hasProducts}
-      <p class="text-sm text-[color:var(--text-tertiary)] font-medium">
-        {products.length} fresh items • Updated moments ago
-      </p>
-    {/if}
   </div>
   
   <!-- Quick Filter Pills - Mobile-First -->

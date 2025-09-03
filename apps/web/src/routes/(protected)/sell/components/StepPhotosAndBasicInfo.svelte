@@ -69,10 +69,11 @@
   <!-- Title & Description - Combined Section -->
   <div class="bg-white rounded-lg border-2 border-gray-200 p-3 space-y-3">
     <div>
-      <label class="text-sm font-medium text-gray-700 mb-1.5 block">
+      <label for="title" class="text-sm font-medium text-gray-700 mb-1.5 block">
         {i18n.sell_title()} <span class="text-red-500">*</span>
       </label>
       <input
+        id="title"
         type="text"
         placeholder={i18n.sell_titlePlaceholder()}
         bind:value={formData.title}

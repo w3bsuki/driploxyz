@@ -174,11 +174,11 @@
 
   <!-- Gender Selection Card -->
   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
-    <label class="text-sm font-medium text-gray-700 mb-2 block">
+    <div id="gender-label" class="text-sm font-medium text-gray-700 mb-2 block">
       {i18n.sell_whoIsItFor()} <span class="text-red-500">*</span>
-    </label>
+    </div>
     
-    <div class="grid grid-cols-4 gap-1.5">
+    <div class="grid grid-cols-4 gap-1.5" role="group" aria-labelledby="gender-label">
       {#each genderCategories as category}
         <button
           type="button"
@@ -200,11 +200,11 @@
   <!-- Type Selection Card -->
   {#if typeCategories.length > 0}
     <div class="bg-white rounded-lg border-2 border-gray-200 p-3 animate-in fade-in slide-in-from-top duration-200">
-      <label class="text-sm font-medium text-gray-700 mb-2 block">
+      <div id="type-label" class="text-sm font-medium text-gray-700 mb-2 block">
         {i18n.sell_category()} <span class="text-red-500">*</span>
-      </label>
+      </div>
       
-      <div class="grid grid-cols-2 gap-1.5">
+      <div class="grid grid-cols-2 gap-1.5" role="group" aria-labelledby="type-label">
         {#each typeCategories as category}
           <button
             type="button"
@@ -232,12 +232,12 @@
   <!-- Specific Category Selection Card (Optional) -->
   {#if specificCategories.length > 0}
     <div class="bg-white rounded-lg border-2 border-gray-200 p-3 animate-in fade-in slide-in-from-top duration-200">
-      <label class="text-sm font-medium text-gray-700 mb-2 block">
+      <div id="specific-label" class="text-sm font-medium text-gray-700 mb-2 block">
         {i18n.sell_beMoreSpecific()} <span class="text-gray-400 text-xs">{i18n.sell_optional()}</span>
-      </label>
+      </div>
       
       <div class="max-h-32 overflow-y-auto">
-        <div class="grid grid-cols-2 gap-1.5">
+        <div class="grid grid-cols-2 gap-1.5" role="group" aria-labelledby="specific-label">
           {#each specificCategories as category}
             <button
               type="button"
@@ -259,11 +259,11 @@
 
   <!-- Condition Selection Card -->
   <div class="bg-white rounded-lg border-2 border-gray-200 p-3">
-    <label class="text-sm font-medium text-gray-700 mb-2 block">
+    <div id="condition-label" class="text-sm font-medium text-gray-700 mb-2 block">
       {i18n.sell_condition()} <span class="text-red-500">*</span>
-    </label>
+    </div>
     
-    <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-1.5">
+    <div class="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-1.5" role="group" aria-labelledby="condition-label">
       {#each conditions as condition}
         <button
           type="button"

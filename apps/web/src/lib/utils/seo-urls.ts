@@ -15,11 +15,69 @@ export interface Product {
   color?: string;
 }
 
+export interface ProductForUrl {
+  id: string;
+  slug: string;
+  seller_username: string;
+}
+
+// Extended interface that matches the actual data structure used in the app
+export interface ProductWithProfile {
+  id: string;
+  slug?: string | null;
+  profiles?: {
+    username?: string | null;
+  } | null;
+  categories?: {
+    slug?: string | null;
+  } | null;
+}
+
 /**
- * Generate SEO-friendly product URL
- * Falls back to UUID if no slug is available
+ * Generate canonical SEO-friendly product URL with seller username
+ * Format: /product/:seller_username/:product_slug
+ * 
+ * @param p Product data with required seller_username and slug
+ * @throws Error if seller_username or slug is missing (production-ready - no fallbacks)
  */
-export function getProductUrl(product: Product): string {
+export function getProductUrl(p: ProductForUrl | ProductWithProfile): string {
+  let sellerUsername: string;
+  let productSlug: string;
+
+  // Handle ProductForUrl interface (clean structure)
+  if ('seller_username' in p) {
+    if (!p.seller_username || !p.slug) {
+      throw new Error(`getProductUrl: Missing required fields - seller_username: ${p.seller_username}, slug: ${p.slug}, product_id: ${p.id}`);
+    }
+    sellerUsername = p.seller_username;
+    productSlug = p.slug;
+  }
+  // Handle ProductWithProfile interface (nested profiles structure)
+  else if ('profiles' in p) {
+    if (!p.profiles?.username || !p.slug) {
+      throw new Error(`getProductUrl: Missing required fields in profiles - username: ${p.profiles?.username}, slug: ${p.slug}, product_id: ${p.id}`);
+    }
+    sellerUsername = p.profiles.username;
+    productSlug = p.slug;
+  }
+  else {
+    throw new Error(`getProductUrl: Invalid product structure for product_id: ${p.id}`);
+  }
+
+  return `/product/${sellerUsername}/${productSlug}`;
+}
+
+/**
+ * Convenient alias for getProductUrl - builds canonical product URLs
+ * @param product Product data with required seller username and slug
+ */
+export const buildProductUrl = getProductUrl;
+
+/**
+ * Legacy product URL generator - falls back to UUID if no slug
+ * @deprecated Use getProductUrl with ProductForUrl interface for new code
+ */
+export function getLegacyProductUrl(product: Product): string {
   if (product.slug) {
     return `/${product.slug}`;
   }

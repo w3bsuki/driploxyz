@@ -1,22 +1,24 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@repo/database';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
+// Imports for future archiving implementation
+// import { createClient } from '@supabase/supabase-js';
+// import type { Database } from '@repo/database';
+// import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+// import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 
-function createSupabaseAdmin() {
-  return createClient<Database>(
-    PUBLIC_SUPABASE_URL,
-    SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    }
-  );
-}
+// Temporarily commented out - will be used when archiving is implemented
+// function createSupabaseAdmin() {
+//   return createClient<Database>(
+//     PUBLIC_SUPABASE_URL,
+//     SUPABASE_SERVICE_ROLE_KEY,
+//     {
+//       auth: {
+//         autoRefreshToken: false,
+//         persistSession: false
+//       }
+//     }
+//   );
+// }
 
 export const GET: RequestHandler = async ({ request }) => {
   try {
@@ -30,7 +32,7 @@ export const GET: RequestHandler = async ({ request }) => {
 
     // Starting automated order archiving
 
-    const supabase = createSupabaseAdmin();
+    // const supabase = createSupabaseAdmin(); // Will be used when archiving is implemented
 
     // Order archiving implementation pending database functions
     const archivedCount = 0; // No orders archived

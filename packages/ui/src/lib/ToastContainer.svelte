@@ -26,20 +26,21 @@
 	// Global toast function that other components can call (legacy support)
 	function addToast(message: string, type: Toast['type'] = 'info', duration = 3000) {
 		const id = Math.random().toString(36).substring(2, 9);
-		const toast: Toast = { id, message, type, duration };
-		toasts = [...toasts, toast];
-
-		// If modern toast provider is available, use it
+		
+		// Use ONLY the modern toast provider - no local toasts to prevent duplicates
 		if (toastProvider?.addToastData) {
-			toastProvider.addToastData({
+			return toastProvider.addToastData({
 				id,
 				type: type || 'info',
 				description: message,
 				duration
 			});
 		}
-
-		// Auto-remove after duration
+		
+		// Fallback only if no modern provider available
+		const toast: Toast = { id, message, type, duration };
+		toasts = [...toasts, toast];
+		
 		setTimeout(() => {
 			removeToast(id);
 		}, duration);
@@ -58,13 +59,14 @@
 
 	// Expose the addToast function globally for other components (legacy support)
 	onMount(() => {
-		if (typeof window !== 'undefined') {
-			(window as any).showToast = addToast;
-		}
-		
 		// Set up connection to modern toast system
 		if (toastProvider) {
 			setToastProvider(toastProvider);
+		}
+		
+		// Only set window.showToast if not already set by modern store
+		if (typeof window !== 'undefined' && !(window as any).showToast) {
+			(window as any).showToast = addToast;
 		}
 	});
 

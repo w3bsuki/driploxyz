@@ -7,7 +7,7 @@ import type { Actions, PageServerLoad } from './$types';
  * Ensures users who have already completed onboarding are redirected to dashboard.
  * Provides necessary data for users still in onboarding process.
  */
-export const load = (async ({ locals: { safeGetSession }, parent, url }) => {
+export const load = (async ({ locals: { safeGetSession }, parent }) => {
   const { session, user } = await safeGetSession();
   
   console.log('[ONBOARDING LOAD] Loading onboarding for user:', user?.email);
@@ -40,7 +40,7 @@ export const load = (async ({ locals: { safeGetSession }, parent, url }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  complete: async ({ request, locals: { supabase, safeGetSession }, cookies }) => {
+  complete: async ({ request, locals: { supabase, safeGetSession } }) => {
     const { session, user } = await safeGetSession();
     
     if (!session || !user) {
@@ -62,8 +62,8 @@ export const actions = {
     
     console.log('[ONBOARDING COMPLETE] Starting completion for user:', user.email, { accountType, brandPaid });
     
-    // SERVER-SIDE VALIDATION: Verify payment for brand/premium accounts
-    if (accountType === 'brand' || accountType === 'premium') {
+    // SERVER-SIDE VALIDATION: Verify payment for brand/pro accounts
+    if (accountType === 'brand' || accountType === 'pro') {
       // First check the client flag
       if (!brandPaid) {
         console.error('[ONBOARDING COMPLETE] Payment required but not completed:', { accountType, brandPaid });
@@ -77,7 +77,7 @@ export const actions = {
         .select('*')
         .eq('user_id', user.id)
         .eq('status', 'completed')
-        .in('plan_type', ['brand', 'premium'])
+        .in('plan_type', ['brand', 'pro'])
         .gte('created_at', thirtyMinutesAgo)
         .order('created_at', { ascending: false })
         .limit(1)
@@ -125,8 +125,8 @@ export const actions = {
       let accountStatus = null;
       if (accountType === 'brand') {
         accountStatus = brandPaid ? 'brand' : 'brand_pending';
-      } else if (accountType === 'premium') {
-        accountStatus = brandPaid ? 'premium' : 'premium_pending';
+      } else if (accountType === 'pro') {
+        accountStatus = brandPaid ? 'pro' : 'pro_pending';
       }
       
       // Parse social links safely
@@ -142,8 +142,8 @@ export const actions = {
       let subscriptionTier = 'free';
       if (accountType === 'brand' && brandPaid) {
         subscriptionTier = 'brand';
-      } else if (accountType === 'premium' && brandPaid) {
-        subscriptionTier = 'premium';
+      } else if (accountType === 'pro' && brandPaid) {
+        subscriptionTier = 'pro';
       }
 
       // Build profile update object
@@ -160,7 +160,7 @@ export const actions = {
         },
         social_links: parsedSocialLinks.filter((link: any) => link.url?.trim()),
         onboarding_completed: true,
-        verified: (accountType === 'brand' || accountType === 'premium') && brandPaid,
+        verified: (accountType === 'brand' || accountType === 'pro') && brandPaid,
         brand_status: accountStatus,
         subscription_tier: subscriptionTier,
         updated_at: new Date().toISOString()

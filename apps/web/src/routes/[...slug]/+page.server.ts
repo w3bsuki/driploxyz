@@ -5,16 +5,18 @@ import type { PageServerLoad } from './$types';
  * SEO-Friendly Product Route Handler
  * 
  * Handles URL patterns like:
- * - /men/shoes/nike-air-force-white-size-42-good-abc123de (SEO-friendly with slug)
- * - /product/uuid (legacy UUID format - redirects to SEO URL)
- * - /uuid (direct UUID fallback)
+ * - /products/:seller/:product_slug (canonical format)
+ * - /products/:seller/:category_slug/:product_slug (with category)
+ * - /product/uuid (legacy UUID format - redirects to canonical)
+ * - /:legacy_slug (old single slug - redirects to canonical)
  * 
- * This route catches all unmatched paths and attempts to:
- * 1. Parse SEO-friendly product slugs
- * 2. Handle direct UUID lookups 
- * 3. Redirect legacy /product/uuid URLs to SEO URLs
+ * Resolution order:
+ * 1. Legacy /product/:id → 301 to /products/:seller/:slug
+ * 2. /products/:seller/:productSlug (with optional category segment)
+ * 3. Legacy single-segment slug → look up product by slug, 301 to canonical
+ * 4. Slug/username history → 301 to current canonical
  */
-export const load = (async ({ params, locals: { supabase, safeGetSession, country }, url }) => {
+export const load = (async ({ params, locals: { supabase, safeGetSession, country } }) => {
   const { session } = await safeGetSession();
   const slug = params.slug;
 
@@ -33,63 +35,174 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
     throw error(404, 'Not found');
   }
 
+  const parts = slug.split('/').filter(Boolean);
   let product = null;
-  let shouldRedirect = false;
-  let redirectUrl = '';
 
   // Case 1: Handle legacy /product/uuid format
-  if (slug.startsWith('product/')) {
-    const uuid = slug.replace('product/', '');
-    if (isUUID(uuid)) {
-      // Look up product by UUID and redirect to SEO URL if it has a slug
-      const { data: productData } = await supabase
-        .from('products')
-        .select('id, slug')
-        .eq('id', uuid)
-        .eq('is_active', true)
-        .eq('country_code', country || 'BG')
+  if (parts[0] === 'product' && parts[1] && isUUID(parts[1])) {
+    const uuid = parts[1];
+    const { data: productData } = await supabase
+      .from('products')
+      .select(`
+        id, slug,
+        profiles!products_seller_id_fkey (username)
+      `)
+      .eq('id', uuid)
+      .eq('is_active', true)
+      .eq('country_code', country || 'BG')
+      .single();
+    
+    if (productData?.slug && productData?.profiles?.username) {
+      // Redirect to canonical URL
+      throw redirect(301, `/products/${productData.profiles.username}/${productData.slug}`);
+    } else if (productData) {
+      // Fallback to internal product page
+      return { redirectToInternal: `/product/${uuid}` };
+    } else {
+      throw error(404, 'Product not found');
+    }
+  }
+
+  // Case 2: Handle /products/:seller/:slug or /products/:seller/:category/:slug
+  if (parts[0] === 'products' && parts[1] && parts[2]) {
+    const sellerUsername = parts[1];
+    const productSlug = parts.length === 3 ? parts[2] : parts[3]; // Handle optional category segment
+    const categorySegment = parts.length === 4 ? parts[2] : null;
+
+    // Look up seller by username
+    let { data: seller } = await supabase
+      .from('profiles')
+      .select('id, username')
+      .eq('username', sellerUsername)
+      .single();
+
+    // If seller not found by current username, check username history
+    if (!seller) {
+      const { data: usernameHistory } = await (supabase as any)
+        .from('username_history')
+        .select(`
+          user_id,
+          profiles!username_history_user_id_fkey (
+            id, username
+          )
+        `)
+        .eq('old_username', sellerUsername)
         .single();
-      
-      if (productData?.slug) {
-        throw redirect(301, `/${productData.slug}`);
+
+      if (usernameHistory?.profiles?.username) {
+        // Redirect to current username
+        const newPath = categorySegment 
+          ? `/products/${usernameHistory.profiles.username}/${categorySegment}/${productSlug}`
+          : `/products/${usernameHistory.profiles.username}/${productSlug}`;
+        throw redirect(301, newPath);
       } else {
-        // Fallback to old product page if no slug exists yet
-        throw redirect(301, `/product/${uuid}`);
+        throw error(404, 'Seller not found');
       }
     }
-  }
 
-  // Case 2: Check if this is a direct UUID
-  if (isUUID(slug)) {
+    // Look up product by seller + slug (with null checks)
+    if (!seller.id || !productSlug) {
+      throw error(404, 'Invalid request parameters');
+    }
+
     const { data: productData } = await supabase
       .from('products')
-      .select('id, slug')
-      .eq('id', slug)
+      .select(`
+        id, slug,
+        categories (slug, name)
+      `)
+      .eq('seller_id', seller.id)
+      .eq('slug', productSlug)
       .eq('is_active', true)
       .eq('country_code', country || 'BG')
       .single();
-    
-    if (productData?.slug) {
-      // Redirect UUID to SEO-friendly URL
-      throw redirect(301, `/${productData.slug}`);
-    } else if (productData) {
-      // Use UUID until slug is generated
-      product = await getProductData(supabase, slug, session, country);
+
+    if (!productData) {
+      throw error(404, 'Product not found');
+    }
+
+    // Check if category segment is correct (if provided)
+    if (categorySegment && productData.categories?.slug !== categorySegment) {
+      // Redirect to correct canonical URL
+      const correctPath = productData.categories?.slug 
+        ? `/products/${sellerUsername}/${productData.categories.slug}/${productSlug}`
+        : `/products/${sellerUsername}/${productSlug}`;
+      throw redirect(301, correctPath);
+    }
+
+    // Product found - get full data and render
+    if (productData.id) {
+      product = await getProductData(supabase, productData.id, session, country);
     }
   }
 
-  // Case 3: Look for product by slug (SEO-friendly URL)
-  if (!product) {
+  // Case 3: Handle direct UUID
+  if (!product && parts.length === 1 && parts[0] && isUUID(parts[0])) {
+    const uuid = parts[0];
+    
+    if (!uuid) {
+      throw error(404, 'Invalid UUID');
+    }
+
     const { data: productData } = await supabase
       .from('products')
-      .select('id')
-      .eq('slug', slug)
+      .select(`
+        id, slug,
+        profiles!products_seller_id_fkey (username)
+      `)
+      .eq('id', uuid)
       .eq('is_active', true)
       .eq('country_code', country || 'BG')
       .single();
     
-    if (productData) {
-      product = await getProductData(supabase, productData.id, session, country);
+    if (productData?.slug && productData?.profiles?.username) {
+      throw redirect(301, `/products/${productData.profiles.username}/${productData.slug}`);
+    } else if (productData) {
+      return { redirectToInternal: `/product/${uuid}` };
+    }
+  }
+
+  // Case 4: Handle legacy single slug (backwards compatibility)
+  if (!product && parts.length === 1 && parts[0] && !isUUID(parts[0])) {
+    const legacySlug = parts[0];
+    
+    if (!legacySlug) {
+      throw error(404, 'Invalid slug');
+    }
+    
+    // First, look for product by slug globally
+    const { data: productData } = await supabase
+      .from('products')
+      .select(`
+        id, slug,
+        profiles!products_seller_id_fkey (username)
+      `)
+      .eq('slug', legacySlug)
+      .eq('is_active', true)
+      .eq('country_code', country || 'BG')
+      .single();
+
+    if (productData?.profiles?.username && productData.slug) {
+      throw redirect(301, `/products/${productData.profiles.username}/${productData.slug}`);
+    }
+
+    // If not found, check slug history for redirects
+    if (!productData) {
+      const { data: slugHistory } = await (supabase as any)
+        .from('product_slug_history')
+        .select(`
+          product_id,
+          products (
+            id, slug,
+            profiles!products_seller_id_fkey (username)
+          )
+        `)
+        .eq('old_slug', legacySlug)
+        .single();
+
+      if (slugHistory?.products?.profiles?.username && slugHistory.products.slug) {
+        throw redirect(301, `/products/${slugHistory.products.profiles.username}/${slugHistory.products.slug}`);
+      }
     }
   }
 
@@ -102,7 +215,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
   if (product.categories && product.categories.parent_id) {
     const { data: parent } = await supabase
       .from('categories')
-      .select('name')
+      .select('name, slug')
       .eq('id', product.categories.parent_id)
       .single();
     parentCategory = parent;
@@ -202,7 +315,7 @@ function isUUID(str: string): boolean {
 /**
  * Get complete product data with all related information
  */
-async function getProductData(supabase: any, productId: string, session: any, country?: string) {
+async function getProductData(supabase: any, productId: string, _session: any, country?: string) {
   // Get main product with optimized query including full seller info
   const { data: product, error: productError } = await supabase
     .from('products')
@@ -232,6 +345,7 @@ async function getProductData(supabase: any, productId: string, session: any, co
       categories!left (
         id,
         name,
+        slug,
         parent_id
       ),
       profiles!products_seller_id_fkey (

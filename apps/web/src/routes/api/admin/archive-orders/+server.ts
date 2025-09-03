@@ -1,24 +1,26 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@repo/database';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
+// Imports for future archiving implementation
+// import { createClient } from '@supabase/supabase-js';
+// import type { Database } from '@repo/database';
+// import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+// import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 
-function createSupabaseAdmin() {
-  return createClient<Database>(
-    PUBLIC_SUPABASE_URL,
-    SUPABASE_SERVICE_ROLE_KEY,
-    {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    }
-  );
-}
+// Temporarily commented out - will be used when archiving is implemented
+// function createSupabaseAdmin() {
+//   return createClient<Database>(
+//     PUBLIC_SUPABASE_URL,
+//     SUPABASE_SERVICE_ROLE_KEY,
+//     {
+//       auth: {
+//         autoRefreshToken: false,
+//         persistSession: false
+//       }
+//     }
+//   );
+// }
 
-export const POST: RequestHandler = async ({ request, locals: { safeGetSession } }) => {
+export const POST: RequestHandler = async ({ locals: { safeGetSession } }) => {
   try {
     // Check authentication
     const { session } = await safeGetSession();
@@ -31,9 +33,8 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession }
     // In production, you might want to restrict this to admin users
     // You can add a role check here later
 
-    const supabase = createSupabaseAdmin();
-
     // Order archiving implementation pending database functions
+    // const supabase = createSupabaseAdmin();
     const result = 0; // No orders archived
     const stats = [{
       total_orders: 0,
@@ -63,9 +64,8 @@ export const GET: RequestHandler = async ({ locals: { safeGetSession } }) => {
       return error(401, 'Authentication required');
     }
 
-    const supabase = createSupabaseAdmin();
-
     // Archiving statistics implementation pending database functions
+    // const supabase = createSupabaseAdmin();
     const stats = [{
       total_orders: 0,
       archived_orders: 0,

@@ -41,25 +41,41 @@
     }
   });
 
-  // Handle form errors with toast  
+  // Track previous form state to prevent duplicate notifications
+  let prevFormErrorsKey = $state('');
+  
+  // Handle form errors with toast - prevent infinite loops
   $effect(() => {
-    if (form?.errors) {
-      if (form.errors._form) {
+    // Create a unique key from current form errors to detect actual changes
+    const currentFormErrorsKey = form?.errors 
+      ? JSON.stringify({
+          _form: form.errors._form,
+          email: form.errors.email, 
+          password: form.errors.password
+        })
+      : '';
+    
+    // Only show toasts if form errors actually changed (not just form object reference)
+    if (currentFormErrorsKey && currentFormErrorsKey !== prevFormErrorsKey) {
+      if (form?.errors?._form) {
         toasts.error(form.errors._form, {
           duration: 6000
         });
       }
-      if (form.errors.email) {
+      if (form?.errors?.email) {
         toasts.error(form.errors.email, {
           duration: 6000
         });
       }
-      if (form.errors.password) {
+      if (form?.errors?.password) {
         toasts.error(`Password: ${form.errors.password}`, {
           duration: 6000
         });
       }
     }
+    
+    // Update the previous key after processing
+    prevFormErrorsKey = currentFormErrorsKey;
   });
 </script>
 
@@ -87,20 +103,7 @@
 
 
 
-  {#if form?.errors?._form}
-    <div class="bg-[color:var(--status-error-bg)] border border-[color:var(--status-error-border)] rounded-md p-4">
-      <div class="flex">
-        <div class="shrink-0">
-          <svg class="h-5 w-5 text-[color:var(--status-error-text)]" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div class="ml-3">
-          <p class="text-sm text-[color:var(--status-error-text)]">{form.errors._form}</p>
-        </div>
-      </div>
-    </div>
-  {/if}
+  <!-- Form errors now handled by toast system only -->
 
   <!-- Email/Password Form -->
   <form 

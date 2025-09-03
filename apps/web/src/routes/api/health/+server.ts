@@ -27,7 +27,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		// Check auth service
 		try {
 			// Try to get session (won't fail if no session, just returns null)
-			const { data: { session }, error: authError } = await locals.supabase.auth.getSession();
+			const { error: authError } = await locals.supabase.auth.getSession();
 			checks.auth = !authError;
 		} catch (e) {
 			console.error('Auth health check failed:', e);
@@ -36,7 +36,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 		
 		// Check storage service (optional check)
 		try {
-			const { data, error: storageError } = await locals.supabase
+			const { error: storageError } = await locals.supabase
 				.storage
 				.listBuckets();
 			

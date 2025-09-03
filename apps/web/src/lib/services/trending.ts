@@ -38,7 +38,7 @@ export async function getTrendingData(supabase: SupabaseClient): Promise<Trendin
       .order('view_count', { ascending: false })
       .limit(5);
 
-    const searches = (popularProducts || []).map((p: any, index: number) => ({
+    const searches = (popularProducts || []).map((p: { title: string; brand?: string }, index: number) => ({
       id: crypto.randomUUID(),
       query: p.brand || p.title,
       search_count: 100 - (index * 10), // Fake counts for now
@@ -64,7 +64,7 @@ export async function getTrendingData(supabase: SupabaseClient): Promise<Trendin
     return {
       searches,
       products: products || [],
-      categories: (categories || []).map((c: any, index: number) => ({
+      categories: (categories || []).map((c: { id: string; name: string; slug: string }, index: number) => ({
         id: c.id,
         name: c.name,
         slug: c.slug,

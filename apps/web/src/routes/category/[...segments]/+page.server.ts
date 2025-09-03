@@ -216,6 +216,7 @@ async function getProductsForCategories(
       seller_id,
       category_id,
       country_code,
+      slug,
       product_images (
         image_url,
         display_order
@@ -291,7 +292,7 @@ async function getProductsForCategories(
 /**
  * Get subcategories with hierarchical product counts
  */
-async function getSubcategoriesWithCounts(services: any, categoryId: string, countryCode: string) {
+async function getSubcategoriesWithCounts(services: any, categoryId: string, _countryCode: string) {
   const { data: subcategories, error } = await services.categories.getSubcategories(categoryId);
   
   if (error || !subcategories?.length) {
@@ -317,7 +318,7 @@ async function getSubcategoriesWithCounts(services: any, categoryId: string, cou
 /**
  * Get level 3 categories for dynamic pills based on current category level
  */
-async function getLevel3CategoriesForPills(services: any, supabase: any, category: any, countryCode: string, currentLevel: number) {
+async function getLevel3CategoriesForPills(services: any, _supabase: any, category: any, _countryCode: string, currentLevel: number) {
   let level3Categories: any[] = [];
 
   if (currentLevel === 2) {
@@ -426,7 +427,7 @@ async function getSellersInCategory(supabase: any, categoryIds: string[], countr
 /**
  * Generate meta title based on category resolution
  */
-function generateMetaTitle(resolution: any, i18n: any): string {
+function generateMetaTitle(resolution: any, _i18n: any): string {
   const titles: string[] = [];
   
   if (resolution.l3) {
@@ -449,7 +450,7 @@ function generateMetaTitle(resolution: any, i18n: any): string {
 /**
  * Generate meta description based on category resolution and product count
  */
-function generateMetaDescription(resolution: any, productCount: number, i18n: any): string {
+function generateMetaDescription(resolution: any, productCount: number, _i18n: any): string {
   let description = '';
   
   if (resolution.l3) {

@@ -6,6 +6,7 @@ export interface Message {
   sender_id: string;
   receiver_id: string;
   product_id?: string | null;
+  order_id?: string | null;
   content: string;
   created_at: string;
   is_read?: boolean;
@@ -14,6 +15,8 @@ export interface Message {
   sender?: any;
   receiver?: any;
   product?: any;
+  order?: any;
+  message_type?: 'user' | 'system' | 'order_update';
 }
 
 export interface Conversation {
@@ -25,12 +28,16 @@ export interface Conversation {
   productTitle?: string | null;
   productImage?: string | null;
   productPrice?: number;
+  orderId?: string | null;
+  orderStatus?: string;
+  orderTotal?: number;
   messages: Message[];
   lastMessage?: string;
   lastMessageTime?: string;
   unread: boolean;
   lastActiveAt?: string;
   isProductConversation: boolean;
+  isOrderConversation: boolean;
   messageCache: Set<string>;
 }
 
@@ -41,12 +48,20 @@ export class ConversationService {
   private reconnectAttempts = 0;
   private readonly MAX_RECONNECT_ATTEMPTS = 5;
   private updateQueue = new Map<string, any>();
-  private __lastUpdateTime = 0; // Future use for performance tracking
 
   constructor(
     private supabase: SupabaseClient,
     private userId: string
   ) {}
+
+  // Add a single conversation to the service
+  addConversation(conversation: Conversation): void {
+    this.conversations.set(conversation.id, conversation);
+    messagingLogger.info('Added conversation to service', { 
+      conversationId: conversation.id,
+      userId: conversation.userId
+    });
+  }
 
   // Initialize conversations from server data (messages or conversation summaries)
   initializeConversations(data: Message[] | any[], dataType: 'messages' | 'conversations' = 'messages'): void {
@@ -64,12 +79,16 @@ export class ConversationService {
           productTitle: conv.productTitle,
           productImage: conv.productImage,
           productPrice: conv.productPrice || 0,
+          orderId: conv.orderId,
+          orderStatus: conv.orderStatus,
+          orderTotal: conv.orderTotal,
           messages: [], // Will be loaded on demand
           lastMessage: conv.lastMessage || 'Start a conversation...',
           lastMessageTime: conv.lastMessageTime,
           unread: (conv.unreadCount || 0) > 0,
           lastActiveAt: conv.lastActiveAt,
           isProductConversation: conv.isProductConversation || false,
+          isOrderConversation: !!conv.orderId,
           messageCache: new Set()
         });
       });
@@ -94,12 +113,16 @@ export class ConversationService {
             productTitle: product?.title || null,
             productImage: product?.images?.[0]?.image_url || null,
             productPrice: product?.price || 0,
+            orderId: msg.order_id,
+            orderStatus: msg.order?.status,
+            orderTotal: msg.order?.total_amount,
             messages: [msg],
             lastMessage: msg.content,
             lastMessageTime: msg.created_at,
             unread: !msg.is_read && msg.sender_id !== this.userId,
             lastActiveAt: otherUser?.last_active_at,
             isProductConversation: !!productId,
+            isOrderConversation: !!msg.order_id,
             messageCache: new Set([msg.id])
           });
         } else {
@@ -163,12 +186,16 @@ export class ConversationService {
         productTitle: message.product?.title || null,
         productImage: message.product?.images?.[0]?.image_url || null,
         productPrice: message.product?.price || 0,
+        orderId: message.order_id,
+        orderStatus: message.order?.status,
+        orderTotal: message.order?.total_amount,
         messages: [message],
         lastMessage: message.content,
         lastMessageTime: message.created_at,
         unread: !message.is_read && message.sender_id !== this.userId,
         lastActiveAt: otherUser?.last_active_at,
         isProductConversation: !!message.product_id,
+        isOrderConversation: !!message.order_id,
         messageCache: new Set([message.id])
       };
       
@@ -198,7 +225,26 @@ export class ConversationService {
   // Send message optimistically
   async sendMessage(conversationId: string, content: string): Promise<boolean> {
     const conversation = this.conversations.get(conversationId);
-    if (!conversation) return false;
+    if (!conversation) {
+      messagingLogger.error('Conversation not found', { conversationId });
+      return false;
+    }
+
+    const trimmedContent = content.trim();
+    if (!trimmedContent || trimmedContent.length === 0) {
+      messagingLogger.error('Empty message content', { conversationId, content });
+      return false;
+    }
+
+    // Validate user IDs
+    if (this.userId === conversation.userId) {
+      messagingLogger.error('Cannot send message to self', { 
+        senderId: this.userId, 
+        receiverId: conversation.userId,
+        conversationId 
+      });
+      return false;
+    }
 
     // Create optimistic message
     const optimisticMessage: Message = {
@@ -206,7 +252,8 @@ export class ConversationService {
       sender_id: this.userId,
       receiver_id: conversation.userId,
       product_id: conversation.productId === 'general' ? null : conversation.productId,
-      content: content.trim(),
+      order_id: conversation.orderId,
+      content: trimmedContent,
       created_at: new Date().toISOString(),
       status: 'sending'
     };
@@ -216,26 +263,70 @@ export class ConversationService {
 
     try {
       // Send to database
-      const { error } = await this.supabase
-        .from('messages')
-        .insert({
-          sender_id: this.userId,
-          receiver_id: conversation.userId,
-          product_id: conversation.productId === 'general' ? null : conversation.productId,
-          content: content.trim()
-        });
+      const insertData = {
+        sender_id: this.userId,
+        receiver_id: conversation.userId,
+        product_id: conversation.productId === 'general' ? null : conversation.productId,
+        order_id: conversation.orderId,
+        content: trimmedContent
+      };
 
-      if (error) throw error;
+      messagingLogger.info('Attempting to send message', { 
+        conversationId,
+        receiverId: conversation.userId,
+        productId: conversation.productId || undefined
+      });
+
+      const { error, data } = await this.supabase
+        .from('messages')
+        .insert([insertData])
+        .select();
+
+      if (error) {
+        messagingLogger.error('Database insert failed', error, { 
+          conversationId,
+          receiverId: conversation.userId,
+          productId: conversation.productId || undefined
+        });
+        throw error;
+      }
       
-      // Update status
-      const msg = conversation.messages.find(m => m.id === optimisticMessage.id);
-      if (msg) {
-        msg.status = 'sent';
+      messagingLogger.info('Message sent successfully', { 
+        conversationId,
+        messageCount: data?.length || 0
+      });
+
+      // Replace optimistic message with real message to prevent duplicates
+      if (data && data.length > 0) {
+        const realMessage = data[0];
+        // Remove optimistic message
+        conversation.messages = conversation.messages.filter(m => m.id !== optimisticMessage.id);
+        conversation.messageCache.delete(optimisticMessage.id);
+        
+        // Add real message if not already there (from real-time)
+        if (!conversation.messageCache.has(realMessage.id)) {
+          const processedMessage: Message = {
+            ...realMessage,
+            status: 'sent'
+          };
+          conversation.messages.push(processedMessage);
+          conversation.messageCache.add(realMessage.id);
+          conversation.lastMessage = realMessage.content;
+          conversation.lastMessageTime = realMessage.created_at;
+        }
+        
         this.notify('conversation_updated', conversation);
       }
       
       return true;
     } catch (error) {
+      messagingLogger.error('Failed to send message', { 
+        error: error instanceof Error ? error.message : error,
+        conversationId,
+        senderId: this.userId,
+        receiverId: conversation.userId
+      });
+      
       // Remove optimistic message on error
       conversation.messages = conversation.messages.filter(m => m.id !== optimisticMessage.id);
       conversation.messageCache.delete(optimisticMessage.id);
@@ -244,41 +335,65 @@ export class ConversationService {
     }
   }
 
-  // Load older messages for conversation
+  // Load older messages for conversation - progressive loading
   async loadOlderMessages(conversationId: string, beforeTime: string): Promise<boolean> {
     const [otherUserId, productId] = conversationId.split('__');
     
-    let query = this.supabase
-      .from('messages_with_details' as any)
-      .select('*')
-      .or(`and(sender_id.eq.${this.userId},receiver_id.eq.${otherUserId}),and(sender_id.eq.${otherUserId},receiver_id.eq.${this.userId})`)
-      .lt('created_at', beforeTime)
-      .order('created_at', { ascending: false })
-      .limit(20) as any;
-    
-    if (productId === 'general') {
-      query = query.is('product_id', null);
-    } else {
-      query = query.eq('product_id', productId);
-    }
-    
-    const { data: olderMessages, error } = await query;
+    // Use the same RPC function for consistency and better performance
+    const { data: olderMessages, error } = await this.supabase.rpc('get_conversation_messages' as any, {
+      p_user_id: this.userId,
+      p_other_user_id: otherUserId,
+      p_product_id: productId === 'general' ? null : productId,
+      p_before_time: beforeTime,
+      p_limit: 10  // Load 10 messages at a time for smooth scrolling
+    });
     
     if (error || !olderMessages || olderMessages.length === 0) {
+      messagingLogger.info('No more older messages to load', { 
+        conversationId, 
+        beforeTime, 
+        error: error?.message 
+      });
       return false;
     }
     
     const conversation = this.conversations.get(conversationId);
     if (conversation) {
-      // Add older messages to beginning
-      const newMessages = olderMessages.reverse().filter((msg: Message) => !conversation.messageCache.has(msg.id));
+      // Transform messages to match expected format (same as in page.server.ts)
+      const processedMessages = olderMessages.reverse().map((msg: any) => ({
+        id: msg.id,
+        sender_id: msg.sender_id,
+        receiver_id: msg.receiver_id,
+        product_id: msg.product_id,
+        order_id: msg.order_id,
+        content: msg.content,
+        created_at: msg.created_at,
+        is_read: msg.is_read,
+        status: msg.status,
+        delivered_at: msg.delivered_at,
+        read_at: msg.read_at,
+        message_type: msg.message_type,
+        sender: msg.sender_info,
+        receiver: msg.receiver_info,
+        order: msg.order_info
+      }));
+      
+      // Add older messages to beginning, filtering out duplicates
+      const newMessages = processedMessages.filter((msg: Message) => !conversation.messageCache.has(msg.id));
       newMessages.forEach((msg: Message) => conversation.messageCache.add(msg.id));
       
       conversation.messages = [...newMessages, ...conversation.messages];
+      
+      messagingLogger.info('Loaded older messages', { 
+        conversationId, 
+        newCount: newMessages.length,
+        totalCount: conversation.messages.length
+      });
+      
       this.notify('conversation_updated', conversation);
     }
     
-    return olderMessages.length === 20; // Has more if we got full batch
+    return olderMessages.length === 10; // Has more if we got full batch
   }
 
   // Setup real-time subscriptions with better error handling
@@ -451,6 +566,42 @@ export class ConversationService {
     }
   }
 
+  // Create order-related conversation
+  async createOrderConversation(params: {
+    orderId: string;
+    buyerId: string;
+    sellerId: string;
+    productId: string;
+    initialMessage: string;
+  }): Promise<boolean> {
+    try {
+      const { orderId, buyerId, sellerId, productId, initialMessage } = params;
+      
+      // Insert initial system message
+      const { error } = await this.supabase
+        .from('messages')
+        .insert({
+          sender_id: sellerId, // System message from seller perspective
+          receiver_id: buyerId,
+          product_id: productId,
+          order_id: orderId,
+          content: initialMessage,
+          message_type: 'system'
+        });
+
+      if (error) {
+        messagingLogger.error('Error creating order conversation', error, { orderId, buyerId, sellerId });
+        return false;
+      }
+
+      messagingLogger.info('Order conversation created successfully', { orderId, buyerId, sellerId });
+      return true;
+    } catch (error) {
+      messagingLogger.error('Error creating order conversation', error);
+      return false;
+    }
+  }
+
   // Event system for UI updates
   on(event: string, callback: (data: any) => void): void {
     this.callbacks.set(event, callback);
@@ -476,7 +627,6 @@ export class ConversationService {
       this.callbacks.clear();
       this.updateQueue.clear();
       this.reconnectAttempts = 0;
-      this._lastUpdateTime = 0;
     } catch (error) {
       messagingLogger.error('Error during cleanup', error, {
         userId: this.userId

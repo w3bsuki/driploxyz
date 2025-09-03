@@ -1,5 +1,4 @@
 import type { PageServerLoad } from './$types';
-import { createServices } from '$lib/services';
 
 export const load = (async ({ locals: { supabase, session } }) => {
   if (!session?.user) {

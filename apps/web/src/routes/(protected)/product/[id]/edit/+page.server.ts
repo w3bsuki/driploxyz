@@ -53,7 +53,7 @@ export const actions = {
       tags: (formData.get('tags') as string)?.split(',').map(t => t.trim()).filter(Boolean) || null
     };
 
-    const { data, error } = await services.products.updateProduct(
+    const { error } = await services.products.updateProduct(
       params.id,
       updates,
       session.user.id

@@ -171,16 +171,16 @@
   --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-mono: 'SF Mono', Consolas, monospace;
   
-  /* Font Sizes — Mobile First */
-  --text-xs: 0.75rem;    /* 12px */
-  --text-sm: 0.875rem;   /* 14px */
-  --text-base: 1rem;     /* 16px — Prevents zoom */
-  --text-lg: 1.125rem;   /* 18px */
-  --text-xl: 1.25rem;    /* 20px */
-  --text-2xl: 1.5rem;    /* 24px */
-  --text-3xl: 1.875rem;  /* 30px */
-  --text-4xl: 2.25rem;   /* 36px */
-  --text-5xl: 3rem;      /* 48px */
+  /* Font Sizes — Fluid Typography (Mobile First with clamp()) */
+  --text-xs: 0.75rem;    /* 12px — Keep static for small text */
+  --text-sm: 0.875rem;   /* 14px — Keep static for UI elements */
+  --text-base: 1rem;     /* 16px — Keep static to prevent mobile zoom */
+  --text-lg: clamp(1.125rem, 1.05rem + 0.6vw, 1.25rem);   /* 18px → 20px */
+  --text-xl: clamp(1.25rem, 1.1rem + 1.1vw, 1.5rem);      /* 20px → 24px */
+  --text-2xl: clamp(1.5rem, 1.2rem + 2.0vw, 1.875rem);    /* 24px → 30px */
+  --text-3xl: clamp(1.875rem, 1.4rem + 2.5vw, 2.25rem);   /* 30px → 36px */
+  --text-4xl: clamp(2.25rem, 1.6rem + 3.5vw, 3rem);       /* 36px → 48px */
+  --text-5xl: clamp(3rem, 2rem + 5vw, 4rem);               /* 48px → 64px */
   
   /* Font Weights */
   --font-thin: 100;

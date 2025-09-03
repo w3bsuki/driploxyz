@@ -12,7 +12,7 @@
 	<div class="max-w-4xl mx-auto">
 		<h1 class="text-3xl font-bold text-gray-900 mb-8">Terms & Conditions</h1>
 		
-		<div class="bg-white shadow-sm rounded-lg p-6 space-y-6">
+		<div class="bg-white shadow-sm rounded-lg p-6 prose prose-gray max-w-none">
 			<div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
 				<p class="text-sm text-blue-800">
 					<strong>Last updated:</strong> {new Date().toLocaleDateString()}
@@ -20,8 +20,8 @@
 			</div>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Agreement to Terms</h2>
-				<p class="text-gray-600 leading-relaxed">
+				<h2>Agreement to Terms</h2>
+				<p>
 					Welcome to Driplo! These Terms & Conditions ("Terms") govern your use of our mobile-first C2C clothing 
 					marketplace platform. By accessing or using Driplo, you agree to be bound by these Terms. If you 
 					disagree with any part of these Terms, you may not access the platform.
@@ -29,8 +29,8 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Platform Overview</h2>
-				<p class="text-gray-600 mb-4">
+				<h2>Platform Overview</h2>
+				<p>
 					Driplo is a consumer-to-consumer (C2C) online marketplace where users can buy and sell pre-owned 
 					and new clothing items. We provide the platform and tools, but we are not a party to the transactions 
 					between buyers and sellers.
@@ -44,11 +44,11 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">User Accounts</h2>
-				<div class="space-y-4">
+				<h2>User Accounts</h2>
+				<div>
 					<div>
-						<h3 class="text-lg font-medium text-gray-900 mb-2">Account Requirements</h3>
-						<ul class="list-disc pl-6 text-gray-600 space-y-1">
+						<h3>Account Requirements</h3>
+						<ul>
 							<li>You must be at least 18 years old to create an account</li>
 							<li>You must provide accurate and complete information</li>
 							<li>You are responsible for maintaining account security</li>
@@ -57,8 +57,8 @@
 					</div>
 					
 					<div>
-						<h3 class="text-lg font-medium text-gray-900 mb-2">Account Responsibilities</h3>
-						<ul class="list-disc pl-6 text-gray-600 space-y-1">
+						<h3>Account Responsibilities</h3>
+						<ul>
 							<li>Keep your login credentials secure and confidential</li>
 							<li>Notify us immediately of any unauthorized account access</li>
 							<li>You are liable for all activities under your account</li>
@@ -69,12 +69,12 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Buying & Selling Rules</h2>
+				<h2>Buying & Selling Rules</h2>
 				
-				<div class="space-y-6">
+				<div>
 					<div>
-						<h3 class="text-lg font-medium text-gray-900 mb-3">For Sellers</h3>
-						<ul class="list-disc pl-6 text-gray-600 space-y-2">
+						<h3>For Sellers</h3>
+						<ul>
 							<li><strong>Item Authenticity:</strong> You must only sell authentic items and accurately describe their condition</li>
 							<li><strong>Legal Ownership:</strong> You must own or have permission to sell all listed items</li>
 							<li><strong>Accurate Descriptions:</strong> Provide honest, detailed descriptions and clear photos</li>
@@ -86,8 +86,8 @@
 					</div>
 					
 					<div>
-						<h3 class="text-lg font-medium text-gray-900 mb-3">For Buyers</h3>
-						<ul class="list-disc pl-6 text-gray-600 space-y-2">
+						<h3>For Buyers</h3>
+						<ul>
 							<li><strong>Payment Obligation:</strong> Complete payment for items you purchase</li>
 							<li><strong>Communication:</strong> Communicate respectfully with sellers</li>
 							<li><strong>Inspection Period:</strong> Inspect items upon delivery and report issues promptly</li>
@@ -99,11 +99,11 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibent mb-4">Prohibited Activities</h2>
-				<p class="text-gray-600 mb-4">
+				<h2>Prohibited Activities</h2>
+				<p>
 					The following activities are strictly prohibited on Driplo:
 				</p>
-				<ul class="list-disc pl-6 text-gray-600 space-y-2">
+				<ul>
 					<li>Selling counterfeit, replica, or unauthorized goods</li>
 					<li>Listing stolen or illegally obtained items</li>
 					<li>Price manipulation or fraudulent pricing practices</li>
@@ -117,11 +117,11 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Payment & Fees</h2>
-				<div class="space-y-4">
+				<h2>Payment & Fees</h2>
+				<div>
 					<div>
-						<h3 class="text-lg font-medium text-gray-900 mb-2">Payment Processing</h3>
-						<ul class="list-disc pl-6 text-gray-600 space-y-1">
+						<h3>Payment Processing</h3>
+						<ul>
 							<li>All payments are processed securely through Stripe</li>
 							<li>We hold payments in escrow until the buyer confirms receipt</li>
 							<li>Funds are released to sellers after successful delivery</li>
@@ -130,7 +130,7 @@
 					</div>
 					
 					<div>
-						<h3 class="text-lg font-medium text-gray-900 mb-2">Platform Fees</h3>
+						<h3>Platform Fees</h3>
 						<div class="bg-blue-50 rounded-lg p-4">
 							<p class="text-blue-800 font-medium mb-2">Standard Commission Structure:</p>
 							<ul class="text-blue-700 space-y-1">
@@ -145,11 +145,11 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Dispute Resolution</h2>
-				<div class="space-y-4">
+				<h2>Dispute Resolution</h2>
+				<div>
 					<div>
-						<h3 class="text-lg font-medium text-gray-900 mb-2">Our Resolution Process</h3>
-						<ol class="list-decimal pl-6 text-gray-600 space-y-2">
+						<h3>Our Resolution Process</h3>
+						<ol>
 							<li>Contact our support team within 48 hours of any issue</li>
 							<li>Provide evidence including photos, messages, and documentation</li>
 							<li>We'll investigate and mediate between parties</li>
@@ -158,8 +158,8 @@
 					</div>
 					
 					<div>
-						<h3 class="text-lg font-medium text-gray-900 mb-2">Refund Policy</h3>
-						<p class="text-gray-600">
+						<h3>Refund Policy</h3>
+						<p>
 							Refunds may be issued if items are significantly not as described, damaged in shipping, 
 							or never delivered. Buyers must provide evidence and follow our return procedures.
 						</p>
@@ -168,12 +168,12 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Intellectual Property</h2>
-				<p class="text-gray-600 mb-4">
+				<h2>Intellectual Property</h2>
+				<p>
 					All content on Driplo, including but not limited to text, graphics, logos, and software, 
 					is the property of Driplo or its licensors and is protected by copyright and trademark laws.
 				</p>
-				<ul class="list-disc pl-6 text-gray-600 space-y-2">
+				<ul>
 					<li>You may not copy, modify, or distribute our content without permission</li>
 					<li>User-generated content remains owned by the user</li>
 					<li>By posting content, you grant us a license to display and distribute it on our platform</li>
@@ -182,8 +182,8 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Platform Modifications</h2>
-				<p class="text-gray-600">
+				<h2>Platform Modifications</h2>
+				<p>
 					We reserve the right to modify, suspend, or discontinue any part of our platform at any time 
 					without prior notice. We may also update these Terms periodically. Continued use of the platform 
 					after changes constitutes acceptance of new Terms.
@@ -191,16 +191,16 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Limitation of Liability</h2>
+				<h2>Limitation of Liability</h2>
 				<div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
 					<p class="text-red-800 font-medium">
 						Important Legal Notice:
 					</p>
 				</div>
-				<p class="text-gray-600 mb-4">
+				<p>
 					Driplo provides the platform "as is" without warranties of any kind. We are not liable for:
 				</p>
-				<ul class="list-disc pl-6 text-gray-600 space-y-1">
+				<ul>
 					<li>Quality, safety, or authenticity of items sold by users</li>
 					<li>Actions or omissions of buyers and sellers</li>
 					<li>Technical issues or platform downtime</li>
@@ -210,11 +210,11 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Termination</h2>
-				<p class="text-gray-600 mb-4">
+				<h2>Termination</h2>
+				<p>
 					We may terminate or suspend your account immediately for:
 				</p>
-				<ul class="list-disc pl-6 text-gray-600 space-y-2">
+				<ul>
 					<li>Violation of these Terms or our policies</li>
 					<li>Fraudulent, illegal, or harmful activities</li>
 					<li>Multiple complaints or negative feedback</li>
@@ -224,8 +224,8 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Governing Law</h2>
-				<p class="text-gray-600">
+				<h2>Governing Law</h2>
+				<p>
 					These Terms are governed by the laws of Bulgaria. Any disputes will be resolved in the courts 
 					of Sofia, Bulgaria. For EU residents, you may also have rights under your local consumer 
 					protection laws.
@@ -233,14 +233,14 @@
 			</section>
 
 			<section>
-				<h2 class="text-2xl font-semibold mb-4">Contact Information</h2>
+				<h2>Contact Information</h2>
 				<div class="bg-gray-50 rounded-lg p-4">
-					<p class="text-gray-600 mb-2">
+					<p>
 						Questions about these Terms? Contact us:
 					</p>
-					<ul class="text-gray-600 space-y-1">
-						<li>Email: <a href="mailto:legal@driplo.xyz" class="text-blue-600 hover:underline">legal@driplo.xyz</a></li>
-						<li>Support: <a href="mailto:support@driplo.xyz" class="text-blue-600 hover:underline">support@driplo.xyz</a></li>
+					<ul>
+						<li>Email: <a href="mailto:legal@driplo.xyz">legal@driplo.xyz</a></li>
+						<li>Support: <a href="mailto:support@driplo.xyz">support@driplo.xyz</a></li>
 						<li>Address: Driplo Ltd, Sofia, Bulgaria</li>
 					</ul>
 				</div>

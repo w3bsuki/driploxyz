@@ -80,13 +80,13 @@
     <!-- Menu Items -->
     <div class="py-1">
       <a 
-        href="/profile" 
+        href="/account" 
         class="flex items-center px-4 py-2 text-sm text-[color:var(--text-primary)] hover:bg-[color:var(--surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary transition-colors duration-[var(--duration-fast)] min-h-[var(--touch-primary)]" 
         role="menuitem" 
         onclick={(e: MouseEvent) => {
           e.preventDefault();
           onClose();
-          window.location.href = '/profile';
+          window.location.href = '/account';
         }}
       >
         <svg class="w-4 h-4 mr-3 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">

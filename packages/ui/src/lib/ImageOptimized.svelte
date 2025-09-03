@@ -35,8 +35,8 @@
     height
   }: Props = $props();
 
-  let imageElement: HTMLImageElement;
-  let containerElement: HTMLDivElement;
+  let imageElement: HTMLImageElement = $state()!;
+  let containerElement: HTMLDivElement = $state()!;
   let imageLoaded = $state(false);
   let imageError = $state(false);
   let inView = $state(false);

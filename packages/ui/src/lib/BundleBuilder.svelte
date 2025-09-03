@@ -5,7 +5,6 @@
   import Dialog from './primitives/dialog/Dialog.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
   import ImageOptimized from './ImageOptimized.svelte';
-  import Badge from './Badge.svelte';
   import Avatar from './Avatar.svelte';
   // Cache to prevent repeated fetches
   const sellerProductsCache = new Map<string, { products: Product[], timestamp: number }>();
@@ -21,6 +20,7 @@
     onCancel: () => void;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     supabaseClient: any;
     translations: {
       bundle_title: () => string;
@@ -82,10 +82,6 @@
   // Bundle benefit - save time by receiving all items in one delivery
   const bundleBenefit = $derived(selectedItems.length > 1);
   
-  // Visible products (limited or all)
-  const visibleProducts = $derived(
-    showAllProducts ? sellerProducts : sellerProducts.slice(0, 6)
-  );
   
   onMount(async () => {
     console.log('BundleBuilder onMount - sellerId:', sellerId);
@@ -142,11 +138,13 @@
       const rawProducts = data || [];
       
       // Map real data to Product type
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const products: Product[] = rawProducts.map((p: any) => ({
         id: p.id,
         title: p.title,
         price: p.price,
         currency: 'BGN',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         images: p.product_images?.sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0)).map((img: any) => img.image_url) || ['/placeholder-product.svg'],
         condition: p.condition || 'good',
         seller_id: sellerId,

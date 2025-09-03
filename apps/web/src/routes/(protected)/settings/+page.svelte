@@ -279,8 +279,9 @@
                   <button
                     onclick={() => handleToggle(item)}
                     class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 transition-colors"
+                    aria-label="Toggle {item.title}"
                   >
-                    <span class="translate-x-1 inline-block h-4 w-4 transform rounded-full bg-white transition-transform" />
+                    <span class="translate-x-1 inline-block h-4 w-4 transform rounded-full bg-white transition-transform"></span>
                   </button>
                 </div>
               {:else}
