@@ -517,8 +517,6 @@
       </div>
     {/if}
 
-    <!-- Perfect Bottom Space -->
-    <div class="bottom-space"></div>
   </section>
 </main>
 
@@ -621,7 +619,7 @@
   .ultimate-page {
     min-height: 100vh;
     background: var(--surface-base);
-    padding-bottom: 140px;
+    padding-bottom: 80px;
   }
 
   /* Ultimate Perfect Header */
@@ -895,10 +893,10 @@
 
   /* Typography-Driven Content Layout */
   .ultimate-content {
-    padding: var(--space-6) var(--space-4);
+    padding: var(--space-4) var(--space-4);
     display: flex;
     flex-direction: column;
-    gap: var(--space-8);
+    gap: var(--space-4);
     max-width: 100%;
     overflow-x: hidden;
   }
@@ -1788,9 +1786,6 @@
     margin: 0;
   }
 
-  .bottom-space {
-    height: 140px;
-  }
 
   /* Ultimate Perfect Action Bar */
   .ultimate-action-bar {
