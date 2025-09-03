@@ -241,13 +241,13 @@ export { default as FeaturedProducts } from './FeaturedProducts.svelte';
 export { default as PromotedHighlights } from './PromotedHighlights.svelte';
 
 // Performance utilities
-export * from './utils';
+export { cn } from './utils';
 
 // Import semantic CSS styles
 import '../styles/semantic.css';
 
 // Variant system utilities
-export * from './utils/variants';
+export * from './utils';
 
 // Type definitions
 export * from './types';
