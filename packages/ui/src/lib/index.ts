@@ -242,9 +242,6 @@ export { default as PromotedHighlights } from './PromotedHighlights.svelte';
 // Import semantic CSS styles
 import '../styles/semantic.css';
 
-// Variant system utilities
-export * from './utils';
-
 // Type definitions
 export * from './types';
 
