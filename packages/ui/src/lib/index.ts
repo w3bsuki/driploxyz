@@ -18,8 +18,7 @@ export { default as BuyBox } from './BuyBox.svelte';
 export { default as ShippingEstimator } from './ShippingEstimator.svelte';
 export { default as TrustBadges } from './TrustBadges.svelte';
 
-// Performance utilities
-export * from './utils';
+// Utils will be exported at the end
 
 // Loading components
 export { default as LoadingSpinner } from './LoadingSpinner.svelte';
@@ -239,9 +238,6 @@ export { default as ProductPrice } from './ProductPrice.svelte';
 // Feature components - NEWLY MIGRATED
 export { default as FeaturedProducts } from './FeaturedProducts.svelte';
 export { default as PromotedHighlights } from './PromotedHighlights.svelte';
-
-// Performance utilities
-export { cn } from './utils';
 
 // Import semantic CSS styles
 import '../styles/semantic.css';
