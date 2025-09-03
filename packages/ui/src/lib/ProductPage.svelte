@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import ProductBreadcrumb from './ProductBreadcrumb.svelte';
+  import ProductActionBar from './ProductActionBar.svelte';
   import Tooltip from './primitives/tooltip/Tooltip.svelte';
   import { Accordion } from './primitives';
   import SellerCard from './SellerCard.svelte';
@@ -53,10 +54,11 @@
       totalReviews: number;
     } | null;
     similarProducts?: any[];
+    sellerProducts?: any[];
     isOwner?: boolean;
     isAuthenticated?: boolean;
     isFavorited?: boolean;
-    onFavorite?: () => void;
+    onFavorite?: () => Promise<{favoriteCount: number, favorited: boolean}> | void;
     onMessage?: () => void;
     onBuyNow?: () => void;
     onMakeOffer?: () => void;
@@ -67,6 +69,7 @@
     reviews = [], 
     ratingSummary, 
     similarProducts = [], 
+    sellerProducts = [],
     isOwner = false,
     isAuthenticated = false,
     isFavorited = false,
@@ -92,7 +95,27 @@
     selectedImage = index;
   }
 
-  function toggleLike() {
+  function handleImageKeydown(event: KeyboardEvent, index: number) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      selectImage(index);
+    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+      event.preventDefault();
+      const newIndex = event.key === 'ArrowLeft' 
+        ? (index > 0 ? index - 1 : (product?.images?.length || 1) - 1)
+        : (index < (product?.images?.length || 1) - 1 ? index + 1 : 0);
+      selectImage(newIndex);
+      
+      // Focus the new button
+      const buttons = document.querySelectorAll('.nav-dot, .thumb-btn');
+      if (buttons[newIndex]) {
+        (buttons[newIndex] as HTMLElement).focus();
+      }
+    }
+  }
+
+  async function toggleLike() {
+    // Optimistic update
     isLiked = !isLiked;
     likeCount += isLiked ? 1 : -1;
     
@@ -101,7 +124,22 @@
       navigator.vibrate(isLiked ? [50, 30, 50] : [30]);
     }
     
-    onFavorite?.();
+    // Call the async favorite handler and reconcile state
+    if (onFavorite) {
+      try {
+        const result = await onFavorite();
+        if (result && typeof result.favoriteCount === 'number' && typeof result.favorited === 'boolean') {
+          // Reconcile with server response
+          likeCount = result.favoriteCount;
+          isLiked = result.favorited;
+        }
+      } catch (error) {
+        // Revert optimistic update on error
+        isLiked = !isLiked;
+        likeCount += isLiked ? 1 : -1;
+        console.error('Error toggling favorite:', error);
+      }
+    }
   }
 
   function handleBuyNow() {
@@ -120,6 +158,21 @@
 
   function toggleProfileModal() {
     showProfileModal = !showProfileModal;
+    
+    // Focus management for modal
+    if (showProfileModal) {
+      // Focus the close button when modal opens
+      setTimeout(() => {
+        const closeBtn = document.querySelector('.modal-close-btn') as HTMLElement;
+        if (closeBtn) closeBtn.focus();
+      }, 100);
+    }
+  }
+
+  function handleModalKeydown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      toggleProfileModal();
+    }
   }
 
   function viewProfile() {
@@ -223,11 +276,19 @@
 </script>
 
 <main class="ultimate-page">
+  <!-- Skip Links for Screen Readers -->
+  <a href="#product-title" class="skip-link">Skip to product details</a>
+  <a href="#seller-products-heading" class="skip-link">Skip to seller products</a>
   <!-- Ultimate Perfect Header -->
-  <header class="ultimate-header {headerVisible ? 'visible' : 'hidden'}">
+  <header class="ultimate-header {headerVisible ? 'visible' : 'hidden'}" role="banner">
     <div class="header-content">
-      <button class="icon-btn" onclick={() => history.back()}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button 
+        class="icon-btn" 
+        onclick={() => history.back()}
+        aria-label="Go back to previous page"
+        type="button"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
           <path d="m15 18-6-6 6-6"/>
         </svg>
       </button>
@@ -238,15 +299,17 @@
       </div>
 
       <div class="header-actions">
-        <Tooltip content="Share">
+        <Tooltip content="Share this product">
           <button 
             class="icon-btn" 
             onclick={() => navigator.share?.({ 
               title: product?.title || '',
               url: window.location.href 
             })}
+            aria-label="Share this product"
+            type="button"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
               <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
             </svg>
           </button>
@@ -256,8 +319,11 @@
           <button 
             class="icon-btn heart-btn {isLiked ? 'liked' : ''}" 
             onclick={toggleLike}
+            aria-label={isLiked ? 'Remove from favorites' : 'Add to favorites'}
+            aria-pressed={isLiked}
+            type="button"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.5">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.5" aria-hidden="true">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
           </button>
@@ -276,13 +342,14 @@
 
 
   <!-- Ultimate Perfect Gallery -->
-  <section class="ultimate-gallery">
+  <section class="ultimate-gallery" role="region" aria-label="Product images">
     <div class="main-display">
       <img 
         src={product?.images?.[selectedImage] || product?.images?.[0] || 'https://via.placeholder.com/400x500/f3f4f6/9ca3af?text=No+Image'} 
-        alt="{product?.title || 'Product'}" 
+        alt="{product?.title || 'Product'}{product?.brand ? ` by ${product.brand}` : ''}{product?.color ? ` in ${product.color}` : ''} - Image {selectedImage + 1} of {product?.images?.length || 1}" 
         class="hero-image" 
         loading="eager"
+        role="img"
       />
       
       <!-- Perfect Sold Badge -->
@@ -297,8 +364,10 @@
         <button 
           class="seller-avatar-button" 
           onclick={toggleProfileModal}
+          aria-label={`View seller profile: ${displayName}`}
+          type="button"
         >
-          <img src={product?.seller?.avatar_url || '/default-avatar.png'} alt={displayName} class="seller-avatar-overlay" />
+          <img src={product?.seller?.avatar_url || '/default-avatar.png'} alt="${displayName} profile picture" class="seller-avatar-overlay" />
         </button>
       </Tooltip>
 
@@ -307,21 +376,29 @@
         <button 
           class="floating-like {isLiked ? 'liked' : ''}" 
           onclick={toggleLike}
+          aria-label={isLiked ? `Remove from favorites. Currently ${likeCount} people love this` : `Add to favorites. Currently ${likeCount} people love this`}
+          aria-pressed={isLiked}
+          type="button"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.5">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
-          <span class="like-count">{likeCount}</span>
+          <span class="like-count" aria-hidden="true">{likeCount}</span>
         </button>
       </Tooltip>
 
       <!-- Perfect Image Navigation -->
       {#if product?.images && product.images.length > 1}
-        <div class="image-nav">
+        <div class="image-nav" role="tablist" aria-label="Select product image">
           {#each product.images as _, index}
             <button 
               class="nav-dot {selectedImage === index ? 'active' : ''}"
               onclick={() => selectImage(index)}
+              onkeydown={(e) => handleImageKeydown(e, index)}
+              role="tab"
+              aria-selected={selectedImage === index}
+              aria-label={`View image ${index + 1} of ${product.images.length}`}
+              type="button"
             ></button>
           {/each}
         </div>
@@ -330,13 +407,18 @@
 
     <!-- Perfect Thumbnail Strip -->
     {#if product?.images && product.images.length > 1}
-      <div class="thumbnail-strip">
+      <div class="thumbnail-strip" role="tablist" aria-label="Product image thumbnails">
         {#each product.images as image, index}
           <button 
             class="thumb-btn {selectedImage === index ? 'active' : ''}"
             onclick={() => selectImage(index)}
+            onkeydown={(e) => handleImageKeydown(e, index)}
+            role="tab"
+            aria-selected={selectedImage === index}
+            aria-label={`View image ${index + 1}: ${product?.title || 'Product'}`}
+            type="button"
           >
-            <img src={image} alt="View {index + 1}" />
+            <img src={image} alt="Thumbnail ${index + 1}" loading="lazy" />
           </button>
         {/each}
       </div>
@@ -344,16 +426,16 @@
   </section>
 
   <!-- Ultimate Perfect Content -->
-  <section class="ultimate-content">
+  <section class="ultimate-content" role="main">
     <!-- SINGLE Product Info Container -->
     <div class="product-info-container">
       <!-- Header Row: Badge + Brand -->
       <div class="header-row">
         {#if product?.condition}
-          <div class="condition-badge">{translateCondition(product.condition)}</div>
+          <div class="condition-badge" role="text" aria-label="Product condition: {translateCondition(product.condition)}">{translateCondition(product.condition)}</div>
         {/if}
-        <div class="favorites-inline">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <div class="favorites-inline" role="text" aria-label="{likeCount} people love this item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
           <span>{likeCount}</span>
@@ -361,7 +443,7 @@
       </div>
       
       <!-- Product Title -->
-      <h1 class="product-name">{product?.title || ''}</h1>
+      <h1 class="product-name" id="product-title">{product?.title || ''}</h1>
       
       <!-- Specs Row with Brand -->
       <div class="specs-inline">
@@ -404,6 +486,21 @@
 
     <!-- Enhanced Mobile-First Seller Section -->
     <div class="seller-products-container">
+      <!-- Product Preview Card -->
+      <div class="product-preview-card">
+        <div class="product-preview-image">
+          <img 
+            src={product?.images?.[0] || '/placeholder-product.png'} 
+            alt={product?.title || 'Product'}
+            class="preview-image"
+          />
+        </div>
+        <div class="product-preview-info">
+          <h2 class="product-preview-title">{product?.title || ''}</h2>
+          <p class="product-preview-price">{formatPrice(product?.price || 0)}</p>
+        </div>
+      </div>
+
       {#if !isOwner}
         <SellerCard 
           id={product?.seller?.id || ''}
@@ -430,12 +527,57 @@
         </div>
       {/if}
 
-      <!-- Connected Products Section -->
-      {#if similarProducts && similarProducts.length > 0}
-        <div class="products-section">
+      <!-- Seller Products Section -->
+      {#if sellerProducts && sellerProducts.length > 0}
+        <div class="products-section" role="region" aria-labelledby="seller-products-heading">
           <div class="products-header">
-            <h3 class="products-title">More from {displayName}</h3>
-            <div class="products-count">{similarProducts.length} items</div>
+            <h3 class="products-title" id="seller-products-heading">More from {displayName}</h3>
+            <div class="products-count" aria-label="{sellerProducts.length} items available from seller">{sellerProducts.length} items</div>
+          </div>
+          
+          <div class="products-scroll-container">
+            <div class="products-scroll">
+              {#each sellerProducts.slice(0, 12) as sellerProduct}
+                <div 
+                  class="product-card" 
+                  role="button"
+                  tabindex="0"
+                  aria-label="View product: {sellerProduct.title} - Price: {formatPrice(sellerProduct.price || 0)}"
+                  onclick={() => window.location.href = sellerProduct.canonicalUrl || `/product/${sellerProduct.id}`}
+                  onkeydown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      window.location.href = sellerProduct.canonicalUrl || `/product/${sellerProduct.id}`;
+                    }
+                  }}
+                >
+                  <div class="product-image">
+                    <img 
+                      src={sellerProduct.images?.[0] || sellerProduct.product_images?.[0]?.image_url || 'https://via.placeholder.com/160x200/f3f4f6/9ca3af?text=No+Image'} 
+                      alt="{sellerProduct.title}{sellerProduct.brand ? ` by ${sellerProduct.brand}` : ''}{sellerProduct.color ? ` in ${sellerProduct.color}` : ''} - {formatPrice(sellerProduct.price || 0)}"
+                      loading="lazy"
+                    />
+                    {#if sellerProduct.condition}
+                      <div class="condition-badge">{translateCondition(sellerProduct.condition)}</div>
+                    {/if}
+                  </div>
+                  <div class="product-info">
+                    <p class="product-title">{sellerProduct.title}</p>
+                    <p class="product-price">{formatPrice(sellerProduct.price || 0)}</p>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          </div>
+        </div>
+      {/if}
+
+      <!-- Similar Products Section (Same Category) -->
+      {#if similarProducts && similarProducts.length > 0}
+        <div class="products-section" role="region" aria-labelledby="similar-products-heading">
+          <div class="products-header">
+            <h3 class="products-title" id="similar-products-heading">Similar items</h3>
+            <div class="products-count" aria-label="{similarProducts.length} similar items available">{similarProducts.length} items</div>
           </div>
           
           <div class="products-scroll-container">
@@ -446,18 +588,18 @@
                   role="button"
                   tabindex="0"
                   aria-label="View product: {similarProduct.title} - Price: {formatPrice(similarProduct.price || 0)}"
-                  onclick={() => window.location.href = `/product/${similarProduct.id}`}
+                  onclick={() => window.location.href = similarProduct.canonicalUrl || `/product/${similarProduct.id}`}
                   onkeydown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      window.location.href = `/product/${similarProduct.id}`;
+                      window.location.href = similarProduct.canonicalUrl || `/product/${similarProduct.id}`;
                     }
                   }}
                 >
                   <div class="product-image">
                     <img 
                       src={similarProduct.images?.[0] || similarProduct.product_images?.[0]?.image_url || 'https://via.placeholder.com/160x200/f3f4f6/9ca3af?text=No+Image'} 
-                      alt={similarProduct.title}
+                      alt="{similarProduct.title}{similarProduct.brand ? ` by ${similarProduct.brand}` : ''}{similarProduct.color ? ` in ${similarProduct.color}` : ''} - {formatPrice(similarProduct.price || 0)}"
                       loading="lazy"
                     />
                     {#if similarProduct.condition}
@@ -520,63 +662,60 @@
   </section>
 </main>
 
-<!-- Ultimate Perfect Action Bar -->
-<div class="ultimate-action-bar">
-  <div class="action-content">
-    <div class="product-info-bottom">
-      <div class="product-title-bottom">{product?.title || ''}</div>
-      <div class="product-price-bottom">{formatPrice(product?.price || 0)}</div>
-    </div>
-    
-    <div class="action-buttons">
-      {#if !product?.is_sold && !isOwner}
-        <button 
-          class="message-btn-small" 
-          onclick={onMessage}
-        >
-          Message
-        </button>
-        
-        <button 
-          class="buy-btn" 
-          onclick={handleBuyNow}
-        >
-          Buy Now
-        </button>
-      {:else if product?.is_sold}
-        <div class="sold-indicator">
-          <span>SOLD</span>
-        </div>
-      {:else if isOwner}
-        <div class="owner-indicator">
-          <span>Your Item</span>
-        </div>
-      {/if}
-    </div>
-  </div>
-</div>
+<!-- Clean Action Bar Component -->
+<ProductActionBar 
+  price={product?.price || 0}
+  currency={product?.currency || 'EUR'}
+  isSold={product?.is_sold || false}
+  isOwner={isOwner}
+  isAuthenticated={isAuthenticated}
+  isFavorited={isLiked}
+  onBuyNow={handleBuyNow}
+  onMessage={onMessage}
+  onFavorite={toggleLike}
+  onMakeOffer={onMakeOffer}
+/>
 
 <!-- Perfect Profile Modal -->
 {#if showProfileModal}
-  <div class="profile-modal-overlay" onclick={toggleProfileModal}>
+  <div 
+    class="profile-modal-overlay" 
+    onclick={toggleProfileModal}
+    onkeydown={handleModalKeydown}
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="profile-modal-title"
+    aria-describedby="profile-modal-content"
+  >
     <div class="profile-modal" onclick={(e) => e.stopPropagation()}>
       <div class="profile-modal-header">
+        <button 
+          class="modal-close-btn"
+          onclick={toggleProfileModal}
+          aria-label="Close profile modal"
+          type="button"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
         <div class="profile-avatar-large">
-          <img src={product?.seller?.avatar_url || '/default-avatar.png'} alt={displayName} />
+          <img src={product?.seller?.avatar_url || '/default-avatar.png'} alt="{displayName} profile picture" />
         </div>
-        <div class="profile-info-large">
+        <div class="profile-info-large" id="profile-modal-content">
           <div class="profile-name-row">
-            <h3>{displayName}</h3>
-            <div class="verified-large">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <h3 id="profile-modal-title">{displayName}</h3>
+            <div class="verified-large" aria-label="Verified seller">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M12 1l3.09 6.26L22 8.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 8.27l6.91-1.01L12 1z"/>
               </svg>
             </div>
           </div>
-          <div class="profile-stats-large">
+          <div class="profile-stats-large" role="text" aria-label="Seller statistics: {displayRating > 0 ? `${displayRating.toFixed(1)} star rating, ` : ''}{reviewCount} reviews, {product?.seller?.sales_count || 0} sales, member since {memberSince}">
             {#if displayRating > 0}
               <div class="rating-large">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M12 1l3.09 6.26L22 8.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 8.27l6.91-1.01L12 1z"/>
                 </svg>
                 <span>{displayRating.toFixed(1)}</span>
@@ -594,16 +733,26 @@
         </div>
       </div>
       <div class="profile-modal-actions">
-        <button class="view-profile-btn" onclick={viewProfile}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button 
+          class="view-profile-btn" 
+          onclick={viewProfile}
+          type="button"
+          aria-label="View {displayName} full profile page"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
           </svg>
           View Full Profile
         </button>
         {#if !isOwner}
-          <button class="message-profile-btn" onclick={onMessage}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <button 
+            class="message-profile-btn" 
+            onclick={onMessage}
+            type="button"
+            aria-label="Send message to {displayName}"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
             </svg>
             Message
@@ -1356,6 +1505,80 @@
     border-radius: var(--radius-xl);
     border: 1px solid var(--border-subtle);
   }
+
+  /* Product Preview Card */
+  .product-preview-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    background: var(--surface-subtle);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+    margin-bottom: var(--space-6);
+  }
+
+  .product-preview-image {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+
+  .product-preview-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .product-preview-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin: 0;
+    line-height: var(--leading-tight);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .product-preview-price {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    color: var(--primary);
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .product-preview-card {
+      padding: var(--space-3);
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+    
+    .product-preview-image {
+      width: 56px;
+      height: 56px;
+    }
+    
+    .product-preview-title {
+      font-size: var(--text-base);
+    }
+    
+    .product-preview-price {
+      font-size: var(--text-lg);
+    }
+  }
   
   /* Owner view styling */
   .owner-seller-info {
@@ -1787,112 +2010,6 @@
   }
 
 
-  /* Ultimate Perfect Action Bar */
-  .ultimate-action-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 40;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(24px);
-    border-top: 1px solid var(--border-subtle);
-    padding: var(--space-4);
-    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.08);
-  }
-
-  .action-content {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    max-width: 640px;
-    margin: 0 auto;
-  }
-
-  .product-info-bottom {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-    flex: 1;
-    min-width: 0;
-  }
-
-  .product-title-bottom {
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-    line-height: var(--leading-tight);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .product-price-bottom {
-    font-size: var(--text-lg);
-    font-weight: var(--font-black);
-    color: var(--text-primary);
-    line-height: 1;
-  }
-
-  .action-buttons {
-    display: flex;
-    flex: 1;
-    gap: var(--space-3);
-  }
-
-  .message-btn-small,
-  .buy-btn {
-    flex: 1;
-    height: 44px;
-    border: none;
-    border-radius: var(--radius-lg);
-    font-size: var(--text-base);
-    font-weight: var(--font-bold);
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .message-btn-small {
-    background: var(--surface-subtle);
-    color: var(--text-primary);
-    border: 2px solid var(--border-default);
-  }
-
-  .message-btn-small:hover {
-    border-color: var(--text-primary);
-    background: var(--surface-muted);
-    transform: translateY(-1px);
-  }
-
-  .buy-btn {
-    background: var(--text-primary);
-    color: var(--surface-base);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .buy-btn:hover {
-    background: var(--text-secondary);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  }
-
-  .sold-indicator,
-  .owner-indicator {
-    flex: 1;
-    height: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface-muted);
-    border-radius: var(--radius-lg);
-    color: var(--text-secondary);
-    font-weight: var(--font-bold);
-  }
-
-  .sold-indicator {
-    color: var(--status-error-text);
-  }
 
   /* Perfect Profile Modal */
   .profile-modal-overlay {
@@ -2132,18 +2249,127 @@
   }
 
   /* Perfect Accessibility */
+  
+  /* Focus visible states for all interactive elements */
+  .nav-dot:focus-visible,
+  .thumb-btn:focus-visible,
+  .product-card:focus-visible,
+  .seller-avatar-button:focus-visible,
+  .floating-like:focus-visible {
+    outline: 2px solid var(--state-focus);
+    outline-offset: 2px;
+  }
+
+  /* Modal accessibility styles */
+  .modal-close-btn {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    width: var(--touch-standard);
+    height: var(--touch-standard);
+    border: none;
+    background: var(--surface-subtle);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    z-index: 10;
+  }
+
+  .modal-close-btn:hover {
+    background: var(--surface-muted);
+    color: var(--text-primary);
+    transform: scale(1.05);
+  }
+
+  .modal-close-btn:focus-visible {
+    outline: 2px solid var(--state-focus);
+    outline-offset: 2px;
+  }
+
+  /* Skip links for screen readers */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .skip-link {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    z-index: 999;
+    background: var(--surface-base);
+    color: var(--text-primary);
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-lg);
+    border: 2px solid var(--border-emphasis);
+    text-decoration: none;
+    font-weight: var(--font-semibold);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  }
+
+  .skip-link:focus {
+    position: absolute;
+    top: var(--space-4);
+    left: var(--space-4);
+    outline: none;
+  }
+
+  /* Keyboard navigation indicators */
+  .product-card:focus {
+    outline: none;
+  }
+
+  .product-card:focus-visible {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .icon-btn,
+    .nav-dot,
+    .thumb-btn,
+    .product-card {
+      border: 2px solid ButtonText;
+    }
+    
+    .condition-badge {
+      border: 1px solid ButtonText;
+    }
+  }
+
+  /* Reduced motion preferences */
   @media (prefers-reduced-motion: reduce) {
     * {
       animation: none !important;
       transition: none !important;
     }
+    
+    .product-card:focus-visible,
+    .thumb-btn:focus-visible,
+    .icon-btn:focus-visible {
+      transform: none;
+    }
   }
 
+  /* Touch device optimizations */
   @media (hover: none) {
     .icon-btn:hover,
     .floating-like:hover,
     .message-btn:hover,
-    .buy-btn:hover {
+    .buy-btn:hover,
+    .modal-close-btn:hover {
       transform: none;
     }
   }
