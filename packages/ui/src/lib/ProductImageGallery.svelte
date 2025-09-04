@@ -10,7 +10,7 @@
   let currentIndex = $state(0)
   let galleryElement: HTMLDivElement | undefined = $state()
 
-  const imagesList = $derived(images?.length > 0 ? images : ['/placeholder-product.jpg'])
+  const imagesList = $derived(images?.length > 0 ? images : [])
 
   function goToImage(index: number) {
     currentIndex = index
@@ -47,7 +47,7 @@
     document.addEventListener('touchend', handleTouchEnd)
   }
 
-  const mainImage = $derived(imagesList[currentIndex] || imagesList[0] || '/placeholder-product.jpg')
+  const mainImage = $derived(imagesList[currentIndex] || imagesList[0] || '')
 </script>
 
 <div class="image-gallery">
@@ -60,21 +60,30 @@
         </div>
       </div>
     {/if}
-    
-    <div 
-      bind:this={galleryElement}
-      class="image-container"
-      ontouchstart={handleTouchStart}
-    >
-      {#each imagesList as image, index}
-        <img 
-          src={image}
-          alt={`${title} - Image ${index + 1}`}
-          class="image"
-          loading={index === 0 ? 'eager' : 'lazy'}
-        />
-      {/each}
-    </div>
+
+    {#if imagesList.length > 0}
+      <div 
+        bind:this={galleryElement}
+        class="image-container"
+        ontouchstart={handleTouchStart}
+      >
+        {#each imagesList as image, index}
+          <img 
+            src={image}
+            alt={`${title} - Image ${index + 1}`}
+            class="image"
+            loading={index === 0 ? 'eager' : 'lazy'}
+          />
+        {/each}
+      </div>
+    {:else}
+      <div class="empty-container" aria-label="No product images available">
+        <svg class="empty-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke="currentColor" stroke-width="2" fill="none" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v9a2 2 0 01-2 2H9l-4 4v-4H5a2 2 0 01-2-2V5z"/>
+        </svg>
+        <span class="empty-text">No images</span>
+      </div>
+    {/if}
 
     <!-- Image Counter -->
     {#if imagesList.length > 1}
@@ -118,10 +127,25 @@
   .main-image {
     position: relative;
     aspect-ratio: 1;
-    background-color: var(--surface-subtle);
-    border-radius: var(--radius-lg);
+    background-color: var(--surface-base);
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--border-subtle);
     overflow: hidden;
+    padding: var(--space-2);
   }
+
+  .empty-container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    color: var(--text-tertiary);
+  }
+  .empty-icon { width: 32px; height: 32px; }
+  .empty-text { font-size: var(--text-xs); font-weight: var(--font-medium); }
 
   .image-container {
     display: flex;
@@ -142,8 +166,11 @@
     height: 100%;
     width: 100%;
     flex-shrink: 0;
-    object-fit: cover;
+    object-fit: contain;
     scroll-snap-align: start;
+    border-radius: var(--radius-xl);
+    background: var(--surface-subtle);
+    border: 1px solid var(--border-subtle);
   }
 
   .sold-overlay {

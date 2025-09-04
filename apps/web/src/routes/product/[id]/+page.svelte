@@ -33,6 +33,9 @@
     // This would typically call an API endpoint
     console.log('Toggle favorite for product:', data.product.id);
   }
+  // A/B toggles via query params (legacy id route)
+  const imageInfoVariant = 'inline';
+  const showQuickFacts = true;
 </script>
 
 <ProductPage 
@@ -46,5 +49,6 @@
   onFavorite={handleFavorite}
   onMessage={handleMessage}
   onBuyNow={handleBuyNow}
+  imageInfoVariant={imageInfoVariant}
+  showQuickFacts={showQuickFacts}
 />
-

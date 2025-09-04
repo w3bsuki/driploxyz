@@ -77,6 +77,9 @@
     data.product.condition && `Condition: ${data.product.condition}`,
     `Price: €${data.product.price}`
   ].filter(Boolean).join(' · ').substring(0, 160);
+  // A/B toggles via query params
+  const imageInfoVariant = 'inline';
+  const showQuickFacts = true;
 </script>
 
 <!-- SEO Meta Tags for perfect optimization -->
@@ -106,4 +109,6 @@
   onFavorite={handleFavorite}
   onMessage={handleMessage}
   onBuyNow={handleBuyNow}
+  imageInfoVariant={imageInfoVariant}
+  showQuickFacts={showQuickFacts}
 />

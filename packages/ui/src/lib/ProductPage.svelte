@@ -62,6 +62,8 @@
     onMessage?: () => void;
     onBuyNow?: () => void;
     onMakeOffer?: () => void;
+    imageInfoVariant?: 'chips' | 'inline' | 'none';
+    showQuickFacts?: boolean;
   }
 
   let { 
@@ -76,7 +78,9 @@
     onFavorite,
     onMessage,
     onBuyNow,
-    onMakeOffer
+    onMakeOffer,
+    imageInfoVariant = 'inline',
+    showQuickFacts = true
   }: Props = $props();
 
   // Perfect State Management
@@ -119,10 +123,7 @@
     isLiked = !isLiked;
     likeCount += isLiked ? 1 : -1;
     
-    // Perfect haptic feedback
-    if ('vibrate' in navigator) {
-      navigator.vibrate(isLiked ? [50, 30, 50] : [30]);
-    }
+    // Haptics removed for lean, responsive UX
     
     // Call the async favorite handler and reconcile state
     if (onFavorite) {
@@ -143,16 +144,10 @@
   }
 
   function handleBuyNow() {
-    if ('vibrate' in navigator) {
-      navigator.vibrate([100, 50, 100]);
-    }
     onBuyNow?.();
   }
 
   function addToBag() {
-    if ('vibrate' in navigator) {
-      navigator.vibrate([100, 50, 100]);
-    }
     onBuyNow?.();
   }
 
@@ -205,6 +200,14 @@
   );
   const displayRating = $derived(ratingSummary?.averageRating || product?.seller?.rating || 0);
   const reviewCount = $derived(ratingSummary?.totalReviews || reviews.length || 0);
+  const imageInlineMeta = $derived(() => {
+    if (!product) return '';
+    const parts: string[] = [];
+    if (product?.condition) parts.push(translateCondition(product.condition));
+    if (product?.size) parts.push(`Size ${product.size}`);
+    else if (product?.brand) parts.push(product.brand);
+    return parts.join(' · ');
+  });
   
   // SellerCard data mapping
   const sellerStats = $derived({
@@ -342,15 +345,23 @@
 
 
   <!-- Ultimate Perfect Gallery -->
-  <section class="ultimate-gallery" role="region" aria-label="Product images">
+  <section class="ultimate-gallery" role="region" aria-label="Product images" data-testid="product-gallery">
     <div class="main-display">
-      <img 
-        src={product?.images?.[selectedImage] || product?.images?.[0] || 'https://via.placeholder.com/400x500/f3f4f6/9ca3af?text=No+Image'} 
-        alt="{product?.title || 'Product'}{product?.brand ? ` by ${product.brand}` : ''}{product?.color ? ` in ${product.color}` : ''} - Image {selectedImage + 1} of {product?.images?.length || 1}" 
-        class="hero-image" 
-        loading="eager"
-        role="img"
-      />
+      {#if product?.images && product.images.length > 0}
+        <img 
+          src={product.images[selectedImage] || product.images[0]}
+          alt="{product?.title || 'Product'}{product?.brand ? ` by ${product.brand}` : ''}{product?.color ? ` in ${product.color}` : ''} - Image {selectedImage + 1} of {product.images.length}" 
+          class="hero-image" 
+          loading="eager"
+        />
+      {:else}
+        <div class="hero-empty" aria-label="No product images available">
+          <svg class="hero-empty-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke="currentColor" stroke-width="2" fill="none" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v9a2 2 0 01-2 2H9l-4 4v-4H5a2 2 0 01-2-2V5z"/>
+          </svg>
+          <span class="hero-empty-text">No images</span>
+        </div>
+      {/if}
       
       <!-- Perfect Sold Badge -->
       {#if product?.is_sold}
@@ -359,33 +370,73 @@
         </div>
       {/if}
 
-      <!-- Perfect Seller Avatar Only -->
-      <Tooltip content={`Sold by ${displayName}`}>
-        <button 
-          class="seller-avatar-button" 
-          onclick={toggleProfileModal}
-          aria-label={`View seller profile: ${displayName}`}
-          type="button"
-        >
-          <img src={product?.seller?.avatar_url || '/default-avatar.png'} alt="${displayName} profile picture" class="seller-avatar-overlay" />
-        </button>
-      </Tooltip>
+      <!-- Top bar: avatar • title • wishlist -->
+      <div class="image-topbar">
+        <!-- Avatar -->
+        {#if product?.seller?.avatar_url}
+          <Tooltip content={`Sold by ${displayName}`}>
+            <button 
+              class="seller-avatar-button" 
+              onclick={toggleProfileModal}
+              aria-label={`View seller profile: ${displayName}`}
+              type="button"
+            >
+              <img src={product.seller.avatar_url} alt="{displayName} profile picture" class="seller-avatar-overlay" />
+            </button>
+          </Tooltip>
+        {:else}
+          <Tooltip content={`Sold by ${displayName}`}>
+            <button 
+              class="seller-avatar-button" 
+              onclick={toggleProfileModal}
+              aria-label={`View seller profile: ${displayName}`}
+              type="button"
+            >
+              <span class="seller-avatar-fallback" aria-hidden="true">{displayName?.charAt(0)?.toUpperCase() || '?'}</span>
+            </button>
+          </Tooltip>
+        {/if}
 
-      <!-- Perfect Floating Like -->
-      <Tooltip content={`${likeCount} people love this`}>
-        <button 
-          class="floating-like {isLiked ? 'liked' : ''}" 
-          onclick={toggleLike}
-          aria-label={isLiked ? `Remove from favorites. Currently ${likeCount} people love this` : `Add to favorites. Currently ${likeCount} people love this`}
-          aria-pressed={isLiked}
-          type="button"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-          <span class="like-count" aria-hidden="true">{likeCount}</span>
-        </button>
-      </Tooltip>
+        <!-- Title -->
+        <h2 class="image-title" title={product?.title || 'Product'}>
+          {product?.title || 'Product'}
+        </h2>
+
+        <!-- Wishlist -->
+        <Tooltip content={`${likeCount} people love this`}>
+          <button 
+            class="floating-like {isLiked ? 'liked' : ''}" 
+            onclick={toggleLike}
+            aria-label={isLiked ? `Remove from favorites. Currently ${likeCount} people love this` : `Add to favorites. Currently ${likeCount} people love this`}
+            aria-pressed={isLiked}
+            type="button"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+        </Tooltip>
+      </div>
+
+      <!-- Bottom info overlay: A/B variants -->
+      {#if imageInfoVariant === 'chips' && product}
+        <div class="image-badges">
+          {#if product?.condition}
+            <span class="badge-chip">{translateCondition(product.condition)}</span>
+          {/if}
+          {#if product?.size}
+            <span class="badge-chip">Size {product.size}</span>
+          {:else if product?.brand}
+            <span class="badge-chip">{product.brand}</span>
+          {/if}
+        </div>
+      {:else if imageInfoVariant === 'inline' && product}
+        {#if imageInlineMeta}
+          <div class="image-inline-meta" aria-label="{imageInlineMeta}">
+            {imageInlineMeta}
+          </div>
+        {/if}
+      {/if}
 
       <!-- Perfect Image Navigation -->
       {#if product?.images && product.images.length > 1}
@@ -399,7 +450,7 @@
               aria-selected={selectedImage === index}
               aria-label={`View image ${index + 1} of ${product.images.length}`}
               type="button"
-            ></button>
+            />
           {/each}
         </div>
       {/if}
@@ -445,21 +496,23 @@
       <!-- Product Title -->
       <h1 class="product-name" id="product-title">{product?.title || ''}</h1>
       
-      <!-- Specs Row with Brand -->
-      <div class="specs-inline">
-        {#if product?.brand}
-          <span class="spec-inline"><strong>Brand:</strong> {product.brand}</span>
-        {/if}
-        {#if product?.size}
-          <span class="spec-inline"><strong>Size:</strong> {product.size}</span>
-        {/if}
-        {#if product?.color}
-          <span class="spec-inline"><strong>Color:</strong> {product.color}</span>
-        {/if}
-        {#if product?.material}
-          <span class="spec-inline"><strong>Material:</strong> {product.material}</span>
-        {/if}
-      </div>
+      <!-- Quick Facts Row -->
+      {#if showQuickFacts && (product?.brand || product?.size || product?.color || product?.material)}
+        <div class="facts-row" role="list" aria-label="Product facts">
+          {#if product?.brand}
+            <span role="listitem" class="fact-chip" title={`Brand: ${product.brand}`}>{product.brand}</span>
+          {/if}
+          {#if product?.size}
+            <span role="listitem" class="fact-chip" title={`Size: ${product.size}`}>Size {product.size}</span>
+          {/if}
+          {#if product?.color}
+            <span role="listitem" class="fact-chip" title={`Color: ${product.color}`}>{product.color}</span>
+          {/if}
+          {#if product?.material}
+            <span role="listitem" class="fact-chip" title={`Material: ${product.material}`}>{product.material}</span>
+          {/if}
+        </div>
+      {/if}
       
       <!-- Description -->
       {#if product?.description}
@@ -688,7 +741,11 @@
           </svg>
         </button>
         <div class="profile-avatar-large">
-          <img src={product?.seller?.avatar_url || '/default-avatar.png'} alt="{displayName} profile picture" />
+          {#if product?.seller?.avatar_url}
+            <img src={product.seller.avatar_url} alt="{displayName} profile picture" />
+          {:else}
+            <span class="profile-avatar-fallback" aria-hidden="true">{displayName?.charAt(0)?.toUpperCase() || '?'}</span>
+          {/if}
         </div>
         <div class="profile-info-large" id="profile-modal-content">
           <div class="profile-name-row">
@@ -765,8 +822,7 @@
     left: 0;
     right: 0;
     z-index: 50;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(20px);
+    background: var(--surface-base);
     border-bottom: 1px solid transparent;
     transform: translateY(-100%);
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -878,14 +934,117 @@
     padding: 0 var(--space-4);
   }
 
+  /* Top bar over image: avatar • title • wishlist */
+  .image-topbar {
+    position: absolute;
+    z-index: 5;
+    top: var(--space-3);
+    left: var(--space-3);
+    right: var(--space-3);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    pointer-events: none; /* avoid capturing stray clicks */
+  }
+  .image-topbar .seller-avatar-button,
+  .image-topbar .floating-like {
+    pointer-events: auto; /* re-enable for controls */
+  }
+  .image-title {
+    flex: 1;
+    text-align: center;
+    font-size: var(--text-sm);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+  }
+  .image-topbar .seller-avatar-button {
+    position: static;
+    transform: none;
+  }
+  .image-topbar .seller-avatar-overlay,
+  .image-topbar .seller-avatar-fallback {
+    width: 40px;
+    height: 40px;
+    border-width: 2px;
+  }
+  .image-topbar .floating-like {
+    position: static;
+    width: 40px;
+    height: 40px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  }
+
+  /* Bottom badges over image */
+  .image-badges {
+    position: absolute;
+    left: var(--space-3);
+    right: var(--space-3);
+    bottom: var(--space-5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    pointer-events: none;
+  }
+  .badge-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: var(--space-1-5) var(--space-3);
+    border-radius: var(--radius-full);
+    background: var(--surface-subtle);
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    font-size: var(--text-xs);
+    font-weight: var(--font-semibold);
+    max-width: 45%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Inline meta variant */
+  .image-inline-meta {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: var(--space-5);
+    max-width: calc(100% - var(--space-6));
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    background: var(--surface-base);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .main-display {
     position: relative;
     aspect-ratio: 3/4;
     background: var(--surface-base);
     overflow: hidden;
     border-radius: var(--radius-2xl);
+    border: 1px solid var(--border-subtle);
+    padding: var(--space-2);
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     max-width: 100%;
+  }
+  /* Subtle bottom gradient to ensure caption readability */
+  .main-display::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 72px;
+    background: linear-gradient(to top, rgba(0,0,0,0.04), rgba(0,0,0,0));
+    pointer-events: none;
   }
 
   /* Responsive aspect ratio adjustments */
@@ -900,8 +1059,32 @@
     height: 100%;
     object-fit: contain;
     object-position: center;
-    border-radius: calc(var(--radius-2xl) - 2px);
+    border-radius: var(--radius-xl);
+    background: var(--surface-subtle);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .hero-empty {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    color: var(--text-tertiary);
     background: var(--surface-base);
+    border-radius: calc(var(--radius-2xl) - 2px);
+  }
+
+  .hero-empty-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .hero-empty-text {
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
   }
 
   .sold-badge {
@@ -924,13 +1107,12 @@
     width: 48px;
     height: 48px;
     border: none;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(16px);
+    background: var(--surface-base);
     border-radius: var(--radius-full);
     color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -938,15 +1120,12 @@
     gap: var(--space-0-5);
   }
 
-  .floating-like:hover {
-    transform: scale(1.1);
-    box-shadow: 0 16px 64px rgba(0, 0, 0, 0.18);
-  }
+  .floating-like:hover { transform: scale(1.05); }
 
   .floating-like.liked {
     color: var(--status-error-solid);
     background: var(--surface-base);
-    transform: scale(1.15);
+    transform: scale(1.05);
   }
 
   .like-count {
@@ -957,30 +1136,45 @@
 
   .image-nav {
     position: absolute;
-    bottom: var(--space-6);
+    bottom: var(--space-12);
     left: 50%;
     transform: translateX(-50%);
     display: flex;
     gap: var(--space-2);
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.4);
     padding: var(--space-2) var(--space-3);
     border-radius: var(--radius-full);
-    backdrop-filter: blur(8px);
+    /* Removed blur for performance */
   }
 
   .nav-dot {
-    width: 8px;
-    height: 8px;
+    position: relative;
+    width: var(--touch-compact);
+    height: var(--touch-compact);
     border: none;
-    background: rgba(255, 255, 255, 0.6);
+    background: transparent;
     border-radius: var(--radius-full);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform 0.15s ease;
   }
-
-  .nav-dot.active {
+  .nav-dot::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: var(--radius-full);
+    transform: translate(-50%, -50%);
+  }
+  .nav-dot.active::after {
     background: white;
-    transform: scale(1.5);
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  .nav-dot:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
   }
 
   .thumbnail-strip {
@@ -1006,6 +1200,11 @@
     flex-shrink: 0;
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .thumb-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
   }
 
   .thumb-btn:hover {
@@ -1062,6 +1261,20 @@
     border-radius: var(--radius-xl);
     transition: all 0.3s ease;
     padding: 0;
+  }
+
+  .seller-avatar-fallback {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-muted);
+    color: var(--text-secondary);
+    font-weight: var(--font-semibold);
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
   }
 
   .seller-avatar-btn:hover {
@@ -1189,22 +1402,26 @@
 
   /* Duplicate removed - keeping only the first definition */
 
-  .specs-inline {
+  .facts-row {
     display: flex;
-    gap: var(--space-4);
+    gap: var(--space-2);
     flex-wrap: wrap;
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
+    margin-top: var(--space-2);
   }
-
-  .spec-inline {
+  .fact-chip {
     display: inline-flex;
     align-items: center;
-  }
-
-  .spec-inline strong {
-    color: var(--text-primary);
-    margin-right: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    background: var(--surface-subtle);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    max-width: 48%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .description-inline {
@@ -1931,8 +2148,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 60;
     display: flex;
     align-items: center;
@@ -1948,7 +2164,7 @@
     max-width: 400px;
     width: 100%;
     border: 1px solid var(--border-default);
-    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
     animation: slideUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
@@ -1969,6 +2185,20 @@
     height: 96px;
     border-radius: var(--radius-2xl);
     object-fit: cover;
+    border: 3px solid var(--border-default);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+  .profile-avatar-fallback {
+    width: 96px;
+    height: 96px;
+    border-radius: var(--radius-2xl);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-muted);
+    color: var(--text-secondary);
+    font-weight: var(--font-bold);
+    font-size: var(--text-2xl);
     border: 3px solid var(--border-default);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   }
