@@ -551,7 +551,7 @@ export class ProductionLocaleManager {
    * Set locale with full SSR sync
    */
   async setLocale(locale: string, skipReload: boolean = false): Promise<void> {
-    if (!i18n.isAvailableLanguageTag(locale)) {
+    if (!i18n.locales.includes(locale as i18n.Locale)) {
       throw new Error(`Invalid locale: ${locale}`);
     }
     
@@ -569,8 +569,8 @@ export class ProductionLocaleManager {
       secure: !dev
     });
     
-    // Update runtime
-    i18n.setLocale(locale as any);
+    // Update runtime (no-op in zero-bundle setup)
+    i18n.setLocale();
     
     if (browser) {
       document.documentElement.lang = locale;
@@ -596,7 +596,7 @@ export class ProductionLocaleManager {
       const match = document.cookie.match(new RegExp(`(^| )${COOKIES.LOCALE}=([^;]+)`));
       const locale = match ? match[2] : null;
       
-      if (locale && i18n.isAvailableLanguageTag(locale)) {
+      if (locale && i18n.locales.includes(locale as i18n.Locale)) {
         return locale;
       }
     }
@@ -612,7 +612,7 @@ export class ProductionLocaleManager {
     
     const browserLang = navigator.language.split('-')[0]?.toLowerCase() || 'en';
     
-    if (i18n.isAvailableLanguageTag(browserLang)) {
+    if (i18n.locales.includes(browserLang as i18n.Locale)) {
       return browserLang;
     }
     
@@ -626,7 +626,7 @@ export class ProductionLocaleManager {
     const stored = this.getLocale();
     
     if (stored !== 'en') {
-      i18n.setLocale(stored as any);
+      i18n.setLocale();
       if (browser) {
         document.documentElement.lang = stored;
       }
@@ -634,7 +634,7 @@ export class ProductionLocaleManager {
     }
     
     const detected = this.detectLocale();
-    i18n.setLocale(detected as any);
+    i18n.setLocale();
     
     if (browser) {
       document.documentElement.lang = detected;

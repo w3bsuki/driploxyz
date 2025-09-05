@@ -1,8 +1,15 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { applySecurityConfig, addSecurityHeaders } from '$lib/middleware/security.js';
+import { handleError } from '$lib/middleware/error-handler.js';
 
-export const GET: RequestHandler = async ({ locals }) => {
+export const GET: RequestHandler = async ({ request, locals }) => {
 	try {
+		// Apply security middleware
+		const securityResult = await applySecurityConfig(request, 'public');
+		if (securityResult instanceof Response) {
+			return securityResult;
+		}
 		const startTime = Date.now();
 		const checks = {
 			database: false,
@@ -20,7 +27,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			
 			checks.database = !dbError;
 		} catch (e) {
-			console.error('Database health check failed:', e);
+			// Database health check failed
 			checks.database = false;
 		}
 		
@@ -30,7 +37,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			const { error: authError } = await locals.supabase.auth.getSession();
 			checks.auth = !authError;
 		} catch (e) {
-			console.error('Auth health check failed:', e);
+			// Auth health check failed
 			checks.auth = false;
 		}
 		
@@ -43,7 +50,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 			checks.storage = !storageError;
 		} catch (e) {
 			// Storage might not be configured, so we don't fail the health check
-			console.warn('Storage health check skipped:', e);
+			// Storage health check skipped
 			checks.storage = true; // Mark as OK if not configured
 		}
 		
@@ -55,8 +62,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			throw error(503, 'Service degraded');
 		}
 		
-		// Return health status
-		return json({
+		// Return health status with security headers
+		const response = json({
 			status: allHealthy ? 'healthy' : 'degraded',
 			timestamp: new Date().toISOString(),
 			version: process.env.npm_package_version || '1.0.0',
@@ -74,12 +81,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 				'X-Response-Time': `${responseTime}ms`,
 			}
 		});
+
+		return addSecurityHeaders(response);
 		
 	} catch (err) {
-		console.error('Health check error:', err);
-		
-		// Return 503 Service Unavailable
-		throw error(503, 'Service unavailable - Health check error');
+		// Use our error handler for consistent error responses
+		return addSecurityHeaders(handleError(err as Error, request));
 	}
 };
 
@@ -97,20 +104,20 @@ export const HEAD: RequestHandler = async ({ locals }) => {
 			throw error(503, 'Database unavailable');
 		}
 		
-		return new Response(null, {
+		return addSecurityHeaders(new Response(null, {
 			status: 200,
 			headers: {
 				'X-Health-Status': 'healthy',
 				'Cache-Control': 'no-cache',
 			}
-		});
+		}));
 	} catch (err) {
-		return new Response(null, {
+		return addSecurityHeaders(new Response(null, {
 			status: 503,
 			headers: {
 				'X-Health-Status': 'unhealthy',
 				'Cache-Control': 'no-cache',
 			}
-		});
+		}));
 	}
 };

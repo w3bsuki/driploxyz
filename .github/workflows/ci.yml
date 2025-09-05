@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-check:
+    name: Build, Lint, Check (pnpm pinned)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20.x, 22.x]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Show tool versions
+        run: |
+          node -v
+          corepack pnpm -v || true
+
+      - name: Install (workspace)
+        env:
+          CI: true
+        run: corepack pnpm -w install --frozen-lockfile
+
+      - name: Lint
+        run: corepack pnpm -w run lint
+
+      - name: Type/Static Check
+        run: corepack pnpm -w run check
+
+      - name: Build
+        env:
+          CI: true
+        run: corepack pnpm -w run build
+
+  latest-toolchain:
+    name: Canary (pnpm@latest on Node 22)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Use pnpm@latest
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+          pnpm -v
+
+      - name: Install (workspace)
+        env:
+          CI: true
+        run: pnpm -w install
+
+      - name: Lint
+        run: pnpm -w run lint
+
+      - name: Type/Static Check
+        run: pnpm -w run check
+
+      - name: Build
+        env:
+          CI: true
+        run: pnpm -w run build
+

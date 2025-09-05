@@ -2,7 +2,7 @@
   import { createToggleGroup } from '@melt-ui/svelte';
   import type { Snippet } from 'svelte';
   import { tick } from 'svelte';
-  import * as i18n from '@repo/i18n';
+  import { filter_ui_applied, filter_ui_removed, filter_modal_filter, filter_ui_filterOptionsAriaLabel, filter_ui_keyboardNavHelp } from '@repo/i18n';
 
   interface FilterOption {
     value: string;
@@ -71,8 +71,8 @@
         if (announcementTemplate) {
           announcement = announcementTemplate(changedOption, isActive);
         } else {
-          const statusText = isActive ? i18n.filter_ui_applied() : i18n.filter_ui_removed();
-          announcement = `${changedOption.label} ${i18n.filter_modal_filter()} ${statusText}`;
+          const statusText = isActive ? filter_ui_applied() : filter_ui_removed();
+          announcement = `${changedOption.label} ${filter_modal_filter()} ${statusText}`;
         }
       }
       
@@ -137,8 +137,8 @@
             if (announcementTemplate) {
               announcement = announcementTemplate(option, newValue !== null);
             } else {
-              const statusText = newValue !== null ? i18n.filter_ui_applied() : i18n.filter_ui_removed();
-              announcement = `${option.label} ${i18n.filter_modal_filter()} ${statusText}`;
+              const statusText = newValue !== null ? filter_ui_applied() : filter_ui_removed();
+              announcement = `${option.label} ${filter_modal_filter()} ${statusText}`;
             }
           }
         }
@@ -198,7 +198,7 @@
   use:root 
   class="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1 {className}"
   role="toolbar"
-  aria-label={label || i18n.filter_ui_filterOptionsAriaLabel()}
+  aria-label={label || filter_ui_filterOptionsAriaLabel()}
   aria-orientation="horizontal"
   tabindex="-1"
   onkeydown={handleKeydown}
@@ -216,10 +216,9 @@
       use:item
       data-value={option.value}
       class="{basePillClasses} {activeClasses}"
-      role="button"
       tabindex={focusedIndex === index ? '0' : '-1'}
       aria-pressed={isActive}
-      aria-label="{option.label} {i18n.filter_modal_filter()} {isActive ? i18n.filter_ui_applied() : i18n.filter_ui_removed()}"
+      aria-label="{option.label} {filter_modal_filter()} {isActive ? filter_ui_applied() : filter_ui_removed()}"
       aria-describedby={`filter-help-${option.value}`}
       onfocus={() => handleButtonFocus(index)}
     >
@@ -250,7 +249,7 @@
       id="filter-help-{option.value}"
       class="sr-only"
     >
-{i18n.filter_ui_keyboardNavHelp()}
+{filter_ui_keyboardNavHelp()}
     </span>
   {/each}
 </div>

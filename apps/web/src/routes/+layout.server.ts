@@ -23,14 +23,7 @@ export const load = (async (event) => {
   const { session, user } = await locals.safeGetSession();
   const supabase = locals.supabase;
   
-  // Log auth state for debugging (development only)
-  if (dev) {
-    console.log('[Layout Load] Auth state:', {
-      hasUser: !!user,
-      userId: user?.id,
-      pathname: url.pathname
-    });
-  }
+  // Auth state loaded
   
 
   let profile = null;
@@ -46,7 +39,7 @@ export const load = (async (event) => {
     if (profileError && profileError.code !== 'PGRST116') {
       // Log and continue without failing the whole request (development only)
       if (dev) {
-        console.warn('Profile fetch failed:', profileError.message);
+        // Profile fetch failed - continuing without profile
       }
     }
 
@@ -58,14 +51,7 @@ export const load = (async (event) => {
     const isProtectedPath = !REDIRECT_PATHS_TO_SKIP.some(path => url.pathname.startsWith(path));
     
     if (needsOnboarding && isProtectedPath) {
-      if (dev) {
-        console.log('[ONBOARDING CHECK] User needs onboarding:', {
-          userId: user.id,
-          hasProfile: !!profile,
-          onboardingCompleted: profile?.onboarding_completed,
-          currentPath: url.pathname
-        });
-      }
+      // User needs onboarding
       throw redirect(303, '/onboarding');
     }
   }

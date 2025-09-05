@@ -102,10 +102,10 @@
     aria-label="Close menu"
   ></div>
   
-  <!-- Compact dropdown menu -->
-  <div class="sm:hidden absolute top-full left-2 right-2 bg-white rounded-xl shadow-xl z-50 border border-gray-200 mt-2">
-    <div class="px-4 py-4">
-      <nav class="space-y-4">
+  <!-- Enhanced mobile dropdown menu -->
+  <div class="sm:hidden absolute top-full left-3 right-3 bg-white rounded-2xl shadow-2xl z-50 border border-gray-100 mt-3 backdrop-blur-xl bg-white/95">
+    <div class="px-5 py-5">
+      <nav class="space-y-3">
         {#if isLoggedIn && user && profile}
           <!-- Account Section for Authenticated Users -->
           <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
@@ -137,41 +137,41 @@
         </div>
         
         <!-- Quick Shopping Actions -->
-        <div class="space-y-1">
-          <a href="/search" class="flex items-center px-3 py-2.5 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors min-h-11" onclick={onClose}>
-            <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="space-y-2">
+          <a href="/search" class="flex items-center px-4 py-3 text-gray-900 hover:bg-gray-50 active:bg-gray-100 rounded-xl transition-all duration-200 min-h-12 touch-manipulation" onclick={onClose}>
+            <svg class="w-5 h-5 mr-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <span class="font-medium text-sm">{translations.browseAll}</span>
+            <span class="font-semibold text-sm">{translations.browseAll}</span>
           </a>
           
-          <a href="/brands" class="flex items-center px-3 py-2.5 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors min-h-11" onclick={onClose}>
-            <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <a href="/brands" class="flex items-center px-4 py-3 text-gray-900 hover:bg-gray-50 active:bg-gray-100 rounded-xl transition-all duration-200 min-h-12 touch-manipulation" onclick={onClose}>
+            <svg class="w-5 h-5 mr-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
             </svg>
-            <span class="font-medium text-sm">{translations.popularBrands}</span>
+            <span class="font-semibold text-sm">{translations.popularBrands}</span>
           </a>
           
-          <a href="/new" class="flex items-center px-3 py-2.5 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors min-h-11" onclick={onClose}>
-            <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <a href="/new" class="flex items-center px-4 py-3 text-gray-900 hover:bg-gray-50 active:bg-gray-100 rounded-xl transition-all duration-200 min-h-12 touch-manipulation" onclick={onClose}>
+            <svg class="w-5 h-5 mr-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span class="font-medium text-sm">{translations.newToday}</span>
+            <span class="font-semibold text-sm">{translations.newToday}</span>
           </a>
           
           {#if canSell}
-            <a href="/sell" class="flex items-center px-3 py-2.5 text-green-700 hover:bg-green-50 rounded-lg transition-colors min-h-11 bg-green-25" onclick={onClose}>
-              <svg class="w-4 h-4 mr-3 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="/sell" class="flex items-center px-4 py-3 text-green-700 hover:bg-green-50 active:bg-green-100 rounded-xl transition-all duration-200 min-h-12 bg-green-50/50 border border-green-200 touch-manipulation" onclick={onClose}>
+              <svg class="w-5 h-5 mr-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
-              <span class="font-semibold text-sm">{translations.sellItems}</span>
+              <span class="font-bold text-sm">{translations.sellItems}</span>
             </a>
           {:else}
-            <a href="/become-seller" class="flex items-center px-3 py-2.5 text-blue-700 hover:bg-blue-50 rounded-lg transition-colors min-h-11 bg-blue-25" onclick={onClose}>
-              <svg class="w-4 h-4 mr-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="/become-seller" class="flex items-center px-4 py-3 text-blue-700 hover:bg-blue-50 active:bg-blue-100 rounded-xl transition-all duration-200 min-h-12 bg-blue-50/50 border border-blue-200 touch-manipulation" onclick={onClose}>
+              <svg class="w-5 h-5 mr-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span class="font-semibold text-sm">{translations.startSelling}</span>
+              <span class="font-bold text-sm">{translations.startSelling}</span>
             </a>
           {/if}
         </div>
@@ -218,13 +218,13 @@
         
         <!-- Authentication Section -->
         {#if !isLoggedIn}
-          <div class="pt-2 border-t border-gray-200">
-            <div class="grid grid-cols-2 gap-2">
-              <a href="/login" class="flex items-center justify-center px-3 py-3 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors min-h-11 border border-gray-200" onclick={onClose}>
-                <span class="font-semibold text-sm">{translations.signIn}</span>
+          <div class="pt-3 border-t border-gray-200">
+            <div class="grid grid-cols-2 gap-3">
+              <a href="/login" class="flex items-center justify-center px-4 py-4 text-gray-900 hover:bg-gray-50 active:bg-gray-100 rounded-xl transition-all duration-200 min-h-12 border border-gray-200 touch-manipulation" onclick={onClose}>
+                <span class="font-bold text-sm">{translations.signIn}</span>
               </a>
-              <a href="/signup" class="flex items-center justify-center px-3 py-3 bg-black text-white rounded-lg font-bold hover:bg-gray-800 transition-colors min-h-11" onclick={onClose}>
-                <span class="text-sm">{translations.signUp}</span>
+              <a href="/signup" class="flex items-center justify-center px-4 py-4 bg-black text-white rounded-xl font-bold hover:bg-gray-800 active:bg-gray-900 transition-all duration-200 min-h-12 touch-manipulation" onclick={onClose}>
+                <span class="text-sm font-bold">{translations.signUp}</span>
               </a>
             </div>
           </div>

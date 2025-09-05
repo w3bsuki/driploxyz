@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import ProductBreadcrumb from './ProductBreadcrumb.svelte';
   import ProductActionBar from './ProductActionBar.svelte';
+  import Badge from './Badge.svelte';
   import Tooltip from './primitives/tooltip/Tooltip.svelte';
   import { Accordion } from './primitives';
   import SellerCard from './SellerCard.svelte';
@@ -10,38 +11,40 @@
   interface ProductData {
     id: string;
     title: string;
-    description: string;
+    description: string | null;
     price: number;
     currency: string;
-    brand?: string;
+    brand?: string | null;
     condition: string;
-    size?: string;
-    color?: string;
-    material?: string;
+    size?: string | null;
+    color?: string | null;
+    material?: string | null;
     images: string[];
-    is_sold: boolean;
+    is_sold: boolean | null;
     favorite_count: number;
+    categories?: { id?: string; name?: string; slug?: string; parent_id?: string | null };
+    parent_category?: { name?: string; slug?: string } | null;
     seller: {
       id: string;
-      username: string;
-      full_name?: string;
-      avatar_url?: string;
-      rating?: number;
-      bio?: string;
-      created_at: string;
-      sales_count?: number;
+      username: string | null;
+      full_name?: string | null;
+      avatar_url?: string | null;
+      rating?: number | null;
+      bio?: string | null;
+      created_at: string | null;
+      sales_count?: number | null;
     };
   }
 
   interface ReviewData {
     id: string;
     rating: number;
-    comment: string;
-    created_at: string;
+    comment: string | null;
+    created_at: string | null;
     reviewer?: {
       id: string;
-      username: string;
-      avatar_url?: string;
+      username: string | null;
+      avatar_url?: string | null;
     };
     reviewer_name?: string;
   }
@@ -58,7 +61,7 @@
     isOwner?: boolean;
     isAuthenticated?: boolean;
     isFavorited?: boolean;
-    onFavorite?: () => Promise<{favoriteCount: number, favorited: boolean}> | void;
+    onFavorite?: () => Promise<{favoriteCount: number, favorited: boolean} | undefined> | void;
     onMessage?: () => void;
     onBuyNow?: () => void;
     onMakeOffer?: () => void;
@@ -171,9 +174,10 @@
   }
 
   function viewProfile() {
-    // Navigate to seller profile page
+    // Navigate to seller profile page by username when available
     if (typeof window !== 'undefined') {
-      window.location.href = `/profile/${product?.seller?.id}`;
+      const username = product?.seller?.username;
+      window.location.href = username ? `/profile/${username}` : `/profile/${product?.seller?.id}`;
     }
   }
 
@@ -189,7 +193,27 @@
 
   // Perfect Derived Values
   const headerVisible = $derived(scrollY > 100);
-  const displayName = $derived(product?.seller?.full_name || product?.seller?.username || 'Unknown Seller');
+  const displayName: string = $derived((product?.seller?.full_name ?? product?.seller?.username) ?? 'Unknown Seller');
+  const breadcrumbCategory = $derived((() => {
+    const c = product?.categories;
+    if (!c || !c.slug) return null;
+    return {
+      id: (c.id ?? c.slug) as string,
+      name: (c.name ?? 'Category') as string,
+      slug: c.slug as string,
+      parent_id: (c.parent_id ?? null) as string | null
+    };
+  })());
+  const breadcrumbParentCategory = $derived((() => {
+    const p = product?.parent_category;
+    if (!p || !p.slug) return null;
+    return {
+      id: p.slug as string,
+      name: (p.name ?? 'Category') as string,
+      slug: p.slug as string,
+      parent_id: null as string | null
+    };
+  })());
   const memberSince = $derived(
     !product?.seller?.created_at 
       ? 'Recently joined' 
@@ -200,7 +224,7 @@
   );
   const displayRating = $derived(ratingSummary?.averageRating || product?.seller?.rating || 0);
   const reviewCount = $derived(ratingSummary?.totalReviews || reviews.length || 0);
-  const imageInlineMeta = $derived(() => {
+  const imageInlineMeta = $derived.by(() => {
     if (!product) return '';
     const parts: string[] = [];
     if (product?.condition) parts.push(translateCondition(product.condition));
@@ -264,16 +288,15 @@
 
   // Condition translation function
   function translateCondition(condition: string): string {
-    const conditionMap: Record<string, () => string> = {
-      'brand_new_with_tags': () => i18n.sell_condition_brandNewWithTags?.() || 'New with tags',
-      'brand_new_without_tags': () => i18n.sell_condition_newWithoutTags?.() || 'New without tags', 
-      'like_new': () => i18n.sell_condition_likeNew?.() || 'Like new',
-      'good': () => i18n.sell_condition_good?.() || 'Good',
-      'worn': () => i18n.sell_condition_worn?.() || 'Worn',
-      'fair': () => i18n.sell_condition_fair?.() || 'Fair'
+    const map: Record<string, string> = {
+      brand_new_with_tags: 'New with tags',
+      brand_new_without_tags: 'New without tags',
+      like_new: 'Like new',
+      good: 'Good',
+      worn: 'Worn',
+      fair: 'Fair'
     };
-    
-    return conditionMap[condition]?.() || condition;
+    return map[condition] || condition;
   }
 
 </script>
@@ -283,7 +306,7 @@
   <a href="#product-title" class="skip-link">Skip to product details</a>
   <a href="#seller-products-heading" class="skip-link">Skip to seller products</a>
   <!-- Ultimate Perfect Header -->
-  <header class="ultimate-header {headerVisible ? 'visible' : 'hidden'}" role="banner">
+  <header class="ultimate-header {headerVisible ? 'visible' : 'hidden'}">
     <div class="header-content">
       <button 
         class="icon-btn" 
@@ -305,10 +328,14 @@
         <Tooltip content="Share this product">
           <button 
             class="icon-btn" 
-            onclick={() => navigator.share?.({ 
-              title: product?.title || '',
-              url: window.location.href 
-            })}
+            onclick={() => {
+              const shareData = { title: product?.title || '', url: window.location.href };
+              if (navigator.share) {
+                navigator.share(shareData);
+              } else {
+                navigator.clipboard?.writeText(shareData.url);
+              }
+            }}
             aria-label="Share this product"
             type="button"
           >
@@ -337,15 +364,15 @@
 
   <!-- Reuse existing ProductBreadcrumb -->
   <ProductBreadcrumb
-    category={product?.categories}
-    parentCategory={product?.parent_category}
+    category={breadcrumbCategory}
+    parentCategory={breadcrumbParentCategory}
     productTitle={product?.title || 'Product'}
     onBack={() => history.back()}
   />
 
 
   <!-- Ultimate Perfect Gallery -->
-  <section class="ultimate-gallery" role="region" aria-label="Product images" data-testid="product-gallery">
+  <section class="ultimate-gallery" aria-label="Product images" data-testid="product-gallery">
     <div class="main-display">
       {#if product?.images && product.images.length > 0}
         <img 
@@ -422,19 +449,17 @@
       {#if imageInfoVariant === 'chips' && product}
         <div class="image-badges">
           {#if product?.condition}
-            <span class="badge-chip">{translateCondition(product.condition)}</span>
+            <Badge variant="secondary" size="sm">{translateCondition(product.condition)}</Badge>
           {/if}
           {#if product?.size}
-            <span class="badge-chip">Size {product.size}</span>
+            <Badge variant="secondary" size="sm">Size {product.size}</Badge>
           {:else if product?.brand}
-            <span class="badge-chip">{product.brand}</span>
+            <Badge variant="secondary" size="sm">{product.brand}</Badge>
           {/if}
         </div>
       {:else if imageInfoVariant === 'inline' && product}
         {#if imageInlineMeta}
-          <div class="image-inline-meta" aria-label="{imageInlineMeta}">
-            {imageInlineMeta}
-          </div>
+          <div class="image-inline-meta" aria-label="{imageInlineMeta}">{imageInlineMeta}</div>
         {/if}
       {/if}
 
@@ -450,7 +475,7 @@
               aria-selected={selectedImage === index}
               aria-label={`View image ${index + 1} of ${product.images.length}`}
               type="button"
-            />
+            ></button>
           {/each}
         </div>
       {/if}
@@ -483,9 +508,9 @@
       <!-- Header Row: Badge + Brand -->
       <div class="header-row">
         {#if product?.condition}
-          <div class="condition-badge" role="text" aria-label="Product condition: {translateCondition(product.condition)}">{translateCondition(product.condition)}</div>
+          <div class="condition-badge" aria-label="Product condition: {translateCondition(product.condition)}">{translateCondition(product.condition)}</div>
         {/if}
-        <div class="favorites-inline" role="text" aria-label="{likeCount} people love this item">
+        <div class="favorites-inline" aria-label="{likeCount} people love this item">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
           </svg>
@@ -500,16 +525,24 @@
       {#if showQuickFacts && (product?.brand || product?.size || product?.color || product?.material)}
         <div class="facts-row" role="list" aria-label="Product facts">
           {#if product?.brand}
-            <span role="listitem" class="fact-chip" title={`Brand: ${product.brand}`}>{product.brand}</span>
+            <span role="listitem" title={`Brand: ${product.brand}`}>
+              <Badge variant="secondary" size="sm">{product.brand}</Badge>
+            </span>
           {/if}
           {#if product?.size}
-            <span role="listitem" class="fact-chip" title={`Size: ${product.size}`}>Size {product.size}</span>
+            <span role="listitem" title={`Size: ${product.size}`}>
+              <Badge variant="secondary" size="sm">Size {product.size}</Badge>
+            </span>
           {/if}
           {#if product?.color}
-            <span role="listitem" class="fact-chip" title={`Color: ${product.color}`}>{product.color}</span>
+            <span role="listitem" title={`Color: ${product.color}`}>
+              <Badge variant="secondary" size="sm">{product.color}</Badge>
+            </span>
           {/if}
           {#if product?.material}
-            <span role="listitem" class="fact-chip" title={`Material: ${product.material}`}>{product.material}</span>
+            <span role="listitem" title={`Material: ${product.material}`}>
+              <Badge variant="secondary" size="sm">{product.material}</Badge>
+            </span>
           {/if}
         </div>
       {/if}
@@ -543,7 +576,7 @@
         <SellerCard 
           id={product?.seller?.id || ''}
           name={displayName}
-          avatar={product?.seller?.avatar_url}
+          avatar={product?.seller?.avatar_url || undefined}
           stats={sellerStats}
           onMessage={onMessage}
           onViewProfile={viewProfile}
@@ -567,7 +600,7 @@
 
       <!-- Seller Products Section -->
       {#if sellerProducts && sellerProducts.length > 0}
-        <div class="products-section" role="region" aria-labelledby="seller-products-heading">
+        <div class="products-section" aria-labelledby="seller-products-heading">
           <div class="products-header">
             <h3 class="products-title" id="seller-products-heading">More from {displayName}</h3>
             <div class="products-count" aria-label="{sellerProducts.length} items available from seller">{sellerProducts.length} items</div>
@@ -576,18 +609,11 @@
           <div class="products-scroll-container">
             <div class="products-scroll">
               {#each sellerProducts.slice(0, 12) as sellerProduct}
-                <div 
+                <a 
                   class="product-card" 
-                  role="button"
-                  tabindex="0"
+                  href={sellerProduct.canonicalUrl || `/product/${sellerProduct.id}`}
                   aria-label="View product: {sellerProduct.title} - Price: {formatPrice(sellerProduct.price || 0)}"
-                  onclick={() => window.location.href = sellerProduct.canonicalUrl || `/product/${sellerProduct.id}`}
-                  onkeydown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      window.location.href = sellerProduct.canonicalUrl || `/product/${sellerProduct.id}`;
-                    }
-                  }}
+                  data-sveltekit-preload-data="hover"
                 >
                   <div class="product-image">
                     <img 
@@ -603,7 +629,7 @@
                     <p class="product-title">{sellerProduct.title}</p>
                     <p class="product-price">{formatPrice(sellerProduct.price || 0)}</p>
                   </div>
-                </div>
+                </a>
               {/each}
             </div>
           </div>
@@ -612,7 +638,7 @@
 
       <!-- Similar Products Section (Same Category) -->
       {#if similarProducts && similarProducts.length > 0}
-        <div class="products-section" role="region" aria-labelledby="similar-products-heading">
+        <div class="products-section" aria-labelledby="similar-products-heading">
           <div class="products-header">
             <h3 class="products-title" id="similar-products-heading">Similar items</h3>
             <div class="products-count" aria-label="{similarProducts.length} similar items available">{similarProducts.length} items</div>
@@ -621,18 +647,11 @@
           <div class="products-scroll-container">
             <div class="products-scroll">
               {#each similarProducts.slice(0, 12) as similarProduct}
-                <div 
+                <a 
                   class="product-card" 
-                  role="button"
-                  tabindex="0"
+                  href={similarProduct.canonicalUrl || `/product/${similarProduct.id}`}
                   aria-label="View product: {similarProduct.title} - Price: {formatPrice(similarProduct.price || 0)}"
-                  onclick={() => window.location.href = similarProduct.canonicalUrl || `/product/${similarProduct.id}`}
-                  onkeydown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      window.location.href = similarProduct.canonicalUrl || `/product/${similarProduct.id}`;
-                    }
-                  }}
+                  data-sveltekit-preload-data="hover"
                 >
                   <div class="product-image">
                     <img 
@@ -648,7 +667,7 @@
                     <p class="product-title">{similarProduct.title}</p>
                     <p class="product-price">{formatPrice(similarProduct.price || 0)}</p>
                   </div>
-                </div>
+                </a>
               {/each}
             </div>
           </div>
@@ -703,10 +722,8 @@
 <!-- Clean Action Bar Component -->
 <ProductActionBar 
   price={product?.price || 0}
-  currency={product?.currency || 'EUR'}
   isSold={product?.is_sold || false}
   isOwner={isOwner}
-  isAuthenticated={isAuthenticated}
   isFavorited={isLiked}
   productTitle={product?.title}
   productImage={product?.images?.[0]}
@@ -720,14 +737,14 @@
 {#if showProfileModal}
   <div 
     class="profile-modal-overlay" 
-    onclick={toggleProfileModal}
+    onclick={(e) => { if (e.target === e.currentTarget) toggleProfileModal(); }}
     onkeydown={handleModalKeydown}
-    role="dialog"
+    role="dialog" tabindex="-1"
     aria-modal="true"
     aria-labelledby="profile-modal-title"
     aria-describedby="profile-modal-content"
   >
-    <div class="profile-modal" onclick={(e) => e.stopPropagation()}>
+    <div class="profile-modal">
       <div class="profile-modal-header">
         <button 
           class="modal-close-btn"
@@ -756,7 +773,7 @@
               </svg>
             </div>
           </div>
-          <div class="profile-stats-large" role="text" aria-label="Seller statistics: {displayRating > 0 ? `${displayRating.toFixed(1)} star rating, ` : ''}{reviewCount} reviews, {product?.seller?.sales_count || 0} sales, member since {memberSince}">
+          <div class="profile-stats-large" aria-label="Seller statistics: {displayRating > 0 ? `${displayRating.toFixed(1)} star rating, ` : ''}{reviewCount} reviews, {product?.seller?.sales_count || 0} sales, member since {memberSince}">
             {#if displayRating > 0}
               <div class="rating-large">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -990,22 +1007,6 @@
     gap: var(--space-3);
     pointer-events: none;
   }
-  .badge-chip {
-    display: inline-flex;
-    align-items: center;
-    min-height: 28px;
-    padding: var(--space-1-5) var(--space-3);
-    border-radius: var(--radius-full);
-    background: var(--surface-subtle);
-    color: var(--text-primary);
-    border: 1px solid var(--border-subtle);
-    font-size: var(--text-xs);
-    font-weight: var(--font-semibold);
-    max-width: 45%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 
   /* Inline meta variant */
   .image-inline-meta {
@@ -1128,11 +1129,6 @@
     transform: scale(1.05);
   }
 
-  .like-count {
-    font-size: var(--text-xs);
-    font-weight: var(--font-bold);
-    line-height: 1;
-  }
 
   .image-nav {
     position: absolute;
@@ -1149,8 +1145,8 @@
 
   .nav-dot {
     position: relative;
-    width: var(--touch-compact);
-    height: var(--touch-compact);
+    width: 36px;
+    height: 36px;
     border: none;
     background: transparent;
     border-radius: var(--radius-full);
@@ -1408,21 +1404,6 @@
     flex-wrap: wrap;
     margin-top: var(--space-2);
   }
-  .fact-chip {
-    display: inline-flex;
-    align-items: center;
-    padding: var(--space-1) var(--space-2);
-    background: var(--surface-subtle);
-    border: 1px solid var(--border-subtle);
-    color: var(--text-secondary);
-    border-radius: var(--radius-lg);
-    font-size: var(--text-xs);
-    font-weight: var(--font-medium);
-    max-width: 48%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
 
   .description-inline {
     display: flex;
@@ -1442,6 +1423,7 @@
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 4;
+    line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -1449,6 +1431,7 @@
   .description-text.expanded {
     display: block;
     -webkit-line-clamp: unset;
+    line-clamp: unset;
   }
 
   .show-more-btn {
@@ -2031,6 +2014,7 @@
     margin: 0 0 var(--space-2) 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     min-height: calc(var(--text-sm) * var(--leading-tight) * 2);
@@ -2408,8 +2392,8 @@
     position: absolute;
     top: var(--space-4);
     right: var(--space-4);
-    width: var(--touch-standard);
-    height: var(--touch-standard);
+    width: 40px;
+    height: 40px;
     border: none;
     background: var(--surface-subtle);
     border-radius: var(--radius-full);

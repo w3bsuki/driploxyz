@@ -5,7 +5,7 @@ import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
 export async function switchLanguage(lang: string) {
   console.log('Switching language to:', lang);
   
-  if (!i18n.isAvailableLanguageTag(lang)) {
+  if (!i18n.locales.includes(lang as i18n.Locale)) {
     console.error('Invalid language tag:', lang);
     return;
   }
@@ -38,7 +38,7 @@ export async function switchLanguage(lang: string) {
     sessionStorage.setItem('selectedLocale', lang);
 
     // Update runtime locale immediately
-    i18n.setLocale(lang as any);
+    i18n.setLocale();
     document.documentElement.lang = lang;
 
     // Normalize path (strip any existing locale prefix)
@@ -81,8 +81,8 @@ export function initializeLanguage(serverLanguage?: string) {
   if (typeof window === 'undefined') return;
   
   // Use server language if provided (SSR first)
-  if (serverLanguage && i18n.isAvailableLanguageTag(serverLanguage)) {
-    i18n.setLocale(serverLanguage as any);
+  if (serverLanguage && i18n.locales.includes(serverLanguage as i18n.Locale)) {
+    i18n.setLocale();
     document.documentElement.lang = serverLanguage;
     return;
   }
@@ -101,8 +101,8 @@ export function initializeLanguage(serverLanguage?: string) {
   } catch (e) {
     // Cookie reading failed
   }
-  if (storedLang && i18n.isAvailableLanguageTag(storedLang)) {
-    i18n.setLocale(storedLang as any);
+  if (storedLang && i18n.locales.includes(storedLang as i18n.Locale)) {
+    i18n.setLocale();
     document.documentElement.lang = storedLang;
   } else {
     // Last resort: browser language detection
@@ -112,8 +112,8 @@ export function initializeLanguage(serverLanguage?: string) {
       browserLang = parts[0]?.toLowerCase() || 'en';
     }
     
-    const finalLang = i18n.isAvailableLanguageTag(browserLang) ? browserLang : 'en';
-    i18n.setLocale(finalLang as any);
+    const finalLang = i18n.locales.includes(browserLang as i18n.Locale) ? browserLang : 'en';
+    i18n.setLocale();
     document.documentElement.lang = finalLang;
   }
 }

@@ -19,6 +19,8 @@ export interface ProductForUrl {
   id: string;
   slug: string;
   seller_username: string;
+  // Optional category slug for URLs that include a category segment
+  category_slug?: string | null;
 }
 
 // Extended interface that matches the actual data structure used in the app
@@ -43,6 +45,7 @@ export interface ProductWithProfile {
 export function getProductUrl(p: ProductForUrl | ProductWithProfile): string {
   let sellerUsername: string;
   let productSlug: string;
+  let categorySlug: string | undefined;
 
   // Handle ProductForUrl interface (clean structure)
   if ('seller_username' in p) {
@@ -51,6 +54,7 @@ export function getProductUrl(p: ProductForUrl | ProductWithProfile): string {
     }
     sellerUsername = p.seller_username;
     productSlug = p.slug;
+    categorySlug = p.category_slug ?? undefined;
   }
   // Handle ProductWithProfile interface (nested profiles structure)
   else if ('profiles' in p) {
@@ -59,12 +63,16 @@ export function getProductUrl(p: ProductForUrl | ProductWithProfile): string {
     }
     sellerUsername = p.profiles.username;
     productSlug = p.slug;
+    categorySlug = p.categories?.slug ?? undefined;
   }
   else {
     throw new Error(`getProductUrl: Invalid product structure for product_id: ${p.id}`);
   }
 
-  return `/product/${sellerUsername}/${productSlug}`;
+  // Include category when available
+  return categorySlug
+    ? `/product/${sellerUsername}/${categorySlug}/${productSlug}`
+    : `/product/${sellerUsername}/${productSlug}`;
 }
 
 /**

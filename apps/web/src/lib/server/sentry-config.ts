@@ -45,7 +45,7 @@ export function getSentryConfig(): SentryConfig {
               errorMessage.includes('token') ||
               errorMessage.includes('secret') ||
               errorMessage.includes('key')) {
-            console.warn('Sentry: Filtered sensitive error from being sent');
+            // Filtered sensitive error from being sent
             return null;
           }
           
@@ -84,7 +84,7 @@ export function getSentryConfig(): SentryConfig {
  */
 export function initServerSentry(dsn?: string): boolean {
   if (!dsn) {
-    console.log('Sentry: No DSN provided, error monitoring disabled');
+    // Sentry: No DSN provided, error monitoring disabled
     return false;
   }
   
@@ -102,10 +102,10 @@ export function initServerSentry(dsn?: string): boolean {
       ],
     });
     
-    console.log('Sentry: Server-side error monitoring initialized');
+    // Sentry: Server-side error monitoring initialized
     return true;
   } catch (error) {
-    console.error('Sentry: Failed to initialize server-side monitoring:', error);
+    // Sentry: Failed to initialize server-side monitoring
     return false;
   }
 }
@@ -115,7 +115,7 @@ export function initServerSentry(dsn?: string): boolean {
  */
 export function initClientSentry(dsn?: string): boolean {
   if (!dsn) {
-    console.log('Sentry: No DSN provided, error monitoring disabled');
+    // Sentry: No DSN provided, error monitoring disabled
     return false;
   }
   
@@ -137,10 +137,10 @@ export function initClientSentry(dsn?: string): boolean {
       ],
     });
     
-    console.log('Sentry: Client-side error monitoring initialized');
+    // Sentry: Client-side error monitoring initialized
     return true;
   } catch (error) {
-    console.error('Sentry: Failed to initialize client-side monitoring:', error);
+    // Sentry: Failed to initialize client-side monitoring
     return false;
   }
 }
@@ -156,7 +156,7 @@ export function setSentryUser(user: Partial<User> | null): void {
       // Don't include sensitive data
     } : null);
   } catch (error) {
-    console.warn('Sentry: Failed to set user context:', error);
+    // Sentry: Failed to set user context
   }
 }
 
@@ -178,7 +178,7 @@ export function addSentryBreadcrumb(
       timestamp: Date.now() / 1000,
     });
   } catch (error) {
-    console.warn('Sentry: Failed to add breadcrumb:', error);
+    // Sentry: Failed to add breadcrumb
   }
 }
 

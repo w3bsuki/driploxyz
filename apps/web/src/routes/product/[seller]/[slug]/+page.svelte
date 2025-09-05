@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { ProductPage, SEOMetaTags } from '@repo/ui';
+  import { ProductPageNew, SEOMetaTags } from '@repo/ui';
   import { buildProductUrl } from '$lib/utils/seo-urls.js';
   import type { PageData } from './$types';
 
@@ -11,7 +11,8 @@
   const canonicalUrl = buildProductUrl({
     id: data.product.id,
     slug: data.product.slug!,
-    seller_username: data.product.seller_username!
+    seller_username: data.product.seller_username!,
+    category_slug: data.product.category_slug
   });
   
   // Handle navigation and actions
@@ -47,7 +48,7 @@
       });
       
       if (!response.ok) {
-        console.error('Failed to toggle favorite');
+        // Failed to toggle favorite
         return { favoriteCount: data.product.favorite_count, favorited: data.isFavorited };
       }
       
@@ -97,7 +98,7 @@
 />
 
 <!-- Product Page Component -->
-<ProductPage 
+<ProductPageNew 
   product={data.product}
   reviews={data.reviews || []}
   ratingSummary={data.ratingSummary}

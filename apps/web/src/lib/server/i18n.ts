@@ -20,7 +20,7 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   
   // Clean up invalid locale values from current cookie
   const cookieLocale = event.cookies.get(COOKIES.LOCALE);
-  if (cookieLocale && !i18n.isAvailableLanguageTag(cookieLocale)) {
+  if (cookieLocale && !i18n.locales.includes(cookieLocale as i18n.Locale)) {
     event.cookies.delete(COOKIES.LOCALE, { path: '/' });
   }
   
@@ -35,7 +35,7 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
     const pathLocale = pathMatch[1];
     // Map /uk to 'en' locale internally
     const mappedLocale = pathLocale === 'uk' ? 'en' : pathLocale;
-    if (mappedLocale && i18n.isAvailableLanguageTag(mappedLocale)) {
+    if (mappedLocale && i18n.locales.includes(mappedLocale as i18n.Locale)) {
       locale = mappedLocale;
       localeExplicitlySet = true;
     }
@@ -44,7 +44,7 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   // SECOND PRIORITY: Check URL parameter (only if not explicitly set by path)
   if (!localeExplicitlySet) {
     const urlLocale = event.url.searchParams.get('locale');
-    if (urlLocale && i18n.isAvailableLanguageTag(urlLocale)) {
+    if (urlLocale && i18n.locales.includes(urlLocale as i18n.Locale)) {
       locale = urlLocale;
       localeExplicitlySet = true;
     }
@@ -53,7 +53,7 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   // THIRD PRIORITY: Fallback to cookie if no explicit locale preference
   if (!localeExplicitlySet) {
     const cookieLocale = event.cookies.get(COOKIES.LOCALE) || event.cookies.get('locale');
-    if (cookieLocale && i18n.isAvailableLanguageTag(cookieLocale)) {
+    if (cookieLocale && i18n.locales.includes(cookieLocale as i18n.Locale)) {
       locale = cookieLocale;
       localeExplicitlySet = true;
     }
@@ -67,7 +67,7 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
     const acceptLang = event.request.headers.get('accept-language');
     if (acceptLang) {
       const browserLang = acceptLang.split(',')[0]?.split('-')[0]?.toLowerCase();
-      if (browserLang && i18n.isAvailableLanguageTag(browserLang)) {
+      if (browserLang && i18n.locales.includes(browserLang as i18n.Locale)) {
         locale = browserLang;
       }
     }
@@ -97,18 +97,18 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   
   // Apply locale with error handling
   try {
-    if (locale && i18n.isAvailableLanguageTag(locale)) {
-      i18n.setLocale(locale as any);
+    if (locale && i18n.locales.includes(locale as i18n.Locale)) {
+      i18n.setLocale();
     } else {
-      i18n.setLocale('bg');
+      i18n.setLocale();
     }
   } catch (error) {
     console.error(`❌ Failed to set language tag '${locale}':`, error);
     // Fallback to Bulgarian if language setting fails
     try {
-      i18n.setLocale('bg');
+      i18n.setLocale();
     } catch (fallbackError) {
-      console.error(`❌ Critical: Failed to set fallback language 'bg':`, fallbackError);
+      console.error(`❌ Critical: Failed to set fallback language:`, fallbackError);
       throw new Error(`Language system failure: ${fallbackError}`);
     }
   }

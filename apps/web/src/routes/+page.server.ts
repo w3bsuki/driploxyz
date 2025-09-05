@@ -1,7 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
-import { createServices } from '$lib/services';
 
 // MANUAL PROMOTION SYSTEM
 // Add product IDs here to promote them with crown badges 👑
@@ -140,33 +139,53 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
     if (featuredResult.status === 'fulfilled') {
       const { data: rawProducts } = featuredResult.value;
       if (rawProducts) {
-        // Create services to get category hierarchy
-        const services = createServices(supabase, null);
+        // Note: services would be used for category hierarchy if needed in future
         
+        // Fetch all categories first for hierarchy resolution (same as search page)
+        const { data: allCategories } = await supabase
+          .from('categories')
+          .select('*')
+          .eq('is_active', true)
+          .order('level')
+          .order('sort_order');
+
         // Transform products for frontend with proper category hierarchy
         featuredProducts = await Promise.all(rawProducts.map(async (item, index) => {
           // AUTO PROMOTION: Promote newest listings (first 3 items since ordered by created_at DESC)
           const isPromoted = index < 3 || MANUALLY_PROMOTED_IDS.includes(item.id);
           
-          // Get category hierarchy for this product
+          // Get category hierarchy for this product (same logic as search page)
           let main_category_name: string | undefined;
           let category_name: string | undefined;
           let subcategory_name: string | undefined;
           
-          if (item.category_id) {
-            try {
-              const { data: breadcrumb } = await services.categories.getCompleteBreadcrumb(item.category_id);
-              if (breadcrumb && breadcrumb.length > 0) {
-                // breadcrumb is ordered from root to leaf
-                // Level 1 (root): Women/Men/Kids/Unisex
-                // Level 2: Clothing/Shoes/Accessories/Bags  
-                // Level 3 (leaf): T-Shirts/Sneakers/etc
-                main_category_name = breadcrumb[0]?.name; // Level 1
-                category_name = breadcrumb[breadcrumb.length - 1]?.name; // Current category (Level 3)
-                subcategory_name = breadcrumb.length > 1 ? breadcrumb[breadcrumb.length - 1]?.name : undefined;
+          if (item.category_id && allCategories) {
+            // Find the product's category
+            const productCategory = allCategories.find(cat => cat.id === item.category_id);
+            if (productCategory) {
+              if (productCategory.level === 1) {
+                main_category_name = productCategory.name;
+                category_name = productCategory.name;
+              } else if (productCategory.level === 2) {
+                subcategory_name = productCategory.name;
+                category_name = productCategory.name;
+                // Find the parent (Level 1) category
+                const parentCat = allCategories.find(cat => cat.id === productCategory.parent_id);
+                if (parentCat) {
+                  main_category_name = parentCat.name;
+                }
+              } else if (productCategory.level === 3) {
+                category_name = productCategory.name;
+                // Find the parent (Level 2) and grandparent (Level 1) categories
+                const parentCat = allCategories.find(cat => cat.id === productCategory.parent_id);
+                if (parentCat) {
+                  subcategory_name = parentCat.name;
+                  const grandparentCat = allCategories.find(cat => cat.id === parentCat.parent_id);
+                  if (grandparentCat) {
+                    main_category_name = grandparentCat.name;
+                  }
+                }
               }
-            } catch (error) {
-              // Fallback - just use undefined
             }
           }
           

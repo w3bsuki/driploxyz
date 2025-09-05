@@ -102,7 +102,7 @@ export class ReviewService {
 				.single();
 
 			if (reviewError) {
-				console.error('Failed to create review:', reviewError);
+				// Failed to create review
 				return { review: null, error: new Error('Failed to create review') };
 			}
 
@@ -118,7 +118,7 @@ export class ReviewService {
 			return { review: review as ReviewWithDetails, error: null };
 
 		} catch (error) {
-			console.error('Error in createReview:', error);
+			// Error in createReview
 			return { review: null, error: error as Error };
 		}
 	}
@@ -177,7 +177,7 @@ export class ReviewService {
 			return { order, error: null };
 
 		} catch (error) {
-			console.error('Error validating review eligibility:', error);
+			// Error validating review eligibility
 			return { order: null, error: error as Error };
 		}
 	}
@@ -226,7 +226,7 @@ export class ReviewService {
 				.range(offset, offset + limit - 1);
 
 			if (reviewsError) {
-				console.error('Failed to fetch reviews:', reviewsError);
+				// Failed to fetch reviews
 				return {
 					reviews: [],
 					pagination: { limit, offset, total: 0, hasMore: false },
@@ -251,7 +251,7 @@ export class ReviewService {
 			};
 
 		} catch (error) {
-			console.error('Error fetching seller reviews:', error);
+			// Error fetching seller reviews
 			return {
 				reviews: [],
 				pagination: { limit: 0, offset: 0, total: 0, hasMore: false },
@@ -277,7 +277,7 @@ export class ReviewService {
 				.single();
 
 			if (profileError) {
-				console.error('Failed to fetch seller profile:', profileError);
+				// Failed to fetch seller profile
 				return {
 					stats: { averageRating: 0, totalReviews: 0, distribution: {} },
 					error: new Error('Failed to fetch seller stats')
@@ -292,7 +292,7 @@ export class ReviewService {
 				.eq('is_public', true);
 
 			if (distributionError) {
-				console.error('Failed to fetch rating distribution:', distributionError);
+				// Failed to fetch rating distribution
 				return {
 					stats: { averageRating: 0, totalReviews: 0, distribution: {} },
 					error: new Error('Failed to fetch rating distribution')
@@ -320,7 +320,7 @@ export class ReviewService {
 			};
 
 		} catch (error) {
-			console.error('Error fetching seller stats:', error);
+			// Error fetching seller stats
 			return {
 				stats: { averageRating: 0, totalReviews: 0, distribution: {} },
 				error: error as Error
@@ -411,7 +411,7 @@ export class ReviewService {
 			};
 
 		} catch (error) {
-			console.error('Error checking review status:', error);
+			// Error checking review status
 			return {
 				canReview: false,
 				hasReviewed: false,
@@ -445,7 +445,7 @@ export class ReviewService {
 					priority: 'normal'
 				});
 		} catch (error) {
-			console.error('Failed to send review notification:', error);
+			// Failed to send review notification
 			// Don't throw - this shouldn't fail the review creation
 		}
 	}
@@ -482,7 +482,7 @@ export class ReviewService {
 				.limit(5);
 
 			if (error) {
-				console.error('Failed to fetch review candidates:', error);
+				// Failed to fetch review candidates
 				return { orders: [], error: new Error('Failed to fetch review candidates') };
 			}
 
@@ -503,7 +503,7 @@ export class ReviewService {
 			return { orders: processedOrders, error: null };
 
 		} catch (error) {
-			console.error('Error fetching review prompt candidates:', error);
+			// Error fetching review prompt candidates
 			return { orders: [], error: error as Error };
 		}
 	}

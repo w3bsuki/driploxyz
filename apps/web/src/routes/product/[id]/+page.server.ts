@@ -3,7 +3,7 @@ import { buildProductUrl } from '$lib/utils/seo-urls.js';
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ params, locals: { supabase, safeGetSession, country } }) => {
-  const { session } = await safeGetSession();
+  const { session: _session } = await safeGetSession();
 
   // Get main product with minimal data needed for redirect
   const { data: product, error: productError } = await supabase

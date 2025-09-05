@@ -1,4 +1,5 @@
 <script lang="ts">
+  import BaseBadge from './components/ui/badge/badge.svelte';
   import type { BadgeVariant, BadgeSize } from '../types';
 
   interface Props {
@@ -6,35 +7,58 @@
     size?: BadgeSize;
     class?: string;
     children?: import('svelte').Snippet;
+    href?: string;
   }
 
   let { 
     variant = 'primary', 
     size = 'md',
     class: className = '',
-    children
+    children,
+    href
   }: Props = $props();
 
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-full border';
-
-  const variantClasses = {
-    primary: 'bg-blue-50 text-blue-700 border-blue-200',
-    secondary: 'bg-gray-50 text-gray-900 border-gray-200',
-    success: 'bg-green-50 text-green-700 border-green-200',
-    warning: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    error: 'bg-red-50 text-red-700 border-red-200',
-    info: 'bg-blue-50 text-blue-700 border-blue-200'
-  };
+  // Map legacy @repo/ui Badge variants to tv-based badge variants
+  const tvVariant = $derived(() => {
+    switch (variant) {
+      case 'primary':
+        return 'default';
+      case 'secondary':
+        return 'secondary';
+      case 'error':
+        return 'destructive';
+      // Variants without direct tv equivalents fall back to outline
+      case 'success':
+      case 'warning':
+      case 'info':
+      default:
+        return 'outline';
+    }
+  });
 
   const sizeClasses = {
     sm: 'px-2 py-0.5 text-xs',
     md: 'px-2.5 py-1 text-sm',
     lg: 'px-3 py-1.5 text-base'
-  };
+  } as const;
 
-  const classes = $derived(`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`);
+  // Provide color overrides for variants not covered by tv
+  const colorOverrides = $derived(() => {
+    switch (variant) {
+      case 'success':
+        return 'bg-green-50 text-green-700 border-green-200';
+      case 'warning':
+        return 'bg-yellow-50 text-yellow-700 border-yellow-200';
+      case 'info':
+        return 'bg-blue-50 text-blue-700 border-blue-200';
+      default:
+        return '';
+    }
+  });
+
+  const classes = $derived(`${sizeClasses[size]} ${colorOverrides} ${className}`);
 </script>
 
-<span class={classes}>
+<BaseBadge variant={tvVariant} class={classes} href={href}>
   {@render children?.()}
-</span>
+</BaseBadge>

@@ -1,0 +1,65 @@
+/* Tailwind CSS v4 with Driplo Design System */
+@import '@repo/ui/styles/tokens.css';
+@import '@repo/ui/styles/semantic.css';
+@import "tailwindcss";
+
+@layer base {
+  * {
+    @apply border-[color:var(--border-default)] outline-[color:var(--state-focus)]/50;
+  }
+  body {
+    @apply bg-[color:var(--surface-base)] text-[color:var(--text-primary)];
+    font-family: var(--font-sans);
+    line-height: var(--leading-normal);
+  }
+}
+
+/* Docs-specific styles */
+@layer components {
+  .prose {
+    max-width: none;
+    color: var(--text-primary);
+  }
+  
+  .prose h1 {
+    color: var(--text-primary);
+    font-weight: var(--font-bold);
+  }
+  
+  .prose h2 {
+    color: var(--text-primary);
+    font-weight: var(--font-semibold);
+  }
+  
+  .prose h3 {
+    color: var(--text-secondary);
+    font-weight: var(--font-medium);
+  }
+  
+  .prose p {
+    color: var(--text-secondary);
+  }
+  
+  .prose code {
+    background-color: var(--surface-muted);
+    color: var(--text-primary);
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+  }
+  
+  .prose pre {
+    background-color: var(--surface-inverse);
+    color: var(--text-inverse);
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+  }
+  
+  .prose blockquote {
+    border-left: 4px solid var(--border-emphasis);
+    padding-left: var(--space-4);
+    color: var(--text-tertiary);
+    font-style: italic;
+  }
+}

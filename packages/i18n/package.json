@@ -3,11 +3,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "pnpm run clean && pnpm run compile && pnpm run types",
+    "build": "pnpm run clean && pnpm run compile && pnpm run types && pnpm run copy-paraglide",
     "compile": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
     "types": "tsc",
     "dev": "pnpm run compile",
-    "clean": "rm -rf lib dist src/paraglide"
+    "clean": "rm -rf lib dist src/paraglide",
+    "copy-paraglide": "cp -r src/paraglide lib/"
   },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",

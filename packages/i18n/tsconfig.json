@@ -16,5 +16,5 @@
     "noImplicitAny": false
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "lib/paraglide", "dist"]
+  "exclude": ["node_modules", "dist"]
 }

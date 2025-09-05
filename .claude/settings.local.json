@@ -69,7 +69,8 @@
       "WebFetch(domain:www.smashingmagazine.com)",
       "WebFetch(domain:next.melt-ui.com)",
       "mcp__playwright__browser_fill_form",
-      "WebFetch(domain:inlang.com)"
+      "WebFetch(domain:inlang.com)",
+      "Bash(git tag:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

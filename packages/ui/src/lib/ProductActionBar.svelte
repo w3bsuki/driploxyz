@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Button from './Button.svelte';
   import { getLocale, buyNow, message, soldOut, makeOffer, addFavorite, removeFavorite } from '@repo/i18n';
 
   interface Props {
@@ -28,8 +27,6 @@
     onMakeOffer
   }: Props = $props()
 
-  let showSheet = $state(false);
-
   const formattedPrice = $derived.by(() => {
     if (!price || price <= 0) return '€0';
     
@@ -55,94 +52,50 @@
     
     return `€${price}`;
   });
-
-  function openSheet() {
-    showSheet = true;
-  }
-
-  function closeSheet() {
-    showSheet = false;
-  }
-
-  function handleBuy() {
-    onBuyNow?.();
-    closeSheet();
-  }
-
-  function handleOffer() {
-    onMakeOffer?.();
-    closeSheet();
-  }
 </script>
 
 {#if !isOwner}
   <div class="action-bar">
     <div class="actions">
-      <!-- Favorite -->
+      <!-- Favorite Button -->
       <button
-        class="fav-btn {isFavorited ? 'active' : ''}" 
+        class="favorite-btn {isFavorited ? 'active' : ''}" 
         onclick={onFavorite}
         aria-label={isFavorited ? removeFavorite() : addFavorite()}
+        type="button"
       >
-        <svg class="heart" fill={isFavorited ? 'currentColor' : 'none'} viewBox="0 0 24 24">
-          <path stroke="currentColor" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+        <svg width="22" height="22" fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
         </svg>
       </button>
 
-      <!-- Message -->
-      <Button variant="outline" onclick={onMessage}>
-        <svg class="icon" viewBox="0 0 24 24" fill="none">
-          <path stroke="currentColor" stroke-width="2" d="M21 12c0 4.418-3.582 8-8 8a9.863 9.863 0 01-4.255-.949L5 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 3.582-8 8-8s8 3.582 8 8z" />
+      <!-- Message Button -->
+      <button
+        class="message-btn"
+        onclick={onMessage}
+        type="button"
+      >
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
         </svg>
-        {message()}
-      </Button>
+        <span>{message()}</span>
+      </button>
 
-      <!-- Buy Now -->
+      <!-- Buy Button -->
       {#if isSold}
-        <Button variant="secondary" disabled class="flex-1">
+        <button class="buy-btn sold" disabled>
           {soldOut()}
-        </Button>
+        </button>
       {:else}
-        <button class="buy-btn" onclick={openSheet}>
-          {buyNow()} • {formattedPrice}
+        <button class="buy-btn primary" onclick={onBuyNow} type="button">
+          <span class="buy-content">
+            <span class="buy-text">{buyNow()}</span>
+            <span class="price">{formattedPrice}</span>
+          </span>
         </button>
       {/if}
     </div>
   </div>
-
-  <!-- Bottom Sheet -->
-  {#if showSheet}
-    <div class="sheet-backdrop" onclick={closeSheet}></div>
-    <div class="sheet" class:open={showSheet}>
-      <div class="handle"></div>
-      
-      {#if productTitle || productImage}
-        <div class="product-preview">
-          {#if productImage}
-            <img src={productImage} alt={productTitle || 'Product'} class="preview-img" />
-          {/if}
-          <div class="preview-info">
-            {#if productTitle}
-              <h3 class="preview-title">{productTitle}</h3>
-            {/if}
-            <p class="preview-price">{formattedPrice}</p>
-          </div>
-        </div>
-      {/if}
-
-      <div class="sheet-actions">
-        <Button variant="primary" size="lg" onclick={handleBuy} class="w-full">
-          {buyNow()} • {formattedPrice}
-        </Button>
-        
-        {#if onMakeOffer}
-          <Button variant="outline" size="lg" onclick={handleOffer} class="w-full">
-            {makeOffer()}
-          </Button>
-        {/if}
-      </div>
-    </div>
-  {/if}
 {/if}
 
 <style>
@@ -153,150 +106,251 @@
     right: 0;
     background: var(--surface-base);
     border-top: 1px solid var(--border-subtle);
-    padding: var(--space-4);
-    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+    padding: var(--space-3) var(--space-4);
+    padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
     z-index: 50;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.06);
   }
 
   .actions {
     display: flex;
     gap: var(--space-3);
+    align-items: center;
     max-width: 28rem;
     margin: 0 auto;
   }
 
-  .fav-btn {
+  /* Favorite Button - Clean Icon Only */
+  .favorite-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
-    border: 2px solid var(--border-default);
-    border-radius: 12px;
+    width: 48px;
+    height: 48px;
+    border: 1.5px solid var(--border-default);
+    border-radius: var(--radius-xl);
     background: var(--surface-base);
-    color: var(--text-muted);
-    transition: all 0.2s;
+    color: var(--text-tertiary);
     cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
   }
 
-  .fav-btn:hover {
+  .favorite-btn:hover {
     border-color: var(--border-emphasis);
+    background: var(--surface-subtle);
     color: var(--text-secondary);
   }
 
-  .fav-btn.active {
+  .favorite-btn.active {
     background: var(--status-error-bg);
-    border-color: var(--status-error-border);
+    border-color: var(--status-error-solid);
     color: var(--status-error-solid);
   }
 
-  .heart {
-    width: 20px;
-    height: 20px;
+  .favorite-btn:focus-visible {
+    outline: 2px solid var(--state-focus);
+    outline-offset: 2px;
   }
 
-  :global(.actions .icon) {
-    width: 18px;
-    height: 18px;
-    margin-right: var(--space-1);
+  /* Message Button - Clean with Text */
+  .message-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    height: 48px;
+    padding: 0 var(--space-4);
+    border: 1.5px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    background: var(--surface-base);
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
+  .message-btn:hover {
+    border-color: var(--border-emphasis);
+    background: var(--surface-subtle);
+  }
+
+  .message-btn:focus-visible {
+    outline: 2px solid var(--state-focus);
+    outline-offset: 2px;
+  }
+
+  .message-btn span {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+  }
+
+  /* Buy Button - Primary Action */
   .buy-btn {
     flex: 1;
-    height: 40px;
-    background: var(--primary);
-    color: var(--primary-fg);
+    height: 48px;
     border: none;
-    border-radius: 12px;
-    font-weight: 600;
+    border-radius: var(--radius-xl);
+    font-weight: var(--font-semibold);
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    position: relative;
+    overflow: hidden;
   }
 
-  .buy-btn:hover {
-    background: var(--primary-hover);
+  .buy-btn.primary {
+    background: var(--text-primary);
+    color: var(--surface-base);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   }
 
-  .sheet-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 100;
+  .buy-btn.primary:hover {
+    background: var(--text-secondary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
+    transform: translateY(-1px);
   }
 
-  .sheet {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: var(--surface-base);
-    border-radius: 24px 24px 0 0;
-    padding: var(--space-6);
-    padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
-    z-index: 101;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
-  }
-
-  .sheet.open {
+  .buy-btn.primary:active {
     transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   }
 
-  .handle {
-    width: 40px;
-    height: 4px;
-    background: var(--border-default);
-    border-radius: 2px;
-    margin: 0 auto var(--space-6) auto;
+  .buy-btn.sold {
+    background: var(--surface-muted);
+    color: var(--text-tertiary);
+    cursor: not-allowed;
+    border: 1px solid var(--border-subtle);
   }
 
-  .product-preview {
+  .buy-content {
     display: flex;
-    gap: var(--space-4);
-    margin-bottom: var(--space-6);
-    padding: var(--space-4);
-    background: var(--surface-subtle);
-    border-radius: 16px;
+    align-items: center;
+    gap: var(--space-2);
   }
 
-  .preview-img {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    object-fit: cover;
-  }
-
-  .preview-info {
-    flex: 1;
-  }
-
-  .preview-title {
+  .buy-text {
     font-size: var(--text-base);
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0 0 var(--space-1) 0;
   }
 
-  .preview-price {
-    font-size: var(--text-xl);
-    font-weight: 700;
-    color: var(--primary);
-    margin: 0;
+  .price {
+    font-size: var(--text-base);
+    font-weight: var(--font-bold);
+    opacity: 0.9;
   }
 
-  .sheet-actions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-
+  /* Mobile Optimizations - Real Marketplace Feel */
   @media (max-width: 640px) {
     .action-bar {
-      padding: var(--space-3);
+      padding: var(--space-3) var(--space-3);
+    }
+
+    .actions {
+      gap: var(--space-2);
+    }
+
+    .favorite-btn {
+      width: 44px;
+      height: 44px;
+    }
+
+    .message-btn {
+      height: 44px;
+      padding: 0 var(--space-3);
+      font-size: var(--text-xs);
+    }
+
+    .message-btn span {
+      font-size: var(--text-xs);
+    }
+
+    .buy-btn {
+      height: 44px;
+    }
+
+    .buy-content {
+      gap: var(--space-1);
+    }
+
+    .buy-text {
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      line-height: 1.2;
+    }
+
+    .price {
+      font-size: var(--text-sm);
+      font-weight: var(--font-bold);
+      line-height: 1.2;
+    }
+  }
+
+  /* Very Small Screens */
+  @media (max-width: 380px) {
+    .actions {
+      gap: var(--space-1);
+    }
+
+    .favorite-btn {
+      width: 40px;
+      height: 40px;
+    }
+
+    .message-btn {
+      height: 40px;
+      padding: 0 var(--space-2);
+    }
+
+    .message-btn span {
+      display: none;
+    }
+
+    .buy-btn {
+      height: 40px;
+    }
+  }
+
+  /* Touch Device Optimizations */
+  @media (pointer: coarse) {
+    .favorite-btn,
+    .message-btn,
+    .buy-btn {
+      min-height: 44px;
+    }
+  }
+
+  /* High Contrast Mode */
+  @media (prefers-contrast: high) {
+    .favorite-btn,
+    .message-btn {
+      border: 2px solid;
     }
     
-    .sheet {
-      padding: var(--space-5);
+    .buy-btn.primary {
+      border: 2px solid transparent;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .favorite-btn,
+    .message-btn,
+    .buy-btn {
+      transition: none;
+      transform: none !important;
+    }
+  }
+
+  /* Dark Mode Adjustments */
+  @media (prefers-color-scheme: dark) {
+    .action-bar {
+      box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.3);
     }
   }
 </style>

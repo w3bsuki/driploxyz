@@ -5,14 +5,14 @@ import type { PageServerLoad } from './$types';
  * SEO-Friendly Product Route Handler
  * 
  * Handles URL patterns like:
- * - /products/:seller/:product_slug (canonical format)
- * - /products/:seller/:category_slug/:product_slug (with category)
+ * - /product/:seller/:product_slug (canonical format)
+ * - /product/:seller/:category_slug/:product_slug (with optional category)
  * - /product/uuid (legacy UUID format - redirects to canonical)
  * - /:legacy_slug (old single slug - redirects to canonical)
  * 
  * Resolution order:
- * 1. Legacy /product/:id → 301 to /products/:seller/:slug
- * 2. /products/:seller/:productSlug (with optional category segment)
+ * 1. Legacy /product/:id → 301 to /product/:seller/:slug
+ * 2. /product/:seller/:productSlug (with optional category segment)
  * 3. Legacy single-segment slug → look up product by slug, 301 to canonical
  * 4. Slug/username history → 301 to current canonical
  */
@@ -54,7 +54,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
     
     if (productData?.slug && productData?.profiles?.username) {
       // Redirect to canonical URL
-      throw redirect(301, `/products/${productData.profiles.username}/${productData.slug}`);
+      throw redirect(301, `/product/${productData.profiles.username}/${productData.slug}`);
     } else if (productData) {
       // Fallback to internal product page
       return { redirectToInternal: `/product/${uuid}` };
@@ -63,8 +63,8 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
     }
   }
 
-  // Case 2: Handle /products/:seller/:slug or /products/:seller/:category/:slug
-  if (parts[0] === 'products' && parts[1] && parts[2]) {
+  // Case 2: Handle /product/:seller/:slug or /product/:seller/:category/:slug
+  if (parts[0] === 'product' && parts[1] && parts[2]) {
     const sellerUsername = parts[1];
     const productSlug = parts.length === 3 ? parts[2] : parts[3]; // Handle optional category segment
     const categorySegment = parts.length === 4 ? parts[2] : null;
@@ -92,8 +92,8 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
       if (usernameHistory?.profiles?.username) {
         // Redirect to current username
         const newPath = categorySegment 
-          ? `/products/${usernameHistory.profiles.username}/${categorySegment}/${productSlug}`
-          : `/products/${usernameHistory.profiles.username}/${productSlug}`;
+          ? `/product/${usernameHistory.profiles.username}/${categorySegment}/${productSlug}`
+          : `/product/${usernameHistory.profiles.username}/${productSlug}`;
         throw redirect(301, newPath);
       } else {
         throw error(404, 'Seller not found');
@@ -125,8 +125,8 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
     if (categorySegment && productData.categories?.slug !== categorySegment) {
       // Redirect to correct canonical URL
       const correctPath = productData.categories?.slug 
-        ? `/products/${sellerUsername}/${productData.categories.slug}/${productSlug}`
-        : `/products/${sellerUsername}/${productSlug}`;
+        ? `/product/${sellerUsername}/${productData.categories.slug}/${productSlug}`
+        : `/product/${sellerUsername}/${productSlug}`;
       throw redirect(301, correctPath);
     }
 
@@ -156,7 +156,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
       .single();
     
     if (productData?.slug && productData?.profiles?.username) {
-      throw redirect(301, `/products/${productData.profiles.username}/${productData.slug}`);
+      throw redirect(301, `/product/${productData.profiles.username}/${productData.slug}`);
     } else if (productData) {
       return { redirectToInternal: `/product/${uuid}` };
     }
@@ -183,7 +183,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
       .single();
 
     if (productData?.profiles?.username && productData.slug) {
-      throw redirect(301, `/products/${productData.profiles.username}/${productData.slug}`);
+      throw redirect(301, `/product/${productData.profiles.username}/${productData.slug}`);
     }
 
     // If not found, check slug history for redirects
@@ -201,7 +201,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
         .single();
 
       if (slugHistory?.products?.profiles?.username && slugHistory.products.slug) {
-        throw redirect(301, `/products/${slugHistory.products.profiles.username}/${slugHistory.products.slug}`);
+        throw redirect(301, `/product/${slugHistory.products.profiles.username}/${slugHistory.products.slug}`);
       }
     }
   }

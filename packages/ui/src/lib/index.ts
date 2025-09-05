@@ -25,12 +25,14 @@ export { default as LoadingSpinner } from './LoadingSpinner.svelte';
 
 // New premium product page components
 export { default as ProductGallery } from './ProductGallery.svelte';
+export { default as ProductInfo } from './ProductInfo.svelte';
 export { default as SizeSelector } from './SizeSelector.svelte';
 export { default as ConditionReport } from './ConditionReport.svelte';
 export { default as SellerCard } from './SellerCard.svelte';
 
 // Main Product Page Component (replaces old modular components)
 export { default as ProductPage } from './ProductPage.svelte';
+export { default as ProductPageNew } from './ProductPageNew.svelte';
 export { default as ProductBreadcrumb } from './ProductBreadcrumb.svelte';
 
 // Product page component modules (for demo pages)
@@ -239,8 +241,8 @@ export { default as ProductPrice } from './ProductPrice.svelte';
 export { default as FeaturedProducts } from './FeaturedProducts.svelte';
 export { default as PromotedHighlights } from './PromotedHighlights.svelte';
 
-// Import semantic CSS styles
-import '../styles/semantic.css';
+// Semantic CSS styles should be imported directly by consuming applications
+// import '../styles/semantic.css';
 
 // Type definitions
 export * from './types';

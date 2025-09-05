@@ -33,6 +33,12 @@
   }
 
   function getProductUrl(product: Product) {
+    if (product.slug && product.profiles?.username) {
+      if (product.categories?.slug) {
+        return `/product/${product.profiles.username}/${product.categories.slug}/${product.slug}`
+      }
+      return `/product/${product.profiles.username}/${product.slug}`
+    }
     return `/product/${product.id}`
   }
 </script>
@@ -108,6 +114,8 @@
   }
 
   .line-clamp-2 {
+    /* Fallback */
+    line-clamp: 2;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;

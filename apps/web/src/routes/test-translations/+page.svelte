@@ -36,7 +36,7 @@
     }));
     
     // Run console tests
-    console.log('Running category translation tests...');
+    // Running category translation tests...
     testTranslationFallbacks();
     generateMissingTranslationKeys(sampleCategories);
   });

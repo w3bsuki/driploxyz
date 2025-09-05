@@ -2,4 +2,4 @@
 // It exists to provide a clean import path for the TypeScript definitions
 
 // Re-export everything from the generated Paraglide messages
-export * from '../lib/paraglide/messages/_index.js';
+export * from './paraglide/messages/_index.js';

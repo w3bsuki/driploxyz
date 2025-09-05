@@ -168,12 +168,20 @@
 	// Transform promoted products for highlights
 	const promotedProducts = $derived<Product[]>(
 		(data.promotedProducts?.length ? data.promotedProducts : featuredProductsData?.slice(0, 8) || [])
-			.map(transformProduct)
+			.map(transformProduct).map(p => ({
+				...p,
+				category_name: p.category_name || p.main_category_name || 'Uncategorized',
+				main_category_name: p.main_category_name || p.category_name || 'Uncategorized'
+			}))
 	);
 
 	// Transform products to match Product interface
 	const products = $derived<Product[]>(
-		(featuredProductsData || []).map(transformProduct)
+		(featuredProductsData || []).map(transformProduct).map(p => ({
+			...p,
+			category_name: p.category_name || p.main_category_name || 'Uncategorized',
+			main_category_name: p.main_category_name || p.category_name || 'Uncategorized'
+		}))
 	);
 
 	// Transform sellers for display
@@ -402,7 +410,7 @@
 			await preloadData(`/category/${categorySlug}`);
 		} catch (e) {
 			// Preload failed, but continue navigation
-			console.warn('Preload failed:', e);
+			// Preload failed - continuing without preload
 		}
 	}
 	

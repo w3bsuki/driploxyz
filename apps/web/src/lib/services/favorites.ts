@@ -68,7 +68,7 @@ export class FavoriteService {
 
       return { data: result, error: null };
     } catch (error) {
-      console.error('Error fetching user favorites:', error);
+      // Error fetching user favorites
       return { data: null, error: error as Error };
     }
   }
@@ -92,7 +92,7 @@ export class FavoriteService {
 
       return { isFavorited: !!data, error: null };
     } catch (error) {
-      console.error('Error checking favorite status:', error);
+      // Error checking favorite status
       return { isFavorited: false, error: error as Error };
     }
   }
@@ -121,7 +121,7 @@ export class FavoriteService {
 
       return { data, error: null };
     } catch (error) {
-      console.error('Error adding to favorites:', error);
+      // Error adding to favorites
       return { data: null, error: error as Error };
     }
   }
@@ -147,7 +147,7 @@ export class FavoriteService {
 
       return { success: true, error: null };
     } catch (error) {
-      console.error('Error removing from favorites:', error);
+      // Error removing from favorites
       return { success: false, error: error as Error };
     }
   }
@@ -174,7 +174,7 @@ export class FavoriteService {
         return { isFavorited: true, error: null };
       }
     } catch (error) {
-      console.error('Error toggling favorite:', error);
+      // Error toggling favorite
       return { isFavorited: false, error: error as Error };
     }
   }
@@ -196,7 +196,7 @@ export class FavoriteService {
 
       return { count: count || 0, error: null };
     } catch (error) {
-      console.error('Error getting favorite count:', error);
+      // Error getting favorite count
       return { count: 0, error: error as Error };
     }
   }
@@ -213,7 +213,7 @@ export class FavoriteService {
         .update({ favorite_count: count })
         .eq('id', productId);
     } catch (error) {
-      console.error('Error updating product favorite count:', error);
+      // Error updating product favorite count
     }
   }
 
@@ -238,7 +238,7 @@ export class FavoriteService {
 
       return { removedCount: 0, error: null };
     } catch (error) {
-      console.error('Error cleaning up sold favorites:', error);
+      // Error cleaning up sold favorites
       return { removedCount: 0, error: error as Error };
     }
   }
@@ -277,7 +277,7 @@ export class FavoriteService {
 
       return { data, error: null };
     } catch (error) {
-      console.error('Error fetching sold favorites:', error);
+      // Error fetching sold favorites
       return { data: null, error: error as Error };
     }
   }
@@ -311,7 +311,7 @@ export class FavoriteService {
 
       return { favorites, error: null };
     } catch (error) {
-      console.error('Error fetching multiple favorite statuses:', error);
+      // Error fetching multiple favorite statuses
       return { 
         favorites: Object.fromEntries(productIds.map(id => [id, false])), 
         error: error as Error 

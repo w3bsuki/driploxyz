@@ -140,10 +140,10 @@
 			
 			<!-- Star Rating -->
 			<div>
-				<label class="block text-sm font-medium text-[color:var(--text-primary)] mb-3">
+				<label for="rating-input" class="block text-sm font-medium text-[color:var(--text-primary)] mb-3">
 					Rating <span class="text-[color:var(--text-error)]">*</span>
 				</label>
-				<div class="flex items-center gap-2">
+				<div class="flex items-center gap-2" role="radiogroup" aria-labelledby="rating-input">
 					{#each stars as star}
 						<button
 							type="button"
