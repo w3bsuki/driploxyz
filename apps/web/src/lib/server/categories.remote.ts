@@ -127,7 +127,7 @@ function findCategoryBySlug(categories: Category[], slug: string, level?: number
 async function getCategoryDescendants(supabase: SupabaseClient<Database>, categoryId: string): Promise<string[]> {
   try {
     const { data, error } = await supabase.rpc('get_category_descendants', {
-      category_uuid: categoryId
+      category_id: categoryId
     });
 
     if (error) {
@@ -135,8 +135,8 @@ async function getCategoryDescendants(supabase: SupabaseClient<Database>, catego
       return [categoryId];
     }
 
-    const descendantIds = data?.map((d: any) => d.descendant_id) || [];
-    return [categoryId, ...descendantIds]; // Include self + descendants
+    const descendantIds = data?.map((d: any) => d.id) || [];
+    return descendantIds; // RPC already includes self + descendants
   } catch (error) {
     console.error('Error in getCategoryDescendants:', error);
     return [categoryId];
