@@ -1,5 +1,5 @@
 <script lang="ts">
-  import BaseBadge from './components/ui/badge/badge.svelte';
+  import * as BaseBadge from './components/ui/badge/badge.svelte';
   import type { BadgeVariant, BadgeSize } from '../types';
 
   interface Props {
@@ -59,6 +59,6 @@
   const classes = $derived(`${sizeClasses[size]} ${colorOverrides} ${className}`);
 </script>
 
-<BaseBadge variant={tvVariant} class={classes} href={href}>
+<BaseBadge.default variant={tvVariant} class={classes} href={href}>
   {@render children?.()}
-</BaseBadge>
+</BaseBadge.default>

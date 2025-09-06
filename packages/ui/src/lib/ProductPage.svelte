@@ -2,9 +2,8 @@
   import { onMount } from 'svelte';
   import ProductBreadcrumb from './ProductBreadcrumb.svelte';
   import ProductActionBar from './ProductActionBar.svelte';
-  import Badge from './Badge.svelte';
-  import Tooltip from './primitives/tooltip/Tooltip.svelte';
-  import { Accordion } from './primitives';
+  import ProductGallery from './ProductGallery.svelte';
+  import ProductInfo from './ProductInfo.svelte';
   import SellerCard from './SellerCard.svelte';
   import * as i18n from '@repo/i18n';
   
@@ -22,6 +21,7 @@
     images: string[];
     is_sold: boolean | null;
     favorite_count: number;
+    view_count?: number; // added for UI usage
     categories?: { id?: string; name?: string; slug?: string; parent_id?: string | null };
     parent_category?: { name?: string; slug?: string } | null;
     seller: {
@@ -65,7 +65,6 @@
     onMessage?: () => void;
     onBuyNow?: () => void;
     onMakeOffer?: () => void;
-    imageInfoVariant?: 'chips' | 'inline' | 'none';
     showQuickFacts?: boolean;
   }
 
@@ -82,106 +81,16 @@
     onMessage,
     onBuyNow,
     onMakeOffer,
-    imageInfoVariant = 'inline',
     showQuickFacts = true
   }: Props = $props();
 
-  // Perfect State Management
-  let selectedImage = $state(0);
+  // State management
   let isLiked = $state(isFavorited);
   let likeCount = $state(product?.favorite_count || 0);
   let scrollY = $state(0);
-  let showFullDescription = $state(false);
-  let showSizeChart = $state(false);
-  let showProfileModal = $state(false);
+  let sellerExpanded = $state(false);
 
-  // Perfect Helper Functions
-
-
-  function selectImage(index: number) {
-    selectedImage = index;
-  }
-
-  function handleImageKeydown(event: KeyboardEvent, index: number) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      selectImage(index);
-    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      event.preventDefault();
-      const newIndex = event.key === 'ArrowLeft' 
-        ? (index > 0 ? index - 1 : (product?.images?.length || 1) - 1)
-        : (index < (product?.images?.length || 1) - 1 ? index + 1 : 0);
-      selectImage(newIndex);
-      
-      // Focus the new button
-      const buttons = document.querySelectorAll('.nav-dot, .thumb-btn');
-      if (buttons[newIndex]) {
-        (buttons[newIndex] as HTMLElement).focus();
-      }
-    }
-  }
-
-  async function toggleLike() {
-    // Optimistic update
-    isLiked = !isLiked;
-    likeCount += isLiked ? 1 : -1;
-    
-    // Haptics removed for lean, responsive UX
-    
-    // Call the async favorite handler and reconcile state
-    if (onFavorite) {
-      try {
-        const result = await onFavorite();
-        if (result && typeof result.favoriteCount === 'number' && typeof result.favorited === 'boolean') {
-          // Reconcile with server response
-          likeCount = result.favoriteCount;
-          isLiked = result.favorited;
-        }
-      } catch (error) {
-        // Revert optimistic update on error
-        isLiked = !isLiked;
-        likeCount += isLiked ? 1 : -1;
-        console.error('Error toggling favorite:', error);
-      }
-    }
-  }
-
-  function handleBuyNow() {
-    onBuyNow?.();
-  }
-
-  function addToBag() {
-    onBuyNow?.();
-  }
-
-  function toggleProfileModal() {
-    showProfileModal = !showProfileModal;
-    
-    // Focus management for modal
-    if (showProfileModal) {
-      // Focus the close button when modal opens
-      setTimeout(() => {
-        const closeBtn = document.querySelector('.modal-close-btn') as HTMLElement;
-        if (closeBtn) closeBtn.focus();
-      }, 100);
-    }
-  }
-
-  function handleModalKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape') {
-      toggleProfileModal();
-    }
-  }
-
-  function viewProfile() {
-    // Navigate to seller profile page by username when available
-    if (typeof window !== 'undefined') {
-      const username = product?.seller?.username;
-      window.location.href = username ? `/profile/${username}` : `/profile/${product?.seller?.id}`;
-    }
-  }
-
-  // Perfect Scroll Handling
+  // Scroll tracking for header visibility
   onMount(() => {
     function handleScroll() {
       scrollY = window.scrollY;
@@ -191,9 +100,10 @@
     return () => window.removeEventListener('scroll', handleScroll);
   });
 
-  // Perfect Derived Values
+  // Derived values
   const headerVisible = $derived(scrollY > 100);
   const displayName: string = $derived((product?.seller?.full_name ?? product?.seller?.username) ?? 'Unknown Seller');
+  
   const breadcrumbCategory = $derived((() => {
     const c = product?.categories;
     if (!c || !c.slug) return null;
@@ -204,6 +114,7 @@
       parent_id: (c.parent_id ?? null) as string | null
     };
   })());
+  
   const breadcrumbParentCategory = $derived((() => {
     const p = product?.parent_category;
     if (!p || !p.slug) return null;
@@ -214,61 +125,66 @@
       parent_id: null as string | null
     };
   })());
-  const memberSince = $derived(
-    !product?.seller?.created_at 
-      ? 'Recently joined' 
-      : new Date(product.seller.created_at).toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'long' 
-        })
-  );
+
   const displayRating = $derived(ratingSummary?.averageRating || product?.seller?.rating || 0);
   const reviewCount = $derived(ratingSummary?.totalReviews || reviews.length || 0);
-  const imageInlineMeta = $derived.by(() => {
-    if (!product) return '';
-    const parts: string[] = [];
-    if (product?.condition) parts.push(translateCondition(product.condition));
-    if (product?.size) parts.push(`Size ${product.size}`);
-    else if (product?.brand) parts.push(product.brand);
-    return parts.join(' · ');
-  });
   
   // SellerCard data mapping
   const sellerStats = $derived({
     rating: displayRating,
     totalSales: product?.seller?.sales_count || 0,
-    responseTime: 24, // Default - could be enhanced with real data later
+    responseTime: 24,
     joinedDate: product?.seller?.created_at || new Date().toISOString(),
-    verificationLevel: 'basic' as const, // Could be enhanced based on seller metrics
-    lastActive: 'recently' // Default - could be enhanced with real data later
+    verificationLevel: 'basic' as const,
+    lastActive: 'recently'
   });
-  
-  // Accordion data - formatted for Melt UI Accordion
-  const accordionItems = $derived([
-    {
-      id: 'product-details',
-      title: 'Product Details',
-      content: `Brand: ${product?.brand || 'Not specified'}\nCondition: ${product?.condition ? translateCondition(product.condition) : 'Not specified'}${product?.size ? `\nSize: ${product.size}` : ''}${product?.color ? `\nColor: ${product.color}` : ''}${product?.material ? `\nMaterial: ${product.material}` : ''}`
-    },
-    {
-      id: 'shipping-returns',
-      title: 'Shipping & Returns',
-      content: 'Free Shipping on orders over €75\nExpress Delivery: 1-2 days - €19\nStandard Delivery: 3-5 days - €9\nReturns: 30 days free returns'
+
+  // Handle favorite toggle
+  async function toggleLike() {
+    const previousLiked = isLiked;
+    const previousCount = likeCount;
+    
+    // Optimistic update
+    isLiked = !isLiked;
+    likeCount += isLiked ? 1 : -1;
+    
+    if (onFavorite) {
+      try {
+        const result = await onFavorite();
+        if (result && typeof result.favoriteCount === 'number' && typeof result.favorited === 'boolean') {
+          // Reconcile with server response
+          likeCount = result.favoriteCount;
+          isLiked = result.favorited;
+        }
+      } catch (error) {
+        // Revert optimistic update on error
+        isLiked = previousLiked;
+        likeCount = previousCount;
+        console.error('Error toggling favorite:', error);
+      }
     }
-  ]);
-  
+  }
+
+  function handleBuyNow() {
+    onBuyNow?.();
+  }
+
+  function viewProfile() {
+    if (typeof window !== 'undefined') {
+      const username = product?.seller?.username;
+      window.location.href = username ? `/profile/${username}` : `/profile/${product?.seller?.id}`;
+    }
+  }
 
   // Price formatting function
   function formatPrice(price: number): string {
     const locale = i18n.getLocale();
     
-    // For Bulgarian, use simple format: "5лв"
     if (locale === 'bg') {
       const roundedPrice = price % 1 === 0 ? Math.round(price) : price.toFixed(2);
       return `${roundedPrice}лв`;
     }
     
-    // For UK/English, use British pounds
     if (locale === 'en') {
       try {
         return new Intl.NumberFormat('en-GB', {
@@ -282,11 +198,9 @@
       }
     }
     
-    // Fallback
     return `€${price}`;
   }
 
-  // Condition translation function
   function translateCondition(condition: string): string {
     const map: Record<string, string> = {
       brand_new_with_tags: 'New with tags',
@@ -298,386 +212,134 @@
     };
     return map[condition] || condition;
   }
-
 </script>
 
-<main class="ultimate-page">
-  <!-- Skip Links for Screen Readers -->
-  <a href="#product-title" class="skip-link">Skip to product details</a>
-  <a href="#seller-products-heading" class="skip-link">Skip to seller products</a>
-  <!-- Ultimate Perfect Header -->
-  <header class="ultimate-header {headerVisible ? 'visible' : 'hidden'}">
-    <div class="header-content">
-      <button 
-        class="icon-btn" 
-        onclick={() => history.back()}
-        aria-label="Go back to previous page"
-        type="button"
-      >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="m15 18-6-6 6-6"/>
-        </svg>
-      </button>
-      
-      <div class="header-info">
-        <span class="header-brand">{product?.brand || ''}</span>
-        <span class="header-title">{product?.title || ''}</span>
-      </div>
+<main class="product-page">
+  <!-- Skip Links -->
 
-      <div class="header-actions">
-        <Tooltip content="Share this product">
-          <button 
-            class="icon-btn" 
-            onclick={() => {
-              const shareData = { title: product?.title || '', url: window.location.href };
-              if (navigator.share) {
-                navigator.share(shareData);
-              } else {
-                navigator.clipboard?.writeText(shareData.url);
-              }
-            }}
-            aria-label="Share this product"
-            type="button"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
-            </svg>
-          </button>
-        </Tooltip>
-        
-        <Tooltip content={isLiked ? 'Remove from favorites' : 'Add to favorites'}>
-          <button 
-            class="icon-btn heart-btn {isLiked ? 'liked' : ''}" 
-            onclick={toggleLike}
-            aria-label={isLiked ? 'Remove from favorites' : 'Add to favorites'}
-            aria-pressed={isLiked}
-            type="button"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-          </button>
-        </Tooltip>
+  <!-- Fixed Header (on scroll) -->
+  <header class="fixed-header {headerVisible ? 'visible' : ''}" aria-hidden={!headerVisible}>
+    <div class="header-content container">
+      <div class="header-left">
+        <h1 class="header-title">{product?.title || ''}</h1>
+        <div class="header-meta">
+          {#if product?.brand}
+            <span class="meta-item">{product.brand}</span>
+          {/if}
+          {#if product?.size}
+            <span class="meta-item">Size {product.size}</span>
+          {/if}
+          {#if product?.condition}
+            <span class="meta-item">{product.condition}</span>
+          {/if}
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="header-fav" type="button" onclick={toggleLike} aria-label={isLiked ? 'Remove from favorites' : 'Add to favorites'}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+          <span>{likeCount}</span>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- Reuse existing ProductBreadcrumb -->
-  <ProductBreadcrumb
-    category={breadcrumbCategory}
-    parentCategory={breadcrumbParentCategory}
-    productTitle={product?.title || 'Product'}
-    onBack={() => history.back()}
-  />
+  <div class="container">
+    <nav class="breadcrumb-row" aria-label="Breadcrumb">
+      <ProductBreadcrumb
+        category={breadcrumbCategory}
+        parentCategory={breadcrumbParentCategory}
+        productTitle={product?.title || ''}
+      />
+    </nav>
 
-
-  <!-- Ultimate Perfect Gallery -->
-  <section class="ultimate-gallery" aria-label="Product images" data-testid="product-gallery">
-    <div class="main-display">
-      {#if product?.images && product.images.length > 0}
-        <img 
-          src={product.images[selectedImage] || product.images[0]}
-          alt="{product?.title || 'Product'}{product?.brand ? ` by ${product.brand}` : ''}{product?.color ? ` in ${product.color}` : ''} - Image {selectedImage + 1} of {product.images.length}" 
-          class="hero-image" 
-          loading="eager"
-        />
-      {:else}
-        <div class="hero-empty" aria-label="No product images available">
-          <svg class="hero-empty-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke="currentColor" stroke-width="2" fill="none" d="M3 5a2 2 0 012-2h14a2 2 0 012 2v9a2 2 0 01-2 2H9l-4 4v-4H5a2 2 0 01-2-2V5z"/>
-          </svg>
-          <span class="hero-empty-text">No images</span>
+    <!-- Unified product container -->
+    <section class="product-shell" aria-labelledby="product-title">
+      <div class="product-card">
+        <div class="product-gallery">
+          <ProductGallery
+            images={product?.images || []}
+            title={product?.title || ''}
+            isSold={product?.is_sold || false}
+            likeCount={likeCount}
+            isLiked={isLiked}
+            onLike={toggleLike}
+            onImageSelect={(index) => console.log('Image selected:', index)}
+            seller={product?.seller}
+          />
         </div>
-      {/if}
-      
-      <!-- Perfect Sold Badge -->
-      {#if product?.is_sold}
-        <div class="sold-badge">
-          <span>SOLD</span>
+        <div class="product-content" id="product-info">
+          <ProductInfo
+            title={product?.title || ''}
+            condition={product?.condition || undefined}
+            brand={product?.brand || undefined}
+            size={product?.size || undefined}
+            color={product?.color || undefined}
+            material={product?.material || undefined}
+            description={product?.description || undefined}
+            favoriteCount={likeCount}
+            isFavorited={isLiked}
+            onFavorite={toggleLike}
+            showQuickFacts={showQuickFacts}
+            category={product?.categories?.name || undefined}
+          />
         </div>
-      {/if}
-
-      <!-- Top bar: avatar • title • wishlist -->
-      <div class="image-topbar">
-        <!-- Avatar -->
-        {#if product?.seller?.avatar_url}
-          <Tooltip content={`Sold by ${displayName}`}>
-            <button 
-              class="seller-avatar-button" 
-              onclick={toggleProfileModal}
-              aria-label={`View seller profile: ${displayName}`}
-              type="button"
-            >
-              <img src={product.seller.avatar_url} alt="{displayName} profile picture" class="seller-avatar-overlay" />
-            </button>
-          </Tooltip>
-        {:else}
-          <Tooltip content={`Sold by ${displayName}`}>
-            <button 
-              class="seller-avatar-button" 
-              onclick={toggleProfileModal}
-              aria-label={`View seller profile: ${displayName}`}
-              type="button"
-            >
-              <span class="seller-avatar-fallback" aria-hidden="true">{displayName?.charAt(0)?.toUpperCase() || '?'}</span>
-            </button>
-          </Tooltip>
-        {/if}
-
-        <!-- Title -->
-        <h2 class="image-title" title={product?.title || 'Product'}>
-          {product?.title || 'Product'}
-        </h2>
-
-        <!-- Wishlist -->
-        <Tooltip content={`${likeCount} people love this`}>
-          <button 
-            class="floating-like {isLiked ? 'liked' : ''}" 
-            onclick={toggleLike}
-            aria-label={isLiked ? `Remove from favorites. Currently ${likeCount} people love this` : `Add to favorites. Currently ${likeCount} people love this`}
-            aria-pressed={isLiked}
-            type="button"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-          </button>
-        </Tooltip>
+        <div class="product-seller">
+          <SellerCard 
+            id={product?.seller?.id || ''}
+            name={displayName}
+            avatar={product?.seller?.avatar_url || undefined}
+            stats={sellerStats}
+            onMessage={onMessage}
+            onViewProfile={viewProfile}
+            translations={{
+              soldBy: 'Sold by',
+              message: 'Message',
+              viewFullProfile: 'View profile',
+              sales: 'sales',
+              memberFor: 'Member for',
+              newMember: 'New member'
+            }}
+          />
+        </div>
       </div>
+    </section>
 
-      <!-- Bottom info overlay: A/B variants -->
-      {#if imageInfoVariant === 'chips' && product}
-        <div class="image-badges">
-          {#if product?.condition}
-            <Badge variant="secondary" size="sm">{translateCondition(product.condition)}</Badge>
-          {/if}
-          {#if product?.size}
-            <Badge variant="secondary" size="sm">Size {product.size}</Badge>
-          {:else if product?.brand}
-            <Badge variant="secondary" size="sm">{product.brand}</Badge>
-          {/if}
-        </div>
-      {:else if imageInfoVariant === 'inline' && product}
-        {#if imageInlineMeta}
-          <div class="image-inline-meta" aria-label="{imageInlineMeta}">{imageInlineMeta}</div>
-        {/if}
-      {/if}
-
-      <!-- Perfect Image Navigation -->
-      {#if product?.images && product.images.length > 1}
-        <div class="image-nav" role="tablist" aria-label="Select product image">
-          {#each product.images as _, index}
-            <button 
-              class="nav-dot {selectedImage === index ? 'active' : ''}"
-              onclick={() => selectImage(index)}
-              onkeydown={(e) => handleImageKeydown(e, index)}
-              role="tab"
-              aria-selected={selectedImage === index}
-              aria-label={`View image ${index + 1} of ${product.images.length}`}
-              type="button"
-            ></button>
+    <!-- Recommendations -->
+    {#if similarProducts && similarProducts.length > 0}
+      <section class="section-block">
+        <h3 class="section-title">Similar items</h3>
+        <div class="products-grid">
+          {#each similarProducts.slice(0, 8) as similarProduct}
+            <a 
+              class="product-card" 
+              href={similarProduct.canonicalUrl || `/product/${similarProduct.id}`}
+              aria-label="View product: {similarProduct.title} - Price: {formatPrice(similarProduct.price || 0)}"
+            >
+              <div class="product-image">
+                <img 
+                  src={similarProduct.images?.[0] || 'https://via.placeholder.com/160x200/f3f4f6/9ca3af?text=No+Image'} 
+                  alt="{similarProduct.title}"
+                  loading="lazy"
+                />
+                {#if similarProduct.condition}
+                  <span class="condition-tag">{translateCondition(similarProduct.condition)}</span>
+                {/if}
+              </div>
+              <div class="product-details">
+                <h4 class="product-name">{similarProduct.title}</h4>
+                <p class="product-price">{formatPrice(similarProduct.price || 0)}</p>
+              </div>
+            </a>
           {/each}
         </div>
-      {/if}
-    </div>
-
-    <!-- Perfect Thumbnail Strip -->
-    {#if product?.images && product.images.length > 1}
-      <div class="thumbnail-strip" role="tablist" aria-label="Product image thumbnails">
-        {#each product.images as image, index}
-          <button 
-            class="thumb-btn {selectedImage === index ? 'active' : ''}"
-            onclick={() => selectImage(index)}
-            onkeydown={(e) => handleImageKeydown(e, index)}
-            role="tab"
-            aria-selected={selectedImage === index}
-            aria-label={`View image ${index + 1}: ${product?.title || 'Product'}`}
-            type="button"
-          >
-            <img src={image} alt="Thumbnail ${index + 1}" loading="lazy" />
-          </button>
-        {/each}
-      </div>
+      </section>
     {/if}
-  </section>
 
-  <!-- Ultimate Perfect Content -->
-  <section class="ultimate-content" role="main">
-    <!-- SINGLE Product Info Container -->
-    <div class="product-info-container">
-      <!-- Header Row: Badge + Brand -->
-      <div class="header-row">
-        {#if product?.condition}
-          <div class="condition-badge" aria-label="Product condition: {translateCondition(product.condition)}">{translateCondition(product.condition)}</div>
-        {/if}
-        <div class="favorites-inline" aria-label="{likeCount} people love this item">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-          </svg>
-          <span>{likeCount}</span>
-        </div>
-      </div>
-      
-      <!-- Product Title -->
-      <h1 class="product-name" id="product-title">{product?.title || ''}</h1>
-      
-      <!-- Quick Facts Row -->
-      {#if showQuickFacts && (product?.brand || product?.size || product?.color || product?.material)}
-        <div class="facts-row" role="list" aria-label="Product facts">
-          {#if product?.brand}
-            <span role="listitem" title={`Brand: ${product.brand}`}>
-              <Badge variant="secondary" size="sm">{product.brand}</Badge>
-            </span>
-          {/if}
-          {#if product?.size}
-            <span role="listitem" title={`Size: ${product.size}`}>
-              <Badge variant="secondary" size="sm">Size {product.size}</Badge>
-            </span>
-          {/if}
-          {#if product?.color}
-            <span role="listitem" title={`Color: ${product.color}`}>
-              <Badge variant="secondary" size="sm">{product.color}</Badge>
-            </span>
-          {/if}
-          {#if product?.material}
-            <span role="listitem" title={`Material: ${product.material}`}>
-              <Badge variant="secondary" size="sm">{product.material}</Badge>
-            </span>
-          {/if}
-        </div>
-      {/if}
-      
-      <!-- Description -->
-      {#if product?.description}
-        <div class="description-inline">
-          <div class="description-text {showFullDescription ? 'expanded' : ''}">
-            {product.description}
-          </div>
-          {#if product.description.length > 200}
-            <button 
-              class="show-more-btn" 
-              onclick={() => showFullDescription = !showFullDescription}
-            >
-              {showFullDescription ? 'Show less' : 'Show more'}
-            </button>
-          {/if}
-        </div>
-      {/if}
-      
-      <!-- Product Details Accordion - positioned with description for better UX -->
-      <div class="accordion-wrapper">
-        <Accordion items={accordionItems} class="product-accordion" />
-      </div>
-    </div>
-
-    <!-- Enhanced Mobile-First Seller Section -->
-    <div class="seller-products-container">
-      {#if !isOwner}
-        <SellerCard 
-          id={product?.seller?.id || ''}
-          name={displayName}
-          avatar={product?.seller?.avatar_url || undefined}
-          stats={sellerStats}
-          onMessage={onMessage}
-          onViewProfile={viewProfile}
-          class="mb-6"
-          translations={{
-            soldBy: 'Sold by',
-            message: 'Message',
-            viewFullProfile: 'View profile',
-            sales: 'sales',
-            memberFor: 'Member for',
-            newMember: 'New member'
-          }}
-        />
-      {:else}
-        <!-- Owner view - simplified seller info -->
-        <div class="owner-seller-info">
-          <h3 class="text-lg font-semibold text-[color:var(--text-primary)] mb-2">Your Item</h3>
-          <p class="text-sm text-[color:var(--text-secondary)]">Listed by you • {memberSince}</p>
-        </div>
-      {/if}
-
-      <!-- Seller Products Section -->
-      {#if sellerProducts && sellerProducts.length > 0}
-        <div class="products-section" aria-labelledby="seller-products-heading">
-          <div class="products-header">
-            <h3 class="products-title" id="seller-products-heading">More from {displayName}</h3>
-            <div class="products-count" aria-label="{sellerProducts.length} items available from seller">{sellerProducts.length} items</div>
-          </div>
-          
-          <div class="products-scroll-container">
-            <div class="products-scroll">
-              {#each sellerProducts.slice(0, 12) as sellerProduct}
-                <a 
-                  class="product-card" 
-                  href={sellerProduct.canonicalUrl || `/product/${sellerProduct.id}`}
-                  aria-label="View product: {sellerProduct.title} - Price: {formatPrice(sellerProduct.price || 0)}"
-                  data-sveltekit-preload-data="hover"
-                >
-                  <div class="product-image">
-                    <img 
-                      src={sellerProduct.images?.[0] || sellerProduct.product_images?.[0]?.image_url || 'https://via.placeholder.com/160x200/f3f4f6/9ca3af?text=No+Image'} 
-                      alt="{sellerProduct.title}{sellerProduct.brand ? ` by ${sellerProduct.brand}` : ''}{sellerProduct.color ? ` in ${sellerProduct.color}` : ''} - {formatPrice(sellerProduct.price || 0)}"
-                      loading="lazy"
-                    />
-                    {#if sellerProduct.condition}
-                      <div class="condition-badge">{translateCondition(sellerProduct.condition)}</div>
-                    {/if}
-                  </div>
-                  <div class="product-info">
-                    <p class="product-title">{sellerProduct.title}</p>
-                    <p class="product-price">{formatPrice(sellerProduct.price || 0)}</p>
-                  </div>
-                </a>
-              {/each}
-            </div>
-          </div>
-        </div>
-      {/if}
-
-      <!-- Similar Products Section (Same Category) -->
-      {#if similarProducts && similarProducts.length > 0}
-        <div class="products-section" aria-labelledby="similar-products-heading">
-          <div class="products-header">
-            <h3 class="products-title" id="similar-products-heading">Similar items</h3>
-            <div class="products-count" aria-label="{similarProducts.length} similar items available">{similarProducts.length} items</div>
-          </div>
-          
-          <div class="products-scroll-container">
-            <div class="products-scroll">
-              {#each similarProducts.slice(0, 12) as similarProduct}
-                <a 
-                  class="product-card" 
-                  href={similarProduct.canonicalUrl || `/product/${similarProduct.id}`}
-                  aria-label="View product: {similarProduct.title} - Price: {formatPrice(similarProduct.price || 0)}"
-                  data-sveltekit-preload-data="hover"
-                >
-                  <div class="product-image">
-                    <img 
-                      src={similarProduct.images?.[0] || similarProduct.product_images?.[0]?.image_url || 'https://via.placeholder.com/160x200/f3f4f6/9ca3af?text=No+Image'} 
-                      alt="{similarProduct.title}{similarProduct.brand ? ` by ${similarProduct.brand}` : ''}{similarProduct.color ? ` in ${similarProduct.color}` : ''} - {formatPrice(similarProduct.price || 0)}"
-                      loading="lazy"
-                    />
-                    {#if similarProduct.condition}
-                      <div class="condition-badge">{translateCondition(similarProduct.condition)}</div>
-                    {/if}
-                  </div>
-                  <div class="product-info">
-                    <p class="product-title">{similarProduct.title}</p>
-                    <p class="product-price">{formatPrice(similarProduct.price || 0)}</p>
-                  </div>
-                </a>
-              {/each}
-            </div>
-          </div>
-        </div>
-      {/if}
-    </div>
-
-    <!-- Perfect Reviews Section -->
+    <!-- Reviews -->
     {#if reviews.length > 0}
-      <div class="reviews-section">
+      <section class="section-block">
         <div class="reviews-header">
           <h3>Reviews ({reviews.length})</h3>
           {#if displayRating > 0}
@@ -693,14 +355,11 @@
             </div>
           {/if}
         </div>
-        
         <div class="reviews-list">
           {#each reviews.slice(0, 3) as review}
             <div class="review-card">
               <div class="review-header">
-                <div class="reviewer-info">
-                  <span class="reviewer-name">{review.reviewer?.username || review.reviewer_name || 'Anonymous'}</span>
-                </div>
+                <span class="reviewer-name">{review.reviewer?.username || review.reviewer_name || 'Anonymous'}</span>
                 <div class="review-rating">
                   {#each Array(review.rating) as _}
                     <svg class="star filled" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
@@ -709,17 +368,18 @@
                   {/each}
                 </div>
               </div>
-              <p class="review-text">{review.comment}</p>
+              {#if review.comment}
+                <p class="review-text">{review.comment}</p>
+              {/if}
             </div>
           {/each}
         </div>
-      </div>
+      </section>
     {/if}
-
-  </section>
+  </div>
 </main>
 
-<!-- Clean Action Bar Component -->
+<!-- Action Bar -->
 <ProductActionBar 
   price={product?.price || 0}
   isSold={product?.is_sold || false}
@@ -733,1771 +393,329 @@
   onMakeOffer={onMakeOffer}
 />
 
-<!-- Perfect Profile Modal -->
-{#if showProfileModal}
-  <div 
-    class="profile-modal-overlay" 
-    onclick={(e) => { if (e.target === e.currentTarget) toggleProfileModal(); }}
-    onkeydown={handleModalKeydown}
-    role="dialog" tabindex="-1"
-    aria-modal="true"
-    aria-labelledby="profile-modal-title"
-    aria-describedby="profile-modal-content"
-  >
-    <div class="profile-modal">
-      <div class="profile-modal-header">
-        <button 
-          class="modal-close-btn"
-          onclick={toggleProfileModal}
-          aria-label="Close profile modal"
-          type="button"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-        <div class="profile-avatar-large">
-          {#if product?.seller?.avatar_url}
-            <img src={product.seller.avatar_url} alt="{displayName} profile picture" />
-          {:else}
-            <span class="profile-avatar-fallback" aria-hidden="true">{displayName?.charAt(0)?.toUpperCase() || '?'}</span>
-          {/if}
-        </div>
-        <div class="profile-info-large" id="profile-modal-content">
-          <div class="profile-name-row">
-            <h3 id="profile-modal-title">{displayName}</h3>
-            <div class="verified-large" aria-label="Verified seller">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 1l3.09 6.26L22 8.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 8.27l6.91-1.01L12 1z"/>
-              </svg>
-            </div>
-          </div>
-          <div class="profile-stats-large" aria-label="Seller statistics: {displayRating > 0 ? `${displayRating.toFixed(1)} star rating, ` : ''}{reviewCount} reviews, {product?.seller?.sales_count || 0} sales, member since {memberSince}">
-            {#if displayRating > 0}
-              <div class="rating-large">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 1l3.09 6.26L22 8.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 8.27l6.91-1.01L12 1z"/>
-                </svg>
-                <span>{displayRating.toFixed(1)}</span>
-              </div>
-            {/if}
-            <span>{reviewCount} reviews</span>
-            <span>•</span>
-            <span>{product?.seller?.sales_count || 0} sales</span>
-            <span>•</span>
-            <span>{memberSince}</span>
-          </div>
-          {#if product?.seller?.bio}
-            <p class="profile-bio">{product.seller.bio}</p>
-          {/if}
-        </div>
-      </div>
-      <div class="profile-modal-actions">
-        <button 
-          class="view-profile-btn" 
-          onclick={viewProfile}
-          type="button"
-          aria-label="View {displayName} full profile page"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
-          View Full Profile
-        </button>
-        {#if !isOwner}
-          <button 
-            class="message-profile-btn" 
-            onclick={onMessage}
-            type="button"
-            aria-label="Send message to {displayName}"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-            Message
-          </button>
-        {/if}
-      </div>
-    </div>
-  </div>
-{/if}
-
-
 <style>
-  .ultimate-page {
+  .product-page {
     min-height: 100vh;
     background: var(--surface-base);
-    padding-bottom: 80px;
+    padding-bottom: 100px;
   }
-
-  /* Ultimate Perfect Header */
-  .ultimate-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 50;
-    background: var(--surface-base);
-    border-bottom: 1px solid transparent;
-    transform: translateY(-100%);
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--space-4);
   }
-
-  .ultimate-header.visible {
-    transform: translateY(0);
-    border-bottom-color: var(--border-subtle);
+  .breadcrumb-row {
+    padding: var(--space-3) 0 var(--space-2);
   }
-
-  .header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: var(--space-4);
-    height: 64px;
-  }
-
-  .icon-btn {
-    width: 44px;
-    height: 44px;
-    border: none;
-    background: transparent;
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .icon-btn:hover {
-    background: var(--surface-subtle);
-    transform: scale(1.05);
-  }
-
-  .icon-btn:focus-visible {
-    outline: 2px solid var(--state-focus);
-    outline-offset: 2px;
-  }
-
-  .header-info {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-  }
-
-  .header-brand {
-    display: block;
-    font-size: var(--text-xs);
-    color: var(--text-secondary);
-    font-weight: var(--font-bold);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .header-title {
-    display: block;
-    font-size: var(--text-sm);
-    color: var(--text-primary);
-    font-weight: var(--font-black);
-    margin-top: 1px;
-  }
-
-  .header-actions {
-    display: flex;
-    gap: var(--space-1);
-  }
-
-  .heart-btn.liked {
-    color: var(--status-error-solid);
-    background: var(--status-error-bg);
-  }
-
-
-  /* Perfect Seller Avatar Button */
-  .seller-avatar-button {
-    position: absolute;
-    top: var(--space-4);
-    left: var(--space-4);
+  .product-shell { 
     padding: 0;
-    background: none;
-    border: none;
-    cursor: pointer;
+    /* Mobile-first: add subtle background */
+    background: var(--surface-base);
+  }
+  
+  /* One true container - Mobile optimized */
+  .product-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  .product-gallery {
+    /* Keep gallery aligned with content */
+    margin: 0;
+  }
+  
+  .product-content,
+  .product-seller { 
+    padding: 0;
+    /* Mobile: Ensure proper touch targets */
+    position: relative;
+  }
+  /* Tablet optimizations */
+  @media (min-width: 641px) and (max-width: 1023px) {
+    .product-card {
+      gap: var(--space-5);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .product-gallery {
+      margin: 0;
+    }
+  }
+  
+  /* Desktop layout */
+  @media (min-width: 1024px) {
+    .product-shell {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-5);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    
+    .product-card {
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: var(--space-5);
+      max-width: none;
+    }
+    
+    .product-gallery { 
+      margin: 0; 
+    }
+    
+    .product-content {
+      background: var(--surface-base);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: var(--space-4);
+    }
+    
+    .product-seller {
+      padding: 0;
+    }
+  }
+
+  /* Enhanced Header for Mobile */
+  .fixed-header { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    z-index: 50; 
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent; 
+    transform: translateY(-100%); 
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
-
-  .seller-avatar-button:hover {
-    transform: translateY(-2px) scale(1.05);
-  }
-
-  .seller-avatar-overlay {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-full);
-    object-fit: cover;
-    border: 3px solid rgba(255, 255, 255, 0.9);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-    background: var(--surface-base);
-  }
-
-  /* Ultimate Perfect Gallery */
-  .ultimate-gallery {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-    padding: 0 var(--space-4);
-  }
-
-  /* Top bar over image: avatar • title • wishlist */
-  .image-topbar {
-    position: absolute;
-    z-index: 5;
-    top: var(--space-3);
-    left: var(--space-3);
-    right: var(--space-3);
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    pointer-events: none; /* avoid capturing stray clicks */
-  }
-  .image-topbar .seller-avatar-button,
-  .image-topbar .floating-like {
-    pointer-events: auto; /* re-enable for controls */
-  }
-  .image-title {
-    flex: 1;
-    text-align: center;
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.2;
-  }
-  .image-topbar .seller-avatar-button {
-    position: static;
-    transform: none;
-  }
-  .image-topbar .seller-avatar-overlay,
-  .image-topbar .seller-avatar-fallback {
-    width: 40px;
-    height: 40px;
-    border-width: 2px;
-  }
-  .image-topbar .floating-like {
-    position: static;
-    width: 40px;
-    height: 40px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
-  }
-
-  /* Bottom badges over image */
-  .image-badges {
-    position: absolute;
-    left: var(--space-3);
-    right: var(--space-3);
-    bottom: var(--space-5);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-    pointer-events: none;
-  }
-
-  /* Inline meta variant */
-  .image-inline-meta {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: var(--space-5);
-    max-width: calc(100% - var(--space-6));
-    padding: var(--space-1) var(--space-3);
-    border-radius: var(--radius-full);
-    background: var(--surface-base);
-    border: 1px solid var(--border-subtle);
-    color: var(--text-secondary);
-    font-size: var(--text-xs);
-    font-weight: var(--font-medium);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .main-display {
-    position: relative;
-    aspect-ratio: 3/4;
-    background: var(--surface-base);
-    overflow: hidden;
-    border-radius: var(--radius-2xl);
-    border: 1px solid var(--border-subtle);
-    padding: var(--space-2);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-    max-width: 100%;
-  }
-  /* Subtle bottom gradient to ensure caption readability */
-  .main-display::after {
-    content: '';
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    height: 72px;
-    background: linear-gradient(to top, rgba(0,0,0,0.04), rgba(0,0,0,0));
-    pointer-events: none;
-  }
-
-  /* Responsive aspect ratio adjustments */
-  @media (max-width: 640px) {
-    .main-display {
-      aspect-ratio: 4/5; /* Slightly taller on mobile for better fit */
-    }
-  }
-
-  .hero-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-    border-radius: var(--radius-xl);
-    background: var(--surface-subtle);
-    border: 1px solid var(--border-subtle);
-  }
-
-  .hero-empty {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-2);
-    color: var(--text-tertiary);
-    background: var(--surface-base);
-    border-radius: calc(var(--radius-2xl) - 2px);
-  }
-
-  .hero-empty-icon {
-    width: 32px;
-    height: 32px;
-  }
-
-  .hero-empty-text {
-    font-size: var(--text-xs);
-    font-weight: var(--font-medium);
-  }
-
-  .sold-badge {
-    position: absolute;
-    top: var(--space-4);
-    left: var(--space-4);
-    background: var(--status-error-solid);
-    color: white;
-    padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-full);
-    font-size: var(--text-sm);
-    font-weight: var(--font-bold);
-    text-transform: uppercase;
-  }
-
-  .floating-like {
-    position: absolute;
-    top: var(--space-4);
-    right: var(--space-4);
-    width: 48px;
-    height: 48px;
-    border: none;
-    background: var(--surface-base);
-    border-radius: var(--radius-full);
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: transform 0.15s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-0-5);
-  }
-
-  .floating-like:hover { transform: scale(1.05); }
-
-  .floating-like.liked {
-    color: var(--status-error-solid);
-    background: var(--surface-base);
-    transform: scale(1.05);
-  }
-
-
-  .image-nav {
-    position: absolute;
-    bottom: var(--space-12);
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: var(--space-2);
-    background: rgba(0, 0, 0, 0.4);
-    padding: var(--space-2) var(--space-3);
-    border-radius: var(--radius-full);
-    /* Removed blur for performance */
-  }
-
-  .nav-dot {
-    position: relative;
-    width: 36px;
-    height: 36px;
-    border: none;
-    background: transparent;
-    border-radius: var(--radius-full);
-    cursor: pointer;
-    transition: transform 0.15s ease;
-  }
-  .nav-dot::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 8px;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: var(--radius-full);
-    transform: translate(-50%, -50%);
-  }
-  .nav-dot.active::after {
-    background: white;
-    transform: translate(-50%, -50%) scale(1.2);
-  }
-  .nav-dot:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-  }
-
-  .thumbnail-strip {
-    display: flex;
-    gap: var(--space-3);
-    padding: 0 var(--space-4);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .thumbnail-strip::-webkit-scrollbar {
-    display: none;
-  }
-
-  .thumb-btn {
-    width: 80px;
-    height: 80px;
-    border: 2px solid var(--border-subtle);
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-    background: var(--surface-base);
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  }
-
-  .thumb-btn:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-  }
-
-  .thumb-btn:hover {
-    border-color: var(--border-emphasis);
-    transform: scale(1.05);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  }
-
-  .thumb-btn.active {
-    border-color: var(--text-primary);
-    transform: scale(1.1);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  }
-
-  .thumb-btn img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: calc(var(--radius-xl) - 2px);
-  }
-
-  /* Typography-Driven Content Layout */
-  .ultimate-content {
-    padding: var(--space-4) var(--space-4);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-    max-width: 100%;
-    overflow-x: hidden;
-  }
-
-  /* Perfect Profile Header */
-  .profile-header {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-
-  .seller-preview {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    padding: var(--space-4);
-    background: var(--surface-subtle);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--border-subtle);
-  }
-
-  .seller-avatar-btn {
-    position: relative;
-    background: none;
-    border: none;
-    cursor: pointer;
-    border-radius: var(--radius-xl);
-    transition: all 0.3s ease;
-    padding: 0;
-  }
-
-  .seller-avatar-fallback {
-    width: 48px;
-    height: 48px;
-    border-radius: var(--radius-full);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface-muted);
-    color: var(--text-secondary);
-    font-weight: var(--font-semibold);
-    border: 3px solid rgba(255, 255, 255, 0.9);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  }
-
-  .seller-avatar-btn:hover {
-    transform: scale(1.05);
-  }
-
-  .seller-avatar-preview {
-    width: 56px;
-    height: 56px;
-    border-radius: var(--radius-xl);
-    object-fit: cover;
-    border: 2px solid var(--border-default);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-
-  .profile-indicator {
-    position: absolute;
-    bottom: -4px;
-    right: -4px;
-    width: 20px;
-    height: 20px;
-    background: var(--primary);
-    border-radius: var(--radius-full);
-    border: 2px solid var(--surface-base);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  .seller-info-preview {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  .seller-name-preview {
-    font-size: var(--text-lg);
-    font-weight: var(--font-bold);
-    color: var(--text-primary);
-  }
-
-  .seller-stats-preview {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    flex-wrap: wrap;
-  }
-
-  .rating-mini {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    color: var(--warning);
-  }
-
-  .rating-mini span {
-    color: var(--text-primary);
-    font-weight: var(--font-semibold);
-  }
-
-  .sales-count {
-    font-weight: var(--font-medium);
-  }
-
-  /* SINGLE Compact Product Info Container */
-  .product-info-container {
-    background: var(--surface-base);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-xl);
-    padding: var(--space-6);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-
-  .header-row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    flex-wrap: wrap;
-  }
-
-  .condition-badge {
-    background: var(--status-success-bg);
-    color: var(--status-success-text);
-    padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-full);
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    border: 1px solid var(--status-success-border);
-    white-space: nowrap;
-    display: inline-block;
-  }
-
-  .brand-name {
-    font-size: var(--text-xs);
-    font-weight: var(--font-medium);
-    color: var(--text-tertiary);
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-widest);
-  }
-
-  .favorites-inline {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    font-size: var(--text-xs);
-    color: var(--text-tertiary);
-    margin-left: auto;
-  }
-
-  .product-name {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-bold);
-    color: var(--text-primary);
-    line-height: var(--leading-tight);
-    letter-spacing: var(--tracking-tight);
-    margin: 0;
-  }
-
-  /* Duplicate removed - keeping only the first definition */
-
-  .facts-row {
-    display: flex;
-    gap: var(--space-2);
-    flex-wrap: wrap;
-    margin-top: var(--space-2);
-  }
-
-  .description-inline {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    border-top: 1px solid var(--border-subtle);
-    padding-top: var(--space-4);
-  }
-
-
-
-  .description-text {
-    font-size: var(--text-base);
-    font-weight: var(--font-normal);
-    color: var(--text-secondary);
-    line-height: var(--leading-relaxed);
-    margin: 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .description-text.expanded {
-    display: block;
-    -webkit-line-clamp: unset;
-    line-clamp: unset;
-  }
-
-  .show-more-btn {
-    margin-top: var(--space-3);
-    background: none;
-    border: none;
-    color: var(--primary);
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    cursor: pointer;
-    padding: var(--space-1) 0;
-    transition: color var(--duration-fast) var(--ease-out);
-  }
-
-  .show-more-btn:hover {
-    color: var(--primary-600);
-  }
-
-  /* Accordion Wrapper */
-  .accordion-wrapper {
-    margin-top: var(--space-5);
-    border-top: 1px solid var(--border-subtle);
-    padding-top: var(--space-5);
-  }
-
-  /* Product Accordion Custom Styling */
-  :global(.product-accordion) {
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    background: var(--surface-base);
-  }
-
-  /* Accordion Content Styling */
-  .details-section {
-    background: var(--surface-raised);
-    border-radius: var(--radius-xl);
-    padding: 0;
-    margin-bottom: var(--space-5);
-    overflow: hidden;
-  }
-
-  .accordion-item {
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
-  .accordion-item:last-child {
-    border-bottom: none;
-  }
-
-  .accordion-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--space-5);
-    cursor: pointer;
-    background: transparent;
-    border: none;
-    width: 100%;
-    text-align: left;
-    list-style: none;
-    transition: background-color var(--duration-fast);
-  }
-
-  .accordion-header:hover {
-    background: var(--state-hover);
-  }
-
-  .accordion-header h3 {
-    font-size: var(--text-lg);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-    margin: 0;
-  }
-
-  .accordion-chevron {
-    transition: transform var(--duration-fast);
-    color: var(--text-secondary);
-    flex-shrink: 0;
-  }
-
-  .accordion-item[open] .accordion-chevron {
-    transform: rotate(180deg);
-  }
-
-  .accordion-content {
-    padding: 0 var(--space-5) var(--space-5) var(--space-5);
-  }
-
-  .details-accordion {
-    border: 1px solid var(--border-default);
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-  }
-
-  .detail-grid {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-
-  .detail-item {
-    display: flex;
-    justify-content: space-between;
-    font-size: var(--text-base);
-  }
-
-  .detail-item span:first-child {
-    color: var(--text-secondary);
-    font-weight: var(--font-medium);
-  }
-
-  .detail-item span:last-child {
-    color: var(--text-primary);
-    font-weight: var(--font-semibold);
-  }
-
-  .shipping-options {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-
-  .shipping-item {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-  }
-
-  .shipping-info {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  .shipping-label {
-    font-size: var(--text-base);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-  }
-
-  .shipping-desc {
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-  }
-
-  /* Perfect Seller */
-  .seller-section {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .seller-card {
-    background: var(--surface-subtle);
-    border-radius: var(--radius-xl);
-    padding: var(--space-6);
-    border: 1px solid var(--border-subtle);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-5);
-  }
-
-  .seller-header {
-    display: flex;
-    gap: var(--space-4);
-    align-items: flex-start;
-  }
-
-  .seller-avatar {
-    width: 64px;
-    height: 64px;
-    border-radius: var(--radius-xl);
-    object-fit: cover;
-    flex-shrink: 0;
-  }
-
-  .seller-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-
-  .seller-name-row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-  }
-
-  .seller-name {
-    font-size: var(--text-xl);
-    font-weight: var(--font-bold);
-    color: var(--text-primary);
-  }
-
-  .verified-mini {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-600));
-    border-radius: var(--radius-full);
-    color: white;
-  }
-
-  .seller-stats {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    flex-wrap: wrap;
-  }
-
-  .rating-display {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    color: var(--warning);
-  }
-
-  .rating-display span {
-    color: var(--text-primary);
-    font-weight: var(--font-bold);
-  }
-
-  .message-btn {
-    background: var(--text-primary);
-    color: var(--surface-base);
-    border: none;
-    border-radius: var(--radius-lg);
-    padding: var(--space-3) var(--space-4);
-    font-size: var(--text-sm);
-    font-weight: var(--font-bold);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    height: 40px;
-    flex-shrink: 0;
-  }
-
-  .message-btn:hover {
-    background: var(--text-secondary);
-    transform: translateY(-1px);
-  }
-
-  .seller-about {
-    font-size: var(--text-base);
-    color: var(--text-secondary);
-    line-height: var(--leading-relaxed);
-    margin: 0;
-  }
-
-
-  /* Connected Seller + Products Container */
-  .seller-products-container {
-    background: var(--surface-base);
-    padding: var(--space-4);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--border-subtle);
+  
+  .fixed-header.visible { 
+    transform: translateY(0); 
+    border-bottom-color: var(--border-subtle); 
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08); 
   }
   
-  /* Owner view styling */
-  .owner-seller-info {
-    padding: var(--space-5);
-    background: var(--surface-subtle);
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border-subtle);
-    margin-bottom: var(--space-6);
+  .header-content { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    padding: var(--space-3) 0;
+    min-height: var(--touch-standard);
   }
-
-  .seller-header {
-    padding: var(--space-4);
-    background: var(--surface-base);
-  }
-
-  .seller-actions {
-    display: flex;
-    gap: var(--space-3);
-    flex-shrink: 0;
-    flex-wrap: wrap;
-  }
-
-  /* Mobile-first seller layout */
-  @media (max-width: 640px) {
-    .seller-info-row {
-      gap: var(--space-4);
-    }
-    
-    .seller-actions {
-      gap: var(--space-2);
-    }
-  }
-
-  .seller-info-row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-  }
-
-  .seller-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-md);
-    object-fit: cover;
-    border: 1px solid var(--border-subtle);
-  }
-
-  .seller-details {
+  
+  .header-left {
     flex: 1;
+    min-width: 0;
   }
-
-  .seller-name-rating {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    margin-bottom: var(--space-1);
-  }
-
-  .seller-name {
-    font-size: var(--text-base);
+  
+  .header-title { 
+    font-size: var(--text-base); 
     font-weight: var(--font-semibold);
-    color: var(--text-primary);
+    line-height: 1.2;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
-
-  .seller-rating {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    color: var(--warning);
+  
+  .header-meta { 
+    display: flex; 
+    gap: var(--space-2); 
+    color: var(--text-tertiary); 
+    font-size: var(--text-xs);
+    margin-top: var(--space-1);
   }
-
-  .seller-rating span {
-    font-size: var(--text-sm);
-    color: var(--text-primary);
-    font-weight: var(--font-medium);
+  
+  .meta-item { 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 0.25rem;
+    white-space: nowrap;
   }
-
-  .seller-stats {
-    font-size: var(--text-sm);
+  
+  .header-fav { 
+    display: flex; 
+    gap: var(--space-1); 
+    align-items: center; 
+    border: none; 
+    background: none; 
+    color: var(--text-tertiary);
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-width: var(--touch-compact);
+    min-height: var(--touch-compact);
+    justify-content: center;
+  }
+  
+  .header-fav:hover {
+    background: var(--surface-subtle);
     color: var(--text-secondary);
   }
-
-  .view-profile-btn,
-  .message-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-1);
-    padding: var(--space-1) var(--space-2);
-    border-radius: var(--radius-sm);
-    font-size: var(--text-xs);
-    font-weight: var(--font-medium);
-    cursor: pointer;
-    transition: all var(--duration-fast) var(--ease-out);
-    border: none;
-    white-space: nowrap;
-    min-height: 32px;
-  }
-
-  /* Mobile enhancements for buttons */
-  @media (max-width: 640px) {
-    .seller-header {
-      padding: var(--space-3);
-    }
-    
-    .seller-info-row {
-      gap: var(--space-2);
-    }
-    
-    .seller-actions {
-      gap: var(--space-1);
-      flex-shrink: 0;
-    }
-    
-    .view-profile-btn,
-    .message-btn {
-      min-height: 28px;
-      padding: var(--space-1);
-      font-size: 11px;
-      min-width: 50px;
-      flex: none;
-    }
-  }
-
-  .view-profile-btn:focus-visible,
-  .message-btn:focus-visible {
+  
+  .header-fav:focus-visible {
     outline: 2px solid var(--state-focus);
     outline-offset: 2px;
   }
 
-  .view-profile-btn {
-    background: var(--surface-base);
-    color: var(--text-primary);
-    border: 1px solid var(--border-default);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  }
-
-  .view-profile-btn:hover {
-    background: var(--surface-subtle);
-    border-color: var(--text-primary);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .view-profile-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-  }
-
-  .message-btn {
-    background: var(--text-primary);
-    color: var(--surface-base);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .message-btn:hover {
-    background: var(--text-secondary);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
-
-  .message-btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .products-section {
-    padding: var(--space-5);
-  }
-
-  .products-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-6);
-    gap: var(--space-4);
-  }
-
-  .products-title {
-    font-size: var(--text-xl);
-    font-weight: var(--font-bold);
-    color: var(--text-primary);
-    margin: 0;
-    flex: 1;
-  }
-
-  .products-count {
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    color: var(--text-secondary);
-    background: var(--surface-base);
-    padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-full);
-    border: 1px solid var(--border-default);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    white-space: nowrap;
-  }
-
-  /* Mobile optimizations for products section */
-  @media (max-width: 640px) {
-    .products-section {
-      padding: var(--space-5);
-    }
+  /* Mobile-optimized recommendations */
+  .section-block { 
+    margin-top: var(--space-6);
     
-    .products-header {
-      margin-bottom: var(--space-4);
-      flex-wrap: wrap;
+    /* Mobile: Better spacing */
+    @media (max-width: 640px) {
+      margin-top: var(--space-5);
     }
+  }
+  
+  .section-title { 
+    font-size: var(--text-lg); 
+    font-weight: var(--font-semibold); 
+    margin-bottom: var(--space-3);
     
-    .products-title {
-      font-size: var(--text-lg);
+    /* Mobile: Smaller title */
+    @media (max-width: 640px) {
+      font-size: var(--text-base);
+      margin-bottom: var(--space-2);
     }
   }
-
-  .products-scroll-container {
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    margin: 0 calc(-1 * var(--space-3));
-    padding: var(--space-1) var(--space-3);
-    scroll-behavior: smooth;
+  
+  .products-grid { 
+    display: grid; 
+    grid-template-columns: repeat(2, minmax(0,1fr)); 
+    gap: var(--space-3);
+    
+    /* Mobile: Smaller gap */
+    @media (max-width: 640px) {
+      gap: var(--space-2);
+    }
   }
-
-  .products-scroll-container::-webkit-scrollbar {
-    display: none;
+  
+  @media (min-width: 700px) { 
+    .products-grid { 
+      grid-template-columns: repeat(4, minmax(0,1fr)); 
+    } 
   }
-
-  .products-scroll {
-    display: flex;
-    gap: var(--space-4);
-    padding: var(--space-2) 0 var(--space-4) 0;
-  }
-
-  .product-card {
-    width: 160px;
-    flex-shrink: 0;
+  
+  .products-grid .product-card { 
+    display: block; 
+    border: 1px solid var(--border-subtle); 
+    border-radius: var(--radius-lg); 
+    overflow: hidden; 
     background: var(--surface-base);
+    transition: all 0.2s ease;
     cursor: pointer;
-    transition: all var(--duration-base) var(--ease-spring);
-    border-radius: var(--radius-xl);
-    border: 1px solid var(--border-subtle);
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   }
-
-  /* Mobile product card adjustments */
-  @media (max-width: 640px) {
-    .product-card {
-      width: 140px;
-    }
-    
-    .products-scroll {
-      gap: var(--space-3);
-    }
-  }
-
-  .product-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+  
+  .products-grid .product-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     border-color: var(--border-emphasis);
   }
-
-  .product-card:active {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-  }
-
-  .product-card:focus-visible {
+  
+  .products-grid .product-card:focus-visible {
     outline: 2px solid var(--state-focus);
     outline-offset: 2px;
   }
-
-  .product-image {
-    position: relative;
-    aspect-ratio: 1;
-    background: var(--surface-subtle);
-    overflow: hidden;
-    transition: all var(--duration-base) var(--ease-out);
+  
+  .products-grid .product-image { 
+    position: relative; 
+    aspect-ratio: 4/5; 
+    background: var(--surface-subtle); 
   }
-
-  .product-card:hover .product-image {
-    background: var(--surface-muted);
+  
+  .products-grid .product-image img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    transition: transform 0.2s ease;
   }
-
-  .product-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform var(--duration-base) var(--ease-out);
-  }
-
-  .product-card:hover .product-image img {
+  
+  .products-grid .product-card:hover .product-image img {
     transform: scale(1.02);
   }
-
-  .product-card .condition-badge {
-    position: absolute;
-    top: var(--space-2);
-    left: var(--space-2);
-    background: var(--surface-base);
-    color: var(--status-success-text);
-    padding: var(--space-1) var(--space-2);
-    border-radius: var(--radius-md);
+  
+  .products-grid .condition-tag { 
+    position: absolute; 
+    left: 0.5rem; 
+    top: 0.5rem; 
+    background: var(--surface-elevated); 
+    border: 1px solid var(--border-subtle); 
+    border-radius: var(--radius-md); 
+    padding: 0.125rem 0.375rem; 
     font-size: var(--text-xs);
     font-weight: var(--font-medium);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--border-subtle);
   }
-
-  .product-info {
-    padding: var(--space-4) var(--space-3);
-    background: var(--surface-base);
-  }
-
-  .product-title {
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    color: var(--text-primary);
-    line-height: var(--leading-tight);
-    margin: 0 0 var(--space-2) 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    min-height: calc(var(--text-sm) * var(--leading-tight) * 2);
-  }
-
-  .product-price {
-    font-size: var(--text-base);
-    font-weight: var(--font-bold);
-    color: var(--text-primary);
-    margin: 0;
-  }
-
-  /* Mobile product info adjustments */
-  @media (max-width: 640px) {
-    .product-info {
-      padding: var(--space-3);
-    }
-    
-    .product-price {
-      font-size: var(--text-sm);
-    }
-  }
-
-  /* Perfect Reviews */
-  .reviews-section {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-6);
-  }
-
-  .reviews-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .reviews-header h3 {
-    font-size: var(--text-xl);
-    font-weight: var(--font-bold);
-    color: var(--text-primary);
-    margin: 0;
-  }
-
-  .rating-summary {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-  }
-
-  .stars {
-    display: flex;
-    gap: var(--space-1);
-  }
-
-  .star {
-    color: var(--surface-muted);
-  }
-
-  .star.filled {
-    color: var(--warning);
-  }
-
-  .rating-summary span {
-    font-size: var(--text-sm);
-    color: var(--text-primary);
-    font-weight: var(--font-semibold);
-  }
-
-  .reviews-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-5);
-  }
-
-  .review-card {
-    background: var(--surface-subtle);
-    border-radius: var(--radius-xl);
-    padding: var(--space-5);
-    border: 1px solid var(--border-subtle);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-
-  .review-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-
-  .reviewer-name {
-    font-size: var(--text-base);
-    font-weight: var(--font-bold);
-    color: var(--text-primary);
-  }
-
-  .review-rating {
-    display: flex;
-    gap: var(--space-1);
-  }
-
-  .review-text {
-    font-size: var(--text-base);
-    color: var(--text-secondary);
-    line-height: var(--leading-relaxed);
-    margin: 0;
-  }
-
-
-
-  /* Perfect Profile Modal */
-  .profile-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 60;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--space-4);
-    animation: fadeIn 0.3s ease;
-  }
-
-  .profile-modal {
-    background: var(--surface-base);
-    border-radius: var(--radius-2xl);
-    padding: var(--space-6);
-    max-width: 400px;
-    width: 100%;
-    border: 1px solid var(--border-default);
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
-    animation: slideUp 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-
-  .profile-modal-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-5);
-    margin-bottom: var(--space-6);
-  }
-
-  .profile-avatar-large {
-    position: relative;
-  }
-
-  .profile-avatar-large img {
-    width: 96px;
-    height: 96px;
-    border-radius: var(--radius-2xl);
-    object-fit: cover;
-    border: 3px solid var(--border-default);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  }
-  .profile-avatar-fallback {
-    width: 96px;
-    height: 96px;
-    border-radius: var(--radius-2xl);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--surface-muted);
-    color: var(--text-secondary);
-    font-weight: var(--font-bold);
-    font-size: var(--text-2xl);
-    border: 3px solid var(--border-default);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  }
-
-  .profile-info-large {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-3);
-    text-align: center;
-  }
-
-  .profile-name-row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-  }
-
-  .profile-name-row h3 {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-bold);
-    color: var(--text-primary);
-    margin: 0;
-  }
-
-  .verified-large {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-600));
-    border-radius: var(--radius-full);
-    color: white;
-  }
-
-  .profile-stats-large {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    font-size: var(--text-sm);
-    color: var(--text-secondary);
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .rating-large {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    color: var(--warning);
-  }
-
-  .rating-large span {
-    color: var(--text-primary);
-    font-weight: var(--font-bold);
-  }
-
-  .profile-bio {
-    font-size: var(--text-base);
-    color: var(--text-secondary);
-    line-height: var(--leading-relaxed);
-    margin: 0;
-    max-width: 320px;
-  }
-
-  .profile-modal-actions {
-    display: flex;
-    gap: var(--space-3);
-    justify-content: center;
-    flex-wrap: wrap;
-  }
-
-  .view-profile-btn,
-  .message-profile-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-2);
-    padding: var(--space-3) var(--space-5);
-    border: none;
-    border-radius: var(--radius-lg);
-    font-size: var(--text-base);
-    font-weight: var(--font-semibold);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    flex: 1;
-    min-width: 140px;
-  }
-
-  .view-profile-btn {
-    background: var(--text-primary);
-    color: var(--surface-base);
-  }
-
-  .view-profile-btn:hover {
-    background: var(--text-secondary);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  }
-
-  .message-profile-btn {
-    background: var(--surface-subtle);
-    color: var(--text-primary);
-    border: 2px solid var(--border-default);
-  }
-
-  .message-profile-btn:hover {
-    border-color: var(--text-primary);
-    background: var(--surface-muted);
-    transform: translateY(-1px);
-  }
-
-
-  /* Perfect Animations */
-  @keyframes slideDown {
-    from {
-      height: 0;
-      opacity: 0;
-    }
-    to {
-      height: auto;
-      opacity: 1;
-    }
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(24px) scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  /* Enhanced Mobile-First Responsive Design */
-  @media (max-width: 480px) {
-    .ultimate-gallery {
-      padding: 0 var(--space-3);
-    }
-    
-    .ultimate-content {
-      padding: var(--space-4) var(--space-3);
-      gap: var(--space-6);
-    }
-    
-    .product-info-container {
-      padding: var(--space-5);
-    }
-    
-    .product-name {
-      font-size: var(--text-xl);
-      line-height: var(--leading-tight);
-    }
-  }
-
-  @media (min-width: 640px) and (max-width: 1024px) {
-    .ultimate-content {
-      padding: var(--space-6) var(--space-5);
-    }
-  }
-
-  @media (min-width: 768px) {
-    .main-display {
-      aspect-ratio: 4/5;
-      max-width: 480px;
-      margin: 0 auto;
-    }
-
-    .ultimate-content {
-      padding: var(--space-8) var(--space-6);
-      max-width: 680px;
-      margin: 0 auto;
-    }
-    
-    .ultimate-gallery {
-      max-width: 680px;
-      margin: 0 auto;
-    }
-  }
-
-  /* Perfect Accessibility */
   
-  /* Focus visible states for all interactive elements */
-  .nav-dot:focus-visible,
-  .thumb-btn:focus-visible,
-  .product-card:focus-visible,
-  .seller-avatar-button:focus-visible,
-  .floating-like:focus-visible {
-    outline: 2px solid var(--state-focus);
-    outline-offset: 2px;
+  .product-details { 
+    padding: 0.75rem; 
+    display: flex; 
+    flex-direction: column;
+    gap: var(--space-1);
+    
+    /* Mobile: More compact padding */
+    @media (max-width: 640px) {
+      padding: 0.5rem;
+    }
   }
-
-  /* Modal accessibility styles */
-  .modal-close-btn {
-    position: absolute;
-    top: var(--space-4);
-    right: var(--space-4);
-    width: 40px;
-    height: 40px;
-    border: none;
-    background: var(--surface-subtle);
-    border-radius: var(--radius-full);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    transition: all 0.2s ease;
-    z-index: 10;
-  }
-
-  .modal-close-btn:hover {
-    background: var(--surface-muted);
-    color: var(--text-primary);
-    transform: scale(1.05);
-  }
-
-  .modal-close-btn:focus-visible {
-    outline: 2px solid var(--state-focus);
-    outline-offset: 2px;
-  }
-
-  /* Skip links for screen readers */
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
+  
+  .product-name { 
+    font-size: var(--text-sm); 
+    color: var(--text-primary); 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
     white-space: nowrap;
-    border: 0;
+    font-weight: var(--font-medium);
+    line-height: 1.3;
+    margin: 0;
   }
-
-  .skip-link {
-    position: absolute;
-    top: -9999px;
-    left: -9999px;
-    z-index: 999;
-    background: var(--surface-base);
+  
+  .product-price { 
+    font-size: var(--text-sm); 
     color: var(--text-primary);
-    padding: var(--space-3) var(--space-4);
-    border-radius: var(--radius-lg);
-    border: 2px solid var(--border-emphasis);
-    text-decoration: none;
     font-weight: var(--font-semibold);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    margin: 0;
   }
-
-  .skip-link:focus {
-    position: absolute;
-    top: var(--space-4);
-    left: var(--space-4);
-    outline: none;
+  
+  /* Touch device optimizations */
+  @media (hover: none) and (pointer: coarse) {
+    .products-grid .product-card:hover {
+      transform: none;
+    }
+    
+    .products-grid .product-card:hover .product-image img {
+      transform: none;
+    }
+    
+    .header-fav:hover {
+      background: none;
+    }
   }
-
-  /* Keyboard navigation indicators */
-  .product-card:focus {
-    outline: none;
+  
+  /* Accessibility enhancements */
+  @media (prefers-reduced-motion: reduce) {
+    .fixed-header,
+    .products-grid .product-card,
+    .products-grid .product-image img,
+    .header-fav {
+      transition: none;
+    }
   }
-
-  .product-card:focus-visible {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  }
-
+  
   /* High contrast mode support */
   @media (prefers-contrast: high) {
-    .icon-btn,
-    .nav-dot,
-    .thumb-btn,
-    .product-card {
-      border: 2px solid ButtonText;
+    .fixed-header {
+      background: var(--surface-base);
+      backdrop-filter: none;
     }
     
-    .condition-badge {
-      border: 1px solid ButtonText;
-    }
-  }
-
-  /* Reduced motion preferences */
-  @media (prefers-reduced-motion: reduce) {
-    * {
-      animation: none !important;
-      transition: none !important;
-    }
-    
-    .product-card:focus-visible,
-    .thumb-btn:focus-visible,
-    .icon-btn:focus-visible {
-      transform: none;
-    }
-  }
-
-  /* Touch device optimizations */
-  @media (hover: none) {
-    .icon-btn:hover,
-    .floating-like:hover,
-    .message-btn:hover,
-    .buy-btn:hover,
-    .modal-close-btn:hover {
-      transform: none;
+    .products-grid .product-card,
+    .products-grid .condition-tag {
+      border-width: 2px;
     }
   }
 </style>

@@ -1,323 +1,192 @@
 <script lang="ts">
   interface Props {
     images: string[];
-    title: string;
+    title?: string;
     isSold?: boolean;
+    likeCount?: number;
+    isLiked?: boolean;
+    onLike?: () => void;
     onImageSelect?: (index: number) => void;
+    seller?: {
+      id: string;
+      username: string | null;
+      avatar_url?: string | null;
+    };
   }
 
   let { 
     images = [], 
-    title,
+    title = '',
     isSold = false,
-    onImageSelect
+    likeCount = 0,
+    isLiked = false,
+    onLike,
+    onImageSelect,
+    seller
   }: Props = $props();
 
   let selectedImage = $state(0);
+  let avatarExpanded = $state(false);
 
   function selectImage(index: number) {
+    if (index === selectedImage) return;
     selectedImage = index;
     onImageSelect?.(index);
   }
 
-  function handleKeyNavigation(event: KeyboardEvent, index: number) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      selectImage(index);
-    } else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      event.preventDefault();
-      const newIndex = event.key === 'ArrowLeft' 
-        ? (index > 0 ? index - 1 : images.length - 1)
-        : (index < images.length - 1 ? index + 1 : 0);
-      selectImage(newIndex);
-    }
-  }
-
-  // Touch/swipe handling for mobile
+  // Simple swipe handling
   let touchStartX = 0;
-  let touchEndX = 0;
   
   function handleTouchStart(e: TouchEvent) {
     touchStartX = e.touches[0].clientX;
   }
   
   function handleTouchEnd(e: TouchEvent) {
-    touchEndX = e.changedTouches[0].clientX;
-    handleSwipe();
-  }
-  
-  function handleSwipe() {
-    const swipeThreshold = 50;
-    const diff = touchStartX - touchEndX;
+    const touchEndX = e.changedTouches[0].clientX;
+    const deltaX = touchStartX - touchEndX;
     
-    if (Math.abs(diff) > swipeThreshold) {
-      if (diff > 0 && selectedImage < images.length - 1) {
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0 && selectedImage < images.length - 1) {
         selectImage(selectedImage + 1);
-      } else if (diff < 0 && selectedImage > 0) {
+      } else if (deltaX < 0 && selectedImage > 0) {
         selectImage(selectedImage - 1);
       }
     }
   }
+
+  function handleKeyDown(e: KeyboardEvent) {
+    if (e.key === 'ArrowLeft' && selectedImage > 0) {
+      selectImage(selectedImage - 1);
+    } else if (e.key === 'ArrowRight' && selectedImage < images.length - 1) {
+      selectImage(selectedImage + 1);
+    }
+  }
+
+  function handleAvatarClick() {
+    if (seller?.username || seller?.id) {
+      const profileUrl = seller.username ? `/profile/${seller.username}` : `/profile/${seller.id}`;
+      if (typeof window !== 'undefined') {
+        window.location.href = profileUrl;
+      }
+    }
+  }
+
+  function handleAvatarEnter() {
+    avatarExpanded = true;
+  }
+
+  function handleAvatarLeave() {
+    avatarExpanded = false;
+  }
 </script>
 
-<div class="gallery">
-  <!-- Main Image Display -->
+<div class="w-full" role="region" aria-label="Product images">
   <div 
-    class="main-image-container"
+    class="relative aspect-4/5 sm:aspect-3/4 bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden focus:outline-none focus:ring-2 focus:ring-blue-500"
     ontouchstart={handleTouchStart}
     ontouchend={handleTouchEnd}
+    onkeydown={handleKeyDown}
+    tabindex="0"
     role="img"
-    aria-label="{title} - Image {selectedImage + 1} of {images.length}"
+    aria-label="{title ? `${title} - ` : ''}Image {selectedImage + 1} of {images.length || 1}"
   >
     {#if images.length > 0}
       <img 
         src={images[selectedImage]}
-        alt="{title} - Image {selectedImage + 1} of {images.length}"
-        class="main-image"
+        alt="{title ? `${title} - ` : ''}Image {selectedImage + 1} of {images.length}"
+        class="w-full h-full object-contain bg-gray-50"
         loading="eager"
       />
+      
+      <!-- Seller Avatar (Top Left) -->
+      {#if seller}
+        <button 
+          class="absolute top-4 left-4 rounded-full bg-white shadow-lg flex items-center justify-center cursor-pointer transition-all duration-300 hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 {avatarExpanded ? 'w-16 h-16' : 'w-12 h-12'}"
+          onclick={handleAvatarClick}
+          onmouseenter={handleAvatarEnter}
+          onmouseleave={handleAvatarLeave}
+          aria-label={`View ${seller.username || 'seller'}'s profile`}
+          type="button"
+        >
+          {#if seller.avatar_url}
+            <img 
+              src={seller.avatar_url} 
+              alt={seller.username || 'Seller'}
+              class="rounded-full object-cover transition-all duration-300 {avatarExpanded ? 'w-14 h-14' : 'w-10 h-10'}"
+            />
+          {:else}
+            <div class="rounded-full bg-gray-200 flex items-center justify-center transition-all duration-300 {avatarExpanded ? 'w-14 h-14' : 'w-10 h-10'}">
+              <svg class="text-gray-500 transition-all duration-300 {avatarExpanded ? 'size-7' : 'size-5'}" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+            </div>
+          {/if}
+          
+          <!-- Hover tooltip -->
+          {#if avatarExpanded}
+            <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 translate-y-full bg-black text-white text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap opacity-90">
+              {seller.username || 'View profile'}
+            </div>
+          {/if}
+        </button>
+      {/if}
+      
+      <!-- Like Button (Top Right) -->
+      {#if onLike}
+        <button 
+          class="btn-icon btn-ghost absolute top-4 right-4 bg-white/95 backdrop-blur-sm shadow-lg rounded-full p-3 {isLiked ? 'text-red-500' : 'text-gray-600'} hover:scale-105 transition-transform"
+          onclick={onLike}
+          aria-label={isLiked ? `Remove from favorites` : `Add to favorites`}
+          type="button"
+        >
+          <svg class="size-5" viewBox="0 0 24 24" fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.5">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </button>
+      {/if}
+
+      <!-- Image Counter -->
+      {#if images.length > 1}
+        <div class="absolute bottom-3 right-3 bg-black/80 backdrop-blur-sm text-white px-2 py-1 rounded-full text-sm font-medium pointer-events-none">
+          {selectedImage + 1} / {images.length}
+        </div>
+      {/if}
+      
     {:else}
-      <div class="no-image">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+      <div class="flex flex-col items-center justify-center h-full text-gray-400 bg-gray-50">
+        <svg class="size-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
           <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
           <circle cx="8.5" cy="8.5" r="1.5"/>
           <polyline points="21,15 16,10 5,21"/>
         </svg>
-        <p>No images available</p>
+        <p class="mt-2 text-sm font-medium">No image available</p>
       </div>
     {/if}
     
     <!-- Sold Badge -->
     {#if isSold}
-      <div class="sold-badge">SOLD</div>
+      <div class="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wide">
+        SOLD
+      </div>
     {/if}
+
   </div>
 
-  <!-- Image Navigation Dots (Mobile) -->
+  <!-- Navigation Dots -->
   {#if images.length > 1}
-    <div class="nav-dots" role="tablist" aria-label="Product images">
+    <div class="flex justify-center gap-2 pt-4 pb-2" role="tablist" aria-label="Image navigation">
       {#each images as _, index}
         <button 
-          class="nav-dot {selectedImage === index ? 'active' : ''}"
+          class="btn-icon w-11 h-11 rounded-full flex items-center justify-center {selectedImage === index ? 'bg-blue-100' : 'hover:bg-gray-100'}"
           onclick={() => selectImage(index)}
-          onkeydown={(e) => handleKeyNavigation(e, index)}
-          role="tab"
-          aria-selected={selectedImage === index}
-          aria-label="View image {index + 1}"
-          type="button"
-        />
-      {/each}
-    </div>
-  {/if}
-
-  <!-- Thumbnail Strip (Desktop) -->
-  {#if images.length > 1}
-    <div class="thumbnails" role="tablist" aria-label="Product image thumbnails">
-      {#each images as image, index}
-        <button 
-          class="thumbnail {selectedImage === index ? 'active' : ''}"
-          onclick={() => selectImage(index)}
-          onkeydown={(e) => handleKeyNavigation(e, index)}
           role="tab"
           aria-selected={selectedImage === index}
           aria-label="View image {index + 1}"
           type="button"
         >
-          <img src={image} alt="Thumbnail {index + 1}" loading="lazy" />
+          <div class="w-2 h-2 rounded-full {selectedImage === index ? 'bg-blue-600 scale-125' : 'bg-gray-300'} transition-all"></div>
         </button>
       {/each}
     </div>
   {/if}
 </div>
-
-<style>
-  .gallery {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-    width: 100%;
-  }
-
-  .main-image-container {
-    position: relative;
-    aspect-ratio: 4/5;
-    background: var(--surface-base);
-    border-radius: var(--radius-2xl);
-    border: 1px solid var(--border-subtle);
-    overflow: hidden;
-    touch-action: pan-y pinch-zoom;
-  }
-
-  .main-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    object-position: center;
-    background: var(--surface-subtle);
-  }
-
-  .no-image {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: var(--space-3);
-    color: var(--text-tertiary);
-    background: var(--surface-subtle);
-  }
-
-  .no-image p {
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    margin: 0;
-  }
-
-  .sold-badge {
-    position: absolute;
-    top: var(--space-4);
-    left: var(--space-4);
-    background: var(--status-error-solid);
-    color: white;
-    padding: var(--space-2) var(--space-4);
-    border-radius: var(--radius-full);
-    font-size: var(--text-sm);
-    font-weight: var(--font-bold);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  /* Navigation Dots - Mobile First */
-  .nav-dots {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-2);
-    padding: var(--space-2);
-  }
-
-  .nav-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: var(--radius-full);
-    border: none;
-    background: var(--border-subtle);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    padding: 0;
-  }
-
-  .nav-dot.active {
-    background: var(--text-primary);
-    transform: scale(1.25);
-  }
-
-  .nav-dot:hover:not(.active) {
-    background: var(--text-secondary);
-  }
-
-  .nav-dot:focus-visible {
-    outline: 2px solid var(--state-focus);
-    outline-offset: 2px;
-  }
-
-  /* Thumbnails - Desktop */
-  .thumbnails {
-    display: none;
-    gap: var(--space-3);
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    padding: var(--space-1) 0;
-  }
-
-  .thumbnails::-webkit-scrollbar {
-    display: none;
-  }
-
-  .thumbnail {
-    width: 80px;
-    height: 80px;
-    border: 2px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    background: none;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: all 0.2s ease;
-    padding: 0;
-  }
-
-  .thumbnail:hover {
-    border-color: var(--border-emphasis);
-    transform: scale(1.05);
-  }
-
-  .thumbnail.active {
-    border-color: var(--text-primary);
-    box-shadow: 0 0 0 1px var(--text-primary);
-  }
-
-  .thumbnail:focus-visible {
-    outline: 2px solid var(--state-focus);
-    outline-offset: 2px;
-  }
-
-  .thumbnail img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  /* Responsive Design */
-  @media (min-width: 768px) {
-    .gallery {
-      gap: var(--space-6);
-    }
-
-    .main-image-container {
-      aspect-ratio: 3/4;
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    .nav-dots {
-      display: none;
-    }
-
-    .thumbnails {
-      display: flex;
-      justify-content: center;
-    }
-  }
-
-  /* Touch device optimizations */
-  @media (pointer: coarse) {
-    .nav-dot {
-      width: 12px;
-      height: 12px;
-    }
-    
-    .thumbnail {
-      width: 90px;
-      height: 90px;
-    }
-  }
-
-  /* High contrast mode */
-  @media (prefers-contrast: high) {
-    .nav-dot,
-    .thumbnail {
-      border: 2px solid ButtonText;
-    }
-  }
-
-  /* Reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    .nav-dot,
-    .thumbnail {
-      transition: none;
-    }
-  }
-</style>
