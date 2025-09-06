@@ -23,9 +23,11 @@
 		"vite": "^7.0.4"
 	},
 	"dependencies": {
+		"@repo/core-auth": "workspace:*",
+		"@repo/core-cookies": "workspace:*",
 		"@repo/database": "workspace:*",
 		"@repo/ui": "workspace:*",
-		"@supabase/ssr": "^0.5.2",
-		"@supabase/supabase-js": "^2.47.10"
+		"@supabase/ssr": "^0.7.0",
+		"@supabase/supabase-js": "^2.56.0"
 	}
 }

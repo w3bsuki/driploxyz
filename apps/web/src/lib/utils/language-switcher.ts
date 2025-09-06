@@ -13,21 +13,9 @@ export async function switchLanguage(lang: string) {
   try {
     const cookieManager = ProductionCookieManager.getInstance();
 
-    // If functional consent is missing, remember intent and prompt for consent
-    if (!cookieManager.hasConsent('functional')) {
-      sessionStorage.setItem('pendingLanguageSwitch', lang);
-      window.dispatchEvent(new CustomEvent('requestCookieConsent', {
-        detail: {
-          reason: 'language_switch',
-          targetLanguage: lang,
-          message: `To switch to ${languages.find(l => l.code === lang)?.name || lang}, please enable functional cookies.`
-        }
-      }));
-      // Proceed with a soft switch using explicit query so SSR renders desired locale
-      // Cookie will be persisted once consent is granted later
-    } else {
-      // Persist preference when allowed
-      cookieManager.setCookie('locale', lang, {
+    // Always persist preference if consent exists
+    if (cookieManager.hasConsent('functional')) {
+      cookieManager.setCookie('PARAGLIDE_LOCALE', lang, {
         maxAge: 365 * 24 * 60 * 60,
         sameSite: 'lax',
         secure: location.protocol === 'https:'
@@ -38,7 +26,7 @@ export async function switchLanguage(lang: string) {
     sessionStorage.setItem('selectedLocale', lang);
 
     // Update runtime locale immediately
-    i18n.setLocale();
+    i18n.setLocale(lang);
     document.documentElement.lang = lang;
 
     // Normalize path (strip any existing locale prefix)
@@ -82,7 +70,6 @@ export function initializeLanguage(serverLanguage?: string) {
   
   // Use server language if provided (SSR first)
   if (serverLanguage && i18n.locales.includes(serverLanguage as i18n.Locale)) {
-    i18n.setLocale();
     document.documentElement.lang = serverLanguage;
     return;
   }
@@ -93,7 +80,7 @@ export function initializeLanguage(serverLanguage?: string) {
     const cookies = document.cookie.split(';');
     for (const cookie of cookies) {
       const [name, value] = cookie.trim().split('=');
-      if (name === 'locale') {
+      if (name === 'PARAGLIDE_LOCALE') {
         storedLang = decodeURIComponent(value || '');
         break;
       }
@@ -102,7 +89,6 @@ export function initializeLanguage(serverLanguage?: string) {
     // Cookie reading failed
   }
   if (storedLang && i18n.locales.includes(storedLang as i18n.Locale)) {
-    i18n.setLocale();
     document.documentElement.lang = storedLang;
   } else {
     // Last resort: browser language detection
@@ -113,7 +99,6 @@ export function initializeLanguage(serverLanguage?: string) {
     }
     
     const finalLang = i18n.locales.includes(browserLang as i18n.Locale) ? browserLang : 'en';
-    i18n.setLocale();
     document.documentElement.lang = finalLang;
   }
 }

@@ -70,7 +70,8 @@
       "WebFetch(domain:next.melt-ui.com)",
       "mcp__playwright__browser_fill_form",
       "WebFetch(domain:inlang.com)",
-      "Bash(git tag:*)"
+      "Bash(git tag:*)",
+      "Bash(sed:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

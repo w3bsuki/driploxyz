@@ -1,7 +1,7 @@
 import { dev } from '$app/environment';
 import type { RequestEvent } from '@sveltejs/kit';
-import * as i18n from '@repo/i18n';
-import { checkServerConsent, COOKIES } from '$lib/cookies/production-cookie-system';
+import { detectLocale, applyLocale, locales, LOCALE_ALIASES } from '@repo/i18n';
+import { checkServerConsent, COOKIES } from '@repo/core-cookies';
 
 // Debug flag for controlled logging
 // Debug flag available for future i18n debugging - currently disabled to reduce console spam
@@ -11,8 +11,8 @@ import { checkServerConsent, COOKIES } from '$lib/cookies/production-cookie-syst
  * Handles locale detection from domain, URL, cookies, and headers
  */
 export async function setupI18n(event: RequestEvent): Promise<void> {
-  // Clean up legacy cookies INCLUDING removed locales
-  ['driplo_language', 'language', 'lang', 'ru', 'ua'].forEach(old => {
+  // Clean up legacy cookies INCLUDING removed locales  
+  ['driplo_language', 'language', 'lang', 'locale', 'ru', 'ua'].forEach(old => {
     if (event.cookies.get(old)) {
       event.cookies.delete(old, { path: '/' });
     }
@@ -20,59 +20,20 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   
   // Clean up invalid locale values from current cookie
   const cookieLocale = event.cookies.get(COOKIES.LOCALE);
-  if (cookieLocale && !i18n.locales.includes(cookieLocale as i18n.Locale)) {
+  if (cookieLocale && !(locales as readonly string[]).includes(cookieLocale)) {
     event.cookies.delete(COOKIES.LOCALE, { path: '/' });
   }
   
-  // HIGHEST PRIORITY: Detect language from URL path
-  const pathname = event.url.pathname;
-  let locale = 'bg'; // Default to Bulgarian
-  let localeExplicitlySet = false;
-  
-  // Check if path starts with a locale (e.g., /uk/, /bg/)
-  const pathMatch = pathname.match(/^\/(uk|bg)(\/|$)/);
-  if (pathMatch) {
-    const pathLocale = pathMatch[1];
-    // Map /uk to 'en' locale internally
-    const mappedLocale = pathLocale === 'uk' ? 'en' : pathLocale;
-    if (mappedLocale && i18n.locales.includes(mappedLocale as i18n.Locale)) {
-      locale = mappedLocale;
-      localeExplicitlySet = true;
-    }
-  }
-  
-  // SECOND PRIORITY: Check URL parameter (only if not explicitly set by path)
-  if (!localeExplicitlySet) {
-    const urlLocale = event.url.searchParams.get('locale');
-    if (urlLocale && i18n.locales.includes(urlLocale as i18n.Locale)) {
-      locale = urlLocale;
-      localeExplicitlySet = true;
-    }
-  }
-  
-  // THIRD PRIORITY: Fallback to cookie if no explicit locale preference
-  if (!localeExplicitlySet) {
-    const cookieLocale = event.cookies.get(COOKIES.LOCALE) || event.cookies.get('locale');
-    if (cookieLocale && i18n.locales.includes(cookieLocale as i18n.Locale)) {
-      locale = cookieLocale;
-      localeExplicitlySet = true;
-    }
-  }
-  
-  // Check functional consent status
   const hasFunctionalConsent = checkServerConsent(event.cookies, 'functional');
   
-  // FOURTH PRIORITY: Detect from headers if no explicit preference found
-  if (!localeExplicitlySet) {
-    const acceptLang = event.request.headers.get('accept-language');
-    if (acceptLang) {
-      const browserLang = acceptLang.split(',')[0]?.split('-')[0]?.toLowerCase();
-      if (browserLang && i18n.locales.includes(browserLang as i18n.Locale)) {
-        locale = browserLang;
-      }
-    }
-    // If no valid header language found, keep default 'bg'
-  }
+  const detected = detectLocale({
+    path: event.url.pathname,
+    query: event.url.searchParams,
+    cookie: event.cookies.get(COOKIES.LOCALE) ?? null,
+    header: event.request.headers.get('accept-language'),
+    defaultLocale: 'bg'
+  });
+  const locale = detected;
   
   
   // Update cookie if locale was set via URL parameter and consent exists
@@ -95,31 +56,22 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
     });
   }
   
-  // Apply locale with error handling
-  try {
-    if (locale && i18n.locales.includes(locale as i18n.Locale)) {
-      i18n.setLocale();
-    } else {
-      i18n.setLocale();
-    }
-  } catch (error) {
-    console.error(`❌ Failed to set language tag '${locale}':`, error);
-    // Fallback to Bulgarian if language setting fails
-    try {
-      i18n.setLocale();
-    } catch (fallbackError) {
-      console.error(`❌ Critical: Failed to set fallback language:`, fallbackError);
-      throw new Error(`Language system failure: ${fallbackError}`);
-    }
-  }
-  
-  (event.locals as any).locale = i18n.getLocale();
+  (event.locals as any).locale = locale;
 }
 
 /**
  * Transform page chunk to add language attribute to HTML tag
  */
 export function transformPageChunk(event: RequestEvent): (params: { html: string }) => string {
-  return ({ html }) => 
-    html.replace('<html', `<html lang="${(event.locals as any).locale}"`);
+  return ({ html }) => {
+    const locale = (event.locals as any).locale || 'bg';
+    const nonce = (event.locals as any).cspNonce;
+    let result = html.replace('<html', `<html lang="${locale}"`);
+    if (!nonce) return result;
+
+    // Add nonce to all <script> tags that don't already have one
+    result = result.replace(/<script(?![^>]*\bnonce=)/g, `<script nonce="${nonce}"`);
+
+    return result;
+  };
 }

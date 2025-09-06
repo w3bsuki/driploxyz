@@ -130,6 +130,7 @@
       specific_category_name: resolution.l3?.name || null,
       sellerId: p.seller_id,
       sellerName: p.profiles?.username || 'Unknown',
+      sellerAvatar: p.profiles?.avatar_url || '',
       sellerRating: 0, // Default rating
       createdAt: p.created_at,
       location: p.location || p.profiles?.location || ''

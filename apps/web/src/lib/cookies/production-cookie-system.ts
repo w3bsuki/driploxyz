@@ -18,7 +18,7 @@ export const COOKIES = {
   CONSENT_VERSION: 'consent_v',
   
   // Functional
-  LOCALE: 'locale',
+  LOCALE: 'PARAGLIDE_LOCALE',
   COUNTRY: 'country',
   THEME: 'theme',
   CURRENCY: 'currency',
@@ -351,26 +351,7 @@ export class ProductionCookieManager {
       console.log('[Cookie Manager] Facebook Pixel blocked - no consent');
     };
     
-    // Block script injection - store reference to this
-    const manager = this;
-    const originalAppendChild = Element.prototype.appendChild;
-    Element.prototype.appendChild = function<T extends Node>(node: T): T {
-      if (node instanceof HTMLScriptElement) {
-        const src = node.src || '';
-        
-        // Check if script should be blocked
-        if (src.includes('googletagmanager.com') && !manager.hasConsent('analytics')) {
-          console.log('[Cookie Manager] Blocked GTM script');
-          return node;
-        }
-        if (src.includes('facebook.com') && !manager.hasConsent('marketing')) {
-          console.log('[Cookie Manager] Blocked Facebook script');
-          return node;
-        }
-      }
-      
-      return originalAppendChild.call(this, node) as T;
-    };
+    // Removed DOM monkey-patching per security plan; use consent-aware loaders instead
   }
   
   /**
@@ -389,8 +370,7 @@ export class ProductionCookieManager {
       });
     }
     
-    // Load queued analytics scripts
-    this.loadQueuedScripts('analytics');
+    // Consent-aware loaders will handle script injection
   }
   
   /**
@@ -422,8 +402,7 @@ export class ProductionCookieManager {
       });
     }
     
-    // Load queued marketing scripts
-    this.loadQueuedScripts('marketing');
+    // Consent-aware loaders will handle script injection
   }
   
   /**
@@ -444,39 +423,38 @@ export class ProductionCookieManager {
   /**
    * Queue script for loading after consent
    */
-  queueScript(category: string, loader: () => void): void {
-    this.scriptQueue.set(category, loader);
-    
-    // Load immediately if already consented
-    if (category === 'analytics' && this.hasConsent('analytics')) {
-      loader();
-    } else if (category === 'marketing' && this.hasConsent('marketing')) {
-      loader();
-    }
-  }
+  queueScript(category: string, loader: () => void): void {}
   
   /**
    * Process queued scripts
    */
-  private processScriptQueue(): void {
-    for (const [category, loader] of this.scriptQueue) {
-      if ((category === 'analytics' && this.hasConsent('analytics')) ||
-          (category === 'marketing' && this.hasConsent('marketing'))) {
-        loader();
-        this.scriptQueue.delete(category);
-      }
-    }
-  }
+  private processScriptQueue(): void {}
   
   /**
    * Load queued scripts for category
    */
-  private loadQueuedScripts(category: string): void {
-    const loader = this.scriptQueue.get(category);
-    if (loader) {
-      loader();
-      this.scriptQueue.delete(category);
-    }
+  private loadQueuedScripts(category: string): void {}
+
+  /**
+   * Consent-aware script loaders (with CSP nonce support)
+   */
+  loadAnalyticsWithConsent(nonce?: string): void {
+    if (!browser || !this.hasConsent('analytics')) return;
+    const script = document.createElement('script');
+    if (nonce) script.setAttribute('nonce', nonce);
+    script.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
+    script.async = true;
+    document.head.appendChild(script);
+  }
+
+  loadMarketingWithConsent(nonce?: string): void {
+    if (!browser || !this.hasConsent('marketing')) return;
+    const script = document.createElement('script');
+    if (nonce) script.setAttribute('nonce', nonce);
+    // Example: load marketing pixel
+    script.src = 'https://connect.facebook.net/en_US/fbevents.js';
+    script.async = true;
+    document.head.appendChild(script);
   }
   
   /**
@@ -569,8 +547,8 @@ export class ProductionLocaleManager {
       secure: !dev
     });
     
-    // Update runtime (no-op in zero-bundle setup)
-    i18n.setLocale();
+    // Update runtime locale
+    i18n.setLocale(locale as i18n.Locale);
     
     if (browser) {
       document.documentElement.lang = locale;
@@ -626,7 +604,7 @@ export class ProductionLocaleManager {
     const stored = this.getLocale();
     
     if (stored !== 'en') {
-      i18n.setLocale();
+      i18n.setLocale(stored as i18n.Locale);
       if (browser) {
         document.documentElement.lang = stored;
       }
@@ -634,7 +612,7 @@ export class ProductionLocaleManager {
     }
     
     const detected = this.detectLocale();
-    i18n.setLocale();
+    i18n.setLocale(detected as i18n.Locale);
     
     if (browser) {
       document.documentElement.lang = detected;

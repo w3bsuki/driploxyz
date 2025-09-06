@@ -228,10 +228,11 @@
 
         <!-- Country Selection -->
         <div class="mb-6">
-          <label class="block text-sm font-medium text-[color:var(--text-primary)] mb-2">
+          <label for="country-select" class="block text-sm font-medium text-[color:var(--text-primary)] mb-2">
             Ship to
           </label>
           <select
+            id="country-select"
             bind:value={selectedCountry}
             class="w-full h-[--input-height] px-[--input-padding] border border-[color:var(--input-border)] rounded-[--input-radius] bg-[color:var(--input-bg)] text-[color:var(--text-primary)] focus:border-[color:var(--input-focus-border)] focus:outline-none focus:ring-2 focus:ring-[color:var(--input-focus-ring)]"
           >

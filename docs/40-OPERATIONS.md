@@ -13,6 +13,7 @@ How we run the app across environments with safety and confidence.
 - Required envs (per app):
   - Supabase: `PUBLIC_SUPABASE_URL`, `PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (server‑only)
   - Stripe: `PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
+  - Security: `CSRF_SECRET` (required for production CSRF protection)
   - Sentry: `PUBLIC_SENTRY_DSN`, `SENTRY_DSN`, `SENTRY_ORG`, `SENTRY_PROJECT`, `SENTRY_AUTH_TOKEN`
   - Email: `RESEND_API_KEY`
   - Site: `PUBLIC_BASE_URL`

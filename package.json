@@ -28,5 +28,9 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@repo/core-auth": "workspace:^",
+    "@repo/core-cookies": "workspace:^"
+  }
 }

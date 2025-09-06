@@ -1,5 +1,6 @@
 // Core UI components
 export { default as Badge } from './Badge.svelte';
+export type { SvelteComponent as _BadgeComponent } from 'svelte';
 export { default as Banner } from './Banner.svelte';
 export { default as Button } from './Button.svelte';
 export { default as Input } from './Input.svelte';
@@ -30,9 +31,8 @@ export { default as SizeSelector } from './SizeSelector.svelte';
 export { default as ConditionReport } from './ConditionReport.svelte';
 export { default as SellerCard } from './SellerCard.svelte';
 
-// Main Product Page Component (replaces old modular components)
+// Main Product Page Component (modular and mobile-optimized)
 export { default as ProductPage } from './ProductPage.svelte';
-export { default as ProductPageNew } from './ProductPageNew.svelte';
 export { default as ProductBreadcrumb } from './ProductBreadcrumb.svelte';
 
 // Product page component modules (for demo pages)

@@ -1,4 +1,4 @@
-import { createServerClient } from '@supabase/ssr';
+import { createAuthHelpers } from '@repo/core-auth';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
@@ -49,43 +49,14 @@ const ipCheckHandler: Handle = async ({ event, resolve }) => {
 
 // Supabase Auth Handler
 const authHandler: Handle = async ({ event, resolve }) => {
-	// Create Supabase client
-	event.locals.supabase = createServerClient<Database>(
-		PUBLIC_SUPABASE_URL,
-		PUBLIC_SUPABASE_ANON_KEY,
-		{
-			cookies: {
-				getAll: () => event.cookies.getAll(),
-				setAll: (cookiesToSet) => {
-					cookiesToSet.forEach(({ name, value, options }) => {
-						event.cookies.set(name, value, { ...options, path: '/' });
-					});
-				}
-			}
-		}
-	);
-
-	// Safe session getter with JWT validation
-	event.locals.safeGetSession = async () => {
-		const {
-			data: { session }
-		} = await event.locals.supabase.auth.getSession();
-
-		if (!session) {
-			return { session: null, user: null };
-		}
-
-		const {
-			data: { user },
-			error: authError
-		} = await event.locals.supabase.auth.getUser();
-
-		if (authError) {
-			return { session: null, user: null };
-		}
-
-		return { session, user };
-	};
+	// Create Supabase client via shared helper
+	const { createSupabaseServerClient, safeGetSession } = createAuthHelpers<Database>({
+		url: PUBLIC_SUPABASE_URL,
+		anonKey: PUBLIC_SUPABASE_ANON_KEY,
+		cookieDefaults: { sameSite: 'lax' }
+	});
+	event.locals.supabase = createSupabaseServerClient(event.cookies, event.fetch);
+	event.locals.safeGetSession = () => safeGetSession(event);
 
 	// Get session for this request
 	const { session, user } = await event.locals.safeGetSession();
@@ -167,13 +138,14 @@ const sessionTimeoutHandler: Handle = async ({ event, resolve }) => {
 			throw redirect(303, '/login?expired=true');
 		}
 
-		// Update last activity
+
+		// Update last activity with stricter cookie policy
 		event.cookies.set('admin_last_activity', now.toString(), {
 			path: '/',
 			httpOnly: true,
-			secure: true,
+			secure: process.env.NODE_ENV !== 'development',
 			sameSite: 'strict',
-			maxAge: 60 * 60 * 24 // 1 day
+			maxAge: 60 * 60 * 24
 		});
 	}
 

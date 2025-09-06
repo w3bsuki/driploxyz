@@ -1,12 +1,13 @@
 import { redirect, error } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { RequestHandler } from './$types';
+import { COOKIES } from '$lib/cookies/production-cookie-system';
 
 /**
  * Secure logout handler - POST-only with origin validation
- * Prevents CSRF attacks by requiring explicit POST requests
+ * Cleans auth cookies but preserves user preferences (locale, country, theme)
  */
-export const POST: RequestHandler = async ({ request, url, locals: { supabase } }) => {
+export const POST: RequestHandler = async ({ request, url, cookies, locals: { supabase } }) => {
   // Origin check for CSRF protection
   const origin = request.headers.get('origin');
   const host = request.headers.get('host');
@@ -26,10 +27,48 @@ export const POST: RequestHandler = async ({ request, url, locals: { supabase } 
     
   } catch (err) {
     // Unexpected logout error handled
-    // Continue with redirect even if there's an error - clear client state
+    // Continue with cleanup even if there's an error
     if (dev) {
       console.warn('Unexpected logout error:', err);
     }
+  }
+  
+  // Explicit cleanup of auth-related cookies (in case Supabase missed any)
+  const authCookiesToClear = [
+    'sb-auth-token',
+    'sb-refresh-token', 
+    'sb-provider-token',
+    'sb-access-token',
+    COOKIES.SESSION_ID,
+    COOKIES.CSRF
+  ];
+  
+  authCookiesToClear.forEach(cookieName => {
+    cookies.set(cookieName, '', { 
+      path: '/', 
+      maxAge: 0,
+      httpOnly: true,
+      secure: !dev,
+      sameSite: 'strict'
+    });
+  });
+  
+  // Get all cookies and clean any that start with 'sb-' (Supabase)
+  const allCookies = cookies.getAll();
+  allCookies.forEach(cookie => {
+    if (cookie.name.startsWith('sb-')) {
+      cookies.set(cookie.name, '', { 
+        path: '/', 
+        maxAge: 0,
+        httpOnly: true,
+        secure: !dev,
+        sameSite: 'strict'
+      });
+    }
+  });
+  
+  if (dev) {
+    console.log('Logout completed - auth cookies cleared, user preferences preserved');
   }
   
   // Always redirect to home after logout

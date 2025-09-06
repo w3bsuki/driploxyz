@@ -42,13 +42,15 @@
   product={data.product}
   reviews={data.reviews || []}
   ratingSummary={data.ratingSummary}
-  similarProducts={data.sellerProducts || []}
+  similarProducts={data.similarProducts || []}
+  sellerProducts={data.sellerProducts || []}
   isOwner={data.user?.id === data.product.seller_id}
   isAuthenticated={!!data.user}
   isFavorited={data.isFavorited || false}
   onFavorite={handleFavorite}
   onMessage={handleMessage}
   onBuyNow={handleBuyNow}
+  onMakeOffer={() => console.log('Make offer clicked')}
   imageInfoVariant={imageInfoVariant}
   showQuickFacts={showQuickFacts}
 />

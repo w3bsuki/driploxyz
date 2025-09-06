@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { ProductPageNew, SEOMetaTags } from '@repo/ui';
+  import { ProductPage, SEOMetaTags } from '@repo/ui';
   import { buildProductUrl } from '$lib/utils/seo-urls.js';
   import type { PageData } from './$types';
 
@@ -98,7 +98,7 @@
 />
 
 <!-- Product Page Component -->
-<ProductPageNew 
+<ProductPage 
   product={data.product}
   reviews={data.reviews || []}
   ratingSummary={data.ratingSummary}
@@ -110,6 +110,7 @@
   onFavorite={handleFavorite}
   onMessage={handleMessage}
   onBuyNow={handleBuyNow}
+  onMakeOffer={() => console.log('Make offer clicked')}
   imageInfoVariant={imageInfoVariant}
   showQuickFacts={showQuickFacts}
 />

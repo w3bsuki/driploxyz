@@ -63,3 +63,12 @@ export function isSentryAvailable(): boolean {
   const enableInDev = process.env.SENTRY_ENABLE_DEV === 'true';
   return !!SENTRY_DSN && (enableInDev ? true : !dev);
 }
+
+/**
+ * Generate a CSP nonce for inline scripts/styles per request
+ */
+export function createCspNonce(): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  // Base64-url safe
+  return btoa(String.fromCharCode(...bytes)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}

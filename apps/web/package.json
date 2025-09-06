@@ -18,6 +18,8 @@
 	},
 	"dependencies": {
 		"@lucide/svelte": "^0.542.0",
+		"@repo/core-auth": "workspace:*",
+		"@repo/core-cookies": "workspace:*",
 		"@repo/database": "workspace:*",
 		"@repo/i18n": "workspace:*",
 		"@repo/ui": "workspace:*",

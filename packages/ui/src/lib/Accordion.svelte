@@ -9,7 +9,8 @@
   interface Props {
     items: Array<{
       title: string;
-      content: string;
+      content?: string;
+      contentSnippet?: () => any;
       id?: string;
     }>;
     allowMultiple?: boolean;
@@ -28,18 +29,18 @@
   const accordionItems = $derived(items.map((item, index) => ({
     id: item.id || `item-${index}`,
     title: item.title,
-    content: item.content
+    content: item.content,
+    contentSnippet: item.contentSnippet
   })));
 
   function getVariantClasses(variant: string) {
-    const baseClasses = 'w-full';
     switch (variant) {
       case 'outline':
-        return `${baseClasses} border border-gray-200 rounded-lg`;
+        return 'border-2 border-[color:var(--border-emphasis)] bg-transparent';
       case 'ghost':
-        return `${baseClasses}`;
+        return 'border-0 bg-transparent shadow-none';
       default:
-        return `${baseClasses} border border-gray-200 rounded-lg bg-white`;
+        return '';
     }
   }
 </script>
