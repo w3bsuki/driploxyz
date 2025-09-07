@@ -58,7 +58,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 			// Check if product exists and if it's sold
 			const { data: product, error: productError } = await locals.supabase
 				.from('products')
-				.select('id, is_sold')
+				.select('id, is_sold, is_active')
 				.eq('id', productId)
 				.single();
 			
@@ -67,11 +67,11 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 				return json({ error: 'Product not found' }, { status: 404 });
 			}
 			
-			// Prevent adding favorite to sold products
-			if (product.is_sold) {
+			// Prevent adding favorite to sold or inactive products (align with RLS)
+			if (product.is_sold || product.is_active === false) {
 				return json({ 
-					error: 'Cannot favorite sold items',
-					message: 'This item has been sold and cannot be favorited'
+					error: 'Cannot favorite this item',
+					message: product.is_sold ? 'This item has been sold and cannot be favorited' : 'This item is inactive and cannot be favorited'
 				}, { status: 409 });
 			}
 			
@@ -92,6 +92,9 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					.eq('product_id', productId);
 				
 				if (deleteError) {
+					if ((deleteError as any).code === '42501') {
+						return json({ error: 'Not allowed', message: 'You are not allowed to modify this favorite' }, { status: 403 });
+					}
 					console.error('Failed to remove favorite:', deleteError);
 					return json({ error: 'Failed to remove favorite', details: deleteError.message }, { status: 500 });
 				}
@@ -119,9 +122,16 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 					});
 				
 				// If duplicate key error (23505), it's already favorited - ignore it
-				if (insertError && insertError.code !== '23505') {
-					console.error('Failed to add favorite:', insertError);
-					return json({ error: 'Failed to add favorite', details: insertError.message }, { status: 500 });
+				if (insertError) {
+					if (insertError.code === '23505') {
+						// no-op, already favorited
+					} else if (insertError.code === '42501') {
+						// RLS not allowed
+						return json({ error: 'Not allowed', message: 'You are not allowed to favorite this item' }, { status: 403 });
+					} else {
+						console.error('Failed to add favorite:', insertError);
+						return json({ error: 'Failed to add favorite', details: insertError.message }, { status: 500 });
+					}
 				}
 				
 				// Get updated count

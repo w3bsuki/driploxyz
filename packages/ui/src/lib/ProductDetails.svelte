@@ -1,4 +1,6 @@
 <script lang="ts">
+  import * as i18n from '@repo/i18n';
+  const m: any = i18n;
   import { Accordion, type AccordionItem } from './primitives/accordion';
   
   interface ShippingEstimate {
@@ -34,12 +36,12 @@
   
   const detailsContent = $derived(() => {
     const details = [];
-    if (brand) details.push(`Brand: ${brand}`);
-    if (condition) details.push(`Condition: ${condition}`);
-    if (size) details.push(`Size: ${size}`);
-    if (color) details.push(`Color: ${color}`);
-    if (material) details.push(`Material: ${material}`);
-    if (location) details.push(`Ships from: ${location}`);
+    if (brand) details.push(`${m.product_brand()}: ${brand}`);
+    if (condition) details.push(`${m.product_condition()}: ${condition}`);
+    if (size) details.push(`${m.product_size()}: ${size}`);
+    if (color) details.push(`${m.pdp_color()}: ${color}`);
+    if (material) details.push(`${m.pdp_material()}: ${material}`);
+    if (location) details.push(m.pdp_shippingFrom({ location }));
     return details.join('\n');
   });
 
@@ -69,7 +71,7 @@
     if (description) {
       items.push({
         id: 'description',
-        title: 'Description',
+        title: m.product_description(),
         content: description
       });
     }
@@ -77,16 +79,16 @@
     if (hasDetails) {
       items.push({
         id: 'details',
-        title: 'Details',
-        content: detailsContent
+        title: m.pdp_specifications(),
+        content: (detailsContent as unknown as string)
       });
     }
     
     if (shippingEstimate?.cost && shippingEstimate?.currency) {
       items.push({
         id: 'shipping',
-        title: 'Shipping & Returns',
-        content: shippingContent
+        title: m.product_shippingReturns(),
+        content: (shippingContent as unknown as string)
       });
     }
     

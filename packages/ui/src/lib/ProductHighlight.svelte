@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Product } from '../types';
+  import FavoriteButton from './FavoriteButton.svelte';
   
   interface Props {
     product: Product;
@@ -31,13 +32,13 @@
   
   // Derived states
   const imageUrl = $derived(
-    product.images?.[0]?.image_url || 
-    product.images?.[0] || 
+    (product.product_images && product.product_images[0]?.image_url) ||
+    product.images?.[0] ||
     '/placeholder-product.svg'
   );
   
   const sellerInitial = $derived(
-    product.seller_name?.charAt(0).toUpperCase() || 'S'
+    ((product as any).sellerName || (product as any).seller_name || 'S').charAt(0).toUpperCase()
   );
   
   const formattedPrice = $derived(
@@ -90,34 +91,33 @@
           />
         </div>
         
-        <!-- PRO Badge -->
-        {#if product.is_promoted}
-          <div class="absolute top-2 left-2 text-xs font-medium px-2 py-0.5 rounded uppercase tracking-wide" style="background-color: oklch(0.15 0.015 270); color: oklch(1 0 0);">
-            PRO
+        <!-- Overlay row: subtle PRO badge and favorite (right) -->
+        <div class="absolute top-2 left-2 right-2 z-20 flex items-center justify-between">
+          <div class="flex items-center gap-1.5">
+            {#if product.is_promoted}
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide shadow-sm backdrop-blur-sm bg-white/85 text-gray-900 border border-gray-200">PRO</span>
+            {/if}
           </div>
-        {/if}
+          <div>
+            <FavoriteButton
+              {product}
+              favorited={isFavorite}
+              onFavorite={() => onToggleFavorite?.(product.id)}
+              absolute={false}
+              showCount={true}
+            />
+          </div>
+        </div>
       </div>
       
       <!-- Content - EXACT copy from ProductCard -->
       <div class="px-1 pt-1.5 pb-1.5 relative">
-        <!-- Favorite button positioned over content area -->
-        <div class="absolute top-1 right-1 z-10">
-          <button
-            onclick={(e: MouseEvent) => { e.stopPropagation(); onToggleFavorite?.(product.id); }}
-            class="w-7 h-7 rounded-full bg-white/90 border border-gray-200 shadow-sm flex items-center justify-center hover:bg-gray-50 pointer-events-auto"
-            aria-label={isFavorite ? 'Add to favorites' : 'Remove from favorites'}
-          >
-            <svg class="w-3 h-3 {isFavorite ? 'text-red-500' : 'text-gray-500'}" fill={isFavorite ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-            </svg>
-          </button>
-        </div>
         
         <!-- Main Category (always show) -->
         <div class="flex items-center justify-between gap-1.5 min-h-3.5 mb-0.5 pr-12">
           {#if product.main_category_name || product.category_name}
             <p class="text-xs font-medium text-gray-500 uppercase tracking-wider leading-none flex-1 truncate">
-              {categoryTranslation(product.main_category_name || product.category_name)}
+              {categoryTranslation(product.main_category_name || product.category_name || '')}
             </p>
           {/if}
         </div>
@@ -158,14 +158,14 @@
   <div id="product-{product.id}-info" class="sr-only">
     <p>Product {index + 1} of {totalCount}</p>
     <p>Price: {formattedPrice}</p>
-    {#if product.seller_name}
-      <p>Sold by {product.seller_name}</p>
+    {#if (product as any).sellerName || (product as any).seller_name}
+      <p>Sold by {(product as any).sellerName || (product as any).seller_name}</p>
     {/if}
     {#if product.condition}
       <p>Condition: {product.condition}</p>
     {/if}
-    {#if product.sizes?.length}
-      <p>Available sizes: {product.sizes.join(', ')}</p>
+    {#if Array.isArray((product as any).sizes) && (product as any).sizes.length}
+      <p>Available sizes: {(product as any).sizes.join(', ')}</p>
     {/if}
   </div>
 </article>

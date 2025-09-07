@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Product } from '../types';
-  import { browser } from '$app/environment';
-  import Tooltip from './primitives/tooltip/Tooltip.svelte';
+  import { Tooltip } from './primitives/tooltip';
 
   interface Props {
     product: Product;
@@ -55,7 +54,18 @@
     event.stopPropagation();
     event.preventDefault();
     
-    if (isLoading || !browser || product.is_sold) return;
+    if (isLoading || typeof window === 'undefined' || product.is_sold) return;
+
+    // If parent provided a handler, delegate to it to avoid duplicate requests
+    if (onFavorite) {
+      try {
+        isLoading = true;
+        await onFavorite();
+      } finally {
+        isLoading = false;
+      }
+      return;
+    }
     
     isLoading = true;
     
@@ -98,11 +108,11 @@
       <button 
         onclick={handleFavorite}
         disabled={isLoading || product.is_sold}
-        class="group flex items-center gap-1 p-1.5 bg-[color:var(--surface-base)]/90 hover:bg-[color:var(--surface-base)] rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] transition-all duration-[var(--duration-fast)] {(isLoading || product.is_sold) ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'}"
+        class="group flex items-center gap-1 p-1.5 bg-white/90 backdrop-blur-sm border border-gray-200 shadow-sm rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] transition-all duration-[var(--duration-fast)] {(isLoading || product.is_sold) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white hover:scale-105 active:scale-95'}"
         aria-label={product.is_sold ? 'Sold – likes frozen' : (currentFavorited ? removeFromFavoritesText : addToFavoritesText)}
       >
         <svg 
-          class="w-3.5 h-3.5 transition-all duration-[var(--duration-fast)] {product.is_sold ? 'text-[color:var(--text-disabled)]' : (currentFavorited ? 'text-[color:var(--status-error-solid)] fill-[color:var(--status-error-solid)] scale-110' : 'text-[color:var(--text-muted)] group-hover:text-[color:var(--status-error-solid)] group-hover:scale-110')}"
+          class="w-3.5 h-3.5 transition-all duration-[var(--duration-fast)] {product.is_sold ? 'text-[color:var(--text-disabled)]' : (currentFavorited ? 'text-[color:var(--status-error-solid)] fill-[color:var(--status-error-solid)] scale-110' : 'text-gray-600 group-hover:text-[color:var(--status-error-solid)] group-hover:scale-110')}"
           aria-hidden="true" 
           viewBox="0 0 24 24"
           stroke="currentColor"

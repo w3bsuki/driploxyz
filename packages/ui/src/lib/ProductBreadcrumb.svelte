@@ -1,4 +1,6 @@
 <script lang="ts">
+  import * as i18n from '@repo/i18n';
+  const m: any = i18n;
   interface Category {
     id: string
     name: string
@@ -25,7 +27,7 @@
         class="btn-icon btn-ghost p-2 -ml-2"
         onclick={onBack}
         type="button"
-        aria-label="Go back"
+        aria-label={m.pdp_goBack()}
       >
         <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
@@ -36,7 +38,7 @@
     <ol class="flex items-center gap-1 text-sm text-gray-600 min-w-0 flex-1">
       <li>
         <a href="/" class="hover:text-gray-900 font-medium transition-colors">
-          Home
+          {m.nav_home()}
         </a>
       </li>
 

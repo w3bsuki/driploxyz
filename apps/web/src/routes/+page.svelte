@@ -1,6 +1,7 @@
 <script lang="ts">
 	// Core components loaded immediately
 	import { SearchBar, HeroSearchDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView } from '@repo/ui';
+	import CategoryPill from '$lib/components/CategoryPill.svelte';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
@@ -415,7 +416,7 @@
 	}
 	
 	function handlePillKeyNav(e: KeyboardEvent, index: number) {
-		const pills = document.querySelectorAll('[role="navigation"] button');
+		const pills = document.querySelectorAll('#category-pills button');
 		const totalPills = mainCategories.length + 1;
 		
 		switch(e.key) {
@@ -577,95 +578,77 @@
 				
 				<!-- Category Pills -->
 				<nav 
+					id="category-pills"
 					aria-label={i18n.nav_browseCategories()}
-					class="flex items-center justify-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-hide px-2 sm:px-4"
+					class="flex items-center justify-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar px-2 sm:px-4"
 				>
 					<!-- All Categories -->
-					<button 
+					<CategoryPill 
+						variant="primary"
+						label={i18n.search_all()}
+						loading={loadingCategory === 'all'}
+						spinnerColor="white"
+						disabled={loadingCategory === 'all'}
+						ariaLabel={i18n.search_viewAll()}
+						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
 						onmouseenter={() => preloadCode('/search')}
 						ontouchstart={() => preloadCode('/search')}
 						onclick={() => navigateToAllSearch()}
 						onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 0)}
-						disabled={loadingCategory === 'all'}
-						aria-label={i18n.search_viewAll()}
-						aria-busy={loadingCategory === 'all'}
-						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
-						class="category-nav-pill shrink-0 px-2.5 sm:px-3 py-2 bg-black text-white rounded-lg text-sm font-medium hover:bg-gray-800 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors whitespace-nowrap"
-					>
-						{#if loadingCategory === 'all'}
-							<LoadingSpinner size="sm" color="white" />
-						{:else}
-							<span>{i18n.search_all()}</span>
-						{/if}
-					</button>
+					/>
 					
 					<!-- Women Category - Standard Action (36px) -->
 					{#if mainCategories.find(c => c.slug === 'women')}
 						{@const category = mainCategories.find(c => c.slug === 'women')}
-						<button 
+						<CategoryPill 
+							label={i18n.category_women()}
+							emoji="👗"
+							loading={loadingCategory === category.slug}
+							spinnerColor="pink"
+							disabled={loadingCategory === category.slug}
+							ariaLabel={`${i18n.menu_browse()} ${i18n.category_women()}`}
+							data-prefetch="hover"
 							onmouseenter={() => prefetchCategoryPage(category.slug)}
 							ontouchstart={() => prefetchCategoryPage(category.slug)}
 							onclick={() => navigateToCategory(category.slug)}
 							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 1)}
-							disabled={loadingCategory === category.slug}
-							aria-label={`${i18n.menu_browse()} ${i18n.category_women()}`}
-							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-2.5 sm:px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors whitespace-nowrap"
-							data-prefetch="hover"
-						>
-							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="pink" />
-							{:else}
-								<span class="text-base">👗</span>
-								<span>{i18n.category_women()}</span>
-							{/if}
-						</button>
+						/>
 					{/if}
 					
 					<!-- Men Category - Standard Action (36px) -->
 					{#if mainCategories.find(c => c.slug === 'men')}
 						{@const category = mainCategories.find(c => c.slug === 'men')}
-						<button 
+						<CategoryPill 
+							label={i18n.category_men()}
+							emoji="👔"
+							loading={loadingCategory === category.slug}
+							spinnerColor="blue"
+							disabled={loadingCategory === category.slug}
+							ariaLabel={`${i18n.menu_browse()} ${i18n.category_men()}`}
+							data-prefetch="hover"
 							onmouseenter={() => prefetchCategoryPage(category.slug)}
 							ontouchstart={() => prefetchCategoryPage(category.slug)}
 							onclick={() => navigateToCategory(category.slug)}
 							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 2)}
-							disabled={loadingCategory === category.slug}
-							aria-label={`${i18n.menu_browse()} ${i18n.category_men()}`}
-							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-2.5 sm:px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors whitespace-nowrap"
-							data-prefetch="hover"
-						>
-							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="blue" />
-							{:else}
-								<span class="text-base">👔</span>
-								<span>{i18n.category_men()}</span>
-							{/if}
-						</button>
+						/>
 					{/if}
 					
 					<!-- Kids Category - Standard Action (36px) -->
 					{#if mainCategories.find(c => c.slug === 'kids')}
 						{@const category = mainCategories.find(c => c.slug === 'kids')}
-						<button 
+						<CategoryPill 
+							label={i18n.category_kids()}
+							emoji="👶"
+							loading={loadingCategory === category.slug}
+							spinnerColor="green"
+							disabled={loadingCategory === category.slug}
+							ariaLabel={`${i18n.menu_browse()} ${i18n.category_kids()}`}
+							data-prefetch="hover"
 							onmouseenter={() => prefetchCategoryPage(category.slug)}
 							ontouchstart={() => prefetchCategoryPage(category.slug)}
 							onclick={() => navigateToCategory(category.slug)}
 							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 3)}
-							disabled={loadingCategory === category.slug}
-							aria-label={`${i18n.menu_browse()} ${i18n.category_kids()}`}
-							aria-busy={loadingCategory === category.slug}
-							class="category-nav-pill shrink-0 px-2.5 sm:px-3 py-2 bg-gray-100 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 min-h-[36px] focus:outline-none focus:ring-2 focus:ring-gray-400 transition-colors whitespace-nowrap"
-							data-prefetch="hover"
-						>
-							{#if loadingCategory === category.slug}
-								<LoadingSpinner size="sm" color="green" />
-							{:else}
-								<span class="text-base">👶</span>
-								<span>{i18n.category_kids()}</span>
-							{/if}
-						</button>
+						/>
 					{/if}
 				</nav>
 			</div>

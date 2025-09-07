@@ -89,25 +89,35 @@
   let searchTimeout: NodeJS.Timeout;
   let inputElement: HTMLInputElement;
   let isSearchMode = $state(false); // true when showing search results, false when showing trending
+  let currentController: AbortController | null = null; // cancel in-flight requests
   
   async function performSearch(query: string) {
     if (!query.trim()) {
       searchResults = [];
       isSearchMode = false;
       showDropdown = trendingProducts.length > 0 || topSellers.length > 0;
+      selectedIndex = -1;
       return;
     }
 
     isLoading = true;
     isSearchMode = true;
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&limit=5`);
+      // Cancel prior request if still in flight
+      if (currentController) currentController.abort();
+      currentController = new AbortController();
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}&limit=5`, { signal: currentController.signal });
       const data = await response.json();
       searchResults = data.products || [];
       showDropdown = true;
+      // Reset selection to first item if available for keyboard users
+      selectedIndex = searchResults.length > 0 ? 0 : -1;
     } catch (error) {
-      console.error('Search failed:', error);
-      searchResults = [];
+      if ((error as any)?.name !== 'AbortError') {
+        console.error('Search failed:', error);
+        searchResults = [];
+        selectedIndex = -1;
+      }
     } finally {
       isLoading = false;
     }
@@ -121,6 +131,7 @@
       searchResults = [];
       isSearchMode = false;
       showDropdown = trendingProducts.length > 0 || topSellers.length > 0;
+      selectedIndex = -1;
     }
   }
   
@@ -154,11 +165,19 @@
     switch(e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        selectedIndex = Math.min(selectedIndex + 1, searchResults.length - 1);
+        if (selectedIndex < 0) selectedIndex = 0; else selectedIndex = Math.min(selectedIndex + 1, searchResults.length - 1);
         break;
       case 'ArrowUp':
         e.preventDefault();
         selectedIndex = Math.max(selectedIndex - 1, -1);
+        break;
+      case 'Home':
+        e.preventDefault();
+        selectedIndex = searchResults.length > 0 ? 0 : -1;
+        break;
+      case 'End':
+        e.preventDefault();
+        selectedIndex = searchResults.length > 0 ? searchResults.length - 1 : -1;
         break;
       case 'Enter':
         e.preventDefault();
@@ -167,6 +186,7 @@
         } else if (value.trim()) {
           onSearch?.(value.trim());
           showDropdown = false;
+          selectedIndex = -1;
         }
         break;
       case 'Escape':
@@ -220,13 +240,13 @@
   <!-- Hero Search Bar with Nested Design -->
   <form 
     role="search"
-    class="bg-white rounded-full border border-gray-200 p-1 shadow-sm hover:shadow-md focus-within:border-gray-300 transition-colors"
+    class="bg-[color:var(--surface)] rounded-lg border border-[color:var(--border-default)] p-0.5 shadow-[var(--shadow-sm)] hover:shadow-[var(--shadow-md)] focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[color:var(--state-focus)] focus-within:border-[color:var(--border-focus)] transition-all duration-200"
   >
-    <div class="bg-gray-50 relative rounded-full overflow-hidden min-h-11 sm:min-h-12">
-      <div class="relative flex items-center min-h-11 sm:min-h-12">
+    <div class="bg-[color:var(--surface-subtle)] relative rounded-lg overflow-hidden min-h-[var(--touch-standard)] sm:min-h-12">
+      <div class="relative flex items-center min-h-[var(--touch-standard)] sm:min-h-12">
         <label for="hero-search-input" class="sr-only">{placeholder}</label>
         <div class="absolute left-3 flex items-center justify-center pointer-events-none" aria-hidden="true">
-          <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5 text-[color:var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
@@ -240,7 +260,9 @@
           autocomplete="off"
           spellcheck="false"
           aria-label={placeholder}
-          class="flex-1 bg-transparent text-sm sm:text-base placeholder-gray-500 focus:outline-none border-0 focus:ring-0 min-w-0 pl-10 pr-2 py-2.5 sm:py-3"
+          aria-controls="hero-results"
+          aria-activedescendant={selectedIndex >= 0 ? `hero-option-${selectedIndex}` : undefined}
+          class="flex-1 bg-transparent text-sm sm:text-base placeholder-[color:var(--text-placeholder)] text-[color:var(--text-primary)] focus:outline-none border-0 focus:ring-0 min-w-0 pl-10 pr-2 py-2 sm:py-2.5"
           oninput={handleInput}
           onfocus={handleFocus}
           onkeydown={handleKeyDown}
@@ -251,16 +273,16 @@
             <button
               type="button"
               onclick={clearSearch}
-              class="p-1.5 hover:bg-gray-200 rounded-full transition-colors mr-1 focus:outline-none focus:ring-2 focus:ring-gray-300"
+              class="p-1.5 hover:bg-[color:var(--surface-muted)] rounded-full transition-colors mr-1 focus:outline-none focus:ring-2 focus:ring-[color:var(--state-focus)]"
               aria-label="Clear search query"
             >
-              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg class="w-4 h-4 text-[color:var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           {/if}
           {#if isLoading}
-            <div class="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin mr-2"></div>
+            <div class="w-4 h-4 border-2 border-[color:var(--border-subtle)] border-t-[color:var(--text-secondary)] rounded-full animate-spin mr-2"></div>
           {/if}
           
           <!-- Dropdown Toggle Button -->
@@ -270,10 +292,11 @@
             aria-expanded={showDropdown}
             aria-haspopup="listbox"
             aria-label="{categoriesText} filter"
-            class="px-3 py-1.5 bg-white rounded-full hover:bg-gray-50 transition-colors flex items-center gap-1 ring-1 ring-gray-200 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-gray-300"
+            aria-controls="hero-results"
+            class="px-2 py-1 bg-[color:var(--surface)] rounded-md hover:bg-[color:var(--surface-muted)] transition-colors flex items-center gap-1 border border-[color:var(--border-default)] whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[color:var(--state-focus)]"
           >
             <svg 
-              class="w-4 h-4 text-gray-500 shrink-0 transition-transform {showDropdown ? 'rotate-180' : ''}" 
+              class="w-4 h-4 text-[color:var(--text-secondary)] shrink-0 transition-transform duration-200 {showDropdown ? 'rotate-180' : ''}" 
               fill="none" 
               stroke="currentColor" 
               viewBox="0 0 24 24"
@@ -281,7 +304,7 @@
             >
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
-            <span class="text-xs font-medium text-gray-500 hidden sm:inline">{categoriesText}</span>
+            <span class="text-xs font-medium text-[color:var(--text-secondary)] hidden sm:inline">{categoriesText}</span>
           </button>
         </div>
       </div>
@@ -290,38 +313,64 @@
 
   {#if showDropdown}
     <div class="absolute z-50 w-full mt-2">
+      <!-- Live region for screen readers -->
+      <div class="sr-only" role="status" aria-live="polite">
+        {#if isLoading}
+          Loading results...
+        {:else if isSearchMode}
+          {searchResults.length} results.
+        {/if}
+      </div>
       {#if isSearchMode && searchResults.length > 0}
         <!-- Search Results Mode -->
-        <div class="bg-white border border-gray-200 rounded-xl shadow-sm md:shadow-xl max-h-96 overflow-y-auto">
+        <div id="hero-results" role="listbox" class="bg-[color:var(--surface)] border border-[color:var(--border-default)] rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] md:shadow-[var(--shadow-lg)] max-h-96 overflow-y-auto">
           {#each searchResults as result, index}
             <button
               onclick={() => navigateToProduct(result)}
-              class="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 transition-colors {selectedIndex === index ? 'bg-gray-50' : ''}"
+              id={`hero-option-${index}`}
+              role="option"
+              aria-selected={selectedIndex === index}
+              class="w-full px-4 py-3 flex items-center gap-3 hover:bg-[color:var(--surface-muted)] transition-colors min-h-[var(--touch-standard)] focus:outline-none focus:bg-[color:var(--surface-muted)] {selectedIndex === index ? 'bg-[color:var(--surface-muted)]' : ''}"
             >
               {#if result.image}
                 <img 
                   src={result.image} 
                   alt={result.title}
-                  class="w-12 h-12 object-cover rounded-lg"
+                  class="w-12 h-12 object-cover rounded-[var(--radius-md)]"
                 />
               {:else}
-                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="w-12 h-12 bg-[color:var(--surface-subtle)] rounded-[var(--radius-md)] flex items-center justify-center">
+                  <svg class="w-6 h-6 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
               {/if}
               <div class="flex-1 text-left">
-                <p class="text-sm font-medium text-gray-900 truncate">{result.title}</p>
-                <p class="text-sm text-gray-500">{formatPrice(result.price)}</p>
+                <p class="text-sm font-medium text-[color:var(--text-primary)] truncate">{result.title}</p>
+                <p class="text-sm text-[color:var(--text-secondary)]">{formatPrice(result.price)}</p>
               </div>
             </button>
           {/each}
           
-          <div class="border-t border-gray-100">
+          <div class="border-t border-[color:var(--border-subtle)]">
             <button
               onclick={() => onSearch?.(value.trim())}
-              class="w-full px-4 py-3 text-sm text-center text-blue-600 hover:bg-gray-50 transition-colors font-medium"
+              class="w-full px-4 py-3 text-sm text-center text-[color:var(--primary)] hover:bg-[color:var(--surface-muted)] transition-colors font-medium min-h-[var(--touch-standard)] focus:outline-none focus:bg-[color:var(--surface-muted)]"
+            >
+              {translations.viewAllResults} "{value}"
+            </button>
+          </div>
+        </div>
+      {:else if isSearchMode && !isLoading && value.trim()}
+        <!-- No results state -->
+        <div id="hero-results" role="listbox" class="bg-[color:var(--surface)] border border-[color:var(--border-default)] rounded-[var(--radius-lg)] shadow-[var(--shadow-sm)] md:shadow-[var(--shadow-lg)]">
+          <div role="option" aria-selected="false" class="px-4 py-3 text-sm text-[color:var(--text-secondary)] min-h-[var(--touch-standard)] flex items-center">
+            No results for "{value}".
+          </div>
+          <div class="border-t border-[color:var(--border-subtle)]">
+            <button
+              onclick={() => onSearch?.(value.trim())}
+              class="w-full px-4 py-3 text-sm text-center text-[color:var(--primary)] hover:bg-[color:var(--surface-muted)] transition-colors font-medium min-h-[var(--touch-standard)] focus:outline-none focus:bg-[color:var(--surface-muted)]"
             >
               {translations.viewAllResults} "{value}"
             </button>

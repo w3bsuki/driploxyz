@@ -58,15 +58,17 @@ export function getProductUrl(p: ProductForUrl | ProductWithProfile): string {
   }
   // Handle ProductWithProfile interface (nested profiles structure)
   else if ('profiles' in p) {
-    if (!p.profiles?.username || !p.slug) {
-      throw new Error(`getProductUrl: Missing required fields in profiles - username: ${p.profiles?.username}, slug: ${p.slug}, product_id: ${p.id}`);
+    if (p.profiles?.username && p.slug) {
+      sellerUsername = p.profiles.username;
+      productSlug = p.slug;
+      categorySlug = p.categories?.slug ?? undefined;
+    } else {
+      // Graceful fallback when data is incomplete
+      return `/product/${p.id}`;
     }
-    sellerUsername = p.profiles.username;
-    productSlug = p.slug;
-    categorySlug = p.categories?.slug ?? undefined;
-  }
-  else {
-    throw new Error(`getProductUrl: Invalid product structure for product_id: ${p.id}`);
+  } else {
+    // Graceful fallback for unknown structure
+    return `/product/${(p as any).id}`;
   }
 
   // Include category when available

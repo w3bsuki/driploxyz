@@ -22,3 +22,27 @@ export const validateJWT = (token: string): boolean => {
 export const detectMobile = (userAgent: string): boolean => {
   return /Mobile|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
 };
+
+/**
+ * SSR timeout wrapper for resilient data loading
+ * Wraps promises with timeout to prevent hanging in dev/production
+ * Falls back to provided fallback value on timeout
+ */
+export const withTimeout = async <T>(
+  promise: Promise<T>, 
+  timeoutMs = 3000,
+  fallback: T
+): Promise<T> => {
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`Operation timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } catch (error) {
+    console.warn(`withTimeout: Operation failed or timed out, using fallback:`, error);
+    return fallback;
+  }
+};

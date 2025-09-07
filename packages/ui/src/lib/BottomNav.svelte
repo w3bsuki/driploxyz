@@ -84,11 +84,11 @@
   
   function getItemClasses(item: NavItem): string {
     if (item.isSpecial) {
-      return 'flex items-center justify-center py-1.5 min-h-[var(--touch-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary rounded-lg';
+      return 'flex items-center justify-center py-1.5 min-h-[var(--touch-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--primary)] rounded-full';
     }
     const active = isActive(item);
     const isLoading = clickedItem === item.href || (isNavigating && navigatingTo === item.href);
-    return `flex flex-col items-center py-2 px-1 min-h-[var(--touch-primary)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary rounded-lg ${
+    return `flex items-center justify-center py-2 min-h-[var(--touch-primary)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--primary)] rounded-lg ${
       active ? 'text-[color:var(--text-primary)]' : isLoading ? 'text-[color:var(--text-primary)] opacity-70' : 'text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)]'
     }`;
   }
@@ -117,23 +117,22 @@
         data-sveltekit-preload-code="hover"
       >
         {#if item.isSpecial}
-          <div class="bg-gray-900 text-white rounded-full p-2.5 shadow-sm md:shadow-lg {isActive(item) ? 'scale-105' : ''} transition-colors duration-200 hover:bg-gray-800 relative focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+          <div class="bg-[color:var(--gray-900)] text-white rounded-full p-2.5 shadow-sm md:shadow-lg {isActive(item) ? 'scale-105' : ''} transition-transform duration-150 hover:scale-105 active:scale-95 relative">
             <svg class="w-5 h-5 {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
             </svg>
           </div>
         {:else}
           <div class="relative">
-            <svg class="w-5 h-5 transition-opacity duration-200 {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
-            </svg>
+            <div class="rounded-full p-2 {isActive(item) ? 'bg-[color:var(--surface-muted)] text-[color:var(--text-primary)]' : 'text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-muted)]'} transition-colors duration-150">
+              <svg class="w-5 h-5 transition-opacity duration-200 {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
+              </svg>
+            </div>
             {#if item.showBadge && unreadMessageCount > 0}
               <span class="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
             {/if}
           </div>
-          <span class="text-xs mt-0.5 font-medium transition-opacity duration-200 {isLoading ? 'opacity-50' : ''}">
-            {item.label}
-          </span>
         {/if}
       </a>
     {/each}

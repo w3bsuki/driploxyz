@@ -44,8 +44,55 @@
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       handleClose();
+    } else if (event.key === 'Tab') {
+      // Focus trap logic
+      const modal = event.currentTarget as HTMLElement;
+      const focusableElements = modal.querySelectorAll(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
+      );
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (event.shiftKey) {
+        // Shift+Tab - move to last element if on first
+        if (document.activeElement === firstElement) {
+          event.preventDefault();
+          lastElement?.focus();
+        }
+      } else {
+        // Tab - move to first element if on last
+        if (document.activeElement === lastElement) {
+          event.preventDefault();
+          firstElement?.focus();
+        }
+      }
     }
   }
+
+  // Focus management
+  let previouslyFocused: HTMLElement | null = null;
+
+  $effect(() => {
+    if (open) {
+      // Store currently focused element
+      previouslyFocused = document.activeElement as HTMLElement;
+      
+      // Focus first focusable element in modal after a tick
+      setTimeout(() => {
+        const modal = document.querySelector('[role="dialog"]') as HTMLElement;
+        if (modal) {
+          const focusableElement = modal.querySelector(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
+          ) as HTMLElement;
+          focusableElement?.focus();
+        }
+      }, 0);
+    } else if (previouslyFocused) {
+      // Return focus to previously focused element
+      previouslyFocused.focus();
+      previouslyFocused = null;
+    }
+  });
 
   // Close context object for snippets
   const closeContext = { close: handleClose };

@@ -454,6 +454,17 @@
 
 /* Custom utilities - ONLY non-duplicates */
 
+@layer utilities {
+  /* Hide scrollbars for horizontal pill nav while preserving scroll */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none;    /* Firefox */
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;            /* Chrome, Safari */
+  }
+}
+
 @utility line-clamp-2 {
   overflow: hidden;
   display: -webkit-box;

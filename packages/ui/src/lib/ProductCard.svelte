@@ -5,7 +5,7 @@
   import ProductPrice from './ProductPrice.svelte';
   import FavoriteButton from './FavoriteButton.svelte';
   import UserBadge from './UserBadge.svelte';
-  import Tooltip from './primitives/tooltip/Tooltip.svelte';
+  import { Tooltip } from './primitives/tooltip';
   
   interface Props {
     product: Product;
@@ -175,17 +175,10 @@
   {/if}
 {/snippet}
 
-<div 
-  class="product-card cursor-pointer transition-shadow duration-[var(--duration-base)] hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:ring-offset-2 rounded-[var(--radius-md)] {highlighted ? 'highlighted' : ''} {className}"
+<button
+  type="button"
+  class="product-card cursor-pointer transition-shadow duration-[var(--duration-base)] hover:shadow-[var(--shadow-md)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:ring-offset-2 rounded-[var(--radius-md)] {highlighted ? 'highlighted' : ''} {className} text-left block w-full p-0 border-0 bg-transparent"
   onclick={handleClick}
-  onkeydown={(e: KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      handleClick();
-    }
-  }}
-  role="button"
-  tabindex="0"
   aria-label="{product.title} - Price: {translations.formatPrice ? translations.formatPrice(product.price) : `${translations.currency}${product.price}`}"
 >
   <!-- Image Container with overlays -->
@@ -197,26 +190,30 @@
       {priority}
     />
     
-      <!-- Condition badge with tooltip -->
-    {#if product.condition}
-      {@render conditionBadgeWithTooltip(product.condition)}
-    {/if}
+    <!-- Overlay row: condition badge (left) and favorite button (right) -->
+    <div class="absolute top-2 left-1 right-1 z-20 flex items-center justify-between">
+      <div>
+        {#if product.condition}
+          {@render conditionBadgeWithTooltip(product.condition)}
+        {/if}
+      </div>
+      <div class="mr-1">
+        <FavoriteButton 
+          {product}
+          {favorited}
+          {favoritesState}
+          onFavorite={() => onFavorite?.(product.id)}
+          addToFavoritesText={translations.addToFavorites}
+          removeFromFavoritesText={translations.removeFromFavorites}
+          absolute={false}
+          showCount={true}
+        />
+      </div>
+    </div>
   </div>
   
   <!-- Content -->
   <div class="px-1 pt-1.5 pb-1.5 relative">
-    <!-- Favorite button positioned over content area -->
-    <FavoriteButton 
-      {product}
-      {favorited}
-      {favoritesState}
-      onFavorite={() => onFavorite?.(product.id)}
-      addToFavoritesText={translations.addToFavorites}
-      removeFromFavoritesText={translations.removeFromFavorites}
-      absolute={true}
-      showCount={true}
-      customPosition="absolute top-2 right-2 z-10"
-    />
     
     <!-- Main Category (always show) -->
     <div class="flex items-center justify-between gap-1.5 min-h-3.5 mb-0.5 pr-12">
@@ -250,7 +247,7 @@
       />
     </div>
   </div>
-</div>
+</button>
 
 <style>
   .product-card {

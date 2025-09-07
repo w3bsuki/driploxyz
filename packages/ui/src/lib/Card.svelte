@@ -22,20 +22,13 @@
 </script>
 
 {#if onclick}
-<div 
+<button
+  type="button"
   class={classes} 
   {onclick}
-  role="button"
-  tabindex="0"
-  onkeydown={(e: KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onclick();
-    }
-  }}
 >
   {@render children?.()}
-</div>
+</button>
 {:else}
 <div class={classes}>
   {@render children?.()}

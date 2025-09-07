@@ -13,6 +13,14 @@ const REDIRECT_PATHS_TO_SKIP = [
   '/auth'
 ];
 
+// Tiny timeout to prevent dev hang if DB is slow/unreachable
+async function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return await Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))
+  ]);
+}
+
 export const load = (async (event) => {
   const { url, cookies, depends, locals } = event;
   // CRITICAL: Only depend on auth - other deps cause unnecessary reloads
@@ -20,7 +28,12 @@ export const load = (async (event) => {
   
   // CRITICAL: Always get fresh session data on each request
   // This ensures auth state is current after login/logout
-  const { session, user } = await locals.safeGetSession();
+  // Avoid dev hang if auth provider stalls
+  const { session, user } = await withTimeout(
+    locals.safeGetSession(),
+    2000,
+    { session: null, user: null } as any
+  );
   const supabase = locals.supabase;
   
   // Auth state loaded
@@ -29,11 +42,15 @@ export const load = (async (event) => {
   let profile = null;
   
   if (user && supabase) {
-    const { data, error: profileError } = await supabase
-      .from('profiles')
-      .select('id, username, full_name, avatar_url, onboarding_completed, account_type, subscription_tier, region')
-      .eq('id', user.id)
-      .single();
+    const { data, error: profileError }: any = await withTimeout(
+      supabase
+        .from('profiles')
+        .select('id, username, full_name, avatar_url, onboarding_completed, account_type, subscription_tier, region')
+        .eq('id', user.id)
+        .single(),
+      2500,
+      { data: null, error: null } as any
+    );
 
     // Ignore profile not found errors (PGRST116)
     if (profileError && profileError.code !== 'PGRST116') {

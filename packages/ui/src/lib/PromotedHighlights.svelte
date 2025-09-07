@@ -134,8 +134,7 @@
 
 <!-- Promoted Listings / Highlights -->
 <section 
-  class="border-y"
-  style="background-color: oklch(0.98 0.005 270); border-color: oklch(0.87 0.01 270 / 0.3);"
+  class="border-y border-[color:var(--border-subtle)] bg-[color:var(--surface-subtle)]"
   aria-label={translations.trending_promoted}
   role="region"
 >
@@ -145,15 +144,15 @@
     <!-- Show partners if available, otherwise show traditional header -->
     {#if partners.length > 0}
       <div class="flex items-center gap-2">
-        <span class="text-xs font-medium text-gray-500 uppercase tracking-wider">Partners</span>
+        <span class="text-xs font-medium text-[color:var(--text-secondary)] uppercase tracking-wider">Partners</span>
         <div class="flex items-center gap-2 overflow-x-auto scrollbar-hide">
           {#each partners as partner}
             <button
               onclick={() => onPartnerClick?.(partner)}
-              class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400/40 focus:ring-offset-1 shrink-0"
+              class="inline-flex items-center gap-2 px-3 py-1.5 bg-[color:var(--surface-base)] border border-[color:var(--border-default)] rounded-full text-xs font-medium text-[color:var(--text-secondary)] hover:border-[color:var(--border-hover)] hover:bg-[color:var(--surface-muted)] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[color:var(--state-focus)] focus:ring-offset-1 shrink-0"
               title="{partner.name}{partner.description ? ` - ${partner.description}` : ''}"
             >
-              <div class="w-4 h-4 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+              <div class="w-4 h-4 rounded-full overflow-hidden bg-[color:var(--surface-muted)] flex-shrink-0">
                 <img 
                   src={partner.logo} 
                   alt={partner.name} 
@@ -162,7 +161,7 @@
               </div>
               <span>{partner.name}</span>
               {#if partner.instagram}
-                <svg class="w-3 h-3 text-pink-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <svg class="w-3 h-3 text-[color:var(--accent-emphasis)] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12.017 0C8.396 0 7.929.013 6.71.072 5.493.131 4.73.33 4.058.63c-.692.3-1.281.72-1.866 1.305-.585.585-1.006 1.174-1.305 1.866-.3.672-.499 1.435-.558 2.652C.013 7.929 0 8.396 0 12.017s.013 4.088.072 5.307c.059 1.217.258 1.98.558 2.652.3.692.72 1.281 1.305 1.866.585.585 1.174 1.006 1.866 1.305.672.3 1.435.499 2.652.558 1.219.059 1.686.072 5.307.072s4.088-.013 5.307-.072c1.217-.059 1.98-.258 2.652-.558.692-.3 1.281-.72 1.866-1.305.585-.585 1.006-1.174 1.305-1.866.3-.672.499-1.435.558-2.652.059-1.219.072-1.686.072-5.307s-.013-4.088-.072-5.307c-.059-1.217-.258-1.98-.558-2.652C21.36 2.437 20.94 1.848 20.355 1.263S18.462.632 17.77.33c-.672-.3-1.435-.499-2.652-.558C13.899.013 13.432 0 12.017 0zm0 2.167c3.555 0 3.977.012 5.378.07 1.297.059 2.001.277 2.47.46.62.24 1.062.527 1.527.992.465.465.752.907.992 1.527.183.469.401 1.173.46 2.47.058 1.401.07 1.823.07 5.378s-.012 3.977-.07 5.378c-.059 1.297-.277 2.001-.46 2.47-.24.62-.527 1.062-.992 1.527-.465.465-.907.752-1.527.992-.469.183-1.173.401-2.47.46-1.401.058-1.823.07-5.378.07s-3.977-.012-5.378-.07c-1.297-.059-2.001-.277-2.47-.46-.62-.24-1.062-.527-1.527-.992-.465-.465-.752-.907-.992-1.527-.183-.469-.401-1.173-.46-2.47C2.179 15.994 2.167 15.572 2.167 12.017s.012-3.977.07-5.378c.059-1.297.277-2.001.46-2.47.24-.62.527-1.062.992-1.527.465-.465.907-.752 1.527-.992.469-.183 1.173-.401 2.47-.46 1.401-.058 1.823-.07 5.378-.07z"/>
                   <path d="M12.017 5.838a6.179 6.179 0 100 12.358 6.179 6.179 0 000-12.358zm0 10.191a4.012 4.012 0 110-8.024 4.012 4.012 0 010 8.024z"/>
                   <circle cx="18.406" cy="5.594" r="1.444"/>
@@ -175,10 +174,10 @@
     {:else}
       <!-- Traditional header when no partners -->
       <div class="flex items-center gap-2">
-        <h2 class="text-sm font-semibold" style="color: oklch(0.15 0.015 270);">
+        <h2 class="text-sm font-semibold text-[color:var(--text-primary)]">
           {hasProducts ? (translations.promoted_hotPicks || 'Горещи предложения') : (translations.promoted_premiumSellers || 'Премиум продавачи')}
         </h2>
-        <div class="text-xs font-medium px-2 py-0.5 rounded" style="background-color: oklch(0.94 0.04 85); color: oklch(0.28 0.12 85);">
+        <div class="text-xs font-medium px-2 py-0.5 rounded bg-[color:var(--accent-subtle)] text-[color:var(--accent-text)]">
           Спонсорирано
         </div>
       </div>
@@ -234,18 +233,18 @@
             >
               <button
                 onclick={() => onSellerClick(seller)}
-                class="group relative block focus:outline-none focus:ring-2 focus:ring-purple-400/40 rounded-2xl transition-all duration-200"
+                class="group relative block focus:outline-none focus:ring-2 focus:ring-[color:var(--state-focus)] rounded-2xl transition-all duration-200"
                 aria-label="View {seller.name}'s profile{seller.premium ? ' - Premium seller' : ''}"
                 tabindex={currentFocusIndex === index ? 0 : -1}
               >
                 <!-- Premium Seller Card -->
                 <div class="relative w-44 sm:w-52 md:w-56">
-                  <div class="bg-white rounded-2xl shadow-sm group-hover:shadow-md transition-all duration-200 group-hover:-translate-y-0.5 border border-gray-200 overflow-hidden p-4">
+                  <div class="bg-[color:var(--surface-base)] rounded-2xl shadow-sm group-hover:shadow-md transition-all duration-200 group-hover:-translate-y-0.5 border border-[color:var(--border-default)] overflow-hidden p-4">
                     
                     <!-- Premium Badge -->
                     {#if seller.premium}
                       <div class="absolute top-2 right-2 z-10">
-                        <div class="bg-purple-600/90 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
+                        <div class="bg-[color:var(--primary)] text-[color:var(--primary-fg)] text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
                           PRO
                         </div>
                       </div>
@@ -254,7 +253,7 @@
                     <!-- Seller Avatar -->
                     <div class="flex flex-col items-center text-center">
                       <div class="relative mb-3">
-                        <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-100 ring-2 ring-white shadow">
+                        <div class="w-16 h-16 rounded-full overflow-hidden bg-[color:var(--surface-muted)] ring-2 ring-[color:var(--surface-base)] shadow">
                           {#if seller.avatar}
                             <img 
                               src={seller.avatar} 
@@ -262,7 +261,7 @@
                               class="w-full h-full object-cover"
                             />
                           {:else}
-                            <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-500 font-semibold text-lg">
+                            <div class="w-full h-full bg-gradient-to-br from-[color:var(--surface-muted)] to-[color:var(--surface-emphasis)] flex items-center justify-center text-[color:var(--text-secondary)] font-semibold text-lg">
                               {seller.name?.charAt(0).toUpperCase() || 'S'}
                             </div>
                           {/if}
@@ -270,8 +269,8 @@
                         
                         <!-- Premium Star -->
                         {#if seller.premium}
-                          <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-purple-600 rounded-full border-2 border-white shadow flex items-center justify-center">
-                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                          <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-[color:var(--primary)] rounded-full border-2 border-[color:var(--surface-base)] shadow flex items-center justify-center">
+                            <svg class="w-3 h-3 text-[color:var(--primary-fg)]" fill="currentColor" viewBox="0 0 24 24">
                               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                             </svg>
                           </div>
@@ -279,11 +278,11 @@
                       </div>
                       
                       <!-- Seller Info -->
-                      <h3 class="font-semibold text-gray-900 text-sm mb-1 line-clamp-1">
+                      <h3 class="font-semibold text-[color:var(--text-primary)] text-sm mb-1 line-clamp-1">
                         {seller.name}
                       </h3>
                       
-                      <div class="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                      <div class="flex items-center gap-2 text-xs text-[color:var(--text-secondary)] mb-2">
                         {#if seller.itemCount}
                           <span>{seller.itemCount} items</span>
                         {/if}
@@ -298,18 +297,18 @@
                         <div class="flex items-center gap-1 mb-2">
                           <div class="flex">
                             {#each Array(5) as _, i}
-                              <svg class="w-3 h-3 {i < Math.floor(seller.rating) ? 'text-yellow-400' : 'text-gray-300'}" fill="currentColor" viewBox="0 0 20 20">
+                              <svg class="w-3 h-3 {i < Math.floor(seller.rating) ? 'text-[color:var(--accent-emphasis)]' : 'text-[color:var(--surface-emphasis)]'}" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                               </svg>
                             {/each}
                           </div>
-                          <span class="text-xs text-gray-500 ml-1">{seller.rating.toFixed(1)}</span>
+                          <span class="text-xs text-[color:var(--text-secondary)] ml-1">{seller.rating.toFixed(1)}</span>
                         </div>
                       {/if}
                       
                       <!-- View Profile Button -->
                       <div class="w-full">
-                        <div class="px-3 py-1.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-medium rounded-lg shadow-sm transition-colors">
+                        <div class="px-3 py-1.5 bg-[color:var(--primary)] hover:bg-[color:var(--primary-hover)] text-[color:var(--primary-fg)] text-xs font-medium rounded-lg shadow-sm transition-colors">
                           View Profile
                         </div>
                       </div>

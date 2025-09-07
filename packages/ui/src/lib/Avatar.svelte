@@ -83,16 +83,9 @@
 </script>
 
 {#if onclick}
-<div
-  role="button"
-  tabindex="0"
+<button
+  type="button"
   onclick={onclick}
-  onkeydown={(e: KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onclick();
-    }
-  }}
   class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary {className} overflow-hidden"
 >
   {#if src && !imageError}
@@ -108,7 +101,7 @@
       <span class="font-semibold text-[color:var(--text-muted)] {textSizes[size]}">{initial()}</span>
     </div>
   {/if}
-</div>
+</button>
 {:else}
 <div
   class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} cursor-default {className} overflow-hidden"

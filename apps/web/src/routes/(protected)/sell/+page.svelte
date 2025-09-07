@@ -531,8 +531,7 @@
               }}
             >
               {#if StepPhotosOnly}
-                <svelte:component
-                  this={StepPhotosOnly}
+                <StepPhotosOnly
                   bind:formData
                   bind:uploadedImages
                   bind:isUploadingImages
@@ -562,8 +561,7 @@
               }}
             >
               {#if StepCategory}
-                <svelte:component
-                  this={StepCategory}
+                <StepCategory
                   categories={data.categories}
                   bind:formData
                   suggestions={categorySuggestions}
@@ -622,8 +620,7 @@
               }}
             >
               {#if StepProductInfo}
-                <svelte:component
-                  this={StepProductInfo}
+                <StepProductInfo
                   bind:formData
                   sizeOptions={sizeOptions}
                   errors={{}}
@@ -655,8 +652,7 @@
               }}
             >
               {#if StepPricing}
-                <svelte:component
-                  this={StepPricing}
+                <StepPricing
                   bind:formData
                   profile={data.profile}
                   {priceSuggestion}

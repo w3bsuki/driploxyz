@@ -12,6 +12,14 @@ const MANUALLY_PROMOTED_IDS: string[] = [
   // 'product-id-3'
 ];
 
+// Tiny timeout wrapper to avoid hanging dev when DB is slow/unreachable
+async function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return await Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))
+  ]);
+}
+
 export const load = (async ({ url, locals: { supabase, country, safeGetSession }, setHeaders, depends }) => {
   // Mark dependencies for client-side invalidation
   depends('home:data');
@@ -44,24 +52,26 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
   const userId = session?.user?.id;
 
   try {
-    // Optimized parallel queries - select only needed columns to minimize egress
-    const [categoriesResult, topSellersResult, featuredResult] = await Promise.allSettled([
-      // Get main categories only
+    // Optimized parallel queries with short timeouts to avoid dev hang
+    const categoriesPromise = withTimeout(
       supabase
         .from('categories')
         .select('id, name, slug, sort_order')
         .is('parent_id', null)
         .order('sort_order')
         .limit(6),
-      
-      // Get sellers who have active listings
+      2500,
+      { data: [] } as any
+    );
+
+    const topSellersPromise = withTimeout(
       supabase
         .from('profiles')
         .select(`
-          id, 
-          username, 
-          avatar_url, 
-          rating, 
+          id,
+          username,
+          avatar_url,
+          rating,
           sales_count,
           products!products_seller_id_fkey!inner (
             id
@@ -72,8 +82,11 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         .order('sales_count', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(8),
-      
-      // Get featured products with images and category info
+      2500,
+      { data: [] } as any
+    );
+
+    const featuredPromise = withTimeout(
       supabase
         .from('products')
         .select(`
@@ -106,12 +119,20 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         .eq('is_sold', false)
         .eq('country_code', country || 'BG')
         .order('created_at', { ascending: false })
-        .limit(12)
+        .limit(12),
+      3000,
+      { data: [] } as any
+    );
+
+    const [categoriesResult, topSellersResult, featuredResult] = await Promise.all([
+      categoriesPromise,
+      topSellersPromise,
+      featuredPromise
     ]);
 
     // Process results
-    const categories = categoriesResult.status === 'fulfilled' ? (categoriesResult.value.data || []) : [];
-    const topSellers = topSellersResult.status === 'fulfilled' ? (topSellersResult.value.data || []) : [];
+    const categories = (categoriesResult as any).data || [];
+    const topSellers = (topSellersResult as any).data || [];
     
     let featuredProducts: Array<{
       id: string;
@@ -136,8 +157,8 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       profiles?: { username?: string | null };
       categories?: { slug?: string | null };
     }> = [];
-    if (featuredResult.status === 'fulfilled') {
-      const { data: rawProducts } = featuredResult.value;
+    {
+      const { data: rawProducts } = (featuredResult as any);
       if (rawProducts) {
         // Note: services would be used for category hierarchy if needed in future
         

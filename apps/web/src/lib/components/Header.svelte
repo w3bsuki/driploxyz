@@ -1,7 +1,6 @@
 <script lang="ts">
   import { 
     Button, 
-    Avatar, 
     NotificationBell, 
     MessageNotificationToast, 
     LanguageSwitcher,
@@ -180,19 +179,20 @@
   });
 </script>
 
-<header class="bg-[color:var(--surface-base)] shadow-[var(--shadow-sm)] border-b border-[color:var(--border-subtle)]">
-  <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-16">
+<header class="border-b border-[color:var(--border-subtle)] bg-[color:var(--surface-base)] supports-[backdrop-filter]:backdrop-blur">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 safe-area">
+    <!-- Bar -->
+    <div class="flex items-center justify-between h-14 sm:h-16">
       <!-- Left: Mobile Menu + Logo -->
-      <div class="flex items-center">
-        <!-- Mobile Menu Button -->
+      <div class="flex items-center gap-0">
         <button
           onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
-          class="sm:hidden p-1 text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] transition-colors duration-[var(--duration-fast)] rounded-[var(--radius-md)] hover:bg-[color:var(--surface-subtle)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] min-h-[var(--touch-standard)] min-w-[var(--touch-standard)]" 
-          aria-label="Toggle menu"
+          class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-[var(--radius-md)] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] transition-colors duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]"
+          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}
+          aria-controls="mobile-navigation"
         >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             {#if mobileMenuOpen}
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             {:else}
@@ -200,25 +200,15 @@
             {/if}
           </svg>
         </button>
-        
-        <!-- Logo -->
-        <HeaderLogo />
+
+        <div class="-ml-0.5">
+          <HeaderLogo />
+        </div>
       </div>
-      
-      <!-- Center: Desktop Navigation or Search -->
-      {#if showSearch}
-        <HeaderSearch placeholder={i18n.search_placeholder()} />
-      {:else}
-        <HeaderNav 
-          {isLoggedIn}
-          canSell={userCanSell}
-          translations={navTranslations}
-        />
-      {/if}
-      
-      <!-- Right: Auth/Account -->
-      <div class="flex items-center gap-1">
-        <!-- Desktop Language Switcher -->
+
+      <!-- Right: Actions -->
+      <div class="flex items-center justify-end gap-2">
+        <!-- Desktop: Language + Theme -->
         <div class="hidden sm:flex items-center gap-1">
           <LanguageSwitcher
             currentLanguage={currentLang}
@@ -228,12 +218,13 @@
           />
           <ThemeToggle size="sm" tooltip="Toggle theme" />
         </div>
-        <!-- Mobile theme toggle moved into hamburger menu -->
+
         
+
         {#if isLoggedIn}
           <!-- Notifications -->
           <div class="relative">
-            <NotificationBell 
+            <NotificationBell
               count={$unreadCount}
               onclick={async () => {
                 if (!notificationPanelLoaded && !NotificationPanel) {
@@ -243,8 +234,9 @@
                 }
                 notificationActions.togglePanel();
               }}
+              aria-label={notificationTranslations.title}
             />
-            
+
             {#if notificationPanelLoaded && NotificationPanel}
               <NotificationPanel
                 notifications={$notifications}
@@ -258,7 +250,7 @@
           </div>
 
           <!-- User Menu -->
-          <HeaderUserMenu 
+          <HeaderUserMenu
             user={currentUser}
             profile={currentProfile}
             {userDisplayName}
@@ -270,26 +262,36 @@
             translations={userMenuTranslations}
           />
         {:else}
-          <!-- Auth Buttons -->
+          <!-- Auth: Sign in always visible; Sign up desktop-only -->
           <div class="flex items-center gap-2">
-            <a 
-              href="/login" 
-              class="text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] font-medium text-sm sm:text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] rounded-[var(--radius-md)] px-2 py-1 transition-colors duration-[var(--duration-fast)]"
+            <a
+              href="/login"
+              class="text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] font-medium text-sm sm:text-base rounded-[var(--radius-md)] px-3 py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] transition-colors duration-[var(--duration-fast)]"
             >
               {i18n.auth_signIn()}
             </a>
-            <Button href="/signup" variant="primary" size="sm">
+            <Button href="/signup" variant="primary" size="sm" class="hidden sm:inline-flex">
               {i18n.auth_signUp()}
             </Button>
           </div>
         {/if}
       </div>
     </div>
+
+    <!-- Desktop secondary: Nav or Search below the bar -->
+    <div class="hidden sm:flex items-center justify-between py-2">
+      {#if showSearch}
+        <div class="w-full"><HeaderSearch placeholder={i18n.search_placeholder()} /></div>
+      {:else}
+        <HeaderNav {isLoggedIn} canSell={userCanSell} translations={navTranslations} />
+      {/if}
+    </div>
   </div>
 
   <!-- Mobile Menu -->
   {#if mobileMenuOpen}
-    <MobileNavigation 
+    <MobileNavigation
+      id="mobile-navigation"
       isOpen={mobileMenuOpen}
       {isLoggedIn}
       user={currentUser}

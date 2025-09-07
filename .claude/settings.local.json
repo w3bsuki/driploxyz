@@ -71,7 +71,8 @@
       "mcp__playwright__browser_fill_form",
       "WebFetch(domain:inlang.com)",
       "Bash(git tag:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(npm run check:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

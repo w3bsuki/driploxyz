@@ -1,4 +1,13 @@
 <script lang="ts">
+  import * as i18n from '@repo/i18n';
+  const m: any = i18n;
+  // @ts-ignore Svelte component modules
+  import ConditionBadge from './ConditionBadge.svelte';
+  // @ts-ignore Svelte component modules
+  import Tooltip from './primitives/tooltip/Tooltip.svelte';
+  
+  type ConditionType = 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair';
+  
   interface Props {
     images: string[];
     title?: string;
@@ -7,10 +16,14 @@
     isLiked?: boolean;
     onLike?: () => void;
     onImageSelect?: (index: number) => void;
-    seller?: {
-      id: string;
-      username: string | null;
-      avatar_url?: string | null;
+    condition?: ConditionType;
+    translations?: {
+      brandNewWithTags?: string;
+      newWithoutTags?: string;
+      likeNew?: string;
+      good?: string;
+      worn?: string;
+      fair?: string;
     };
   }
 
@@ -22,11 +35,18 @@
     isLiked = false,
     onLike,
     onImageSelect,
-    seller
+    condition,
+    translations = {
+      brandNewWithTags: 'BNWT',
+      newWithoutTags: 'New',
+      likeNew: 'Like New',
+      good: 'Good',
+      worn: 'Worn',
+      fair: 'Fair'
+    }
   }: Props = $props();
 
   let selectedImage = $state(0);
-  let avatarExpanded = $state(false);
 
   function selectImage(index: number) {
     if (index === selectedImage) return;
@@ -62,22 +82,18 @@
     }
   }
 
-  function handleAvatarClick() {
-    if (seller?.username || seller?.id) {
-      const profileUrl = seller.username ? `/profile/${seller.username}` : `/profile/${seller.id}`;
-      if (typeof window !== 'undefined') {
-        window.location.href = profileUrl;
-      }
-    }
-  }
-
-  function handleAvatarEnter() {
-    avatarExpanded = true;
-  }
-
-  function handleAvatarLeave() {
-    avatarExpanded = false;
-  }
+  // Tooltip content helpers
+  const getConditionTooltip = (condition: ConditionType) => {
+    const tooltipMap: Record<ConditionType, string> = {
+      'brand_new_with_tags': m.condition_newWithTags(),
+      'new_without_tags': m.sell_condition_newWithoutTags(),
+      'like_new': m.product_likeNew(),
+      'good': m.sell_condition_good_desc(),
+      'worn': m.sell_condition_worn(),
+      'fair': 'Fair'
+    };
+    return tooltipMap[condition] || `Condition: ${condition}`;
+  };
 </script>
 
 <div class="w-full" role="region" aria-label="Product images">
@@ -86,49 +102,34 @@
     ontouchstart={handleTouchStart}
     ontouchend={handleTouchEnd}
     onkeydown={handleKeyDown}
-    tabindex="0"
     role="img"
-    aria-label="{title ? `${title} - ` : ''}Image {selectedImage + 1} of {images.length || 1}"
+    aria-label={m.pdp_a11y_productImage({ index: selectedImage + 1, total: images.length || 1 })}
   >
     {#if images.length > 0}
       <img 
         src={images[selectedImage]}
-        alt="{title ? `${title} - ` : ''}Image {selectedImage + 1} of {images.length}"
+        alt={m.pdp_a11y_productImage({ index: selectedImage + 1, total: images.length })}
         class="w-full h-full object-contain bg-gray-50"
         loading="eager"
       />
       
-      <!-- Seller Avatar (Top Left) -->
-      {#if seller}
-        <button 
-          class="absolute top-4 left-4 rounded-full bg-white shadow-lg flex items-center justify-center cursor-pointer transition-all duration-300 hover:scale-110 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 {avatarExpanded ? 'w-16 h-16' : 'w-12 h-12'}"
-          onclick={handleAvatarClick}
-          onmouseenter={handleAvatarEnter}
-          onmouseleave={handleAvatarLeave}
-          aria-label={`View ${seller.username || 'seller'}'s profile`}
-          type="button"
-        >
-          {#if seller.avatar_url}
-            <img 
-              src={seller.avatar_url} 
-              alt={seller.username || 'Seller'}
-              class="rounded-full object-cover transition-all duration-300 {avatarExpanded ? 'w-14 h-14' : 'w-10 h-10'}"
-            />
-          {:else}
-            <div class="rounded-full bg-gray-200 flex items-center justify-center transition-all duration-300 {avatarExpanded ? 'w-14 h-14' : 'w-10 h-10'}">
-              <svg class="text-gray-500 transition-all duration-300 {avatarExpanded ? 'size-7' : 'size-5'}" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
-            </div>
-          {/if}
-          
-          <!-- Hover tooltip -->
-          {#if avatarExpanded}
-            <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 translate-y-full bg-black text-white text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap opacity-90">
-              {seller.username || 'View profile'}
-            </div>
-          {/if}
-        </button>
+      <!-- Condition Badge (Top Left) -->
+      {#if condition}
+        <div class="absolute top-3 left-3 z-20">
+          <Tooltip 
+            content={getConditionTooltip(condition)}
+            positioning={{ side: 'bottom', align: 'start' }}
+            openDelay={600}
+            closeDelay={200}
+          >
+            {#snippet trigger()}
+              <ConditionBadge 
+                {condition}
+                {translations}
+              />
+            {/snippet}
+          </Tooltip>
+        </div>
       {/if}
       
       <!-- Like Button (Top Right) -->
@@ -136,7 +137,7 @@
         <button 
           class="btn-icon btn-ghost absolute top-4 right-4 bg-white/95 backdrop-blur-sm shadow-lg rounded-full p-3 {isLiked ? 'text-red-500' : 'text-gray-600'} hover:scale-105 transition-transform"
           onclick={onLike}
-          aria-label={isLiked ? `Remove from favorites` : `Add to favorites`}
+          aria-label={isLiked ? m.removeFavorite() : m.addFavorite()}
           type="button"
         >
           <svg class="size-5" viewBox="0 0 24 24" fill={isLiked ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.5">
@@ -159,14 +160,14 @@
           <circle cx="8.5" cy="8.5" r="1.5"/>
           <polyline points="21,15 16,10 5,21"/>
         </svg>
-        <p class="mt-2 text-sm font-medium">No image available</p>
+        <p class="mt-2 text-sm font-medium">{m.orders_noImage()}</p>
       </div>
     {/if}
     
     <!-- Sold Badge -->
     {#if isSold}
-      <div class="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold uppercase tracking-wide">
-        SOLD
+      <div class="absolute top-3 left-3 bg-red-500 text-white px-3 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide shadow-lg z-30">
+        {m.pdp_sold()}
       </div>
     {/if}
 

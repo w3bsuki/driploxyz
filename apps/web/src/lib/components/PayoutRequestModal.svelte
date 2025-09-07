@@ -3,10 +3,7 @@
 Creates payout requests via Supabase RPC calls
 -->
 <script lang="ts">
-	import Button from './Button.svelte';
-	import Input from './Input.svelte';
-	import Select from './Select.svelte';
-	import { Dialog } from '@repo/ui';
+	import { Button, Input, Select, Dialog } from '@repo/ui';
 
 	interface PayoutMethod {
 		type: 'revolut' | 'bank_transfer';
