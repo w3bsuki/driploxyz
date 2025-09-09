@@ -197,16 +197,16 @@
             </div>
           </div>
 
-          <!-- Title + Condition (inline) -->
+          <!-- Condition + Title (inline, condition on the left) -->
           <div class="mt-1 flex items-center gap-2">
-            <h1 class="text-[1rem] font-medium text-[color:var(--gray-900)] leading-snug tracking-tight truncate">
-              {data.product.title}
-            </h1>
             {#if data.product.condition}
               <span class="shrink-0">
                 <ConditionBadge condition={data.product.condition as any} />
               </span>
             {/if}
+            <h1 class="flex-1 text-[1rem] font-medium text-[color:var(--gray-900)] leading-snug tracking-tight truncate">
+              {data.product.title}
+            </h1>
           </div>
 
           <!-- Description -->
