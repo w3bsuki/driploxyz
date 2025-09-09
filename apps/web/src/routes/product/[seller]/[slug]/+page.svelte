@@ -163,13 +163,6 @@
       <!-- Mobile unified post: condition · header (avatar/name/@username · like) · title · description -->
       <div class="md:hidden mt-3 space-y-2">
         <div class="bg-white rounded-lg border border-[color:var(--gray-200)] p-3">
-          <!-- Condition above header/title -->
-          {#if data.product.condition}
-            <div class="mb-2">
-              <ConditionBadge condition={data.product.condition as any} />
-            </div>
-          {/if}
-
           <!-- Header: avatar · name/@username · like (date moved under name) -->
           <div class="flex items-center justify-between gap-3">
             <div class="flex items-center gap-2 min-w-0">
@@ -203,6 +196,13 @@
               </button>
             </div>
           </div>
+
+          <!-- Condition below seller header -->
+          {#if data.product.condition}
+            <div class="mt-1">
+              <ConditionBadge condition={data.product.condition as any} />
+            </div>
+          {/if}
 
           <!-- Title -->
           <h1 class="mt-2 text-[1.05rem] font-medium text-[color:var(--gray-900)] leading-snug">{data.product.title}</h1>
