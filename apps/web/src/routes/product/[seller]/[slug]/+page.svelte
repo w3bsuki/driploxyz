@@ -419,24 +419,27 @@
 
 <!-- Mobile sticky actions bar -->
 <div class="fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md border-t border-[color:var(--gray-200)] md:hidden" style="padding: 0; padding-bottom: max(1rem, env(safe-area-inset-bottom));">
-  <ProductActions
-    price={data.product.price}
-    currency={data.product.currency || '€'}
-    isOwner={data.isOwner}
-    isSold={data.product.is_sold}
-    onBuyNow={handleBuyNow}
-    onMessage={handleMessage}
-    onMakeOffer={handleMakeOffer}
-    seller={{
-      username: data.product.seller_username,
-      avatar_url: data.product.images?.[0],
-      rating: data.product.seller?.rating,
-      full_name: data.product.seller_name
-    }}
-    productTitle={data.product.title}
-    productDescription={formatRelativeDate(data.product.created_at)}
-    showSellerInfo={true}
-  />
+  <div class="relative">
+    <ProductActions
+      price={data.product.price}
+      currency={data.product.currency || '€'}
+      isOwner={data.isOwner}
+      isSold={data.product.is_sold}
+      onBuyNow={handleBuyNow}
+      onMessage={handleMessage}
+      onMakeOffer={handleMakeOffer}
+      seller={{
+        username: data.product.seller_username,
+        avatar_url: data.product.images?.[0],
+        rating: data.product.seller?.rating,
+        full_name: data.product.seller_name
+      }}
+      productTitle={data.product.title}
+      productDescription={data.product.description}
+      showSellerInfo={true}
+    />
+    <span class="absolute right-3 top-2 text-[11px] text-[color:var(--gray-500)]">{formatRelativeDate(data.product.created_at)}</span>
+  </div>
 </div>
 
 <style>
