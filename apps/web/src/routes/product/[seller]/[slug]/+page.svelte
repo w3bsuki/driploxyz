@@ -160,10 +160,17 @@
         condition={data.product.condition as any}
       />
 
-      <!-- Mobile unified post: header (avatar/name/date/like) · title · condition · description -->
+      <!-- Mobile unified post: condition · header (avatar/name/@username · like) · title · description -->
       <div class="md:hidden mt-3 space-y-2">
         <div class="bg-white rounded-lg border border-[color:var(--gray-200)] p-3">
-          <!-- Header: avatar · name/@username · date · like -->
+          <!-- Condition above header/title -->
+          {#if data.product.condition}
+            <div class="mb-2">
+              <ConditionBadge condition={data.product.condition as any} />
+            </div>
+          {/if}
+
+          <!-- Header: avatar · name/@username · like (date moved under name) -->
           <div class="flex items-center justify-between gap-3">
             <div class="flex items-center gap-2 min-w-0">
               {#if data.product.seller_avatar}
@@ -173,13 +180,16 @@
               {/if}
               <div class="min-w-0">
                 <a href={`/profile/${data.product.seller_id}`} class="block text-xs font-medium text-[color:var(--gray-900)] truncate">{data.product.seller_name}</a>
-                {#if data.product.seller_username}
-                  <span class="block text-[11px] text-[color:var(--gray-500)] truncate">@{data.product.seller_username}</span>
-                {/if}
+                <div class="flex items-center gap-1 text-[11px] text-[color:var(--gray-500)] truncate">
+                  {#if data.product.seller_username}
+                    <span class="truncate">@{data.product.seller_username}</span>
+                    <span aria-hidden="true">·</span>
+                  {/if}
+                  <span class="shrink-0">{formatRelativeDate(data.product.created_at)}</span>
+                </div>
               </div>
             </div>
             <div class="flex items-center gap-2 shrink-0">
-              <span class="text-[11px] text-[color:var(--gray-500)]">{formatRelativeDate(data.product.created_at)}</span>
               <button
                 type="button"
                 class={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${isLiked ? 'border-[color:var(--rose-200)] bg-[color:var(--rose-50)] text-[color:var(--rose-700)]' : 'border-[color:var(--gray-200)] bg-white text-[color:var(--gray-700)]'}`}
@@ -192,13 +202,8 @@
             </div>
           </div>
 
-          <!-- Title + condition -->
+          <!-- Title -->
           <h1 class="mt-2 text-[1.05rem] font-medium text-[color:var(--gray-900)] leading-snug">{data.product.title}</h1>
-          {#if data.product.condition}
-            <div class="mt-1">
-              <ConditionBadge condition={data.product.condition as any} />
-            </div>
-          {/if}
 
           <!-- Description -->
           {#if data.product.description}
