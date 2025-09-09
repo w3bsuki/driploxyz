@@ -226,22 +226,37 @@
 
         <!-- Quick facts table (mobile) -->
         <div class="bg-white rounded-xl border border-[color:var(--gray-200)]">
-          <div class="px-3 py-2 border-b border-[color:var(--gray-200)] text-sm font-semibold text-[color:var(--gray-900)]">Details</div>
-          <dl>
+          <div class="px-3 py-2.5 border-b border-[color:var(--gray-200)] text-sm font-semibold text-[color:var(--gray-900)]">Details</div>
+          <dl class="divide-y divide-[color:var(--gray-100)]">
             {#if data.product.brand}
-              <div class="px-3 py-2 flex justify-between text-sm border-b border-[color:var(--gray-100)]"><dt class="text-[color:var(--gray-600)]">Brand</dt><dd class="font-medium text-[color:var(--gray-900)]">{data.product.brand}</dd></div>
+              <div class="px-3 py-2 grid grid-cols-[auto_1fr] items-center gap-2 text-sm">
+                <dt class="text-[11px] uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">Brand</dt>
+                <dd class="font-medium text-[color:var(--gray-900)] text-right truncate">{data.product.brand}</dd>
+              </div>
             {/if}
             {#if data.product.size}
-              <div class="px-3 py-2 flex justify-between text-sm border-b border-[color:var(--gray-100)]"><dt class="text-[color:var(--gray-600)]">Size</dt><dd class="font-medium text-[color:var(--gray-900)]">{data.product.size}</dd></div>
+              <div class="px-3 py-2 grid grid-cols-[auto_1fr] items-center gap-2 text-sm">
+                <dt class="text-[11px] uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">Size</dt>
+                <dd class="font-medium text-[color:var(--gray-900)] text-right truncate">{data.product.size}</dd>
+              </div>
             {/if}
             {#if data.product.condition}
-              <div class="px-3 py-2 flex justify-between text-sm border-b border-[color:var(--gray-100)]"><dt class="text-[color:var(--gray-600)]">Condition</dt><dd class="font-medium text-[color:var(--gray-900)]">{(data.product.condition || '').toString().replaceAll('_',' ')}</dd></div>
+              <div class="px-3 py-2 grid grid-cols-[auto_1fr] items-center gap-2 text-sm">
+                <dt class="text-[11px] uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">Condition</dt>
+                <dd class="font-medium text-[color:var(--gray-900)] text-right truncate">{(data.product.condition || '').toString().replaceAll('_',' ')}</dd>
+              </div>
             {/if}
             {#if data.product.color}
-              <div class="px-3 py-2 flex justify-between text-sm border-b border-[color:var(--gray-100)]"><dt class="text-[color:var(--gray-600)]">Color</dt><dd class="font-medium text-[color:var(--gray-900)]">{data.product.color}</dd></div>
+              <div class="px-3 py-2 grid grid-cols-[auto_1fr] items-center gap-2 text-sm">
+                <dt class="text-[11px] uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">Color</dt>
+                <dd class="font-medium text-[color:var(--gray-900)] text-right truncate">{data.product.color}</dd>
+              </div>
             {/if}
             {#if data.product.material}
-              <div class="px-3 py-2 flex justify-between text-sm"><dt class="text-[color:var(--gray-600)]">Material</dt><dd class="font-medium text-[color:var(--gray-900)]">{data.product.material}</dd></div>
+              <div class="px-3 py-2 grid grid-cols-[auto_1fr] items-center gap-2 text-sm">
+                <dt class="text-[11px] uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">Material</dt>
+                <dd class="font-medium text-[color:var(--gray-900)] text-right truncate">{data.product.material}</dd>
+              </div>
             {/if}
           </dl>
         </div>
@@ -336,18 +351,18 @@
 
         <!-- Product Details Table -->
         <section class="hidden md:block bg-white rounded-xl border border-[color:var(--gray-200)] shadow-sm" aria-labelledby="details-heading">
-          <div class="px-4 py-3 bg-[color:var(--gray-50)] border-b border-[color:var(--gray-200)]">
+          <div class="px-5 py-2.5 bg-[color:var(--gray-50)] border-b border-[color:var(--gray-200)]">
             <h2 id="details-heading" class="text-base font-semibold text-[color:var(--gray-900)]">Product Details</h2>
           </div>
           {#snippet fact(label: string, value: string)}
-            <div class="px-4 py-3 border-b border-[color:var(--gray-100)] last:border-b-0 hover:bg-[color:var(--gray-50)] transition-colors md:border-b-0 md:py-2">
-              <div class="flex justify-between items-center">
-                <dt class="text-sm font-medium text-[color:var(--gray-600)]">{label}</dt>
-                <dd class="text-sm text-[color:var(--gray-900)] font-medium text-right">{value}</dd>
+            <div class="px-5 py-2 border-b border-[color:var(--gray-100)] last:border-b-0 md:border-b-0">
+              <div class="grid grid-cols-[auto_1fr] items-baseline gap-3">
+                <dt class="text-sm font-medium text-[color:var(--gray-600)] whitespace-nowrap">{label}</dt>
+                <dd class="text-sm text-[color:var(--gray-900)] font-medium text-right truncate">{value}</dd>
               </div>
             </div>
           {/snippet}
-          <dl role="list" aria-label="Product specifications" class="md:grid md:grid-cols-2 md:gap-x-6">
+          <dl role="list" aria-label="Product specifications" class="md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-1">
             {#if data.product.brand}{@render fact('Brand', data.product.brand)}{/if}
             {#if data.product.size}{@render fact('Size', data.product.size)}{/if}
             {#if data.product.condition}{@render fact('Condition', (data.product.condition || '').toString().replaceAll('_',' '))}{/if}
