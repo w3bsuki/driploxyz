@@ -4,7 +4,7 @@
 /// <reference path="./paraglide.d.ts" />
 
 // Export all message functions - Vite automatically tree-shakes unused ones
-export * from './paraglide/messages/_index.js';
+export * from './paraglide/messages.js';
 
 // Type definitions 
 export type Locale = 'en' | 'bg';
