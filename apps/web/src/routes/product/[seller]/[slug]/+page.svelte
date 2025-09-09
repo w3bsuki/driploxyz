@@ -398,26 +398,24 @@
 
 <!-- Mobile sticky actions bar -->
 <div class="fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md border-t border-[color:var(--gray-200)] md:hidden" style="padding: 0; padding-bottom: max(1rem, env(safe-area-inset-bottom));">
-  <div class="mx-auto max-w-screen-xl px-3 py-2">
-    <div class="flex items-center gap-3">
-      {#if (data.product.images?.length || 0) > 0}
-        <img src={data.product.images[0]} alt={data.product.title} class="size-10 rounded-md object-cover border border-[color:var(--gray-200)]" />
-      {/if}
-      <div class="min-w-0 flex-1">
-        <p class="text-xs text-[color:var(--gray-700)] leading-snug line-clamp-1">{data.product.title}</p>
-      </div>
-      <ProductActions
-        className="flex-shrink-0"
-        price={data.product.price}
-        currency={data.product.currency || '€'}
-        isOwner={data.isOwner}
-        isSold={data.product.is_sold}
-        onBuyNow={handleBuyNow}
-        onMessage={handleMessage}
-        onMakeOffer={handleMakeOffer}
-      />
-    </div>
-  </div>
+  <ProductActions
+    price={data.product.price}
+    currency={data.product.currency || '€'}
+    isOwner={data.isOwner}
+    isSold={data.product.is_sold}
+    onBuyNow={handleBuyNow}
+    onMessage={handleMessage}
+    onMakeOffer={handleMakeOffer}
+    seller={{
+      username: data.product.seller_username,
+      avatar_url: data.product.images?.[0],
+      rating: data.product.seller?.rating,
+      full_name: data.product.seller_name
+    }}
+    productTitle={data.product.title}
+    productDescription={data.product.description}
+    showSellerInfo={true}
+  />
 </div>
 
 <style>
