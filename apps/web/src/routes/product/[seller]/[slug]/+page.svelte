@@ -79,7 +79,7 @@
     data.product.title,
     data.product.size && `Size ${data.product.size}`,
     data.product.condition
-  ].filter(Boolean).join(' Â· ');
+  ].filter(Boolean).join(' · ');
   
   const seoDescription = [
     data.product.description || `${data.product.title} by ${data.product.seller_name}`,
@@ -87,7 +87,7 @@
     data.product.size && `Size: ${data.product.size}`,
     data.product.condition && `Condition: ${data.product.condition}`,
     `Price: €${data.product.price}`
-  ].filter(Boolean).join(' Â· ').substring(0, 160);
+  ].filter(Boolean).join(' · ').substring(0, 160);
 
   // Relative date helper: minutes < 60 -> m, hours < 24 -> h, else days -> d
   function formatRelativeDate(input: string | Date) {
@@ -186,6 +186,10 @@
                     <span aria-hidden="true">·</span>
                   {/if}
                   <span class="shrink-0">{formatRelativeDate(data.product.created_at)}</span>
+                  {#if data.product.location}
+                    <span aria-hidden="true">·</span>
+                    <span class="truncate">{data.product.location}</span>
+                  {/if}
                 </div>
               </div>
             </div>
@@ -449,6 +453,7 @@
     }
   }
 </style>
+
 
 
 
