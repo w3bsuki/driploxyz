@@ -384,13 +384,10 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {#each data.similarProducts as p (p.id)}
             <ProductCard
-              id={p.id}
-              title={p.title}
-              price={p.price}
-              condition={p.condition}
-              images={p.images}
-              slug={p.slug}
-              showQuickActions={false}
+              product={{
+                ...p,
+                currency: data.product.currency || 'EUR'
+              }}
               class="h-full"
             />
           {/each}
@@ -404,13 +401,10 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {#each data.sellerProducts as p (p.id)}
             <ProductCard
-              id={p.id}
-              title={p.title}
-              price={p.price}
-              condition={p.condition}
-              images={p.images}
-              slug={p.slug}
-              showQuickActions={false}
+              product={{
+                ...p,
+                currency: data.product.currency || 'EUR'
+              }}
               class="h-full"
             />
           {/each}
