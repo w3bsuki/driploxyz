@@ -14,7 +14,10 @@
 		"check-types": "tsc --noEmit",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "eslint ."
+		"lint": "eslint .",
+		"lighthouse": "lhci autorun",
+		"lighthouse:ci": "lhci autorun --config=../../.lighthouserc.ci.json",
+		"test:performance": "playwright test ../../performance-tests/ --config=../../playwright.config.performance.ts"
 	},
 	"dependencies": {
 		"@lucide/svelte": "^0.542.0",

@@ -68,7 +68,6 @@
 <section 
   class="px-4 sm:px-6 lg:px-8 py-4"
   aria-label={sectionTitle}
-  role="region"
 >
   <!-- Enhanced Section Header - Mobile-First -->
   <div class="mb-4 sm:mb-6">
@@ -92,7 +91,7 @@
       <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
         <button
           onclick={() => onQuickFilter?.('new')}
-          class="min-h-[32px] shrink-0 px-3 py-1.5 
+          class="min-h-[36px] shrink-0 px-3 py-1.5 
                  rounded-full text-xs font-semibold transition-all duration-200
                  bg-[color:var(--success-subtle)] text-[color:var(--success-text)]
                  border border-[color:var(--success-border)]
@@ -105,7 +104,7 @@
         
         <button
           onclick={() => onQuickFilter?.('like-new')}
-          class="min-h-[32px] shrink-0 px-3 py-1.5 
+          class="min-h-[36px] shrink-0 px-3 py-1.5 
                  rounded-full text-xs font-semibold transition-all duration-200
                  bg-[color:var(--info-subtle)] text-[color:var(--info-text)]
                  border border-[color:var(--info-border)]
@@ -118,7 +117,7 @@
         
         <button
           onclick={() => onQuickFilter?.('good')}
-          class="min-h-[32px] shrink-0 px-3 py-1.5 
+          class="min-h-[36px] shrink-0 px-3 py-1.5 
                  rounded-full text-xs font-semibold transition-all duration-200
                  bg-[color:var(--surface-muted)] text-[color:var(--text-secondary)]
                  border border-[color:var(--border-subtle)]
@@ -132,7 +131,7 @@
         
         <button
           onclick={() => onQuickFilter?.('fair')}
-          class="min-h-[32px] shrink-0 px-3 py-1.5 
+          class="min-h-[36px] shrink-0 px-3 py-1.5 
                  rounded-full text-xs font-semibold transition-all duration-200
                  bg-[color:var(--surface-muted)] text-[color:var(--text-secondary)]
                  border border-[color:var(--border-subtle)]

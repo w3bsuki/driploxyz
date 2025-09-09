@@ -391,6 +391,10 @@
   --category-men: var(--blue-500);
   --category-women: var(--pink-500);
   --category-kids: var(--orange-500);
+  
+  /* Wishlist/Favorites - Custom warm red */
+  --favorite-solid: oklch(0.55 0.18 15);  /* Warm red, not harsh */
+  --favorite-hover: oklch(0.45 0.20 15);  /* Darker on hover */
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
      ALIAS TOKENS — Bridge for semantic.css and utilities
@@ -420,6 +424,10 @@
   --info: var(--status-info-solid);
   --info-bg: var(--status-info-bg);
   --info-fg: var(--status-info-text);
+
+  /* Favorite aliases */
+  --favorite: var(--favorite-solid);
+  --favorite-fg: var(--favorite-solid);
 
   /* Text aliases */
   --fg-muted: var(--text-muted);

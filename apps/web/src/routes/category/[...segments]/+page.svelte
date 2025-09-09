@@ -693,6 +693,8 @@
     profile: i18n.nav_profile(),
     messages: i18n.nav_messages()
   }}
+  variant="ios"
+  showLabels={false}
 />
 
 <style>

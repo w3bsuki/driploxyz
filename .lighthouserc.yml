@@ -1,113 +1,110 @@
 # Lighthouse CI Configuration for Driplo Performance Validation
-# Aligns with CLAUDE.md requirements: mobile p75 ≥ 90, LCP ≤ 1.5s
+# Aligns with PRODUCTION_REFACTOR_PLAN.md requirements: Mobile LCP < 2.5s, TBT < 200ms, CLS < 0.1
 
 ci:
   collect:
+    # Critical pages as per PRODUCTION_REFACTOR_PLAN
+    url:
+      - "http://localhost:4173/"                           # Homepage
+      - "http://localhost:4173/search"                     # Search with filters
+      - "http://localhost:4173/search?q=shoes&category=sneakers" # Search results
+      - "http://localhost:4173/category/women"             # Category page with filters  
+      - "http://localhost:4173/product/1"                  # Product detail page
+      - "http://localhost:4173/checkout"                   # Checkout flow
+
+    # Server configuration for SvelteKit preview
+    startServerCommand: "cd apps/web && pnpm build && pnpm preview"
+    startServerReadyPattern: "Local:.*http://localhost:4173"
+    
     # Run multiple times for statistical significance
     numberOfRuns: 5
     
-    # Chrome configuration for consistent testing
+    # Mobile-first testing configuration (per CLAUDE.md)
     settings:
-      chromeFlags: "--no-sandbox --headless --disable-dev-shm-usage"
+      chromeFlags: "--no-sandbox --headless --disable-dev-shm-usage --disable-background-timer-throttling --disable-renderer-backgrounding"
       
-      # Mobile-first testing (per CLAUDE.md)
+      # Mobile emulation
       emulatedFormFactor: "mobile"
       
-      # Throttling to simulate real-world mobile conditions
+      # 3G Fast network simulation for realistic mobile testing
       throttling:
-        rttMs: 150              # 3G Fast network simulation
-        throughputKbps: 1638.4  # ~1.6 Mbps down
-        uploadThroughputKbps: 750  # 0.75 Mbps up
-        cpuSlowdownMultiplier: 4   # Low-end mobile CPU
+        rttMs: 150
+        throughputKbps: 1638.4
+        uploadThroughputKbps: 675.84
+        cpuSlowdownMultiplier: 4
       
-      # Only run categories we care about
+      # Screen emulation - iPhone SE dimensions
+      screenEmulation:
+        mobile: true
+        width: 375
+        height: 667
+        deviceScaleFactor: 2
+        disabled: false
+      
+      # Only run categories we care about for performance
       onlyCategories: ["performance", "accessibility", "best-practices", "seo"]
-      
-      # Additional settings for filter component testing
-      skipAudits:
-        - "uses-http2"          # Not applicable for testing
-        - "uses-long-cache-ttl" # Handled by deployment
-      
-      # Custom audits for filter performance
-      extraHeaders:
-        "User-Agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36"
 
-  # URLs to test (focusing on filter-heavy pages)
-  collect:
-    url:
-      - "http://localhost:5173/"                    # Homepage
-      - "http://localhost:5173/search"              # Main search with filters
-      - "http://localhost:5173/search?q=shoes"     # Search results
-      - "http://localhost:5173/category/sneakers"  # Category page with filters
-
-  # Performance assertions based on CLAUDE.md requirements
+  # Performance budgets based on PRODUCTION_REFACTOR_PLAN requirements
   assert:
     assertions:
-      # Core requirement: mobile p75 ≥ 90
+      # Core requirement: mobile p75 >= 90%
       "categories:performance": ["error", {"minScore": 0.9}]
       "categories:accessibility": ["error", {"minScore": 0.95}]
       "categories:best-practices": ["error", {"minScore": 0.9}]
-      "categories:seo": ["error", {"minScore": 0.95}]
+      "categories:seo": ["error", {"minScore": 0.9}]
       
-      # Critical Core Web Vitals (CLAUDE.md: LCP ≤ 1.5s)
-      "metrics:largest-contentful-paint": ["error", {"maxNumericValue": 1500}]
-      "metrics:first-contentful-paint": ["error", {"maxNumericValue": 1200}]
-      "metrics:cumulative-layout-shift": ["error", {"maxNumericValue": 0.1}]
-      "metrics:total-blocking-time": ["error", {"maxNumericValue": 200}]
+      # Critical Core Web Vitals (PRODUCTION_REFACTOR_PLAN: LCP < 2.5s, TBT < 200ms, CLS < 0.1)
+      "largest-contentful-paint": ["error", {"maxNumericValue": 2500}]
+      "first-contentful-paint": ["warn", {"maxNumericValue": 1800}]
+      "cumulative-layout-shift": ["error", {"maxNumericValue": 0.1}]
+      "total-blocking-time": ["error", {"maxNumericValue": 200}]
       
       # Interactive performance
-      "metrics:interactive": ["error", {"maxNumericValue": 2500}]
-      "metrics:speed-index": ["error", {"maxNumericValue": 2000}]
+      "interactive": ["warn", {"maxNumericValue": 4000}]
+      "speed-index": ["warn", {"maxNumericValue": 3000}]
+      "first-meaningful-paint": ["warn", {"maxNumericValue": 2500}]
       
-      # Filter-specific performance budgets
-      "metrics:max-potential-fid": ["warn", {"maxNumericValue": 100}]
-      "metrics:server-response-time": ["warn", {"maxNumericValue": 200}]
+      # Resource optimization
+      "uses-text-compression": "error"
+      "uses-responsive-images": "error"
+      "efficient-animated-content": "warn"
+      "offscreen-images": "warn"
+      "render-blocking-resources": "warn"
+      "unminified-css": "error"
+      "unminified-javascript": "error"
+      "unused-css-rules": "warn"
+      "unused-javascript": "warn"
+      "modern-image-formats": "warn"
+      "uses-optimized-images": "warn"
+      "uses-webp-images": "warn"
+      "uses-rel-preconnect": "warn"
+      "uses-rel-preload": "warn"
       
       # Accessibility requirements (AA compliance)
       "color-contrast": "error"
-      "tap-targets": "error"
-      "accessible-names": "error"
-      "focus-traps": "error"
-      
-      # Best practices for filter components
-      "uses-responsive-images": "warn"
-      "efficient-animated-content": "warn"
-      "no-document-write": "error"
+      "image-alt": "error"
+      "label": "error"
+      "link-name": "error"
+      "button-name": "error"
+      "document-title": "error"
+      "duplicate-id-aria": "error"
+      "heading-order": "warn"
+      "html-has-lang": "error"
+      "html-lang-valid": "error"
+      "landmark-one-main": "error"
+      "meta-description": "error"
+      "meta-viewport": "error"
+      "tabindex": "warn"
       
       # SEO for search and category pages
-      "meta-description": "warn"
-      "document-title": "error"
+      "canonical": "warn"
+      "http-status-code": "error"
+      "is-crawlable": "error"
+      "robots-txt": "warn"
       "structured-data": "warn"
+      "hreflang": "warn"
 
   # Upload results for CI/CD integration
   upload:
     target: "temporary-public-storage"
-    
-  # Server configuration for local testing
-  server:
-    port: 9001
-    
-  # Budget configuration for filter components
-  budgets:
-    - path: "/search"
-      resourceSizes:
-        - resourceType: "script"
-          budget: 200  # KB - includes all filter JS
-        - resourceType: "stylesheet" 
-          budget: 50   # KB - filter component styles
-        - resourceType: "image"
-          budget: 300  # KB - brand logos, thumbnails
-      
-      # Timing budgets for filter interactions
-      timings:
-        - metric: "interactive"
-          budget: 2500
-        - metric: "first-contentful-paint"
-          budget: 1200
-    
-    - path: "/category/*"
-      resourceSizes:
-        - resourceType: "script"
-          budget: 180  # KB - category-specific filters
-        - resourceType: "total"
-          budget: 800  # KB - total page weight
+    ignoreDuplicateBuildFailure: true

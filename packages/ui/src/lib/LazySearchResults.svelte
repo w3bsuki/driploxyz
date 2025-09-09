@@ -150,12 +150,12 @@
 
 <div bind:this={container} class="lazy-search-results {className}">
   {#if !isLoaded}
-    <!-- Loading placeholder -->
+    <!-- Loading placeholder (token-based for dark mode) -->
     <div class="flex items-center justify-center h-64">
       <div class="animate-pulse space-y-4 w-full">
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
           {#each Array(10) as _}
-            <div class="bg-gray-200 rounded-lg aspect-square"></div>
+            <div class="rounded-lg aspect-square bg-[color:var(--surface-subtle)]"></div>
           {/each}
         </div>
       </div>
@@ -163,17 +163,17 @@
   {:else if error}
     <!-- Error state -->
     <div class="text-center py-12">
-      <div class="text-red-500 mb-4">
+      <div class="text-[color:var(--status-error-solid)] mb-4">
         <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z" />
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">Search Error</h3>
-      <p class="text-gray-500 mb-4">{error}</p>
+      <h3 class="text-lg font-medium text-[color:var(--text-primary)] mb-2">Search Error</h3>
+      <p class="text-[color:var(--text-muted)] mb-4">{error}</p>
       <button 
         onclick={() => loadSearchResults()}
-        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        class="px-4 py-2 rounded-lg transition-colors bg-[color:var(--status-info-solid)] text-[color:var(--text-inverse)] hover:brightness-95"
       >
         Try Again
       </button>
@@ -181,20 +181,20 @@
   {:else if products.length === 0 && !loading}
     <!-- Empty state -->
     <div class="text-center py-12">
-      <div class="text-gray-400 mb-4">
+      <div class="text-[color:var(--text-muted)] mb-4">
         <svg class="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
       </div>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-      <p class="text-gray-500">Try adjusting your search or filters</p>
+      <h3 class="text-lg font-medium text-[color:var(--text-primary)] mb-2">No products found</h3>
+      <p class="text-[color:var(--text-muted)]">Try adjusting your search or filters</p>
     </div>
   {:else}
     <!-- Results -->
     <div class="space-y-4">
       <!-- Results count -->
-      <div class="text-sm text-gray-500">
+      <div class="text-sm text-[color:var(--text-muted)]">
         {totalCount} {totalCount === 1 ? 'product' : 'products'} found
       </div>
       

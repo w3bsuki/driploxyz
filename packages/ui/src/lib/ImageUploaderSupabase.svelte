@@ -368,7 +368,7 @@
         <div 
           class="bg-blue-600 h-2 rounded-full transition-colors duration-300 ease-out"
           style="width: {conversionProgress.total > 0 ? (conversionProgress.current / conversionProgress.total) * 100 : 0}%"
-        />
+        ></div>
       </div>
       <p class="text-xs text-blue-600 mt-2">
         {imagesOptimizedText}
@@ -382,6 +382,8 @@
     ondrop={handleDrop}
     ondragover={handleDragOver}
     ondragleave={handleDragLeave}
+    role="application"
+    aria-label="Image upload area with drag and drop support"
   >
     <!-- Uploaded images -->
     {#each images as image, index}
@@ -416,7 +418,7 @@
           type="button"
           onclick={() => removeImage(index)}
           disabled={uploading || isProcessing}
-          class="absolute bottom-1.5 right-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 
+          class="absolute bottom-1.5 right-1.5 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center
                  opacity-0 group-hover:opacity-100 transition-colors duration-200 
                  disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label={removeImageText}
@@ -524,7 +526,8 @@
             <button
               type="button"
               onclick={() => currentError = ''}
-              class="inline-flex rounded-md bg-red-50 p-1.5 text-red-400 hover:bg-red-100 focus:outline-none"
+              class="inline-flex rounded-md bg-red-50 p-1.5 text-red-400 hover:bg-red-100 focus:outline-none min-w-[36px] min-h-[36px]"
+              aria-label="Dismiss error message"
             >
               <svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />

@@ -2,15 +2,28 @@
 // Proper tree-shaking approach: export * allows Vite to tree-shake unused messages
 /// <reference path="./paraglide.d.ts" />
 // Export all message functions - Vite automatically tree-shakes unused ones
-export * from './generated-messages.js';
+export * from './paraglide/messages.js';
 // Re-export Paraglide runtime functions directly - let Paraglide handle locale detection
+// During packaging/build, runtime is emitted to lib/paraglide/runtime.js.
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export { setLocale, getLocale, isLocale, locales, baseLocale } from './paraglide/runtime.js';
 // Local bindings for internal use
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import { locales as runtimeLocales, setLocale as runtimeSetLocale } from './paraglide/runtime.js';
 // Compatibility aliases for existing API
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export { getLocale as languageTag } from './paraglide/runtime.js';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export { setLocale as setLanguageTag } from './paraglide/runtime.js';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export { locales as availableLanguageTags } from './paraglide/runtime.js';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export { isLocale as isAvailableLanguageTag } from './paraglide/runtime.js';
 // Helper constants
 export const languageNames = {
@@ -33,7 +46,7 @@ export function detectLocale(input) {
     // Path: /^\/(uk|bg)(\/|$)/
     if (input.path) {
         const match = input.path.match(/^\/(uk|bg)(\/|$)/);
-        if (match) {
+        if (match && match[1]) {
             const mapped = LOCALE_ALIASES[match[1]] ?? match[1];
             if (runtimeLocales.includes(mapped))
                 return mapped;

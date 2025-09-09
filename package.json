@@ -7,10 +7,13 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "turbo test",
-    "test:performance": "playwright test performance-tests/ --config=playwright.config.performance.ts",
-    "lighthouse": "lhci autorun",
+    "test:performance": "turbo test:performance",
+    "lighthouse": "turbo lighthouse",
+    "lighthouse:local": "./scripts/lighthouse-ci.sh local",
+    "lighthouse:staging": "./scripts/lighthouse-ci.sh staging",
+    "lighthouse:production": "./scripts/lighthouse-ci.sh production",
     "bundle-analysis": "node performance-tests/bundle-analysis.js",
-    "performance-audit": "npm run lighthouse && npm run bundle-analysis && npm run test:performance",
+    "performance-audit": "turbo performance-audit",
     "check-types": "turbo run check-types"
   },
   "devDependencies": {

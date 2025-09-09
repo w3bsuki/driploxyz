@@ -19,33 +19,47 @@ export { default as BuyBox } from './BuyBox.svelte';
 export { default as ShippingEstimator } from './ShippingEstimator.svelte';
 export { default as TrustBadges } from './TrustBadges.svelte';
 
+// Core product page components only (5 components total)
+export { default as ProductGallery } from './ProductGallery.svelte';
+export { default as ProductInfo } from './ProductInfo.svelte';
+export { default as ProductSeller } from './ProductSeller.svelte';
+export { default as ProductBuyBox } from './ProductBuyBox.svelte';
+export { default as ProductReviews } from './ProductReviews.svelte';
+
 // Utils will be exported at the end
 
 // Loading components
 export { default as LoadingSpinner } from './LoadingSpinner.svelte';
 
-// New premium product page components
-export { default as ProductGallery } from './ProductGallery.svelte';
-export { default as ProductInfo } from './ProductInfo.svelte';
+// Form and selector components
 export { default as SizeSelector } from './SizeSelector.svelte';
 export { default as ConditionReport } from './ConditionReport.svelte';
 export { default as SellerCard } from './SellerCard.svelte';
 
-// Main Product Page Component (modular and mobile-optimized)
-export { default as ProductPage } from './ProductPage.svelte';
+// Core product components
 export { default as ProductBreadcrumb } from './ProductBreadcrumb.svelte';
+export { default as ProductActions } from './ProductActions.svelte';
 
-// Product page component modules (for demo pages)
-export { default as ProductImageGallery } from './ProductImageGallery.svelte';
-export { default as ProductHero } from './ProductHero.svelte';
-export { default as ProductActionBar } from './ProductActionBar.svelte';
-export { default as ProductDetails } from './ProductDetails.svelte';
-export { default as ProductPageLayout } from './ProductPageLayout.svelte';
-export { default as ProductRecommendations } from './ProductRecommendations.svelte';
+// PDP Components
+export { default as StickyHeader } from './PDP/components/StickyHeader.svelte';
+
+// PDP Sections
+export { default as InfoSection } from './PDP/sections/InfoSection.svelte';
+export { default as ReviewsSection } from './PDP/sections/ReviewsSection.svelte';
+export { default as RecommendationsSection } from './PDP/sections/RecommendationsSection.svelte';
+export { default as GallerySection } from './PDP/sections/GallerySection.svelte';
+export { default as BuyBoxSection } from './PDP/sections/BuyBoxSection.svelte';
+export { default as SellerSection } from './PDP/sections/SellerSection.svelte';
+
+// Lazy-loaded components for performance
+export { default as LazyRecommendationsSection } from './lazy/LazyRecommendationsSection.svelte';
+export { default as LazySellerProductsSection } from './lazy/LazySellerProductsSection.svelte';
+export { default as LazyReviewModal } from './lazy/LazyReviewModal.svelte';
+
+// Seller components
 export { default as SellerProfile } from './SellerProfile.svelte';
 // MOVED TO EXPERIMENTAL - Unused components
 // export { default as LiveActivity } from './LiveActivity.svelte';
-// export { default as ProductSheet } from './ProductSheet.svelte';
 export { default as QuickActions } from './QuickActions.svelte';
 export { default as TabGroup } from './TabGroup.svelte';
 export { default as Tabs } from './primitives/tabs/Tabs.svelte';
@@ -206,9 +220,7 @@ export { default as Accordion } from './Accordion.svelte';
 // Seller components
 export { default as SellerQuickView } from './SellerQuickView.svelte';
 
-// Product quick view components
 // MOVED TO EXPERIMENTAL - Quick view components (unused)
-// export { default as ProductQuickView } from './ProductQuickView.svelte';
 // export { default as HighlightQuickView } from './HighlightQuickView.svelte';
 
 // Auth components
@@ -249,6 +261,20 @@ export * from './types';
 
 // Design tokens
 export * from './tokens';
+
+// PDP Components & Utilities
+export { default as PriceFormatter } from './PDP/components/PriceFormatter.svelte';
+export { default as SellerProductsSection } from './PDP/sections/SellerProductsSection.svelte';
+export * as pdpUtils from './PDP/utils';
+
+// Description list primitives
+export { default as DescriptionList } from './components/description-list/DescriptionList.svelte';
+export { default as DescriptionTerm } from './components/description-list/DescriptionTerm.svelte';
+export { default as DescriptionDetails } from './components/description-list/DescriptionDetails.svelte';
+
+// Performance utilities
+export * from '../utils/lazyLoad';
+export * from '../utils/imagePreloader';
 
 // Melt UI Primitives
 export * from './primitives';

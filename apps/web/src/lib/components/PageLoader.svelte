@@ -47,20 +47,20 @@
 {#if showLoader}
   {#if fullScreen}
     <!-- Full screen loader for major operations -->
-    <div class="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-[color:color-mix(in_oklch,_var(--surface-base)_80%,_transparent)] backdrop-blur-sm">
       <div class="flex flex-col items-center gap-3">
-        <div class="animate-spin rounded-full h-12 w-12 border-4 border-indigo-600 border-t-transparent"></div>
+        <div class="animate-spin rounded-full h-12 w-12 border-4 border-[color:var(--status-info-solid)] border-t-transparent"></div>
         {#if message}
-          <p class="text-sm text-gray-600">{message}</p>
+          <p class="text-sm text-[color:var(--text-secondary)]">{message}</p>
         {/if}
       </div>
     </div>
   {:else}
     <!-- Corner spinner for non-blocking indication -->
-    <div class="fixed bottom-4 right-4 z-50 bg-white rounded-lg shadow-lg p-3 flex items-center gap-3">
-      <div class="animate-spin rounded-full h-8 w-8 border-3 border-indigo-600 border-t-transparent"></div>
+    <div class="fixed bottom-4 right-4 z-50 rounded-lg shadow-lg p-3 flex items-center gap-3 bg-[color:var(--surface-base)]">
+      <div class="animate-spin rounded-full h-8 w-8 border-3 border-[color:var(--status-info-solid)] border-t-transparent"></div>
       {#if message}
-        <p class="text-sm text-gray-600">{message}</p>
+        <p class="text-sm text-[color:var(--text-secondary)]">{message}</p>
       {/if}
     </div>
   {/if}

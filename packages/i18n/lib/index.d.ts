@@ -1,4 +1,4 @@
-export * from './generated-messages.js';
+export * from './paraglide/messages.js';
 export type Locale = 'en' | 'bg';
 export type LanguageTag = Locale;
 export { setLocale, getLocale, isLocale, locales, baseLocale } from './paraglide/runtime.js';

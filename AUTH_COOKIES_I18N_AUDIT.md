@@ -157,3 +157,65 @@
 - Supabase SvelteKit SSR: `createServerClient`, cookie plumbing, `getSession` before `getUser`.
 - OWASP: CSRF protection and cookie security.
 - Paraglide best practices: server-driven locale, tree-shaking, canonical/hreflang.
+
+---
+
+## Claude-codes Production Audit (2025-09-09)
+
+Scope: Auth, Cookies/Consent, Security (CSRF/CSP), Paraglide/i18n. Includes observations impacting SEO routing that intersect with localization and canonical URLs.
+
+Executive Summary
+
+- Overall posture is strong. Auth and consent systems follow modern SSR patterns with secure defaults. Minor gaps remain around documentation, canonical/hreflang coverage, and consolidating duplicated URL handlers that can affect SEO and locale routing.
+
+Key Strengths
+
+- SSR-first Supabase auth with PKCE and cookie plumbing via @supabase/ssr.
+- CSRF tokens use HMAC with timing-safe comparison and bounded lifetime.
+- Consent framework categorizes cookies and gates non-essential scripts consistently.
+- Locale detection prioritizes path prefix, then cookie, then Accept-Language; reroute hook handles prefixed locales.
+
+Observed Risks / Gaps
+
+- Canonicalization: Multiple PDP route handlers existed (/product/[seller]/[slug] and a catch‑all). Divergence risks inconsistent canonical URLs and hreflang signals. Resolution: retain a single canonical route and make catch‑all redirect-only.
+- Canonical + hreflang coverage: Some pages don’t emit hreflang consistently from a single utility; risk of diluted SEO signals for localized routes.
+- Documentation: CSRF_SECRET and consent categories lifetimes are not fully documented for ops handoff.
+- CSP: Script blocking is present, but CSP with nonce/strict-dynamic is not uniformly configured across routes.
+
+Recommendations (Actionable)
+
+1) Canonical URL Discipline
+- Keep only /product/[seller]/[slug] as the rendering route; make the catch‑all redirect-only (301 for legacy patterns, 302 for normalization).
+- Ensure canonical + hreflang generation uses a single helper fed by locale-aware URLs.
+
+2) Session/CSRF Hardening (Documentation + Consistency)
+- Add explicit docs for CSRF_SECRET rotation and entropy requirements.
+- Provide a shared server helper getSession(event) and migrate callsites for consistency and observability.
+
+3) Consent + Cookie Policy
+- Keep sensitive cookies server‑only; validate SameSite=strict/secure across environments.
+- Ensure consent payload remains minimal (booleans + version + ts). Any IP/UA derived logic should be server-side only.
+
+4) CSP and Third‑Party Scripts
+- Add CSP with nonce and strict-dynamic for pages that inject scripts post-consent. Document nonce propagation in server hooks.
+
+5) i18n Hygiene
+- Centralize prefix/locale mapping helpers; generate hreflang/canonical consistently via seo.ts.
+- Add tests that verify hreflang link sets per supported locale on key pages (home, category, PDP).
+
+Acceptance Criteria
+
+- Catch‑all route contains redirects only; canonical PDP renders from a single route.
+- seo.ts emits canonical + hreflang for every localized route via one API.
+- CSRF guide lives in ops docs (env var, rotation policy, error triage steps).
+- CSP with nonce enabled where dynamic scripts may execute after consent; violations surface to monitoring.
+
+Monitoring & Tests
+
+- Playwright: login/logout flows, locale switching, presence of canonical + hreflang.
+- Unit: locale prefix mapping utilities; seo.ts generation.
+- Runtime: log redirect counts from catch‑all to track legacy traffic decay.
+
+Notes
+
+- The UI layer audit (tokens, sticky bars, mobile touch targets) is tracked separately and does not change auth/cookie/i18n contracts. Ensure SEO/canonical links remain stable through UI refactors.

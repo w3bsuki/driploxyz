@@ -12,6 +12,8 @@
       messages: string;
       profile: string;
     };
+    variant?: 'default' | 'flat' | 'ios';
+    showLabels?: boolean;
   }
   
   let { 
@@ -26,7 +28,9 @@
       sell: 'Sell',
       messages: 'Messages',
       profile: 'Profile'
-    }
+    },
+    variant = 'default',
+    showLabels = false
   }: Props = $props();
   
   let clickedItem = $state<string | null>(null);
@@ -88,9 +92,16 @@
     }
     const active = isActive(item);
     const isLoading = clickedItem === item.href || (isNavigating && navigatingTo === item.href);
-    return `flex items-center justify-center py-2 min-h-[var(--touch-primary)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--primary)] rounded-lg ${
-      active ? 'text-[color:var(--text-primary)]' : isLoading ? 'text-[color:var(--text-primary)] opacity-70' : 'text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)]'
-    }`;
+    const base = variant === 'ios'
+      ? 'flex items-center justify-center py-1 min-h-[44px] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--primary)]'
+      : 'flex items-center justify-center py-2 min-h-[var(--touch-primary)] transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--primary)]';
+    const color = active
+      ? 'text-[color:var(--text-primary)]'
+      : isLoading
+      ? 'text-[color:var(--text-primary)] opacity-70'
+      : 'text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)]';
+    const shape = variant === 'flat' ? '' : ' rounded-lg';
+    return `${base}${shape} ${color}`.trim();
   }
   
   // Clear clicked state when navigation completes
@@ -104,7 +115,7 @@
   });
 </script>
 
-<nav class="bottom-nav fixed bottom-0 left-0 right-0 bg-white shadow-sm md:shadow-lg pb-safe sm:hidden z-50 before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-[color:var(--border-subtle)] before:to-transparent">
+<nav class="bottom-nav bottom-nav--{variant} fixed bottom-0 left-0 right-0 bg-[color:var(--surface-base)] shadow-sm md:shadow-lg pb-safe sm:hidden z-50 before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-[color:var(--border-subtle)] before:to-transparent">
   <div class="grid grid-cols-5">
     {#each navItems as item}
       {@const isLoading = clickedItem === item.href || (isNavigating && navigatingTo === item.href)}
@@ -112,27 +123,45 @@
         href={item.href}
         class={getItemClasses(item)}
         aria-label={item.label}
+        aria-current={isActive(item) ? 'page' : undefined}
         onclick={() => handleClick(item)}
         data-sveltekit-preload-data="hover"
         data-sveltekit-preload-code="hover"
       >
-        {#if item.isSpecial}
-          <div class="bg-[color:var(--gray-900)] text-white rounded-full p-2.5 shadow-sm md:shadow-lg {isActive(item) ? 'scale-105' : ''} transition-transform duration-150 hover:scale-105 active:scale-95 relative">
-            <svg class="w-5 h-5 {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {#if variant === 'flat' || variant === 'ios'}
+          <div class="relative flex flex-col items-center justify-center gap-0.5">
+            <svg class="{variant === 'ios' ? 'w-[22px] h-[22px]' : 'w-[22px] h-[22px]'} {isActive(item) ? 'text-[color:var(--text-primary)]' : 'text-[color:var(--text-muted)]'} {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
             </svg>
+            {#if showLabels}
+              <span class="nav-label {isActive(item) ? 'text-[color:var(--text-primary)]' : 'text-[color:var(--text-muted)]'}">{item.label}</span>
+            {/if}
+            {#if item.showBadge && unreadMessageCount > 0}
+              <span class="absolute -top-1 -right-1 h-2.5 w-2.5 bg-red-500 rounded-full"></span>
+            {/if}
+            {#if isActive(item)}
+              <span class="active-indicator"></span>
+            {/if}
           </div>
         {:else}
-          <div class="relative">
-            <div class="rounded-full p-2 {isActive(item) ? 'bg-[color:var(--surface-muted)] text-[color:var(--text-primary)]' : 'text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-muted)]'} transition-colors duration-150">
-              <svg class="w-5 h-5 transition-opacity duration-200 {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {#if item.isSpecial}
+            <div class="bg-[color:var(--surface-inverse)] text-[color:var(--text-inverse)] rounded-full p-2.5 shadow-sm md:shadow-lg {isActive(item) ? 'scale-105' : ''} transition-transform duration-150 hover:scale-105 active:scale-95 relative">
+              <svg class="w-5 h-5 {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
               </svg>
             </div>
-            {#if item.showBadge && unreadMessageCount > 0}
-              <span class="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
-            {/if}
-          </div>
+          {:else}
+            <div class="relative">
+              <div class="rounded-full p-2 {isActive(item) ? 'bg-[color:var(--surface-muted)] text-[color:var(--text-primary)]' : 'text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-muted)]'} transition-colors duration-150">
+                <svg class="w-5 h-5 transition-opacity duration-200 {isLoading ? 'opacity-50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={item.icon} />
+                </svg>
+              </div>
+              {#if item.showBadge && unreadMessageCount > 0}
+                <span class="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+              {/if}
+            </div>
+          {/if}
         {/if}
       </a>
     {/each}
@@ -142,5 +171,40 @@
 <style>
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom);
+  }
+  /* Flat variant removes shadows and gradient border */
+  .bottom-nav--flat {
+    background: color-mix(in oklch, var(--surface-base) 95%, transparent);
+    box-shadow: none;
+  }
+  .bottom-nav--flat::before { display: none; }
+  .bottom-nav--flat { border-top: 1px solid var(--border-subtle); }
+
+  /* iOS-styled tab bar variant */
+  .bottom-nav--ios {
+    background: color-mix(in oklch, var(--surface-base) 95%, transparent);
+    box-shadow: none;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .bottom-nav--ios::before { display: none; }
+
+  .nav-label {
+    font-size: 10px;
+    line-height: 1.1;
+    margin-top: 2px;
+    max-width: 56px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Active indicator dot under icon */
+  .active-indicator {
+    position: absolute;
+    bottom: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--text-primary);
   }
 </style>

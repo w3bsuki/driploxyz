@@ -1,6 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
+import { withTimeout } from '@repo/utils';
 
 // MANUAL PROMOTION SYSTEM
 // Add product IDs here to promote them with crown badges 👑
@@ -11,14 +12,6 @@ const MANUALLY_PROMOTED_IDS: string[] = [
   // 'product-id-2',
   // 'product-id-3'
 ];
-
-// Tiny timeout wrapper to avoid hanging dev when DB is slow/unreachable
-async function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
-  return await Promise.race([
-    promise,
-    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))
-  ]);
-}
 
 export const load = (async ({ url, locals: { supabase, country, safeGetSession }, setHeaders, depends }) => {
   // Mark dependencies for client-side invalidation
@@ -59,7 +52,8 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         .select('id, name, slug, sort_order')
         .is('parent_id', null)
         .order('sort_order')
-        .limit(6),
+        .limit(6)
+        .then(),
       2500,
       { data: [] } as any
     );
@@ -81,7 +75,8 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         .eq('products.is_sold', false)
         .order('sales_count', { ascending: false })
         .order('created_at', { ascending: false })
-        .limit(8),
+        .limit(8)
+        .then(),
       2500,
       { data: [] } as any
     );
@@ -119,7 +114,8 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         .eq('is_sold', false)
         .eq('country_code', country || 'BG')
         .order('created_at', { ascending: false })
-        .limit(12),
+        .limit(12)
+        .then(),
       3000,
       { data: [] } as any
     );
@@ -163,12 +159,17 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         // Note: services would be used for category hierarchy if needed in future
         
         // Fetch all categories first for hierarchy resolution (same as search page)
-        const { data: allCategories } = await supabase
-          .from('categories')
-          .select('*')
-          .eq('is_active', true)
-          .order('level')
-          .order('sort_order');
+        const { data: allCategories } = await withTimeout(
+          supabase
+            .from('categories')
+            .select('*')
+            .eq('is_active', true)
+            .order('level')
+            .order('sort_order')
+            .then(),
+          2000,
+          { data: null }
+        );
 
         // Transform products for frontend with proper category hierarchy
         featuredProducts = await Promise.all(rawProducts.map(async (item, index) => {
@@ -249,11 +250,16 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
     let userFavorites: Record<string, boolean> = {};
     if (userId && featuredProducts.length > 0) {
       const productIds = featuredProducts.map(p => p.id);
-      const { data: favorites } = await supabase
-        .from('favorites')
-        .select('product_id')
-        .eq('user_id', userId)
-        .in('product_id', productIds);
+      const { data: favorites } = await withTimeout(
+        supabase
+          .from('favorites')
+          .select('product_id')
+          .eq('user_id', userId)
+          .in('product_id', productIds)
+          .then(),
+        1500,
+        { data: null }
+      );
       
       if (favorites) {
         userFavorites = Object.fromEntries(

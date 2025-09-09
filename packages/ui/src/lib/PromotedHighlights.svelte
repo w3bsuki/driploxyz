@@ -192,7 +192,6 @@
       <span class="sr-only">{sellers.length} premium sellers available</span>
     {/if}
     <nav 
-      role="navigation"
       aria-label="Promoted products carousel"
       class="relative overflow-x-auto scrollbar-hide pb-2"
       onkeydown={handleKeyNavigation}

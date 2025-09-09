@@ -108,11 +108,11 @@
       <button 
         onclick={handleFavorite}
         disabled={isLoading || product.is_sold}
-        class="group flex items-center gap-1 p-1.5 bg-white/90 backdrop-blur-sm border border-gray-200 shadow-sm rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] transition-all duration-[var(--duration-fast)] {(isLoading || product.is_sold) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-white hover:scale-105 active:scale-95'}"
+        class="group flex items-center gap-1 p-1.5 bg-black/20 backdrop-blur-sm shadow-sm rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] transition-all duration-[var(--duration-fast)] {(isLoading || product.is_sold) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-black/30 hover:scale-105 active:scale-95'}"
         aria-label={product.is_sold ? 'Sold – likes frozen' : (currentFavorited ? removeFromFavoritesText : addToFavoritesText)}
       >
         <svg 
-          class="w-3.5 h-3.5 transition-all duration-[var(--duration-fast)] {product.is_sold ? 'text-[color:var(--text-disabled)]' : (currentFavorited ? 'text-[color:var(--status-error-solid)] fill-[color:var(--status-error-solid)] scale-110' : 'text-gray-600 group-hover:text-[color:var(--status-error-solid)] group-hover:scale-110')}"
+          class="w-3.5 h-3.5 transition-all duration-[var(--duration-fast)] {product.is_sold ? 'text-[color:var(--text-disabled)]' : (currentFavorited ? 'text-[color:var(--favorite-solid)] fill-[color:var(--favorite-solid)] scale-110' : 'text-white group-hover:text-[color:var(--favorite-solid)] group-hover:scale-110')}"
           aria-hidden="true" 
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -126,7 +126,7 @@
           />
         </svg>
         {#if showCount && favoriteCount > 0}
-          <span class="text-xs font-medium transition-colors duration-[var(--duration-fast)] {currentFavorited ? 'text-[color:var(--status-error-solid)]' : 'text-[color:var(--text-muted)]'}">
+          <span class="text-xs font-medium transition-colors duration-[var(--duration-fast)] {currentFavorited ? 'text-[color:var(--favorite-solid)]' : 'text-white/90'}">
             {favoriteCount > 999 ? `${Math.floor(favoriteCount/1000)}k` : favoriteCount}
           </span>
         {/if}

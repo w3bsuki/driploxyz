@@ -2,6 +2,9 @@
   import * as i18n from '@repo/i18n';
   const m: any = i18n;
   import Badge from './Badge.svelte';
+  import FavoriteButton from './FavoriteButton.svelte';
+  import ConditionBadge from './ConditionBadge.svelte';
+  import { DescriptionList, DescriptionTerm, DescriptionDetails } from './index';
 
   interface Props {
     title: string;
@@ -9,12 +12,22 @@
     size?: string;
     color?: string;
     material?: string;
+    condition?: string;
     description?: string;
     favoriteCount: number;
     isFavorited: boolean;
     onFavorite?: () => void;
     showQuickFacts?: boolean;
     category?: string;
+    productId: string;
+    seller?: {
+      id: string;
+      username: string;
+      avatar?: string | null;
+      joinedAt?: string;
+      verified?: boolean;
+    };
+    showSellerRow?: boolean;
   }
 
   let { 
@@ -23,207 +36,987 @@
     size,
     color,
     material,
+    condition,
     description,
     favoriteCount,
     isFavorited,
     onFavorite,
     showQuickFacts = true,
-    category
+    category,
+    productId,
+    seller,
+    showSellerRow = false
   }: Props = $props();
 
-  let showFullDescription = $state(false);
-  let detailsOpen = $state(false);
-  let shippingOpen = $state(false);
+  // State management
+  let activeTab = $state('shipping');
+  let showSizeGuide = $state(false);
+  let showFacts = $state(true);
 
+  // Computed properties
+  const attributes = $derived(() => [
+    condition && { key: 'condition', label: 'Condition', value: condition, type: 'badge' },
+    brand && { key: 'brand', label: 'Brand', value: brand, type: 'badge' },
+    size && { key: 'size', label: 'Size', value: size, type: 'text' },
+    color && { key: 'color', label: 'Color', value: color, type: 'text' },
+    material && { key: 'material', label: 'Material', value: material, type: 'text' },
+    category && { key: 'category', label: 'Category', value: category, type: 'text' }
+  ].filter(Boolean));
 
-  function toggleDescription() {
-    showFullDescription = !showFullDescription;
-  }
-
-  // Size guide helper
-  const showSizeGuide = $derived(() => {
+  const hasDescription = $derived(description && description.trim().length > 0);
+  const hasAttributes = $derived(showQuickFacts && attributes.length > 0);
+  const showSizeGuideButton = $derived(() => {
     return !!(category && ['clothing', 'shoes', 'accessories'].some(cat => 
       category.toLowerCase().includes(cat)
     ) && size);
   });
+
+  // Seller info
+  const joinedYear = $derived(seller?.joinedAt ? new Date(seller.joinedAt).getFullYear() : null);
+  const sellerDisplayName = $derived(seller?.username ? `@${seller.username}` : null);
+
+  // Tab configuration (move description out of tabs into its own container)
+  const tabs = $derived(() => [
+    { 
+      id: 'shipping', 
+      label: 'Shipping', 
+      count: 3,
+      show: true 
+    }
+  ].filter(tab => tab.show));
+
+  function handleSizeGuide() {
+    showSizeGuide = true;
+    // In a real app, this would open a modal or navigate to size guide
+    console.log('Open size guide for category:', category, 'size:', size);
+  }
+
+  // Show details by default on all screens for now
 </script>
 
-<div class="bg-white border border-gray-200 rounded-xl p-5 flex flex-col gap-4">
-  <!-- Title and Favorite Button -->
-  <div class="flex items-start justify-between gap-3">
-    <h1 class="text-xl md:text-2xl font-bold leading-tight flex-1">{title}</h1>
-    
-    <button 
-      class="btn-icon btn-ghost flex items-center gap-1 text-gray-500 text-xs p-2 rounded-full transition-colors hover:text-red-500 hover:bg-gray-50 min-w-[44px] min-h-[44px] justify-center shrink-0"
-      onclick={onFavorite}
-      aria-label={isFavorited ? m.removeFavorite() : m.addFavorite()}
-      type="button"
-    >
-      <svg class="size-5 {isFavorited ? 'text-red-500' : ''}" viewBox="0 0 24 24" fill={isFavorited ? 'currentColor' : 'none'} stroke="currentColor" stroke-width="1.5">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-      </svg>
-    </button>
-  </div>
+<div class="product-info">
+  <!-- Title inside summary card -->
+  <!-- Seller Info moved below description and attributes -->
 
-  <!-- Key Product Details -->
-  <div class="flex gap-2 flex-wrap">
-    {#if brand}
-      <Badge variant="secondary" size="sm">{brand}</Badge>
-    {/if}
-    {#if size}
-      <div class="flex items-center gap-2">
-        <Badge variant="secondary" size="sm">{m.product_size()}: {size}</Badge>
-        {#if showSizeGuide()}
-          <button 
-            class="text-blue-600 text-xs font-medium hover:text-blue-700 transition-colors border border-blue-200 hover:border-blue-300 rounded px-2 py-1 flex items-center gap-1"
-            type="button" 
-            aria-label={m.product_sizeGuide()}
-          >
-            <svg class="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4"/>
-              <path d="M9 7V3a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/>
-              <path d="M12 8v5l3-3"/>
-            </svg>
-            {m.product_sizeGuide()}
-          </button>
+  <!-- Summary Card: Title + Description (single column) -->
+  <section class="summary-card" aria-labelledby="summary-heading">
+    <h2 id="summary-heading" class="visually-hidden">Product summary</h2>
+    {#if condition || brand || size}
+      <div class="meta-inline" aria-label="Quick facts">
+        {#if condition}
+          <ConditionBadge condition={condition as any} />
         {/if}
-      </div>
-    {:else if color}
-      <Badge variant="secondary" size="sm">{color}</Badge>
-    {/if}
-    {#if material}
-      <Badge variant="secondary" size="sm">{material}</Badge>
-    {/if}
-  </div>
-
-  <!-- Description -->
-  {#if description}
-    <div class="flex flex-col gap-3">
-      <div class="text-gray-700 leading-relaxed {showFullDescription ? '' : 'line-clamp-3'}">
-        {description}
-      </div>
-      {#if description.length > 150}
-        <button 
-          class="text-blue-600 font-semibold text-sm text-left hover:text-blue-700 transition-colors"
-          onclick={toggleDescription}
-          type="button"
-        >
-          {showFullDescription ? m.product_showLess() : m.product_readMore()}
-        </button>
-      {/if}
-    </div>
-  {/if}
-
-  <!-- Trust Signals -->
-  <div class="border-t border-gray-200 pt-4 mt-2">
-    <div class="bg-gray-50 rounded-lg p-4 flex flex-col sm:flex-row gap-3 sm:justify-between">
-      <div class="flex items-center gap-2 text-sm text-gray-600">
-        <svg class="size-4 text-green-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 12l2 2 4-4"/>
-          <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12 s4.477 10 10 10z"/>
-        </svg>
-        <span>{m.pdp_authenticity()}</span>
-      </div>
-      
-      <div class="flex items-center gap-2 text-sm text-gray-600">
-        <svg class="size-4 text-green-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-          <circle cx="12" cy="16" r="1"/>
-          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-        </svg>
-        <span>{m.product_securePayments()}</span>
-      </div>
-      
-      <div class="flex items-center gap-2 text-sm text-gray-600">
-        <svg class="size-4 text-green-600 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4m6-6v6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-6"/>
-          <path d="M9 7V3a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/>
-          <path d="M12 8v5l3-3"/>
-        </svg>
-        <span>{m.product_returnPolicy()}</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Product Details Accordion -->
-  {#if brand || size || color || material}
-    <details class="border border-gray-200 rounded-lg overflow-hidden" bind:open={detailsOpen}>
-      <summary class="flex items-center justify-between p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
-        <span class="font-medium text-gray-900">{m.product_itemDetails()}</span>
-        <svg class="size-5 text-gray-400 transition-transform {detailsOpen ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <polyline points="6,9 12,15 18,9"/>
-        </svg>
-      </summary>
-      <div class="p-4 bg-white space-y-3">
         {#if brand}
-          <div class="flex justify-between">
-            <span class="text-gray-600">{m.product_brand()}:</span>
-            <span class="font-medium text-gray-900">{brand}</span>
-          </div>
+          <span class="meta-sep">•</span>
+          <Badge variant="secondary" size="sm">{brand}</Badge>
         {/if}
         {#if size}
-          <div class="flex justify-between">
-            <span class="text-gray-600">{m.product_size()}:</span>
-            <span class="font-medium text-gray-900">{size}</span>
-          </div>
-        {/if}
-        {#if color}
-          <div class="flex justify-between">
-            <span class="text-gray-600">{m.pdp_color()}:</span>
-            <span class="font-medium text-gray-900">{color}</span>
-          </div>
-        {/if}
-        {#if material}
-          <div class="flex justify-between">
-            <span class="text-gray-600">{m.pdp_material()}:</span>
-            <span class="font-medium text-gray-900">{material}</span>
-          </div>
+          <span class="meta-sep">•</span>
+          <span class="meta-size">Size {size}</span>
         {/if}
       </div>
-    </details>
+    {/if}
+
+    <h1 class="title">{title}</h1>
+    {#if description && description.trim().length > 0}
+      <p class="summary-desc">{description}</p>
+    {/if}
+
+    {#if !seller}
+      <div class="summary-actions">
+        <FavoriteButton 
+          product={{ favorite_count: favoriteCount, id: productId }}
+          favorited={isFavorited}
+          onFavorite={onFavorite}
+          absolute={false}
+        />
+      </div>
+    {/if}
+  </section>
+
+  <!-- Facts Card: Condition, Size, Color, Brand, Material, Category -->
+  {#if attributes.length > 0}
+    <section class="facts-card" aria-labelledby="facts-heading">
+      <h2 id="facts-heading" class="visually-hidden">Product details</h2>
+      <DescriptionList>
+        {#each attributes as attr}
+          <DescriptionTerm>{attr.label}</DescriptionTerm>
+          <DescriptionDetails>
+            {#if attr.key === 'condition'}
+              <ConditionBadge condition={attr.value as any} />
+            {:else}
+              {attr.value}
+            {/if}
+          </DescriptionDetails>
+        {/each}
+      </DescriptionList>
+    </section>
   {/if}
 
-  <!-- Shipping & Returns -->
-  <details class="border border-gray-200 rounded-lg overflow-hidden" bind:open={shippingOpen}>
-    <summary class="flex items-center justify-between p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors">
-      <span class="font-medium text-gray-900">{m.product_shippingReturns()}</span>
-      <svg class="size-5 text-gray-400 transition-transform {shippingOpen ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <polyline points="6,9 12,15 18,9"/>
-      </svg>
-    </summary>
-    <div class="p-4 bg-white space-y-3">
-      <div class="flex items-start gap-2">
-        <svg class="size-4 text-green-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <rect x="1" y="3" width="15" height="13"/>
-          <polygon points="16,3 21,8 21,13 16,13"/>
-          <circle cx="5.5" cy="18.5" r="2.5"/>
-          <circle cx="18.5" cy="18.5" r="2.5"/>
-        </svg>
-        <div>
-          <p class="font-medium text-gray-900">{m.pdp_freeShipping()}</p>
-          <p class="text-sm text-gray-600">{m.product_standardShipping()} 3-5 {m.product_businessDays()}</p>
+  <!-- Seller Info (optional; disabled by default to avoid duplication) -->
+  {#if showSellerRow && seller}
+    <div class="seller-row seller-card">
+      <div class="seller-info">
+        <div class="seller-avatar">
+          {#if seller.avatar}
+            <img src={seller.avatar} alt={seller.username} class="avatar-image" />
+          {:else}
+            <div class="avatar-placeholder">
+              <svg viewBox="0 0 20 20" class="avatar-icon">
+                <path fill="currentColor" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/>
+              </svg>
+            </div>
+          {/if}
+        </div>
+        <div class="seller-details">
+          <div class="seller-name">{sellerDisplayName}</div>
+          {#if joinedYear}
+            <div class="seller-joined">Joined {joinedYear}</div>
+          {/if}
         </div>
       </div>
-      <div class="flex items-start gap-2">
-        <svg class="size-4 text-blue-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h4m6-6v6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-6"/>
-          <path d="M9 7V3a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v4"/>
-          <path d="M12 8v5l3-3"/>
-        </svg>
-        <div>
-          <p class="font-medium text-gray-900">{m.product_returnPolicy()}</p>
-          <p class="text-sm text-gray-600">{m.product_originalCondition()}</p>
-        </div>
+      <FavoriteButton 
+        product={{ favorite_count: favoriteCount, id: productId }}
+        favorited={isFavorited}
+        onFavorite={onFavorite}
+        absolute={false}
+      />
+    </div>
+  {/if}
+
+  <!-- Tab Navigation -->
+  {#if tabs.length > 0}
+    <div class="tabs-section">
+      <div class="tab-nav" role="tablist">
+        {#each tabs as tab}
+          <button 
+            class="tab-button"
+            class:tab-button--active={activeTab === tab.id}
+            onclick={() => activeTab = tab.id}
+            role="tab"
+            aria-selected={activeTab === tab.id}
+            aria-controls="panel-{tab.id}"
+            id="tab-{tab.id}"
+          >
+            <span class="tab-label">{tab.label}</span>
+            {#if tab.count > 0}
+              <Badge variant="subtle" size="xs" class="tab-count">{tab.count}</Badge>
+            {/if}
+          </button>
+        {/each}
       </div>
-      <div class="flex items-start gap-2">
-        <svg class="size-4 text-purple-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-        <div>
-          <p class="font-medium text-gray-900">{m.product_driploProtection()}</p>
-          <p class="text-sm text-gray-600">{m.product_securePayments()}</p>
-        </div>
+
+      <div class="tab-content">
+        <!-- Details Panel -->
+        {#if activeTab === 'details' && hasAttributes}
+          <div 
+            class="tab-panel"
+            id="panel-details"
+            role="tabpanel"
+            aria-labelledby="tab-details"
+          >
+            <div class="details-content">
+              <div class="details-list">
+                {#each attributes as attr}
+                  <div class="detail-row">
+                    <span class="detail-label">{attr.label}</span>
+                    <span class="detail-value">{attr.value}</span>
+                  </div>
+                {/each}
+              </div>
+              
+              {#if showSizeGuideButton()}
+                <button class="size-guide-button" onclick={handleSizeGuide}>
+                  <svg viewBox="0 0 20 20" class="size-guide-icon">
+                    <path fill="currentColor" d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zM2 15a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"/>
+                  </svg>
+                  <span>Size Guide</span>
+                  <svg viewBox="0 0 20 20" class="external-icon">
+                    <path fill="currentColor" d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/>
+                    <path fill="currentColor" d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/>
+                  </svg>
+                </button>
+              {/if}
+            </div>
+          </div>
+        {/if}
+
+        <!-- Description panel removed: description is shown in its own card above -->
+
+        <!-- Shipping Panel -->
+        {#if activeTab === 'shipping'}
+          <div 
+            class="tab-panel"
+            id="panel-shipping"
+            role="tabpanel"
+            aria-labelledby="tab-shipping"
+          >
+            <div class="shipping-content">
+              <div class="shipping-options">
+                <div class="shipping-option">
+                  <div class="shipping-icon">
+                    <svg viewBox="0 0 20 20">
+                      <path fill="currentColor" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/>
+                      <path fill="currentColor" d="M3 4a1 1 0 00-1 1v1a1 1 0 001 1h1a1 1 0 001-1V5a1 1 0 00-1-1H3zM6 4a1 1 0 011-1h8a1 1 0 011 1v5H6V4z"/>
+                      <path fill="currentColor" d="M16 10h1a1 1 0 011 1v3a1 1 0 01-1 1h-1v-5zM1 10h2v5H2a1 1 0 01-1-1v-3a1 1 0 011-1z"/>
+                    </svg>
+                  </div>
+                  <div class="shipping-details">
+                    <div class="shipping-title">Free Standard Shipping</div>
+                    <div class="shipping-desc">Orders over €50 • 3-5 business days</div>
+                  </div>
+                  <div class="shipping-price">Free</div>
+                </div>
+
+                <div class="shipping-option">
+                  <div class="shipping-icon">
+                    <svg viewBox="0 0 20 20">
+                      <path fill="currentColor" d="M13 7H7v6h6V7z"/>
+                      <path fill="currentColor" fill-rule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2H3V5a2 2 0 012-2h2V2zM3 9v6a2 2 0 002 2h10a2 2 0 002-2V9H3z" clip-rule="evenodd"/>
+                    </svg>
+                  </div>
+                  <div class="shipping-details">
+                    <div class="shipping-title">Express Delivery</div>
+                    <div class="shipping-desc">Next business day • Order before 2 PM</div>
+                  </div>
+                  <div class="shipping-price">€9.99</div>
+                </div>
+
+                <div class="shipping-option">
+                  <div class="shipping-icon">
+                    <svg viewBox="0 0 20 20">
+                      <path fill="currentColor" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2h12v8H4V6z"/>
+                      <path fill="currentColor" d="M9 12l2 2 4-4"/>
+                    </svg>
+                  </div>
+                  <div class="shipping-details">
+                    <div class="shipping-title">30-Day Returns</div>
+                    <div class="shipping-desc">Free returns & exchanges</div>
+                  </div>
+                  <div class="shipping-badge">
+                    <Badge variant="success" size="xs">Included</Badge>
+                  </div>
+                </div>
+              </div>
+
+              <div class="shipping-note">
+                <svg viewBox="0 0 20 20" class="note-icon">
+                  <path fill="currentColor" fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                </svg>
+                <p class="note-text">
+                  All items are shipped securely with tracking information. 
+                  Delivery times may vary based on location and availability.
+                </p>
+              </div>
+            </div>
+          </div>
+        {/if}
       </div>
     </div>
-  </details>
+  {/if}
 </div>
+
+<!-- Size Guide Modal (placeholder) -->
+{#if showSizeGuide}
+  <div class="modal-backdrop" onclick={() => showSizeGuide = false} role="button" tabindex="0" onkeydown={(e) => e.key === 'Escape' && (showSizeGuide = false)}>
+    <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+      <div class="modal-header">
+        <h2 class="modal-title">Size Guide</h2>
+        <button class="modal-close" onclick={() => showSizeGuide = false} aria-label="Close">
+          <svg viewBox="0 0 20 20">
+            <path fill="currentColor" d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Size guide content would go here for {category} items.</p>
+        <p>Selected size: {size}</p>
+      </div>
+    </div>
+  </div>
+{/if}
+
+<style>
+  .product-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .product-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+    color: var(--text-strong);
+    margin: 0;
+    flex: 1;
+  }
+
+  .main-title {
+    margin-bottom: var(--space-3);
+  }
+
+  /* Seller Row - Beautiful Styling */
+  .seller-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    background: var(--surface-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    transition: all 0.2s ease;
+  }
+
+  .seller-row:hover {
+    border-color: var(--border-strong);
+  }
+
+  .seller-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .seller-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px color-mix(in oklch, var(--shadow) 12%, transparent);
+    border: 2px solid var(--surface-base);
+    transition: transform 0.2s ease;
+  }
+
+  .seller-avatar:hover {
+    transform: scale(1.05);
+  }
+
+  .avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--primary) 0%, color-mix(in oklch, var(--primary) 80%, var(--secondary)) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-fg);
+  }
+
+  .avatar-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .seller-details {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .seller-name {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1-5);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-strong);
+    margin-bottom: var(--space-0-5);
+    line-height: 1.3;
+  }
+
+  .verified-icon {
+    width: 14px;
+    height: 14px;
+    color: var(--success);
+    flex-shrink: 0;
+  }
+
+  .seller-joined {
+    font-size: var(--font-size-xs);
+    color: var(--text-subtle);
+    font-weight: var(--font-weight-normal);
+  }
+
+  /* Product Details Section */
+  .product-details-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    background: var(--surface-base);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+    box-shadow: 0 1px 3px color-mix(in oklch, var(--shadow) 6%, transparent);
+  }
+
+  .product-header-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .product-title {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-tight);
+    color: var(--text-strong);
+    margin: 0;
+  }
+
+  .brand-badge { flex-shrink: 0; margin-top: var(--space-2); }
+
+  .summary-actions { margin-top: var(--space-3); }
+
+  /* Summary (title + description) */
+  .summary-card {
+    background: var(--surface-base);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--space-4);
+  }
+  .summary-card .title { margin: 0 0 var(--space-2) 0; color: var(--text-strong); }
+  .summary-desc {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
+    color: var(--text-base);
+    font-weight: var(--font-weight-normal);
+  }
+
+  .meta-inline {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-2);
+  }
+  .meta-sep { color: var(--text-subtle); }
+  .meta-size { font-size: var(--font-size-sm); color: var(--text-strong); }
+
+  .visually-hidden {
+    position: absolute !important;
+    height: 1px; width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+  }
+
+  .product-description {
+    border-left: 3px solid var(--primary-subtle);
+    padding-left: var(--space-4);
+    background: var(--surface-subtle);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .description-text {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-relaxed);
+    color: var(--text-base);
+  }
+
+  .product-attributes {
+    /* Inherits from attributes-section styles below */
+  }
+
+  /* Fallback: No seller info */
+  .product-row-solo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .product-row-solo .title-section {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .favorite-section {
+    flex-shrink: 0;
+  }
+
+  /* Summary card wraps title, brand, and quick facts */
+  .summary-card {
+    background: var(--surface-base);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+  }
+
+  /* Removed separate desc-card: description now in summary-card */
+
+  .facts-card {
+    background: var(--surface-base);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+  }
+  /* facts use DescriptionList with Tailwind utilities */
+
+  /* Attributes Grid - Clean Layout */
+  .product-attributes {
+    /* No additional styling needed - contained within product-details-section */
+  }
+
+  .attributes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .attribute-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    align-items: flex-start;
+    padding: var(--space-3);
+    background: var(--surface-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    transition: all 0.2s ease;
+  }
+
+  .attribute-item:hover {
+    border-color: var(--primary-subtle);
+    background: var(--surface-base);
+  }
+
+  .attribute-label {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-subtle);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .attribute-value {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-strong);
+  }
+
+  /* Tabs Section */
+  .tabs-section {
+    background: var(--surface-base);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+
+  .tab-nav {
+    display: flex;
+    background: var(--surface-subtle);
+    border-bottom: 1px solid var(--border-subtle);
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .tab-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-subtle);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    position: relative;
+    min-height: var(--touch-standard);
+  }
+
+  .tab-button:hover {
+    color: var(--text-strong);
+    background: var(--surface-hover);
+  }
+
+  .tab-button--active {
+    color: var(--primary);
+    background: var(--surface-base);
+  }
+
+  .tab-button--active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary);
+  }
+
+  .tab-label {
+    font-size: var(--font-size-sm);
+  }
+
+  .tab-count {
+    opacity: 0.7;
+  }
+
+  .tab-content {
+    padding: var(--space-4);
+  }
+
+  .tab-panel {
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Details Content */
+  .details-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .details-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .detail-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .detail-label {
+    color: var(--text-subtle);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+  }
+
+  .detail-value {
+    color: var(--text-strong);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+  }
+
+  .size-guide-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
+    background: var(--surface-subtle);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    color: var(--text-strong);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .size-guide-button:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-strong);
+    color: var(--primary);
+  }
+
+  .size-guide-icon,
+  .external-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Description Content */
+  .description-content {
+    line-height: var(--line-height-relaxed);
+  }
+
+  .description-text {
+    margin: 0;
+    color: var(--text-base);
+    white-space: pre-wrap;
+  }
+
+  /* Shipping Content */
+  .shipping-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .shipping-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .shipping-option {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--surface-subtle);
+    border-radius: var(--radius-lg);
+    transition: all 0.2s;
+  }
+
+  .shipping-option:hover {
+    background: var(--surface-hover);
+  }
+
+  .shipping-icon {
+    width: var(--space-8);
+    height: var(--space-8);
+    background: var(--primary);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .shipping-icon svg {
+    width: 18px;
+    height: 18px;
+    color: var(--primary-fg);
+  }
+
+  .shipping-details {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .shipping-title {
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-strong);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-1);
+  }
+
+  .shipping-desc {
+    color: var(--text-subtle);
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-relaxed);
+  }
+
+  .shipping-price {
+    font-weight: var(--font-weight-bold);
+    color: var(--success);
+    font-size: var(--font-size-sm);
+    align-self: center;
+  }
+
+  .shipping-badge {
+    align-self: center;
+  }
+
+  .shipping-note {
+    display: flex;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    background: var(--surface-subtle);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-subtle);
+  }
+
+  .note-icon {
+    width: 18px;
+    height: 18px;
+    color: var(--text-subtle);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .note-text {
+    margin: 0;
+    font-size: var(--font-size-xs);
+    color: var(--text-subtle);
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Modal Styles */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: color-mix(in oklch, var(--gray-900) 50%, transparent);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+  }
+
+  .modal-content {
+    background: var(--surface-base);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-2xl);
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .modal-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-strong);
+    margin: 0;
+  }
+
+  .modal-close {
+    width: var(--touch-standard);
+    height: var(--touch-standard);
+    background: none;
+    border: none;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text-subtle);
+  }
+
+  .modal-close:hover {
+    background: var(--surface-hover);
+    color: var(--text-strong);
+  }
+
+  .modal-close svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .modal-body {
+    padding: var(--space-5);
+    color: var(--text-base);
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .product-header {
+      gap: var(--space-2);
+    }
+
+    .seller-row {
+      gap: var(--space-3);
+    }
+
+    .seller-avatar {
+      width: var(--space-7);
+      height: var(--space-7);
+    }
+
+    .seller-name {
+      font-size: var(--font-size-xs);
+    }
+
+    .seller-joined {
+      font-size: var(--font-size-xs);
+    }
+
+    .product-title {
+      font-size: var(--font-size-lg);
+    }
+
+    .summary-card { padding: var(--space-4); }
+    
+    .attributes-grid {
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: var(--space-2);
+    }
+    
+    .tab-nav {
+      padding: 0 var(--space-2);
+    }
+    
+    .tab-button {
+      padding: var(--space-2) var(--space-3);
+    }
+    
+    .tab-content {
+      padding: var(--space-3);
+    }
+
+    .shipping-option {
+      flex-direction: column;
+      text-align: center;
+      gap: var(--space-2);
+    }
+
+    .shipping-icon {
+      align-self: center;
+    }
+  }
+
+  /* Small Mobile: tighten rhythm further */
+  @media (max-width: 480px) {
+    .product-info { gap: var(--space-3); }
+    .summary-card,
+    .facts-card { padding: var(--space-3); }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .tab-panel {
+      animation: none;
+    }
+    
+    .tab-button,
+    .shipping-option,
+    .size-guide-button {
+      transition: none;
+    }
+  }
+</style>

@@ -776,6 +776,8 @@
 		messages: i18n.nav_messages(),
 		profile: i18n.nav_profile()
 	}}
+    variant="ios"
+    showLabels={false}
 />
 
 <!-- Quick View Dialog for Premium Sellers -->

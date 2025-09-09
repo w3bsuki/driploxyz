@@ -132,65 +132,66 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* Global typography scale using existing tokens */
+  /* Base typography — Overridden by language-specific styles in cyrillic-typography.css */
   h1 { 
+    font-size: var(--text-4xl); 
+    line-height: var(--leading-tight); 
+    font-weight: var(--font-semibold); 
+    letter-spacing: var(--tracking-tight);
+    color: var(--text-strong);
+  }
+  h2 { 
     font-size: var(--text-3xl); 
     line-height: var(--leading-tight); 
     font-weight: var(--font-semibold); 
-    letter-spacing: var(--tracking-normal); 
-  }
-  h2 { 
-    font-size: var(--text-2xl); 
-    line-height: var(--leading-tight); 
-    font-weight: var(--font-semibold); 
-    letter-spacing: var(--tracking-normal); 
+    letter-spacing: var(--tracking-normal);
+    color: var(--text-strong);
   }
   h3 { 
-    font-size: var(--text-xl);  
+    font-size: var(--text-2xl);  
     line-height: var(--leading-snug);  
-    font-weight: var(--font-semibold); 
-    letter-spacing: var(--tracking-normal); 
+    font-weight: var(--font-medium); 
+    letter-spacing: var(--tracking-normal);
+    color: var(--text-base);
   }
   h4 { 
-    font-size: var(--text-lg);  
+    font-size: var(--text-xl);  
     line-height: var(--leading-snug);  
     font-weight: var(--font-medium);   
-    letter-spacing: var(--tracking-normal); 
+    letter-spacing: var(--tracking-normal);
+    color: var(--text-base);
   }
   h5 { 
-    font-size: var(--text-base);
+    font-size: var(--text-lg);
     line-height: var(--leading-normal);
     font-weight: var(--font-medium);   
-    letter-spacing: var(--tracking-normal); 
+    letter-spacing: var(--tracking-normal);
+    color: var(--text-base);
   }
   h6 { 
-    font-size: var(--text-sm);  
+    font-size: var(--text-base);  
     line-height: var(--leading-normal);
     font-weight: var(--font-medium);   
-    letter-spacing: var(--tracking-normal); 
+    letter-spacing: var(--tracking-normal);
+    color: var(--text-subtle);
   }
   p  { 
     font-size: var(--text-base);
-    line-height: var(--leading-relaxed); 
+    line-height: var(--leading-relaxed);
+    color: var(--text-base);
   }
   small { 
     font-size: var(--text-sm); 
-    color: var(--text-tertiary); 
+    color: var(--text-mute);
   }
   a { 
-    color: var(--text-link); 
+    color: var(--text-brand); 
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-out);
   }
   a:hover { 
-    color: var(--text-link-hover); 
-  }
-
-  /* Language-aware typography adjustments for Bulgarian Cyrillic */
-  :lang(bg) h1, :lang(bg) h2, :lang(bg) h3, :lang(bg) h4, :lang(bg) h5, :lang(bg) h6 {
-    letter-spacing: var(--tracking-normal);
-  }
-  
-  :lang(bg) .product-brand {
-    letter-spacing: var(--tracking-normal); /* Override tight spacing for Bulgarian */
+    color: var(--text-brand-hover);
+    text-decoration: underline;
   }
   
   /* Mobile-first scrolling - keep simple */
@@ -391,7 +392,28 @@
     from { opacity: 0; }
     to { opacity: 1; }
   }
-  
+
+  /* Section separators and vertical rhythm */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border-subtle), transparent);
+    margin-block: var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    .section-divider { margin-block: var(--space-8); }
+  }
+
+  /* Vertical rhythm stacks */
+  .vr-sm > * + * { margin-block-start: var(--space-3); }
+  .vr-md > * + * { margin-block-start: var(--space-4); }
+  .vr-lg > * + * { margin-block-start: var(--space-6); }
+
+  @media (min-width: 640px) {
+    .vr-md > * + * { margin-block-start: var(--space-6); }
+    .vr-lg > * + * { margin-block-start: var(--space-8); }
+  }
+
   /* Messaging scroll container - targeted optimization */
   .messages-container {
     -webkit-overflow-scrolling: touch;

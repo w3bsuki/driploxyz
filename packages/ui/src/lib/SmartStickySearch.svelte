@@ -32,7 +32,7 @@
 
   let observer: IntersectionObserver | null = null;
   let searchTimeout: NodeJS.Timeout;
-  let inputElement: HTMLInputElement;
+  let inputElement = $state<HTMLInputElement>();
 
   function handleInput() {
     clearTimeout(searchTimeout);
@@ -55,7 +55,7 @@
   }
 
   function getFilterButtonClasses(style: string = 'default'): string {
-    const baseClasses = 'px-2.5 py-1 rounded-full text-xs font-medium transition-colors hover:scale-105 shrink-0 scroll-snap-align-start';
+    const baseClasses = 'px-2.5 py-1 min-h-[36px] flex items-center rounded-full text-xs font-medium transition-colors hover:scale-105 shrink-0 scroll-snap-align-start';
     
     switch(style) {
       case 'price':
@@ -122,7 +122,7 @@
               type="search"
               autocomplete="off"
               spellcheck="false"
-              class="w-full pl-10 pr-8 py-2.5 bg-gray-50 border border-gray-300 rounded-full text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-colors"
+              class="w-full pl-10 pr-8 py-2.5 min-h-[44px] bg-gray-50 border border-gray-300 rounded-full text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent transition-colors"
               oninput={handleInput}
               onkeydown={handleSubmit}
             />
@@ -131,7 +131,7 @@
               <button
                 type="button"
                 onclick={handleClear}
-                class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 hover:bg-gray-200 rounded-full transition-colors"
+                class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 min-w-[36px] min-h-[36px] flex items-center justify-center hover:bg-gray-200 rounded-full transition-colors"
                 aria-label="Clear search"
               >
                 <svg class="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,6 +1,10 @@
 <script lang="ts">
   import Dialog from './primitives/dialog/Dialog.svelte';
   import Button from './Button.svelte';
+  // Simple inline utility to generate unique IDs
+  function generateId(prefix: string) {
+    return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+  }
 
   interface Props {
     open: boolean;
@@ -18,6 +22,13 @@
   let productQualityRating = $state(0);
   let comment = $state('');
   let submitting = $state(false);
+  
+  // Generate IDs for accessibility
+  const overallRatingId = generateId('overall-rating');
+  const communicationId = generateId('communication');
+  const shippingId = generateId('shipping');
+  const productQualityId = generateId('product-quality');
+  const commentId = generateId('comment');
   
   function setRating(value: number) {
     rating = value;
@@ -94,17 +105,19 @@
 
   {#snippet children()}
     <!-- Overall Rating -->
-    <div class="mb-6">
-      <label class="block text-sm font-medium text-gray-900 mb-2">
+    <fieldset class="mb-6">
+      <legend class="block text-sm font-medium text-gray-900 mb-2">
         Overall Rating <span class="text-red-500">*</span>
-      </label>
-      <div class="flex gap-2">
+      </legend>
+      <div class="flex gap-2" role="radiogroup" aria-labelledby="{overallRatingId}-legend">
         {#each [1, 2, 3, 4, 5] as star}
           <button
             type="button"
             onclick={() => setRating(star)}
-            class="w-10 h-10 rounded-lg border-2 transition-colors {rating >= star ? 'bg-yellow-400 border-yellow-500' : 'bg-gray-100 border-gray-300 hover:bg-gray-200'}"
-            aria-label="{star} stars"
+            class="min-w-[44px] min-h-[44px] w-10 h-10 rounded-lg border-2 transition-colors {rating >= star ? 'bg-yellow-400 border-yellow-500' : 'bg-gray-100 border-gray-300 hover:bg-gray-200'}"
+            aria-label="{star} stars overall rating"
+            role="radio"
+            aria-checked={rating === star}
           >
             <svg class="w-6 h-6 mx-auto {rating >= star ? 'text-white' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -112,22 +125,24 @@
           </button>
         {/each}
       </div>
-    </div>
+    </fieldset>
     
     <!-- Detailed Ratings (Optional) -->
     <div class="space-y-4 mb-6">
       <!-- Communication -->
-      <div>
-        <label class="block text-sm font-medium text-gray-900 mb-1">
+      <fieldset>
+        <legend class="block text-sm font-medium text-gray-900 mb-1">
           Communication
-        </label>
-        <div class="flex gap-1">
+        </legend>
+        <div class="flex gap-1" role="radiogroup" aria-labelledby="{communicationId}-legend">
           {#each [1, 2, 3, 4, 5] as star}
             <button
               type="button"
               onclick={() => setCommunicationRating(star)}
-              class="w-8 h-8 rounded border transition-colors {communicationRating >= star ? 'bg-blue-400 border-blue-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
+              class="min-w-[36px] min-h-[36px] w-8 h-8 rounded border transition-colors {communicationRating >= star ? 'bg-blue-400 border-blue-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
               aria-label="{star} stars for communication"
+              role="radio"
+              aria-checked={communicationRating === star}
             >
               <svg class="w-4 h-4 mx-auto {communicationRating >= star ? 'text-white' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -135,20 +150,22 @@
             </button>
           {/each}
         </div>
-      </div>
+      </fieldset>
       
       <!-- Shipping Speed -->
-      <div>
-        <label class="block text-sm font-medium text-gray-900 mb-1">
+      <fieldset>
+        <legend class="block text-sm font-medium text-gray-900 mb-1">
           Shipping Speed
-        </label>
-        <div class="flex gap-1">
+        </legend>
+        <div class="flex gap-1" role="radiogroup" aria-labelledby="{shippingId}-legend">
           {#each [1, 2, 3, 4, 5] as star}
             <button
               type="button"
               onclick={() => setShippingRating(star)}
-              class="w-8 h-8 rounded border transition-colors {shippingRating >= star ? 'bg-green-400 border-green-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
+              class="min-w-[36px] min-h-[36px] w-8 h-8 rounded border transition-colors {shippingRating >= star ? 'bg-green-400 border-green-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
               aria-label="{star} stars for shipping"
+              role="radio"
+              aria-checked={shippingRating === star}
             >
               <svg class="w-4 h-4 mx-auto {shippingRating >= star ? 'text-white' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -156,20 +173,22 @@
             </button>
           {/each}
         </div>
-      </div>
+      </fieldset>
       
       <!-- Product Quality -->
-      <div>
-        <label class="block text-sm font-medium text-gray-900 mb-1">
+      <fieldset>
+        <legend class="block text-sm font-medium text-gray-900 mb-1">
           Product as Described
-        </label>
-        <div class="flex gap-1">
+        </legend>
+        <div class="flex gap-1" role="radiogroup" aria-labelledby="{productQualityId}-legend">
           {#each [1, 2, 3, 4, 5] as star}
             <button
               type="button"
               onclick={() => setProductQualityRating(star)}
-              class="w-8 h-8 rounded border transition-colors {productQualityRating >= star ? 'bg-purple-400 border-purple-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
+              class="min-w-[36px] min-h-[36px] w-8 h-8 rounded border transition-colors {productQualityRating >= star ? 'bg-purple-400 border-purple-500' : 'bg-gray-50 border-gray-200 hover:bg-gray-100'}"
               aria-label="{star} stars for product quality"
+              role="radio"
+              aria-checked={productQualityRating === star}
             >
               <svg class="w-4 h-4 mx-auto {productQualityRating >= star ? 'text-white' : 'text-gray-400'}" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -177,16 +196,16 @@
             </button>
           {/each}
         </div>
-      </div>
+      </fieldset>
     </div>
     
     <!-- Comment -->
     <div class="mb-6">
-      <label for="comment" class="block text-sm font-medium text-gray-900 mb-2">
+      <label for="{commentId}" class="block text-sm font-medium text-gray-900 mb-2">
         Add a Comment (Optional)
       </label>
       <textarea
-        id="comment"
+        id="{commentId}"
         bind:value={comment}
         rows="3"
         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

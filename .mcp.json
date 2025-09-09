@@ -30,6 +30,17 @@
         "-y",
         "mcp-svelte-docs"
       ]
+    },
+    "21st-dev": {
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@21st-dev/magic@latest",
+        "mcp",
+        "1e26104b96d9ad00b7af16e814bd26b78be39fcd0670908433f0b90c6e6f58a5"
+      ]
     }
   }
 }

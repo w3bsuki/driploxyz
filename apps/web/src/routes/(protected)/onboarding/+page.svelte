@@ -6,9 +6,7 @@
     AccountTypeSelector,
     AvatarSelector,
     SocialLinksEditor,
-    PayoutMethodSelector,
-    OnboardingSuccessModal,
-    BrandPaymentModal
+    PayoutMethodSelector
   } from '@repo/ui';
   import { goto, invalidateAll } from '$app/navigation';
   import { enhance } from '$app/forms';
@@ -36,6 +34,12 @@
   let showSuccessModal = $state(false);
   let showBrandPayment = $state(false);
   let brandPaid = $state(false);
+  
+  // Dynamically imported modal components
+  let OnboardingSuccessModal: any = $state(null);
+  let BrandPaymentModal: any = $state(null);
+  let successModalLoaded = $state(false);
+  let brandPaymentModalLoaded = $state(false);
   let accountType = $state<'personal' | 'pro' | 'brand'>('personal');
   let discountCode = $state('');
   let username = $state('');
@@ -101,6 +105,23 @@
     }
   });
 
+  // Dynamic import functions for modals
+  async function loadSuccessModal() {
+    if (!successModalLoaded && !OnboardingSuccessModal) {
+      const module = await import('@repo/ui/lib/OnboardingSuccessModal.svelte');
+      OnboardingSuccessModal = module.default;
+      successModalLoaded = true;
+    }
+  }
+  
+  async function loadBrandPaymentModal() {
+    if (!brandPaymentModalLoaded && !BrandPaymentModal) {
+      const module = await import('@repo/ui/lib/BrandPaymentModal.svelte');
+      BrandPaymentModal = module.default;
+      brandPaymentModalLoaded = true;
+    }
+  }
+
   async function handleSuccessComplete() {
     console.log('[ONBOARDING] Success modal complete clicked');
     showSuccessModal = false;
@@ -122,12 +143,13 @@
     brandPaid = false;
   }
 
-  function nextStep() {
+  async function nextStep() {
     // STRICT CHECK: Block brand/premium users without payment at ANY step
     if ((accountType === 'pro' || accountType === 'brand') && !brandPaid) {
       toasts.error('Payment is required for ' + accountType + ' accounts. Please complete payment to continue.', {
         duration: 5000
       });
+      await loadBrandPaymentModal();
       showBrandPayment = true;
       return;
     }
@@ -260,7 +282,7 @@
     payoutName = name || '';
   }
 
-  function prepareFormSubmit() {
+  async function prepareFormSubmit() {
     if (!data.user || !username.trim()) return false;
     
     // FINAL CHECK: Absolutely no completing without payment for brand/premium
@@ -268,6 +290,7 @@
       toasts.error('Payment is required to complete ' + accountType + ' account setup!', {
         duration: 5000
       });
+      await loadBrandPaymentModal();
       showBrandPayment = true;
       return false;
     }
@@ -390,10 +413,11 @@
     {#snippet navigation()}
       <div class="flex space-x-4">
         <Button
-          onclick={() => {
+          onclick={async () => {
             // For premium/brand, always require payment first
             if ((accountType === 'brand' || accountType === 'pro') && !brandPaid) {
               // Show payment modal
+              await loadBrandPaymentModal();
               showBrandPayment = true;
             } else {
               nextStep();
@@ -555,8 +579,8 @@
         id="onboarding-form"
         method="POST"
         action="?/complete"
-        use:enhance={() => {
-          if (!prepareFormSubmit()) return;
+        use:enhance={async () => {
+          if (!(await prepareFormSubmit())) return;
           submitting = true;
           completionInProgress = true;
           
@@ -571,6 +595,7 @@
                 console.log('[ONBOARDING CLIENT] Profile verified as complete');
                 
                 // Show success modal briefly
+                await loadSuccessModal();
                 showSuccessModal = true;
                 toasts.success('Profile setup complete! Redirecting...');
                 
@@ -648,33 +673,37 @@
 {/if}
 
 <!-- Success Modal -->
-<OnboardingSuccessModal
-  show={showSuccessModal}
-  accountType={accountType}
-  onClose={handleSuccessComplete}
-  translations={{
-    welcomeBrand: m.onboarding_welcomeBrand(),
-    welcomePersonal: m.onboarding_welcomePersonal(),
-    brandProfileSetup: m.onboarding_brandProfileSetup(),
-    profileComplete: m.onboarding_profileComplete(),
-    profileCreated: m.onboarding_profileCreated(),
-    profileVerified: m.onboarding_profileVerified(),
-    brandPending: m.onboarding_brandPending(),
-    paymentReady: m.onboarding_paymentReady(),
-    goToDashboard: m.onboarding_goToDashboard(),
-    startExploring: m.onboarding_startExploring()
-  }}
-/>
+{#if successModalLoaded && OnboardingSuccessModal}
+  <OnboardingSuccessModal
+    show={showSuccessModal}
+    accountType={accountType}
+    onClose={handleSuccessComplete}
+    translations={{
+      welcomeBrand: m.onboarding_welcomeBrand(),
+      welcomePersonal: m.onboarding_welcomePersonal(),
+      brandProfileSetup: m.onboarding_brandProfileSetup(),
+      profileComplete: m.onboarding_profileComplete(),
+      profileCreated: m.onboarding_profileCreated(),
+      profileVerified: m.onboarding_profileVerified(),
+      brandPending: m.onboarding_brandPending(),
+      paymentReady: m.onboarding_paymentReady(),
+      goToDashboard: m.onboarding_goToDashboard(),
+      startExploring: m.onboarding_startExploring()
+    }}
+  />
+{/if}
 
 <!-- Brand Payment Modal -->
-<BrandPaymentModal
-  show={showBrandPayment}
-  accountType={accountType}
-  initialDiscountCode={discountCode}
-  stripePublishableKey={PUBLIC_STRIPE_PUBLISHABLE_KEY}
-  onSuccess={handleBrandPaymentSuccess}
-  onCancel={handleBrandPaymentCancel}
-  onClose={() => showBrandPayment = false}
-/>
+{#if brandPaymentModalLoaded && BrandPaymentModal}
+  <BrandPaymentModal
+    show={showBrandPayment}
+    accountType={accountType}
+    initialDiscountCode={discountCode}
+    stripePublishableKey={PUBLIC_STRIPE_PUBLISHABLE_KEY}
+    onSuccess={handleBrandPaymentSuccess}
+    onCancel={handleBrandPaymentCancel}
+    onClose={() => showBrandPayment = false}
+  />
+{/if}
 
 <!-- Tutorial flow removed - too many modals are confusing -->

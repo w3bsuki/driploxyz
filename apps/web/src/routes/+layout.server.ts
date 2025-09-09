@@ -3,6 +3,7 @@ import { dev } from '$app/environment';
 import type { LayoutServerLoad } from './$types';
 import { detectRegion } from '$lib/server/geo-detection';
 import { getCanonicalAndHreflang } from '$lib/seo';
+import { withTimeout } from '@repo/utils';
 
 const REDIRECT_PATHS_TO_SKIP = [
   '/onboarding',
@@ -12,14 +13,6 @@ const REDIRECT_PATHS_TO_SKIP = [
   '/logout',
   '/auth'
 ];
-
-// Tiny timeout to prevent dev hang if DB is slow/unreachable
-async function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
-  return await Promise.race([
-    promise,
-    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))
-  ]);
-}
 
 export const load = (async (event) => {
   const { url, cookies, depends, locals } = event;
@@ -47,7 +40,8 @@ export const load = (async (event) => {
         .from('profiles')
         .select('id, username, full_name, avatar_url, onboarding_completed, account_type, subscription_tier, region')
         .eq('id', user.id)
-        .single(),
+        .single()
+        .then(),
       2500,
       { data: null, error: null } as any
     );

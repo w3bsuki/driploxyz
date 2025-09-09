@@ -150,7 +150,9 @@
 							onclick={() => rating = star}
 							class="p-2 hover:scale-110 transition-all duration-200 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg {star <= rating ? 'bg-yellow-50' : ''}"
 							disabled={isSubmitting}
-							aria-label="{star} star{star === 1 ? '' : 's'}"
+							aria-label="{star} star{star === 1 ? '' : 's'} rating"
+							role="radio"
+							aria-checked={rating === star}
 						>
 							<svg
 								class="w-7 h-7 transition-colors {star <= rating ? 'text-yellow-500 fill-current' : 'text-[color:var(--border-default)] hover:text-yellow-300'}"
@@ -217,7 +219,7 @@
 					maxlength="2000"
 					placeholder="Share details about your experience, product quality, shipping, communication..."
 					class="w-full px-3 py-3 border border-[color:var(--border-default)] rounded-lg focus:ring-2 focus:ring-[color:var(--state-focus)] focus:border-[color:var(--state-focus)] resize-none bg-[color:var(--surface-base)] text-[color:var(--text-primary)] placeholder:text-[color:var(--text-placeholder)] disabled:opacity-50"
-				/>
+				></textarea>
 				<div class="flex justify-between mt-1">
 					<span class="text-xs text-[color:var(--text-muted)]">
 						Be specific and honest to help other buyers
@@ -230,10 +232,11 @@
 			
 			<!-- Image Upload -->
 			<div>
-				<label class="block text-sm font-medium text-[color:var(--text-primary)] mb-2">
+				<label for="review-image-uploader" class="block text-sm font-medium text-[color:var(--text-primary)] mb-2">
 					Photos (optional)
 				</label>
 				<ImageUploader
+					id="review-image-uploader"
 					maxFiles={5}
 					onUpload={handleImageUpload}
 					onError={handleImageUploadError}

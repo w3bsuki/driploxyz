@@ -6,30 +6,48 @@
 	}
 	
 	interface Props {
-		stats: RatingStats;
+		stats?: RatingStats;
 		class?: string;
 		compact?: boolean;
 	}
 
 	let { stats, class: className = '', compact = false }: Props = $props();
 	
+	// Provide default values if stats is undefined
+	const safeStats = $derived(() => {
+		if (!stats) {
+			return {
+				averageRating: 0,
+				totalReviews: 0,
+				distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+			};
+		}
+		return {
+			averageRating: stats.averageRating || 0,
+			totalReviews: stats.totalReviews || 0,
+			distribution: stats.distribution || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+		};
+	});
+	
 	// Generate star display for average
 	const stars = [1, 2, 3, 4, 5];
 	
 	// Calculate percentages for distribution
 	const distributionPercentages = $derived(() => {
+		const stats = safeStats();
 		if (stats.totalReviews === 0) return { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 		
 		return Object.fromEntries(
 			Object.entries(stats.distribution).map(([rating, count]) => [
 				rating,
-				Math.round((count / stats.totalReviews) * 100)
+				Math.round(((count || 0) / stats.totalReviews) * 100)
 			])
 		);
 	});
 	
 	// Format average rating display
 	const formattedRating = $derived(() => {
+		const stats = safeStats();
 		if (stats.totalReviews === 0) return '0.0';
 		return stats.averageRating.toFixed(1);
 	});
@@ -42,8 +60,8 @@
 			<div class="flex items-center gap-1">
 				{#each stars as star}
 					<svg
-						class="w-4 h-4 {star <= Math.round(stats.averageRating) ? 'text-yellow-500 fill-current' : 'text-[color:var(--border-subtle)]'}"
-						fill={star <= Math.round(stats.averageRating) ? 'currentColor' : 'none'}
+						class="w-4 h-4 {star <= Math.round(safeStats().averageRating) ? 'text-yellow-500 fill-current' : 'text-[color:var(--border-subtle)]'}"
+						fill={star <= Math.round(safeStats().averageRating) ? 'currentColor' : 'none'}
 						stroke="currentColor"
 						viewBox="0 0 24 24"
 						stroke-width="1.5"
@@ -60,7 +78,7 @@
 				{formattedRating}
 			</span>
 			<span class="text-sm text-[color:var(--text-muted)]">
-				({stats.totalReviews} review{stats.totalReviews === 1 ? '' : 's'})
+				({safeStats().totalReviews} review{safeStats().totalReviews === 1 ? '' : 's'})
 			</span>
 		</div>
 	{:else}
@@ -75,8 +93,8 @@
 					<div class="flex items-center justify-center gap-1 mt-1">
 						{#each stars as star}
 							<svg
-								class="w-5 h-5 {star <= Math.round(stats.averageRating) ? 'text-yellow-500 fill-current' : 'text-[color:var(--border-subtle)]'}"
-								fill={star <= Math.round(stats.averageRating) ? 'currentColor' : 'none'}
+								class="w-5 h-5 {star <= Math.round(safeStats().averageRating) ? 'text-yellow-500 fill-current' : 'text-[color:var(--border-subtle)]'}"
+								fill={star <= Math.round(safeStats().averageRating) ? 'currentColor' : 'none'}
 								stroke="currentColor"
 								viewBox="0 0 24 24"
 								stroke-width="1.5"
@@ -90,7 +108,7 @@
 						{/each}
 					</div>
 					<div class="text-sm text-[color:var(--text-muted)] mt-1">
-						{stats.totalReviews} review{stats.totalReviews === 1 ? '' : 's'}
+						{safeStats().totalReviews} review{safeStats().totalReviews === 1 ? '' : 's'}
 					</div>
 				</div>
 				
@@ -109,21 +127,21 @@
 							
 							<!-- Progress bar -->
 							<div class="flex-1 h-2 bg-[color:var(--surface-subtle)] rounded-full overflow-hidden">
-								<div 
+								<div
 									class="h-full bg-yellow-500 rounded-full transition-all duration-300"
-									style="width: {distributionPercentages[rating] || 0}%"
+									style="width: {distributionPercentages()[rating] || 0}%"
 								></div>
 							</div>
 							
 							<div class="w-12 text-right">
 								<span class="text-sm text-[color:var(--text-muted)]">
-									{distributionPercentages[rating] || 0}%
+									{distributionPercentages()[rating] || 0}%
 								</span>
 							</div>
 							
 							<div class="w-8 text-right">
 								<span class="text-xs text-[color:var(--text-muted)]">
-									({stats.distribution[rating] || 0})
+									({safeStats().distribution[rating] || 0})
 								</span>
 							</div>
 						</div>

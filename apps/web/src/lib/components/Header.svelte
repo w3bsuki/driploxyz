@@ -228,8 +228,8 @@
               count={$unreadCount}
               onclick={async () => {
                 if (!notificationPanelLoaded && !NotificationPanel) {
-                  const module = await import('@repo/ui');
-                  NotificationPanel = module.NotificationPanel;
+                  const module = await import('@repo/ui/lib/NotificationPanel.svelte');
+                  NotificationPanel = module.default;
                   notificationPanelLoaded = true;
                 }
                 notificationActions.togglePanel();

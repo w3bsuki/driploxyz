@@ -183,3 +183,6 @@ export interface AccessibilityProps {
 export interface Translations {
   [key: string]: string | Translations;
 }
+
+// Product Page (PDP) Types
+export * from './product';

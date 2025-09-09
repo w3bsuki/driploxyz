@@ -1,47 +1,64 @@
-import { json, error } from '@sveltejs/kit';
-import type { RequestHandler } from '@sveltejs/kit';
-import { createServices } from '$lib/services';
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { supabase } from '$lib/server/supabase.server';
 
-export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
+  if (!locals.session?.user?.id) {
+    return json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
-    const { session } = await safeGetSession();
-    
-    if (!session?.user) {
-      return error(401, { message: 'Authentication required' });
+    const { productId } = await request.json();
+
+    if (!productId) {
+      return json({ error: 'Product ID is required' }, { status: 400 });
     }
 
-    const services = createServices(supabase);
-    const productId = url.searchParams.get('productId');
+    const { error } = await locals.supabase
+      .from('favorites')
+      .insert({
+        user_id: locals.session.user.id,
+        product_id: productId
+      });
 
-    if (productId) {
-      // Check if specific product is favorited
-      const { isFavorited, error: checkError } = await services.favorites.isFavorited(
-        session.user.id, 
-        productId
-      );
-
-      if (checkError) {
-        return error(500, { message: 'Failed to check favorite status' });
-      }
-
-      return json({ isFavorited });
-    } else {
-      // Get all user favorites
-      const { data: favorites, error: favError } = await services.favorites.getUserFavorites(
-        session.user.id
-      );
-
-      if (favError) {
-        return error(500, { message: 'Failed to fetch favorites' });
-      }
-
-      return json({ favorites });
+    if (error) {
+      console.error('Error adding favorite:', error);
+      return json({ error: 'Failed to add favorite' }, { status: 500 });
     }
 
-  } catch (err) {
-    console.error('Favorites API error:', err);
-    return error(500, { message: 'Internal server error' });
+    return json({ success: true });
+  } catch (error) {
+    console.error('Error in POST /api/favorites:', error);
+    return json({ error: 'Internal server error' }, { status: 500 });
   }
 };
 
-// POST and DELETE endpoints removed - use /api/favorites/[productId] for toggle operations
+export const DELETE: RequestHandler = async ({ request, locals }) => {
+  if (!locals.session?.user?.id) {
+    return json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const { productId } = await request.json();
+
+    if (!productId) {
+      return json({ error: 'Product ID is required' }, { status: 400 });
+    }
+
+    const { error } = await locals.supabase
+      .from('favorites')
+      .delete()
+      .eq('user_id', locals.session.user.id)
+      .eq('product_id', productId);
+
+    if (error) {
+      console.error('Error removing favorite:', error);
+      return json({ error: 'Failed to remove favorite' }, { status: 500 });
+    }
+
+    return json({ success: true });
+  } catch (error) {
+    console.error('Error in DELETE /api/favorites:', error);
+    return json({ error: 'Internal server error' }, { status: 500 });
+  }
+};

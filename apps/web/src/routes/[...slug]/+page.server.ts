@@ -38,6 +38,17 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
   const parts = slug.split('/').filter(Boolean);
   let product = null;
 
+  // Normalize any /product/* path to canonical /product/:seller/:slug and redirect
+  if (parts[0] === 'product' && parts.length >= 3) {
+    const seller = parts[1];
+    const productSlug = parts[parts.length - 1];
+    const canonical = `/product/${seller}/${productSlug}`;
+    // Extra path segment (e.g., category) → permanent redirect
+    if (parts.length > 3) throw redirect(301, canonical);
+    // Exactly seller + slug → temporary redirect to canonical route (lets specific route take over)
+    throw redirect(302, canonical);
+  }
+
   // Case 1: Handle legacy /product/uuid format
   if (parts[0] === 'product' && parts[1] && isUUID(parts[1])) {
     const uuid = parts[1];
@@ -55,9 +66,6 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
     if (productData?.slug && productData?.profiles?.username) {
       // Redirect to canonical URL
       throw redirect(301, `/product/${productData.profiles.username}/${productData.slug}`);
-    } else if (productData) {
-      // Fallback to internal product page
-      return { redirectToInternal: `/product/${uuid}` };
     } else {
       throw error(404, 'Product not found');
     }
@@ -130,9 +138,10 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
       throw redirect(301, correctPath);
     }
 
-    // Product found - get full data and render
+    // Product found - redirect to canonical route handled by specific page
     if (productData.id) {
-      product = await getProductData(supabase, productData.id, session, country);
+      const canonical = `/product/${sellerUsername}/${productSlug}`;
+      throw redirect(302, canonical);
     }
   }
 
@@ -157,8 +166,6 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
     
     if (productData?.slug && productData?.profiles?.username) {
       throw redirect(301, `/product/${productData.profiles.username}/${productData.slug}`);
-    } else if (productData) {
-      return { redirectToInternal: `/product/${uuid}` };
     }
   }
 
@@ -206,102 +213,8 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
     }
   }
 
-  if (!product) {
-    throw error(404, 'Product not found');
-  }
-
-  // Get parent category if exists
-  let parentCategory = null;
-  if (product.categories && product.categories.parent_id) {
-    const { data: parent } = await supabase
-      .from('categories')
-      .select('name, slug')
-      .eq('id', product.categories.parent_id)
-      .single();
-    parentCategory = parent;
-  }
-
-  // Check favorite status and fetch related data in parallel
-  const [favoriteResult, similarResult, sellerResult] = await Promise.allSettled([
-    // Check if user has favorited (only if authenticated)
-    session?.user ? supabase
-      .from('favorites')
-      .select('id')
-      .eq('user_id', session.user.id)
-      .eq('product_id', product.id)
-      .maybeSingle() : Promise.resolve({ data: null }),
-    
-    // Get similar products (same category, if category exists)
-    product.category_id 
-      ? supabase
-          .from('products')
-          .select(`
-            id,
-            title,
-            price,
-            condition,
-            slug,
-            product_images (
-              image_url
-            )
-          `)
-          .eq('category_id', product.category_id)
-          .eq('is_active', true)
-          .eq('is_sold', false)
-          .neq('id', product.id)
-          .limit(4)
-      : Promise.resolve({ data: [] }),
-
-    // Get other products from the same seller
-    supabase
-      .from('products')
-      .select(`
-        id,
-        title,
-        price,
-        condition,
-        slug,
-        product_images!product_id (
-          image_url
-        )
-      `)
-      .eq('seller_id', product.seller_id!)
-      .eq('is_active', true)
-      .eq('is_sold', false)
-      .neq('id', product.id)
-      .limit(4)
-  ]);
-
-  const isFavorited = favoriteResult.status === 'fulfilled' && !!favoriteResult.value.data;
-  const similarProducts = similarResult.status === 'fulfilled' ? similarResult.value.data || [] : [];
-  const sellerProducts = sellerResult.status === 'fulfilled' ? sellerResult.value.data || [] : [];
-  const isOwner = session?.user?.id === product.seller_id;
-
-  return {
-    product: {
-      ...product,
-      images: product.product_images?.map((img: { image_url: string }) => img.image_url) || [],
-      seller: product.profiles,
-      seller_name: product.profiles?.full_name || product.profiles?.username || 'Unknown Seller',
-      seller_username: product.profiles?.username,
-      seller_avatar: product.profiles?.avatar_url,
-      seller_rating: product.profiles?.rating,
-      seller_sales_count: product.profiles?.sales_count,
-      category_name: product.categories?.name,
-      parent_category: parentCategory
-    },
-    similarProducts: similarProducts.map((p: any) => ({
-      ...p,
-      images: p.product_images?.map((img: { image_url: string }) => img.image_url) || []
-    })),
-    sellerProducts: sellerProducts.map((p: any) => ({
-      ...p,
-      images: p.product_images?.map((img: { image_url: string }) => img.image_url) || []
-    })),
-    isOwner,
-    isFavorited,
-    user: session?.user || null
-  };
+  // For any other paths, return 404 from this catch‑all to avoid duplicate UI
+  throw error(404, 'Not found');
 }) satisfies PageServerLoad;
 
 /**
