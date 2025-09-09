@@ -72,51 +72,52 @@
 {#if showSellerInfo && (seller || productTitle)}
     <!-- Seller Info Section -->
     <div class="bg-white/95 backdrop-blur-sm border-b border-[color:var(--gray-200)] p-4 mb-4">
-      <div class="flex items-start gap-3">
-        <!-- Seller Avatar -->
+      <!-- Grid layout so thumbnail matches text stack height (3 rows) -->
+      <div class="grid grid-cols-[auto_1fr] grid-rows-[auto_auto_auto] gap-x-3 gap-y-1 items-start">
+        <!-- Product Thumbnail (row-span to match 3 lines) -->
         {#if seller?.avatar_url}
           <img 
             src={seller.avatar_url} 
             alt={seller.full_name || seller.username || 'Seller'}
-            class="w-16 h-16 rounded-md object-cover bg-[color:var(--gray-100)] border border-[color:var(--gray-200)] flex-shrink-0"
+            class="row-span-3 w-16 self-stretch rounded-md object-cover bg-[color:var(--gray-100)] border border-[color:var(--gray-200)]"
             loading="lazy"
           />
         {:else}
-          <div class="w-16 h-16 rounded-md bg-[color:var(--gray-200)] border border-[color:var(--gray-300)] flex items-center justify-center flex-shrink-0">
+          <div class="row-span-3 w-16 self-stretch rounded-md bg-[color:var(--gray-200)] border border-[color:var(--gray-300)] flex items-center justify-center">
             <svg class="w-5 h-5 text-[color:var(--gray-500)]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z"/>
             </svg>
           </div>
         {/if}
-        
-        <!-- Product & Seller Info -->
-        <div class="flex-1 min-w-0">
-          {#if productTitle}
-            <h3 class="text-sm font-semibold text-[color:var(--gray-900)] leading-tight mb-1">
-              {truncateText(productTitle, 45)}
-            </h3>
-          {/if}
-          
-          <div class="flex items-center gap-2 mb-1">
-            <span class="text-xs font-medium text-[color:var(--gray-700)]">
-              {seller?.full_name || seller?.username || 'Seller'}
-            </span>
-            {#if seller?.rating}
-              <div class="flex items-center gap-1">
-                <svg class="w-3 h-3 text-yellow-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                </svg>
-                <span class="text-xs font-medium text-[color:var(--gray-600)]">{seller.rating.toFixed(1)}</span>
-              </div>
-            {/if}
-          </div>
-          
-          {#if productDescription}
-            <p class="text-xs text-[color:var(--gray-600)] leading-relaxed">
-              {truncateText(productDescription, 60)}
-            </p>
+
+        <!-- Row 1: Title (single line) -->
+        {#if productTitle}
+          <h3 class="col-start-2 row-start-1 text-sm font-semibold text-[color:var(--gray-900)] leading-tight truncate">
+            {truncateText(productTitle, 60)}
+          </h3>
+        {/if}
+
+        <!-- Row 2: Seller meta (single line) -->
+        <div class="col-start-2 row-start-2 min-w-0 flex items-center gap-2">
+          <span class="text-xs font-medium text-[color:var(--gray-700)] truncate">
+            {seller?.full_name || seller?.username || 'Seller'}
+          </span>
+          {#if seller?.rating}
+            <div class="flex items-center gap-1">
+              <svg class="w-3 h-3 text-yellow-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <span class="text-xs font-medium text-[color:var(--gray-600)]">{seller.rating.toFixed(1)}</span>
+            </div>
           {/if}
         </div>
+
+        <!-- Row 3: Description (single line) -->
+        {#if productDescription}
+          <p class="col-start-2 row-start-3 text-xs text-[color:var(--gray-600)] leading-relaxed truncate">
+            {truncateText(productDescription, 80)}
+          </p>
+        {/if}
       </div>
     </div>
   {/if}
