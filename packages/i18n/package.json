@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "pnpm run clean && pnpm run compile && pnpm run types",
+    "build": "pnpm run clean && pnpm run compile && pnpm run types && pnpm run copy-runtime",
     "compile": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
     "types": "tsc",
+    "copy-runtime": "mkdir -p lib/paraglide && cp src/paraglide/*.js lib/paraglide/ && cp -r src/paraglide/messages lib/paraglide/",
     "dev": "pnpm run compile",
     "clean": "rm -rf lib dist src/paraglide"
   },
