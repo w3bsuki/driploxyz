@@ -197,15 +197,17 @@
             </div>
           </div>
 
-          <!-- Condition below seller header -->
-          {#if data.product.condition}
-            <div class="mt-1">
-              <ConditionBadge condition={data.product.condition as any} />
-            </div>
-          {/if}
-
-          <!-- Title -->
-          <h1 class="mt-2 text-[1.05rem] font-medium text-[color:var(--gray-900)] leading-snug">{data.product.title}</h1>
+          <!-- Title + Condition (inline) -->
+          <div class="mt-1 flex items-center gap-2">
+            <h1 class="text-[1rem] font-medium text-[color:var(--gray-900)] leading-snug tracking-tight truncate">
+              {data.product.title}
+            </h1>
+            {#if data.product.condition}
+              <span class="shrink-0">
+                <ConditionBadge condition={data.product.condition as any} />
+              </span>
+            {/if}
+          </div>
 
           <!-- Description -->
           {#if data.product.description}
