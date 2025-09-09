@@ -65,7 +65,7 @@ const languageHandler: Handle = async ({ event, resolve }) => {
   } else {
     const prodCsp = [
       "default-src 'self'",
-      `script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://connect.facebook.net`,
+      `script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://connect.facebook.net https://vercel.live`,
       "worker-src 'self' blob:",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com",

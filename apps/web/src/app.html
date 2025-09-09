@@ -17,7 +17,7 @@
 		<link rel="stylesheet" href="%sveltekit.assets%/fonts/inter.css">
 
 		<!-- Early theme init: apply saved theme before CSS paints -->
-		<script>
+		<script nonce="%sveltekit.nonce%">
 			(function(){
 				try {
 					var t = localStorage.getItem('theme');
@@ -35,7 +35,7 @@
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/icons/icon-192x192.png">
 		
 		<!-- Error handling and monitoring -->
-		<script>
+		<script nonce="%sveltekit.nonce%">
 			// Global error handler for uncaught JavaScript errors
 			window.addEventListener('error', function(event) {
 				console.error('Global error:', event.error);
