@@ -4,7 +4,7 @@
 /// <reference path="./paraglide.d.ts" />
 
 // Export all message functions - Vite automatically tree-shakes unused ones
-export * from './generated-messages.js';
+export * from './paraglide/messages/_index.js';
 
 // Type definitions 
 export type Locale = 'en' | 'bg';
@@ -12,11 +12,9 @@ export type LanguageTag = Locale; // Compatibility alias
 
 // Re-export Paraglide runtime functions directly - let Paraglide handle locale detection
 // During packaging/build, runtime is emitted to lib/paraglide/runtime.js.
-// Import via compiled lib path when bundled environments cannot resolve src-relative path.
-// Prefer src path for dev; fall back to lib path for production builds.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export { setLocale, getLocale, isLocale, locales, baseLocale } from (typeof window === 'undefined' ? './paraglide/runtime.js' : './paraglide/runtime.js');
+export { setLocale, getLocale, isLocale, locales, baseLocale } from './paraglide/runtime.js';
 
 // Local bindings for internal use
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -66,7 +64,7 @@ export function detectLocale(input: {
   // Path: /^\/(uk|bg)(\/|$)/
   if (input.path) {
     const match = input.path.match(/^\/(uk|bg)(\/|$)/);
-    if (match) {
+    if (match && match[1]) {
       const mapped = LOCALE_ALIASES[match[1]] ?? (match[1] as Locale);
       if ((runtimeLocales as readonly string[]).includes(mapped)) return mapped as Locale;
     }
