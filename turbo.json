@@ -5,7 +5,7 @@
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".svelte-kit/**", ".vercel/**", "dist/**", "build/**"],
+      "outputs": [".svelte-kit/**", ".vercel/**", "dist/**", "build/**", "lib/**"],
       "env": [
         "PUBLIC_STRIPE_PUBLISHABLE_KEY",
         "STRIPE_SECRET_KEY", 
@@ -20,7 +20,8 @@
         "SENTRY_ORG",
         "SENTRY_PROJECT",
         "SENTRY_AUTH_TOKEN",
-        "SENTRY_RELEASE"
+        "SENTRY_RELEASE",
+        "PUBLIC_SITE_URL"
       ]
     },
     "lint": {

@@ -607,6 +607,60 @@ export const handle = async ({ event, resolve }) => {
 };
 ```
 
+**CLAUDE_CODE: CSP NONCE COMPLIANCE**
+⚠️ **CRITICAL**: All inline scripts must use nonce attributes to prevent CSP violations:
+
+```html
+<!-- app.html - CORRECT: All inline scripts must have nonce attribute -->
+<script nonce="%sveltekit.nonce%">
+  // Theme initialization script
+  (function(){
+    try {
+      var t = localStorage.getItem('theme');
+      if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+      else document.documentElement.removeAttribute('data-theme');
+    } catch(e){}
+  })();
+</script>
+
+<script nonce="%sveltekit.nonce%">
+  // Error handling and monitoring
+  window.addEventListener('error', function(event) {
+    console.error('Global error:', event.error);
+  });
+</script>
+```
+
+**CSP Production Configuration**:
+```typescript
+// hooks.server.ts - Production CSP with nonce
+const nonce = createCspNonce();
+const prodCsp = [
+  "default-src 'self'",
+  `script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://connect.facebook.net https://vercel.live`,
+  "worker-src 'self' blob:",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com data:",
+  "img-src 'self' data: https:",
+  "connect-src 'self' https:",
+  "frame-ancestors 'none'",
+  "object-src 'none'"
+].join('; ');
+```
+
+**CSP Compliance Checklist**:
+- [ ] All inline `<script>` tags have `nonce="%sveltekit.nonce%"` attribute
+- [ ] Production CSP includes required external domains
+- [ ] Development CSP is relaxed for HMR: `'unsafe-inline' 'unsafe-eval'`
+- [ ] No inline event handlers (`onclick`, `onload`, etc.)
+- [ ] External scripts are from allowlisted domains only
+
+**Common CSP Violations to Avoid**:
+❌ `<script>` without nonce → Blocks JavaScript execution
+❌ Missing external domains in CSP → Blocks third-party scripts  
+❌ Inline event handlers → Use `addEventListener` instead
+❌ `eval()` or `new Function()` → Blocked by CSP (except in dev)
+
 **CLAUDE_CODE: GDPR COMPLIANCE FOR BULGARIAN MARKET**
 Data protection requirements:
 - User consent management for analytics
