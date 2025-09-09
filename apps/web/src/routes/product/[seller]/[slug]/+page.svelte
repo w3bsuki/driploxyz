@@ -141,43 +141,29 @@
         condition={data.product.condition as any}
       />
 
-      <!-- Mobile Post Header: brand â†’ title â†’ condition/size/color â†’ price/like â†’ description -->
+      <!-- Mobile unified post: header (avatar/name/date/like) · title · condition · description -->
       <div class="md:hidden mt-3 space-y-2">
-        <!-- Seller row like a social post header -->
-        <div class="flex items-center justify-between gap-3">
-          <div class="flex items-center gap-3 min-w-0">
-            {#if data.product.seller_avatar}
-              <img src={data.product.seller_avatar} alt={data.product.seller_name || 'Seller avatar'} class="size-9 rounded-full object-cover" />
-            {:else}
-              <div class="size-9 rounded-full bg-[color:var(--gray-200)]" aria-hidden="true"></div>
-            {/if}
-            <div class="min-w-0">
-              <a href={`/profile/${data.product.seller_id}`} class="block text-sm font-semibold text-[color:var(--gray-900)] truncate">{data.product.seller_name}</a>
-              {#if data.product.seller_username}
-                <span class="block text-xs text-[color:var(--gray-500)] truncate">@{data.product.seller_username}</span>
+        <div class="bg-white rounded-lg border border-[color:var(--gray-200)] p-3">
+          <!-- Header: avatar · name/@username · date · like -->
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2 min-w-0">
+              {#if data.product.seller_avatar}
+                <img src={data.product.seller_avatar} alt={data.product.seller_name || 'Seller avatar'} class="size-6 rounded-full object-cover" />
+              {:else}
+                <div class="size-6 rounded-full bg-[color:var(--gray-200)]" aria-hidden="true"></div>
               {/if}
+              <div class="min-w-0">
+                <a href={`/profile/${data.product.seller_id}`} class="block text-xs font-medium text-[color:var(--gray-900)] truncate">{data.product.seller_name}</a>
+                {#if data.product.seller_username}
+                  <span class="block text-[11px] text-[color:var(--gray-500)] truncate">@{data.product.seller_username}</span>
+                {/if}
+              </div>
             </div>
-          </div>
-          <div class="text-xs text-[color:var(--gray-500)] shrink-0">
-            {new Date(data.product.created_at).toLocaleDateString()}
-          </div>
-        </div>
-
-        <!-- Unified post card: title · condition · price · like · description -->
-        <div class="bg-white rounded-xl border border-[color:var(--gray-200)] p-3">
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0">
-              <h1 class="text-lg font-semibold text-[color:var(--gray-900)] leading-snug tracking-tight">{data.product.title}</h1>
-              {#if data.product.condition}
-                <div class="mt-1">
-                  <ConditionBadge condition={data.product.condition as any} />
-                </div>
-              {/if}
-            </div>
-            <div class="shrink-0 text-right">
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="text-[11px] text-[color:var(--gray-500)]">{new Date(data.product.created_at).toLocaleDateString()}</span>
               <button
                 type="button"
-                class={`mt-1 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${isLiked ? 'border-[color:var(--rose-200)] bg-[color:var(--rose-50)] text-[color:var(--rose-700)]' : 'border-[color:var(--gray-200)] bg-white text-[color:var(--gray-700)]'}`}
+                class={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${isLiked ? 'border-[color:var(--rose-200)] bg-[color:var(--rose-50)] text-[color:var(--rose-700)]' : 'border-[color:var(--gray-200)] bg-white text-[color:var(--gray-700)]'}`}
                 aria-pressed={isLiked}
                 onclick={async () => { const r = await handleFavorite(); return r; }}
               >
@@ -187,6 +173,15 @@
             </div>
           </div>
 
+          <!-- Title + condition -->
+          <h1 class="mt-2 text-[1.05rem] font-medium text-[color:var(--gray-900)] leading-snug">{data.product.title}</h1>
+          {#if data.product.condition}
+            <div class="mt-1">
+              <ConditionBadge condition={data.product.condition as any} />
+            </div>
+          {/if}
+
+          <!-- Description -->
           {#if data.product.description}
             <p class="mt-2 text-[0.95rem] text-[color:var(--gray-800)] leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-4'}">
               {data.product.description}
