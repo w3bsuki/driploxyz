@@ -10,7 +10,7 @@
   import { UnifiedCookieConsent } from '@repo/ui';
   import Header from '$lib/components/Header.svelte';
   import '../app.css';
-  // Deploy to driplo.xyz
+  // Deploy to driplo.xyz - force redeploy
   import { invalidate } from '$app/navigation';
   import { browser, dev } from '$app/environment';
   // Auth stores removed - we use server data directly
