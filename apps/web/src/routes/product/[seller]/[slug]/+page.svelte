@@ -183,11 +183,9 @@
                 <div class="flex items-center gap-1 text-[11px] text-[color:var(--gray-500)] truncate">
                   {#if data.product.seller_username}
                     <span class="truncate">@{data.product.seller_username}</span>
-                    <span aria-hidden="true">·</span>
+                    {#if data.product.location}<span aria-hidden="true">·</span>{/if}
                   {/if}
-                  <span class="shrink-0">{formatRelativeDate(data.product.created_at)}</span>
                   {#if data.product.location}
-                    <span aria-hidden="true">·</span>
                     <span class="truncate">{data.product.location}</span>
                   {/if}
                 </div>
@@ -436,7 +434,7 @@
       full_name: data.product.seller_name
     }}
     productTitle={data.product.title}
-    productDescription={data.product.description}
+    productDescription={formatRelativeDate(data.product.created_at)}
     showSellerInfo={true}
   />
 </div>
