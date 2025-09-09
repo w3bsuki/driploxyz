@@ -1,7 +1,7 @@
 ﻿<script lang="ts">
   import { goto } from '$app/navigation';
   import { ProductBreadcrumb, SEOMetaTags, ProductGallery, ProductCard, ConditionBadge, ProductActions, SellerCard } from '@repo/ui';
-  import { Heart } from '@lucide/svelte';
+  import { Heart, Clock } from '@lucide/svelte';
   import { onMount } from 'svelte';
   import { buildProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
@@ -438,7 +438,10 @@
       productDescription={data.product.description}
       showSellerInfo={true}
     />
-    <span class="absolute right-3 top-2 text-[11px] text-[color:var(--gray-500)]">{formatRelativeDate(data.product.created_at)}</span>
+    <div class="absolute right-3 top-2 flex items-center gap-1 text-[11px] text-[color:var(--gray-500)]">
+      <Clock class="size-3.5 text-[color:var(--gray-400)]" aria-hidden="true" />
+      <span>{formatRelativeDate(data.product.created_at)}</span>
+    </div>
   </div>
 </div>
 
