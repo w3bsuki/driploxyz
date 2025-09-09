@@ -5,6 +5,7 @@
   import { onMount } from 'svelte';
   import { buildProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
+  import * as m from '@repo/i18n';
 
   let { data }: { data: PageData } = $props();
 
@@ -97,14 +98,27 @@
       const diffMs = now.getTime() - d.getTime();
       if (!isFinite(diffMs)) return '';
       const mins = Math.floor(diffMs / 60000);
-      if (mins < 1) return 'just now';
-      if (mins < 60) return `${mins}m ago`;
+      if (mins < 1) return m.pdp_justNow();
+      if (mins < 60) return m.pdp_minutesAgo({ count: mins.toString() });
       const hours = Math.floor(mins / 60);
-      if (hours < 24) return `${hours}h ago`;
+      if (hours < 24) return m.pdp_hoursAgo({ count: hours.toString() });
       const days = Math.floor(hours / 24);
-      return `${days}d ago`;
+      return m.pdp_daysAgo({ count: days.toString() });
     } catch {
       return '';
+    }
+  }
+
+  // Condition translation helper
+  function translateCondition(condition: string) {
+    switch (condition) {
+      case 'brand_new_with_tags': return m.sell_condition_brandNewWithTags();
+      case 'new_without_tags': return m.sell_condition_newWithoutTags();
+      case 'like_new': return m.sell_condition_likeNew();
+      case 'good': return m.sell_condition_good();
+      case 'worn': return m.sell_condition_worn();
+      case 'fair': return m.sell_condition_fair();
+      default: return condition.replaceAll('_', ' ');
     }
   }
 </script>
@@ -150,7 +164,7 @@
 
 <!-- Main Layout: Gallery + Info/Actions -->
 <div class="mx-auto max-w-screen-xl px-4 md:px-6 lg:px-8 pb-24 md:pb-0">
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
     <!-- Gallery -->
     <section>
       <ProductGallery
@@ -161,19 +175,19 @@
       />
 
       <!-- Mobile unified post: condition · header (avatar/name/@username · like) · title · description -->
-      <div class="md:hidden mt-3 space-y-2">
-        <div class="bg-white rounded-lg border border-[color:var(--gray-200)] p-3">
+      <div class="md:hidden mt-4 space-y-3">
+        <div class="bg-white rounded-xl border border-[color:var(--gray-200)] p-4">
           <!-- Header: avatar · name/@username · like (date moved under name) -->
-          <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-2 min-w-0">
+          <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-3 min-w-0">
               {#if data.product.seller_avatar}
-                <img src={data.product.seller_avatar} alt={data.product.seller_name || 'Seller avatar'} class="size-6 rounded-full object-cover" />
+                <img src={data.product.seller_avatar} alt={data.product.seller_name || 'Seller avatar'} class="size-7 rounded-full object-cover" />
               {:else}
-                <div class="size-6 rounded-full bg-[color:var(--gray-200)]" aria-hidden="true"></div>
+                <div class="size-7 rounded-full bg-[color:var(--gray-200)]" aria-hidden="true"></div>
               {/if}
               <div class="min-w-0">
-                <a href={`/profile/${data.product.seller_id}`} class="block text-xs font-medium text-[color:var(--gray-900)] truncate">{data.product.seller_name}</a>
-                <div class="flex items-center gap-1 text-[11px] text-[color:var(--gray-500)] truncate">
+                <a href={`/profile/${data.product.seller_id}`} class="block text-sm font-medium text-[color:var(--gray-900)] truncate">{data.product.seller_name}</a>
+                <div class="flex items-center gap-1.5 text-xs text-[color:var(--gray-500)] truncate">
                   {#if data.product.seller_username}
                     <span class="truncate">@{data.product.seller_username}</span>
                     {#if data.product.location}<span aria-hidden="true">·</span>{/if}
@@ -198,20 +212,20 @@
           </div>
 
           <!-- Condition + Title (inline, condition on the left) -->
-          <div class="mt-1 flex items-center gap-2">
+          <div class="mt-3 flex items-center gap-3">
             {#if data.product.condition}
               <span class="shrink-0">
                 <ConditionBadge condition={data.product.condition as any} />
               </span>
             {/if}
-            <h1 class="flex-1 text-[1rem] font-medium text-[color:var(--gray-900)] leading-snug tracking-tight truncate">
+            <h1 class="flex-1 text-lg font-semibold text-[color:var(--gray-900)] leading-snug tracking-tight truncate">
               {data.product.title}
             </h1>
           </div>
 
           <!-- Description -->
           {#if data.product.description}
-            <p class="mt-2 text-[0.95rem] text-[color:var(--gray-800)] leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-4'}">
+            <p class="mt-3 text-sm text-[color:var(--gray-700)] leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-4'}">
               {data.product.description}
             </p>
             {#if data.product.description.length > 160}
@@ -219,43 +233,45 @@
                 type="button"
                 class="mt-2 text-xs font-medium text-[color:var(--blue-600)] hover:text-[color:var(--blue-700)]"
                 onclick={() => descExpanded = !descExpanded}
-              >{descExpanded ? 'Show less' : 'Read more'}</button>
+              >{descExpanded ? m.pdp_showLess() : m.pdp_readMore()}</button>
             {/if}
           {/if}
         </div>
 
         <!-- Quick facts table (mobile) -->
-        <div class="bg-white rounded-xl border border-[color:var(--gray-200)]">
-          <div class="px-3 py-2.5 border-b border-[color:var(--gray-200)] text-sm font-semibold text-[color:var(--gray-900)]">Details</div>
+        <div class="bg-white rounded-xl border border-[color:var(--gray-200)] shadow-sm">
+          <div class="px-4 py-3 border-b border-[color:var(--gray-200)] bg-[color:var(--gray-50)]">
+            <h3 class="text-sm font-semibold text-[color:var(--gray-900)]">{m.pdp_details()}</h3>
+          </div>
           <dl class="divide-y divide-[color:var(--gray-100)]">
             {#if data.product.brand}
-              <div class="px-3 py-2 grid grid-cols-[auto_1fr] items-center gap-2 text-sm">
-                <dt class="text-[11px] uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">Brand</dt>
-                <dd class="font-medium text-[color:var(--gray-900)] text-right truncate">{data.product.brand}</dd>
+              <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
+                <dt class="text-xs font-medium uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">{m.pdp_brand()}</dt>
+                <dd class="font-semibold text-[color:var(--gray-900)] text-right truncate">{data.product.brand}</dd>
               </div>
             {/if}
             {#if data.product.size}
-              <div class="px-3 py-2 grid grid-cols-[auto_1fr] items-center gap-2 text-sm">
-                <dt class="text-[11px] uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">Size</dt>
-                <dd class="font-medium text-[color:var(--gray-900)] text-right truncate">{data.product.size}</dd>
+              <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
+                <dt class="text-xs font-medium uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">{m.pdp_size()}</dt>
+                <dd class="font-semibold text-[color:var(--gray-900)] text-right truncate">{data.product.size}</dd>
               </div>
             {/if}
             {#if data.product.condition}
-              <div class="px-3 py-2 grid grid-cols-[auto_1fr] items-center gap-2 text-sm">
-                <dt class="text-[11px] uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">Condition</dt>
-                <dd class="font-medium text-[color:var(--gray-900)] text-right truncate">{(data.product.condition || '').toString().replaceAll('_',' ')}</dd>
+              <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
+                <dt class="text-xs font-medium uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">{m.pdp_condition()}</dt>
+                <dd class="font-semibold text-[color:var(--gray-900)] text-right truncate">{translateCondition(data.product.condition || '')}</dd>
               </div>
             {/if}
             {#if data.product.color}
-              <div class="px-3 py-2 grid grid-cols-[auto_1fr] items-center gap-2 text-sm">
-                <dt class="text-[11px] uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">Color</dt>
-                <dd class="font-medium text-[color:var(--gray-900)] text-right truncate">{data.product.color}</dd>
+              <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
+                <dt class="text-xs font-medium uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">{m.pdp_color()}</dt>
+                <dd class="font-semibold text-[color:var(--gray-900)] text-right truncate">{data.product.color}</dd>
               </div>
             {/if}
             {#if data.product.material}
-              <div class="px-3 py-2 grid grid-cols-[auto_1fr] items-center gap-2 text-sm">
-                <dt class="text-[11px] uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">Material</dt>
-                <dd class="font-medium text-[color:var(--gray-900)] text-right truncate">{data.product.material}</dd>
+              <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
+                <dt class="text-xs font-medium uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">{m.pdp_material()}</dt>
+                <dd class="font-semibold text-[color:var(--gray-900)] text-right truncate">{data.product.material}</dd>
               </div>
             {/if}
           </dl>
@@ -273,14 +289,14 @@
       }}
       onMessage={handleMessage}
       onViewProfile={() => handleNavigate(`/profile/${data.product.seller_id}`)}
-      class="md:hidden mt-3"
+      class="md:hidden mt-4"
     />
     </section>
 
     <!-- Info + Actions -->
     <section class="vr-md">
       <!-- Product Info -->
-      <div class="space-y-3">
+      <div class="space-y-4">
         <!-- Main Product Information Card -->
         <article class="hidden md:block bg-white rounded-xl border border-[color:var(--gray-200)] shadow-sm" aria-label="Product information">
           <div class="p-4 sm:p-6">
@@ -298,18 +314,18 @@
             </h1>
 
             <!-- Price Section -->
-            <div class="mt-4 pb-4 border-b border-[color:var(--gray-100)]">
+            <div class="mt-5 pb-5 border-b border-[color:var(--gray-100)]">
               <div class="flex items-baseline gap-3">
                 <span class="text-3xl font-bold text-[color:var(--gray-900)] tracking-tight" aria-label="Price">€{data.product.price}</span>
                 {#if data.product.original_price && data.product.original_price > data.product.price}
-                  <span class="text-base text-[color:var(--gray-500)] line-through" aria-label="Original price">€{data.product.original_price}</span>
+                  <span class="text-lg text-[color:var(--gray-500)] line-through" aria-label="Original price">€{data.product.original_price}</span>
                   <span class="sr-only">Reduced from €{data.product.original_price} to €{data.product.price}</span>
                 {/if}
               </div>
             </div>
 
             <!-- Product Attributes -->
-            <div class="flex flex-wrap gap-2 mt-4" role="list" aria-label="Product attributes">
+            <div class="flex flex-wrap gap-2.5 mt-5" role="list" aria-label="Product attributes">
               {#if data.product.size}
                 <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-[color:var(--blue-50)] text-[color:var(--blue-700)] border border-[color:var(--blue-200)]" role="listitem">
                   Size {data.product.size}
@@ -332,8 +348,8 @@
 
         <!-- Description -->
         {#if data.product.description}
-          <div class="hidden md:block bg-white rounded-lg border border-[color:var(--gray-200)] p-4">
-            <h2 class="text-sm font-semibold text-[color:var(--gray-900)] mb-2">Description</h2>
+          <div class="hidden md:block bg-white rounded-xl border border-[color:var(--gray-200)] p-5 shadow-sm">
+            <h2 class="text-base font-semibold text-[color:var(--gray-900)] mb-3">{m.pdp_description()}</h2>
             <p class="text-sm text-[color:var(--gray-700)] leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-3'}">
               {data.product.description}
             </p>
@@ -343,7 +359,7 @@
                 class="mt-2 text-xs font-medium text-[color:var(--blue-600)] hover:text-[color:var(--blue-700)]"
                 onclick={() => descExpanded = !descExpanded}
               >
-                {descExpanded ? 'Show less' : 'Read more'}
+                {descExpanded ? m.pdp_showLess() : m.pdp_readMore()}
               </button>
             {/if}
           </div>
@@ -351,40 +367,42 @@
 
         <!-- Product Details Table -->
         <section class="hidden md:block bg-white rounded-xl border border-[color:var(--gray-200)] shadow-sm" aria-labelledby="details-heading">
-          <div class="px-5 py-2.5 bg-[color:var(--gray-50)] border-b border-[color:var(--gray-200)]">
-            <h2 id="details-heading" class="text-base font-semibold text-[color:var(--gray-900)]">Product Details</h2>
+          <div class="px-5 py-3.5 bg-[color:var(--gray-50)] border-b border-[color:var(--gray-200)]">
+            <h2 id="details-heading" class="text-base font-semibold text-[color:var(--gray-900)]">{m.pdp_productDetails()}</h2>
           </div>
           {#snippet fact(label: string, value: string)}
-            <div class="px-5 py-2 border-b border-[color:var(--gray-100)] last:border-b-0 md:border-b-0">
-              <div class="grid grid-cols-[auto_1fr] items-baseline gap-3">
+            <div class="px-5 py-3.5 border-b border-[color:var(--gray-100)] last:border-b-0">
+              <div class="grid grid-cols-[auto_1fr] items-center gap-4">
                 <dt class="text-sm font-medium text-[color:var(--gray-600)] whitespace-nowrap">{label}</dt>
-                <dd class="text-sm text-[color:var(--gray-900)] font-medium text-right truncate">{value}</dd>
+                <dd class="text-sm text-[color:var(--gray-900)] font-semibold text-right truncate">{value}</dd>
               </div>
             </div>
           {/snippet}
-          <dl role="list" aria-label="Product specifications" class="md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-1">
-            {#if data.product.brand}{@render fact('Brand', data.product.brand)}{/if}
-            {#if data.product.size}{@render fact('Size', data.product.size)}{/if}
-            {#if data.product.condition}{@render fact('Condition', (data.product.condition || '').toString().replaceAll('_',' '))}{/if}
-            {#if data.product.color}{@render fact('Color', data.product.color)}{/if}
-            {#if data.product.material}{@render fact('Material', data.product.material)}{/if}
-            {#if data.product.category_name}{@render fact('Category', data.product.category_name)}{/if}
+          <dl role="list" aria-label="Product specifications">
+            {#if data.product.brand}{@render fact(m.pdp_brand(), data.product.brand)}{/if}
+            {#if data.product.size}{@render fact(m.pdp_size(), data.product.size)}{/if}
+            {#if data.product.condition}{@render fact(m.pdp_condition(), translateCondition(data.product.condition || ''))}{/if}
+            {#if data.product.color}{@render fact(m.pdp_color(), data.product.color)}{/if}
+            {#if data.product.material}{@render fact(m.pdp_material(), data.product.material)}{/if}
+            {#if data.product.category_name}{@render fact(m.pdp_category(), data.product.category_name)}{/if}
           </dl>
         </section>
       </div>
 
       <!-- Desktop actions -->
-      <ProductActions
-        className="hidden md:flex"
-        price={data.product.price}
-        currency={data.product.currency || '€'}
-        isOwner={data.isOwner}
-        isSold={data.product.is_sold}
-        onBuyNow={handleBuyNow}
-        onMessage={handleMessage}
-        onMakeOffer={handleMakeOffer}
-        showSellerInfo={false}
-      />
+      <div class="mt-6">
+        <ProductActions
+          className="hidden md:flex"
+          price={data.product.price}
+          currency="€"
+          isOwner={data.isOwner}
+          isSold={data.product.is_sold}
+          onBuyNow={handleBuyNow}
+          onMessage={handleMessage}
+          onMakeOffer={handleMakeOffer}
+          showSellerInfo={false}
+        />
+      </div>
     </section>
     </div>
 
@@ -395,13 +413,13 @@
 
     {#if showSimilar}
       <section class="mt-6">
-        <h2 class="section-heading">You may also like</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <h2 class="text-xl font-semibold text-[color:var(--gray-900)] mb-4">{m.pdp_youMayAlsoLike()}</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {#each data.similarProducts as p (p.id)}
             <ProductCard
               product={{
                 ...p,
-                currency: data.product.currency || 'EUR'
+                currency: 'EUR'
               }}
               class="h-full"
             />
@@ -412,13 +430,13 @@
 
     {#if showSeller}
       <section class="mt-6">
-        <h2 class="section-heading">More from this seller</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <h2 class="text-xl font-semibold text-[color:var(--gray-900)] mb-4">{m.pdp_moreFromSeller()}</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {#each data.sellerProducts as p (p.id)}
             <ProductCard
               product={{
                 ...p,
-                currency: data.product.currency || 'EUR'
+                currency: 'EUR'
               }}
               class="h-full"
             />
@@ -433,7 +451,7 @@
   <div class="relative">
     <ProductActions
       price={data.product.price}
-      currency={data.product.currency || '€'}
+      currency="€"
       isOwner={data.isOwner}
       isSold={data.product.is_sold}
       onBuyNow={handleBuyNow}

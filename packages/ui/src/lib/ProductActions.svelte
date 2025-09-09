@@ -1,4 +1,6 @@
 <script lang="ts">
+  import * as m from '@repo/i18n';
+
   interface Seller {
     username?: string;
     avatar_url?: string;
@@ -136,7 +138,7 @@
         <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
         </svg>
-        <span class="text-sm font-semibold">Sold</span>
+        <span class="text-sm font-semibold">{m.pdp_sold()}</span>
       </div>
     {:else if isOwner}
       <!-- Owner State -->
@@ -150,7 +152,7 @@
         <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <path d="M10 2L3 7v11a1 1 0 001 1h3a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1h3a1 1 0 001-1V7l-7-5z"/>
         </svg>
-        <span class="text-sm font-semibold">Your item</span>
+        <span class="text-sm font-semibold">{m.pdp_yourItem()}</span>
       </div>
     {:else}
       <!-- Active Actions Row -->
@@ -171,7 +173,7 @@
                  shadow-xs hover:shadow-sm"
           onclick={() => handleAction('message', onMessage)}
           disabled={!canMessage || isLoading}
-          aria-label="Message seller"
+          aria-label={m.pdp_messageSeller()}
         >
           {#if loadingAction === 'message'}
             <div class="w-4 h-4 border-2 border-[color:var(--text-muted)] border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
@@ -180,7 +182,7 @@
               <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/>
             </svg>
           {/if}
-          <span class="text-sm font-medium">Message</span>
+          <span class="text-sm font-medium">{m.message()}</span>
         </button>
         
         <!-- Buy Button -->
@@ -198,7 +200,7 @@
                  shadow-sm"
           onclick={() => handleAction('buy', onBuyNow)}
           disabled={!canBuy || isLoading}
-          aria-label="Buy now for {currency}{price}"
+          aria-label={m.pdp_buyNow() + ` ${currency}${price}`}
         >
           {#if loadingAction === 'buy'}
             <div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden="true"></div>
@@ -211,9 +213,9 @@
           {/if}
           <span class="text-sm font-semibold tracking-wide">
             {#if typeof price === 'number'}
-              Buy • {currency}{price}
+              {m.buyNow()} • {currency}{price}
             {:else}
-              Buy now
+              {m.pdp_buyNow()}
             {/if}
           </span>
         </button>
