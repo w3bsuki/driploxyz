@@ -340,14 +340,14 @@
             <h2 id="details-heading" class="text-base font-semibold text-[color:var(--gray-900)]">Product Details</h2>
           </div>
           {#snippet fact(label: string, value: string)}
-            <div class="px-4 py-3 border-b border-[color:var(--gray-100)] last:border-b-0 hover:bg-[color:var(--gray-50)] transition-colors">
+            <div class="px-4 py-3 border-b border-[color:var(--gray-100)] last:border-b-0 hover:bg-[color:var(--gray-50)] transition-colors md:border-b-0 md:py-2">
               <div class="flex justify-between items-center">
                 <dt class="text-sm font-medium text-[color:var(--gray-600)]">{label}</dt>
                 <dd class="text-sm text-[color:var(--gray-900)] font-medium text-right">{value}</dd>
               </div>
             </div>
           {/snippet}
-          <dl role="list" aria-label="Product specifications">
+          <dl role="list" aria-label="Product specifications" class="md:grid md:grid-cols-2 md:gap-x-6">
             {#if data.product.brand}{@render fact('Brand', data.product.brand)}{/if}
             {#if data.product.size}{@render fact('Size', data.product.size)}{/if}
             {#if data.product.condition}{@render fact('Condition', (data.product.condition || '').toString().replaceAll('_',' '))}{/if}

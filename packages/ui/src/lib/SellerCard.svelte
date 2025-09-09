@@ -59,17 +59,17 @@
 </script>
 
 <div 
-  class="bg-white border border-gray-200 rounded-xl p-4 {className}"
+  class="bg-white border border-gray-200 rounded-xl p-3 {className}"
   role="region"
   aria-label="Seller information"
 >
   <!-- Header -->
-  <div class="flex items-center justify-between mb-3">
-    <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">{translations.soldBy || m.seller_soldBy()}</h3>
+  <div class="flex items-center justify-between mb-2">
+    <h3 class="text-xs font-semibold text-gray-700 uppercase tracking-wide">{translations.soldBy || m.seller_soldBy()}</h3>
   </div>
 
   <!-- Seller Info -->
-  <div class="flex items-center gap-3 mb-4">
+  <div class="flex items-center gap-2 mb-3">
     <Avatar 
       name={name} 
       src={avatar} 
@@ -78,8 +78,8 @@
     />
     
     <div class="flex-1 min-w-0">
-      <h4 class="font-semibold text-gray-900 truncate mb-1">{name}</h4>
-      <div class="flex items-center gap-4 text-sm text-gray-600">
+      <h4 class="font-medium text-gray-900 truncate mb-0.5">{name}</h4>
+      <div class="flex items-center gap-3 text-xs sm:text-sm text-gray-600">
         <!-- Rating -->
         <div class="flex items-center gap-1">
           <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -89,14 +89,14 @@
           <span>({stats.totalSales} {translations.sales || m.seller_sales()})</span>
         </div>
       </div>
-      <div class="text-sm text-gray-500 mt-1">
+      <div class="text-xs sm:text-sm text-gray-500 mt-1">
         {formatJoinDate(stats.joinedDate)}
       </div>
     </div>
   </div>
 
   <!-- Action Buttons -->
-  <div class="flex gap-3">
+  <div class="flex gap-2">
     <button
       onclick={onMessage}
       class="btn-action btn-secondary flex-1"
@@ -128,7 +128,7 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    min-height: 44px;
+    min-height: 40px;
     padding: 0.5rem 1rem;
     border-radius: 0.5rem;
     font-weight: 500;
@@ -172,7 +172,7 @@
 
   @media (max-width: 640px) {
     .btn-action {
-      min-height: 40px;
+      min-height: 36px;
       font-size: 0.75rem;
       padding: 0.5rem 0.75rem;
     }
