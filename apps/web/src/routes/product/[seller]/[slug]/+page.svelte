@@ -1,75 +1,85 @@
-<script lang="ts">
+﻿<script lang="ts">
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import { ProductPage, SEOMetaTags } from '@repo/ui';
-  import { buildProductUrl } from '$lib/utils/seo-urls.js';
+  import { ProductBreadcrumb, SEOMetaTags, ProductGallery, ProductCard, ConditionBadge, ProductActions, SellerCard } from '@repo/ui';
+  import { Heart } from '@lucide/svelte';
+  import { onMount } from 'svelte';
+  import { buildProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
-  
-  // Build canonical URL for this product
+
+  // Canonical URL
   const canonicalUrl = buildProductUrl({
     id: data.product.id,
     slug: data.product.slug!,
     seller_username: data.product.seller_username!,
     category_slug: data.product.category_slug
   });
-  
-  // Handle navigation and actions
+
+  // State (simplified)
+  let isLiked = $state(data.isFavorited);
+  let favoriteCount = $state<number>(data.product.favorite_count || 0);
+  let descExpanded = $state(false);
+  // Lazy sections control
+  const hasSimilar = (data.similarProducts?.length || 0) > 0;
+  const hasSeller = (data.sellerProducts?.length || 0) > 0;
+  let showSimilar = $state(false);
+  let showSeller = $state(false);
+  let sentinel: HTMLElement | null = $state(null);
+  onMount(() => {
+    if (!hasSimilar && !hasSeller) return;
+    if (typeof IntersectionObserver === 'undefined') { showSimilar = hasSimilar; showSeller = hasSeller; return; }
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) { showSimilar = hasSimilar; showSeller = hasSeller; io.disconnect(); }
+    }, { rootMargin: '200px' });
+    if (sentinel) io.observe(sentinel);
+    return () => io.disconnect();
+  });
+
+  // Actions
   function handleMessage() {
-    if (data.user) {
-      goto(`/messages?seller=${data.product.seller_id}`);
-    } else {
-      goto('/login');
-    }
+    if (data.user) goto(`/messages?seller=${data.product.seller_id}`);
+    else goto('/login');
   }
-  
+
   function handleBuyNow() {
-    if (data.user) {
-      // Navigate to checkout or handle purchase
-      goto(`/checkout?product=${data.product.id}`);
-    } else {
-      goto('/login');
-    }
+    if (data.user) goto(`/checkout?product=${data.product.id}`);
+    else goto('/login');
   }
-  
+
   async function handleFavorite() {
-    if (!data.user) {
-      goto('/login');
-      return;
-    }
-    
+    if (!data.user) { goto('/login'); return; }
     try {
       const response = await fetch(`/api/favorites/${data.product.id}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' }
       });
-      
-      if (!response.ok) {
-        // Failed to toggle favorite
-        return { favoriteCount: data.product.favorite_count, favorited: data.isFavorited };
-      }
-      
+      if (!response.ok) return { favoriteCount, favorited: isLiked };
       const result = await response.json();
-      return {
-        favoriteCount: result.favoriteCount || data.product.favorite_count,
-        favorited: result.favorited ?? !data.isFavorited
-      };
-    } catch (error) {
-      console.error('Error toggling favorite:', error);
-      return { favoriteCount: data.product.favorite_count, favorited: data.isFavorited };
+      isLiked = result?.favorited ?? !isLiked;
+      if (typeof result?.favoriteCount === 'number') favoriteCount = result.favoriteCount;
+      else favoriteCount = Math.max(0, favoriteCount + (isLiked ? 1 : -1));
+      return { favoriteCount, favorited: isLiked };
+    } catch (e) {
+      console.error('favorite failed', e);
+      return { favoriteCount, favorited: isLiked };
     }
   }
 
-  // Generate SEO metadata
+  function handleMakeOffer() {
+    if (!data.user) { goto('/login'); return; }
+    goto(`/offer/${data.product.seller_id}?product=${data.product.id}`);
+  }
+
+  function handleNavigate(url: string) { goto(url); }
+
+  // SEO metadata
   const seoTitle = [
     data.product.brand,
     data.product.title,
     data.product.size && `Size ${data.product.size}`,
     data.product.condition
-  ].filter(Boolean).join(' · ');
+  ].filter(Boolean).join(' Â· ');
   
   const seoDescription = [
     data.product.description || `${data.product.title} by ${data.product.seller_name}`,
@@ -77,13 +87,10 @@
     data.product.size && `Size: ${data.product.size}`,
     data.product.condition && `Condition: ${data.product.condition}`,
     `Price: €${data.product.price}`
-  ].filter(Boolean).join(' · ').substring(0, 160);
-  // A/B toggles via query params
-  const imageInfoVariant = 'inline';
-  const showQuickFacts = true;
+  ].filter(Boolean).join(' Â· ').substring(0, 160);
 </script>
 
-<!-- SEO Meta Tags for perfect optimization -->
+<!-- SEO Meta -->
 <SEOMetaTags
   title={seoTitle}
   description={seoDescription}
@@ -97,20 +104,335 @@
   enableImageOptimization={true}
 />
 
-<!-- Product Page Component -->
-<ProductPage 
-  product={data.product}
-  reviews={data.reviews || []}
-  ratingSummary={data.ratingSummary}
-  similarProducts={data.similarProducts || []}
-  sellerProducts={data.sellerProducts || []}
-  isOwner={data.isOwner}
-  isAuthenticated={!!data.user}
-  isFavorited={data.isFavorited || false}
-  onFavorite={handleFavorite}
-  onMessage={handleMessage}
-  onBuyNow={handleBuyNow}
-  onMakeOffer={() => console.log('Make offer clicked')}
-  imageInfoVariant={imageInfoVariant}
-  showQuickFacts={showQuickFacts}
+<!-- Breadcrumb -->
+<ProductBreadcrumb
+  category={{
+    id: data.product.category_id,
+    name: data.product.categories?.name || 'Unknown',
+    slug: data.product.category_slug || ''
+  }}
+  parentCategory={data.product.parent_category ? {
+    id: data.product.parent_category.id,
+    name: data.product.parent_category.name,
+    slug: data.product.parent_category.slug
+  } : null}
+  topLevelCategory={data.product.top_level_category ? {
+    id: data.product.top_level_category.id,
+    name: data.product.top_level_category.name,
+    slug: data.product.top_level_category.slug
+  } : null}
+  seller={{
+    username: data.product.seller_username,
+    full_name: data.product.seller_name
+  }}
+  productTitle={data.product.title}
+  variant="flat"
 />
+
+<!-- Main Layout: Gallery + Info/Actions -->
+<div class="mx-auto max-w-screen-xl px-4 md:px-6 lg:px-8 pb-24 md:pb-0">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
+    <!-- Gallery -->
+    <section>
+      <ProductGallery
+        images={data.product.images || []}
+        title={data.product.title || ''}
+        isSold={data.product.is_sold || false}
+        condition={data.product.condition as any}
+      />
+
+      <!-- Mobile Post Header: brand â†’ title â†’ condition/size/color â†’ price/like â†’ description -->
+      <div class="md:hidden mt-3 space-y-2">
+        <!-- Seller row like a social post header -->
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3 min-w-0">
+            {#if data.product.seller_avatar}
+              <img src={data.product.seller_avatar} alt={data.product.seller_name || 'Seller avatar'} class="size-9 rounded-full object-cover" />
+            {:else}
+              <div class="size-9 rounded-full bg-[color:var(--gray-200)]" aria-hidden="true"></div>
+            {/if}
+            <div class="min-w-0">
+              <a href={`/profile/${data.product.seller_id}`} class="block text-sm font-semibold text-[color:var(--gray-900)] truncate">{data.product.seller_name}</a>
+              {#if data.product.seller_username}
+                <span class="block text-xs text-[color:var(--gray-500)] truncate">@{data.product.seller_username}</span>
+              {/if}
+            </div>
+          </div>
+          <div class="text-xs text-[color:var(--gray-500)] shrink-0">
+            {new Date(data.product.created_at).toLocaleDateString()}
+          </div>
+        </div>
+
+        <!-- Unified post card: title · condition · price · like · description -->
+        <div class="bg-white rounded-xl border border-[color:var(--gray-200)] p-3">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <h1 class="text-lg font-semibold text-[color:var(--gray-900)] leading-snug tracking-tight">{data.product.title}</h1>
+              {#if data.product.condition}
+                <div class="mt-1">
+                  <ConditionBadge condition={data.product.condition as any} />
+                </div>
+              {/if}
+            </div>
+            <div class="shrink-0 text-right">
+              <button
+                type="button"
+                class={`mt-1 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${isLiked ? 'border-[color:var(--rose-200)] bg-[color:var(--rose-50)] text-[color:var(--rose-700)]' : 'border-[color:var(--gray-200)] bg-white text-[color:var(--gray-700)]'}`}
+                aria-pressed={isLiked}
+                onclick={async () => { const r = await handleFavorite(); return r; }}
+              >
+                <Heart class={`size-4 ${isLiked ? 'text-[color:var(--rose-600)] fill-[color:var(--rose-600)]' : 'text-[color:var(--gray-500)]'}`}/>
+                <span>{favoriteCount || 0}</span>
+              </button>
+            </div>
+          </div>
+
+          {#if data.product.description}
+            <p class="mt-2 text-[0.95rem] text-[color:var(--gray-800)] leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-4'}">
+              {data.product.description}
+            </p>
+            {#if data.product.description.length > 160}
+              <button
+                type="button"
+                class="mt-2 text-xs font-medium text-[color:var(--blue-600)] hover:text-[color:var(--blue-700)]"
+                onclick={() => descExpanded = !descExpanded}
+              >{descExpanded ? 'Show less' : 'Read more'}</button>
+            {/if}
+          {/if}
+        </div>
+
+        <!-- Quick facts table (mobile) -->
+        <div class="bg-white rounded-xl border border-[color:var(--gray-200)]">
+          <div class="px-3 py-2 border-b border-[color:var(--gray-200)] text-sm font-semibold text-[color:var(--gray-900)]">Details</div>
+          <dl>
+            {#if data.product.brand}
+              <div class="px-3 py-2 flex justify-between text-sm border-b border-[color:var(--gray-100)]"><dt class="text-[color:var(--gray-600)]">Brand</dt><dd class="font-medium text-[color:var(--gray-900)]">{data.product.brand}</dd></div>
+            {/if}
+            {#if data.product.size}
+              <div class="px-3 py-2 flex justify-between text-sm border-b border-[color:var(--gray-100)]"><dt class="text-[color:var(--gray-600)]">Size</dt><dd class="font-medium text-[color:var(--gray-900)]">{data.product.size}</dd></div>
+            {/if}
+            {#if data.product.condition}
+              <div class="px-3 py-2 flex justify-between text-sm border-b border-[color:var(--gray-100)]"><dt class="text-[color:var(--gray-600)]">Condition</dt><dd class="font-medium text-[color:var(--gray-900)]">{(data.product.condition || '').toString().replaceAll('_',' ')}</dd></div>
+            {/if}
+            {#if data.product.color}
+              <div class="px-3 py-2 flex justify-between text-sm border-b border-[color:var(--gray-100)]"><dt class="text-[color:var(--gray-600)]">Color</dt><dd class="font-medium text-[color:var(--gray-900)]">{data.product.color}</dd></div>
+            {/if}
+            {#if data.product.material}
+              <div class="px-3 py-2 flex justify-between text-sm"><dt class="text-[color:var(--gray-600)]">Material</dt><dd class="font-medium text-[color:var(--gray-900)]">{data.product.material}</dd></div>
+            {/if}
+          </dl>
+        </div>
+      </div>
+    <SellerCard
+      id={data.product.seller_id}
+      name={data.product.seller_name}
+      avatar={data.product.seller_avatar}
+      stats={{
+        rating: data.product.seller_rating || 0,
+        totalSales: data.product.seller_sales_count || 0,
+        responseTime: 24,
+        joinedDate: data.product.seller?.created_at || ''
+      }}
+      onMessage={handleMessage}
+      onViewProfile={() => handleNavigate(`/profile/${data.product.seller_id}`)}
+      class="md:hidden mt-3"
+    />
+    </section>
+
+    <!-- Info + Actions -->
+    <section class="vr-md">
+      <!-- Product Info -->
+      <div class="space-y-3">
+        <!-- Main Product Information Card -->
+        <article class="hidden md:block bg-white rounded-xl border border-[color:var(--gray-200)] shadow-sm" aria-label="Product information">
+          <div class="p-4 sm:p-6">
+
+            <!-- Brand (tiny) -->
+            {#if data.product.brand}
+              <div class="mb-1">
+                <span class="text-xs text-[color:var(--gray-500)] uppercase tracking-wide">{data.product.brand}</span>
+              </div>
+            {/if}
+
+            <!-- Title -->
+            <h1 class="text-xl font-semibold text-[color:var(--gray-900)] leading-tight">
+              {data.product.title}
+            </h1>
+
+            <!-- Price Section -->
+            <div class="mt-4 pb-4 border-b border-[color:var(--gray-100)]">
+              <div class="flex items-baseline gap-3">
+                <span class="text-3xl font-bold text-[color:var(--gray-900)] tracking-tight" aria-label="Price">€{data.product.price}</span>
+                {#if data.product.original_price && data.product.original_price > data.product.price}
+                  <span class="text-base text-[color:var(--gray-500)] line-through" aria-label="Original price">€{data.product.original_price}</span>
+                  <span class="sr-only">Reduced from €{data.product.original_price} to €{data.product.price}</span>
+                {/if}
+              </div>
+            </div>
+
+            <!-- Product Attributes -->
+            <div class="flex flex-wrap gap-2 mt-4" role="list" aria-label="Product attributes">
+              {#if data.product.size}
+                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-[color:var(--blue-50)] text-[color:var(--blue-700)] border border-[color:var(--blue-200)]" role="listitem">
+                  Size {data.product.size}
+                </span>
+              {/if}
+              {#if data.product.color}
+                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-[color:var(--gray-50)] text-[color:var(--gray-700)] border border-[color:var(--gray-200)]" role="listitem">
+                  {data.product.color}
+                </span>
+              {/if}
+              {#if data.product.material}
+                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-[color:var(--purple-50)] text-[color:var(--purple-700)] border border-[color:var(--purple-200)]" role="listitem">
+                  {data.product.material}
+                </span>
+              {/if}
+            </div>
+
+          </div>
+        </article>
+
+        <!-- Description -->
+        {#if data.product.description}
+          <div class="hidden md:block bg-white rounded-lg border border-[color:var(--gray-200)] p-4">
+            <h2 class="text-sm font-semibold text-[color:var(--gray-900)] mb-2">Description</h2>
+            <p class="text-sm text-[color:var(--gray-700)] leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-3'}">
+              {data.product.description}
+            </p>
+            {#if data.product.description.length > 150}
+              <button 
+                type="button" 
+                class="mt-2 text-xs font-medium text-[color:var(--blue-600)] hover:text-[color:var(--blue-700)]"
+                onclick={() => descExpanded = !descExpanded}
+              >
+                {descExpanded ? 'Show less' : 'Read more'}
+              </button>
+            {/if}
+          </div>
+        {/if}
+
+        <!-- Product Details Table -->
+        <section class="hidden md:block bg-white rounded-xl border border-[color:var(--gray-200)] shadow-sm" aria-labelledby="details-heading">
+          <div class="px-4 py-3 bg-[color:var(--gray-50)] border-b border-[color:var(--gray-200)]">
+            <h2 id="details-heading" class="text-base font-semibold text-[color:var(--gray-900)]">Product Details</h2>
+          </div>
+          {#snippet fact(label: string, value: string)}
+            <div class="px-4 py-3 border-b border-[color:var(--gray-100)] last:border-b-0 hover:bg-[color:var(--gray-50)] transition-colors">
+              <div class="flex justify-between items-center">
+                <dt class="text-sm font-medium text-[color:var(--gray-600)]">{label}</dt>
+                <dd class="text-sm text-[color:var(--gray-900)] font-medium text-right">{value}</dd>
+              </div>
+            </div>
+          {/snippet}
+          <dl role="list" aria-label="Product specifications">
+            {#if data.product.brand}{@render fact('Brand', data.product.brand)}{/if}
+            {#if data.product.size}{@render fact('Size', data.product.size)}{/if}
+            {#if data.product.condition}{@render fact('Condition', (data.product.condition || '').toString().replaceAll('_',' '))}{/if}
+            {#if data.product.color}{@render fact('Color', data.product.color)}{/if}
+            {#if data.product.material}{@render fact('Material', data.product.material)}{/if}
+            {#if data.product.category_name}{@render fact('Category', data.product.category_name)}{/if}
+          </dl>
+        </section>
+      </div>
+
+      <!-- Desktop actions -->
+      <ProductActions
+        className="hidden md:flex"
+        price={data.product.price}
+        currency={data.product.currency || '€'}
+        isOwner={data.isOwner}
+        isSold={data.product.is_sold}
+        onBuyNow={handleBuyNow}
+        onMessage={handleMessage}
+        onMakeOffer={handleMakeOffer}
+        showSellerInfo={false}
+      />
+    </section>
+    </div>
+
+    <!-- Below-the-fold lazy content sentinel -->
+    {#if hasSimilar || hasSeller}
+      <div bind:this={sentinel} class="h-px"></div>
+    {/if}
+
+    {#if showSimilar}
+      <section class="mt-6">
+        <h2 class="section-heading">You may also like</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {#each data.similarProducts as p (p.id)}
+            <ProductCard
+              id={p.id}
+              title={p.title}
+              price={p.price}
+              condition={p.condition}
+              images={p.images}
+              slug={p.slug}
+              showQuickActions={false}
+              class="h-full"
+            />
+          {/each}
+        </div>
+      </section>
+    {/if}
+
+    {#if showSeller}
+      <section class="mt-6">
+        <h2 class="section-heading">More from this seller</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {#each data.sellerProducts as p (p.id)}
+            <ProductCard
+              id={p.id}
+              title={p.title}
+              price={p.price}
+              condition={p.condition}
+              images={p.images}
+              slug={p.slug}
+              showQuickActions={false}
+              class="h-full"
+            />
+          {/each}
+        </div>
+      </section>
+    {/if}
+  </div>
+
+<!-- Mobile sticky actions bar -->
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md border-t border-[color:var(--gray-200)] md:hidden" style="padding: 0; padding-bottom: max(1rem, env(safe-area-inset-bottom));">
+  <div class="mx-auto max-w-screen-xl px-3 py-2">
+    <div class="flex items-center gap-3">
+      {#if (data.product.images?.length || 0) > 0}
+        <img src={data.product.images[0]} alt={data.product.title} class="size-10 rounded-md object-cover border border-[color:var(--gray-200)]" />
+      {/if}
+      <div class="min-w-0 flex-1">
+        <p class="text-xs text-[color:var(--gray-700)] leading-snug line-clamp-1">{data.product.title}</p>
+      </div>
+      <ProductActions
+        className="flex-shrink-0"
+        price={data.product.price}
+        currency={data.product.currency || '€'}
+        isOwner={data.isOwner}
+        isSold={data.product.is_sold}
+        onBuyNow={handleBuyNow}
+        onMessage={handleMessage}
+        onMakeOffer={handleMakeOffer}
+      />
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Add bottom padding for mobile sticky nav */
+  .vr-md {
+    padding-bottom: 100px;
+  }
+
+  @media (min-width: 768px) {
+    .vr-md {
+      padding-bottom: 0;
+    }
+  }
+</style>
+
+
+
+
