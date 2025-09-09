@@ -88,6 +88,25 @@
     data.product.condition && `Condition: ${data.product.condition}`,
     `Price: €${data.product.price}`
   ].filter(Boolean).join(' Â· ').substring(0, 160);
+
+  // Relative date helper: minutes < 60 -> m, hours < 24 -> h, else days -> d
+  function formatRelativeDate(input: string | Date) {
+    try {
+      const d = new Date(input);
+      const now = new Date();
+      const diffMs = now.getTime() - d.getTime();
+      if (!isFinite(diffMs)) return '';
+      const mins = Math.floor(diffMs / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return `${mins}m ago`;
+      const hours = Math.floor(mins / 60);
+      if (hours < 24) return `${hours}h ago`;
+      const days = Math.floor(hours / 24);
+      return `${days}d ago`;
+    } catch {
+      return '';
+    }
+  }
 </script>
 
 <!-- SEO Meta -->
@@ -160,7 +179,7 @@
               </div>
             </div>
             <div class="flex items-center gap-2 shrink-0">
-              <span class="text-[11px] text-[color:var(--gray-500)]">{new Date(data.product.created_at).toLocaleDateString()}</span>
+              <span class="text-[11px] text-[color:var(--gray-500)]">{formatRelativeDate(data.product.created_at)}</span>
               <button
                 type="button"
                 class={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${isLiked ? 'border-[color:var(--rose-200)] bg-[color:var(--rose-50)] text-[color:var(--rose-700)]' : 'border-[color:var(--gray-200)] bg-white text-[color:var(--gray-700)]'}`}
