@@ -141,12 +141,20 @@
 	let topSellersData = $state<any[]>([]);
 	let sellersData = $state<any[]>([]);
 	let userFavoritesData = $state<Record<string, boolean>>({});
+	let dataLoaded = $state(false);
 	
-	// Resolve streamed promises
+	// Resolve streamed promises - initialize immediately with data
 	$effect(() => {
+		console.log('Homepage data loading effect triggered', { data });
+		
 		if (data.featuredProducts instanceof Promise) {
-			data.featuredProducts.then(products => featuredProductsData = products || []);
+			console.log('Featured products is a promise, resolving...');
+			data.featuredProducts.then(products => {
+				console.log('Featured products resolved:', products);
+				featuredProductsData = products || [];
+			});
 		} else {
+			console.log('Featured products is direct data:', data.featuredProducts);
 			featuredProductsData = data.featuredProducts || [];
 		}
 		
@@ -167,6 +175,16 @@
 		} else {
 			userFavoritesData = data.userFavorites || {};
 		}
+		
+		console.log('State after data loading:', {
+			featuredProductsData,
+			topSellersData,
+			sellersData,
+			userFavoritesData
+		});
+		
+		// Mark data as loaded after processing
+		dataLoaded = true;
 	});
 
 	// Transform promoted products for highlights
@@ -720,7 +738,7 @@
 		</div>
 
 		<!-- FeaturedProducts -->
-		{#if products.length > 0}
+		{#if dataLoaded && (products.length > 0)}
 			<FeaturedProducts
 				{products}
 				errors={data.errors}
@@ -753,7 +771,7 @@
 					categoryTranslation: translateCategory
 				}}
 			/>
-		{:else}
+		{:else if !dataLoaded}
 			<!-- Loading skeleton for featured products -->
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 				<div class="mb-6">
@@ -768,6 +786,35 @@
 							<div class="w-20 h-6 bg-gray-200 rounded animate-pulse"></div>
 						</div>
 					{/each}
+				</div>
+			</div>
+		{:else}
+			<!-- No products found - show call to action for new users -->
+			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+				<div class="max-w-md mx-auto">
+					<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+						<svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z" />
+						</svg>
+					</div>
+					<h3 class="text-xl font-semibold text-gray-900 mb-2">Welcome to Driplo!</h3>
+					<p class="text-gray-600 mb-6">
+						Discover amazing second-hand fashion and unique finds from sellers across Bulgaria and the UK.
+					</p>
+					<div class="space-y-3">
+						<button 
+							onclick={() => goto('/search')}
+							class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+						>
+							Browse All Items
+						</button>
+						<button 
+							onclick={() => goto('/sell')}
+							class="w-full border border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors"
+						>
+							Start Selling
+						</button>
+					</div>
 				</div>
 			</div>
 		{/if}
