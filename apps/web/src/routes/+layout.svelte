@@ -31,14 +31,14 @@
   // Region switch modal state
   let showRegionModal = $state(false);
   
-  // Cookie consent handling - invalidate data when cookies are accepted
+  // Cookie consent handling - only invalidate auth for user-specific features
   function handleConsentChange(consent: any) {
-    // Invalidate all data to trigger server-side re-evaluation with new cookies
+    // Only invalidate auth state for user-specific features (favorites, etc.)
+    // Homepage content should be visible regardless of cookie acceptance
     if (browser) {
-      // Small delay to ensure cookies are set before invalidation
       setTimeout(() => {
         invalidate('supabase:auth');
-        invalidate('home:data');
+        // Don't invalidate home:data - content should always be visible
       }, 100);
     }
   }

@@ -339,12 +339,12 @@
   
   <!-- Main Banner Container -->
   <div class="fixed inset-x-0 bottom-0 z-[9999]">
-    <div class="bg-white border-t-2 border-[color:var(--border-secondary)] shadow-2xl">
+    <div class="bg-white border-t border-gray-200 shadow-xl backdrop-blur-xl bg-white/95">
       <div class="max-w-6xl mx-auto">
         
         {#if showLanguageSelector && !hasExistingConsent}
           <!-- Language Selection (First Time Visitors) -->
-          <div class="p-6 border-b border-[color:var(--border-secondary)] bg-gradient-to-r from-[color:var(--status-info-bg)] to-purple-50">
+          <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
             <div class="text-center mb-4">
               <h3 class="text-lg font-bold text-[color:var(--text-primary)]">Welcome to Driplo! 🌍</h3>
               <p class="text-sm text-[color:var(--text-secondary)] mt-1">
@@ -366,18 +366,34 @@
               </p>
             </div>
             
-            <div class="flex justify-center gap-3 max-w-sm mx-auto">
+            <div class="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
               {#each languages as lang}
                 <button
                   onclick={() => selectedLocale = lang.code}
-                  class="flex-1 min-h-[44px] p-3 rounded-lg border-2 transition-all duration-200 hover:scale-105
+                  class="flex-1 min-h-[64px] p-4 rounded-xl border-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]
                     {selectedLocale === lang.code 
-                      ? 'border-[color:var(--primary)] bg-[color:var(--primary-50)] shadow-md' 
-                      : 'border-[color:var(--border-secondary)] bg-white hover:border-[color:var(--border-primary)] hover:shadow-sm'}"
-                  title={lang.name}
+                      ? 'border-blue-500 bg-blue-50 shadow-lg ring-2 ring-blue-200/50' 
+                      : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'}"
+                  title={`Choose ${lang.name}`}
                 >
-                  <div class="text-2xl leading-none">{lang.flag}</div>
-                  <div class="text-xs mt-1 font-medium text-[color:var(--text-secondary)]">{lang.code.toUpperCase()}</div>
+                  <div class="flex items-center justify-center gap-3">
+                    <div class="text-3xl">{lang.flag}</div>
+                    <div class="text-left flex-1">
+                      <div class="text-sm font-semibold text-gray-900">{lang.name}</div>
+                      <div class="text-xs text-gray-500">
+                        {lang.code === 'en' ? 'United Kingdom' : 'България'}
+                      </div>
+                    </div>
+                    {#if selectedLocale === lang.code}
+                      <div class="ml-2">
+                        <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                          <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                          </svg>
+                        </div>
+                      </div>
+                    {/if}
+                  </div>
                 </button>
               {/each}
             </div>
