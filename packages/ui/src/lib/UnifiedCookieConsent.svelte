@@ -35,7 +35,7 @@
       try {
         const consent = document.cookie
           .split(';')
-          .find(row => row.trim().startsWith('consent='))
+          .find(row => row.trim().startsWith('driplo_driplo_consent='))
           ?.split('=')[1];
         return consent ? JSON.parse(decodeURIComponent(consent)) : null;
       } catch {
@@ -49,7 +49,7 @@
       try {
         const expires = new Date();
         expires.setFullYear(expires.getFullYear() + 1);
-        document.cookie = `consent=${encodeURIComponent(JSON.stringify(consentWithTimestamp))}; expires=${expires.toUTCString()}; path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
+        document.cookie = `driplo_consent=${encodeURIComponent(JSON.stringify(consentWithTimestamp))}; expires=${expires.toUTCString()}; path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
       } catch (e) {
         console.warn('Failed to set consent cookie:', e);
       }
@@ -285,7 +285,7 @@
   function saveLanguageAndRedirect(targetLang: string) {
     try {
       // Set cookie first
-      document.cookie = `locale=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+      document.cookie = `PARAGLIDE_LOCALE=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
       
       // Clear the pending language switch
       sessionStorage?.removeItem('pendingLanguageSwitch');
@@ -323,7 +323,7 @@
       
     } catch (e) {
       // Fallback: Set the locale cookie directly and refresh
-      document.cookie = `locale=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+      document.cookie = `PARAGLIDE_LOCALE=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
       
       setTimeout(() => {
         window.location.reload();

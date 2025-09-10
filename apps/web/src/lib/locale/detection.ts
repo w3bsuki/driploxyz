@@ -134,7 +134,7 @@ export function storeLocalePreference(locale: LanguageTag) {
     // Always set cookie as fallback for SSR and iOS Safari
     try {
       const isSecure = window.location.protocol === 'https:';
-      document.cookie = `locale=${locale};path=/;max-age=31536000;samesite=lax${isSecure ? ';secure' : ''}`;
+      document.cookie = `PARAGLIDE_LOCALE=${locale};path=/;max-age=31536000;samesite=lax${isSecure ? ';secure' : ''}`;
     } catch (error) {
       console.error('Failed to set cookie:', error);
     }

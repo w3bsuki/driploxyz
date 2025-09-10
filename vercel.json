@@ -20,39 +20,74 @@
           "value": "camera=(), microphone=(), geolocation=()"
         }
       ]
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/(.*)",
-      "destination": "https://driplo.xyz/bg/$1",
-      "permanent": true,
-      "has": [
-        {
-          "type": "host",
-          "value": "bg.driplo.xyz"
-        }
-      ]
     },
     {
       "source": "/(.*)",
-      "destination": "https://driplo.xyz/$1",
-      "permanent": true,
       "has": [
         {
           "type": "host",
           "value": "uk.driplo.xyz"
         }
+      ],
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer-when-downgrade"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "x-locale",
+          "value": "en"
+        },
+        {
+          "key": "x-country",
+          "value": "GB"
+        }
       ]
     },
     {
       "source": "/(.*)",
-      "destination": "https://driplo.xyz/$1",
-      "permanent": true,
       "has": [
         {
           "type": "host",
-          "value": "en.driplo.xyz"
+          "value": "bg.driplo.xyz"
+        }
+      ],
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer-when-downgrade"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "x-locale",
+          "value": "bg"
+        },
+        {
+          "key": "x-country",
+          "value": "BG"
         }
       ]
     }

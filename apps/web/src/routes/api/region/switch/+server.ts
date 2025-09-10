@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { setRegionPreference } from '$lib/server/geo-detection';
+import { setCountryCookie } from '$lib/country/detection';
 
 export const POST: RequestHandler = async (event) => {
   const { region } = await event.request.json();
@@ -9,8 +9,9 @@ export const POST: RequestHandler = async (event) => {
     return json({ error: 'Invalid region' }, { status: 400 });
   }
   
-  // Set cookie preference
-  setRegionPreference(event, region);
+  // Convert region to country code and set cookie using unified system
+  const countryCode = region === 'UK' ? 'GB' : 'BG';
+  setCountryCookie(event, countryCode);
   
   // Update user profile if logged in
   const { session } = await event.locals.safeGetSession();

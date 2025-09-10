@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { LayoutServerLoad } from './$types';
-import { detectRegion } from '$lib/server/geo-detection';
+import { COUNTRY_CONFIGS, shouldSuggestCountrySwitch } from '$lib/country/detection';
 import { getCanonicalAndHreflang } from '$lib/seo';
 import { withTimeout } from '@repo/utils';
 
@@ -73,15 +73,17 @@ export const load = (async (event) => {
   // Get country from locals (set by server hooks)
   const country = locals.country || 'BG';
   
-  // Detect user's region
-  const geoLocation = detectRegion(event);
-  const userRegion = profile?.region || geoLocation.region;
+  // Get country config and derive region/currency info
+  const countryConfig = COUNTRY_CONFIGS[country];
+  const currency = countryConfig.currency;
+  const userRegion = profile?.region || (country === 'GB' ? 'UK' : 'BG');
   
-  // Check if user should be prompted to switch regions
+  // Check if user should be prompted to switch regions using unified detection
+  const detectedCountry = await import('$lib/country/detection').then(m => m.detectCountryFromIP(event));
   const shouldPromptRegionSwitch = 
     !cookies.get('region_prompt_dismissed') && 
     !profile?.region && // User hasn't set a preference
-    geoLocation.region !== userRegion;
+    shouldSuggestCountrySwitch(country, detectedCountry);
   
   // Generate SEO data
   const seoData = getCanonicalAndHreflang(event);
@@ -94,9 +96,9 @@ export const load = (async (event) => {
     country, // Pass country for country-based filtering
     cookies: cookies.getAll(), // Pass cookies for SSR hydration
     region: userRegion,
-    detectedRegion: geoLocation.region,
+    detectedRegion: detectedCountry === 'GB' ? 'UK' : 'BG',
     shouldPromptRegionSwitch,
-    currency: geoLocation.currency,
+    currency,
     seo: seoData
   };
 }) satisfies LayoutServerLoad;

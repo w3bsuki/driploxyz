@@ -209,27 +209,43 @@ export async function getUserCountry(event: RequestEvent): Promise<CountryCode> 
     return country;
   }
   
-  // 2. Check subdomain/domain (second highest priority)
+  // 2. Check Vercel host-based headers (from subdomain mapping)
+  const headerCountry = event.request.headers.get('x-country');
+  if (headerCountry && headerCountry in COUNTRY_CONFIGS) {
+    const country = headerCountry as CountryCode;
+    setCountryCookie(event, country);
+    return country;
+  }
+  
+  // 3. Check subdomain/domain (fallback if headers not set)
   const domainCountry = getCountryFromDomain(event.url.hostname);
   if (domainCountry) {
     setCountryCookie(event, domainCountry);
     return domainCountry;
   }
 
-  // 3. Check cookie
+  // 4. Check cookie
   const cookieCountry = getCountryFromCookie(event);
   if (cookieCountry) {
     return cookieCountry;
   }
 
-  // 4. Detect from IP
+  // 5. Check Vercel geo headers
+  const vercelCountry = event.request.headers.get('x-vercel-ip-country');
+  if (vercelCountry && vercelCountry in COUNTRY_CONFIGS) {
+    const country = vercelCountry as CountryCode;
+    setCountryCookie(event, country);
+    return country;
+  }
+
+  // 6. Detect from IP
   const ipCountry = await detectCountryFromIP(event);
   if (ipCountry) {
     setCountryCookie(event, ipCountry);
     return ipCountry;
   }
 
-  // 5. Default to Bulgaria
+  // 7. Default to Bulgaria
   return 'BG';
 }
 

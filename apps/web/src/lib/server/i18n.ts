@@ -1,7 +1,7 @@
 import { dev } from '$app/environment';
 import type { RequestEvent } from '@sveltejs/kit';
-import { detectLocale, applyLocale, locales, LOCALE_ALIASES } from '@repo/i18n';
-import { checkServerConsent, COOKIES } from '@repo/core-cookies';
+import { detectLocale, locales } from '@repo/i18n';
+import { checkServerConsent, COOKIES } from '$lib/cookies/production-cookie-system';
 
 // Debug flag for controlled logging
 // Debug flag available for future i18n debugging - currently disabled to reduce console spam
@@ -26,14 +26,21 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   
   const hasFunctionalConsent = checkServerConsent(event.cookies, 'functional');
   
-  const detected = detectLocale({
-    path: event.url.pathname,
-    query: event.url.searchParams,
-    cookie: event.cookies.get(COOKIES.LOCALE) ?? null,
-    header: event.request.headers.get('accept-language'),
-    defaultLocale: 'bg'
-  });
-  const locale = detected;
+  // Check for Vercel host-based locale header first
+  const headerLocale = event.request.headers.get('x-locale');
+  let locale = headerLocale && locales.includes(headerLocale as any) ? headerLocale : null;
+  
+  // If no header locale, use standard detection
+  if (!locale) {
+    const detected = detectLocale({
+      path: event.url.pathname,
+      query: event.url.searchParams,
+      cookie: event.cookies.get(COOKIES.LOCALE) ?? null,
+      header: event.request.headers.get('accept-language'),
+      defaultLocale: 'bg'
+    });
+    locale = detected;
+  }
   
   
   // Update cookie if locale was set via URL parameter and consent exists
