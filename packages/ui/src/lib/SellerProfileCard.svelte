@@ -64,35 +64,48 @@
           </div>
         {/if}
       </div>
-      {#if hasVerifiedBadge}
-        <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center border-2 border-white">
-          <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-          </svg>
+      <!-- Account Badge - positioned bottom-right like verified badge -->
+      {#if seller.account_type || hasVerifiedBadge}
+        <div class="absolute -bottom-1 -right-1">
+          {#if seller.account_type === 'admin'}
+            <!-- Keep admin text badge for authority -->
+            <span class="inline-block px-1.5 py-0.5 text-[8px] font-bold rounded-full shadow-sm bg-[oklch(0.55_0.25_25)] text-[oklch(1_0_0)] border border-white">
+              {i18n.badge_admin()}
+            </span>
+          {:else if seller.account_type === 'brand'}
+            <!-- White star on black background for brand accounts -->
+            <div class="w-6 h-6 bg-black rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+              <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </div>
+          {:else if seller.account_type === 'pro'}
+            <!-- Gold crown for pro accounts -->
+            <div class="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+              <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 6L9.5 10.5L4 8L8.5 14H15.5L20 8L14.5 10.5L12 6Z"/>
+                <path d="M7 16H17V18C17 18.55 16.55 19 16 19H8C7.45 19 7 18.55 7 18V16Z"/>
+              </svg>
+            </div>
+          {:else if seller.account_type === 'personal'}
+            <!-- Green checkmark for personal accounts -->
+            <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+              <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          {:else if hasVerifiedBadge}
+            <!-- Verified badge (existing blue checkmark) -->
+            <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center border-2 border-white shadow-sm">
+              <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+            </div>
+          {/if}
         </div>
       {/if}
     </div>
 
-    <!-- Account Badge -->
-    {#if seller.account_type}
-      <div class="mb-1.5">
-        {#if seller.account_type === 'admin'}
-          <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded-full shadow-sm bg-[oklch(0.55_0.25_25)] text-[oklch(1_0_0)]">
-            {i18n.badge_admin()}
-          </span>
-        {:else if seller.account_type === 'brand'}
-          <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded-full shadow-sm bg-[oklch(0.25_0_0)] text-[oklch(1_0_0)]">
-            {i18n.badge_brand()}
-          </span>
-        {:else if seller.account_type === 'pro'}
-          <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded-full shadow-sm bg-[oklch(0.15_0_0)] text-[oklch(1_0_0)]">
-            {i18n.badge_pro()}
-          </span>
-        {:else if seller.account_type === 'personal'}
-          <NewSellerBadge size="sm" />
-        {/if}
-      </div>
-    {/if}
 
     <!-- Username -->
     <div class="mb-1">

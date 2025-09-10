@@ -2,7 +2,7 @@
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
 const bg_category_clothing = /** @type {(inputs: {}) => string} */ () => {
-	return `Облекло`
+	return `Дрехи`
 };
 
 const en_category_clothing = /** @type {(inputs: {}) => string} */ () => {

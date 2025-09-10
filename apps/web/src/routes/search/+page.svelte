@@ -454,7 +454,7 @@
   
   <!-- Clean Header Section -->
   <div class="bg-white/40 backdrop-blur-sm sticky z-30 border-b border-gray-100" style="top: var(--app-header-offset, 56px);">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="px-2 sm:px-4 lg:px-6">
       
       <!-- Search Container -->
       <div class="py-3">
@@ -573,7 +573,7 @@
   
   <!-- Clean Filter Bar Above Products -->
   <div class="bg-white/40 backdrop-blur-sm border-b border-gray-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div class="px-2 sm:px-4 lg:px-6 py-3">
       
       <!-- Mobile Layout - Results Count + Filter Button + Filter Pills -->
       <div class="sm:hidden mb-3 flex items-center justify-between gap-2">
@@ -737,7 +737,7 @@
   </div>
   
   <!-- Products Grid (window scroll + infinite load) -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+  <div class="px-2 sm:px-4 lg:px-6 py-3">
     {#if displayProductsWithCategory.length > 0}
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4">
         {#each displayProductsWithCategory as product}

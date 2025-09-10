@@ -62,7 +62,7 @@
   aria-label="Product: {product.title}"
 >
   <!-- Product Card -->
-  <div class="w-40 shrink-0">
+  <div class="shrink-0" style="width: calc(50vw - 8px);"><!-- Exactly 2 cards visible, 3rd partially hidden -->
     <!-- Main Card Container -->
     <div class="product-card cursor-pointer w-full">
       

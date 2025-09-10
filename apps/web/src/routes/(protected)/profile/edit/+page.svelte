@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { Button, Input, Avatar } from '@repo/ui';
+  import { Button, Input, Avatar, AvatarUploader } from '@repo/ui';
   import { goto } from '$app/navigation';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
+  import { uploadAvatar } from '$lib/supabase/storage';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
 
@@ -42,6 +43,13 @@
 
   function removeSocialLink(index: number) {
     socialLinks = socialLinks.filter((_, i) => i !== index);
+  }
+
+  async function handleAvatarUpload(file: File): Promise<string> {
+    if (!data.user?.id) {
+      throw new Error('User not authenticated');
+    }
+    return await uploadAvatar(supabase, file, data.user.id);
   }
 
   async function saveProfile() {
@@ -130,6 +138,25 @@
             
             <!-- Scroll hint -->
             <div class="absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-white via-white/80 to-transparent pointer-events-none"></div>
+          </div>
+          
+          <!-- Custom Avatar Upload -->
+          <div class="mt-6 pt-4 border-t border-gray-100">
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="text-sm font-medium text-gray-900">{i18n.profile_customAvatar()}</h4>
+              <span class="text-xs text-gray-500">{i18n.profile_uploadYourOwn()}</span>
+            </div>
+            
+            <AvatarUploader 
+              uploadFunction={handleAvatarUpload}
+              onUpload={(url) => avatarUrl = url}
+              onError={(error) => console.error('Avatar upload error:', error)}
+              uploadingText={i18n.profile_uploadingAvatar()}
+              uploadText={i18n.profile_uploadAvatar()}
+              changePhotoText={i18n.profile_changePhoto()}
+              dropHereText={i18n.profile_dropHere()}
+              selectFileText={i18n.profile_selectPhoto()}
+            />
           </div>
         </div>
 

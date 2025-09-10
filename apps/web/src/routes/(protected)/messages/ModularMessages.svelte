@@ -19,23 +19,25 @@
 
   let { data }: Props = $props();
 
-  // State management
+  // Simplified state management - server-driven approach
   let conversationService: ConversationService;
   let conversations = $state<Conversation[]>([]);
   let activeConversation = $state<Conversation | null>(null);
+  let activeConversationMessages = $state<Message[]>([]);
   let activeTab = $state<'all' | 'buying' | 'selling' | 'offers' | 'unread'>('all');
   let showSidebarOnMobile = $state(true);
   let isLoadingOlder = $state(false);
   let hasMoreMessages = $state(true);
   let isInitializing = $state(true);
   let isLoadingConversation = $state(false);
+  let isSendingMessage = $state(false);
   let connectionStatus = $state<'connected' | 'connecting' | 'error' | 'disconnected'>('disconnected');
   let connectionMessage = $state('');
   let canRetryConnection = $state(false);
 
   const supabase = createBrowserSupabaseClient();
 
-  // Initialize conversation service
+  // Initialize simplified conversation service
   onMount(async () => {
     if (!data.user) {
       isInitializing = false;
@@ -45,70 +47,52 @@
     try {
       conversationService = new ConversationService(supabase, data.user.id);
       
-      // Set up event listeners FIRST
-      conversationService.on('conversations_updated', (updatedConversations: Conversation[]) => {
-        conversations = updatedConversations;
-        messageNotificationActions.setUnreadCount(
-          updatedConversations.filter(c => c.unread).length
-        );
-        isInitializing = false;
-      });
-      
-      conversationService.on('conversation_updated', (updatedConversation: Conversation) => {
-        // Update the conversation in the list
-        const index = conversations.findIndex(c => c.id === updatedConversation.id);
-        if (index >= 0) {
-          conversations[index] = updatedConversation;
-          conversations = [...conversations]; // Trigger reactivity
-        }
-        
-        // Update active conversation if it matches
-        if (activeConversation?.id === updatedConversation.id) {
-          activeConversation = updatedConversation;
-        }
-      });
-      
-      // Handle connection status changes
+      // Set up event listeners for the simplified service
       conversationService.on('connection_status', (status: any) => {
         connectionStatus = status.status;
         connectionMessage = status.message;
         canRetryConnection = status.canRetry;
       });
       
-      // Handle connection errors
-      conversationService.on('connection_error', (error: any) => {
-        messagingLogger.error('Realtime connection error', error);
-        connectionStatus = 'error';
-        connectionMessage = error.message || 'Connection failed';
-        canRetryConnection = true;
+      // Handle new message notifications - just refresh the conversation
+      conversationService.on('new_message', async (data: any) => {
+        messagingLogger.info('New message notification received', data);
+        
+        // If it's for the active conversation, reload messages
+        if (activeConversation && data.conversationId === activeConversation.id) {
+          await loadConversationMessages(activeConversation.id);
+        }
+        
+        // Always reload conversations to update unread counts and last messages
+        await loadConversations();
       });
       
-      // Handle message errors
-      conversationService.on('message_error', (errorData: any) => {
-        messagingLogger.error('Message error', errorData.error);
-        // Could show a toast notification here
+      // Handle polling refresh
+      conversationService.on('poll_refresh', async () => {
+        if (activeConversation) {
+          await loadConversationMessages(activeConversation.id);
+        }
+        await loadConversations();
       });
 
-      // Initialize with optimized server data
-      if (data.conversations && data.conversations.length > 0) {
-        // Use conversation summaries (much faster)
-        conversationService.initializeConversations(data.conversations, 'conversations');
-      } else if (data.messages && data.messages.length > 0) {
-        // Fallback to message-based initialization for specific conversation
-        conversationService.initializeConversations(data.messages, 'messages');
-      } else {
-        // No data - empty state
-        conversations = [];
-        isInitializing = false;
+      // Load initial data from server
+      await loadConversations();
+      
+      // Fallback: if no conversations loaded but we have server data, use it
+      if (conversations.length === 0 && data.conversations && data.conversations.length > 0) {
+        messagingLogger.info('Using server data as fallback for conversations');
+        conversations = data.conversations;
       }
       
-      // Setup real-time subscriptions immediately (no delay)
+      // If we have a specific conversation from URL, load its messages
+      if (data.messages && data.messages.length > 0) {
+        activeConversationMessages = data.messages;
+      }
+      
+      // Setup real-time subscriptions
       conversationService.setupRealtimeSubscriptions();
       
-      // Set initial unread count
-      if (data.unreadCount !== undefined) {
-        messageNotificationActions.setUnreadCount(data.unreadCount);
-      }
+      isInitializing = false;
     } catch (error) {
       messagingLogger.error('Error initializing conversations', error, {
         userId: data.user?.id
@@ -117,21 +101,47 @@
     }
   });
 
-  // Handle URL conversation parameter with better loading states
-  $effect(() => {
+  // Load conversations from server
+  async function loadConversations() {
+    try {
+      const freshConversations = await conversationService.loadConversations();
+      messagingLogger.info('Setting conversations in UI', { 
+        conversationCount: freshConversations.length,
+        conversations: freshConversations 
+      });
+      
+      conversations = freshConversations;
+      
+      // Update unread count
+      const unreadCount = freshConversations.filter(c => c.unread).length;
+      messageNotificationActions.setUnreadCount(unreadCount);
+    } catch (error) {
+      messagingLogger.error('Failed to load conversations', error);
+    }
+  }
+
+  // Load messages for a specific conversation
+  async function loadConversationMessages(conversationId: string) {
+    try {
+      const messages = await conversationService.loadMessages(conversationId);
+      activeConversationMessages = messages;
+      hasMoreMessages = messages.length >= 30; // Assume more if we got a full batch
+    } catch (error) {
+      messagingLogger.error('Failed to load conversation messages', error);
+    }
+  }
+
+  // Handle URL conversation parameter with simplified loading
+  $effect(async () => {
     const conversationParam = $page.url.searchParams.get('conversation');
     
     if (conversationParam && !isInitializing) {
-      // Find and set active conversation
+      // Find conversation in current list
       const conversation = conversations.find(c => c.id === conversationParam);
       if (conversation) {
-        // Load messages if not already loaded
-        if (conversation.messages.length === 0 && data.messages && data.messages.length > 0) {
-          conversation.messages = data.messages;
-          conversation.messageCache = new Set(data.messages.map(m => m.id));
-        }
         activeConversation = conversation;
-        showSidebarOnMobile = false; // Show chat on mobile
+        await loadConversationMessages(conversationParam);
+        showSidebarOnMobile = false;
       } else {
         // Create new conversation from server data (for starting new conversations)
         const [otherUserId, productId] = conversationParam.split('__');
@@ -145,22 +155,24 @@
           productTitle: data.conversationProduct?.title || null,
           productImage: data.conversationProduct?.images?.[0]?.image_url || null,
           productPrice: data.conversationProduct?.price || 0,
-          messages: data.messages || [],
-          lastMessage: data.messages?.length ? data.messages[data.messages.length - 1].content : 'Start a conversation...',
-          lastMessageTime: data.messages?.length ? data.messages[data.messages.length - 1].created_at : new Date().toISOString(),
+          messages: [],
+          lastMessage: 'Start a conversation...',
+          lastMessageTime: new Date().toISOString(),
           unread: false,
           lastActiveAt: data.conversationUser?.last_active_at,
           isProductConversation: productId !== 'general',
-          isOrderConversation: false,
-          messageCache: new Set((data.messages || []).map(m => m.id))
+          isOrderConversation: false
         };
         
-        // Add to ConversationService first
-        if (conversationService) {
-          conversationService.addConversation(newConversation);
+        activeConversation = newConversation;
+        
+        // Load messages from server or use existing data
+        if (data.messages && data.messages.length > 0) {
+          activeConversationMessages = data.messages;
+        } else {
+          await loadConversationMessages(conversationParam);
         }
         
-        activeConversation = newConversation;
         // Add to conversations list if not already there
         if (!conversations.find(c => c.id === conversationParam)) {
           conversations = [newConversation, ...conversations];
@@ -169,6 +181,7 @@
       }
     } else if (!conversationParam) {
       activeConversation = null;
+      activeConversationMessages = [];
       showSidebarOnMobile = true;
     }
   });
@@ -192,44 +205,55 @@
   }
 
   async function handleSendMessage(content: string) {
-    if (!activeConversation || !conversationService) {
-      messagingLogger.error('Cannot send message: missing dependencies', {
-        hasActiveConversation: !!activeConversation,
-        hasConversationService: !!conversationService,
-        userId: data.user?.id
-      });
+    if (!activeConversation || !conversationService || isSendingMessage) {
       return;
     }
     
-    const success = await conversationService.sendMessage(activeConversation.id, content);
-    if (!success) {
-      messagingLogger.error('Failed to send message', {
-        conversationId: activeConversation.id,
-        userId: data.user?.id
-      });
+    isSendingMessage = true;
+    
+    try {
+      const success = await conversationService.sendMessage(activeConversation.id, content);
+      
+      if (success) {
+        // Reload messages to get the fresh message with server data
+        await loadConversationMessages(activeConversation.id);
+        // Reload conversations to update last message
+        await loadConversations();
+      } else {
+        messagingLogger.error('Failed to send message', {
+          conversationId: activeConversation.id,
+          userId: data.user?.id
+        });
+        alert('Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      messagingLogger.error('Error sending message', error);
       alert('Failed to send message. Please try again.');
+    } finally {
+      isSendingMessage = false;
     }
   }
 
   async function handleLoadOlder() {
     if (!activeConversation || !conversationService || isLoadingOlder || !hasMoreMessages) return;
     
-    const oldestMessage = activeConversation.messages[0];
+    const oldestMessage = activeConversationMessages[0];
     if (!oldestMessage) return;
     
     isLoadingOlder = true;
     
     try {
-      const hasMore = await conversationService.loadOlderMessages(
+      const olderMessages = await conversationService.loadOlderMessages(
         activeConversation.id, 
         oldestMessage.created_at
       );
-      hasMoreMessages = hasMore;
       
-      // Update the active conversation with new messages
-      const updatedConversation = conversationService.getConversation(activeConversation.id);
-      if (updatedConversation) {
-        activeConversation = updatedConversation;
+      if (olderMessages.length > 0) {
+        // Prepend older messages
+        activeConversationMessages = [...olderMessages, ...activeConversationMessages];
+        hasMoreMessages = olderMessages.length >= 20; // Assume more if we got a full batch
+      } else {
+        hasMoreMessages = false;
       }
     } catch (error) {
       messagingLogger.error('Failed to load older messages', error, {
@@ -299,13 +323,14 @@
         <div class="sm:col-span-2 lg:col-span-3 h-full {!activeConversation ? 'hidden sm:block' : ''}">
           {#if activeConversation}
             <ChatWindow
-              conversation={activeConversation}
+              conversation={{...activeConversation, messages: activeConversationMessages}}
               currentUserId={data.user?.id || ''}
               onBackToList={handleBackToList}
               onSendMessage={handleSendMessage}
               onLoadOlder={handleLoadOlder}
               {isLoadingOlder}
               {hasMoreMessages}
+              isSending={isSendingMessage}
             />
           {:else}
             <!-- No Conversation Selected (Desktop) -->

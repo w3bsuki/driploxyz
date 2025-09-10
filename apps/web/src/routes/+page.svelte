@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { IntegratedSearchBar, TrendingDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers } from '@repo/ui';
+	import { EnhancedSearchBar, TrendingDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill } from '@repo/ui';
 	import CategoryPill from '$lib/components/CategoryPill.svelte';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
@@ -62,6 +62,13 @@
 				document.addEventListener('click', handleClickOutside);
 				return () => document.removeEventListener('click', handleClickOutside);
 			}
+		}
+	});
+
+	// Hide trending dropdown when user starts typing in search
+	$effect(() => {
+		if (searchQuery.trim()) {
+			showTrendingDropdown = false;
 		}
 	});
 	
@@ -177,12 +184,11 @@
 
 	// Transform promoted products for highlights
 	const promotedProducts = $derived<Product[]>(
-		(data.promotedProducts?.length ? data.promotedProducts : (featuredProductsData || []).slice(0, 8))
-			.map(transformProduct).map(p => ({
-				...p,
-				category_name: p.category_name || p.main_category_name || 'Uncategorized',
-				main_category_name: p.main_category_name || p.category_name || 'Uncategorized'
-			}))
+		(featuredProductsData || []).map(transformProduct).map(p => ({
+			...p,
+			category_name: p.category_name || p.main_category_name || 'Uncategorized',
+			main_category_name: p.main_category_name || p.category_name || 'Uncategorized'
+		}))
 	);
 
 	// Transform products to match Product interface
@@ -219,8 +225,12 @@
 		})
 	);
 
-	// Debug sellers data
+	// Debug data loading
 	$effect(() => {
+		console.log('dataLoaded:', dataLoaded);
+		console.log('featuredProductsData:', featuredProductsData);
+		console.log('promotedProducts:', promotedProducts);
+		console.log('filteredPromotedProducts:', filteredPromotedProducts);
 		console.log('sellersData:', sellersData);
 		console.log('transformed sellers:', sellers);
 	});
@@ -251,6 +261,21 @@
 	function handleSearch(query: string) {
 		if (query.trim()) {
 			goto(`/search?q=${encodeURIComponent(query)}`);
+		}
+	}
+
+	// Quick search for dropdown results
+	async function handleQuickSearch(query: string) {
+		if (!query.trim() || !data.supabase) {
+			return { data: [], error: null };
+		}
+		
+		try {
+			const { ProductService } = await import('$lib/services/products');
+			const productService = new ProductService(data.supabase);
+			return await productService.searchProducts(query, { limit: 6 });
+		} catch (error) {
+			return { data: [], error: 'Search failed' };
 		}
 	}
 
@@ -453,7 +478,7 @@
 	
 	function handlePillKeyNav(e: KeyboardEvent, index: number) {
 		const pills = document.querySelectorAll('#category-pills button');
-		const totalPills = mainCategories.length + 1;
+		const totalPills = mainCategories.length + 1 + virtualCategories.length; // All + mainCategories + virtualCategories
 		
 		switch(e.key) {
 			case 'ArrowRight':
@@ -508,6 +533,14 @@
 			.sort((a, b) => a.sort_order - b.sort_order) // Sort by order
 			.slice(0, 3) // Take first 3 (Men, Women, Kids)
 	);
+
+	// Virtual categories for quick access
+	const virtualCategories = [
+		{ slug: 'clothing', name: i18n.category_clothing ? i18n.category_clothing() : 'Clothing' },
+		{ slug: 'shoes', name: i18n.category_shoesType ? i18n.category_shoesType() : 'Shoes' },
+		{ slug: 'bags', name: i18n.category_bagsType ? i18n.category_bagsType() : 'Bags' },
+		{ slug: 'accessories', name: i18n.category_accessoriesType ? i18n.category_accessoriesType() : 'Accessories' }
+	];
 
 	// Get category icon from constants
 	function getCategoryIcon(categoryName: string): string {
@@ -567,22 +600,76 @@
 	// Removed duplicate favorites initialization - keeping only the first one
 
 	// Scroll detection removed for cleaner UX
+
+	// Promoted content filtering
+	let promotedFilter = $state<string>('all');
+
+	// Promoted content filter options
+	const promotedCategoryFilters = [
+		{ key: 'all', label: i18n.search_all(), icon: '🌟' },
+		{ key: 'men', label: i18n.category_men(), icon: '👔' },
+		{ key: 'women', label: i18n.category_women(), icon: '👗' },
+		{ key: 'kids', label: i18n.category_kids(), icon: '👶' }
+	];
+
+	const promotedConditionFilters = [
+		{ key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: 'нови с етикет' },
+		{ key: 'like_new', label: i18n.condition_likeNew(), shortLabel: 'като ново' },
+		{ key: 'newest', label: 'най-нови', shortLabel: 'най-нови' }
+	];
+
+	function handlePromotedFilterChange(filterKey: string) {
+		promotedFilter = promotedFilter === filterKey ? 'all' : filterKey;
+	}
+
+	// Filter promoted products based on selected filter
+	const filteredPromotedProducts = $derived(() => {
+		if (promotedFilter === 'all') {
+			return promotedProducts;
+		}
+
+		return promotedProducts.filter(product => {
+			// Category filters
+			if (promotedFilter === 'men' || promotedFilter === 'women' || promotedFilter === 'kids') {
+				const productCategory = product.main_category_name?.toLowerCase();
+				return productCategory === promotedFilter || productCategory === promotedFilter + 's'; // handle plurals
+			}
+
+			// Condition filters
+			if (promotedFilter === 'brand_new_with_tags') {
+				return product.condition === 'brand_new_with_tags';
+			}
+			if (promotedFilter === 'like_new') {
+				return product.condition === 'like_new';
+			}
+			if (promotedFilter === 'newest') {
+				// Sort by creation date and return newest ones
+				return true; // All products, but we'll sort them in the component
+			}
+
+			return true;
+		});
+	});
+
 </script>
 
 
 {#key currentLang}
 <div class="min-h-screen bg-[color:var(--surface-subtle)] pb-20 sm:pb-0">
-	<main class="max-w-6xl mx-auto">
+	<main>
 		<!-- Hero Search -->
 		<div class="bg-white/40 backdrop-blur-sm border-b border-gray-100">
-			<div class="px-4 sm:px-6 lg:px-8 py-4">
+			<div class="px-2 sm:px-4 lg:px-6 py-3">
 				<!-- Hero Search -->
-				<div id="hero-search-container" class="max-w-2xl mx-auto relative mb-4">
-					<IntegratedSearchBar
+				<div id="hero-search-container" class="max-w-4xl mx-auto relative mb-3">
+					<EnhancedSearchBar
 						bind:searchValue={searchQuery}
 						onSearch={handleSearch}
 						placeholder={i18n.search_placeholder()}
 						searchId="hero-search-input"
+						searchFunction={handleQuickSearch}
+						showDropdown={true}
+						maxResults={6}
 					>
 						{#snippet rightSection()}
 							<button
@@ -604,10 +691,10 @@
 								<span class="text-sm font-medium text-gray-600 hidden sm:inline">{i18n.search_categories()}</span>
 							</button>
 						{/snippet}
-					</IntegratedSearchBar>
+					</EnhancedSearchBar>
 
 					{#if showTrendingDropdown}
-						<div class="absolute z-50 w-full mt-2">
+						<div class="absolute z-[99999] w-full mt-2">
 							<TrendingDropdown
 								topSellers={topSellers}
 								quickFilters={heroQuickFilters}
@@ -640,7 +727,7 @@
 				<nav 
 					id="category-pills"
 					aria-label={i18n.nav_browseCategories()}
-					class="flex items-center justify-center gap-1 sm:gap-2 overflow-x-auto no-scrollbar px-2 sm:px-4"
+					class="flex items-center justify-start gap-2 sm:gap-3 overflow-x-auto no-scrollbar px-1 sm:px-2 sm:justify-center"
 				>
 					<!-- All Categories -->
 					<CategoryPill 
@@ -662,7 +749,6 @@
 						{@const category = mainCategories.find(c => c.slug === 'women')}
 						<CategoryPill 
 							label={i18n.category_women()}
-							emoji="👗"
 							loading={loadingCategory === category.slug}
 							spinnerColor="pink"
 							disabled={loadingCategory === category.slug}
@@ -680,7 +766,6 @@
 						{@const category = mainCategories.find(c => c.slug === 'men')}
 						<CategoryPill 
 							label={i18n.category_men()}
-							emoji="👔"
 							loading={loadingCategory === category.slug}
 							spinnerColor="blue"
 							disabled={loadingCategory === category.slug}
@@ -698,7 +783,6 @@
 						{@const category = mainCategories.find(c => c.slug === 'kids')}
 						<CategoryPill 
 							label={i18n.category_kids()}
-							emoji="👶"
 							loading={loadingCategory === category.slug}
 							spinnerColor="green"
 							disabled={loadingCategory === category.slug}
@@ -710,6 +794,22 @@
 							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 3)}
 						/>
 					{/if}
+					
+					<!-- Virtual Categories - Unisex Product Types -->
+					{#each virtualCategories as virtualCategory, index}
+						<CategoryPill 
+							label={virtualCategory.name}
+							loading={loadingCategory === virtualCategory.slug}
+							spinnerColor="purple"
+							disabled={loadingCategory === virtualCategory.slug}
+							ariaLabel={`${i18n.menu_browse()} ${virtualCategory.name}`}
+							data-prefetch="hover"
+							onmouseenter={() => prefetchCategoryPage(virtualCategory.slug)}
+							ontouchstart={() => prefetchCategoryPage(virtualCategory.slug)}
+							onclick={() => navigateToCategory(virtualCategory.slug)}
+							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 4 + index)}
+						/>
+					{/each}
 				</nav>
 			</div>
 		</div>
@@ -723,6 +823,7 @@
 				title={i18n.promoted_premiumSellers ? i18n.promoted_premiumSellers() : 'Featured Sellers'}
 			/>
 		</div>
+
 
 		<!-- FeaturedProducts -->
 		{#if dataLoaded && (products.length > 0)}
@@ -760,7 +861,7 @@
 			/>
 		{:else if !dataLoaded}
 			<!-- Loading skeleton for featured products -->
-			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+			<div class="px-2 sm:px-4 lg:px-6 py-4">
 				<div class="mb-6">
 					<div class="w-48 h-8 bg-gray-200 rounded animate-pulse mb-2"></div>
 					<div class="w-32 h-4 bg-gray-100 rounded animate-pulse"></div>
@@ -777,7 +878,7 @@
 			</div>
 		{:else}
 			<!-- No products found - show call to action for new users -->
-			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+			<div class="px-2 sm:px-4 lg:px-6 py-8 text-center">
 				<div class="max-w-md mx-auto">
 					<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
 						<svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -808,13 +909,21 @@
 	</main>
 </div>
 
+<style>
+	.scrollbar-hide {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+	.scrollbar-hide::-webkit-scrollbar {
+		display: none;
+	}
+</style>
+
 <!-- Smart Sticky Search -->
 <SmartStickySearch 
 	bind:value={searchQuery}
 	onSearch={handleSearch}
 	placeholder={i18n.search_placeholder()}
-	quickFilters={heroQuickFilters.slice(0, 4)}
-	onFilterClick={handleHeroFilterClick}
 	observeTarget="#hero-search-container"
 />
 

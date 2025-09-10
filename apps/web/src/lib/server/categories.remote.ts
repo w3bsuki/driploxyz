@@ -1,6 +1,7 @@
 // SvelteKit server-only category resolution utilities
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
+import { isVirtualCategory, getVirtualCategory, getVirtualCategoryTargets } from './virtual-categories';
 
 type Category = Database['public']['Tables']['categories']['Row'];
 
@@ -13,6 +14,13 @@ export interface CategoryResolution {
   canonicalPath: string;
   isValid: boolean;
   error?: string;
+  isVirtual?: boolean;
+  virtualCategory?: {
+    name: string;
+    slug: string;
+    description: string;
+  };
+  virtualTargetCategories?: Category[];
 }
 
 export interface BreadcrumbItem {
@@ -127,7 +135,7 @@ function findCategoryBySlug(categories: Category[], slug: string, level?: number
 async function getCategoryDescendants(supabase: SupabaseClient<Database>, categoryId: string): Promise<string[]> {
   try {
     const { data, error } = await supabase.rpc('get_category_descendants', {
-      category_id: categoryId
+      category_uuid: categoryId
     });
 
     if (error) {
@@ -174,6 +182,60 @@ export async function resolveCategoryPath(
     }
 
     const [l1Slug, l2Slug, l3Slug] = segments;
+    
+    // Handle virtual categories (e.g., /category/shoes)
+    if (segments.length === 1 && l1Slug && isVirtualCategory(l1Slug)) {
+      const virtualCategoryConfig = getVirtualCategory(l1Slug);
+      if (!virtualCategoryConfig) {
+        return {
+          level: 1,
+          categoryIds: [],
+          canonicalPath: '/category',
+          isValid: false,
+          error: `Virtual category '${l1Slug}' not found`
+        };
+      }
+      
+      // Find all target L2 categories
+      const targetSlugs = getVirtualCategoryTargets(l1Slug);
+      const targetCategories = categories.filter(cat => 
+        targetSlugs.includes(cat.slug) && cat.level === 2 && cat.is_active
+      );
+      
+      if (targetCategories.length === 0) {
+        return {
+          level: 1,
+          categoryIds: [],
+          canonicalPath: `/category/${l1Slug}`,
+          isValid: false,
+          error: `No active categories found for virtual category '${l1Slug}'`
+        };
+      }
+      
+      // Get all descendant category IDs for these L2 categories
+      const allCategoryIds: string[] = [];
+      for (const category of targetCategories) {
+        const descendants = await getCategoryDescendants(supabase, category.id);
+        allCategoryIds.push(...descendants);
+      }
+      
+      // Remove duplicates
+      const uniqueCategoryIds = [...new Set(allCategoryIds)];
+      
+      return {
+        level: 2, // Virtual categories operate at L2 level
+        categoryIds: uniqueCategoryIds,
+        canonicalPath: `/category/${l1Slug}`,
+        isValid: true,
+        isVirtual: true,
+        virtualCategory: {
+          name: virtualCategoryConfig.name,
+          slug: virtualCategoryConfig.slug,
+          description: virtualCategoryConfig.description
+        },
+        virtualTargetCategories: targetCategories
+      };
+    }
     
     // Find Level 1 category (Gender: women, men, kids, unisex)
     const l1Category = findCategoryBySlug(categories, l1Slug || '', 1);
@@ -300,28 +362,38 @@ export async function getCategoryBreadcrumbs(
       { name: 'Home', href: '/', level: 0 }
     ];
 
-    if (resolution.l1) {
+    // Handle virtual category breadcrumbs
+    if (resolution.isVirtual && resolution.virtualCategory) {
       items.push({
-        name: resolution.l1.name,
-        href: `/category/${resolution.l1.slug}`,
+        name: resolution.virtualCategory.name,
+        href: `/category/${resolution.virtualCategory.slug}`,
         level: 1
       });
-    }
+    } else {
+      // Handle regular category breadcrumbs
+      if (resolution.l1) {
+        items.push({
+          name: resolution.l1.name,
+          href: `/category/${resolution.l1.slug}`,
+          level: 1
+        });
+      }
 
-    if (resolution.l2) {
-      items.push({
-        name: resolution.l2.name,
-        href: `/category/${resolution.l1!.slug}/${resolution.l2.slug}`,
-        level: 2
-      });
-    }
+      if (resolution.l2) {
+        items.push({
+          name: resolution.l2.name,
+          href: `/category/${resolution.l1!.slug}/${resolution.l2.slug}`,
+          level: 2
+        });
+      }
 
-    if (resolution.l3) {
-      items.push({
-        name: resolution.l3.name,
-        href: `/category/${resolution.l1!.slug}/${resolution.l2!.slug}/${resolution.l3.slug}`,
-        level: 3
-      });
+      if (resolution.l3) {
+        items.push({
+          name: resolution.l3.name,
+          href: `/category/${resolution.l1!.slug}/${resolution.l2!.slug}/${resolution.l3.slug}`,
+          level: 3
+        });
+      }
     }
 
     // Generate JSON-LD structured data

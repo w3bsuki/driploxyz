@@ -276,7 +276,7 @@ export async function uploadAvatar(
     
     // Generate unique filename for avatar
     const timestamp = Date.now();
-    const fileName = `avatars/${userId}/${timestamp}.webp`;
+    const fileName = `${userId}/${timestamp}.webp`;
     
     // Upload to Supabase
     const { data, error } = await supabase.storage

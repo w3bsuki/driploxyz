@@ -140,7 +140,7 @@
 >
   
   <!-- Section Header with Partners -->
-  <div class="px-4 sm:px-6 pt-4 pb-3">
+  <div class="px-2 sm:px-4 lg:px-6 pt-3 pb-3">
     <!-- Show partners if available, otherwise show traditional header -->
     {#if partners.length > 0}
       <div class="flex items-center gap-2">
@@ -184,7 +184,7 @@
     {/if}
   </div>
   
-  <div class="px-4 sm:px-6 pb-4">
+  <div class="px-2 sm:px-4 lg:px-6 pb-3">
     <!-- Screen reader only announcements for accessibility -->
     {#if hasProducts}
       <span class="sr-only">{promotedProducts.length} featured products available</span>
@@ -197,7 +197,7 @@
       onkeydown={handleKeyNavigation}
     >
       <div 
-        class="flex flex-nowrap gap-3 sm:gap-4 scroll-snap-x"
+        class="flex flex-nowrap gap-2 sm:gap-3 scroll-snap-x"
         data-highlights-container
         role="list"
       >

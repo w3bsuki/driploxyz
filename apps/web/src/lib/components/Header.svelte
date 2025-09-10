@@ -28,6 +28,7 @@
   import { switchLanguage, languages } from '$lib/utils/language-switcher';
   import { browser } from '$app/environment';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
+  import { ProductService } from '$lib/services/products';
   
   interface Props {
     showSearch?: boolean;
@@ -47,6 +48,9 @@
   
   // Create supabase client when needed (browser only)
   const supabase = browser ? createBrowserSupabaseClient() : null;
+  
+  // Create product service for search functionality
+  const productService = supabase ? new ProductService(supabase) : null;
   
   let mobileMenuOpen = $state(false);
   let signingOut = $state(false);
@@ -177,17 +181,30 @@
     returns: 'Returns',
     trustSafety: 'Trust & Safety'
   });
+
+  // Search function for quick results dropdown
+  async function handleQuickSearch(query: string) {
+    if (!productService || !query.trim()) {
+      return { data: [], error: null };
+    }
+    
+    try {
+      return await productService.searchProducts(query, { limit: 6 });
+    } catch (error) {
+      return { data: [], error: 'Search failed' };
+    }
+  }
 </script>
 
 <header class="border-b border-[color:var(--border-subtle)] bg-[color:var(--surface-base)] supports-[backdrop-filter]:backdrop-blur">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 safe-area">
+  <div class="px-2 sm:px-4 lg:px-6 safe-area">
     <!-- Bar -->
     <div class="flex items-center justify-between h-14 sm:h-16">
       <!-- Left: Mobile Menu + Logo -->
       <div class="flex items-center gap-0">
         <button
           onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
-          class="sm:hidden inline-flex items-center justify-center h-10 w-10 rounded-[var(--radius-md)] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] transition-colors duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]"
+          class="sm:hidden inline-flex items-center justify-center h-10 w-10 -ml-2 rounded-[var(--radius-md)] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] transition-colors duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]"
           aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}
           aria-controls="mobile-navigation"
@@ -201,7 +218,7 @@
           </svg>
         </button>
 
-        <div class="-ml-0.5">
+        <div>
           <HeaderLogo />
         </div>
       </div>
@@ -281,7 +298,7 @@
     <!-- Desktop secondary: Nav or Search below the bar -->
     <div class="hidden sm:flex items-center justify-between py-2">
       {#if showSearch}
-        <div class="w-full"><HeaderSearch placeholder={i18n.search_placeholder()} /></div>
+        <div class="w-full"><HeaderSearch placeholder={i18n.search_placeholder()} searchFunction={handleQuickSearch} /></div>
       {:else}
         <HeaderNav {isLoggedIn} canSell={userCanSell} translations={navTranslations} />
       {/if}

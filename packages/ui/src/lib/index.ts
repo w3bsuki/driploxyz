@@ -71,6 +71,7 @@ export { default as PaymentForm } from './PaymentForm.svelte';
 export { default as CheckoutSummary } from './CheckoutSummary.svelte';
 
 // Filter components
+export { default as FilterPill } from './FilterPill.svelte';
 export { default as FilterPillGroup } from './FilterPillGroup.svelte';
 export { default as CategoryFilterDropdown } from './CategoryFilterDropdown.svelte';
 export { default as FilterModal } from './FilterModal.svelte';
@@ -137,6 +138,8 @@ export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte
 // Search components
 export { default as TrendingDropdown } from './TrendingDropdown.svelte';
 export { default as SmartStickySearch } from './SmartStickySearch.svelte';
+export { default as SearchDropdown } from './SearchDropdown.svelte';
+export { default as EnhancedSearchBar } from './EnhancedSearchBar.svelte';
 
 // Virtual scrolling and search components
 export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';
@@ -186,6 +189,7 @@ export { default as CategorySelector } from './CategorySelector.svelte';
 export { default as CollapsibleCategorySelector } from './CollapsibleCategorySelector.svelte';
 export { default as ImageUploader } from './ImageUploader.svelte';
 export { default as ImageUploaderSupabase } from './ImageUploaderSupabase.svelte';
+export { default as AvatarUploader } from './AvatarUploader.svelte';
 export { default as PriceInput } from './PriceInput.svelte';
 export { default as TagInput } from './TagInput.svelte';
 

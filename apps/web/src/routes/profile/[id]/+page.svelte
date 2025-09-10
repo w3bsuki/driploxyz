@@ -80,7 +80,7 @@
 <div class="min-h-screen bg-white pb-20 sm:pb-0">
 
   <!-- Profile Section -->
-  <div class="px-4 py-6 overflow-visible">
+  <div class="px-2 sm:px-4 lg:px-6 py-3 overflow-visible">
     <div class="flex items-start space-x-4">
       <!-- Avatar -->
       <div class="relative">
@@ -251,7 +251,7 @@
   </div>
 
   <!-- Tab Content -->
-  <div class="px-4 py-4">
+  <div class="px-2 sm:px-4 lg:px-6 py-3">
     {#if activeTab === 'posts'}
       <!-- Products Grid -->
       {#if data.products.length > 0}

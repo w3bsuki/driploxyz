@@ -11,6 +11,7 @@ export interface Product {
   category_name?: string;
   main_category_name?: string;
   subcategory_name?: string;
+  specific_category_name?: string;
   sellerId: string;
   sellerName: string;
   sellerRating: number;

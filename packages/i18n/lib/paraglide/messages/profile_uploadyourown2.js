@@ -1,13 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const bg_badge_brand = /** @type {(inputs: {}) => string} */ () => {
-	return `БРАНД`
+const bg_profile_uploadyourown2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Качете своя снимка`
 };
 
-const en_badge_brand = /** @type {(inputs: {}) => string} */ () => {
-	return `BRAND`
-};
+/** @type {(inputs: {}) => string} */
+const en_profile_uploadyourown2 = bg_profile_uploadyourown2;
 
 /**
 * This function has been compiled by [Paraglide JS](https://inlang.com/m/gerre34r).
@@ -22,12 +21,13 @@ const en_badge_brand = /** @type {(inputs: {}) => string} */ () => {
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
-export const badge_brand = (inputs = {}, options = {}) => {
+const profile_uploadyourown2 = (inputs = {}, options = {}) => {
 	if (experimentalMiddlewareLocaleSplitting && isServer === false) {
-		return /** @type {any} */ (globalThis).__paraglide_ssr.badge_brand(inputs) 
+		return /** @type {any} */ (globalThis).__paraglide_ssr.profile_uploadyourown2(inputs) 
 	}
 	const locale = options.locale ?? getLocale()
-	trackMessageCall("badge_brand", locale)
-	if (locale === "bg") return bg_badge_brand(inputs)
-	return en_badge_brand(inputs)
+	trackMessageCall("profile_uploadyourown2", locale)
+	if (locale === "bg") return bg_profile_uploadyourown2(inputs)
+	return en_profile_uploadyourown2(inputs)
 };
+export { profile_uploadyourown2 as "profile_uploadYourOwn" }

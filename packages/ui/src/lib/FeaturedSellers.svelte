@@ -76,7 +76,7 @@
 
 <section class="w-full {className}">
   <!-- Header -->
-  <div class="px-4 mb-4">
+  <div class="px-2 sm:px-4 lg:px-6 mb-3">
     <div class="flex items-center justify-between">
       <div class="flex-1">
         <h2 class="text-lg font-medium text-gray-900">{title}</h2>
@@ -122,9 +122,9 @@
 
   <!-- Sellers -->
   {#if loading}
-    <div class="flex gap-4 px-4 overflow-x-hidden">
+    <div class="flex gap-2 sm:gap-3 px-2 sm:px-4 lg:px-6 overflow-x-hidden">
       {#each Array(3) as _}
-        <div class="bg-white border border-gray-200 rounded-xl p-4 animate-pulse flex-shrink-0" style="width: calc(50vw - 24px);">
+        <div class="bg-white border border-gray-200 rounded-xl p-4 animate-pulse flex-shrink-0" style="width: calc(50vw - 8px);">
           <div class="flex flex-col items-center">
             <div class="w-14 h-14 bg-gray-200 rounded-full mb-2"></div>
             <div class="h-3 bg-gray-200 rounded w-12 mb-1"></div>
@@ -141,13 +141,13 @@
       {/each}
     </div>
   {:else if displaySellers.length === 0}
-    <div class="text-center py-12 px-4">
+    <div class="text-center py-8 px-2 sm:px-4 lg:px-6">
       <p class="text-gray-500">No sellers available</p>
     </div>
   {:else}
-    <div bind:this={scrollContainer} class="flex gap-4 px-4 overflow-x-auto scrollbar-hide" onscroll={updateScrollButtons}>
+    <div bind:this={scrollContainer} class="flex gap-2 sm:gap-3 px-2 sm:px-4 lg:px-6 overflow-x-auto scrollbar-hide" onscroll={updateScrollButtons}>
       {#each displaySellers as seller}
-        <div class="flex-shrink-0 snap-start" style="width: calc(50vw - 24px);" data-seller-card>
+        <div class="flex-shrink-0 snap-start" style="width: calc(50vw - 8px);" data-seller-card>
           <SellerProfileCard
             {seller}
             productPreviews={getSellerPreviews(seller.id)}

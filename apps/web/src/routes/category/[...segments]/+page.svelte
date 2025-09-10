@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page, navigating } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, type Product, type BreadcrumbItem } from '@repo/ui';
+  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, FilterPill, type Product, type BreadcrumbItem } from '@repo/ui';
   import * as i18n from '@repo/i18n';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { formatPrice } from '$lib/utils/price';
@@ -288,14 +288,14 @@
 
   <!-- Breadcrumb -->
   <div class="bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="px-2 sm:px-4 lg:px-6 py-3">
       <Breadcrumb items={breadcrumbs.map(b => ({ label: translateCategoryName(b.name), href: b.href }))} />
     </div>
   </div>
 
   <!-- Category Section with Brand Colors -->
   <div class="border-b {categoryBgColor}">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="px-2 sm:px-4 lg:px-6 py-3">
 
 
       <!-- Top Sellers -->
@@ -386,45 +386,81 @@
       </div>
 
       <!-- Category Navigation Pills -->
-      {#if subcategories.length > 0 || level3Categories.length > 0}
-        <div class="flex justify-center">
-          <div class="flex overflow-x-auto scrollbar-hide space-x-2 px-4">
-            
-            {#if subcategories.length > 0}
-              <!-- Show Level 2 subcategories (e.g., Clothing, Shoes, Accessories) -->
-              {#each subcategories.filter(s => s.productCount > 0) as subcat}
-                <a 
-                  href={getCategoryUrl(resolution.l1?.slug || '', subcat.slug)}
-                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 no-underline touch-manipulation"
-                  data-sveltekit-preload-data="hover"
-                  data-sveltekit-preload-code="eager"
-                >
-                  <span>{translateSubcategoryName(subcat.name)}</span>
-                  <span class="text-xs opacity-75">({subcat.productCount})</span>
-                </a>
-              {/each}
-              
-            {:else if level3Categories.length > 0}
-              <!-- Show Level 3 subcategories (e.g., T-Shirts, Dresses, Sneakers) -->
-              {#each level3Categories.filter(l3cat => l3cat.productCount > 0) as l3cat}
-                <a 
-                  href={getCategoryUrl(resolution.l1?.slug || '', resolution.l2?.slug || '', l3cat.slug)}
-                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 no-underline touch-manipulation"
-                  data-sveltekit-preload-data="hover"
-                  data-sveltekit-preload-code="eager"
-                >
-                  <span>{translateSubcategoryName(l3cat.name)}</span>
-                  <span class="text-xs opacity-75">({l3cat.productCount})</span>
-                </a>
-              {/each}
-            {/if}
-          </div>
+      {#if resolution.isVirtual || subcategories.length > 0 || level3Categories.length > 0}
+        <div class="space-y-3">
+          
+          <!-- Gender Filter Pills for Virtual Categories -->
+          {#if resolution.isVirtual}
+            <div class="flex justify-center">
+              <div class="flex overflow-x-auto scrollbar-hide gap-2 px-4">
+                <FilterPill variant="category" onClick={() => goto(`/category/women/${resolution.virtualCategory?.slug || ''}`)}>
+                  {#snippet children()}
+                    {translateCategoryName('Women')}
+                  {/snippet}
+                </FilterPill>
+                <FilterPill variant="category" onClick={() => goto(`/category/men/${resolution.virtualCategory?.slug || ''}`)}>
+                  {#snippet children()}
+                    {translateCategoryName('Men')}
+                  {/snippet}
+                </FilterPill>
+                <FilterPill variant="category" onClick={() => goto(`/category/kids/${resolution.virtualCategory?.slug || ''}`)}>
+                  {#snippet children()}
+                    {translateCategoryName('Kids')}
+                  {/snippet}
+                </FilterPill>
+                <FilterPill variant="category" onClick={() => goto(`/category/unisex/${resolution.virtualCategory?.slug || ''}`)}>
+                  {#snippet children()}
+                    {translateCategoryName('Unisex')}
+                  {/snippet}
+                </FilterPill>
+              </div>
+            </div>
+          {/if}
+          
+          <!-- Level 3 Subcategory Pills (for both virtual and regular categories) -->
+          {#if level3Categories.length > 0}
+            <div class="flex justify-center">
+              <div class="flex overflow-x-auto scrollbar-hide gap-2 px-4">
+                {#each level3Categories.filter(l3cat => l3cat.productCount > 0).slice(0, 12) as l3cat}
+                  <FilterPill 
+                    variant="default" 
+                    onClick={() => goto(resolution.isVirtual 
+                      ? `/category/${resolution.virtualCategory?.slug}?subcategory=${l3cat.slug}` 
+                      : getCategoryUrl(resolution.l1?.slug || '', resolution.l2?.slug || '', l3cat.slug)
+                    )}
+                  >
+                    {#snippet children()}
+                      {translateSubcategoryName(l3cat.name)}
+                      <span class="text-xs opacity-75">({l3cat.productCount})</span>
+                    {/snippet}
+                  </FilterPill>
+                {/each}
+              </div>
+            </div>
+          {:else if subcategories.length > 0}
+            <!-- Level 2 Subcategories (for regular categories) -->
+            <div class="flex justify-center">
+              <div class="flex overflow-x-auto scrollbar-hide gap-2 px-4">
+                {#each subcategories.filter(s => s.productCount > 0) as subcat}
+                  <FilterPill 
+                    variant="default" 
+                    onClick={() => goto(getCategoryUrl(resolution.l1?.slug || '', subcat.slug))}
+                  >
+                    {#snippet children()}
+                      {translateSubcategoryName(subcat.name)}
+                      <span class="text-xs opacity-75">({subcat.productCount})</span>
+                    {/snippet}
+                  </FilterPill>
+                {/each}
+              </div>
+            </div>
+          {/if}
         </div>
       {/if}
     </div>
   </div>
 
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+  <div class="px-2 sm:px-4 lg:px-6 py-3">
     <!-- Sort and Filter Bar -->
     <div class="flex justify-between items-center mb-4">
       <p class="text-sm text-gray-600">

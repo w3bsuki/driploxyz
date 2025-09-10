@@ -87,20 +87,38 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
     if (searchParams.get('brand')) {
       hierarchicalFilters.brands = searchParams.getAll('brand');
     }
+    
+    // Handle subcategory filter for virtual categories (e.g., ?subcategory=sneakers)
+    if (resolution.isVirtual && searchParams.get('subcategory')) {
+      const subcategorySlug = searchParams.get('subcategory')!;
+      hierarchicalFilters.subcategory_slug = subcategorySlug;
+    }
 
     // Get sort options
     const sortBy = (searchParams.get('sort') || 'created_at') as any;
     const sortDirection = (searchParams.get('order') || 'desc') as 'asc' | 'desc';
     const sort = { by: sortBy, direction: sortDirection };
 
-    // Determine current category for subcategory fetching
-    const currentCategory = resolution.l3 || resolution.l2 || resolution.l1;
+    // Use parallel promises for better performance
+    let subcategoriesPromise: Promise<any[]>;
+    let level3CategoriesPromise: Promise<any[]>;
     
-    if (!currentCategory) {
-      throw error(500, 'Failed to determine current category');
+    if (resolution.isVirtual) {
+      // For virtual categories, get aggregated subcategories from all target categories
+      subcategoriesPromise = getVirtualCategorySubcategories(services, resolution.virtualTargetCategories || [], currentCountry);
+      level3CategoriesPromise = getVirtualCategoryLevel3Pills(services, supabase, resolution.virtualTargetCategories || [], currentCountry);
+    } else {
+      // Regular category handling
+      const currentCategory = resolution.l3 || resolution.l2 || resolution.l1;
+      
+      if (!currentCategory) {
+        throw error(500, 'Failed to determine current category');
+      }
+      
+      subcategoriesPromise = getSubcategoriesWithCounts(services, currentCategory.id, currentCountry);
+      level3CategoriesPromise = resolution.level < 3 ? getLevel3CategoriesForPills(services, supabase, currentCategory, currentCountry, resolution.level) : Promise.resolve([]);
     }
 
-    // Use parallel promises for better performance
     const [
       productsResult,
       subcategoriesResult,
@@ -110,11 +128,11 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
       // Get products using the resolved category IDs
       getProductsForCategories(supabase, resolution.categoryIds, hierarchicalFilters, sort, limit, offset),
       
-      // Get direct children (subcategories) with counts
-      getSubcategoriesWithCounts(services, currentCategory.id, currentCountry),
+      // Get subcategories (virtual or regular)
+      subcategoriesPromise,
       
-      // Get level 3 categories for pills if we're on L1 or L2
-      resolution.level < 3 ? getLevel3CategoriesForPills(services, supabase, currentCategory, currentCountry, resolution.level) : Promise.resolve([]),
+      // Get level 3 categories for pills (virtual or regular)
+      level3CategoriesPromise,
       
       // Get sellers in this category
       getSellersInCategory(supabase, resolution.categoryIds, currentCountry)
@@ -139,7 +157,7 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
 
     return {
       // Category information
-      category: currentCategory,
+      category: resolution.isVirtual ? null : (resolution.l3 || resolution.l2 || resolution.l1),
       resolution,
       breadcrumbs: breadcrumbsResult.items,
       breadcrumbsJsonLd: breadcrumbsResult.jsonLd,
@@ -189,6 +207,102 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
     throw error(500, 'Failed to load category');
   }
 }) satisfies PageServerLoad;
+
+/**
+ * Get aggregated subcategories for virtual categories
+ */
+async function getVirtualCategorySubcategories(services: any, targetCategories: any[], _countryCode: string) {
+  const allSubcategories: any[] = [];
+  
+  // Get subcategories from all target L2 categories
+  for (const targetCategory of targetCategories) {
+    const { data: subcategories, error } = await services.categories.getSubcategories(targetCategory.id);
+    
+    if (!error && subcategories?.length) {
+      // Get product counts for each subcategory
+      const subcategoriesWithCounts = await Promise.all(
+        subcategories.map(async (subcat: any) => {
+          const { count } = await services.categories.getHierarchicalProductCount(subcat.id);
+          return {
+            ...subcat,
+            productCount: count,
+            parentCategory: targetCategory.name // Add parent info for better organization
+          };
+        })
+      );
+      
+      allSubcategories.push(...subcategoriesWithCounts);
+    }
+  }
+
+  // Filter, deduplicate by name, and sort by product count
+  const uniqueSubcategories = allSubcategories
+    .filter((cat: any) => cat.productCount > 0)
+    .reduce((acc: any[], current: any) => {
+      // Avoid duplicates with same name (e.g., "Sneakers" from different genders)
+      const existing = acc.find(item => item.name === current.name);
+      if (!existing) {
+        acc.push(current);
+      } else {
+        // Combine product counts if duplicate names
+        existing.productCount += current.productCount;
+      }
+      return acc;
+    }, [])
+    .sort((a: any, b: any) => b.productCount - a.productCount);
+
+  return uniqueSubcategories;
+}
+
+/**
+ * Get level 3 categories for virtual category pills
+ */
+async function getVirtualCategoryLevel3Pills(services: any, supabase: any, targetCategories: any[], countryCode: string) {
+  const allLevel3Categories: any[] = [];
+  
+  // Get L3 categories from all target L2 categories
+  for (const targetCategory of targetCategories) {
+    const { data: level3Data } = await services.categories.getSubcategories(targetCategory.id);
+    if (level3Data?.length) {
+      allLevel3Categories.push(...level3Data);
+    }
+  }
+
+  // Get product counts using hierarchical count (includes all descendant products)
+  if (allLevel3Categories.length > 0) {
+    const categoriesWithCounts = await Promise.all(
+      allLevel3Categories.map(async (l3cat: any) => {
+        // Use hierarchical count for more accurate product counts
+        const { count } = await services.categories.getHierarchicalProductCount(l3cat.id);
+        return {
+          ...l3cat,
+          productCount: count || 0
+        };
+      })
+    );
+
+    // Deduplicate by name, combine counts, and sort
+    const uniqueLevel3Categories = categoriesWithCounts
+      .filter((cat: any) => cat.productCount > 0)
+      .reduce((acc: any[], current: any) => {
+        const existing = acc.find(item => item.name === current.name);
+        if (!existing) {
+          acc.push(current);
+        } else {
+          // Combine product counts for same category names across genders
+          existing.productCount += current.productCount;
+          // Keep the first slug for navigation
+        }
+        return acc;
+      }, [])
+      .sort((a: any, b: any) => b.productCount - a.productCount)
+      .slice(0, 20); // Limit to 20 pills
+
+    return uniqueLevel3Categories;
+  }
+
+  return [];
+}
 
 /**
  * Get products for multiple category IDs with hierarchical filtering
@@ -260,6 +374,11 @@ async function getProductsForCategories(
     // Use ilike for brand filtering to handle partial matches
     const brandConditions = filters.brands.map((brand: string) => `brand.ilike.%${brand}%`).join(',');
     query = query.or(brandConditions);
+  }
+  
+  // Apply subcategory filter for virtual categories (filter by L3 category slug)
+  if (filters.subcategory_slug) {
+    query = query.eq('categories.slug', filters.subcategory_slug);
   }
 
   // Apply sorting
@@ -430,14 +549,20 @@ async function getSellersInCategory(supabase: any, categoryIds: string[], countr
 function generateMetaTitle(resolution: any, _i18n: any): string {
   const titles: string[] = [];
   
-  if (resolution.l3) {
-    titles.push(resolution.l3.name);
-  }
-  if (resolution.l2) {
-    titles.push(resolution.l2.name);
-  }
-  if (resolution.l1) {
-    titles.push(resolution.l1.name);
+  // Handle virtual categories
+  if (resolution.isVirtual && resolution.virtualCategory) {
+    titles.push(resolution.virtualCategory.name);
+  } else {
+    // Handle regular categories
+    if (resolution.l3) {
+      titles.push(resolution.l3.name);
+    }
+    if (resolution.l2) {
+      titles.push(resolution.l2.name);
+    }
+    if (resolution.l1) {
+      titles.push(resolution.l1.name);
+    }
   }
   
   if (titles.length === 0) {
@@ -453,21 +578,27 @@ function generateMetaTitle(resolution: any, _i18n: any): string {
 function generateMetaDescription(resolution: any, productCount: number, _i18n: any): string {
   let description = '';
   
-  if (resolution.l3) {
-    description = `Shop ${productCount} ${resolution.l3.name.toLowerCase()} items`;
-    if (resolution.l2) {
-      description += ` in ${resolution.l2.name.toLowerCase()}`;
+  // Handle virtual categories
+  if (resolution.isVirtual && resolution.virtualCategory) {
+    description = `Shop ${productCount} ${resolution.virtualCategory.name.toLowerCase()} from men's, women's, kids' and unisex collections`;
+  } else {
+    // Handle regular categories
+    if (resolution.l3) {
+      description = `Shop ${productCount} ${resolution.l3.name.toLowerCase()} items`;
+      if (resolution.l2) {
+        description += ` in ${resolution.l2.name.toLowerCase()}`;
+      }
+      if (resolution.l1) {
+        description += ` for ${resolution.l1.name.toLowerCase()}`;
+      }
+    } else if (resolution.l2) {
+      description = `Discover ${productCount} ${resolution.l2.name.toLowerCase()} items`;
+      if (resolution.l1) {
+        description += ` for ${resolution.l1.name.toLowerCase()}`;
+      }
+    } else if (resolution.l1) {
+      description = `Browse ${productCount} items in ${resolution.l1.name.toLowerCase()}'s fashion`;
     }
-    if (resolution.l1) {
-      description += ` for ${resolution.l1.name.toLowerCase()}`;
-    }
-  } else if (resolution.l2) {
-    description = `Discover ${productCount} ${resolution.l2.name.toLowerCase()} items`;
-    if (resolution.l1) {
-      description += ` for ${resolution.l1.name.toLowerCase()}`;
-    }
-  } else if (resolution.l1) {
-    description = `Browse ${productCount} items in ${resolution.l1.name.toLowerCase()}'s fashion`;
   }
   
   if (!description) {

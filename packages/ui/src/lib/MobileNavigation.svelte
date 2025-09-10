@@ -89,6 +89,24 @@
       trustSafety: ''
     }
   }: Props = $props();
+
+  // Hide bottom nav when mobile menu is open
+  $effect(() => {
+    if (typeof document !== 'undefined') {
+      if (isOpen) {
+        document.body.classList.add('mobile-menu-open');
+      } else {
+        document.body.classList.remove('mobile-menu-open');
+      }
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      if (typeof document !== 'undefined') {
+        document.body.classList.remove('mobile-menu-open');
+      }
+    };
+  });
 </script>
 
 {#if isOpen}
@@ -102,8 +120,9 @@
     aria-label="Close menu"
   ></div>
   
+  
   <!-- Enhanced mobile dropdown menu -->
-  <div class="sm:hidden absolute top-full left-0 right-0 mx-4 bg-white rounded-2xl shadow-2xl z-50 border border-gray-100 mt-3 backdrop-blur-xl bg-white/95 safe-area-x">
+  <div class="sm:hidden absolute top-full left-0 right-0 mx-1 bg-white rounded-2xl shadow-2xl z-50 border border-gray-100 mt-2 backdrop-blur-xl bg-white/95 safe-area-x">
     <div class="px-5 py-5">
       <nav class="space-y-3">
         {#if isLoggedIn && user && profile}
@@ -233,3 +252,11 @@
     </div>
   </div>
 {/if}
+
+<style>
+  /* Hide bottom navigation when mobile menu is open */
+  :global(body.mobile-menu-open .bottom-nav),
+  :global(body.mobile-menu-open [data-bottom-nav]) {
+    display: none !important;
+  }
+</style>

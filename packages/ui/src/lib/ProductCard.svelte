@@ -81,8 +81,8 @@
   // Check if text needs truncation tooltip (simplified check)
   const shouldShowTitleTooltip = $derived(product.title && product.title.length > 50);
   const shouldShowCategoryTooltip = $derived(
-    product.subcategory_name && product.brand && product.size && 
-    `${product.subcategory_name} • ${product.brand} • ${translations.size} ${product.size}`.length > 60
+    product.specific_category_name && product.brand && product.size && 
+    `${product.specific_category_name} • ${product.brand} • ${translations.size} ${product.size}`.length > 60
   );
 </script>
 
@@ -118,7 +118,7 @@
       positioning={{ side: 'top', align: 'start' }}
       openDelay={800}
       closeDelay={200}
-      triggerClass="block pr-12"
+      triggerClass="block"
     >
       {#snippet trigger()}
         <h3 class="text-sm font-medium text-gray-900 line-clamp-1 leading-none mb-0.5 cursor-help">
@@ -127,7 +127,7 @@
       {/snippet}
     </Tooltip>
   {:else}
-    <h3 class="text-sm font-medium text-gray-900 line-clamp-1 leading-none mb-0.5 pr-12">
+    <h3 class="text-sm font-medium text-gray-900 line-clamp-1 leading-none mb-0.5">
       {title}
     </h3>
   {/if}
@@ -144,14 +144,14 @@
     >
       {#snippet trigger()}
         <p class="text-xs text-gray-700 line-clamp-1 leading-none mb-1 cursor-help">
-          {#if product.subcategory_name}
-            <span class="font-medium text-gray-700">{translations.categoryTranslation ? translations.categoryTranslation(product.subcategory_name) : product.subcategory_name}</span>
+          {#if product.specific_category_name}
+            <span class="font-medium text-gray-700">{translations.categoryTranslation ? translations.categoryTranslation(product.specific_category_name) : product.specific_category_name}</span>
           {/if}
-          {#if product.subcategory_name && product.brand} • {/if}
+          {#if product.specific_category_name && product.brand} • {/if}
           {#if product.brand}
             <span class="text-gray-700">{product.brand}</span>
           {/if}
-          {#if (product.subcategory_name || product.brand) && product.size} • {/if}
+          {#if (product.specific_category_name || product.brand) && product.size} • {/if}
           {#if product.size}
             <span class="text-gray-700">{translations.size} {product.size}</span>
           {/if}
@@ -160,14 +160,14 @@
     </Tooltip>
   {:else}
     <p class="text-xs text-gray-700 line-clamp-1 leading-none mb-1">
-      {#if product.subcategory_name}
-        <span class="font-medium text-gray-700">{translations.categoryTranslation ? translations.categoryTranslation(product.subcategory_name) : product.subcategory_name}</span>
+      {#if product.specific_category_name}
+        <span class="font-medium text-gray-700">{translations.categoryTranslation ? translations.categoryTranslation(product.specific_category_name) : product.specific_category_name}</span>
       {/if}
-      {#if product.subcategory_name && product.brand} • {/if}
+      {#if product.specific_category_name && product.brand} • {/if}
       {#if product.brand}
         <span class="text-gray-700">{product.brand}</span>
       {/if}
-      {#if (product.subcategory_name || product.brand) && product.size} • {/if}
+      {#if (product.specific_category_name || product.brand) && product.size} • {/if}
       {#if product.size}
         <span class="text-gray-700">{translations.size} {product.size}</span>
       {/if}
@@ -190,47 +190,47 @@
       {priority}
     />
     
-    <!-- Overlay row: condition badge (left) and favorite button (right) -->
-    <div class="absolute top-2 left-1 right-1 z-20 flex items-center justify-between">
-      <div>
-        {#if product.condition}
-          {@render conditionBadgeWithTooltip(product.condition)}
-        {/if}
-      </div>
-      <div class="mr-1">
-        <FavoriteButton 
-          {product}
-          {favorited}
-          {favoritesState}
-          onFavorite={() => onFavorite?.(product.id)}
-          addToFavoritesText={translations.addToFavorites}
-          removeFromFavoritesText={translations.removeFromFavorites}
-          absolute={false}
-          showCount={true}
-        />
-      </div>
-    </div>
+    <!-- Condition badge only -->
+    {#if product.condition}
+      {@render conditionBadgeWithTooltip(product.condition)}
+    {/if}
   </div>
   
   <!-- Content -->
   <div class="px-1 pt-1.5 pb-1.5 relative">
     
-    <!-- Main Category (always show) -->
-    <div class="flex items-center justify-between gap-1.5 min-h-3.5 mb-0.5 pr-12">
+    <!-- Wishlist button positioned absolutely -->
+    <div class="absolute top-1.5 right-1 z-10">
+      <FavoriteButton 
+        {product}
+        {favorited}
+        {favoritesState}
+        onFavorite={() => onFavorite?.(product.id)}
+        addToFavoritesText={translations.addToFavorites}
+        removeFromFavoritesText={translations.removeFromFavorites}
+        absolute={false}
+        showCount={true}
+      />
+    </div>
+    
+    <!-- Main Category (clean layout) -->
+    <div class="min-h-3.5 mb-0.5 pr-12">
       {#if product.main_category_name || product.category_name}
-        <p class="text-xs font-medium text-gray-600 uppercase tracking-wider leading-none flex-1 truncate">
+        <p class="text-xs font-medium text-gray-600 uppercase tracking-wider leading-none truncate">
           {translations.categoryTranslation ? translations.categoryTranslation(product.main_category_name || product.category_name || '') : (product.main_category_name || product.category_name)}
         </p>
       {/if}
     </div>
     
     <!-- Title with tooltip for truncated text -->
-    {@render titleWithTooltip(product.title, shouldShowTitleTooltip)}
+    <div class="pr-12">
+      {@render titleWithTooltip(product.title, shouldShowTitleTooltip)}
+    </div>
     
-    <!-- Subcategory • Brand • Size with tooltip for truncated text -->
-    {#if product.subcategory_name || product.brand || product.size}
+    <!-- Specific Category • Brand • Size with tooltip for truncated text -->
+    {#if product.specific_category_name || product.brand || product.size}
       {@const fullDetailsText = [
-        product.subcategory_name ? (translations.categoryTranslation ? translations.categoryTranslation(product.subcategory_name) : product.subcategory_name) : null,
+        product.specific_category_name ? (translations.categoryTranslation ? translations.categoryTranslation(product.specific_category_name) : product.specific_category_name) : null,
         product.brand,
         product.size ? `${translations.size} ${product.size}` : null
       ].filter(Boolean).join(' • ')}

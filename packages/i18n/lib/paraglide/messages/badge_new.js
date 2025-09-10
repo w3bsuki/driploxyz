@@ -2,7 +2,7 @@
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
 const bg_badge_new = /** @type {(inputs: {}) => string} */ () => {
-	return `НОВО`
+	return `НОВ`
 };
 
 const en_badge_new = /** @type {(inputs: {}) => string} */ () => {

@@ -86,6 +86,7 @@
 <!-- Native mobile bottom navigation -->
 <nav 
   role="tablist"
+  data-bottom-nav
   class="fixed bottom-0 left-0 right-0 z-50 sm:hidden
          bg-[color:var(--surface-base)]/95 backdrop-blur-xl 
          border-t border-[color:var(--border-subtle)]

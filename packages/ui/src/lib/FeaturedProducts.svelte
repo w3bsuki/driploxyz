@@ -66,7 +66,7 @@
 
 <!-- Product Grid Section -->
 <section 
-  class="px-4 sm:px-6 lg:px-8 py-4"
+  class="px-2 sm:px-4 lg:px-6 py-3"
   aria-label={sectionTitle}
 >
   <!-- Enhanced Section Header - Mobile-First -->

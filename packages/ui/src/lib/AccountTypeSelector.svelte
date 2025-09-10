@@ -37,7 +37,7 @@
   }
 
   let { 
-    selected = 'personal',
+    selected = $bindable('personal'),
     onSelect,
     class: className = '',
     showDiscountCode = false,
@@ -94,6 +94,7 @@
   ];
 
   function handleSelect(type: 'personal' | 'pro' | 'brand') {
+    console.log('[AccountTypeSelector] Selected:', type);
     selected = type;
     onSelect?.(type);
   }

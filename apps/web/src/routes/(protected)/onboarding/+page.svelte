@@ -225,12 +225,15 @@
   }
 
   function handleAccountTypeSelect(type: 'personal' | 'pro' | 'brand') {
+    console.log('[ONBOARDING] Account type selected:', type);
     accountType = type;
     // Don't show payment modal immediately - wait for user to click continue
     if (type === 'personal') {
       // Reset payment status for personal accounts
       brandPaid = false;
     }
+    console.log('[ONBOARDING] Account type state updated to:', accountType);
+    console.log('[ONBOARDING] Can proceed:', canProceed());
   }
   
   function handleDiscountCodeChange(code: string) {
@@ -379,7 +382,7 @@
       </div>
 
       <AccountTypeSelector
-        selected={accountType}
+        bind:selected={accountType}
         onSelect={handleAccountTypeSelect}
         showDiscountCode={true}
         onDiscountCodeChange={handleDiscountCodeChange}
