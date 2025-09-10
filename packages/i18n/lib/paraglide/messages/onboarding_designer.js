@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_onboarding_designer = /** @type {(inputs: {}) => string} */ () => {
-	return `Designer`
-};
-
 const bg_onboarding_designer = /** @type {(inputs: {}) => string} */ () => {
 	return `Дизайнерски`
+};
+
+const en_onboarding_designer = /** @type {(inputs: {}) => string} */ () => {
+	return `Designer`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_onboarding_designer = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const onboarding_designer = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("onboarding_designer", locale)
-	if (locale === "en") return en_onboarding_designer(inputs)
-	return bg_onboarding_designer(inputs)
+	if (locale === "bg") return bg_onboarding_designer(inputs)
+	return en_onboarding_designer(inputs)
 };

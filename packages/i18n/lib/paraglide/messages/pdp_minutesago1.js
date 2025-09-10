@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_pdp_minutesago1 = /** @type {(inputs: { count: NonNullable<unknown> }) => string} */ (i) => {
-	return `${i.count}m ago`
-};
-
 const bg_pdp_minutesago1 = /** @type {(inputs: { count: NonNullable<unknown> }) => string} */ (i) => {
 	return `${i.count}м назад`
+};
+
+const en_pdp_minutesago1 = /** @type {(inputs: { count: NonNullable<unknown> }) => string} */ (i) => {
+	return `${i.count}m ago`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_pdp_minutesago1 = /** @type {(inputs: { count: NonNullable<unknown> }) 
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{ count: NonNullable<unknown> }} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const pdp_minutesago1 = (inputs, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("pdp_minutesago1", locale)
-	if (locale === "en") return en_pdp_minutesago1(inputs)
-	return bg_pdp_minutesago1(inputs)
+	if (locale === "bg") return bg_pdp_minutesago1(inputs)
+	return en_pdp_minutesago1(inputs)
 };
 export { pdp_minutesago1 as "pdp_minutesAgo" }

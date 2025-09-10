@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_auth_email = /** @type {(inputs: {}) => string} */ () => {
-	return `Email`
-};
-
 const bg_auth_email = /** @type {(inputs: {}) => string} */ () => {
 	return `Имейл`
+};
+
+const en_auth_email = /** @type {(inputs: {}) => string} */ () => {
+	return `Email`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_auth_email = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const auth_email = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("auth_email", locale)
-	if (locale === "en") return en_auth_email(inputs)
-	return bg_auth_email(inputs)
+	if (locale === "bg") return bg_auth_email(inputs)
+	return en_auth_email(inputs)
 };

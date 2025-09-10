@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_messages_messageinput1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Message...`
-};
-
 const bg_messages_messageinput1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Съобщение...`
+};
+
+const en_messages_messageinput1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Message...`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_messages_messageinput1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const messages_messageinput1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("messages_messageinput1", locale)
-	if (locale === "en") return en_messages_messageinput1(inputs)
-	return bg_messages_messageinput1(inputs)
+	if (locale === "bg") return bg_messages_messageinput1(inputs)
+	return en_messages_messageinput1(inputs)
 };
 export { messages_messageinput1 as "messages_messageInput" }

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_dashboard_direct = /** @type {(inputs: {}) => string} */ () => {
-	return `Direct`
-};
-
 const bg_dashboard_direct = /** @type {(inputs: {}) => string} */ () => {
 	return `Директно`
+};
+
+const en_dashboard_direct = /** @type {(inputs: {}) => string} */ () => {
+	return `Direct`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_dashboard_direct = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const dashboard_direct = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("dashboard_direct", locale)
-	if (locale === "en") return en_dashboard_direct(inputs)
-	return bg_dashboard_direct(inputs)
+	if (locale === "bg") return bg_dashboard_direct(inputs)
+	return en_dashboard_direct(inputs)
 };

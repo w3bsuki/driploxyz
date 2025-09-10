@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_category_travel = /** @type {(inputs: {}) => string} */ () => {
-	return `Travel`
-};
-
 const bg_category_travel = /** @type {(inputs: {}) => string} */ () => {
 	return `Пътни чанти`
+};
+
+const en_category_travel = /** @type {(inputs: {}) => string} */ () => {
+	return `Travel`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_category_travel = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const category_travel = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("category_travel", locale)
-	if (locale === "en") return en_category_travel(inputs)
-	return bg_category_travel(inputs)
+	if (locale === "bg") return bg_category_travel(inputs)
+	return en_category_travel(inputs)
 };

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_error_failedtocreateproduct3 = /** @type {(inputs: {}) => string} */ () => {
-	return `Failed to create product`
-};
-
 const bg_error_failedtocreateproduct3 = /** @type {(inputs: {}) => string} */ () => {
 	return `Неуспешно създаване на продукт`
+};
+
+const en_error_failedtocreateproduct3 = /** @type {(inputs: {}) => string} */ () => {
+	return `Failed to create product`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_error_failedtocreateproduct3 = /** @type {(inputs: {}) => string} */ ()
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const error_failedtocreateproduct3 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("error_failedtocreateproduct3", locale)
-	if (locale === "en") return en_error_failedtocreateproduct3(inputs)
-	return bg_error_failedtocreateproduct3(inputs)
+	if (locale === "bg") return bg_error_failedtocreateproduct3(inputs)
+	return en_error_failedtocreateproduct3(inputs)
 };
 export { error_failedtocreateproduct3 as "error_failedToCreateProduct" }

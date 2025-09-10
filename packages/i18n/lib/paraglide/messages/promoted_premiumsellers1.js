@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_promoted_premiumsellers1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Premium sellers`
-};
-
 const bg_promoted_premiumsellers1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Премиум продавачи`
+};
+
+const en_promoted_premiumsellers1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Premium sellers`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_promoted_premiumsellers1 = /** @type {(inputs: {}) => string} */ () => 
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const promoted_premiumsellers1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("promoted_premiumsellers1", locale)
-	if (locale === "en") return en_promoted_premiumsellers1(inputs)
-	return bg_promoted_premiumsellers1(inputs)
+	if (locale === "bg") return bg_promoted_premiumsellers1(inputs)
+	return en_promoted_premiumsellers1(inputs)
 };
 export { promoted_premiumsellers1 as "promoted_premiumSellers" }

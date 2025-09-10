@@ -6,7 +6,7 @@ const en_view_details = /** @type {(inputs: {}) => string} */ () => {
 };
 
 /** @type {(inputs: {}) => string} */
-const bg_view_details = en_view_details;
+const bg_view_details = () => 'view_details'
 
 /**
 * This function has been compiled by [Paraglide JS](https://inlang.com/m/gerre34r).
@@ -17,7 +17,7 @@ const bg_view_details = en_view_details;
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -27,6 +27,6 @@ export const view_details = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("view_details", locale)
-	if (locale === "en") return en_view_details(inputs)
-	return bg_view_details(inputs)
+	if (locale === "bg") return bg_view_details(inputs)
+	return en_view_details(inputs)
 };

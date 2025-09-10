@@ -11,7 +11,7 @@ const URLPattern = {}
  *     // do something
  *   }
  */
-export const baseLocale = "en";
+export const baseLocale = "bg";
 /**
  * The project's locales that have been specified in the settings.
  *
@@ -20,7 +20,7 @@ export const baseLocale = "en";
  *     throw new Error('Locale is not available');
  *   }
  */
-export const locales = /** @type {const} */ (["en", "bg"]);
+export const locales = /** @type {const} */ (["bg", "en"]);
 /** @type {string} */
 export const cookieName = "PARAGLIDE_LOCALE";
 /** @type {number} */
@@ -47,11 +47,11 @@ export const urlPatterns = [
     "pattern": ":protocol://:domain(.*)::port?/:path(.*)?",
     "localized": [
       [
-        "bg",
-        ":protocol://:domain(.*)::port?/bg/:path(.*)?"
+        "en",
+        ":protocol://:domain(.*)::port?/en/:path(.*)?"
       ],
       [
-        "en",
+        "bg",
         ":protocol://:domain(.*)::port?/:path(.*)?"
       ]
     ]

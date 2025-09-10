@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_category_dropdown_navigatedbacksubcategories2 = /** @type {(inputs: { category: NonNullable<unknown> }) => string} */ (i) => {
-	return `Navigated back to ${i.category} subcategories`
-};
-
 const bg_category_dropdown_navigatedbacksubcategories2 = /** @type {(inputs: { category: NonNullable<unknown> }) => string} */ (i) => {
 	return `Навигация назад към ${i.category} подкатегории`
+};
+
+const en_category_dropdown_navigatedbacksubcategories2 = /** @type {(inputs: { category: NonNullable<unknown> }) => string} */ (i) => {
+	return `Navigated back to ${i.category} subcategories`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_category_dropdown_navigatedbacksubcategories2 = /** @type {(inputs: { c
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{ category: NonNullable<unknown> }} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const category_dropdown_navigatedbacksubcategories2 = (inputs, options = {}) => 
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("category_dropdown_navigatedbacksubcategories2", locale)
-	if (locale === "en") return en_category_dropdown_navigatedbacksubcategories2(inputs)
-	return bg_category_dropdown_navigatedbacksubcategories2(inputs)
+	if (locale === "bg") return bg_category_dropdown_navigatedbacksubcategories2(inputs)
+	return en_category_dropdown_navigatedbacksubcategories2(inputs)
 };
 export { category_dropdown_navigatedbacksubcategories2 as "category_dropdown_navigatedBackSubcategories" }

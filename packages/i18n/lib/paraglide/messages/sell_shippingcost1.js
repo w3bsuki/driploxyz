@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_sell_shippingcost1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Shipping Cost`
-};
-
 const bg_sell_shippingcost1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Цена за доставка`
+};
+
+const en_sell_shippingcost1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Shipping Cost`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_sell_shippingcost1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const sell_shippingcost1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("sell_shippingcost1", locale)
-	if (locale === "en") return en_sell_shippingcost1(inputs)
-	return bg_sell_shippingcost1(inputs)
+	if (locale === "bg") return bg_sell_shippingcost1(inputs)
+	return en_sell_shippingcost1(inputs)
 };
 export { sell_shippingcost1 as "sell_shippingCost" }

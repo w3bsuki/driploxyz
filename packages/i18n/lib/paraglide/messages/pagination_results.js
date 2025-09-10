@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_pagination_results = /** @type {(inputs: {}) => string} */ () => {
-	return `results`
-};
-
 const bg_pagination_results = /** @type {(inputs: {}) => string} */ () => {
 	return `резултати`
+};
+
+const en_pagination_results = /** @type {(inputs: {}) => string} */ () => {
+	return `results`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_pagination_results = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const pagination_results = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("pagination_results", locale)
-	if (locale === "en") return en_pagination_results(inputs)
-	return bg_pagination_results(inputs)
+	if (locale === "bg") return bg_pagination_results(inputs)
+	return en_pagination_results(inputs)
 };

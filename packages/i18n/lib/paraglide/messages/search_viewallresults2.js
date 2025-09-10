@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_search_viewallresults2 = /** @type {(inputs: {}) => string} */ () => {
-	return `View all results for`
-};
-
 const bg_search_viewallresults2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Виж всички резултати за`
+};
+
+const en_search_viewallresults2 = /** @type {(inputs: {}) => string} */ () => {
+	return `View all results for`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_search_viewallresults2 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const search_viewallresults2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("search_viewallresults2", locale)
-	if (locale === "en") return en_search_viewallresults2(inputs)
-	return bg_search_viewallresults2(inputs)
+	if (locale === "bg") return bg_search_viewallresults2(inputs)
+	return en_search_viewallresults2(inputs)
 };
 export { search_viewallresults2 as "search_viewAllResults" }

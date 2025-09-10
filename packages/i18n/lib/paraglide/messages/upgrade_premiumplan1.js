@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_upgrade_premiumplan1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Premium Plan`
-};
-
 const bg_upgrade_premiumplan1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Премиум план`
+};
+
+const en_upgrade_premiumplan1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Premium Plan`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_upgrade_premiumplan1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const upgrade_premiumplan1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("upgrade_premiumplan1", locale)
-	if (locale === "en") return en_upgrade_premiumplan1(inputs)
-	return bg_upgrade_premiumplan1(inputs)
+	if (locale === "bg") return bg_upgrade_premiumplan1(inputs)
+	return en_upgrade_premiumplan1(inputs)
 };
 export { upgrade_premiumplan1 as "upgrade_premiumPlan" }

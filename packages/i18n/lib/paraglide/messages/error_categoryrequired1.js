@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_error_categoryrequired1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Category is required. Please select a category for your item.`
-};
-
 const bg_error_categoryrequired1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Категорията е задължителна. Моля изберете категория за вашия артикул.`
+};
+
+const en_error_categoryrequired1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Category is required. Please select a category for your item.`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_error_categoryrequired1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const error_categoryrequired1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("error_categoryrequired1", locale)
-	if (locale === "en") return en_error_categoryrequired1(inputs)
-	return bg_error_categoryrequired1(inputs)
+	if (locale === "bg") return bg_error_categoryrequired1(inputs)
+	return en_error_categoryrequired1(inputs)
 };
 export { error_categoryrequired1 as "error_categoryRequired" }

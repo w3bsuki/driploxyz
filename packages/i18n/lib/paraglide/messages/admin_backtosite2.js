@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_admin_backtosite2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Back to Site`
-};
-
 const bg_admin_backtosite2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Назад към сайта`
+};
+
+const en_admin_backtosite2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Back to Site`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_admin_backtosite2 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const admin_backtosite2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("admin_backtosite2", locale)
-	if (locale === "en") return en_admin_backtosite2(inputs)
-	return bg_admin_backtosite2(inputs)
+	if (locale === "bg") return bg_admin_backtosite2(inputs)
+	return en_admin_backtosite2(inputs)
 };
 export { admin_backtosite2 as "admin_backToSite" }

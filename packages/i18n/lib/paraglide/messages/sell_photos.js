@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_sell_photos = /** @type {(inputs: {}) => string} */ () => {
-	return `Photos`
-};
-
 const bg_sell_photos = /** @type {(inputs: {}) => string} */ () => {
 	return `Снимки`
+};
+
+const en_sell_photos = /** @type {(inputs: {}) => string} */ () => {
+	return `Photos`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_sell_photos = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const sell_photos = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("sell_photos", locale)
-	if (locale === "en") return en_sell_photos(inputs)
-	return bg_sell_photos(inputs)
+	if (locale === "bg") return bg_sell_photos(inputs)
+	return en_sell_photos(inputs)
 };

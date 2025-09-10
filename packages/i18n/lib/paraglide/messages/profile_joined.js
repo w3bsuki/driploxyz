@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_profile_joined = /** @type {(inputs: {}) => string} */ () => {
-	return `Joined`
-};
-
 const bg_profile_joined = /** @type {(inputs: {}) => string} */ () => {
 	return `Присъединил се`
+};
+
+const en_profile_joined = /** @type {(inputs: {}) => string} */ () => {
+	return `Joined`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_profile_joined = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const profile_joined = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("profile_joined", locale)
-	if (locale === "en") return en_profile_joined(inputs)
-	return bg_profile_joined(inputs)
+	if (locale === "bg") return bg_profile_joined(inputs)
+	return en_profile_joined(inputs)
 };

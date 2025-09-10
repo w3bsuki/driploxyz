@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_dashboard_daysago1 = /** @type {(inputs: { days: NonNullable<unknown> }) => string} */ (i) => {
-	return `${i.days}d ago`
-};
-
 const bg_dashboard_daysago1 = /** @type {(inputs: { days: NonNullable<unknown> }) => string} */ (i) => {
 	return `преди ${i.days} дн`
+};
+
+const en_dashboard_daysago1 = /** @type {(inputs: { days: NonNullable<unknown> }) => string} */ (i) => {
+	return `${i.days}d ago`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_dashboard_daysago1 = /** @type {(inputs: { days: NonNullable<unknown> }
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{ days: NonNullable<unknown> }} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const dashboard_daysago1 = (inputs, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("dashboard_daysago1", locale)
-	if (locale === "en") return en_dashboard_daysago1(inputs)
-	return bg_dashboard_daysago1(inputs)
+	if (locale === "bg") return bg_dashboard_daysago1(inputs)
+	return en_dashboard_daysago1(inputs)
 };
 export { dashboard_daysago1 as "dashboard_daysAgo" }

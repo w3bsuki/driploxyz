@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_bundle_title = /** @type {(inputs: {}) => string} */ () => {
-	return `Bundle & Save on Shipping`
-};
-
 const bg_bundle_title = /** @type {(inputs: {}) => string} */ () => {
 	return `Комплект и икономия на доставка`
+};
+
+const en_bundle_title = /** @type {(inputs: {}) => string} */ () => {
+	return `Bundle & Save on Shipping`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_bundle_title = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const bundle_title = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("bundle_title", locale)
-	if (locale === "en") return en_bundle_title(inputs)
-	return bg_bundle_title(inputs)
+	if (locale === "bg") return bg_bundle_title(inputs)
+	return en_bundle_title(inputs)
 };

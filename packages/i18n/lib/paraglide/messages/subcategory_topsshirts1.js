@@ -6,7 +6,7 @@ const bg_subcategory_topsshirts1 = /** @type {(inputs: {}) => string} */ () => {
 };
 
 /** @type {(inputs: {}) => string} */
-const en_subcategory_topsshirts1 = () => 'subcategory_topsShirts'
+const en_subcategory_topsshirts1 = bg_subcategory_topsshirts1;
 
 /**
 * This function has been compiled by [Paraglide JS](https://inlang.com/m/gerre34r).
@@ -17,7 +17,7 @@ const en_subcategory_topsshirts1 = () => 'subcategory_topsShirts'
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -27,7 +27,7 @@ const subcategory_topsshirts1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("subcategory_topsshirts1", locale)
-	if (locale === "en") return en_subcategory_topsshirts1(inputs)
-	return bg_subcategory_topsshirts1(inputs)
+	if (locale === "bg") return bg_subcategory_topsshirts1(inputs)
+	return en_subcategory_topsshirts1(inputs)
 };
 export { subcategory_topsshirts1 as "subcategory_topsShirts" }

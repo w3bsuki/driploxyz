@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_messages_read = /** @type {(inputs: {}) => string} */ () => {
-	return `Read`
-};
-
 const bg_messages_read = /** @type {(inputs: {}) => string} */ () => {
 	return `Прочетено`
+};
+
+const en_messages_read = /** @type {(inputs: {}) => string} */ () => {
+	return `Read`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_messages_read = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const messages_read = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("messages_read", locale)
-	if (locale === "en") return en_messages_read(inputs)
-	return bg_messages_read(inputs)
+	if (locale === "bg") return bg_messages_read(inputs)
+	return en_messages_read(inputs)
 };

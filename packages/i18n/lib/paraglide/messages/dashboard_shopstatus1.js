@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_dashboard_shopstatus1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Here's what's happening with your shop today.`
-};
-
 const bg_dashboard_shopstatus1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Ето какво се случва с твоя магазин днес.`
+};
+
+const en_dashboard_shopstatus1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Here's what's happening with your shop today.`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_dashboard_shopstatus1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const dashboard_shopstatus1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("dashboard_shopstatus1", locale)
-	if (locale === "en") return en_dashboard_shopstatus1(inputs)
-	return bg_dashboard_shopstatus1(inputs)
+	if (locale === "bg") return bg_dashboard_shopstatus1(inputs)
+	return en_dashboard_shopstatus1(inputs)
 };
 export { dashboard_shopstatus1 as "dashboard_shopStatus" }

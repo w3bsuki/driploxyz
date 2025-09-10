@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_checkout_billingaddress1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Billing address`
-};
-
 const bg_checkout_billingaddress1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Адрес за фактуриране`
+};
+
+const en_checkout_billingaddress1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Billing address`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_checkout_billingaddress1 = /** @type {(inputs: {}) => string} */ () => 
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const checkout_billingaddress1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("checkout_billingaddress1", locale)
-	if (locale === "en") return en_checkout_billingaddress1(inputs)
-	return bg_checkout_billingaddress1(inputs)
+	if (locale === "bg") return bg_checkout_billingaddress1(inputs)
+	return en_checkout_billingaddress1(inputs)
 };
 export { checkout_billingaddress1 as "checkout_billingAddress" }

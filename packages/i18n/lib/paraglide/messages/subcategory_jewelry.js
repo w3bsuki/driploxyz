@@ -6,7 +6,7 @@ const bg_subcategory_jewelry = /** @type {(inputs: {}) => string} */ () => {
 };
 
 /** @type {(inputs: {}) => string} */
-const en_subcategory_jewelry = () => 'subcategory_jewelry'
+const en_subcategory_jewelry = bg_subcategory_jewelry;
 
 /**
 * This function has been compiled by [Paraglide JS](https://inlang.com/m/gerre34r).
@@ -17,7 +17,7 @@ const en_subcategory_jewelry = () => 'subcategory_jewelry'
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -27,6 +27,6 @@ export const subcategory_jewelry = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("subcategory_jewelry", locale)
-	if (locale === "en") return en_subcategory_jewelry(inputs)
-	return bg_subcategory_jewelry(inputs)
+	if (locale === "bg") return bg_subcategory_jewelry(inputs)
+	return en_subcategory_jewelry(inputs)
 };

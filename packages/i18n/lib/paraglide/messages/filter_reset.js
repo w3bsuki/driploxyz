@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_filter_reset = /** @type {(inputs: {}) => string} */ () => {
-	return `Reset filters`
-};
-
 const bg_filter_reset = /** @type {(inputs: {}) => string} */ () => {
 	return `Нулирай филтри`
+};
+
+const en_filter_reset = /** @type {(inputs: {}) => string} */ () => {
+	return `Reset filters`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_filter_reset = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const filter_reset = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("filter_reset", locale)
-	if (locale === "en") return en_filter_reset(inputs)
-	return bg_filter_reset(inputs)
+	if (locale === "bg") return bg_filter_reset(inputs)
+	return en_filter_reset(inputs)
 };

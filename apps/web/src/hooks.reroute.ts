@@ -2,15 +2,15 @@ import type { Reroute } from '@sveltejs/kit';
 
 /**
  * Reroute hook to handle language path prefixes
- * Transforms /uk/about -> /about (maps to 'en' locale internally)
- * Transforms /bg/about -> /about with locale set
+ * Transforms /en/about -> /about (maps to 'en' locale internally)
+ * Transforms /uk/about -> /about (legacy support, maps to 'en' locale)
  * No prefix = Bulgarian (default)
  */
 export const reroute: Reroute = ({ url }) => {
   const pathname = url.pathname;
   
-  // Check if path starts with /uk or /bg
-  const match = pathname.match(/^\/(uk|bg)(\/.*)?$/);
+  // Check if path starts with /en, /uk (legacy), or /bg
+  const match = pathname.match(/^\/(en|uk|bg)(\/.*)?$/);
   
   if (match) {
     const rest = match[2] || '/';

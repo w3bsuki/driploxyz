@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_filter_applied_filterremoved1 = /** @type {(inputs: { label: NonNullable<unknown> }) => string} */ (i) => {
-	return `${i.label} filter removed`
-};
-
 const bg_filter_applied_filterremoved1 = /** @type {(inputs: { label: NonNullable<unknown> }) => string} */ (i) => {
 	return `${i.label} филтър премахнат`
+};
+
+const en_filter_applied_filterremoved1 = /** @type {(inputs: { label: NonNullable<unknown> }) => string} */ (i) => {
+	return `${i.label} filter removed`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_filter_applied_filterremoved1 = /** @type {(inputs: { label: NonNullabl
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{ label: NonNullable<unknown> }} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const filter_applied_filterremoved1 = (inputs, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("filter_applied_filterremoved1", locale)
-	if (locale === "en") return en_filter_applied_filterremoved1(inputs)
-	return bg_filter_applied_filterremoved1(inputs)
+	if (locale === "bg") return bg_filter_applied_filterremoved1(inputs)
+	return en_filter_applied_filterremoved1(inputs)
 };
 export { filter_applied_filterremoved1 as "filter_applied_filterRemoved" }

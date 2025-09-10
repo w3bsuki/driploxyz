@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_orders_issues = /** @type {(inputs: {}) => string} */ () => {
-	return `Issues`
-};
-
 const bg_orders_issues = /** @type {(inputs: {}) => string} */ () => {
 	return `Проблеми`
+};
+
+const en_orders_issues = /** @type {(inputs: {}) => string} */ () => {
+	return `Issues`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_orders_issues = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const orders_issues = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("orders_issues", locale)
-	if (locale === "en") return en_orders_issues(inputs)
-	return bg_orders_issues(inputs)
+	if (locale === "bg") return bg_orders_issues(inputs)
+	return en_orders_issues(inputs)
 };

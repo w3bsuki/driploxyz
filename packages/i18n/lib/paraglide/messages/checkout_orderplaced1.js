@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_checkout_orderplaced1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Order placed successfully!`
-};
-
 const bg_checkout_orderplaced1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Поръчката е направена успешно!`
+};
+
+const en_checkout_orderplaced1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Order placed successfully!`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_checkout_orderplaced1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const checkout_orderplaced1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("checkout_orderplaced1", locale)
-	if (locale === "en") return en_checkout_orderplaced1(inputs)
-	return bg_checkout_orderplaced1(inputs)
+	if (locale === "bg") return bg_checkout_orderplaced1(inputs)
+	return en_checkout_orderplaced1(inputs)
 };
 export { checkout_orderplaced1 as "checkout_orderPlaced" }

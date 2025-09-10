@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_checkout_paymentfailed1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Payment failed`
-};
-
 const bg_checkout_paymentfailed1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Плащането неуспешно`
+};
+
+const en_checkout_paymentfailed1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Payment failed`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_checkout_paymentfailed1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const checkout_paymentfailed1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("checkout_paymentfailed1", locale)
-	if (locale === "en") return en_checkout_paymentfailed1(inputs)
-	return bg_checkout_paymentfailed1(inputs)
+	if (locale === "bg") return bg_checkout_paymentfailed1(inputs)
+	return en_checkout_paymentfailed1(inputs)
 };
 export { checkout_paymentfailed1 as "checkout_paymentFailed" }

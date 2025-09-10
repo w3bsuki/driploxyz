@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_onboarding_personalfeature31 = /** @type {(inputs: {}) => string} */ () => {
-	return `Standard support`
-};
-
 const bg_onboarding_personalfeature31 = /** @type {(inputs: {}) => string} */ () => {
 	return `Достъп до общността`
+};
+
+const en_onboarding_personalfeature31 = /** @type {(inputs: {}) => string} */ () => {
+	return `Standard support`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_onboarding_personalfeature31 = /** @type {(inputs: {}) => string} */ ()
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const onboarding_personalfeature31 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("onboarding_personalfeature31", locale)
-	if (locale === "en") return en_onboarding_personalfeature31(inputs)
-	return bg_onboarding_personalfeature31(inputs)
+	if (locale === "bg") return bg_onboarding_personalfeature31(inputs)
+	return en_onboarding_personalfeature31(inputs)
 };
 export { onboarding_personalfeature31 as "onboarding_personalFeature3" }

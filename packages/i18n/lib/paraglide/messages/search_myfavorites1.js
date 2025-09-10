@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_search_myfavorites1 = /** @type {(inputs: {}) => string} */ () => {
-	return `My Favorites`
-};
-
 const bg_search_myfavorites1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Моите любими`
+};
+
+const en_search_myfavorites1 = /** @type {(inputs: {}) => string} */ () => {
+	return `My Favorites`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_search_myfavorites1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const search_myfavorites1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("search_myfavorites1", locale)
-	if (locale === "en") return en_search_myfavorites1(inputs)
-	return bg_search_myfavorites1(inputs)
+	if (locale === "bg") return bg_search_myfavorites1(inputs)
+	return en_search_myfavorites1(inputs)
 };
 export { search_myfavorites1 as "search_myFavorites" }

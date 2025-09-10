@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_pdp_estimateddelivery1 = /** @type {(inputs: { date: NonNullable<unknown> }) => string} */ (i) => {
-	return `Estimated delivery: ${i.date}`
-};
-
 const bg_pdp_estimateddelivery1 = /** @type {(inputs: { date: NonNullable<unknown> }) => string} */ (i) => {
 	return `Очаквана доставка: ${i.date}`
+};
+
+const en_pdp_estimateddelivery1 = /** @type {(inputs: { date: NonNullable<unknown> }) => string} */ (i) => {
+	return `Estimated delivery: ${i.date}`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_pdp_estimateddelivery1 = /** @type {(inputs: { date: NonNullable<unknow
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{ date: NonNullable<unknown> }} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const pdp_estimateddelivery1 = (inputs, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("pdp_estimateddelivery1", locale)
-	if (locale === "en") return en_pdp_estimateddelivery1(inputs)
-	return bg_pdp_estimateddelivery1(inputs)
+	if (locale === "bg") return bg_pdp_estimateddelivery1(inputs)
+	return en_pdp_estimateddelivery1(inputs)
 };
 export { pdp_estimateddelivery1 as "pdp_estimatedDelivery" }

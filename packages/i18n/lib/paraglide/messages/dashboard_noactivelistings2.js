@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_dashboard_noactivelistings2 = /** @type {(inputs: {}) => string} */ () => {
-	return `No active listings`
-};
-
 const bg_dashboard_noactivelistings2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Няма активни обяви`
+};
+
+const en_dashboard_noactivelistings2 = /** @type {(inputs: {}) => string} */ () => {
+	return `No active listings`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_dashboard_noactivelistings2 = /** @type {(inputs: {}) => string} */ () 
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const dashboard_noactivelistings2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("dashboard_noactivelistings2", locale)
-	if (locale === "en") return en_dashboard_noactivelistings2(inputs)
-	return bg_dashboard_noactivelistings2(inputs)
+	if (locale === "bg") return bg_dashboard_noactivelistings2(inputs)
+	return en_dashboard_noactivelistings2(inputs)
 };
 export { dashboard_noactivelistings2 as "dashboard_noActiveListings" }

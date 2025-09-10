@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_sales_overview = /** @type {(inputs: {}) => string} */ () => {
-	return `Sales Overview`
-};
-
 const bg_sales_overview = /** @type {(inputs: {}) => string} */ () => {
 	return `Преглед на продажбите`
+};
+
+const en_sales_overview = /** @type {(inputs: {}) => string} */ () => {
+	return `Sales Overview`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_sales_overview = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const sales_overview = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("sales_overview", locale)
-	if (locale === "en") return en_sales_overview(inputs)
-	return bg_sales_overview(inputs)
+	if (locale === "bg") return bg_sales_overview(inputs)
+	return en_sales_overview(inputs)
 };

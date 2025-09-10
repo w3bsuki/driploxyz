@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_upgrade_faqbusinessrequirements2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Business selling requirements?`
-};
-
 const bg_upgrade_faqbusinessrequirements2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Изисквания за бизнес продажби?`
+};
+
+const en_upgrade_faqbusinessrequirements2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Business selling requirements?`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_upgrade_faqbusinessrequirements2 = /** @type {(inputs: {}) => string} *
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const upgrade_faqbusinessrequirements2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("upgrade_faqbusinessrequirements2", locale)
-	if (locale === "en") return en_upgrade_faqbusinessrequirements2(inputs)
-	return bg_upgrade_faqbusinessrequirements2(inputs)
+	if (locale === "bg") return bg_upgrade_faqbusinessrequirements2(inputs)
+	return en_upgrade_faqbusinessrequirements2(inputs)
 };
 export { upgrade_faqbusinessrequirements2 as "upgrade_faqBusinessRequirements" }

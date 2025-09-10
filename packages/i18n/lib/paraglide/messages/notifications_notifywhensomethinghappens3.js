@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_notifications_notifywhensomethinghappens3 = /** @type {(inputs: {}) => string} */ () => {
-	return `We'll notify you when something happens`
-};
-
 const bg_notifications_notifywhensomethinghappens3 = /** @type {(inputs: {}) => string} */ () => {
 	return `Ще ти съобщим когато се случи нещо`
+};
+
+const en_notifications_notifywhensomethinghappens3 = /** @type {(inputs: {}) => string} */ () => {
+	return `We'll notify you when something happens`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_notifications_notifywhensomethinghappens3 = /** @type {(inputs: {}) => 
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const notifications_notifywhensomethinghappens3 = (inputs = {}, options = {}) =>
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("notifications_notifywhensomethinghappens3", locale)
-	if (locale === "en") return en_notifications_notifywhensomethinghappens3(inputs)
-	return bg_notifications_notifywhensomethinghappens3(inputs)
+	if (locale === "bg") return bg_notifications_notifywhensomethinghappens3(inputs)
+	return en_notifications_notifywhensomethinghappens3(inputs)
 };
 export { notifications_notifywhensomethinghappens3 as "notifications_notifyWhenSomethingHappens" }

@@ -6,7 +6,7 @@ const en_size = /** @type {(inputs: {}) => string} */ () => {
 };
 
 /** @type {(inputs: {}) => string} */
-const bg_size = en_size;
+const bg_size = () => 'size'
 
 /**
 * This function has been compiled by [Paraglide JS](https://inlang.com/m/gerre34r).
@@ -17,7 +17,7 @@ const bg_size = en_size;
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -27,6 +27,6 @@ export const size = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("size", locale)
-	if (locale === "en") return en_size(inputs)
-	return bg_size(inputs)
+	if (locale === "bg") return bg_size(inputs)
+	return en_size(inputs)
 };

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_sell_condition_newwithouttags2 = /** @type {(inputs: {}) => string} */ () => {
-	return `New no tags`
-};
-
 const bg_sell_condition_newwithouttags2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Ново без етикети`
+};
+
+const en_sell_condition_newwithouttags2 = /** @type {(inputs: {}) => string} */ () => {
+	return `New no tags`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_sell_condition_newwithouttags2 = /** @type {(inputs: {}) => string} */ 
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const sell_condition_newwithouttags2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("sell_condition_newwithouttags2", locale)
-	if (locale === "en") return en_sell_condition_newwithouttags2(inputs)
-	return bg_sell_condition_newwithouttags2(inputs)
+	if (locale === "bg") return bg_sell_condition_newwithouttags2(inputs)
+	return en_sell_condition_newwithouttags2(inputs)
 };
 export { sell_condition_newwithouttags2 as "sell_condition_newWithoutTags" }

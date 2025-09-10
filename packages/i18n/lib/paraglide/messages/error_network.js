@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_error_network = /** @type {(inputs: {}) => string} */ () => {
-	return `Network error. Please try again.`
-};
-
 const bg_error_network = /** @type {(inputs: {}) => string} */ () => {
 	return `Мрежова грешка. Опитайте отново.`
+};
+
+const en_error_network = /** @type {(inputs: {}) => string} */ () => {
+	return `Network error. Please try again.`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_error_network = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const error_network = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("error_network", locale)
-	if (locale === "en") return en_error_network(inputs)
-	return bg_error_network(inputs)
+	if (locale === "bg") return bg_error_network(inputs)
+	return en_error_network(inputs)
 };

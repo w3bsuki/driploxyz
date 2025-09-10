@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_product_fair = /** @type {(inputs: {}) => string} */ () => {
-	return `Fair`
-};
-
 const bg_product_fair = /** @type {(inputs: {}) => string} */ () => {
 	return `Добър`
+};
+
+const en_product_fair = /** @type {(inputs: {}) => string} */ () => {
+	return `Fair`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_product_fair = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const product_fair = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("product_fair", locale)
-	if (locale === "en") return en_product_fair(inputs)
-	return bg_product_fair(inputs)
+	if (locale === "bg") return bg_product_fair(inputs)
+	return en_product_fair(inputs)
 };

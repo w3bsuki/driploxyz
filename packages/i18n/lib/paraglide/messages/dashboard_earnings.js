@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_dashboard_earnings = /** @type {(inputs: {}) => string} */ () => {
-	return `Earnings`
-};
-
 const bg_dashboard_earnings = /** @type {(inputs: {}) => string} */ () => {
 	return `Печалби`
+};
+
+const en_dashboard_earnings = /** @type {(inputs: {}) => string} */ () => {
+	return `Earnings`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_dashboard_earnings = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const dashboard_earnings = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("dashboard_earnings", locale)
-	if (locale === "en") return en_dashboard_earnings(inputs)
-	return bg_dashboard_earnings(inputs)
+	if (locale === "bg") return bg_dashboard_earnings(inputs)
+	return en_dashboard_earnings(inputs)
 };

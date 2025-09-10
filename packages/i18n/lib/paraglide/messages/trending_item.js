@@ -6,7 +6,7 @@ const en_trending_item = /** @type {(inputs: {}) => string} */ () => {
 };
 
 /** @type {(inputs: {}) => string} */
-const bg_trending_item = en_trending_item;
+const bg_trending_item = () => 'trending_item'
 
 /**
 * This function has been compiled by [Paraglide JS](https://inlang.com/m/gerre34r).
@@ -17,7 +17,7 @@ const bg_trending_item = en_trending_item;
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -27,6 +27,6 @@ export const trending_item = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("trending_item", locale)
-	if (locale === "en") return en_trending_item(inputs)
-	return bg_trending_item(inputs)
+	if (locale === "bg") return bg_trending_item(inputs)
+	return en_trending_item(inputs)
 };

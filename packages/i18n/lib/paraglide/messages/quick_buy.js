@@ -6,7 +6,7 @@ const en_quick_buy = /** @type {(inputs: {}) => string} */ () => {
 };
 
 /** @type {(inputs: {}) => string} */
-const bg_quick_buy = en_quick_buy;
+const bg_quick_buy = () => 'quick_buy'
 
 /**
 * This function has been compiled by [Paraglide JS](https://inlang.com/m/gerre34r).
@@ -17,7 +17,7 @@ const bg_quick_buy = en_quick_buy;
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -27,6 +27,6 @@ export const quick_buy = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("quick_buy", locale)
-	if (locale === "en") return en_quick_buy(inputs)
-	return bg_quick_buy(inputs)
+	if (locale === "bg") return bg_quick_buy(inputs)
+	return en_quick_buy(inputs)
 };

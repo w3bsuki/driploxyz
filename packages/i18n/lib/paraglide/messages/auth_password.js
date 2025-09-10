@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_auth_password = /** @type {(inputs: {}) => string} */ () => {
-	return `Password`
-};
-
 const bg_auth_password = /** @type {(inputs: {}) => string} */ () => {
 	return `Парола`
+};
+
+const en_auth_password = /** @type {(inputs: {}) => string} */ () => {
+	return `Password`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_auth_password = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const auth_password = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("auth_password", locale)
-	if (locale === "en") return en_auth_password(inputs)
-	return bg_auth_password(inputs)
+	if (locale === "bg") return bg_auth_password(inputs)
+	return en_auth_password(inputs)
 };

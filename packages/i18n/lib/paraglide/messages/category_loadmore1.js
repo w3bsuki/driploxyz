@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_category_loadmore1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Load More Items`
-};
-
 const bg_category_loadmore1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Покажи още артикули`
+};
+
+const en_category_loadmore1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Load More Items`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_category_loadmore1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const category_loadmore1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("category_loadmore1", locale)
-	if (locale === "en") return en_category_loadmore1(inputs)
-	return bg_category_loadmore1(inputs)
+	if (locale === "bg") return bg_category_loadmore1(inputs)
+	return en_category_loadmore1(inputs)
 };
 export { category_loadmore1 as "category_loadMore" }

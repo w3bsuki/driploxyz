@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_product_like = /** @type {(inputs: {}) => string} */ () => {
-	return `like`
-};
-
 const bg_product_like = /** @type {(inputs: {}) => string} */ () => {
 	return `харесване`
+};
+
+const en_product_like = /** @type {(inputs: {}) => string} */ () => {
+	return `like`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_product_like = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const product_like = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("product_like", locale)
-	if (locale === "en") return en_product_like(inputs)
-	return bg_product_like(inputs)
+	if (locale === "bg") return bg_product_like(inputs)
+	return en_product_like(inputs)
 };

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_dashboard_age45plus = /** @type {(inputs: {}) => string} */ () => {
-	return `Age 45+`
-};
-
 const bg_dashboard_age45plus = /** @type {(inputs: {}) => string} */ () => {
 	return `Възраст 45+`
+};
+
+const en_dashboard_age45plus = /** @type {(inputs: {}) => string} */ () => {
+	return `Age 45+`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_dashboard_age45plus = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const dashboard_age45plus = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("dashboard_age45plus", locale)
-	if (locale === "en") return en_dashboard_age45plus(inputs)
-	return bg_dashboard_age45plus(inputs)
+	if (locale === "bg") return bg_dashboard_age45plus(inputs)
+	return en_dashboard_age45plus(inputs)
 };

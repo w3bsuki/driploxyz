@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_category_bottomsheet_allcategory1 = /** @type {(inputs: { category: NonNullable<unknown> }) => string} */ (i) => {
-	return `All ${i.category}`
-};
-
 const bg_category_bottomsheet_allcategory1 = /** @type {(inputs: { category: NonNullable<unknown> }) => string} */ (i) => {
 	return `Всички ${i.category}`
+};
+
+const en_category_bottomsheet_allcategory1 = /** @type {(inputs: { category: NonNullable<unknown> }) => string} */ (i) => {
+	return `All ${i.category}`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_category_bottomsheet_allcategory1 = /** @type {(inputs: { category: Non
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{ category: NonNullable<unknown> }} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const category_bottomsheet_allcategory1 = (inputs, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("category_bottomsheet_allcategory1", locale)
-	if (locale === "en") return en_category_bottomsheet_allcategory1(inputs)
-	return bg_category_bottomsheet_allcategory1(inputs)
+	if (locale === "bg") return bg_category_bottomsheet_allcategory1(inputs)
+	return en_category_bottomsheet_allcategory1(inputs)
 };
 export { category_bottomsheet_allcategory1 as "category_bottomsheet_allCategory" }

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_subcategory_boys2to8 = /** @type {(inputs: {}) => string} */ () => {
-	return `Boys (2-8)`
-};
-
 const bg_subcategory_boys2to8 = /** @type {(inputs: {}) => string} */ () => {
 	return `Момчета (2-8)`
+};
+
+const en_subcategory_boys2to8 = /** @type {(inputs: {}) => string} */ () => {
+	return `Boys (2-8)`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_subcategory_boys2to8 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const subcategory_boys2to8 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("subcategory_boys2to8", locale)
-	if (locale === "en") return en_subcategory_boys2to8(inputs)
-	return bg_subcategory_boys2to8(inputs)
+	if (locale === "bg") return bg_subcategory_boys2to8(inputs)
+	return en_subcategory_boys2to8(inputs)
 };

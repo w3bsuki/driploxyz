@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_onboarding_choosepaymentmethod2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Choose how you'll receive payments from sales`
-};
-
 const bg_onboarding_choosepaymentmethod2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Изберете как ще получавате плащания от продажби`
+};
+
+const en_onboarding_choosepaymentmethod2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Choose how you'll receive payments from sales`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_onboarding_choosepaymentmethod2 = /** @type {(inputs: {}) => string} */
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const onboarding_choosepaymentmethod2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("onboarding_choosepaymentmethod2", locale)
-	if (locale === "en") return en_onboarding_choosepaymentmethod2(inputs)
-	return bg_onboarding_choosepaymentmethod2(inputs)
+	if (locale === "bg") return bg_onboarding_choosepaymentmethod2(inputs)
+	return en_onboarding_choosepaymentmethod2(inputs)
 };
 export { onboarding_choosepaymentmethod2 as "onboarding_choosePaymentMethod" }

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_banner_priorityplacement1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Get priority placement & featured listings at launch • Limited time only`
-};
-
 const bg_banner_priorityplacement1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Получете приоритетно позициониране и препоръчани обяви при стартиране • Само за ограничено време`
+};
+
+const en_banner_priorityplacement1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Get priority placement & featured listings at launch • Limited time only`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_banner_priorityplacement1 = /** @type {(inputs: {}) => string} */ () =>
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const banner_priorityplacement1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("banner_priorityplacement1", locale)
-	if (locale === "en") return en_banner_priorityplacement1(inputs)
-	return bg_banner_priorityplacement1(inputs)
+	if (locale === "bg") return bg_banner_priorityplacement1(inputs)
+	return en_banner_priorityplacement1(inputs)
 };
 export { banner_priorityplacement1 as "banner_priorityPlacement" }

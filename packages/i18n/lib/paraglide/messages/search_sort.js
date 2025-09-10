@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_search_sort = /** @type {(inputs: {}) => string} */ () => {
-	return `Sort`
-};
-
 const bg_search_sort = /** @type {(inputs: {}) => string} */ () => {
 	return `Сортиране`
+};
+
+const en_search_sort = /** @type {(inputs: {}) => string} */ () => {
+	return `Sort`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_search_sort = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const search_sort = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("search_sort", locale)
-	if (locale === "en") return en_search_sort(inputs)
-	return bg_search_sort(inputs)
+	if (locale === "bg") return bg_search_sort(inputs)
+	return en_search_sort(inputs)
 };

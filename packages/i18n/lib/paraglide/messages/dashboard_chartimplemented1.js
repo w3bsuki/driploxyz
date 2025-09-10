@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_dashboard_chartimplemented1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Chart will be implemented with a charting library`
-};
-
 const bg_dashboard_chartimplemented1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Графиката ще бъде реализирана с библиотека за диаграми`
+};
+
+const en_dashboard_chartimplemented1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Chart will be implemented with a charting library`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_dashboard_chartimplemented1 = /** @type {(inputs: {}) => string} */ () 
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const dashboard_chartimplemented1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("dashboard_chartimplemented1", locale)
-	if (locale === "en") return en_dashboard_chartimplemented1(inputs)
-	return bg_dashboard_chartimplemented1(inputs)
+	if (locale === "bg") return bg_dashboard_chartimplemented1(inputs)
+	return en_dashboard_chartimplemented1(inputs)
 };
 export { dashboard_chartimplemented1 as "dashboard_chartImplemented" }

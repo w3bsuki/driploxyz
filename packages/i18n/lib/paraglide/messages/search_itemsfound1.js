@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_search_itemsfound1 = /** @type {(inputs: {}) => string} */ () => {
-	return `items found`
-};
-
 const bg_search_itemsfound1 = /** @type {(inputs: {}) => string} */ () => {
 	return `артикула намерени`
+};
+
+const en_search_itemsfound1 = /** @type {(inputs: {}) => string} */ () => {
+	return `items found`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_search_itemsfound1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const search_itemsfound1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("search_itemsfound1", locale)
-	if (locale === "en") return en_search_itemsfound1(inputs)
-	return bg_search_itemsfound1(inputs)
+	if (locale === "bg") return bg_search_itemsfound1(inputs)
+	return en_search_itemsfound1(inputs)
 };
 export { search_itemsfound1 as "search_itemsFound" }

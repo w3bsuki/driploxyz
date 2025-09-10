@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_pdp_productnotfound2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Product not found`
-};
-
 const bg_pdp_productnotfound2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Продуктът не е намерен`
+};
+
+const en_pdp_productnotfound2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Product not found`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_pdp_productnotfound2 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const pdp_productnotfound2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("pdp_productnotfound2", locale)
-	if (locale === "en") return en_pdp_productnotfound2(inputs)
-	return bg_pdp_productnotfound2(inputs)
+	if (locale === "bg") return bg_pdp_productnotfound2(inputs)
+	return en_pdp_productnotfound2(inputs)
 };
 export { pdp_productnotfound2 as "pdp_productNotFound" }

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_upgrade_faqsubtitle1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Everything you need to know about our plans`
-};
-
 const bg_upgrade_faqsubtitle1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Всичко, което трябва да знаете за нашите планове`
+};
+
+const en_upgrade_faqsubtitle1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Everything you need to know about our plans`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_upgrade_faqsubtitle1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const upgrade_faqsubtitle1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("upgrade_faqsubtitle1", locale)
-	if (locale === "en") return en_upgrade_faqsubtitle1(inputs)
-	return bg_upgrade_faqsubtitle1(inputs)
+	if (locale === "bg") return bg_upgrade_faqsubtitle1(inputs)
+	return en_upgrade_faqsubtitle1(inputs)
 };
 export { upgrade_faqsubtitle1 as "upgrade_faqSubtitle" }

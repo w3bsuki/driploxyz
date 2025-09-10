@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_dashboard_createfirstlisting2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Create your first listing to start selling`
-};
-
 const bg_dashboard_createfirstlisting2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Създайте първата си обява, за да започнете продажби`
+};
+
+const en_dashboard_createfirstlisting2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Create your first listing to start selling`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_dashboard_createfirstlisting2 = /** @type {(inputs: {}) => string} */ (
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const dashboard_createfirstlisting2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("dashboard_createfirstlisting2", locale)
-	if (locale === "en") return en_dashboard_createfirstlisting2(inputs)
-	return bg_dashboard_createfirstlisting2(inputs)
+	if (locale === "bg") return bg_dashboard_createfirstlisting2(inputs)
+	return en_dashboard_createfirstlisting2(inputs)
 };
 export { dashboard_createfirstlisting2 as "dashboard_createFirstListing" }

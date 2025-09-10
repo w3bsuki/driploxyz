@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_dashboard_welcomeback1 = /** @type {(inputs: { username: NonNullable<unknown> }) => string} */ (i) => {
-	return `Welcome back, ${i.username}!`
-};
-
 const bg_dashboard_welcomeback1 = /** @type {(inputs: { username: NonNullable<unknown> }) => string} */ (i) => {
 	return `Добре дошъл, ${i.username}!`
+};
+
+const en_dashboard_welcomeback1 = /** @type {(inputs: { username: NonNullable<unknown> }) => string} */ (i) => {
+	return `Welcome back, ${i.username}!`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_dashboard_welcomeback1 = /** @type {(inputs: { username: NonNullable<un
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{ username: NonNullable<unknown> }} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const dashboard_welcomeback1 = (inputs, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("dashboard_welcomeback1", locale)
-	if (locale === "en") return en_dashboard_welcomeback1(inputs)
-	return bg_dashboard_welcomeback1(inputs)
+	if (locale === "bg") return bg_dashboard_welcomeback1(inputs)
+	return en_dashboard_welcomeback1(inputs)
 };
 export { dashboard_welcomeback1 as "dashboard_welcomeBack" }

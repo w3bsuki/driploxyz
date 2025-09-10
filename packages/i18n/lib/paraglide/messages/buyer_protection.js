@@ -6,7 +6,7 @@ const en_buyer_protection = /** @type {(inputs: {}) => string} */ () => {
 };
 
 /** @type {(inputs: {}) => string} */
-const bg_buyer_protection = en_buyer_protection;
+const bg_buyer_protection = () => 'buyer_protection'
 
 /**
 * This function has been compiled by [Paraglide JS](https://inlang.com/m/gerre34r).
@@ -17,7 +17,7 @@ const bg_buyer_protection = en_buyer_protection;
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -27,6 +27,6 @@ export const buyer_protection = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("buyer_protection", locale)
-	if (locale === "en") return en_buyer_protection(inputs)
-	return bg_buyer_protection(inputs)
+	if (locale === "bg") return bg_buyer_protection(inputs)
+	return en_buyer_protection(inputs)
 };

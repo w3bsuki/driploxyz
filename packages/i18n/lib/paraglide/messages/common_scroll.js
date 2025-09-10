@@ -6,7 +6,7 @@ const bg_common_scroll = /** @type {(inputs: {}) => string} */ () => {
 };
 
 /** @type {(inputs: {}) => string} */
-const en_common_scroll = () => 'common_scroll'
+const en_common_scroll = bg_common_scroll;
 
 /**
 * This function has been compiled by [Paraglide JS](https://inlang.com/m/gerre34r).
@@ -17,7 +17,7 @@ const en_common_scroll = () => 'common_scroll'
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -27,6 +27,6 @@ export const common_scroll = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("common_scroll", locale)
-	if (locale === "en") return en_common_scroll(inputs)
-	return bg_common_scroll(inputs)
+	if (locale === "bg") return bg_common_scroll(inputs)
+	return en_common_scroll(inputs)
 };

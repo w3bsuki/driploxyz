@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_trending_promoted = /** @type {(inputs: {}) => string} */ () => {
-	return `Promoted`
-};
-
 const bg_trending_promoted = /** @type {(inputs: {}) => string} */ () => {
 	return `Промотирани`
+};
+
+const en_trending_promoted = /** @type {(inputs: {}) => string} */ () => {
+	return `Promoted`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_trending_promoted = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const trending_promoted = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("trending_promoted", locale)
-	if (locale === "en") return en_trending_promoted(inputs)
-	return bg_trending_promoted(inputs)
+	if (locale === "bg") return bg_trending_promoted(inputs)
+	return en_trending_promoted(inputs)
 };

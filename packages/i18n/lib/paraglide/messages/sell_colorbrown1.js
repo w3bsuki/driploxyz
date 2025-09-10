@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_sell_colorbrown1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Brown`
-};
-
 const bg_sell_colorbrown1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Кафяво`
+};
+
+const en_sell_colorbrown1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Brown`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_sell_colorbrown1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const sell_colorbrown1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("sell_colorbrown1", locale)
-	if (locale === "en") return en_sell_colorbrown1(inputs)
-	return bg_sell_colorbrown1(inputs)
+	if (locale === "bg") return bg_sell_colorbrown1(inputs)
+	return en_sell_colorbrown1(inputs)
 };
 export { sell_colorbrown1 as "sell_colorBrown" }

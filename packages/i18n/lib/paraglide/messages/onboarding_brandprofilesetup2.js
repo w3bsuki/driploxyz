@@ -1,11 +1,11 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_onboarding_brandprofilesetup2 = /** @type {(inputs: {}) => string} */ () => {
+const bg_onboarding_brandprofilesetup2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Brand Profile Setup`
 };
 
-const bg_onboarding_brandprofilesetup2 = /** @type {(inputs: {}) => string} */ () => {
+const en_onboarding_brandprofilesetup2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Brand Profile Setup`
 };
 
@@ -18,7 +18,7 @@ const bg_onboarding_brandprofilesetup2 = /** @type {(inputs: {}) => string} */ (
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const onboarding_brandprofilesetup2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("onboarding_brandprofilesetup2", locale)
-	if (locale === "en") return en_onboarding_brandprofilesetup2(inputs)
-	return bg_onboarding_brandprofilesetup2(inputs)
+	if (locale === "bg") return bg_onboarding_brandprofilesetup2(inputs)
+	return en_onboarding_brandprofilesetup2(inputs)
 };
 export { onboarding_brandprofilesetup2 as "onboarding_brandProfileSetup" }

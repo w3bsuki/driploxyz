@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_onboarding_continue = /** @type {(inputs: {}) => string} */ () => {
-	return `Continue`
-};
-
 const bg_onboarding_continue = /** @type {(inputs: {}) => string} */ () => {
 	return `Продължи`
+};
+
+const en_onboarding_continue = /** @type {(inputs: {}) => string} */ () => {
+	return `Continue`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_onboarding_continue = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const onboarding_continue = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("onboarding_continue", locale)
-	if (locale === "en") return en_onboarding_continue(inputs)
-	return bg_onboarding_continue(inputs)
+	if (locale === "bg") return bg_onboarding_continue(inputs)
+	return en_onboarding_continue(inputs)
 };

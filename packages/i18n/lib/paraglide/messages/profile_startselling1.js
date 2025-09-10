@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_profile_startselling1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Start Selling`
-};
-
 const bg_profile_startselling1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Продавай`
+};
+
+const en_profile_startselling1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Start Selling`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_profile_startselling1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const profile_startselling1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("profile_startselling1", locale)
-	if (locale === "en") return en_profile_startselling1(inputs)
-	return bg_profile_startselling1(inputs)
+	if (locale === "bg") return bg_profile_startselling1(inputs)
+	return en_profile_startselling1(inputs)
 };
 export { profile_startselling1 as "profile_startSelling" }

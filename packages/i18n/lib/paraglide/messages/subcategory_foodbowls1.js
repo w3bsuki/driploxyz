@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_subcategory_foodbowls1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Food Bowls`
-};
-
 const bg_subcategory_foodbowls1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Купи за храна`
+};
+
+const en_subcategory_foodbowls1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Food Bowls`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_subcategory_foodbowls1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const subcategory_foodbowls1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("subcategory_foodbowls1", locale)
-	if (locale === "en") return en_subcategory_foodbowls1(inputs)
-	return bg_subcategory_foodbowls1(inputs)
+	if (locale === "bg") return bg_subcategory_foodbowls1(inputs)
+	return en_subcategory_foodbowls1(inputs)
 };
 export { subcategory_foodbowls1 as "subcategory_foodBowls" }

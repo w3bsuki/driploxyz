@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_sales_startselling1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Start selling to see your sold items here`
-};
-
 const bg_sales_startselling1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Започнете да продавате, за да видите продадените си артикули тук`
+};
+
+const en_sales_startselling1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Start selling to see your sold items here`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_sales_startselling1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const sales_startselling1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("sales_startselling1", locale)
-	if (locale === "en") return en_sales_startselling1(inputs)
-	return bg_sales_startselling1(inputs)
+	if (locale === "bg") return bg_sales_startselling1(inputs)
+	return en_sales_startselling1(inputs)
 };
 export { sales_startselling1 as "sales_startSelling" }

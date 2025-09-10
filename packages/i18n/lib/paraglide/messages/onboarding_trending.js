@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_onboarding_trending = /** @type {(inputs: {}) => string} */ () => {
-	return `Trending`
-};
-
 const bg_onboarding_trending = /** @type {(inputs: {}) => string} */ () => {
 	return `В тенденция`
+};
+
+const en_onboarding_trending = /** @type {(inputs: {}) => string} */ () => {
+	return `Trending`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_onboarding_trending = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const onboarding_trending = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("onboarding_trending", locale)
-	if (locale === "en") return en_onboarding_trending(inputs)
-	return bg_onboarding_trending(inputs)
+	if (locale === "bg") return bg_onboarding_trending(inputs)
+	return en_onboarding_trending(inputs)
 };

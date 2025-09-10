@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_banner_register = /** @type {(inputs: {}) => string} */ () => {
-	return `Sign Up`
-};
-
 const bg_banner_register = /** @type {(inputs: {}) => string} */ () => {
 	return `Регистрирай се`
+};
+
+const en_banner_register = /** @type {(inputs: {}) => string} */ () => {
+	return `Sign Up`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_banner_register = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const banner_register = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("banner_register", locale)
-	if (locale === "en") return en_banner_register(inputs)
-	return bg_banner_register(inputs)
+	if (locale === "bg") return bg_banner_register(inputs)
+	return en_banner_register(inputs)
 };

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_home_searchsuggestions_summerdresses2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Summer dresses`
-};
-
 const bg_home_searchsuggestions_summerdresses2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Летни рокли`
+};
+
+const en_home_searchsuggestions_summerdresses2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Summer dresses`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_home_searchsuggestions_summerdresses2 = /** @type {(inputs: {}) => stri
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const home_searchsuggestions_summerdresses2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("home_searchsuggestions_summerdresses2", locale)
-	if (locale === "en") return en_home_searchsuggestions_summerdresses2(inputs)
-	return bg_home_searchsuggestions_summerdresses2(inputs)
+	if (locale === "bg") return bg_home_searchsuggestions_summerdresses2(inputs)
+	return en_home_searchsuggestions_summerdresses2(inputs)
 };
 export { home_searchsuggestions_summerdresses2 as "home_searchSuggestions_summerDresses" }

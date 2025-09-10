@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_nav_sell = /** @type {(inputs: {}) => string} */ () => {
-	return `Sell`
-};
-
 const bg_nav_sell = /** @type {(inputs: {}) => string} */ () => {
 	return `Продай`
+};
+
+const en_nav_sell = /** @type {(inputs: {}) => string} */ () => {
+	return `Sell`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_nav_sell = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const nav_sell = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("nav_sell", locale)
-	if (locale === "en") return en_nav_sell(inputs)
-	return bg_nav_sell(inputs)
+	if (locale === "bg") return bg_nav_sell(inputs)
+	return en_nav_sell(inputs)
 };

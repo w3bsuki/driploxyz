@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_sales_noitemssoldyet3 = /** @type {(inputs: {}) => string} */ () => {
-	return `No items sold yet`
-};
-
 const bg_sales_noitemssoldyet3 = /** @type {(inputs: {}) => string} */ () => {
 	return `Няма продадени артикули още`
+};
+
+const en_sales_noitemssoldyet3 = /** @type {(inputs: {}) => string} */ () => {
+	return `No items sold yet`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_sales_noitemssoldyet3 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const sales_noitemssoldyet3 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("sales_noitemssoldyet3", locale)
-	if (locale === "en") return en_sales_noitemssoldyet3(inputs)
-	return bg_sales_noitemssoldyet3(inputs)
+	if (locale === "bg") return bg_sales_noitemssoldyet3(inputs)
+	return en_sales_noitemssoldyet3(inputs)
 };
 export { sales_noitemssoldyet3 as "sales_noItemsSoldYet" }

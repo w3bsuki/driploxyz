@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_onboarding_brandsetupcomplete2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Your brand profile is set up! To activate full brand features and verification badge, you'll need to subscribe to our Brand plan from your dashboard.`
-};
-
 const bg_onboarding_brandsetupcomplete2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Вашият бранд профил е настроен! За да активирате пълните функции за марки и значка за верификация, трябва да се абонирате за нашия план за марки от вашето табло.`
+};
+
+const en_onboarding_brandsetupcomplete2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Your brand profile is set up! To activate full brand features and verification badge, you'll need to subscribe to our Brand plan from your dashboard.`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_onboarding_brandsetupcomplete2 = /** @type {(inputs: {}) => string} */ 
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const onboarding_brandsetupcomplete2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("onboarding_brandsetupcomplete2", locale)
-	if (locale === "en") return en_onboarding_brandsetupcomplete2(inputs)
-	return bg_onboarding_brandsetupcomplete2(inputs)
+	if (locale === "bg") return bg_onboarding_brandsetupcomplete2(inputs)
+	return en_onboarding_brandsetupcomplete2(inputs)
 };
 export { onboarding_brandsetupcomplete2 as "onboarding_brandSetupComplete" }

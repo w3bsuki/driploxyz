@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_product_driploprotection1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Driplo Buyer Protection`
-};
-
 const bg_product_driploprotection1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Driplo защита на купувача`
+};
+
+const en_product_driploprotection1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Driplo Buyer Protection`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_product_driploprotection1 = /** @type {(inputs: {}) => string} */ () =>
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const product_driploprotection1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("product_driploprotection1", locale)
-	if (locale === "en") return en_product_driploprotection1(inputs)
-	return bg_product_driploprotection1(inputs)
+	if (locale === "bg") return bg_product_driploprotection1(inputs)
+	return en_product_driploprotection1(inputs)
 };
 export { product_driploprotection1 as "product_driploProtection" }

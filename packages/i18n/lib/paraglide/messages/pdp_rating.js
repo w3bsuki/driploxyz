@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_pdp_rating = /** @type {(inputs: {}) => string} */ () => {
-	return `Rating`
-};
-
 const bg_pdp_rating = /** @type {(inputs: {}) => string} */ () => {
 	return `Рейтинг`
+};
+
+const en_pdp_rating = /** @type {(inputs: {}) => string} */ () => {
+	return `Rating`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_pdp_rating = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const pdp_rating = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("pdp_rating", locale)
-	if (locale === "en") return en_pdp_rating(inputs)
-	return bg_pdp_rating(inputs)
+	if (locale === "bg") return bg_pdp_rating(inputs)
+	return en_pdp_rating(inputs)
 };

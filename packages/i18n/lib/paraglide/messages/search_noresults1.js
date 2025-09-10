@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_search_noresults1 = /** @type {(inputs: {}) => string} */ () => {
-	return `No results found`
-};
-
 const bg_search_noresults1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Няма намерени резултати`
+};
+
+const en_search_noresults1 = /** @type {(inputs: {}) => string} */ () => {
+	return `No results found`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_search_noresults1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const search_noresults1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("search_noresults1", locale)
-	if (locale === "en") return en_search_noresults1(inputs)
-	return bg_search_noresults1(inputs)
+	if (locale === "bg") return bg_search_noresults1(inputs)
+	return en_search_noresults1(inputs)
 };
 export { search_noresults1 as "search_noResults" }

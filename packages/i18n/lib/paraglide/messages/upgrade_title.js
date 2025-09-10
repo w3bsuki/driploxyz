@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_upgrade_title = /** @type {(inputs: {}) => string} */ () => {
-	return `Upgrade Your Account`
-};
-
 const bg_upgrade_title = /** @type {(inputs: {}) => string} */ () => {
 	return `Надградете акаунта си`
+};
+
+const en_upgrade_title = /** @type {(inputs: {}) => string} */ () => {
+	return `Upgrade Your Account`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_upgrade_title = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const upgrade_title = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("upgrade_title", locale)
-	if (locale === "en") return en_upgrade_title(inputs)
-	return bg_upgrade_title(inputs)
+	if (locale === "bg") return bg_upgrade_title(inputs)
+	return en_upgrade_title(inputs)
 };

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_footer_contact = /** @type {(inputs: {}) => string} */ () => {
-	return `Contact`
-};
-
 const bg_footer_contact = /** @type {(inputs: {}) => string} */ () => {
 	return `Контакт`
+};
+
+const en_footer_contact = /** @type {(inputs: {}) => string} */ () => {
+	return `Contact`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_footer_contact = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const footer_contact = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("footer_contact", locale)
-	if (locale === "en") return en_footer_contact(inputs)
-	return bg_footer_contact(inputs)
+	if (locale === "bg") return bg_footer_contact(inputs)
+	return en_footer_contact(inputs)
 };

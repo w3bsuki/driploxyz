@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_banner_endssoon1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Ends soon`
-};
-
 const bg_banner_endssoon1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Изтича скоро`
+};
+
+const en_banner_endssoon1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Ends soon`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_banner_endssoon1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const banner_endssoon1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("banner_endssoon1", locale)
-	if (locale === "en") return en_banner_endssoon1(inputs)
-	return bg_banner_endssoon1(inputs)
+	if (locale === "bg") return bg_banner_endssoon1(inputs)
+	return en_banner_endssoon1(inputs)
 };
 export { banner_endssoon1 as "banner_endsSoon" }

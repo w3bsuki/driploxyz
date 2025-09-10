@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_pagination_gotopage2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Go to page`
-};
-
 const bg_pagination_gotopage2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Отиди на страница`
+};
+
+const en_pagination_gotopage2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Go to page`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_pagination_gotopage2 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const pagination_gotopage2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("pagination_gotopage2", locale)
-	if (locale === "en") return en_pagination_gotopage2(inputs)
-	return bg_pagination_gotopage2(inputs)
+	if (locale === "bg") return bg_pagination_gotopage2(inputs)
+	return en_pagination_gotopage2(inputs)
 };
 export { pagination_gotopage2 as "pagination_goToPage" }

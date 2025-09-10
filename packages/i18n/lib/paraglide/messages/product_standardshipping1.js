@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_product_standardshipping1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Standard`
-};
-
 const bg_product_standardshipping1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Стандартна`
+};
+
+const en_product_standardshipping1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Standard`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_product_standardshipping1 = /** @type {(inputs: {}) => string} */ () =>
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const product_standardshipping1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("product_standardshipping1", locale)
-	if (locale === "en") return en_product_standardshipping1(inputs)
-	return bg_product_standardshipping1(inputs)
+	if (locale === "bg") return bg_product_standardshipping1(inputs)
+	return en_product_standardshipping1(inputs)
 };
 export { product_standardshipping1 as "product_standardShipping" }

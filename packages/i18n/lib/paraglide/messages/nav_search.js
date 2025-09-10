@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_nav_search = /** @type {(inputs: {}) => string} */ () => {
-	return `Search`
-};
-
 const bg_nav_search = /** @type {(inputs: {}) => string} */ () => {
 	return `Търсене`
+};
+
+const en_nav_search = /** @type {(inputs: {}) => string} */ () => {
+	return `Search`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_nav_search = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const nav_search = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("nav_search", locale)
-	if (locale === "en") return en_nav_search(inputs)
-	return bg_nav_search(inputs)
+	if (locale === "bg") return bg_nav_search(inputs)
+	return en_nav_search(inputs)
 };

@@ -30,12 +30,12 @@ export async function switchLanguage(lang: string) {
     document.documentElement.lang = lang;
 
     // Normalize path (strip any existing locale prefix)
-    const currentPath = window.location.pathname.replace(/^\/(uk|bg)(?=\/|$)/, '');
+    const currentPath = window.location.pathname.replace(/^\/(uk|en|bg)(?=\/|$)/, '');
 
     // Build explicit locale routing + query to ensure SSR honors choice
-    // English uses /uk prefix; Bulgarian uses no prefix (root)
+    // English uses /en prefix; Bulgarian uses no prefix (root)
     const isEn = lang === 'en';
-    const prefix = isEn ? '/uk' : '';
+    const prefix = isEn ? '/en' : '';
     const search = new URLSearchParams(window.location.search);
     search.set('locale', lang);
     const query = search.toString();

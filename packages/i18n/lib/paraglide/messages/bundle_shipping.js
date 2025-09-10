@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_bundle_shipping = /** @type {(inputs: {}) => string} */ () => {
-	return `Shipping (once for all)`
-};
-
 const bg_bundle_shipping = /** @type {(inputs: {}) => string} */ () => {
 	return `Доставка (еднократно за всички)`
+};
+
+const en_bundle_shipping = /** @type {(inputs: {}) => string} */ () => {
+	return `Shipping (once for all)`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_bundle_shipping = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const bundle_shipping = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("bundle_shipping", locale)
-	if (locale === "en") return en_bundle_shipping(inputs)
-	return bg_bundle_shipping(inputs)
+	if (locale === "bg") return bg_bundle_shipping(inputs)
+	return en_bundle_shipping(inputs)
 };

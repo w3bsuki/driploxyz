@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_checkout_paymentsystemnotinitialized3 = /** @type {(inputs: {}) => string} */ () => {
-	return `Payment system not initialized`
-};
-
 const bg_checkout_paymentsystemnotinitialized3 = /** @type {(inputs: {}) => string} */ () => {
 	return `Системата за плащане не е инициализирана`
+};
+
+const en_checkout_paymentsystemnotinitialized3 = /** @type {(inputs: {}) => string} */ () => {
+	return `Payment system not initialized`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_checkout_paymentsystemnotinitialized3 = /** @type {(inputs: {}) => stri
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const checkout_paymentsystemnotinitialized3 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("checkout_paymentsystemnotinitialized3", locale)
-	if (locale === "en") return en_checkout_paymentsystemnotinitialized3(inputs)
-	return bg_checkout_paymentsystemnotinitialized3(inputs)
+	if (locale === "bg") return bg_checkout_paymentsystemnotinitialized3(inputs)
+	return en_checkout_paymentsystemnotinitialized3(inputs)
 };
 export { checkout_paymentsystemnotinitialized3 as "checkout_paymentSystemNotInitialized" }

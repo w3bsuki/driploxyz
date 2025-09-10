@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_banner_sellbuysecond2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Sell & buy secondhand fashion`
-};
-
 const bg_banner_sellbuysecond2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Продавай и купувай дрехи`
+};
+
+const en_banner_sellbuysecond2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Sell & buy secondhand fashion`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_banner_sellbuysecond2 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const banner_sellbuysecond2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("banner_sellbuysecond2", locale)
-	if (locale === "en") return en_banner_sellbuysecond2(inputs)
-	return bg_banner_sellbuysecond2(inputs)
+	if (locale === "bg") return bg_banner_sellbuysecond2(inputs)
+	return en_banner_sellbuysecond2(inputs)
 };
 export { banner_sellbuysecond2 as "banner_sellBuySecond" }

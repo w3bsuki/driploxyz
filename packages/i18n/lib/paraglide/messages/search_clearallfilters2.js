@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_search_clearallfilters2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Clear all`
-};
-
 const bg_search_clearallfilters2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Изчисти всички`
+};
+
+const en_search_clearallfilters2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Clear all`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_search_clearallfilters2 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const search_clearallfilters2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("search_clearallfilters2", locale)
-	if (locale === "en") return en_search_clearallfilters2(inputs)
-	return bg_search_clearallfilters2(inputs)
+	if (locale === "bg") return bg_search_clearallfilters2(inputs)
+	return en_search_clearallfilters2(inputs)
 };
 export { search_clearallfilters2 as "search_clearAllFilters" }

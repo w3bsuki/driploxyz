@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_onboarding_skip = /** @type {(inputs: {}) => string} */ () => {
-	return `Skip`
-};
-
 const bg_onboarding_skip = /** @type {(inputs: {}) => string} */ () => {
 	return `Прескочи`
+};
+
+const en_onboarding_skip = /** @type {(inputs: {}) => string} */ () => {
+	return `Skip`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_onboarding_skip = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const onboarding_skip = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("onboarding_skip", locale)
-	if (locale === "en") return en_onboarding_skip(inputs)
-	return bg_onboarding_skip(inputs)
+	if (locale === "bg") return bg_onboarding_skip(inputs)
+	return en_onboarding_skip(inputs)
 };

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_common_submit = /** @type {(inputs: {}) => string} */ () => {
-	return `Submit`
-};
-
 const bg_common_submit = /** @type {(inputs: {}) => string} */ () => {
 	return `Изпрати`
+};
+
+const en_common_submit = /** @type {(inputs: {}) => string} */ () => {
+	return `Submit`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_common_submit = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const common_submit = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("common_submit", locale)
-	if (locale === "en") return en_common_submit(inputs)
-	return bg_common_submit(inputs)
+	if (locale === "bg") return bg_common_submit(inputs)
+	return en_common_submit(inputs)
 };

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_pdp_details = /** @type {(inputs: {}) => string} */ () => {
-	return `Details`
-};
-
 const bg_pdp_details = /** @type {(inputs: {}) => string} */ () => {
 	return `Детайли`
+};
+
+const en_pdp_details = /** @type {(inputs: {}) => string} */ () => {
+	return `Details`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_pdp_details = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const pdp_details = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("pdp_details", locale)
-	if (locale === "en") return en_pdp_details(inputs)
-	return bg_pdp_details(inputs)
+	if (locale === "bg") return bg_pdp_details(inputs)
+	return en_pdp_details(inputs)
 };

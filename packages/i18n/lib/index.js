@@ -43,9 +43,9 @@ export function detectLanguage(acceptLanguage) {
 export const LOCALE_ALIASES = { uk: 'en' };
 export function detectLocale(input) {
     const fallback = input.defaultLocale ?? 'bg';
-    // Path: /^\/(uk|bg)(\/|$)/
+    // Path: /^\/(en|uk|bg)(\/|$)/
     if (input.path) {
-        const match = input.path.match(/^\/(uk|bg)(\/|$)/);
+        const match = input.path.match(/^\/(en|uk|bg)(\/|$)/);
         if (match && match[1]) {
             const mapped = LOCALE_ALIASES[match[1]] ?? match[1];
             if (runtimeLocales.includes(mapped))

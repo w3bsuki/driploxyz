@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_auth_termsagreement1 = /** @type {(inputs: {}) => string} */ () => {
-	return `By signing up, you agree to our`
-};
-
 const bg_auth_termsagreement1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Със записването се съгласявате с нашите`
+};
+
+const en_auth_termsagreement1 = /** @type {(inputs: {}) => string} */ () => {
+	return `By signing up, you agree to our`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_auth_termsagreement1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const auth_termsagreement1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("auth_termsagreement1", locale)
-	if (locale === "en") return en_auth_termsagreement1(inputs)
-	return bg_auth_termsagreement1(inputs)
+	if (locale === "bg") return bg_auth_termsagreement1(inputs)
+	return en_auth_termsagreement1(inputs)
 };
 export { auth_termsagreement1 as "auth_termsAgreement" }

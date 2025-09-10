@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_footer_help = /** @type {(inputs: {}) => string} */ () => {
-	return `Help`
-};
-
 const bg_footer_help = /** @type {(inputs: {}) => string} */ () => {
 	return `Помощ`
+};
+
+const en_footer_help = /** @type {(inputs: {}) => string} */ () => {
+	return `Help`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_footer_help = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const footer_help = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("footer_help", locale)
-	if (locale === "en") return en_footer_help(inputs)
-	return bg_footer_help(inputs)
+	if (locale === "bg") return bg_footer_help(inputs)
+	return en_footer_help(inputs)
 };

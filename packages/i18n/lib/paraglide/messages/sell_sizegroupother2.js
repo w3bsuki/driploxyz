@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_sell_sizegroupother2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Other`
-};
-
 const bg_sell_sizegroupother2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Други`
+};
+
+const en_sell_sizegroupother2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Other`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_sell_sizegroupother2 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const sell_sizegroupother2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("sell_sizegroupother2", locale)
-	if (locale === "en") return en_sell_sizegroupother2(inputs)
-	return bg_sell_sizegroupother2(inputs)
+	if (locale === "bg") return bg_sell_sizegroupother2(inputs)
+	return en_sell_sizegroupother2(inputs)
 };
 export { sell_sizegroupother2 as "sell_sizeGroupOther" }

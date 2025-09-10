@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_product_weeksago1 = /** @type {(inputs: {}) => string} */ () => {
-	return `w ago`
-};
-
 const bg_product_weeksago1 = /** @type {(inputs: {}) => string} */ () => {
 	return `с преди`
+};
+
+const en_product_weeksago1 = /** @type {(inputs: {}) => string} */ () => {
+	return `w ago`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_product_weeksago1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const product_weeksago1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("product_weeksago1", locale)
-	if (locale === "en") return en_product_weeksago1(inputs)
-	return bg_product_weeksago1(inputs)
+	if (locale === "bg") return bg_product_weeksago1(inputs)
+	return en_product_weeksago1(inputs)
 };
 export { product_weeksago1 as "product_weeksAgo" }

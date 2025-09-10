@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_onboarding_trustedmarketplace1 = /** @type {(inputs: {}) => string} */ () => {
-	return `The trusted marketplace for buying and selling pre-owned fashion. Join thousands of users trading quality clothing.`
-};
-
 const bg_onboarding_trustedmarketplace1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Довереният пазар за купуване и продажба на втора употреба мода. Присъединете се към хиляди потребители, търгуващи качествено облекло.`
+};
+
+const en_onboarding_trustedmarketplace1 = /** @type {(inputs: {}) => string} */ () => {
+	return `The trusted marketplace for buying and selling pre-owned fashion. Join thousands of users trading quality clothing.`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_onboarding_trustedmarketplace1 = /** @type {(inputs: {}) => string} */ 
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const onboarding_trustedmarketplace1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("onboarding_trustedmarketplace1", locale)
-	if (locale === "en") return en_onboarding_trustedmarketplace1(inputs)
-	return bg_onboarding_trustedmarketplace1(inputs)
+	if (locale === "bg") return bg_onboarding_trustedmarketplace1(inputs)
+	return en_onboarding_trustedmarketplace1(inputs)
 };
 export { onboarding_trustedmarketplace1 as "onboarding_trustedMarketplace" }

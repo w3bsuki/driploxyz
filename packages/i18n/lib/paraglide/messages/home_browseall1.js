@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_home_browseall1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Browse all items`
-};
-
 const bg_home_browseall1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Разгледай всички артикули`
+};
+
+const en_home_browseall1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Browse all items`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_home_browseall1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const home_browseall1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("home_browseall1", locale)
-	if (locale === "en") return en_home_browseall1(inputs)
-	return bg_home_browseall1(inputs)
+	if (locale === "bg") return bg_home_browseall1(inputs)
+	return en_home_browseall1(inputs)
 };
 export { home_browseall1 as "home_browseAll" }

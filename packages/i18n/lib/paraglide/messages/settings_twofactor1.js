@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_settings_twofactor1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Two-factor authentication`
-};
-
 const bg_settings_twofactor1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Двуфакторна автентикация`
+};
+
+const en_settings_twofactor1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Two-factor authentication`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_settings_twofactor1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const settings_twofactor1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("settings_twofactor1", locale)
-	if (locale === "en") return en_settings_twofactor1(inputs)
-	return bg_settings_twofactor1(inputs)
+	if (locale === "bg") return bg_settings_twofactor1(inputs)
+	return en_settings_twofactor1(inputs)
 };
 export { settings_twofactor1 as "settings_twoFactor" }

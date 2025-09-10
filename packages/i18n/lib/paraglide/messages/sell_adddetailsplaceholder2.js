@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_sell_adddetailsplaceholder2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Add details about condition, measurements, flaws...`
-};
-
 const bg_sell_adddetailsplaceholder2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Добавете детайли за състоянието, размери, дефекти...`
+};
+
+const en_sell_adddetailsplaceholder2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Add details about condition, measurements, flaws...`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_sell_adddetailsplaceholder2 = /** @type {(inputs: {}) => string} */ () 
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const sell_adddetailsplaceholder2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("sell_adddetailsplaceholder2", locale)
-	if (locale === "en") return en_sell_adddetailsplaceholder2(inputs)
-	return bg_sell_adddetailsplaceholder2(inputs)
+	if (locale === "bg") return bg_sell_adddetailsplaceholder2(inputs)
+	return en_sell_adddetailsplaceholder2(inputs)
 };
 export { sell_adddetailsplaceholder2 as "sell_addDetailsPlaceholder" }

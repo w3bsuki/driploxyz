@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_product_lastone1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Last one!`
-};
-
 const bg_product_lastone1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Последен!`
+};
+
+const en_product_lastone1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Last one!`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_product_lastone1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const product_lastone1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("product_lastone1", locale)
-	if (locale === "en") return en_product_lastone1(inputs)
-	return bg_product_lastone1(inputs)
+	if (locale === "bg") return bg_product_lastone1(inputs)
+	return en_product_lastone1(inputs)
 };
 export { product_lastone1 as "product_lastOne" }

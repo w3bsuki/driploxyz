@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_error_atleastonephoto3 = /** @type {(inputs: {}) => string} */ () => {
-	return `At least one photo is required`
-};
-
 const bg_error_atleastonephoto3 = /** @type {(inputs: {}) => string} */ () => {
 	return `Необходима е поне една снимка`
+};
+
+const en_error_atleastonephoto3 = /** @type {(inputs: {}) => string} */ () => {
+	return `At least one photo is required`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_error_atleastonephoto3 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const error_atleastonephoto3 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("error_atleastonephoto3", locale)
-	if (locale === "en") return en_error_atleastonephoto3(inputs)
-	return bg_error_atleastonephoto3(inputs)
+	if (locale === "bg") return bg_error_atleastonephoto3(inputs)
+	return en_error_atleastonephoto3(inputs)
 };
 export { error_atleastonephoto3 as "error_atLeastOnePhoto" }

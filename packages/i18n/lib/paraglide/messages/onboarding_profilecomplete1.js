@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_onboarding_profilecomplete1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Your profile is now complete and verified. You're ready to start buying and selling amazing fashion items!`
-};
-
 const bg_onboarding_profilecomplete1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Вашият профил е завършен и потвърден. Готови сте да започнете да купувате и продавате невероятни модни артикули!`
+};
+
+const en_onboarding_profilecomplete1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Your profile is now complete and verified. You're ready to start buying and selling amazing fashion items!`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_onboarding_profilecomplete1 = /** @type {(inputs: {}) => string} */ () 
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const onboarding_profilecomplete1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("onboarding_profilecomplete1", locale)
-	if (locale === "en") return en_onboarding_profilecomplete1(inputs)
-	return bg_onboarding_profilecomplete1(inputs)
+	if (locale === "bg") return bg_onboarding_profilecomplete1(inputs)
+	return en_onboarding_profilecomplete1(inputs)
 };
 export { onboarding_profilecomplete1 as "onboarding_profileComplete" }

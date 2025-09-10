@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_filter_newest = /** @type {(inputs: {}) => string} */ () => {
-	return `Newest`
-};
-
 const bg_filter_newest = /** @type {(inputs: {}) => string} */ () => {
 	return `Най-нови`
+};
+
+const en_filter_newest = /** @type {(inputs: {}) => string} */ () => {
+	return `Newest`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_filter_newest = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const filter_newest = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("filter_newest", locale)
-	if (locale === "en") return en_filter_newest(inputs)
-	return bg_filter_newest(inputs)
+	if (locale === "bg") return bg_filter_newest(inputs)
+	return en_filter_newest(inputs)
 };

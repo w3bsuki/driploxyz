@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_checkout_processing = /** @type {(inputs: {}) => string} */ () => {
-	return `Processing...`
-};
-
 const bg_checkout_processing = /** @type {(inputs: {}) => string} */ () => {
 	return `Обработка...`
+};
+
+const en_checkout_processing = /** @type {(inputs: {}) => string} */ () => {
+	return `Processing...`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_checkout_processing = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const checkout_processing = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("checkout_processing", locale)
-	if (locale === "en") return en_checkout_processing(inputs)
-	return bg_checkout_processing(inputs)
+	if (locale === "bg") return bg_checkout_processing(inputs)
+	return en_checkout_processing(inputs)
 };

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_breadcrumb_dashboard = /** @type {(inputs: {}) => string} */ () => {
-	return `Dashboard`
-};
-
 const bg_breadcrumb_dashboard = /** @type {(inputs: {}) => string} */ () => {
 	return `Табло`
+};
+
+const en_breadcrumb_dashboard = /** @type {(inputs: {}) => string} */ () => {
+	return `Dashboard`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_breadcrumb_dashboard = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const breadcrumb_dashboard = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("breadcrumb_dashboard", locale)
-	if (locale === "en") return en_breadcrumb_dashboard(inputs)
-	return bg_breadcrumb_dashboard(inputs)
+	if (locale === "bg") return bg_breadcrumb_dashboard(inputs)
+	return en_breadcrumb_dashboard(inputs)
 };

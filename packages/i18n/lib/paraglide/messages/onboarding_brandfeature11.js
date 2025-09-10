@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_onboarding_brandfeature11 = /** @type {(inputs: {}) => string} */ () => {
-	return `Unlimited listings`
-};
-
 const bg_onboarding_brandfeature11 = /** @type {(inputs: {}) => string} */ () => {
 	return `Напреднала аналитика`
+};
+
+const en_onboarding_brandfeature11 = /** @type {(inputs: {}) => string} */ () => {
+	return `Unlimited listings`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_onboarding_brandfeature11 = /** @type {(inputs: {}) => string} */ () =>
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const onboarding_brandfeature11 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("onboarding_brandfeature11", locale)
-	if (locale === "en") return en_onboarding_brandfeature11(inputs)
-	return bg_onboarding_brandfeature11(inputs)
+	if (locale === "bg") return bg_onboarding_brandfeature11(inputs)
+	return en_onboarding_brandfeature11(inputs)
 };
 export { onboarding_brandfeature11 as "onboarding_brandFeature1" }

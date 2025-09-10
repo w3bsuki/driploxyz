@@ -6,7 +6,7 @@ const bg_subcategory_suibbazers1 = /** @type {(inputs: {}) => string} */ () => {
 };
 
 /** @type {(inputs: {}) => string} */
-const en_subcategory_suibbazers1 = () => 'subcategory_suiBbazers'
+const en_subcategory_suibbazers1 = bg_subcategory_suibbazers1;
 
 /**
 * This function has been compiled by [Paraglide JS](https://inlang.com/m/gerre34r).
@@ -17,7 +17,7 @@ const en_subcategory_suibbazers1 = () => 'subcategory_suiBbazers'
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -27,7 +27,7 @@ const subcategory_suibbazers1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("subcategory_suibbazers1", locale)
-	if (locale === "en") return en_subcategory_suibbazers1(inputs)
-	return bg_subcategory_suibbazers1(inputs)
+	if (locale === "bg") return bg_subcategory_suibbazers1(inputs)
+	return en_subcategory_suibbazers1(inputs)
 };
 export { subcategory_suibbazers1 as "subcategory_suiBbazers" }

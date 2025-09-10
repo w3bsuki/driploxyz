@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_product_viewfullshipping2 = /** @type {(inputs: {}) => string} */ () => {
-	return `View full shipping details`
-};
-
 const bg_product_viewfullshipping2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Пълни детайли за доставката`
+};
+
+const en_product_viewfullshipping2 = /** @type {(inputs: {}) => string} */ () => {
+	return `View full shipping details`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_product_viewfullshipping2 = /** @type {(inputs: {}) => string} */ () =>
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const product_viewfullshipping2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("product_viewfullshipping2", locale)
-	if (locale === "en") return en_product_viewfullshipping2(inputs)
-	return bg_product_viewfullshipping2(inputs)
+	if (locale === "bg") return bg_product_viewfullshipping2(inputs)
+	return en_product_viewfullshipping2(inputs)
 };
 export { product_viewfullshipping2 as "product_viewFullShipping" }

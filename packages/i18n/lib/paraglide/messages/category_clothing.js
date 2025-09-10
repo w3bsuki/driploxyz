@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_category_clothing = /** @type {(inputs: {}) => string} */ () => {
-	return `Clothing`
-};
-
 const bg_category_clothing = /** @type {(inputs: {}) => string} */ () => {
 	return `Облекло`
+};
+
+const en_category_clothing = /** @type {(inputs: {}) => string} */ () => {
+	return `Clothing`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_category_clothing = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const category_clothing = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("category_clothing", locale)
-	if (locale === "en") return en_category_clothing(inputs)
-	return bg_category_clothing(inputs)
+	if (locale === "bg") return bg_category_clothing(inputs)
+	return en_category_clothing(inputs)
 };

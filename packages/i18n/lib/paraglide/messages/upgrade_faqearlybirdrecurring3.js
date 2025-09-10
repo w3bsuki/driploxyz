@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_upgrade_faqearlybirdrecurring3 = /** @type {(inputs: {}) => string} */ () => {
-	return `Early bird discount recurring?`
-};
-
 const bg_upgrade_faqearlybirdrecurring3 = /** @type {(inputs: {}) => string} */ () => {
 	return `Повтаря ли се отстъпката за ранни последователи?`
+};
+
+const en_upgrade_faqearlybirdrecurring3 = /** @type {(inputs: {}) => string} */ () => {
+	return `Early bird discount recurring?`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_upgrade_faqearlybirdrecurring3 = /** @type {(inputs: {}) => string} */ 
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const upgrade_faqearlybirdrecurring3 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("upgrade_faqearlybirdrecurring3", locale)
-	if (locale === "en") return en_upgrade_faqearlybirdrecurring3(inputs)
-	return bg_upgrade_faqearlybirdrecurring3(inputs)
+	if (locale === "bg") return bg_upgrade_faqearlybirdrecurring3(inputs)
+	return en_upgrade_faqearlybirdrecurring3(inputs)
 };
 export { upgrade_faqearlybirdrecurring3 as "upgrade_faqEarlyBirdRecurring" }

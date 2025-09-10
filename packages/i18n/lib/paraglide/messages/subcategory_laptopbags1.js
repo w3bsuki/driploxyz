@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_subcategory_laptopbags1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Laptop Bags`
-};
-
 const bg_subcategory_laptopbags1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Чанти за лаптоп`
+};
+
+const en_subcategory_laptopbags1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Laptop Bags`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_subcategory_laptopbags1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const subcategory_laptopbags1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("subcategory_laptopbags1", locale)
-	if (locale === "en") return en_subcategory_laptopbags1(inputs)
-	return bg_subcategory_laptopbags1(inputs)
+	if (locale === "bg") return bg_subcategory_laptopbags1(inputs)
+	return en_subcategory_laptopbags1(inputs)
 };
 export { subcategory_laptopbags1 as "subcategory_laptopBags" }

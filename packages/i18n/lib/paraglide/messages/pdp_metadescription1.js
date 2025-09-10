@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_pdp_metadescription1 = /** @type {(inputs: { title: NonNullable<unknown>, condition: NonNullable<unknown>, brand: NonNullable<unknown>, category: NonNullable<unknown> }) => string} */ (i) => {
-	return `${i.title} - ${i.condition} condition ${i.brand} ${i.category} available on Driplo`
-};
-
 const bg_pdp_metadescription1 = /** @type {(inputs: { title: NonNullable<unknown>, condition: NonNullable<unknown>, brand: NonNullable<unknown>, category: NonNullable<unknown> }) => string} */ (i) => {
 	return `${i.title} - ${i.condition} състояние ${i.brand} ${i.category} налично в Driplo`
+};
+
+const en_pdp_metadescription1 = /** @type {(inputs: { title: NonNullable<unknown>, condition: NonNullable<unknown>, brand: NonNullable<unknown>, category: NonNullable<unknown> }) => string} */ (i) => {
+	return `${i.title} - ${i.condition} condition ${i.brand} ${i.category} available on Driplo`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_pdp_metadescription1 = /** @type {(inputs: { title: NonNullable<unknown
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{ title: NonNullable<unknown>, condition: NonNullable<unknown>, brand: NonNullable<unknown>, category: NonNullable<unknown> }} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const pdp_metadescription1 = (inputs, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("pdp_metadescription1", locale)
-	if (locale === "en") return en_pdp_metadescription1(inputs)
-	return bg_pdp_metadescription1(inputs)
+	if (locale === "bg") return bg_pdp_metadescription1(inputs)
+	return en_pdp_metadescription1(inputs)
 };
 export { pdp_metadescription1 as "pdp_metaDescription" }

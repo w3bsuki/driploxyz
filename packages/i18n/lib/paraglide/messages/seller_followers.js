@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_seller_followers = /** @type {(inputs: {}) => string} */ () => {
-	return `followers`
-};
-
 const bg_seller_followers = /** @type {(inputs: {}) => string} */ () => {
 	return `последователи`
+};
+
+const en_seller_followers = /** @type {(inputs: {}) => string} */ () => {
+	return `followers`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_seller_followers = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const seller_followers = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("seller_followers", locale)
-	if (locale === "en") return en_seller_followers(inputs)
-	return bg_seller_followers(inputs)
+	if (locale === "bg") return bg_seller_followers(inputs)
+	return en_seller_followers(inputs)
 };

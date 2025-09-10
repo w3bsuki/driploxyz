@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_profile_noreviewsyet2 = /** @type {(inputs: {}) => string} */ () => {
-	return `No reviews yet`
-};
-
 const bg_profile_noreviewsyet2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Все още няма отзиви`
+};
+
+const en_profile_noreviewsyet2 = /** @type {(inputs: {}) => string} */ () => {
+	return `No reviews yet`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_profile_noreviewsyet2 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const profile_noreviewsyet2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("profile_noreviewsyet2", locale)
-	if (locale === "en") return en_profile_noreviewsyet2(inputs)
-	return bg_profile_noreviewsyet2(inputs)
+	if (locale === "bg") return bg_profile_noreviewsyet2(inputs)
+	return en_profile_noreviewsyet2(inputs)
 };
 export { profile_noreviewsyet2 as "profile_noReviewsYet" }

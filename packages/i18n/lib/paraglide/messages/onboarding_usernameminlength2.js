@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_onboarding_usernameminlength2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Username must be at least 3 characters long`
-};
-
 const bg_onboarding_usernameminlength2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Потребителското име трябва да е поне 3 символа`
+};
+
+const en_onboarding_usernameminlength2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Username must be at least 3 characters long`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_onboarding_usernameminlength2 = /** @type {(inputs: {}) => string} */ (
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const onboarding_usernameminlength2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("onboarding_usernameminlength2", locale)
-	if (locale === "en") return en_onboarding_usernameminlength2(inputs)
-	return bg_onboarding_usernameminlength2(inputs)
+	if (locale === "bg") return bg_onboarding_usernameminlength2(inputs)
+	return en_onboarding_usernameminlength2(inputs)
 };
 export { onboarding_usernameminlength2 as "onboarding_usernameMinLength" }

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_onboarding_generatenew1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Generate New`
-};
-
 const bg_onboarding_generatenew1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Генерирай нова`
+};
+
+const en_onboarding_generatenew1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Generate New`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_onboarding_generatenew1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const onboarding_generatenew1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("onboarding_generatenew1", locale)
-	if (locale === "en") return en_onboarding_generatenew1(inputs)
-	return bg_onboarding_generatenew1(inputs)
+	if (locale === "bg") return bg_onboarding_generatenew1(inputs)
+	return en_onboarding_generatenew1(inputs)
 };
 export { onboarding_generatenew1 as "onboarding_generateNew" }

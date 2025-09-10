@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_seller_hours = /** @type {(inputs: {}) => string} */ () => {
-	return `hours`
-};
-
 const bg_seller_hours = /** @type {(inputs: {}) => string} */ () => {
 	return `часа`
+};
+
+const en_seller_hours = /** @type {(inputs: {}) => string} */ () => {
+	return `hours`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_seller_hours = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const seller_hours = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("seller_hours", locale)
-	if (locale === "en") return en_seller_hours(inputs)
-	return bg_seller_hours(inputs)
+	if (locale === "bg") return bg_seller_hours(inputs)
+	return en_seller_hours(inputs)
 };

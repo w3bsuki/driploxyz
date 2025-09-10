@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_admin_totalrevenue1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Total Revenue`
-};
-
 const bg_admin_totalrevenue1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Общи приходи`
+};
+
+const en_admin_totalrevenue1 = /** @type {(inputs: {}) => string} */ () => {
+	return `Total Revenue`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_admin_totalrevenue1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const admin_totalrevenue1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("admin_totalrevenue1", locale)
-	if (locale === "en") return en_admin_totalrevenue1(inputs)
-	return bg_admin_totalrevenue1(inputs)
+	if (locale === "bg") return bg_admin_totalrevenue1(inputs)
+	return en_admin_totalrevenue1(inputs)
 };
 export { admin_totalrevenue1 as "admin_totalRevenue" }

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_message_nomessages1 = /** @type {(inputs: {}) => string} */ () => {
-	return `No messages yet`
-};
-
 const bg_message_nomessages1 = /** @type {(inputs: {}) => string} */ () => {
 	return `Няма съобщения още`
+};
+
+const en_message_nomessages1 = /** @type {(inputs: {}) => string} */ () => {
+	return `No messages yet`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_message_nomessages1 = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const message_nomessages1 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("message_nomessages1", locale)
-	if (locale === "en") return en_message_nomessages1(inputs)
-	return bg_message_nomessages1(inputs)
+	if (locale === "bg") return bg_message_nomessages1(inputs)
+	return en_message_nomessages1(inputs)
 };
 export { message_nomessages1 as "message_noMessages" }

@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_category_dropdown_arialabel1 = /** @type {(inputs: { selectedText: NonNullable<unknown> }) => string} */ (i) => {
-	return `Category filter: ${i.selectedText}. Press Enter or Arrow Down to open.`
-};
-
 const bg_category_dropdown_arialabel1 = /** @type {(inputs: { selectedText: NonNullable<unknown> }) => string} */ (i) => {
 	return `Филтър за категории: ${i.selectedText}. Натиснете Enter или стрелка надолу за отваряне.`
+};
+
+const en_category_dropdown_arialabel1 = /** @type {(inputs: { selectedText: NonNullable<unknown> }) => string} */ (i) => {
+	return `Category filter: ${i.selectedText}. Press Enter or Arrow Down to open.`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_category_dropdown_arialabel1 = /** @type {(inputs: { selectedText: NonN
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{ selectedText: NonNullable<unknown> }} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const category_dropdown_arialabel1 = (inputs, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("category_dropdown_arialabel1", locale)
-	if (locale === "en") return en_category_dropdown_arialabel1(inputs)
-	return bg_category_dropdown_arialabel1(inputs)
+	if (locale === "bg") return bg_category_dropdown_arialabel1(inputs)
+	return en_category_dropdown_arialabel1(inputs)
 };
 export { category_dropdown_arialabel1 as "category_dropdown_ariaLabel" }

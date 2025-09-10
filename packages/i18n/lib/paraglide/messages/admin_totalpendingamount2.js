@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_admin_totalpendingamount2 = /** @type {(inputs: {}) => string} */ () => {
-	return `Total Pending Amount`
-};
-
 const bg_admin_totalpendingamount2 = /** @type {(inputs: {}) => string} */ () => {
 	return `Обща сума в очакване`
+};
+
+const en_admin_totalpendingamount2 = /** @type {(inputs: {}) => string} */ () => {
+	return `Total Pending Amount`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_admin_totalpendingamount2 = /** @type {(inputs: {}) => string} */ () =>
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,7 +28,7 @@ const admin_totalpendingamount2 = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("admin_totalpendingamount2", locale)
-	if (locale === "en") return en_admin_totalpendingamount2(inputs)
-	return bg_admin_totalpendingamount2(inputs)
+	if (locale === "bg") return bg_admin_totalpendingamount2(inputs)
+	return en_admin_totalpendingamount2(inputs)
 };
 export { admin_totalpendingamount2 as "admin_totalPendingAmount" }

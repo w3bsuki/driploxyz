@@ -61,9 +61,9 @@ export function detectLocale(input: {
 }): Locale {
   const fallback: Locale = input.defaultLocale ?? 'bg';
 
-  // Path: /^\/(uk|bg)(\/|$)/
+  // Path: /^\/(en|uk|bg)(\/|$)/
   if (input.path) {
-    const match = input.path.match(/^\/(uk|bg)(\/|$)/);
+    const match = input.path.match(/^\/(en|uk|bg)(\/|$)/);
     if (match && match[1]) {
       const mapped = LOCALE_ALIASES[match[1]] ?? (match[1] as Locale);
       if ((runtimeLocales as readonly string[]).includes(mapped)) return mapped as Locale;

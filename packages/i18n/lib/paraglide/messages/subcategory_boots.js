@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const en_subcategory_boots = /** @type {(inputs: {}) => string} */ () => {
-	return `Boots`
-};
-
 const bg_subcategory_boots = /** @type {(inputs: {}) => string} */ () => {
 	return `Ботуши`
+};
+
+const en_subcategory_boots = /** @type {(inputs: {}) => string} */ () => {
+	return `Boots`
 };
 
 /**
@@ -18,7 +18,7 @@ const bg_subcategory_boots = /** @type {(inputs: {}) => string} */ () => {
 * use another inlang app like [Fink](https://inlang.com/m/tdozzpar) or the [VSCode extension Sherlock](https://inlang.com/m/r7kp499g).
 * 
 * @param {{}} inputs
-* @param {{ locale?: "en" | "bg" }} options
+* @param {{ locale?: "bg" | "en" }} options
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
@@ -28,6 +28,6 @@ export const subcategory_boots = (inputs = {}, options = {}) => {
 	}
 	const locale = options.locale ?? getLocale()
 	trackMessageCall("subcategory_boots", locale)
-	if (locale === "en") return en_subcategory_boots(inputs)
-	return bg_subcategory_boots(inputs)
+	if (locale === "bg") return bg_subcategory_boots(inputs)
+	return en_subcategory_boots(inputs)
 };
