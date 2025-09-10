@@ -143,18 +143,13 @@
 	let userFavoritesData = $state<Record<string, boolean>>({});
 	let dataLoaded = $state(false);
 	
-	// Resolve streamed promises - initialize immediately with data
+	// Resolve streamed promises
 	$effect(() => {
-		console.log('Homepage data loading effect triggered', { data });
-		
 		if (data.featuredProducts instanceof Promise) {
-			console.log('Featured products is a promise, resolving...');
 			data.featuredProducts.then(products => {
-				console.log('Featured products resolved:', products);
 				featuredProductsData = products || [];
 			});
 		} else {
-			console.log('Featured products is direct data:', data.featuredProducts);
 			featuredProductsData = data.featuredProducts || [];
 		}
 		
@@ -175,13 +170,6 @@
 		} else {
 			userFavoritesData = data.userFavorites || {};
 		}
-		
-		console.log('State after data loading:', {
-			featuredProductsData,
-			topSellersData,
-			sellersData,
-			userFavoritesData
-		});
 		
 		// Mark data as loaded after processing
 		dataLoaded = true;
@@ -209,7 +197,6 @@
 	// Transform sellers for display (for FeaturedSellers component)
 	const sellers = $derived<Seller[]>(
 		(sellersData || []).map(seller => {
-			console.log('Transforming seller:', seller);
 			const productCount = seller.total_products || 0;
 			return {
 				id: seller.id,
