@@ -106,15 +106,6 @@
             <div class="text-lg font-semibold">{data.profile.active_listings || 0}</div>
             <div class="text-xs text-gray-600">{i18n.profile_posts()}</div>
           </div>
-          {#if data.isOwnProfile}
-            <button
-              onclick={() => activeTab = 'likes'}
-              class="hover:bg-gray-50 rounded p-1"
-            >
-              <div class="text-lg font-semibold">{data.profile.favorites_count || 0}</div>
-              <div class="text-xs text-gray-600">{i18n.profile_likes ? i18n.profile_likes() : 'Likes'}</div>
-            </button>
-          {/if}
           <button 
             onclick={async () => {
               showFollowersModal = true;
@@ -158,32 +149,19 @@
         </div>
         
         <!-- Action Buttons -->
-        {#if data.isOwnProfile}
-          <div class="flex space-x-2">
-            <Button 
-              onclick={() => goto('/account')}
-              variant="primary" 
-              size="sm" 
-              class="flex-1 text-sm"
-            >
-              Go to My Account
-            </Button>
-          </div>
-        {:else}
-          <div class="flex space-x-2">
-            <Button 
-              onclick={handleFollow}
-              variant={isFollowing ? 'outline-solid' : 'primary'}
-              size="sm"
-              class="flex-1 text-sm"
-            >
-              {isFollowing ? i18n.profile_following() : i18n.profile_follow()}
-            </Button>
-            <Button onclick={handleMessage} variant="outline" size="sm" class="flex-1 text-sm">
-              {i18n.profile_message()}
-            </Button>
-          </div>
-        {/if}
+        <div class="flex space-x-2">
+          <Button 
+            onclick={handleFollow}
+            variant={isFollowing ? 'outline-solid' : 'primary'}
+            size="sm"
+            class="flex-1 text-sm"
+          >
+            {isFollowing ? i18n.profile_following() : i18n.profile_follow()}
+          </Button>
+          <Button onclick={handleMessage} variant="outline" size="sm" class="flex-1 text-sm">
+            {i18n.profile_message()}
+          </Button>
+        </div>
       </div>
     </div>
     
@@ -247,31 +225,27 @@
     <div class="flex">
       <button
         onclick={() => activeTab = 'posts'}
-        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'posts' ? 'border-black' : 'border-transparent'}"
-        aria-label="Posts"
+        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'posts' ? 'border-black text-black' : 'border-transparent text-gray-500'}"
       >
-        <div class="text-2xl {activeTab === 'posts' ? 'grayscale-0' : 'grayscale opacity-60'}">🛍️</div>
+        <span class="text-sm font-medium">Posts</span>
       </button>
       <button
         onclick={() => activeTab = 'reviews'}
-        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'reviews' ? 'border-black' : 'border-transparent'}"
-        aria-label="Reviews"
+        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'reviews' ? 'border-black text-black' : 'border-transparent text-gray-500'}"
       >
-        <div class="text-2xl {activeTab === 'reviews' ? 'grayscale-0' : 'grayscale opacity-60'}">⭐</div>
+        <span class="text-sm font-medium">Reviews</span>
       </button>
       <button
         onclick={() => activeTab = 'about'}
-        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'about' ? 'border-black' : 'border-transparent'}"
-        aria-label="About"
+        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'about' ? 'border-black text-black' : 'border-transparent text-gray-500'}"
       >
-        <div class="text-2xl {activeTab === 'about' ? 'grayscale-0' : 'grayscale opacity-60'}">ℹ️</div>
+        <span class="text-sm font-medium">About</span>
       </button>
       <button
         onclick={() => activeTab = 'ratings'}
-        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'ratings' ? 'border-black' : 'border-transparent'}"
-        aria-label="Ratings"
+        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'ratings' ? 'border-black text-black' : 'border-transparent text-gray-500'}"
       >
-        <div class="text-2xl {activeTab === 'ratings' ? 'grayscale-0' : 'grayscale opacity-60'}">📊</div>
+        <span class="text-sm font-medium">Ratings</span>
       </button>
     </div>
   </div>
@@ -506,7 +480,6 @@
   isNavigating={!!$navigating}
   navigatingTo={$navigating?.to?.url.pathname}
   unreadMessageCount={$unreadMessageCount}
-  profileHref={data.currentUser ? `/profile/${data.currentUser.username || data.currentUser.id}` : '/account'}
   labels={{
     home: i18n.nav_home(),
     search: i18n.nav_search(),

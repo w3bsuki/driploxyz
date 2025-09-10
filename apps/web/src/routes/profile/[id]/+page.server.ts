@@ -50,46 +50,12 @@ export const load = (async ({ params, locals }) => {
 
   // Check if this is the current user's profile
   const isOwnProfile = session?.user?.id === profile.id;
-
-  // Get user's favorites/wishlist if it's their own profile
-  let favorites: any[] = [];
+  
+  // Redirect users viewing their own profile to account page
   if (isOwnProfile) {
-    const { data: userFavorites } = await locals.supabase
-      .from('favorites')
-      .select(`
-        id,
-        created_at,
-        products!product_id (
-          id,
-          title,
-          price,
-          condition,
-          is_sold,
-          seller_id,
-          product_images!inner (
-            image_url
-          ),
-          profiles!products_seller_id_fkey (
-            username,
-            avatar_url
-          )
-        )
-      `)
-      .eq('user_id', profile.id)
-      .order('created_at', { ascending: false });
-    
-    if (userFavorites) {
-      favorites = userFavorites
-        .filter(f => f.products)
-        .map(f => ({
-          ...f.products,
-          images: f.products.product_images?.map((img: any) => img.image_url) || [],
-          seller_name: f.products.profiles?.username,
-          seller_avatar: f.products.profiles?.avatar_url,
-          favorited_at: f.created_at
-        }));
-    }
+    throw redirect(303, '/account');
   }
+
 
   // Get user's products (filtered by region)
   const { data: products } = await locals.supabase
@@ -178,7 +144,7 @@ export const load = (async ({ params, locals }) => {
 
   // Check if current user is following this profile
   let isFollowing = false;
-  if (session?.user && !isOwnProfile) {
+  if (session?.user) {
     const { isFollowing: followStatus } = await profileService.isFollowing(
       session.user.id,
       profile.id
@@ -192,7 +158,6 @@ export const load = (async ({ params, locals }) => {
       products_count: products?.length || 0,
       active_listings: products?.length || 0,
       sold_listings: profile.sales_count || 0,
-      favorites_count: favorites.length,
       followers_count: followersCount || 0,
       following_count: followingCount || 0
     },
@@ -200,8 +165,6 @@ export const load = (async ({ params, locals }) => {
     reviews: reviews || [],
     reviewStats,
     totalReviewCount: totalReviewCount || 0,
-    favorites,
-    isOwnProfile,
     currentUser: session?.user || null,
     isFollowing
   };

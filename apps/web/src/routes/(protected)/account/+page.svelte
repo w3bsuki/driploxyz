@@ -154,31 +154,27 @@
     <div class="flex">
       <button
         onclick={() => activeTab = 'posts'}
-        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'posts' ? 'border-black' : 'border-transparent'}"
-        aria-label="Posts"
+        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'posts' ? 'border-black text-black' : 'border-transparent text-gray-500'}"
       >
-        <div class="text-2xl {activeTab === 'posts' ? 'grayscale-0' : 'grayscale opacity-60'}">🛍️</div>
+        <span class="text-sm font-medium">Posts</span>
       </button>
       <button
         onclick={() => activeTab = 'orders'}
-        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'orders' ? 'border-black' : 'border-transparent'}"
-        aria-label="Orders"
+        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'orders' ? 'border-black text-black' : 'border-transparent text-gray-500'}"
       >
-        <div class="text-2xl {activeTab === 'orders' ? 'grayscale-0' : 'grayscale opacity-60'}">📦</div>
+        <span class="text-sm font-medium">Orders</span>
       </button>
       <button
         onclick={() => activeTab = 'sales'}
-        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'sales' ? 'border-black' : 'border-transparent'}"
-        aria-label="Sales"
+        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'sales' ? 'border-black text-black' : 'border-transparent text-gray-500'}"
       >
-        <div class="text-2xl {activeTab === 'sales' ? 'grayscale-0' : 'grayscale opacity-60'}">💰</div>
+        <span class="text-sm font-medium">Sales</span>
       </button>
       <button
         onclick={() => activeTab = 'likes'}
-        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'likes' ? 'border-black' : 'border-transparent'}"
-        aria-label="Likes"
+        class="flex-1 py-3 text-center border-b-2 transition-colors {activeTab === 'likes' ? 'border-black text-black' : 'border-transparent text-gray-500'}"
       >
-        <div class="text-2xl {activeTab === 'likes' ? 'grayscale-0' : 'grayscale opacity-60'}">❤️</div>
+        <span class="text-sm font-medium">Likes</span>
       </button>
     </div>
   </div>
@@ -326,7 +322,6 @@
   isNavigating={!!$navigating}
   navigatingTo={$navigating?.to?.url.pathname}
   unreadMessageCount={$unreadMessageCount}
-  profileHref={`/profile/${data.profile.username || data.profile.id}`}
   labels={{
     home: i18n.nav_home(),
     search: i18n.nav_search(),
