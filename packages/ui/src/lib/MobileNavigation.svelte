@@ -103,7 +103,7 @@
   ></div>
   
   <!-- Enhanced mobile dropdown menu -->
-  <div class="sm:hidden absolute top-full left-3 right-3 bg-white rounded-2xl shadow-2xl z-50 border border-gray-100 mt-3 backdrop-blur-xl bg-white/95">
+  <div class="sm:hidden absolute top-full left-0 right-0 mx-4 bg-white rounded-2xl shadow-2xl z-50 border border-gray-100 mt-3 backdrop-blur-xl bg-white/95 safe-area-x">
     <div class="px-5 py-5">
       <nav class="space-y-3">
         {#if isLoggedIn && user && profile}

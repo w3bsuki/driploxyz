@@ -1481,5 +1481,23 @@
   "trending_brands": "Популярни марки",
   "profile_likes": "Харесвания",
   "onboarding_uploadCustom": "Качи собствена",
-  "onboarding_generateNew": "Генерирай нова"
+  "onboarding_generateNew": "Генерирай нова",
+  
+  "footer_company": "Компания",
+  "footer_careers": "Кариери",
+  "footer_press": "Преса",
+  "footer_blog": "Блог",
+  "footer_support": "Поддръжка",
+  "footer_trustSafety": "Доверие и Сигурност",
+  "footer_legal": "Правни",
+  "footer_cookies": "Бисквитки",
+  "footer_returns": "Връщания",
+  "footer_newsletter": "Бюлетин",
+  "footer_followUs": "Последвайте ни",
+  "footer_madeWith": "Направено с",
+  "footer_in": "в",
+  "footer_bulgaria": "България",
+  "footer_allRightsReserved": "Всички права запазени.",
+  "footer_newsletterPlaceholder": "Въведете имейла си",
+  "footer_subscribe": "Абонирай се"
 }

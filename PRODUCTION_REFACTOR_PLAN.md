@@ -102,8 +102,8 @@ CODEX: `export async function withTimeout<T>(p: Promise<T>, ms: number, fallback
 
 - packages/ui/src/lib
   - atoms: Button, Input, Select, Badge, Avatar, Toggle, Spinner
-  - molecules: CategoryPill, LanguageSwitcher, NotificationBell, SearchBar, Listbox, Modal
-  - organisms: HeaderLogo, HeaderNav, HeaderUserMenu, MobileNavigation, Footer, HeroSearchDropdown
+  - molecules: CategoryPill, LanguageSwitcher, NotificationBell, IntegratedSearchBar, Listbox, Modal
+  - organisms: HeaderLogo, HeaderNav, HeaderUserMenu, MobileNavigation, Footer, TrendingDropdown
   - utils: a11y helpers, focus trap, keyboard navigation utils
 - apps/web/src/lib/components: app-specific compositions only (e.g., Header wrapper, RegionSwitchModal, PageLoader)
 CODEX: Matches repository: app comps live in `apps/web/src/lib/components` (e.g., `Header.svelte`, `CategoryPill.svelte`, `RegionSwitchModal.svelte`). Library primitives live in `packages/ui/src/lib`.
@@ -220,11 +220,12 @@ CODEX: If row extraction is needed, create `apps/web/src/lib/components/Category
 - [ ] Localized labels; aria‑labels for social icons.
 CODEX: Audit with `rg -n "<nav|aria-label=\"(Twitter|X|Facebook|Instagram)\"" packages/ui/src/lib/Footer.svelte` and ensure link groups are wrapped in a single `<nav>` with labelled regions.
 
-### Forms (Input, Select, SearchBar)
+### Forms (Input, Select, IntegratedSearchBar)
+- [x] **SearchBar Standardization COMPLETE**: Unified all search implementations under IntegratedSearchBar component with Svelte 5 snippets for flexible left/right sections. Replaced SearchBar and HeroSearchDropdown across all pages while maintaining functionality.
 - [ ] Use native inputs with labels and `aria-describedby` for helper/error text.
 - [ ] Focus rings via Tailwind tokens; no custom outlines that conflict.
 - [ ] Error state: `aria-invalid`, error messaging region.
-CODEX: Centralize form field a11y helpers (ids for `aria-describedby`, error region patterns) in `packages/ui/src/utils/form-a11y.ts` and reuse in `Input.svelte`, `Select.svelte`, and `SearchBar.svelte`.
+CODEX: Centralize form field a11y helpers (ids for `aria-describedby`, error region patterns) in `packages/ui/src/utils/form-a11y.ts` and reuse in `Input.svelte`, `Select.svelte`, and `IntegratedSearchBar.svelte`.
 
 ### Dialogs/Modals (Modal.svelte, Sheet variants)
 - [ ] `role="dialog"` + `aria-modal="true"`; focus trap + return focus on close.

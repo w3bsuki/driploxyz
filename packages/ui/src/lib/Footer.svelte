@@ -1,62 +1,14 @@
 <script lang="ts">
-  import type { ComponentProps } from 'svelte';
+  import * as i18n from '@repo/i18n';
 
   interface Props {
     currentLanguage?: string;
     onLanguageChange?: (lang: string) => void;
-    translations?: {
-      company?: string;
-      about?: string;
-      careers?: string;
-      press?: string;
-      support?: string;
-      help?: string;
-      trustSafety?: string;
-      legal?: string;
-      privacy?: string;
-      terms?: string;
-      cookies?: string;
-      returns?: string;
-      community?: string;
-      blog?: string;
-      newsletter?: string;
-      followUs?: string;
-      madeWith?: string;
-      in?: string;
-      bulgaria?: string;
-      allRightsReserved?: string;
-      newsletterPlaceholder?: string;
-      subscribe?: string;
-    };
   }
 
   let { 
     currentLanguage = 'en',
-    onLanguageChange,
-    translations = {
-      company: 'Company',
-      about: 'About Driplo',
-      careers: 'Careers',
-      press: 'Press',
-      support: 'Support',
-      help: 'Help Center',
-      trustSafety: 'Trust & Safety',
-      legal: 'Legal',
-      privacy: 'Privacy Policy',
-      terms: 'Terms & Conditions',
-      cookies: 'Cookie Policy',
-      returns: 'Return Policy',
-      community: 'Community',
-      blog: 'Blog',
-      newsletter: 'Newsletter',
-      followUs: 'Follow Us',
-      madeWith: 'Made with',
-      in: 'in',
-      bulgaria: 'Bulgaria',
-      allRightsReserved: 'All rights reserved.',
-      newsletterPlaceholder: 'Enter your email',
-      subscribe: 'Subscribe'
-    }
+    onLanguageChange
   }: Props = $props();
 
   let email = $state('');
@@ -90,7 +42,7 @@
       <!-- Company -->
       <div class="space-y-4">
         <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wider">
-          {translations.company}
+          {i18n.footer_company()}
         </h3>
         <ul class="space-y-2">
           <li>
@@ -98,7 +50,7 @@
               href="/about" 
               class="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
-              {translations.about}
+              {i18n.footer_about()}
             </a>
           </li>
           <li>
@@ -106,7 +58,7 @@
               href="/careers" 
               class="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
-              {translations.careers}
+              {i18n.footer_careers()}
             </a>
           </li>
           <li>
@@ -114,7 +66,7 @@
               href="/press" 
               class="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
-              {translations.press}
+              {i18n.footer_press()}
             </a>
           </li>
           <li>
@@ -122,7 +74,7 @@
               href="/blog" 
               class="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
-              {translations.blog}
+              {i18n.footer_blog()}
             </a>
           </li>
         </ul>
@@ -131,7 +83,7 @@
       <!-- Support -->
       <div class="space-y-4">
         <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wider">
-          {translations.support}
+          {i18n.footer_support()}
         </h3>
         <ul class="space-y-2">
           <li>
@@ -139,7 +91,7 @@
               href="/help" 
               class="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
-              {translations.help}
+              {i18n.footer_help()}
             </a>
           </li>
           <li>
@@ -147,7 +99,7 @@
               href="/trust-safety" 
               class="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
-              {translations.trustSafety}
+              {i18n.footer_trustSafety()}
             </a>
           </li>
           <li>
@@ -155,7 +107,7 @@
               href="/returns" 
               class="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
-              {translations.returns}
+              {i18n.footer_returns()}
             </a>
           </li>
         </ul>
@@ -164,7 +116,7 @@
       <!-- Legal -->
       <div class="space-y-4">
         <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wider">
-          {translations.legal}
+          {i18n.footer_legal()}
         </h3>
         <ul class="space-y-2">
           <li>
@@ -172,7 +124,7 @@
               href="/privacy" 
               class="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
-              {translations.privacy}
+              {i18n.footer_privacy()}
             </a>
           </li>
           <li>
@@ -180,7 +132,7 @@
               href="/terms" 
               class="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
-              {translations.terms}
+              {i18n.footer_terms()}
             </a>
           </li>
           <li>
@@ -188,7 +140,7 @@
               href="/privacy/cookies" 
               class="text-sm text-gray-500 hover:text-gray-900 transition-colors"
             >
-              {translations.cookies}
+              {i18n.footer_cookies()}
             </a>
           </li>
         </ul>
@@ -197,7 +149,7 @@
       <!-- Newsletter & Social -->
       <div class="space-y-4">
         <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wider">
-          {translations.newsletter}
+          {i18n.footer_newsletter()}
         </h3>
         
         <!-- Newsletter Signup -->
@@ -206,7 +158,7 @@
             <input
               bind:value={email}
               type="email"
-              placeholder={translations.newsletterPlaceholder}
+              placeholder={i18n.footer_newsletterPlaceholder()}
               class="flex-1 min-h-[36px] px-3 py-2 text-sm border border-gray-200 rounded-lg 
                      focus:ring-2 focus:ring-black focus:border-transparent transition-colors"
               disabled={isSubscribing}
@@ -224,7 +176,7 @@
                   <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
               {:else}
-                {translations.subscribe}
+                {i18n.footer_subscribe()}
               {/if}
             </button>
           </div>
@@ -232,7 +184,7 @@
 
         <!-- Social Media -->
         <div class="space-y-3">
-          <h4 class="text-sm font-medium text-gray-900">{translations.followUs}</h4>
+          <h4 class="text-sm font-medium text-gray-900">{i18n.footer_followUs()}</h4>
           <div class="flex space-x-3">
             <a 
               href="https://instagram.com/driplo.xyz" 
@@ -289,13 +241,13 @@
         <div class="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-2">
           <div class="flex items-center space-x-2 text-sm text-gray-500">
             <span>© {new Date().getFullYear()} Driplo.</span>
-            <span>{translations.allRightsReserved}</span>
+            <span>{i18n.footer_allRightsReserved()}</span>
           </div>
           <div class="flex items-center space-x-1 text-sm text-gray-500">
-            <span>{translations.madeWith}</span>
+            <span>{i18n.footer_madeWith()}</span>
             <span class="text-red-500">❤️</span>
-            <span>{translations.in}</span>
-            <span class="font-medium">{translations.bulgaria} 🇧🇬</span>
+            <span>{i18n.footer_in()}</span>
+            <span class="font-medium">{i18n.footer_bulgaria()} 🇧🇬</span>
           </div>
         </div>
 

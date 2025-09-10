@@ -81,6 +81,18 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       { data: [] } as any
     );
 
+    const sellersPromise = withTimeout(
+      supabase
+        .from('profiles')
+        .select('*')
+        .not('username', 'is', null)
+        .order('created_at', { ascending: false })
+        .limit(20)
+        .then(),
+      2500,
+      { data: [] } as any
+    );
+
     const featuredPromise = withTimeout(
       supabase
         .from('products')
@@ -120,15 +132,17 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       { data: [] } as any
     );
 
-    const [categoriesResult, topSellersResult, featuredResult] = await Promise.all([
+    const [categoriesResult, topSellersResult, sellersResult, featuredResult] = await Promise.all([
       categoriesPromise,
       topSellersPromise,
+      sellersPromise,
       featuredPromise
     ]);
 
     // Process results
     const categories = (categoriesResult as any).data || [];
     const topSellers = (topSellersResult as any).data || [];
+    const sellers = (sellersResult as any).data || [];
     
     let featuredProducts: Array<{
       id: string;
@@ -285,6 +299,7 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       
       // Stream non-critical data
       topSellers: Promise.resolve(topSellers),
+      sellers: Promise.resolve(sellers),
       userFavorites: Promise.resolve(userFavorites),
       
       errors: {

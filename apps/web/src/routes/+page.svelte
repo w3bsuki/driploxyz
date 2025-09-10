@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { SearchBar, HeroSearchDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView } from '@repo/ui';
+	import { IntegratedSearchBar, TrendingDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers } from '@repo/ui';
 	import CategoryPill from '$lib/components/CategoryPill.svelte';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
@@ -26,12 +26,12 @@
 	let showSellerModal = $state(false);
 	let showPartnerModal = $state(false);
 	let showCategoryDropdown = $state(false);
+	let showTrendingDropdown = $state(false);
 	let loadingCategory = $state<string | null>(null);
 	let selectedPillIndex = $state(-1);
 	
-	// Lazy loaded components
-	let PromotedHighlights = $state<any>(null);
-	let highlightsInView = $state(false);
+	// Component state
+	let sellersInView = $state(false);
 
 	// Language state - already initialized in +layout.svelte
 	let currentLang = $state(i18n.getLocale());
@@ -44,7 +44,25 @@
 			currentLang = newLang;
 			updateKey++;
 		}
-		
+	});
+
+	// Debug data (removed to prevent infinite loops)
+
+	// Handle click outside for trending dropdown
+	$effect(() => {
+		if (typeof window !== 'undefined') {
+			function handleClickOutside(e: MouseEvent) {
+				const target = e.target as HTMLElement;
+				if (!target.closest('#hero-search-container')) {
+					showTrendingDropdown = false;
+				}
+			}
+
+			if (showTrendingDropdown) {
+				document.addEventListener('click', handleClickOutside);
+				return () => document.removeEventListener('click', handleClickOutside);
+			}
+		}
 	});
 	
 	// Initialize favorites from server data on mount
@@ -79,29 +97,7 @@
 	});
 	
 	// Lazy load heavy components
-	$effect(() => {
-		if (browser && !PromotedHighlights) {
-			// Set up intersection observer for PromotedHighlights
-			const observer = new IntersectionObserver(
-				async ([entry]) => {
-					if (entry.isIntersecting && !PromotedHighlights) {
-						highlightsInView = true;
-						const module = await import('@repo/ui');
-						PromotedHighlights = module.PromotedHighlights;
-						observer.disconnect();
-					}
-				},
-				{ rootMargin: '100px' } // Start loading 100px before visible
-			);
-			
-			const trigger = document.querySelector('#highlights-trigger');
-			if (trigger) {
-				observer.observe(trigger);
-			}
-			
-			return () => observer.disconnect();
-		}
-	});
+	// FeaturedSellers is now imported directly, no lazy loading needed
 
 	// Helper function to transform product data
 	function transformProduct(product: ProductWithImages): Product {
@@ -143,6 +139,7 @@
 	// Handle streamed data
 	let featuredProductsData = $state<any[]>([]);
 	let topSellersData = $state<any[]>([]);
+	let sellersData = $state<any[]>([]);
 	let userFavoritesData = $state<Record<string, boolean>>({});
 	
 	// Resolve streamed promises
@@ -159,6 +156,12 @@
 			topSellersData = data.topSellers || [];
 		}
 		
+		if (data.sellers instanceof Promise) {
+			data.sellers.then(sellers => sellersData = sellers || []);
+		} else {
+			sellersData = data.sellers || [];
+		}
+		
 		if (data.userFavorites instanceof Promise) {
 			data.userFavorites.then(favorites => userFavoritesData = favorites || {});
 		} else {
@@ -168,7 +171,7 @@
 
 	// Transform promoted products for highlights
 	const promotedProducts = $derived<Product[]>(
-		(data.promotedProducts?.length ? data.promotedProducts : featuredProductsData?.slice(0, 8) || [])
+		(data.promotedProducts?.length ? data.promotedProducts : (featuredProductsData || []).slice(0, 8))
 			.map(transformProduct).map(p => ({
 				...p,
 				category_name: p.category_name || p.main_category_name || 'Uncategorized',
@@ -185,32 +188,60 @@
 		}))
 	);
 
-	// Transform sellers for display
+	// Transform sellers for display (for FeaturedSellers component)
 	const sellers = $derived<Seller[]>(
+		(sellersData || []).map(seller => {
+			console.log('Transforming seller:', seller);
+			const productCount = seller.total_products || 0;
+			return {
+				id: seller.id,
+				name: seller.username || seller.full_name,
+				username: seller.username,
+				full_name: seller.full_name,
+				premium: productCount > 0 || seller.verified,
+				account_type: seller.username === 'indecisive_wear' ? 'brand' : 
+				             seller.account_type || (productCount > 10 ? 'pro' : productCount > 0 ? 'brand' : 'new'),
+				avatar: seller.avatar_url,
+				avatar_url: seller.avatar_url,
+				rating: seller.rating || 0,
+				average_rating: seller.rating || 0,
+				total_products: productCount,
+				itemCount: productCount,
+				followers: seller.followers_count || 0,
+				description: seller.bio,
+				is_verified: seller.verified || false
+			};
+		})
+	);
+
+	// Debug sellers data
+	$effect(() => {
+		console.log('sellersData:', sellersData);
+		console.log('transformed sellers:', sellers);
+	});
+
+	// Transform top sellers for TrendingDropdown
+	const topSellers = $derived<Seller[]>(
 		(topSellersData || []).map(seller => ({
 			id: seller.id,
 			name: seller.username || seller.full_name,
 			username: seller.username,
 			premium: seller.sales_count > 0,
+			account_type: seller.sales_count > 10 ? 'pro' : seller.sales_count > 0 ? 'brand' : 'new',
 			avatar: seller.avatar_url,
+			avatar_url: seller.avatar_url,
 			rating: seller.rating || 0,
-			itemCount: seller.product_count || 0, // Use actual active listings count
+			average_rating: seller.rating || 0,
+			total_products: seller.product_count || 0,
+			itemCount: seller.product_count || 0,
 			followers: seller.followers_count || 0,
-			description: seller.bio
+			description: seller.bio,
+			is_verified: seller.is_verified || false
 		}))
 	);
 
-	// Partners data
-	const partners = $derived([
-		{
-			id: 'indecisive-wear',
-			name: 'Indecisive Wear',
-			logo: 'https://via.placeholder.com/80x80/000000/FFFFFF?text=IW',
-			instagram: 'https://instagram.com/indecisivewear',
-			website: 'https://indecisivewear.com',
-			description: 'Unique statement pieces for the fashion-forward'
-		}
-	]);
+	// Partners data - production ready, no test data
+	const partners = $derived([]);
 
 	function handleSearch(query: string) {
 		if (query.trim()) {
@@ -542,38 +573,62 @@
 			<div class="px-4 sm:px-6 lg:px-8 py-4">
 				<!-- Hero Search -->
 				<div id="hero-search-container" class="max-w-2xl mx-auto relative mb-4">
-					<HeroSearchDropdown 
-						bind:value={searchQuery}
+					<IntegratedSearchBar
+						bind:searchValue={searchQuery}
 						onSearch={handleSearch}
 						placeholder={i18n.search_placeholder()}
-						categoriesText={i18n.search_categories()}
-						trendingProducts={products.slice(0, 8)}
-						topSellers={sellers}
-						quickFilters={heroQuickFilters}
-						onProductClick={handleProductClick}
-						onSearchResultClick={handleSearchResultClick}
-						onSellerClick={handleSellerClick}
-						onFilterClick={handleHeroFilterClick}
-						{formatPrice}
-						translations={{
-							quickShop: i18n.search_quickShop(),
-							shopByCondition: i18n.search_shopByCondition(),
-							shopByPrice: i18n.search_shopByPrice(),
-							quickAccess: i18n.search_quickAccess(),
-							topSellers: i18n.search_topSellers(),
-							newWithTags: i18n.search_newWithTags(),
-							likeNew: i18n.search_likeNew(),
-							good: i18n.search_good(),
-							fair: i18n.search_fair(),
-							under25: i18n.search_under25(),
-							cheapest: i18n.search_cheapest(),
-							newest: i18n.search_newest(),
-							premium: i18n.search_premium(),
-							myFavorites: i18n.search_myFavorites(),
-							browseAll: i18n.search_browseAll(),
-							viewAllResults: i18n.search_viewAllResults()
-						}}
-					/>
+						searchId="hero-search-input"
+					>
+						{#snippet rightSection()}
+							<button
+								onclick={() => showTrendingDropdown = !showTrendingDropdown}
+								class="h-12 px-3 rounded-r-xl hover:bg-gray-100 transition-colors flex items-center gap-1"
+								aria-expanded={showTrendingDropdown}
+								aria-haspopup="listbox"
+								aria-label={i18n.search_categories()}
+							>
+								<svg 
+									class="w-4 h-4 text-gray-600 transition-transform {showTrendingDropdown ? 'rotate-180' : ''}" 
+									fill="none" 
+									stroke="currentColor" 
+									viewBox="0 0 24 24"
+									aria-hidden="true"
+								>
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								</svg>
+								<span class="text-sm font-medium text-gray-600 hidden sm:inline">{i18n.search_categories()}</span>
+							</button>
+						{/snippet}
+					</IntegratedSearchBar>
+
+					{#if showTrendingDropdown}
+						<div class="absolute z-50 w-full mt-2">
+							<TrendingDropdown
+								topSellers={topSellers}
+								quickFilters={heroQuickFilters}
+								onSellerClick={handleSellerClick}  
+								onFilterClick={handleHeroFilterClick}
+								translations={{
+									quickShop: i18n.search_quickShop(),
+									shopByCondition: i18n.search_shopByCondition(),
+									shopByPrice: i18n.search_shopByPrice(),
+									quickAccess: i18n.search_quickAccess(),
+									topSellers: i18n.search_topSellers(),
+									newWithTags: i18n.search_newWithTags(),
+									likeNew: i18n.search_likeNew(),
+									good: i18n.search_good(),
+									fair: i18n.search_fair(),
+									under25: i18n.search_under25(),
+									cheapest: i18n.search_cheapest(),
+									newest: i18n.search_newest(),
+									premium: i18n.search_premium(),
+									myFavorites: i18n.search_myFavorites(),
+									browseAll: i18n.search_browseAll(),
+									viewAllResults: i18n.search_viewAllResults()
+								}}
+							/>
+						</div>
+					{/if}
 				</div>
 				
 				<!-- Category Pills -->
@@ -654,48 +709,14 @@
 			</div>
 		</div>
 
-		<!-- Lazy load PromotedHighlights with skeleton -->
-		<div id="highlights-trigger">
-			{#if PromotedHighlights}
-				<PromotedHighlights
-					promotedProducts={promotedProducts.map(product => ({
-						...product,
-						sizes: product.size ? [product.size] : ['S', 'M', 'L']
-					}))}
-					{sellers}
-					{partners}
-					onSellerSelect={(seller) => selectedSeller = seller}
-					onSellerClick={handleSellerClick}
-					onPartnerClick={handlePartnerClick}
-					onProductClick={handleProductClick}
-					onProductBuy={handlePurchase}
-					onToggleFavorite={handleFavorite}
-					favoritesState={$favoritesStore}
-					{formatPrice}
-					translations={{
-						seller_premiumSeller: i18n.seller_premiumSeller(),
-						seller_premiumSellerDescription: i18n.seller_premiumSellerDescription(),
-						trending_promoted: i18n.trending_promoted(),
-						trending_featured: i18n.trending_featured(),
-						common_currency: i18n.common_currency(),
-						ui_scroll: i18n.ui_scroll(),
-						promoted_hotPicks: i18n.promoted_hotPicks(),
-						promoted_premiumSellers: i18n.promoted_premiumSellers(),
-						categoryTranslation: translateCategory
-					}}
-				/>
-			{:else if highlightsInView}
-				<!-- Loading skeleton for promoted highlights when in view -->
-				<div class="w-full bg-gradient-to-br from-gray-50/90 to-white/95 border-y border-gray-200/60">
-					<div class="px-4 sm:px-6 lg:px-8 py-3 sm:py-3.5">
-						<div class="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide">
-							{#each Array(4) as _}
-								<div class="flex-shrink-0 w-44 sm:w-52 md:w-56 bg-gray-100 rounded-xl aspect-[4/5] animate-pulse"></div>
-							{/each}
-						</div>
-					</div>
-				</div>
-			{/if}
+		<!-- Featured Sellers Section -->
+		<div id="sellers-trigger">
+			<FeaturedSellers
+				sellers={sellers}
+				sellerProducts={{}}
+				onSellerClick={handleSellerClick}
+				title={i18n.promoted_premiumSellers ? i18n.promoted_premiumSellers() : 'Featured Sellers'}
+			/>
 		</div>
 
 		<!-- FeaturedProducts -->
@@ -776,8 +797,6 @@
 		messages: i18n.nav_messages(),
 		profile: i18n.nav_profile()
 	}}
-    variant="ios"
-    showLabels={false}
 />
 
 <!-- Quick View Dialog for Premium Sellers -->

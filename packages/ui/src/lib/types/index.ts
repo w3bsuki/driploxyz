@@ -66,6 +66,11 @@ export interface Seller extends Profile {
   itemCount?: number;
   followers?: number;
   description?: string;
+  account_type?: 'new' | 'pro' | 'brand';
+  is_verified?: boolean;
+  total_products?: number;
+  average_rating?: number;
+  full_name?: string;
 }
 
 export interface Category {

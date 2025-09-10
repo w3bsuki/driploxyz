@@ -92,19 +92,19 @@
 {#if show}
   <!-- Glass Morphism Backdrop -->
   <button 
-    class="fixed inset-0 bg-black/20 md:backdrop-blur-xs z-40 bg-transparent border-0 cursor-default"
+    class="fixed inset-0 bg-black/20 supports-[backdrop-filter]:backdrop-blur-sm z-40 border-0 cursor-default"
     onclick={onClose}
     aria-label="Close notifications panel"
     tabindex="-1"
   ></button>
 
   <!-- Notification Panel -->
-  <div class="fixed top-16 right-4 w-96 max-w-[calc(100vw-2rem)] z-50 {className}">
-    <div class="bg-white/95 md:backdrop-blur-xl rounded-2xl shadow-sm md:shadow-2xl ring-1 ring-black/5 
-      border border-white/20 overflow-hidden max-h-[80vh] flex flex-col">
+  <div class="fixed top-16 right-4 w-96 max-w-[calc(100vw-2rem)] z-50 safe-area-x {className}">
+    <div class="bg-white supports-[backdrop-filter]:bg-white/95 supports-[backdrop-filter]:backdrop-blur-xl rounded-2xl shadow-lg ring-1 ring-black/5 
+      border border-gray-200 supports-[backdrop-filter]:border-white/20 overflow-hidden max-h-[80vh] flex flex-col">
       
       <!-- Header -->
-      <div class="flex items-center justify-between p-4 border-b border-gray-100/50 bg-white/50">
+      <div class="flex items-center justify-between p-4 border-b border-gray-100 supports-[backdrop-filter]:border-gray-100/50 bg-white supports-[backdrop-filter]:bg-white/50">
         <div>
           <h3 class="font-semibold text-gray-900">{translations.title || 'Notifications'}</h3>
           {#if unreadCount > 0}
@@ -227,7 +227,7 @@
 
       <!-- Footer -->
       {#if notifications.length > 0}
-        <div class="p-3 border-t border-gray-100/50 bg-white/50">
+        <div class="p-3 border-t border-gray-100 supports-[backdrop-filter]:border-gray-100/50 bg-white supports-[backdrop-filter]:bg-white/50">
           <Button 
             variant="ghost" 
             size="sm" 

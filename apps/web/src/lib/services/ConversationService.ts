@@ -48,6 +48,7 @@ export class ConversationService {
   private reconnectAttempts = 0;
   private readonly MAX_RECONNECT_ATTEMPTS = 5;
   private updateQueue = new Map<string, any>();
+  private connectionTimeout: NodeJS.Timeout | null = null;
 
   constructor(
     private supabase: SupabaseClient,
@@ -409,14 +410,24 @@ export class ConversationService {
       canRetry: false
     });
 
+    // Add timeout for connection attempt
+    this.connectionTimeout = setTimeout(() => {
+      if (this.messageChannel && this.messageChannel.state !== 'joined') {
+        messagingLogger.error('Realtime connection timed out', {
+          userId: this.userId,
+          channelState: this.messageChannel?.state
+        });
+        this.notify('connection_status', {
+          status: 'error',
+          message: 'Connection timeout. Retrying...',
+          canRetry: true
+        });
+        this.handleReconnection();
+      }
+    }, 10000); // 10 second timeout
+
     this.messageChannel = this.supabase
-      .channel(`user-messages-${this.userId}`, {
-        config: {
-          presence: {
-            key: this.userId
-          }
-        }
-      })
+      .channel(`user-messages-${this.userId}`)
       .on('postgres_changes', {
         event: 'INSERT',
         schema: 'public',
@@ -438,6 +449,12 @@ export class ConversationService {
       .subscribe((status, error) => {
         messagingLogger.info('Realtime subscription status', { status, error: error?.message || String(error), userId: this.userId });
         
+        // Clear timeout on any status update
+        if (this.connectionTimeout) {
+          clearTimeout(this.connectionTimeout);
+          this.connectionTimeout = null;
+        }
+        
         if (error) {
           messagingLogger.error('Realtime subscription error', error, {
             userId: this.userId,
@@ -457,13 +474,20 @@ export class ConversationService {
             message: 'Connected',
             canRetry: false
           });
-        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
           this.notify('connection_status', {
             status: 'error',
             message: 'Connection failed. Retrying...',
             canRetry: true
           });
           this.handleReconnection();
+        } else if (status === 'JOINING') {
+          // Still connecting, update status
+          this.notify('connection_status', {
+            status: 'connecting',
+            message: 'Connecting...',
+            canRetry: false
+          });
         }
       });
   }
@@ -617,6 +641,12 @@ export class ConversationService {
   // Cleanup
   async cleanup(): Promise<void> {
     try {
+      // Clear any pending timeout
+      if (this.connectionTimeout) {
+        clearTimeout(this.connectionTimeout);
+        this.connectionTimeout = null;
+      }
+      
       if (this.messageChannel) {
         await this.supabase.removeChannel(this.messageChannel);
         this.messageChannel = null;

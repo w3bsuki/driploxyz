@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ProductCard, Button, SearchBar, ProductCardSkeleton, BottomNav, StickyFilterModal, AppliedFilterPills, CategoryBottomSheet, type Product } from '@repo/ui';
+  import { ProductCard, Button, IntegratedSearchBar, ProductCardSkeleton, BottomNav, StickyFilterModal, AppliedFilterPills, CategoryBottomSheet, type Product } from '@repo/ui';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { goto } from '$app/navigation';
   import { page, navigating } from '$app/stores';
@@ -290,9 +290,7 @@
     filterStore.updateFilter('query', query);
   }, 300);
   
-  function handleSearch(e: Event) {
-    const value = (e.target as HTMLInputElement).value;
-    searchInput = value;
+  function handleSearch(value: string) {
     isSearching = true;
     handleSearchDebounced(value);
     setTimeout(() => { isSearching = false; }, 350);
@@ -460,61 +458,49 @@
       
       <!-- Search Container -->
       <div class="py-3">
-        <div class="bg-gray-50 rounded-xl flex items-center relative category-dropdown">
-          <!-- Category Dropdown -->
-          <CategoryBottomSheet
-            bind:open={showCategoryBottomSheet}
-            {categoryHierarchy}
-            selectedPath={currentCategoryPath}
-            onCategorySelect={handleBottomSheetCategorySelect}
-            allCategoriesLabel={i18n.search_categories()}
-            backLabel={i18n.common_back()}
-            allLabel={i18n.category_all()}
-            class="h-12 rounded-l-xl border-0"
-          >
-            {#snippet trigger()}
-              <span class="text-base">
-                {filters.category ? 
-                  categoryHierarchy.categories.find(cat => cat.key === filters.category)?.icon || '📁' : 
-                  '📁'
-                }
-              </span>
-              <span>
-                {filters.specific ? 
-                  categoryHierarchy.specifics[`${filters.category}-${filters.subcategory}`]?.find(cat => cat.key === filters.specific)?.name || 
-                  (filters.subcategory ? categoryHierarchy.subcategories[filters.category]?.find(cat => cat.key === filters.subcategory)?.name : i18n.category_all()) :
-                  filters.subcategory ? 
-                    categoryHierarchy.subcategories[filters.category]?.find(cat => cat.key === filters.subcategory)?.name :
-                    filters.category ? 
-                      categoryHierarchy.categories.find(cat => cat.key === filters.category)?.name : 
-                      i18n.category_all()
-                }
-              </span>
-              <svg class="w-4 h-4 transition-transform {showCategoryBottomSheet ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            {/snippet}
-          </CategoryBottomSheet>
-
-          <!-- Vertical Separator -->
-          <div class="w-px h-6 bg-gray-300"></div>
-          
-          <!-- Search Input -->
-          <div class="flex-1 relative">
-            <input
-              type="search"
-              value={searchInput}
-              oninput={handleSearch}
-              placeholder={i18n.search_placeholder()}
-              class="w-full h-12 pl-10 pr-16 bg-transparent border-0 text-base placeholder-gray-500 focus:ring-0 focus:outline-none"
-            />
-            <svg class="absolute left-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            
-          </div>
-          
-        </div>
+        <IntegratedSearchBar
+          bind:searchValue={searchInput}
+          placeholder={i18n.search_placeholder()}
+          onSearch={(query) => filterStore.updateFilter('query', query)}
+          onInput={handleSearch}
+          searchId="search-page-input"
+        >
+          {#snippet leftSection()}
+            <CategoryBottomSheet
+              bind:open={showCategoryBottomSheet}
+              {categoryHierarchy}
+              selectedPath={currentCategoryPath}
+              onCategorySelect={handleBottomSheetCategorySelect}
+              allCategoriesLabel={i18n.search_categories()}
+              backLabel={i18n.common_back()}
+              allLabel={i18n.category_all()}
+              class="h-12 rounded-l-xl border-0"
+            >
+              {#snippet trigger()}
+                <span class="text-base">
+                  {filters.category ? 
+                    categoryHierarchy.categories.find(cat => cat.key === filters.category)?.icon || '📁' : 
+                    '📁'
+                  }
+                </span>
+                <span>
+                  {filters.specific ? 
+                    categoryHierarchy.specifics[`${filters.category}-${filters.subcategory}`]?.find(cat => cat.key === filters.specific)?.name || 
+                    (filters.subcategory ? categoryHierarchy.subcategories[filters.category]?.find(cat => cat.key === filters.subcategory)?.name : i18n.category_all()) :
+                    filters.subcategory ? 
+                      categoryHierarchy.subcategories[filters.category]?.find(cat => cat.key === filters.subcategory)?.name :
+                      filters.category ? 
+                        categoryHierarchy.categories.find(cat => cat.key === filters.category)?.name : 
+                        i18n.category_all()
+                  }
+                </span>
+                <svg class="w-4 h-4 transition-transform {showCategoryBottomSheet ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              {/snippet}
+            </CategoryBottomSheet>
+          {/snippet}
+        </IntegratedSearchBar>
       </div>
       
       <!-- Quick Category & Price Pills -->

@@ -93,7 +93,7 @@
                 id={`url-${index}`}
                 bind:value={link.url}
                 placeholder={platformInfo.placeholder}
-                onchange={(value) => updateLink(index, 'url', value)}
+                onchange={(e) => updateLink(index, 'url', e.currentTarget.value)}
                 class="bg-white/80"
               />
             </div>

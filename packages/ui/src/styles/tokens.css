@@ -258,7 +258,7 @@
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   
   /* Brand Colors */
-  --brand-primary: var(--blue-500);
+  --brand-primary: var(--gray-950);  /* Pure black for premium feel */
   --brand-secondary: var(--purple-500);
   --brand-accent: var(--orange-500);
   
@@ -403,8 +403,8 @@
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
   /* Brand aliases */
-  --primary: var(--gray-900);
-  --primary-600: var(--gray-800);
+  --primary: var(--gray-950);  /* Pure black primary */
+  --primary-600: var(--gray-900);
   --primary-700: var(--gray-950);
   --primary-fg: var(--gray-0);
 

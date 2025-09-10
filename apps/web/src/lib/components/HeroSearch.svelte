@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SearchBar } from '@repo/ui';
+  import { IntegratedSearchBar } from '@repo/ui';
   import { goto, preloadCode, preloadData } from '$app/navigation';
 
   interface Category {
@@ -76,15 +76,26 @@
 >
   <div class="px-4 sm:px-6 lg:px-8 py-4 space-y-3">
     <!-- Search Bar -->
-    <SearchBar 
-      bind:value={searchQuery}
-      {onSearch}
-      {onFilter}
-      {isDropdownOpen}
-      showCategoriesButton={true}
+    <IntegratedSearchBar
+      bind:searchValue={searchQuery}
+      onSearch={(query) => onSearch(query)}
       placeholder="Search for anything..."
       searchId="hero-search"
-    />
+      class="w-full"
+    >
+      {#snippet leftSection()}
+        <button
+          onclick={onFilter}
+          class="h-12 px-3 rounded-l-xl hover:bg-gray-100 transition-colors flex items-center gap-1"
+          aria-label="Categories"
+        >
+          <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <span class="text-sm text-gray-600 hidden sm:inline">Categories</span>
+        </button>
+      {/snippet}
+    </IntegratedSearchBar>
     
     <!-- Category Pills -->
     <nav 

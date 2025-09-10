@@ -1480,5 +1480,23 @@
   "trending_brands": "Popular Brands",
   "profile_likes": "Likes",
   "onboarding_uploadCustom": "Upload Custom",
-  "onboarding_generateNew": "Generate New"
+  "onboarding_generateNew": "Generate New",
+  
+  "footer_company": "Company",
+  "footer_careers": "Careers",
+  "footer_press": "Press",
+  "footer_blog": "Blog",
+  "footer_support": "Support",
+  "footer_trustSafety": "Trust & Safety",
+  "footer_legal": "Legal",
+  "footer_cookies": "Cookie Policy",
+  "footer_returns": "Return Policy",
+  "footer_newsletter": "Newsletter",
+  "footer_followUs": "Follow Us",
+  "footer_madeWith": "Made with",
+  "footer_in": "in",
+  "footer_bulgaria": "Bulgaria",
+  "footer_allRightsReserved": "All rights reserved.",
+  "footer_newsletterPlaceholder": "Enter your email",
+  "footer_subscribe": "Subscribe"
 }

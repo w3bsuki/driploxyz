@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page, navigating } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { Button, ProductCard, Breadcrumb, SellerQuickView, SearchBar, BottomNav, type Product, type BreadcrumbItem } from '@repo/ui';
+  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, type Product, type BreadcrumbItem } from '@repo/ui';
   import * as i18n from '@repo/i18n';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { formatPrice } from '$lib/utils/price';
@@ -324,19 +324,29 @@
         </div>
       {/if}
       
-      <!-- Search Bar with Power Variant -->
+      <!-- Search Bar with Integrated Design -->
       <div class="pb-4">
         <div class="max-w-2xl mx-auto">
           <div class="relative">
-            <SearchBar 
-              bind:value={searchQuery}
+            <IntegratedSearchBar
+              bind:searchValue={searchQuery}
               onSearch={handleSearch}
-              onFilter={handleMegaMenuToggle}
               placeholder={i18n.category_searchPlaceholder()}
-              showCategoriesButton={true}
-              categoriesText={i18n.category_categories()}
               class="w-full"
-            />
+            >
+              {#snippet leftSection()}
+                <button
+                  onclick={handleMegaMenuToggle}
+                  class="h-12 px-3 rounded-l-xl hover:bg-gray-100 transition-colors flex items-center gap-1"
+                  aria-label={i18n.category_categories()}
+                >
+                  <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                  <span class="text-sm text-gray-600 hidden sm:inline">{i18n.category_categories()}</span>
+                </button>
+              {/snippet}
+            </IntegratedSearchBar>
             
             <!-- Category Mega Menu -->
             {#if showMegaMenu}
@@ -693,8 +703,6 @@
     profile: i18n.nav_profile(),
     messages: i18n.nav_messages()
   }}
-  variant="ios"
-  showLabels={false}
 />
 
 <style>

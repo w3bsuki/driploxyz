@@ -7,10 +7,12 @@ export { default as Input } from './Input.svelte';
 export { default as Card } from './Card.svelte';
 export { default as Modal } from './Modal.svelte';
 export { default as ProductCard } from './ProductCard.svelte';
-export { default as SearchBar } from './SearchBar.svelte';
+export { default as IntegratedSearchBar } from './IntegratedSearchBar.svelte';
 export { default as CategoryDropdown } from './CategoryDropdown.svelte';
 export { default as CategoryBottomSheet } from './CategoryBottomSheet.svelte';
 export { default as Avatar } from './Avatar.svelte';
+export { default as SellerProfileCard } from './SellerProfileCard.svelte';
+export { default as FeaturedSellers } from './FeaturedSellers.svelte';
 export { default as Breadcrumb } from './Breadcrumb.svelte';
 export { default as ErrorBoundary } from './ErrorBoundary.svelte';
 
@@ -134,7 +136,6 @@ export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte
 
 // Search components
 export { default as TrendingDropdown } from './TrendingDropdown.svelte';
-export { default as HeroSearchDropdown } from './HeroSearchDropdown.svelte';
 export { default as SmartStickySearch } from './SmartStickySearch.svelte';
 
 // Virtual scrolling and search components
