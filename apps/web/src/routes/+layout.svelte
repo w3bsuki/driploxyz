@@ -36,10 +36,12 @@
     // Only invalidate auth state for user-specific features (favorites, etc.)
     // Homepage content should be visible regardless of cookie acceptance
     if (browser) {
+      // Delay auth invalidation to avoid interfering with redirect/login flow
+      // This prevents race conditions when users accept cookies and then try to login
       setTimeout(() => {
         invalidate('supabase:auth');
         // Don't invalidate home:data - content should always be visible
-      }, 100);
+      }, 500);
     }
   }
 
@@ -64,6 +66,13 @@
   const isOnboardingPage = $derived($page.route.id?.includes('/onboarding'));
   const isMessagesConversation = $derived($page.route.id?.includes('/messages') && $page.url.searchParams.has('conversation'));
   const isSearchPage = $derived($page.route.id?.includes('/search'));
+  const isCategoryPage = $derived($page.route.id?.includes('/category'));
+  const isProductPage = $derived($page.route.id?.includes('/product'));
+  
+  // Show search in header on pages where users expect to search
+  const shouldShowHeaderSearch = $derived(
+    isSearchPage || isCategoryPage || isProductPage
+  );
   
   // Check if we should show region prompt
   $effect(() => {
@@ -221,7 +230,7 @@
 <ToastProvider>
   {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
     <div class="sticky top-0 z-50" bind:this={headerContainer}>
-      <Header user={data?.user} profile={data?.profile} />
+      <Header user={data?.user} profile={data?.profile} showSearch={shouldShowHeaderSearch} />
     </div>
   {/if}
   <!-- Route progress just below header -->

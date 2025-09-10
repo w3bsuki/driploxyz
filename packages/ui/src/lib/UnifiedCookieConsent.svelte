@@ -295,28 +295,31 @@
       showPreferences = false;
       showLanguageSelector = false;
       
-      // Redirect to proper URL with language prefix
-      const currentUrl = new URL(window.location.href);
-      let newPath = currentUrl.pathname;
-      
-      // Remove existing locale prefix if any
-      newPath = newPath.replace(/^\/(?:bg|uk)(?=\/|$)/, '');
-      
-      // Use /uk for English; Bulgarian uses no prefix (root)
-      if (targetLang === 'bg') {
-        newPath = (newPath === '/' ? '/' : newPath);
-      } else if (targetLang === 'en') {
-        newPath = '/uk' + (newPath === '/' ? '' : newPath);
-      }
-      // Also include locale query to allow server to persist cookie immediately
-      const qs = new URLSearchParams(currentUrl.search);
-      qs.set('locale', targetLang);
-      
-      // Build final URL
-      const finalUrl = `${currentUrl.protocol}//${currentUrl.host}${newPath}${qs.toString() ? `?${qs.toString()}` : ''}${currentUrl.hash}`;
-      
-      // Navigate to the new URL
-      window.location.href = finalUrl;
+      // Wait a moment for cookies and consent to be properly set before redirecting
+      setTimeout(() => {
+        // Redirect to proper URL with language prefix
+        const currentUrl = new URL(window.location.href);
+        let newPath = currentUrl.pathname;
+        
+        // Remove existing locale prefix if any
+        newPath = newPath.replace(/^\/(?:bg|uk)(?=\/|$)/, '');
+        
+        // Use /uk for English; Bulgarian uses no prefix (root)
+        if (targetLang === 'bg') {
+          newPath = (newPath === '/' ? '/' : newPath);
+        } else if (targetLang === 'en') {
+          newPath = '/uk' + (newPath === '/' ? '' : newPath);
+        }
+        // Also include locale query to allow server to persist cookie immediately
+        const qs = new URLSearchParams(currentUrl.search);
+        qs.set('locale', targetLang);
+        
+        // Build final URL
+        const finalUrl = `${currentUrl.protocol}//${currentUrl.host}${newPath}${qs.toString() ? `?${qs.toString()}` : ''}${currentUrl.hash}`;
+        
+        // Navigate to the new URL
+        window.location.href = finalUrl;
+      }, 150);
       
     } catch (e) {
       // Fallback: Set the locale cookie directly and refresh
@@ -324,7 +327,7 @@
       
       setTimeout(() => {
         window.location.reload();
-      }, 100);
+      }, 150);
     }
   }
   
