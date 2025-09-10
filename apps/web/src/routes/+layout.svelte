@@ -30,6 +30,18 @@
   
   // Region switch modal state
   let showRegionModal = $state(false);
+  
+  // Cookie consent handling - invalidate data when cookies are accepted
+  function handleConsentChange(consent: any) {
+    // Invalidate all data to trigger server-side re-evaluation with new cookies
+    if (browser) {
+      // Small delay to ensure cookies are set before invalidation
+      setTimeout(() => {
+        invalidate('supabase:auth');
+        invalidate('home:data');
+      }, 100);
+    }
+  }
 
   // Language initialization - Header component handles switching
   $effect(() => {
@@ -256,7 +268,7 @@
 <!-- Note: ToastProvider above already handles all notifications -->
 
 <!-- Unified Cookie & Language Consent (handles everything) -->
-<UnifiedCookieConsent />
+<UnifiedCookieConsent onConsentChange={handleConsentChange} />
 
 <!-- Global Message Notification Toast -->
 {#if $activeNotification}
