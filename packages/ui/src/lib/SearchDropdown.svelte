@@ -176,12 +176,12 @@
   }
 </script>
 
-<svelte:document on:keydown={handleKeyDown} on:click={handleClickOutside} />
+<svelte:document onkeydown={handleKeyDown} onclick={handleClickOutside} />
 
 {#if dropdownVisible}
   <div 
     class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-xl shadow-lg z-50 {className}"
-    on:click|stopPropagation
+    onclick={(e) => e.stopPropagation()}
   >
     {#if query.trim()}
       <!-- Search Results -->
@@ -204,7 +204,7 @@
           {#each results as product, index}
             <button
               class="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 text-left transition-colors {selectedIndex === index ? 'bg-blue-50' : ''}"
-              on:click={() => handleProductSelect(product)}
+              onclick={() => handleProductSelect(product)}
             >
               {#if product.images?.[0]?.image_url}
                 <img 
@@ -241,25 +241,25 @@
               <div class="flex flex-wrap gap-2">
                 <button
                   class="px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
-                  on:click={() => handleCategorySelect('men')}
+                  onclick={() => handleCategorySelect('men')}
                 >
                   Мъже
                 </button>
                 <button
                   class="px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
-                  on:click={() => handleCategorySelect('women')}
+                  onclick={() => handleCategorySelect('women')}
                 >
                   Жени
                 </button>
                 <button
                   class="px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
-                  on:click={() => handleCategorySelect('kids')}
+                  onclick={() => handleCategorySelect('kids')}
                 >
                   Деца
                 </button>
                 <button
                   class="px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
-                  on:click={() => handleCategorySelect('unisex')}
+                  onclick={() => handleCategorySelect('unisex')}
                 >
                   Унисекс
                 </button>
@@ -270,7 +270,7 @@
           {#if results.length >= maxResults}
             <button
               class="w-full px-4 py-3 text-blue-600 hover:bg-blue-50 text-sm font-medium transition-colors"
-              on:click={() => handleSearchSelect(query)}
+              onclick={() => handleSearchSelect(query)}
             >
               View all results for "{query}"
             </button>
@@ -281,7 +281,7 @@
           <div class="mb-2">No products found</div>
           <button
             class="text-blue-600 hover:text-blue-700 text-sm font-medium"
-            on:click={() => handleSearchSelect(query)}
+            onclick={() => handleSearchSelect(query)}
           >
             Search for "{query}" anyway
           </button>

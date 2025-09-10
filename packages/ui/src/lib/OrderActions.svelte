@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
-
 	interface Props {
 		orderId: string;
 		status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'disputed' | 'failed' | 'completed';
@@ -8,6 +6,13 @@
 		trackingNumber?: string;
 		isLoading?: boolean;
 		className?: string;
+		// Callback props replacing event dispatcher
+		onMarkShipped?: (data: { orderId: string; trackingNumber?: string }) => void;
+		onMarkDelivered?: (data: { orderId: string }) => void;
+		onCancelOrder?: (data: { orderId: string; reason?: string }) => void;
+		onDisputeOrder?: (data: { orderId: string; reason?: string }) => void;
+		onContactOtherParty?: (data: { orderId: string }) => void;
+		onLeaveReview?: (data: { orderId: string }) => void;
 	}
 
 	let { 
@@ -16,17 +21,14 @@
 		userRole, 
 		trackingNumber,
 		isLoading = false,
-		className = ''
+		className = '',
+		onMarkShipped,
+		onMarkDelivered,
+		onCancelOrder,
+		onDisputeOrder,
+		onContactOtherParty,
+		onLeaveReview
 	}: Props = $props();
-
-	const dispatch = createEventDispatcher<{
-		markShipped: { orderId: string; trackingNumber?: string };
-		markDelivered: { orderId: string };
-		cancelOrder: { orderId: string; reason?: string };
-		disputeOrder: { orderId: string; reason?: string };
-		contactOtherParty: { orderId: string };
-		leaveReview: { orderId: string };
-	}>();
 
 	let showTrackingInput = $state(false);
 	let trackingInput = $state('');
@@ -36,7 +38,7 @@
 	let disputeReason = $state('');
 
 	const handleMarkShipped = () => {
-		dispatch('markShipped', { 
+		onMarkShipped?.({ 
 			orderId, 
 			trackingNumber: trackingInput.trim() || undefined 
 		});
@@ -45,11 +47,11 @@
 	};
 
 	const handleMarkDelivered = () => {
-		dispatch('markDelivered', { orderId });
+		onMarkDelivered?.({ orderId });
 	};
 
 	const handleCancelOrder = () => {
-		dispatch('cancelOrder', { 
+		onCancelOrder?.({ 
 			orderId, 
 			reason: cancelReason.trim() || undefined 
 		});
@@ -58,7 +60,7 @@
 	};
 
 	const handleDisputeOrder = () => {
-		dispatch('disputeOrder', { 
+		onDisputeOrder?.({ 
 			orderId, 
 			reason: disputeReason.trim() || undefined 
 		});
@@ -67,11 +69,11 @@
 	};
 
 	const handleContactOtherParty = () => {
-		dispatch('contactOtherParty', { orderId });
+		onContactOtherParty?.({ orderId });
 	};
 
 	const handleLeaveReview = () => {
-		dispatch('leaveReview', { orderId });
+		onLeaveReview?.({ orderId });
 	};
 
 	// Determine available actions based on status and user role
