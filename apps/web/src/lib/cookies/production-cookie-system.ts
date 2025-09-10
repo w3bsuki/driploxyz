@@ -104,7 +104,7 @@ export class ProductionCookieManager {
   private consent: ConsentState | null = null;
   private readonly CONSENT_VERSION = '2.0.0';
   private readonly CONSENT_MAX_AGE = 365 * 24 * 60 * 60; // 1 year
-  private scriptQueue = new Map<string, () => void>();
+  private scriptQueue = new Map<string, Array<() => void>>();
   
   private constructor() {
     if (browser) {
@@ -123,6 +123,7 @@ export class ProductionCookieManager {
     this.loadConsent();
     this.setupGlobalBlockers();
     this.applyConsentState();
+    this.processScriptQueue(); // Process any queued scripts on init
     this.listenForChanges();
   }
   
@@ -243,6 +244,7 @@ export class ProductionCookieManager {
     
     // Apply immediately
     this.applyConsentState();
+    this.processScriptQueue(); // Process queued scripts after consent update
     
     // Dispatch event
     this.dispatchConsentEvent();
@@ -420,42 +422,170 @@ export class ProductionCookieManager {
     }
   }
   
+
   /**
    * Queue script for loading after consent
    */
-  queueScript(category: string, loader: () => void): void {}
+  queueScript(category: keyof typeof COOKIE_CATEGORIES, loader: () => void): void {
+    if (!browser) return;
+    
+    // If already consented, load immediately
+    if (this.hasConsent(category)) {
+      try {
+        loader();
+      } catch (error) {
+        console.error(`Failed to load ${category} script:`, error);
+      }
+      return;
+    }
+    
+    // Otherwise queue for later
+    if (!this.scriptQueue.has(category)) {
+      this.scriptQueue.set(category, []);
+    }
+    this.scriptQueue.get(category)!.push(loader);
+  }
   
   /**
    * Process queued scripts
    */
-  private processScriptQueue(): void {}
+  private processScriptQueue(): void {
+    if (!browser) return;
+    
+    for (const [category] of this.scriptQueue) {
+      const categoryKey = category as keyof typeof COOKIE_CATEGORIES;
+      if (this.hasConsent(categoryKey)) {
+        this.loadQueuedScripts(categoryKey);
+      }
+    }
+  }
   
   /**
    * Load queued scripts for category
    */
-  private loadQueuedScripts(category: string): void {}
+  private loadQueuedScripts(category: keyof typeof COOKIE_CATEGORIES): void {
+    if (!browser) return;
+    
+    const scripts = this.scriptQueue.get(category);
+    if (!scripts || scripts.length === 0) return;
+    
+    scripts.forEach(loader => {
+      try {
+        loader();
+      } catch (error) {
+        console.error(`Failed to load ${category} script:`, error);
+      }
+    });
+    
+    // Clear the queue for this category
+    this.scriptQueue.set(category, []);
+  }
+
+  /**
+   * Get CSP nonce from current document
+   */
+  private getCSPNonce(): string | null {
+    // Try to get nonce from existing script tags (SvelteKit provides this)
+    const scripts = document.querySelectorAll('script[nonce]');
+    if (scripts.length > 0 && scripts[0]) {
+      return scripts[0].getAttribute('nonce') || null;
+    }
+    return null;
+  }
+
+  /**
+   * Create script element with CSP nonce
+   */
+  private createScript(src: string, nonce?: string): HTMLScriptElement {
+    const script = document.createElement('script');
+    const nonceValue = nonce || this.getCSPNonce();
+    if (nonceValue) script.setAttribute('nonce', nonceValue);
+    script.src = src;
+    script.async = true;
+    return script;
+  }
 
   /**
    * Consent-aware script loaders (with CSP nonce support)
    */
   loadAnalyticsWithConsent(nonce?: string): void {
     if (!browser || !this.hasConsent('analytics')) return;
-    const script = document.createElement('script');
-    if (nonce) script.setAttribute('nonce', nonce);
-    script.src = 'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID';
-    script.async = true;
+    
+    // Only load if not already loaded
+    if (document.querySelector('script[src*="googletagmanager.com/gtag"]')) return;
+    
+    const script = this.createScript('https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID', nonce);
+    document.head.appendChild(script);
+    
+    // Initialize gtag
+    script.onload = () => {
+      if (typeof (window as any).gtag === 'undefined') {
+        (window as any).dataLayer = (window as any).dataLayer || [];
+        (window as any).gtag = function() {
+          (window as any).dataLayer.push(arguments);
+        };
+        (window as any).gtag('js', new Date());
+        (window as any).gtag('config', 'GA_MEASUREMENT_ID', {
+          anonymize_ip: true,
+          cookie_flags: 'SameSite=Strict;Secure'
+        });
+      }
+    };
+  }
+
+  /**
+   * Load marketing scripts with consent
+   */
+  loadMarketingWithConsent(nonce?: string): void {
+    if (!browser || !this.hasConsent('marketing')) return;
+    
+    // Example: Facebook Pixel (replace with actual marketing scripts)
+    const script = this.createScript('https://connect.facebook.net/en_US/fbevents.js', nonce);
+    document.head.appendChild(script);
+    
+    script.onload = () => {
+      if (typeof (window as any).fbq === 'undefined') {
+        (window as any).fbq = function() {
+          if ((window as any).fbq.callMethod) {
+            (window as any).fbq.callMethod.apply((window as any).fbq, arguments);
+          } else {
+            (window as any).fbq.queue.push(arguments);
+          }
+        };
+        (window as any).fbq.push = (window as any).fbq;
+        (window as any).fbq.queue = [];
+        // Initialize with your Facebook Pixel ID
+        // (window as any).fbq('init', 'YOUR_PIXEL_ID');
+      }
+    };
+  }
+
+  /**
+   * Load Stripe scripts (functional - always allowed)
+   */
+  loadStripeScripts(nonce?: string): void {
+    if (!browser) return;
+    
+    // Only load if not already loaded
+    if (document.querySelector('script[src*="js.stripe.com"]')) return;
+    
+    const script = this.createScript('https://js.stripe.com/v3/', nonce);
     document.head.appendChild(script);
   }
 
-  loadMarketingWithConsent(nonce?: string): void {
-    if (!browser || !this.hasConsent('marketing')) return;
-    const script = document.createElement('script');
-    if (nonce) script.setAttribute('nonce', nonce);
-    // Example: load marketing pixel
-    script.src = 'https://connect.facebook.net/en_US/fbevents.js';
-    script.async = true;
+  /**
+   * Load performance monitoring scripts (functional - always allowed)
+   */
+  loadPerformanceScripts(nonce?: string): void {
+    if (!browser) return;
+    
+    // Vercel Speed Insights
+    if (document.querySelector('script[src*="vercel-insights"]')) return;
+    
+    const script = this.createScript('https://vitals.vercel-insights.com/v1/vitals', nonce);
     document.head.appendChild(script);
   }
+
   
   /**
    * Listen for consent changes across tabs
@@ -467,6 +597,7 @@ export class ProductionCookieManager {
       if (e.key === COOKIES.CONSENT) {
         this.loadConsent();
         this.applyConsentState();
+        this.processScriptQueue();
       }
     });
   }
@@ -491,6 +622,7 @@ export class ProductionCookieManager {
     this.cleanupCookies();
     this.blockAnalytics();
     this.blockMarketing();
+    this.scriptQueue.clear(); // Clear script queue when consent is revoked
     this.dispatchConsentEvent();
   }
 }

@@ -375,6 +375,27 @@
   <WelcomeModal
     show={showWelcomeModal}
     username={data.profile?.username || 'there'}
+    translations={{
+      welcome: i18n.m.welcome_modal_welcome(),
+      welcomeBrand: i18n.m.welcome_modal_welcomeBrand(),
+      welcomePersonal: i18n.m.welcome_modal_welcomePersonal(),
+      discover: i18n.m.welcome_modal_discover(),
+      discoverDesc: i18n.m.welcome_modal_discoverDesc(),
+      sell: i18n.m.welcome_modal_sell(),
+      sellDesc: i18n.m.welcome_modal_sellDesc(),
+      ready: i18n.m.welcome_modal_ready(),
+      readyDesc: i18n.m.welcome_modal_readyDesc(),
+      back: i18n.m.welcome_modal_back(),
+      next: i18n.m.welcome_modal_next(),
+      getStarted: i18n.m.welcome_modal_getStarted(),
+      skip: i18n.m.welcome_modal_skip(),
+      designer: i18n.m.welcome_modal_designer(),
+      vintage: i18n.m.welcome_modal_vintage(),
+      trending: i18n.m.welcome_modal_trending(),
+      totalSales: i18n.m.welcome_modal_totalSales(),
+      happySellers: i18n.m.welcome_modal_happySellers(),
+      trustedMarketplace: i18n.m.welcome_modal_trustedMarketplace()
+    }}
     onComplete={() => {
       showWelcomeModal = false;
     }}

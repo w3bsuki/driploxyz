@@ -2,12 +2,21 @@
   import { browser } from '$app/environment';
   import { onMount } from 'svelte';
 
+  interface Translations {
+    title?: string;
+    description?: string;
+    signUp?: string;
+    later?: string;
+    dismiss?: string;
+  }
+
   interface Props {
     isAuthenticated?: boolean;
     onSignUp?: () => void;
     onDismiss?: () => void;
     showAfterViews?: number;
     hideAfterMs?: number;
+    translations?: Translations;
   }
 
   let { 
@@ -15,20 +24,21 @@
     onSignUp,
     onDismiss,
     showAfterViews = 3,
-    hideAfterMs = 10000
+    hideAfterMs = 10000,
+    translations = {}
   }: Props = $props();
 
   let showBanner = $state(false);
   let viewCount = $state(0);
   let isDismissed = $state(false);
 
-  // Track page views for unauthenticated users
+  // Initialize view count and dismissal state once on mount
   $effect(() => {
-    if (!browser || isAuthenticated || isDismissed) return;
+    if (!browser || isAuthenticated) return;
 
-    // Get stored view count
+    // Get stored view count - only read, don't increment yet
     const stored = localStorage.getItem('driplo_view_count');
-    viewCount = stored ? parseInt(stored, 10) : 0;
+    const storedCount = stored ? parseInt(stored, 10) : 0;
 
     // Check if banner was previously dismissed
     const dismissed = localStorage.getItem('driplo_engagement_dismissed');
@@ -41,20 +51,25 @@
       }
     }
 
-    // Increment view count
-    viewCount++;
-    localStorage.setItem('driplo_view_count', viewCount.toString());
+    // Only increment and show if not dismissed
+    if (!isDismissed) {
+      const newCount = storedCount + 1;
+      viewCount = newCount;
+      localStorage.setItem('driplo_view_count', newCount.toString());
 
-    // Show banner after enough views
-    if (viewCount >= showAfterViews) {
-      setTimeout(() => {
-        showBanner = true;
-        
-        // Auto-hide after specified time
+      // Show banner after enough views
+      if (newCount >= showAfterViews) {
         setTimeout(() => {
-          showBanner = false;
-        }, hideAfterMs);
-      }, 1000); // Small delay to avoid jarring experience
+          if (!isDismissed) { // Double check before showing
+            showBanner = true;
+            
+            // Auto-hide after specified time
+            setTimeout(() => {
+              showBanner = false;
+            }, hideAfterMs);
+          }
+        }, 1000); // Small delay to avoid jarring experience
+      }
     }
   });
 
@@ -97,10 +112,10 @@
         <!-- Content -->
         <div class="flex-1 min-w-0">
           <h3 class="text-sm font-semibold text-[color:var(--text-primary)] mb-1">
-            Join the Driplo Community
+            {translations.title || 'Join the Driplo Community'}
           </h3>
           <p class="text-xs text-[color:var(--text-secondary)] mb-3">
-            Save favorites, start selling, and connect with fashion lovers
+            {translations.description || 'Save favorites, start selling, and connect with fashion lovers'}
           </p>
           
           <!-- Actions -->
@@ -110,14 +125,14 @@
               class="flex-1 px-3 py-1.5 bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] 
                      text-xs font-medium rounded-lg hover:bg-[color:var(--brand-primary)]/90 transition-colors"
             >
-              Sign Up
+              {translations.signUp || 'Sign Up'}
             </button>
             <button
               onclick={dismiss}
               class="px-3 py-1.5 text-[color:var(--text-secondary)] text-xs font-medium 
                      hover:text-[color:var(--text-primary)] transition-colors"
             >
-              Later
+              {translations.later || 'Later'}
             </button>
           </div>
         </div>
@@ -126,7 +141,7 @@
         <button
           onclick={dismiss}
           class="flex-shrink-0 p-1 hover:bg-[color:var(--surface-secondary)] rounded-lg transition-colors"
-          aria-label="Dismiss"
+          aria-label={translations.dismiss || 'Dismiss'}
         >
           <svg class="w-4 h-4 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

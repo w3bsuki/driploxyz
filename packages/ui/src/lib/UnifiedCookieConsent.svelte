@@ -35,7 +35,7 @@
       try {
         const consent = document.cookie
           .split(';')
-          .find(row => row.trim().startsWith('driplo_driplo_consent='))
+          .find(row => row.trim().startsWith('driplo_consent='))
           ?.split('=')[1];
         return consent ? JSON.parse(decodeURIComponent(consent)) : null;
       } catch {
@@ -256,8 +256,10 @@
     consentManager.updateConsent(consent);
     onConsentChange?.(consent);
     
-    // Note: Language preference cannot be saved without functional cookies
-    // But we still close the banner
+    // Force reload to refresh cookie state
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
     
     showBanner = false;
     showLanguageSelector = false;
@@ -341,9 +343,9 @@
   <div class="fixed inset-0 bg-black/40 md:backdrop-blur-sm md:bg-black/30 z-[9998]" aria-hidden="true"></div>
   
   <!-- Main Banner Container -->
-  <div class="fixed inset-x-0 bottom-0 z-[9999]">
+  <div class="fixed inset-x-0 bottom-0 z-[9999] max-h-[90vh] overflow-y-auto">
     <div class="bg-[color:var(--surface-base)]/95 border-t border-[color:var(--border-subtle)] shadow-xl backdrop-blur-xl">
-      <div class="max-w-6xl mx-auto">
+      <div class="max-w-6xl mx-auto px-2 sm:px-4">
         
         {#if showLanguageSelector && !hasExistingConsent}
           <!-- Language Selection (First Time Visitors) -->
@@ -528,16 +530,16 @@
             <div class="flex flex-col sm:flex-row lg:flex-col gap-2 lg:w-64">
               <button
                 onclick={acceptAll}
-                class="min-h-[44px] px-4 py-3 bg-[color:var(--surface-strong)] text-[color:var(--text-inverse)] rounded-xl font-semibold 
-                       hover:bg-[color:var(--surface-strong)]/90 transition-all hover:scale-[1.02] shadow-lg text-sm"
+                class="min-h-[44px] px-4 py-3 bg-blue-600 text-white rounded-xl font-semibold 
+                       hover:bg-blue-700 transition-all hover:scale-[1.02] shadow-lg text-sm"
               >
                 Accept All
               </button>
               
               <button
                 onclick={acceptNecessary}
-                class="min-h-[44px] px-4 py-3 bg-[color:var(--surface-base)] text-[color:var(--text-secondary)] rounded-xl font-semibold 
-                       border-2 border-[color:var(--border-primary)] hover:border-[color:var(--border-secondary)] hover:bg-[color:var(--surface-secondary)] transition-all text-sm"
+                class="min-h-[44px] px-4 py-3 bg-white text-gray-700 rounded-xl font-semibold 
+                       border-2 border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all text-sm"
               >
                 Essential Only
               </button>
@@ -545,16 +547,16 @@
               {#if !showPreferences}
                 <button
                   onclick={togglePreferences}
-                  class="min-h-[44px] px-4 py-3 text-[color:var(--text-muted)] hover:text-[color:var(--text-primary)] 
-                         font-semibold transition-colors text-sm hover:bg-[color:var(--surface-secondary)] rounded-xl"
+                  class="min-h-[44px] px-4 py-3 text-gray-500 hover:text-gray-700 
+                         font-semibold transition-colors text-sm hover:bg-gray-50 rounded-xl"
                 >
                   Customize
                 </button>
               {:else}
                 <button
                   onclick={savePreferences}
-                  class="min-h-[44px] px-4 py-3 bg-[color:var(--brand-primary)] 
-                         text-[color:var(--text-inverse)] rounded-xl font-semibold hover:shadow-lg hover:bg-[color:var(--brand-primary)]/90 transition-all text-sm"
+                  class="min-h-[44px] px-4 py-3 bg-blue-600 
+                         text-white rounded-xl font-semibold hover:shadow-lg hover:bg-blue-700 transition-all text-sm"
                 >
                   Save My Choices
                 </button>

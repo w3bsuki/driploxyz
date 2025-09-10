@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { EnhancedSearchBar, TrendingDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill, EngagementBanner } from '@repo/ui';
+	import { EnhancedSearchBar, TrendingDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill } from '@repo/ui';
 	import CategoryPill from '$lib/components/CategoryPill.svelte';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
@@ -17,6 +17,9 @@
 	import type { Seller, ProductDisplay, PromotedProduct } from '$lib/types';
 	import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '$lib/types';
 	import { getProductUrl } from '$lib/utils/seo-urls';
+	import { createLogger } from '$lib/utils/log';
+
+	const log = createLogger('homepage');
 
 	let { data }: { data: PageData } = $props();
 
@@ -227,12 +230,14 @@
 
 	// Debug data loading
 	$effect(() => {
-		console.log('dataLoaded:', dataLoaded);
-		console.log('featuredProductsData:', featuredProductsData);
-		console.log('promotedProducts:', promotedProducts);
-		console.log('filteredPromotedProducts:', filteredPromotedProducts);
-		console.log('sellersData:', sellersData);
-		console.log('transformed sellers:', sellers);
+		log.debug('Data loading status', {
+			dataLoaded,
+			featuredProductsCount: featuredProductsData?.length || 0,
+			promotedProductsCount: promotedProducts?.length || 0,
+			filteredPromotedProductsCount: filteredPromotedProducts?.length || 0,
+			sellersCount: sellersData?.length || 0,
+			transformedSellersCount: sellers?.length || 0
+		});
 	});
 
 	// Transform top sellers for TrendingDropdown
@@ -325,6 +330,10 @@
 
 	function handleSellClick() {
 		goto('/sell');
+	}
+	
+	function handleViewProProducts() {
+		goto('/pro');
 	}
 
 	function formatPrice(price: number): string {
@@ -837,6 +846,8 @@
 				onSellClick={handleSellClick}
 				{formatPrice}
 				favoritesState={$favoritesStore}
+				showViewAllButton={true}
+				onViewAll={handleViewProProducts}
 				translations={{
 					empty_noProducts: i18n.empty_noProducts(),
 					empty_startBrowsing: i18n.empty_startBrowsing(),
@@ -937,6 +948,12 @@
 	onSearch={handleSearch}
 	placeholder={i18n.search_placeholder()}
 	observeTarget="#hero-search-container"
+	{mainCategories}
+	{virtualCategories}
+	{loadingCategory}
+	onNavigateToCategory={navigateToCategory}
+	onNavigateToAllSearch={navigateToAllSearch}
+	onPillKeyNav={handlePillKeyNav}
 />
 
 <BottomNav 
@@ -995,12 +1012,21 @@
 	onSignUp={authPopupActions.signUp}
 />
 
-<!-- Engagement Banner for unauthenticated users -->
-<EngagementBanner
-	isAuthenticated={!!data.user}
-	onSignUp={() => authPopupActions.showForSignUp()}
-	showAfterViews={3}
-	hideAfterMs={12000}
-/>
+<!-- Subtle browsing hint for unauthenticated users -->
+{#if !data.user}
+	<div class="fixed bottom-20 sm:bottom-4 left-4 right-4 z-30 mx-auto max-w-xs sm:max-w-sm">
+		<div class="bg-[color:var(--surface-base)] border border-[color:var(--border-primary)] rounded-lg shadow-sm px-4 py-3 text-center">
+			<p class="text-xs text-[color:var(--text-secondary)] mb-2">
+				{i18n.engagement_banner_description ? i18n.engagement_banner_description() : 'Join thousands of fashion lovers'}
+			</p>
+			<button 
+				onclick={() => authPopupActions.showForSignUp()}
+				class="text-xs font-medium text-[color:var(--brand-primary)] hover:underline"
+			>
+				{i18n.auth_signUp()}
+			</button>
+		</div>
+	</div>
+{/if}
 {/key}
 

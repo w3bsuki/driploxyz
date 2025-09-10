@@ -1,5 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { enforceRateLimit } from '$lib/security/rate-limiter';
 // Imports for future archiving implementation
 // import { createClient } from '@supabase/supabase-js';
 // import type { Database } from '@repo/database';
@@ -20,7 +21,16 @@ import type { RequestHandler } from './$types';
 //   );
 // }
 
-export const POST: RequestHandler = async ({ locals: { safeGetSession } }) => {
+export const POST: RequestHandler = async ({ request, locals: { safeGetSession }, getClientAddress }) => {
+  // Strict rate limiting for admin operations
+  const rateLimitResponse = await enforceRateLimit(
+    request, 
+    getClientAddress, 
+    'admin',
+    `admin-archive:${getClientAddress()}`
+  );
+  if (rateLimitResponse) return rateLimitResponse;
+  
   try {
     // Check authentication
     const { session } = await safeGetSession();
@@ -55,7 +65,16 @@ export const POST: RequestHandler = async ({ locals: { safeGetSession } }) => {
   }
 };
 
-export const GET: RequestHandler = async ({ locals: { safeGetSession } }) => {
+export const GET: RequestHandler = async ({ request, locals: { safeGetSession }, getClientAddress }) => {
+  // Strict rate limiting for admin operations
+  const rateLimitResponse = await enforceRateLimit(
+    request, 
+    getClientAddress, 
+    'admin',
+    `admin-archive-stats:${getClientAddress()}`
+  );
+  if (rateLimitResponse) return rateLimitResponse;
+  
   try {
     // Check authentication
     const { session } = await safeGetSession();

@@ -2,6 +2,9 @@ import { handleErrorWithSentry } from '@sentry/sveltekit';
 import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
+import { createLogger } from '$lib/utils/log';
+
+const log = createLogger('hooks-client');
 
 // Get Sentry DSN from environment (may be undefined)
 const PUBLIC_SENTRY_DSN = env.PUBLIC_SENTRY_DSN;
@@ -24,7 +27,7 @@ if (PUBLIC_SENTRY_DSN) {
 export const handleError = PUBLIC_SENTRY_DSN 
   ? handleErrorWithSentry() 
   : (async ({ error }: { error: unknown; event: any }) => {
-      console.error('Client error:', error);
+      log.error('Client error occurred', error);
       return {
         message: 'An error occurred'
       };

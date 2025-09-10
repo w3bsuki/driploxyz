@@ -79,11 +79,11 @@
   <div class="px-2 sm:px-4 lg:px-6 mb-3">
     <div class="flex items-center justify-between">
       <div class="flex-1">
-        <h2 class="text-lg font-medium text-gray-900">{title}</h2>
+        <h2 class="text-base font-normal text-gray-900 leading-tight">{title}</h2>
         {#if description}
-          <p class="text-xs text-gray-500 mt-0.5">{description}</p>
+          <p class="text-xs text-gray-500">{description}</p>
         {:else if displaySellers.length > 0}
-          <p class="text-xs text-gray-500 mt-0.5">
+          <p class="text-xs text-gray-500">
             {displaySellers.length} seller{displaySellers.length === 1 ? '' : 's'} • updated recently
           </p>
         {/if}

@@ -1,7 +1,17 @@
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { enforceRateLimit } from '$lib/security/rate-limiter';
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
+  // Rate limiting for follow/unfollow actions
+  const rateLimitResponse = await enforceRateLimit(
+    request, 
+    getClientAddress, 
+    'followers',
+    `followers:${getClientAddress()}`
+  );
+  if (rateLimitResponse) return rateLimitResponse;
+  
   const { session } = await locals.safeGetSession();
   if (!session?.user) {
     throw error(401, 'Unauthorized');

@@ -1,8 +1,18 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServerSupabaseClient } from '$lib/supabase/server';
+import { enforceRateLimit } from '$lib/security/rate-limiter';
 
 export const POST: RequestHandler = async (event) => {
+  // Rate limiting for profile account type updates
+  const rateLimitResponse = await enforceRateLimit(
+    event.request, 
+    event.getClientAddress, 
+    'api',
+    `profile-update:${event.getClientAddress()}`
+  );
+  if (rateLimitResponse) return rateLimitResponse;
+  
   try {
     const { accountType } = await event.request.json();
     

@@ -40,6 +40,8 @@
     favoritesState?: any;
     showQuickFilters?: boolean;
     onQuickFilter?: (condition: string) => void;
+    showViewAllButton?: boolean;
+    onViewAll?: () => void;
   }
 
   let { 
@@ -55,7 +57,9 @@
     sectionTitle = 'Newest listings', // Will be overridden by parent with proper translation
     favoritesState,
     showQuickFilters = false,
-    onQuickFilter
+    onQuickFilter,
+    showViewAllButton = false,
+    onViewAll
   }: Props = $props();
   
   // Derived states
@@ -73,15 +77,27 @@
   <div class="mb-4 sm:mb-6">
     <div class="flex items-start justify-between">
       <div class="flex-1">
-        <h2 class="text-lg sm:text-xl font-medium text-gray-900 tracking-tight leading-tight">
+        <h2 class="text-base font-normal text-gray-900 tracking-tight leading-tight">
           {sectionTitle}
         </h2>
         {#if hasProducts}
-          <p class="text-xs sm:text-sm text-gray-500 font-normal mt-0.5" style="letter-spacing: -0.01em;">
+          <p class="text-xs sm:text-sm text-gray-500 font-normal" style="letter-spacing: -0.01em;">
             {products.length} {translations.home_itemCount} • {translations.home_updatedMomentsAgo}
           </p>
         {/if}
       </div>
+      
+      {#if showViewAllButton && hasProducts}
+        <button
+          onclick={onViewAll}
+          class="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+        >
+          View All
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      {/if}
     </div>
   </div>
   

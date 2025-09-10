@@ -1,5 +1,8 @@
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
+import { createLogger } from '$lib/utils/log';
+
+const log = createLogger('onboarding');
 
 /**
  * Onboarding Page Load Function
@@ -10,16 +13,16 @@ import type { Actions, PageServerLoad } from './$types';
 export const load = (async ({ locals: { safeGetSession }, parent }) => {
   const { session, user } = await safeGetSession();
   
-  console.log('[ONBOARDING LOAD] Loading onboarding for user:', user?.email);
+  log.debug('Loading onboarding page', { userEmail: user?.email });
   
   if (!session || !user) {
-    console.log('[ONBOARDING LOAD] No session/user, redirecting to login');
+    log.debug('No session/user, redirecting to login');
     throw redirect(303, '/login');
   }
 
   const parentData = await parent();
   
-  console.log('[ONBOARDING LOAD] Profile status:', {
+  log.debug('Profile status check', {
     hasProfile: !!parentData.profile,
     onboardingCompleted: parentData.profile?.onboarding_completed,
     accountType: parentData.profile?.account_type
@@ -27,11 +30,11 @@ export const load = (async ({ locals: { safeGetSession }, parent }) => {
   
   // Check if onboarding is already completed
   if (parentData.profile?.onboarding_completed === true) {
-    console.log('[ONBOARDING LOAD] User already completed onboarding, redirecting to dashboard');
+    log.debug('User already completed onboarding, redirecting to dashboard');
     throw redirect(303, '/dashboard');
   }
 
-  console.log('[ONBOARDING LOAD] User needs onboarding, proceeding with page load');
+  log.debug('User needs onboarding, proceeding with page load');
 
   return {
     user,
@@ -60,13 +63,13 @@ export const actions = {
     const socialLinks = formData.get('socialLinks') as string;
     const brandPaid = formData.get('brandPaid') === 'true';
     
-    console.log('[ONBOARDING COMPLETE] Starting completion for user:', user.email, { accountType, brandPaid });
+    log.debug('Starting onboarding completion', { userEmail: user.email, accountType, brandPaid });
     
     // SERVER-SIDE VALIDATION: Verify payment for brand/pro accounts
     if (accountType === 'brand' || accountType === 'pro') {
       // First check the client flag
       if (!brandPaid) {
-        console.error('[ONBOARDING COMPLETE] Payment required but not completed:', { accountType, brandPaid });
+        log.error('Payment required but not completed', undefined, { accountType, brandPaid });
         return fail(403, { error: 'Payment is required for ' + accountType + ' accounts. Please complete payment before continuing.' });
       }
       
@@ -84,18 +87,18 @@ export const actions = {
         .maybeSingle();
       
       if (paymentError) {
-        console.error('[ONBOARDING COMPLETE] Error checking payment:', paymentError);
+        log.error('Error checking payment', paymentError);
         return fail(500, { error: 'Failed to verify payment. Please try again.' });
       }
       
       if (!recentPayment) {
-        console.error('[ONBOARDING COMPLETE] No valid payment found for:', { accountType, userId: user.id });
+        log.error('No valid payment found', undefined, { accountType, userId: user.id });
         return fail(403, { 
           error: 'Payment verification failed. Please ensure your payment was processed successfully before continuing.' 
         });
       }
       
-      console.log('[ONBOARDING COMPLETE] Payment verified:', { 
+      log.debug('Payment verified', { 
         paymentId: recentPayment.id, 
         planType: recentPayment.plan_type,
         amount: recentPayment.amount 
@@ -134,7 +137,7 @@ export const actions = {
       try {
         parsedSocialLinks = socialLinks ? JSON.parse(socialLinks) : [];
       } catch (e) {
-        console.warn('[ONBOARDING COMPLETE] Failed to parse social links:', e);
+        log.warn('Failed to parse social links', { error: e });
         parsedSocialLinks = [];
       }
 
@@ -166,7 +169,7 @@ export const actions = {
         updated_at: new Date().toISOString()
       };
 
-      console.log('[ONBOARDING COMPLETE] Updating profile with:', profileUpdate);
+      log.debug('Updating profile', profileUpdate);
 
       // UPSERT profile - this handles both update and insert cases
       const { data: updatedProfile, error: profileError } = await supabase
@@ -179,11 +182,11 @@ export const actions = {
         .single();
 
       if (profileError) {
-        console.error('[ONBOARDING COMPLETE] Profile update failed:', profileError);
+        log.error('Profile update failed', profileError);
         return fail(500, { error: 'Failed to update profile: ' + profileError.message });
       }
 
-      console.log('[ONBOARDING COMPLETE] Profile updated successfully:', updatedProfile);
+      log.debug('Profile updated successfully', { profileId: updatedProfile?.id, username: updatedProfile?.username });
 
       // VERIFY the update actually succeeded by reading it back
       const { data: verifiedProfile, error: verifyError } = await supabase
@@ -193,20 +196,20 @@ export const actions = {
         .single();
 
       if (verifyError || !verifiedProfile) {
-        console.error('[ONBOARDING COMPLETE] Failed to verify profile update:', verifyError);
+        log.error('Failed to verify profile update', verifyError);
         return fail(500, { error: 'Failed to verify profile completion. Please try again.' });
       }
 
       if (verifiedProfile.onboarding_completed !== true) {
-        console.error('[ONBOARDING COMPLETE] Profile onboarding_completed is still false after update!');
+        log.error('Profile onboarding_completed is still false after update');
         return fail(500, { error: 'Profile update failed to save. Please contact support.' });
       }
 
-      console.log('[ONBOARDING COMPLETE] Verified profile data:', {
-        id: verifiedProfile.id,
+      log.debug('Verified profile data', {
+        profileId: verifiedProfile.id,
         username: verifiedProfile.username,
-        account_type: verifiedProfile.account_type,
-        onboarding_completed: verifiedProfile.onboarding_completed
+        accountType: verifiedProfile.account_type,
+        onboardingCompleted: verifiedProfile.onboarding_completed
       });
 
       // If brand account, create brand entry (with error handling)
@@ -219,7 +222,7 @@ export const actions = {
           subscription_active: brandPaid
         };
 
-        console.log('[ONBOARDING COMPLETE] Creating brand entry:', brandData);
+        log.debug('Creating brand entry', brandData);
 
         const { error: brandError } = await supabase
           .from('brands')
@@ -227,13 +230,13 @@ export const actions = {
 
         if (brandError) {
           if (brandError.code === '23505') {
-            console.log('[ONBOARDING COMPLETE] Brand entry already exists (duplicate key), continuing...');
+            log.debug('Brand entry already exists (duplicate key), continuing');
           } else {
-            console.error('[ONBOARDING COMPLETE] Brand creation failed:', brandError);
+            log.error('Brand creation failed', brandError);
             // Don't fail the entire onboarding for brand table issues
           }
         } else {
-          console.log('[ONBOARDING COMPLETE] Brand entry created successfully');
+          log.debug('Brand entry created successfully');
         }
       }
 
@@ -241,7 +244,7 @@ export const actions = {
       // This ensures the protected route guard sees the updated onboarding_completed = true
       await supabase.auth.refreshSession();
       
-      console.log('[ONBOARDING COMPLETE] Onboarding completed successfully for user:', user.email);
+      log.info('Onboarding completed successfully', { userEmail: user.email });
       
       // Return success with verified profile data
       return { 
@@ -255,7 +258,7 @@ export const actions = {
         throw error; // Re-throw redirects
       }
       
-      console.error('[ONBOARDING COMPLETE] Unexpected error:', error);
+      log.error('Unexpected error during onboarding', error);
       return fail(500, { error: 'Something went wrong during onboarding. Please try again.' });
     }
   }

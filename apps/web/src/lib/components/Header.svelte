@@ -67,7 +67,7 @@
     currentProfile?.full_name || currentProfile?.username || 'User'
   );
   const initials = $derived(
-    currentProfile?.full_name?.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() || 
+    (currentProfile?.full_name?.split(' ') || []).map(n => n[0]).slice(0, 2).join('').toUpperCase() || 
     currentProfile?.username?.[0]?.toUpperCase() || 
     '?'
   );

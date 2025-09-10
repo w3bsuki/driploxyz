@@ -100,14 +100,18 @@
     return translations[name] || name;
   }
   
-  // Use real category data from server
+  // Use real category data from server with level-aware navigation
   const category = data.category || { name: 'Categories', slug: 'categories', description: 'Browse all categories' };
   const resolution = data.resolution;
-  const subcategories = data.subcategories || [];
-  const level3Categories = data.level3Categories || [];
+  const pillCategories = data.pillCategories || [];        // Level-appropriate categories for pills
+  const dropdownCategories = data.dropdownCategories || []; // Level-appropriate categories for dropdown
   const products = data.products || [];
   const sellers = data.sellers || [];
   const breadcrumbs = data.breadcrumbs || [];
+  
+  // Backward compatibility for existing logic (deprecated)
+  const subcategories = dropdownCategories;
+  const level3Categories = pillCategories;
   
   // Performance-optimized product transformation using $state.raw()
   // Transform products for ProductCard component with better performance for large arrays
@@ -358,22 +362,34 @@
                 tabindex="-1"
               ></button>
 
-              <!-- Menu -->
+              <!-- Level-Aware Dropdown Menu -->
               <div class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-2">
                 <div class="p-4">
                   <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                    {#each subcategories as subcategory}
+                    {#each dropdownCategories as cat}
                       <a
-                        href={getCategoryUrl(resolution.l1?.slug || '', subcategory.slug)}
+                        href={(() => {
+                          if (resolution.isVirtual) {
+                            // Virtual category → Gender dropdown → Navigate to /category/{gender}/{virtual_category}
+                            return `/category/${cat.slug}/${resolution.virtualCategory?.slug || ''}`;
+                          } else if (resolution.level === 1) {
+                            // L1 page → L2 dropdown → Navigate to /category/{l1}/{l2}
+                            return getCategoryUrl(resolution.l1?.slug || '', cat.slug);
+                          } else if (resolution.level === 2) {
+                            // L2 page → L3 dropdown → Navigate to /category/{l1}/{l2}/{l3}
+                            return getCategoryUrl(resolution.l1?.slug || '', resolution.l2?.slug || '', cat.slug);
+                          }
+                          return '#';
+                        })()}
                         onclick={() => showMegaMenu = false}
                         class="text-left p-3 rounded-lg hover:bg-gray-50 border border-gray-100 hover:border-gray-200 transition-colors block no-underline"
                         data-sveltekit-preload-data="hover"
                       >
                         <span class="text-sm font-medium text-gray-900">
-                          {translateSubcategoryName(subcategory.name)}
+                          {translateSubcategoryName(cat.name)}
                         </span>
-                        {#if subcategory.productCount}
-                          <span class="text-xs text-gray-500 block">({subcategory.productCount})</span>
+                        {#if cat.productCount}
+                          <span class="text-xs text-gray-500 block">({cat.productCount})</span>
                         {/if}
                       </a>
                     {/each}
@@ -385,76 +401,40 @@
         </div>
       </div>
 
-      <!-- Category Navigation Pills -->
-      {#if resolution.isVirtual || subcategories.length > 0 || level3Categories.length > 0}
+      <!-- Level-Aware Category Navigation Pills -->
+      {#if pillCategories.length > 0}
         <div class="space-y-3">
-          
-          <!-- Level 3 Subcategory Pills (Primary filters - sneakers, boots, etc.) -->
-          {#if level3Categories.length > 0}
-            <div class="flex justify-center">
-              <div class="flex overflow-x-auto scrollbar-hide gap-2 px-4">
-                {#each level3Categories.filter(l3cat => l3cat.productCount > 0).slice(0, 12) as l3cat}
-                  <FilterPill 
-                    variant="primary" 
-                    onClick={() => goto(resolution.isVirtual 
-                      ? `/category/${resolution.virtualCategory?.slug}?subcategory=${l3cat.slug}` 
-                      : getCategoryUrl(resolution.l1?.slug || '', resolution.l2?.slug || '', l3cat.slug)
-                    )}
-                  >
-                    {#snippet children()}
-                      {translateSubcategoryName(l3cat.name)}
-                      <span class="text-xs opacity-75">({l3cat.productCount})</span>
-                    {/snippet}
-                  </FilterPill>
-                {/each}
-              </div>
+          <div class="flex justify-center">
+            <div class="flex overflow-x-auto scrollbar-hide gap-2 px-4">
+              {#each pillCategories.filter(cat => cat.productCount > 0).slice(0, 12) as cat}
+                <FilterPill 
+                  variant="primary" 
+                  onClick={() => {
+                    let targetUrl = '';
+                    
+                    if (resolution.isVirtual) {
+                      // Virtual category pills → Navigate to /category/{gender}/{virtual_category}
+                      // Example: /category/clothing + click "Women" → /category/women/clothing
+                      targetUrl = `/category/${cat.slug}/${resolution.virtualCategory?.slug || ''}`;
+                    } else if (resolution.level === 1) {
+                      // L1 page → L2 pills → Navigate to /category/{l1}/{l2}
+                      targetUrl = getCategoryUrl(resolution.l1?.slug || '', cat.slug);
+                    } else if (resolution.level === 2) {
+                      // L2 page → L3 pills → Navigate to /category/{l1}/{l2}/{l3}
+                      targetUrl = getCategoryUrl(resolution.l1?.slug || '', resolution.l2?.slug || '', cat.slug);
+                    }
+                    
+                    if (targetUrl) goto(targetUrl);
+                  }}
+                >
+                  {#snippet children()}
+                    {translateSubcategoryName(cat.name)}
+                    <span class="text-xs opacity-75">({cat.productCount})</span>
+                  {/snippet}
+                </FilterPill>
+              {/each}
             </div>
-          {:else if subcategories.length > 0}
-            <!-- Level 2 Subcategories (for regular categories) -->
-            <div class="flex justify-center">
-              <div class="flex overflow-x-auto scrollbar-hide gap-2 px-4">
-                {#each subcategories.filter(s => s.productCount > 0) as subcat}
-                  <FilterPill 
-                    variant="primary" 
-                    onClick={() => goto(getCategoryUrl(resolution.l1?.slug || '', subcat.slug))}
-                  >
-                    {#snippet children()}
-                      {translateSubcategoryName(subcat.name)}
-                      <span class="text-xs opacity-75">({subcat.productCount})</span>
-                    {/snippet}
-                  </FilterPill>
-                {/each}
-              </div>
-            </div>
-          {/if}
-          
-          <!-- Gender Filter Pills for Virtual Categories (Secondary filters) -->
-          {#if resolution.isVirtual}
-            <div class="flex justify-center">
-              <div class="flex overflow-x-auto scrollbar-hide gap-2 px-4">
-                <FilterPill variant="category" onClick={() => goto(`/category/women/${resolution.virtualCategory?.slug || ''}`)}>
-                  {#snippet children()}
-                    {translateCategoryName('Women')}
-                  {/snippet}
-                </FilterPill>
-                <FilterPill variant="category" onClick={() => goto(`/category/men/${resolution.virtualCategory?.slug || ''}`)}>
-                  {#snippet children()}
-                    {translateCategoryName('Men')}
-                  {/snippet}
-                </FilterPill>
-                <FilterPill variant="category" onClick={() => goto(`/category/kids/${resolution.virtualCategory?.slug || ''}`)}>
-                  {#snippet children()}
-                    {translateCategoryName('Kids')}
-                  {/snippet}
-                </FilterPill>
-                <FilterPill variant="category" onClick={() => goto(`/category/unisex/${resolution.virtualCategory?.slug || ''}`)}>
-                  {#snippet children()}
-                    {translateCategoryName('Unisex')}
-                  {/snippet}
-                </FilterPill>
-              </div>
-            </div>
-          {/if}
+          </div>
         </div>
       {/if}
     </div>

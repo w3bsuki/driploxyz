@@ -1,7 +1,6 @@
 /* Tailwind CSS v4 with Driplo Design System */
 @import '@repo/ui/styles/tokens.css';
 @import '@repo/ui/styles/semantic.css';
-@import "tailwindcss/theme";
 
 @layer base {
   * {

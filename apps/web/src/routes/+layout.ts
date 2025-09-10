@@ -34,8 +34,32 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
    * and on the server, it reads session from LayoutData which was safely checked
    * using safeGetSession() in +layout.server.ts
    */
-  const { data: { session } } = await supabase.auth.getSession();
-  const { data: { user } } = await supabase.auth.getUser();
+  let session = null;
+  let user = null;
+  
+  try {
+    const sessionPromise = supabase.auth.getSession();
+    const userPromise = supabase.auth.getUser();
+    
+    // Add timeout to prevent hanging
+    const [sessionResult, userResult] = await Promise.allSettled([
+      Promise.race([sessionPromise, new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Session timeout')), 3000)
+      )]),
+      Promise.race([userPromise, new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('User timeout')), 3000)
+      )])
+    ]);
+    
+    if (sessionResult.status === 'fulfilled') {
+      session = sessionResult.value.data.session;
+    }
+    if (userResult.status === 'fulfilled') {
+      user = userResult.value.data.user;
+    }
+  } catch (error) {
+    console.error('Auth timeout in layout:', error);
+  }
 
   return {
     session,

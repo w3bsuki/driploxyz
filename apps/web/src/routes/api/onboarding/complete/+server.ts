@@ -1,7 +1,17 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { enforceRateLimit } from '$lib/security/rate-limiter';
 
-export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
+export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession }, getClientAddress }) => {
+  // Rate limiting for onboarding completion
+  const rateLimitResponse = await enforceRateLimit(
+    request, 
+    getClientAddress, 
+    'api',
+    `onboarding:${getClientAddress()}`
+  );
+  if (rateLimitResponse) return rateLimitResponse;
+  
   const { session } = await safeGetSession();
   
   if (!session?.user) {

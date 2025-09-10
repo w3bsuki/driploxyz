@@ -18,6 +18,9 @@
   import { toasts } from '@repo/ui';
   import { uploadImage } from '$lib/supabase/storage';
   import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
+  import { createLogger } from '$lib/utils/log';
+
+  const log = createLogger('onboarding-client');
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import { scrollIntoView, focusWithAnnouncement } from '$lib/utils/navigation';
   import type { PageData } from './$types';
@@ -76,19 +79,19 @@
   if (browser) {
     const params = new URLSearchParams(window.location.search);
     if (params.get('email_verified') === 'true' || params.get('welcome') === 'true') {
-      console.log('[ONBOARDING] URL params detected, showing welcome modal');
+      log.debug('URL params detected, showing welcome modal');
       showEmailVerifiedWelcome = true;
     }
   }
 
   // Show welcome modal on mount
   onMount(() => {
-    console.log('[ONBOARDING] onMount called');
+    log.debug('Component mounted');
     
     // FORCE CHECK: Make absolutely sure the welcome modal shows
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('email_verified') === 'true' || urlParams.get('welcome') === 'true') {
-      console.log('[ONBOARDING] onMount detected email_verified, forcing modal');
+      log.debug('Email verified detected, forcing modal');
       showEmailVerifiedWelcome = true;
     }
     
@@ -123,7 +126,7 @@
   }
 
   async function handleSuccessComplete() {
-    console.log('[ONBOARDING] Success modal complete clicked');
+    log.debug('Success modal complete clicked');
     showSuccessModal = false;
     
     // Navigate to welcome page which will verify profile and redirect
@@ -225,15 +228,14 @@
   }
 
   function handleAccountTypeSelect(type: 'personal' | 'pro' | 'brand') {
-    console.log('[ONBOARDING] Account type selected:', type);
+    log.debug('Account type selected', { type });
     accountType = type;
     // Don't show payment modal immediately - wait for user to click continue
     if (type === 'personal') {
       // Reset payment status for personal accounts
       brandPaid = false;
     }
-    console.log('[ONBOARDING] Account type state updated to:', accountType);
-    console.log('[ONBOARDING] Can proceed:', canProceed());
+    log.debug('Account type state updated', { accountType, canProceed: canProceed() });
   }
   
   function handleDiscountCodeChange(code: string) {
@@ -591,11 +593,11 @@
             submitting = false;
             
             if (result.type === 'success') {
-              console.log('[ONBOARDING CLIENT] Completion successful:', result.data);
+              log.debug('Completion successful', result.data);
               
               // Check if we got a verified profile back
               if (result.data?.profile?.onboarding_completed === true) {
-                console.log('[ONBOARDING CLIENT] Profile verified as complete');
+                log.debug('Profile verified as complete');
                 
                 // Show success modal briefly
                 await loadSuccessModal();
@@ -605,22 +607,22 @@
                 // Auto-redirect after 2 seconds if modal isn't closed
                 setTimeout(() => {
                   if (showSuccessModal) {
-                    console.log('[ONBOARDING CLIENT] Auto-redirecting to welcome page');
+                    log.debug('Auto-redirecting to welcome page');
                     window.location.href = '/welcome';
                   }
                 }, 2000);
               } else {
-                console.error('[ONBOARDING CLIENT] Profile not properly completed:', result.data?.profile);
+                log.error('Profile not properly completed', undefined, { profile: result.data?.profile });
                 toasts.error('Profile update may have failed. Please try again.');
                 completionInProgress = false;
               }
               
             } else if (result.type === 'failure') {
-              console.error('[ONBOARDING CLIENT] Completion failed:', result.data);
+              log.error('Completion failed', undefined, result.data);
               toasts.error(result.data?.error || 'Failed to complete onboarding');
               completionInProgress = false;
             } else {
-              console.error('[ONBOARDING CLIENT] Unexpected result type:', result.type);
+              log.error('Unexpected result type', undefined, { resultType: result.type });
               toasts.error('An unexpected error occurred. Please try again.');
               completionInProgress = false;
             }

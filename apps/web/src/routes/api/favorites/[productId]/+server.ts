@@ -1,11 +1,21 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types.js';
+import { enforceRateLimit } from '$lib/security/rate-limiter';
 
 // In-memory cache to prevent duplicate requests
 const processingRequests = new Map<string, Promise<any>>();
 
 // GET - Check if product is favorited and get count
-export const GET: RequestHandler = async ({ params, locals }) => {
+export const GET: RequestHandler = async ({ params, locals, request, getClientAddress }) => {
+	// Generous rate limiting for read operations
+	const rateLimitResponse = await enforceRateLimit(
+		request, 
+		getClientAddress, 
+		'apiRead',
+		`favorites-check:${getClientAddress()}`
+	);
+	if (rateLimitResponse) return rateLimitResponse;
+	
 	const { productId } = params;
 	const { session } = await locals.safeGetSession();
 	
@@ -37,7 +47,16 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 };
 
 // POST - Toggle favorite
-export const POST: RequestHandler = async ({ params, locals }) => {
+export const POST: RequestHandler = async ({ params, locals, request, getClientAddress }) => {
+	// Rate limiting for favorite actions
+	const rateLimitResponse = await enforceRateLimit(
+		request, 
+		getClientAddress, 
+		'favorites',
+		`favorites-toggle:${getClientAddress()}`
+	);
+	if (rateLimitResponse) return rateLimitResponse;
+	
 	const { productId } = params;
 	const { session } = await locals.safeGetSession();
 	

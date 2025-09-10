@@ -1,12 +1,22 @@
 import { json } from '@sveltejs/kit';
 import { createStripeService } from '$lib/services/stripe';
 import { stripe } from '$lib/stripe/server';
+import { enforceRateLimit } from '$lib/security/rate-limiter';
 import type { RequestHandler } from './$types';
 import { sendEmail, emailTemplates } from '$lib/email/resend';
 import type { PaymentIntentConfirmParams } from '$lib/stripe/types';
 import { paymentLogger } from '$lib/utils/log';
 
-export const POST: RequestHandler = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
+	// Critical rate limiting for payment confirmation
+	const rateLimitResponse = await enforceRateLimit(
+		request, 
+		getClientAddress, 
+		'payment',
+		`payment-confirm:${getClientAddress()}`
+	);
+	if (rateLimitResponse) return rateLimitResponse;
+	
 	try {
 		// Get current user session
 		const { session } = await locals.safeGetSession();

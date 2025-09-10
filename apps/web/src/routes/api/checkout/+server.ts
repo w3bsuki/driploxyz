@@ -2,9 +2,19 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createServices } from '$lib/services';
 import { stripe } from '$lib/stripe/server';
+import { enforceRateLimit } from '$lib/security/rate-limiter';
 import { paymentLogger } from '$lib/utils/log';
 
-export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession, country } }) => {
+export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession, country }, getClientAddress }) => {
+  // Critical rate limiting for checkout operations
+  const rateLimitResponse = await enforceRateLimit(
+    request, 
+    getClientAddress, 
+    'checkout',
+    `checkout:${getClientAddress()}`
+  );
+  if (rateLimitResponse) return rateLimitResponse;
+  
   paymentLogger.info('Starting checkout process');
   
   const { session } = await safeGetSession();
