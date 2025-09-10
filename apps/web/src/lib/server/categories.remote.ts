@@ -1,7 +1,7 @@
 // SvelteKit server-only category resolution utilities
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
-import { isVirtualCategory, getVirtualCategory, getVirtualCategoryTargets } from './virtual-categories';
+import { isVirtualCategory, getVirtualCategory, getVirtualCategoryTargets, validateVirtualCategoryTargets } from './virtual-categories';
 
 type Category = Database['public']['Tables']['categories']['Row'];
 
@@ -130,7 +130,7 @@ function findCategoryBySlug(categories: Category[], slug: string, level?: number
 }
 
 /**
- * Get all descendants of a category using existing RPC function
+ * Get all descendants of a category using RPC with robust fallback
  */
 async function getCategoryDescendants(supabase: SupabaseClient<Database>, categoryId: string): Promise<string[]> {
   try {
@@ -138,16 +138,60 @@ async function getCategoryDescendants(supabase: SupabaseClient<Database>, catego
       category_uuid: categoryId
     });
 
-    if (error) {
-      console.error('Error getting category descendants:', error);
-      return [categoryId];
+    if (!error && Array.isArray(data) && data.length > 0) {
+      const descendantIds = data.map((d: any) => d.id);
+      return descendantIds; // RPC success - includes self + descendants
+    }
+  } catch (rpcError) {
+    console.warn('RPC get_category_descendants failed, using fallback:', rpcError);
+  }
+  
+  // Fallback: Manual 3-level taxonomy resolution
+  return await getCategoryDescendantsFallback(supabase, categoryId);
+}
+
+/**
+ * Robust fallback for getting category descendants when RPC fails
+ * Manually computes L1→L2→L3 descendants using direct queries
+ */
+async function getCategoryDescendantsFallback(supabase: SupabaseClient<Database>, categoryId: string): Promise<string[]> {
+  try {
+    // First, get the given category plus its direct children (L1→L2)
+    const { data: level1And2, error: l1Error } = await supabase
+      .from('categories')
+      .select('id')
+      .or(`id.eq.${categoryId},parent_id.eq.${categoryId}`)
+      .eq('is_active', true);
+
+    if (l1Error) {
+      console.error('Error fetching L1/L2 categories in fallback:', l1Error);
+      return [categoryId]; // Return at least the parent category
     }
 
-    const descendantIds = data?.map((d: any) => d.id) || [];
-    return descendantIds; // RPC already includes self + descendants
-  } catch (error) {
-    console.error('Error in getCategoryDescendants:', error);
-    return [categoryId];
+    const level1And2Ids = (level1And2 || []).map((d: any) => d.id);
+    
+    if (level1And2Ids.length === 0) {
+      return [categoryId]; // Return at least the parent category
+    }
+
+    // Then get all grandchildren (L3) under the L2 categories
+    const { data: level3 } = await supabase
+      .from('categories')
+      .select('id')
+      .in('parent_id', level1And2Ids)
+      .eq('is_active', true);
+
+    const level3Ids = (level3 || []).map((d: any) => d.id);
+    
+    // Return union of all levels, removing duplicates
+    const allIds = Array.from(new Set([...level1And2Ids, ...level3Ids]));
+    
+    console.log(`Fallback resolved ${allIds.length} descendants for category ${categoryId}`);
+    return allIds;
+    
+  } catch (fallbackError) {
+    console.error('Fallback category descendant resolution failed:', fallbackError);
+    return [categoryId]; // Last resort: return parent category only
   }
 }
 
@@ -196,13 +240,18 @@ export async function resolveCategoryPath(
         };
       }
       
-      // Find all target L2 categories
+      // Find all target L2 categories with validation
       const targetSlugs = getVirtualCategoryTargets(l1Slug);
+      const { validSlugs, missingCount } = await validateVirtualCategoryTargets(supabase, l1Slug, targetSlugs);
+      
       const targetCategories = categories.filter(cat => 
-        targetSlugs.includes(cat.slug) && cat.level === 2 && cat.is_active
+        validSlugs.includes(cat.slug) && cat.level === 2 && cat.is_active
       );
       
       if (targetCategories.length === 0) {
+        if (missingCount === targetSlugs.length) {
+          console.warn(`Virtual category '${l1Slug}' has no valid target slugs in database`);
+        }
         return {
           level: 1,
           categoryIds: [],

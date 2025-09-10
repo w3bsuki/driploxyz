@@ -176,10 +176,21 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Real-time notification is handled by postgres_changes subscription
-    // in apps/web/src/lib/services/realtime-notifications.ts
-    // No need for broadcast - postgres_changes is more reliable
+    // Send real-time notification via broadcast (ConversationService listens to this)
     const conversationId = productId ? `${receiverId}__${productId}` : `${receiverId}__general`;
+    
+    // Broadcast to receiver's notification channel
+    await supabaseAdmin
+      .channel(`user-notifications-${receiverId}`)
+      .send({
+        type: 'broadcast',
+        event: 'message_received',
+        payload: { 
+          conversation_id: conversationId, 
+          message: message,
+          for_user: receiverId 
+        }
+      });
 
     // Update sender's last active time
     await supabaseAdmin

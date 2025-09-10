@@ -112,6 +112,7 @@
       
       conversations = freshConversations;
       
+      
       // Update unread count
       const unreadCount = freshConversations.filter(c => c.unread).length;
       messageNotificationActions.setUnreadCount(unreadCount);
@@ -309,14 +310,18 @@
           
           <!-- Conversations Sidebar -->
           <div class="sm:col-span-1 {activeConversation ? 'hidden sm:block' : ''}">
-            <ConversationSidebar
-              {conversations}
-              activeConversationId={activeConversation?.id}
-              {activeTab}
-              showOnMobile={!activeConversation}
-              onConversationSelect={handleConversationSelect}
-              onTabChange={handleTabChange}
-            />
+            {#if conversations}
+              <ConversationSidebar
+                {conversations}
+                activeConversationId={activeConversation?.id}
+                bind:activeTab
+                showOnMobile={!activeConversation}
+                onConversationSelect={handleConversationSelect}
+                onTabChange={handleTabChange}
+              />
+            {:else}
+              <div>No conversations prop</div>
+            {/if}
           </div>
 
         <!-- Chat Window -->

@@ -112,7 +112,7 @@
 {#if isOpen}
   <!-- Backdrop overlay -->
   <div 
-    class="sm:hidden fixed inset-0 bg-black/20 z-40" 
+    class="sm:hidden fixed inset-0 bg-black/20 z-[99998]" 
     onclick={onClose}
     onkeydown={(e) => e.key === 'Escape' && onClose()}
     role="button"
@@ -122,7 +122,7 @@
   
   
   <!-- Enhanced mobile dropdown menu -->
-  <div class="sm:hidden absolute top-full left-0 right-0 mx-1 bg-white rounded-2xl shadow-2xl z-50 border border-gray-100 mt-2 backdrop-blur-xl bg-white/95 safe-area-x">
+  <div class="sm:hidden fixed top-[72px] left-1 right-1 bg-white rounded-2xl shadow-2xl z-[2147483647] border border-gray-100 backdrop-blur-xl bg-white/95 safe-area-x">
     <div class="px-5 py-5">
       <nav class="space-y-3">
         {#if isLoggedIn && user && profile}

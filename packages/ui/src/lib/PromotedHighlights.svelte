@@ -134,7 +134,7 @@
 
 <!-- Promoted Listings / Highlights -->
 <section 
-  class="border-y border-[color:var(--border-subtle)] bg-[color:var(--surface-subtle)]"
+  class="border-y border-[color:var(--border-subtle)] bg-[color:var(--surface-subtle)] overflow-hidden"
   aria-label={translations.trending_promoted}
   role="region"
 >

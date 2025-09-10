@@ -21,21 +21,24 @@
     onTabChange,
     showOnMobile 
   }: Props = $props();
+  
 
-  // Filter conversations based on active tab
-  let filteredConversations = $derived(() => {
-    if (!conversations) return [];
+  // Fixed: Use derived instead of effect to avoid infinite loops
+  let filteredConversations = $derived.by(() => {
+    if (!conversations || conversations.length === 0) {
+      return [];
+    }
     
     switch (activeTab) {
       case 'unread':
         return conversations.filter(c => c.unread);
-      case 'buying':
+      case 'buying':  
         return conversations.filter(c => c.isProductConversation);
       case 'selling':
         return conversations.filter(c => !c.isProductConversation);
       case 'all':
       default:
-        return conversations;
+        return [...conversations];
     }
   });
 

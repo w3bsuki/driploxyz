@@ -14,7 +14,7 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
   });
 
   try {
-    const segments = params.segments ? params.segments.split('/').filter(Boolean) : [];
+    const segments = (params.segments || '').split('/').filter(Boolean);
     
     // Validate segment count (max 3 levels: L1/L2/L3)
     if (segments.length > 3) {
@@ -66,9 +66,13 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
       country_code: currentCountry
     };
 
-    // Apply category filtering
+    // Apply category filtering with empty result guard
     if (resolution.categoryIds.length > 0) {
       hierarchicalFilters.category_ids = resolution.categoryIds;
+    } else {
+      // Guard against empty categoryIds - show newest products as fallback
+      console.warn(`Empty categoryIds for path: /category/${segments.join('/')}. Showing newest products in ${currentCountry}.`);
+      hierarchicalFilters.showEmptyFallback = true;
     }
 
     // Apply additional filters from URL
@@ -167,6 +171,9 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
       level3Categories,
       products,
       sellers,
+      
+      // Empty category fallback indicator
+      isEmptyFallback: hierarchicalFilters.showEmptyFallback || false,
       
       // Pagination
       pagination: {
@@ -352,9 +359,12 @@ async function getProductsForCategories(
     .eq('is_active', true)
     .eq('country_code', filters.country_code);
 
-  // Apply category filter
+  // Apply category filter or fallback for empty categories
   if (categoryIds.length > 0) {
     query = query.in('category_id', categoryIds);
+  } else if (filters.showEmptyFallback) {
+    // No category filtering - show newest products across all categories in this country
+    // This is the fallback for when category resolution fails
   }
 
   // Apply additional filters

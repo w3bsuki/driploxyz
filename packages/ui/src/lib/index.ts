@@ -15,6 +15,7 @@ export { default as SellerProfileCard } from './SellerProfileCard.svelte';
 export { default as FeaturedSellers } from './FeaturedSellers.svelte';
 export { default as Breadcrumb } from './Breadcrumb.svelte';
 export { default as ErrorBoundary } from './ErrorBoundary.svelte';
+export { default as EngagementBanner } from './EngagementBanner.svelte';
 
 // Enhanced product components
 export { default as BuyBox } from './BuyBox.svelte';

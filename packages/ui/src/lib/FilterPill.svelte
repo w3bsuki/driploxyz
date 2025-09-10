@@ -2,7 +2,7 @@
   interface Props {
     active?: boolean;
     onClick?: () => void;
-    variant?: 'default' | 'category' | 'condition';
+    variant?: 'default' | 'category' | 'condition' | 'primary';
     children: any;
     class?: string;
   }
@@ -19,6 +19,11 @@
     const baseClasses = 'shrink-0 px-3 py-1.5 min-h-[36px] rounded-full text-sm font-medium transition-all duration-200 cursor-pointer hover:scale-105 flex items-center gap-1.5 touch-manipulation';
     
     switch (variant) {
+      case 'primary':
+        return active
+          ? `${baseClasses} bg-black text-white shadow-md`
+          : `${baseClasses} bg-white text-gray-900 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 shadow-sm font-semibold`;
+      
       case 'category':
         return active
           ? `${baseClasses} bg-black text-white shadow-sm`

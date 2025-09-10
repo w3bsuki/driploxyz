@@ -41,10 +41,6 @@
   let dropdownVisible = $state(true);
   let selectedIndex = $state(-1);
 
-  // Popular search suggestions when no query
-  const popularSearches = [
-    'sneakers', 'dresses', 'jeans', 'jackets', 'bags', 'vintage', 'designer'
-  ];
 
   const recentSearches = $state<string[]>([]);
 
@@ -80,7 +76,7 @@
   $effect(() => {
     if (!query.trim()) {
       results = [];
-      dropdownVisible = true; // Show suggestions even with empty query
+      dropdownVisible = false; // Don't show dropdown with empty query
       return;
     }
 
@@ -127,10 +123,16 @@
     selectedIndex = -1;
   }
 
+  function handleCategorySelect(category: string) {
+    goto(`/category/${category}`);
+    dropdownVisible = false;
+    selectedIndex = -1;
+  }
+
   function handleKeyDown(event: KeyboardEvent) {
     if (!dropdownVisible) return;
 
-    const totalItems = results.length + (query.trim() ? 0 : Math.min(recentSearches.length + popularSearches.length, 8));
+    const totalItems = results.length;
 
     switch (event.key) {
       case 'ArrowDown':
@@ -143,16 +145,8 @@
         break;
       case 'Enter':
         event.preventDefault();
-        if (selectedIndex >= 0) {
-          if (query.trim() && selectedIndex < results.length) {
-            handleProductSelect(results[selectedIndex]);
-          } else if (!query.trim()) {
-            const suggestionIndex = selectedIndex;
-            const allSuggestions = [...recentSearches, ...popularSearches].slice(0, 8);
-            if (suggestionIndex < allSuggestions.length) {
-              handleSearchSelect(allSuggestions[suggestionIndex]);
-            }
-          }
+        if (selectedIndex >= 0 && selectedIndex < results.length) {
+          handleProductSelect(results[selectedIndex]);
         } else if (query.trim()) {
           handleSearchSelect(query);
         }
@@ -186,7 +180,7 @@
 
 {#if dropdownVisible}
   <div 
-    class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-xl shadow-lg z-[99999] max-h-96 overflow-y-auto {className}"
+    class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-xl shadow-lg z-50 {className}"
     on:click|stopPropagation
   >
     {#if query.trim()}
@@ -238,6 +232,41 @@
             </button>
           {/each}
           
+          <!-- Category search buttons -->
+          {#if results.length > 0}
+            <div class="px-4 py-2 border-t border-gray-100">
+              <div class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
+                Search in categories
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  class="px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
+                  on:click={() => handleCategorySelect('men')}
+                >
+                  Мъже
+                </button>
+                <button
+                  class="px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
+                  on:click={() => handleCategorySelect('women')}
+                >
+                  Жени
+                </button>
+                <button
+                  class="px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
+                  on:click={() => handleCategorySelect('kids')}
+                >
+                  Деца
+                </button>
+                <button
+                  class="px-3 py-1.5 text-xs font-medium bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
+                  on:click={() => handleCategorySelect('unisex')}
+                >
+                  Унисекс
+                </button>
+              </div>
+            </div>
+          {/if}
+          
           {#if results.length >= maxResults}
             <button
               class="w-full px-4 py-3 text-blue-600 hover:bg-blue-50 text-sm font-medium transition-colors"
@@ -258,42 +287,6 @@
           </button>
         </div>
       {/if}
-    {:else}
-      <!-- Suggestions when no query -->
-      <div class="py-2">
-        {#if recentSearches.length > 0}
-          <div class="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Recent
-          </div>
-          {#each recentSearches.slice(0, 4) as search, index}
-            <button
-              class="w-full px-4 py-2 flex items-center gap-3 hover:bg-gray-50 text-left transition-colors {selectedIndex === index ? 'bg-blue-50' : ''}"
-              on:click={() => handleSearchSelect(search)}
-            >
-              <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span class="text-gray-700">{search}</span>
-            </button>
-          {/each}
-        {/if}
-
-        <div class="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider {recentSearches.length > 0 ? 'border-t border-gray-100 mt-2' : ''}">
-          Popular
-        </div>
-        {#each popularSearches.slice(0, 4) as search, index}
-          {@const adjustedIndex = recentSearches.length + index}
-          <button
-            class="w-full px-4 py-2 flex items-center gap-3 hover:bg-gray-50 text-left transition-colors {selectedIndex === adjustedIndex ? 'bg-blue-50' : ''}"
-            on:click={() => handleSearchSelect(search)}
-          >
-            <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-            </svg>
-            <span class="text-gray-700">{search}</span>
-          </button>
-        {/each}
-      </div>
     {/if}
   </div>
 {/if}

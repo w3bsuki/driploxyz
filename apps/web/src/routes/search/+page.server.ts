@@ -3,8 +3,31 @@ import { error, redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { Database } from '@repo/database';
 import { canonicalizeFilterUrl, buildCanonicalUrl, searchParamsToSegments } from '$lib/utils/filter-url';
+import { resolveCategoryPath } from '$lib/server/categories.remote';
 
 type Category = Database['public']['Tables']['categories']['Row'];
+
+/**
+ * Simplified category resolution using the fixed category resolver
+ * This provides a fallback when the complex search category logic fails
+ */
+async function getSimplifiedCategoryIds(supabase: any, category: string, subcategory?: string, specific?: string): Promise<string[]> {
+  try {
+    const segments = [category, subcategory, specific].filter(Boolean) as string[];
+    if (segments.length === 0) return [];
+    
+    const resolution = await resolveCategoryPath(segments, supabase);
+    
+    if (resolution.isValid && resolution.categoryIds.length > 0) {
+      console.log(`Simplified category resolution found ${resolution.categoryIds.length} IDs for: ${segments.join('/')}`);
+      return resolution.categoryIds;
+    }
+  } catch (error) {
+    console.warn('Simplified category resolution failed:', error);
+  }
+  
+  return [];
+}
 
 /**
  * Get category and all its descendants using direct SQL (more reliable than the buggy RPC function)
@@ -286,6 +309,16 @@ export const load = (async ({ url, locals, setHeaders }) => {
       }
     }
 
+    // Fallback: If no category IDs found with complex logic, try simplified resolver
+    if (categoryIds.length === 0 && (category || subcategory || specific)) {
+      console.warn('Complex category resolution returned empty, trying simplified resolver...');
+      categoryIds = await getSimplifiedCategoryIds(locals.supabase, category, subcategory, specific);
+      
+      if (categoryIds.length > 0) {
+        console.log(`Simplified resolver found ${categoryIds.length} category IDs as fallback`);
+      }
+    }
+
     // Build the products query with proper category hierarchy
     let productsQuery = locals.supabase
       .from('products')
@@ -317,7 +350,7 @@ export const load = (async ({ url, locals, setHeaders }) => {
           parent_id,
           level
         )
-      `)
+      `, { count: 'exact' })
       .eq('is_sold', false)
       .eq('is_active', true)
       .eq('country_code', country);
@@ -377,11 +410,11 @@ export const load = (async ({ url, locals, setHeaders }) => {
         break;
     }
 
-    // Execute query with pagination
+    // Execute query with pagination and count
     const offset = (page - 1) * pageSize;
     productsQuery = productsQuery
       .range(offset, offset + pageSize - 1);
-    const { data: products, error: productsError } = await productsQuery;
+    const { data: products, error: productsError, count } = await productsQuery;
 
     if (productsError) {
       if (dev) console.error('Products query error:', productsError);
@@ -477,7 +510,7 @@ export const load = (async ({ url, locals, setHeaders }) => {
       categories: sortedCategories,
       categoryHierarchy,
       searchQuery: query,
-      total: transformedProducts.length,
+      total: count || 0,
       hasMore: transformedProducts.length === pageSize, // Simple check for more results
       currentPage: page,
       pageSize,

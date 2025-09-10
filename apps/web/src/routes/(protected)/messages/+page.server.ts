@@ -1,4 +1,4 @@
-import { redirect, fail } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 
 export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
@@ -123,7 +123,7 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
           price,
           images:product_images (
             image_url,
-            display_order
+            sort_order
           )
         `)
         .eq('id', productId)
@@ -177,44 +177,7 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
 }) satisfies PageServerLoad;
 
 export const actions = {
-  sendMessage: async ({ request, locals: { supabase, safeGetSession } }) => {
-    const { session } = await safeGetSession();
-    const user = session?.user;
-    
-    if (!user) {
-      return fail(401, { error: 'Unauthorized' });
-    }
-
-    const formData = await request.formData();
-    const message = formData.get('message') as string;
-    const receiverId = formData.get('receiverId') as string;
-    const productId = formData.get('productId') as string;
-    const orderId = formData.get('orderId') as string;
-
-    if (!message?.trim()) {
-      return fail(400, { error: 'Message cannot be empty' });
-    }
-
-    if (!receiverId) {
-      return fail(400, { error: 'Receiver ID is required' });
-    }
-
-    // Insert the message
-    const { error } = await supabase
-      .from('messages')
-      .insert({
-        sender_id: user.id,
-        receiver_id: receiverId,
-        content: message.trim(),
-        product_id: productId || null,
-        order_id: orderId || null
-      });
-
-    if (error) {
-      console.error('Error sending message:', error);
-      return fail(500, { error: 'Failed to send message' });
-    }
-
-    return { success: true };
-  }
+  // Removed sendMessage action - all message sending now goes through Edge Function
+  // for consistency, rate limiting, and proper real-time notifications
+  // Use ConversationService.sendMessage() instead
 } satisfies Actions;

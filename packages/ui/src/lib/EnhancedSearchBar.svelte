@@ -101,7 +101,7 @@
 </script>
 
 <form onsubmit={handleSubmit} class="w-full relative {className}">
-  <div class="bg-white rounded-xl flex items-center relative shadow-sm border border-gray-200 hover:shadow-md transition-shadow {dropdownVisible ? 'rounded-b-none border-b-0' : ''}">
+  <div class="bg-white rounded-xl flex items-center relative shadow-sm border border-gray-200 hover:shadow-md transition-shadow {dropdownVisible && searchValue?.trim() ? 'rounded-b-none border-b-0' : ''}">
     <!-- Left Section (Category Dropdown/Filter) -->
     {#if leftSection}
       <div class="shrink-0">

@@ -40,6 +40,13 @@ export const VIRTUAL_CATEGORIES: Record<string, VirtualCategoryConfig> = {
  * Check if a slug represents a virtual category
  */
 export function isVirtualCategory(slug: string): boolean {
+  if (!slug) return false;
+  
+  // Exclude gender categories that should take precedence
+  const genderCategorySlugs = ['men', 'women', 'kids', 'unisex'];
+  if (genderCategorySlugs.includes(slug.toLowerCase())) {
+    return false;
+  }
   return slug in VIRTUAL_CATEGORIES;
 }
 
@@ -63,4 +70,46 @@ export function getAllVirtualCategories(): VirtualCategoryConfig[] {
 export function getVirtualCategoryTargets(slug: string): string[] {
   const virtualCategory = getVirtualCategory(slug);
   return virtualCategory?.targetSlugs || [];
+}
+
+/**
+ * Validate that virtual category target slugs actually exist in the database
+ * Returns only the slugs that exist, with warnings for missing ones
+ */
+export async function validateVirtualCategoryTargets(
+  supabase: any, 
+  virtualSlug: string, 
+  targetSlugs: string[]
+): Promise<{ validSlugs: string[]; missingCount: number }> {
+  try {
+    const { data: existingSlugs, error } = await supabase
+      .from('categories')
+      .select('slug')
+      .in('slug', targetSlugs)
+      .eq('level', 2) // Virtual categories target L2 categories
+      .eq('is_active', true);
+
+    if (error) {
+      console.error(`Error validating virtual category '${virtualSlug}' targets:`, error);
+      return { validSlugs: targetSlugs, missingCount: 0 }; // Fail gracefully
+    }
+
+    const existingSlugSet = new Set((existingSlugs || []).map((row: any) => row.slug));
+    const validSlugs = targetSlugs.filter(slug => existingSlugSet.has(slug));
+    const missingCount = targetSlugs.length - validSlugs.length;
+
+    if (missingCount > 0) {
+      const missingSlugs = targetSlugs.filter(slug => !existingSlugSet.has(slug));
+      console.warn(
+        `Virtual category '${virtualSlug}' has ${missingCount} missing target slugs: ${missingSlugs.join(', ')}. ` +
+        `Using ${validSlugs.length} valid targets: ${validSlugs.join(', ')}`
+      );
+    }
+
+    return { validSlugs, missingCount };
+    
+  } catch (error) {
+    console.error(`Failed to validate virtual category '${virtualSlug}' targets:`, error);
+    return { validSlugs: targetSlugs, missingCount: 0 }; // Fail gracefully
+  }
 }

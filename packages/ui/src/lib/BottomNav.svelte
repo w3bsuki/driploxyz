@@ -14,6 +14,7 @@
     isNavigating?: boolean;
     navigatingTo?: string;
     profileHref?: string;
+    isAuthenticated?: boolean;
     labels?: {
       home: string;
       search: string;
@@ -29,6 +30,7 @@
     isNavigating = false,
     navigatingTo = '',
     profileHref = '/account',
+    isAuthenticated = false,
     labels = {
       home: 'Home',
       search: 'Search', 
@@ -125,6 +127,13 @@
             >
               {unreadMessageCount > 99 ? '99' : unreadMessageCount}
             </div>
+          {:else if item.id === 'sell' && !isAuthenticated}
+            <!-- Selling hint for unauthenticated users -->
+            <div 
+              class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5
+                     bg-[color:var(--brand-primary)] rounded-full animate-pulse"
+              title="Start selling your items"
+            ></div>
           {/if}
         </div>
 

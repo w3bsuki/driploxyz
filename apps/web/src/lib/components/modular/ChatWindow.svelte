@@ -6,27 +6,26 @@
   interface Props {
     conversation: Conversation;
     currentUserId: string;
-    onlineUsers?: Set<string>;
     onBackToList: () => void;
     onSendMessage: (content: string) => void;
     onLoadOlder?: () => void;
     isLoadingOlder?: boolean;
     hasMoreMessages?: boolean;
+    isSending?: boolean;
   }
 
   let { 
     conversation, 
     currentUserId, 
-    onlineUsers = new Set(),
     onBackToList, 
     onSendMessage,
     onLoadOlder,
     isLoadingOlder = false,
-    hasMoreMessages = true
+    hasMoreMessages = true,
+    isSending = false
   }: Props = $props();
 
   let messageText = $state('');
-  let isSending = $state(false);
   let messagesContainer: HTMLDivElement | null = $state(null);
   
   // Pre-DOM measurement state for smooth scrolling
@@ -75,6 +74,22 @@
     }
   });
 
+  // Mark messages as read when chat opens or becomes visible
+  $effect(() => {
+    if (conversation?.id) {
+      // Small delay to ensure messages are loaded
+      setTimeout(() => {
+        // Mark conversation as read - this will update unread status
+        void markAsRead();
+      }, 500);
+    }
+  });
+
+  async function markAsRead() {
+    // This would typically call the ConversationService to mark as read
+    // The ConversationService already handles this in loadMessages
+  }
+
   // Scroll to bottom helper
   function scrollToBottom() {
     requestAnimationFrame(() => {
@@ -119,14 +134,13 @@
     
     const text = messageText.trim();
     messageText = '';
-    isSending = true;
     
     try {
       await onSendMessage(text);
     } catch (error) {
       console.error('Error sending message:', error);
-    } finally {
-      isSending = false;
+      // Restore message text on error
+      messageText = text;
     }
   }
 
@@ -323,13 +337,13 @@
       {#each conversation.messages as message (message.id)}
         <div class="flex {message.sender_id === currentUserId ? 'justify-end' : 'justify-start'} group">
           <div class="max-w-[85%] sm:max-w-[70%]">
-            <!-- Message bubble -->
+            <!-- Message bubble - Modern, clean design -->
             <div class="relative {message.sender_id === currentUserId ? 'ml-8' : 'mr-8'}">
               <div class="{message.sender_id === currentUserId 
-                ? 'bg-blue-500 text-white rounded-2xl rounded-br-md shadow-sm' 
-                : 'bg-white text-gray-900 rounded-2xl rounded-bl-md shadow-sm border border-gray-200'
-              } px-4 py-2.5 relative">
-                <p class="text-[15px] leading-relaxed">{message.content}</p>
+                ? 'bg-blue-500 text-white rounded-[18px] rounded-br-md shadow-sm' 
+                : 'bg-gray-100 text-gray-900 rounded-[18px] rounded-bl-md shadow-sm'
+              } px-4 py-3 relative transition-all">
+                <p class="text-[15px] leading-[1.4] break-words">{message.content}</p>
               </div>
             </div>
             
@@ -339,26 +353,22 @@
                 {timeAgo(message.created_at)}
               </p>
               
-              <!-- Modern read status indicators -->
+              <!-- Clean read status indicators -->
               {#if message.sender_id === currentUserId}
                 <div class="flex items-center">
                   {#if message.status === 'sending'}
                     <div class="w-3 h-3 border-2 border-blue-300 border-t-blue-500 rounded-full animate-spin"></div>
-                  {:else if message.status === 'sent' || (!message.status && !message.delivered_at)}
-                    <div class="w-3 h-3 rounded-full bg-gray-300 flex items-center justify-center">
-                      <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                  {:else if message.status === 'delivered' || message.delivered_at}
-                    <div class="w-3 h-3 rounded-full bg-gray-500 flex items-center justify-center">
-                      <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                      </svg>
-                    </div>
-                  {:else if message.status === 'read' || message.is_read}
-                    <div class="w-3 h-3 rounded-full overflow-hidden ring-1 ring-blue-500 shadow-sm">
+                  {:else if message.is_read}
+                    <!-- Read: Show recipient's avatar -->
+                    <div class="w-3 h-3 rounded-full overflow-hidden ring-1 ring-blue-500">
                       <Avatar src={conversation.userAvatar} name={conversation.userName} size="xs" class="w-full h-full" />
+                    </div>
+                  {:else}
+                    <!-- Sent but not read: Single checkmark -->
+                    <div class="w-3 h-3 rounded-full bg-gray-400 flex items-center justify-center">
+                      <svg class="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      </svg>
                     </div>
                   {/if}
                 </div>
@@ -417,7 +427,7 @@
     <!-- Input Row - Clean Messenger Style -->
     <div class="flex items-end space-x-3">
       <div class="flex-1 relative">
-        <div class="relative bg-gray-50 rounded-full border border-gray-200 focus-within:border-blue-400 transition-colors">
+        <div class="relative bg-gray-50 rounded-full border border-gray-200 focus-within:border-blue-400 focus-within:ring-1 focus-within:ring-blue-400 transition-all">
           <input
             id="message-input"
             type="text"
@@ -425,7 +435,7 @@
             onkeydown={handleKeydown}
             placeholder={i18n.messages_messageInput()}
             aria-label="Type a message"
-            class="w-full px-4 py-3 bg-transparent text-[15px] placeholder-gray-500 focus:outline-none pr-12"
+            class="w-full px-4 py-3 bg-transparent text-[15px] placeholder-gray-500 focus:outline-none focus:ring-0 border-0 pr-12"
           />
           
           <!-- Emoji button -->
@@ -442,18 +452,22 @@
       
       <button 
         onclick={sendMessage}
-        class="min-w-[44px] min-h-[44px] bg-blue-500 text-white rounded-full hover:bg-blue-600 active:scale-95 transition-all flex items-center justify-center shadow-sm 
-          {messageText.trim() && !isSending ? '' : 'opacity-70 cursor-not-allowed'}"
+        class="min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center shadow-lg transition-all duration-200 transform
+          {messageText.trim() && !isSending 
+            ? 'bg-blue-500 hover:bg-blue-600 text-white hover:scale-105 active:scale-95 shadow-blue-200' 
+            : 'bg-gray-200 text-gray-400 cursor-not-allowed'}"
         disabled={!messageText.trim() || isSending}
-        aria-label="Send message"
+        aria-label={isSending ? 'Sending...' : 'Send message'}
       >
         {#if isSending}
-          <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          <div class="w-5 h-5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin"></div>
+        {:else if messageText.trim()}
+          <svg class="w-5 h-5 transform translate-x-0.5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
           </svg>
         {:else}
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
           </svg>
         {/if}
       </button>

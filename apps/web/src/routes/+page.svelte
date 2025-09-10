@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { EnhancedSearchBar, TrendingDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill } from '@repo/ui';
+	import { EnhancedSearchBar, TrendingDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill, EngagementBanner } from '@repo/ui';
 	import CategoryPill from '$lib/components/CategoryPill.svelte';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
@@ -658,10 +658,10 @@
 <div class="min-h-screen bg-[color:var(--surface-subtle)] pb-20 sm:pb-0">
 	<main>
 		<!-- Hero Search -->
-		<div class="bg-white/40 backdrop-blur-sm border-b border-gray-100">
+		<div class="bg-white/40 backdrop-blur-sm border-b border-gray-100 relative z-50">
 			<div class="px-2 sm:px-4 lg:px-6 py-3">
 				<!-- Hero Search -->
-				<div id="hero-search-container" class="max-w-4xl mx-auto relative mb-3">
+				<div id="hero-search-container" class="max-w-4xl mx-auto relative mb-3 z-50">
 					<EnhancedSearchBar
 						bind:searchValue={searchQuery}
 						onSearch={handleSearch}
@@ -694,7 +694,7 @@
 					</EnhancedSearchBar>
 
 					{#if showTrendingDropdown}
-						<div class="absolute z-[99999] w-full mt-2">
+						<div class="absolute z-[9999] w-full mt-2">
 							<TrendingDropdown
 								topSellers={topSellers}
 								quickFilters={heroQuickFilters}
@@ -815,7 +815,7 @@
 		</div>
 
 		<!-- Featured Sellers Section -->
-		<div id="sellers-trigger">
+		<div id="sellers-trigger" class="relative z-0">
 			<FeaturedSellers
 				sellers={sellers}
 				sellerProducts={{}}
@@ -880,28 +880,40 @@
 			<!-- No products found - show call to action for new users -->
 			<div class="px-2 sm:px-4 lg:px-6 py-8 text-center">
 				<div class="max-w-md mx-auto">
-					<div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-						<svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<div class="w-16 h-16 bg-[color:var(--surface-brand-subtle)] rounded-full flex items-center justify-center mx-auto mb-4">
+						<svg class="w-8 h-8 text-[color:var(--brand-primary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z" />
 						</svg>
 					</div>
-					<h3 class="text-xl font-semibold text-gray-900 mb-2">Welcome to Driplo!</h3>
-					<p class="text-gray-600 mb-6">
-						Discover amazing second-hand fashion and unique finds from sellers across Bulgaria and the UK.
+					<h3 class="text-xl font-semibold text-[color:var(--text-primary)] mb-2">{i18n.welcome()}</h3>
+					<p class="text-[color:var(--text-secondary)] mb-6">
+						{data.user ? 
+							'No products available yet. Check back soon for new listings!' : 
+							'Discover amazing second-hand fashion and unique finds from sellers across Bulgaria and the UK.'
+						}
 					</p>
 					<div class="space-y-3">
 						<button 
 							onclick={() => goto('/search')}
-							class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+							class="w-full bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] px-6 py-3 rounded-lg font-medium hover:bg-[color:var(--brand-primary)]/90 transition-colors"
 						>
-							Browse All Items
+							{i18n.home_browseAll()}
 						</button>
-						<button 
-							onclick={() => goto('/sell')}
-							class="w-full border border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors"
-						>
-							Start Selling
-						</button>
+						{#if data.user}
+							<button 
+								onclick={() => goto('/sell')}
+								class="w-full border border-[color:var(--border-primary)] text-[color:var(--brand-primary)] px-6 py-3 rounded-lg font-medium hover:bg-[color:var(--surface-secondary)] transition-colors"
+							>
+								{i18n.nav_sell()}
+							</button>
+						{:else}
+							<button 
+								onclick={() => authPopupActions.showForSignUp()}
+								class="w-full border border-[color:var(--border-primary)] text-[color:var(--brand-primary)] px-6 py-3 rounded-lg font-medium hover:bg-[color:var(--surface-secondary)] transition-colors"
+							>
+								{i18n.auth_signUp()}
+							</button>
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -933,6 +945,7 @@
 	navigatingTo={$navigating?.to?.url.pathname}
 	unreadMessageCount={$unreadMessageCount}
 	profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
+	isAuthenticated={!!data.user}
 	labels={{
 		home: i18n.nav_home(),
 		search: i18n.nav_search(),
@@ -980,6 +993,14 @@
 	onClose={authPopupActions.close}
 	onSignIn={authPopupActions.signIn}
 	onSignUp={authPopupActions.signUp}
+/>
+
+<!-- Engagement Banner for unauthenticated users -->
+<EngagementBanner
+	isAuthenticated={!!data.user}
+	onSignUp={() => authPopupActions.showForSignUp()}
+	showAfterViews={3}
+	hideAfterMs={12000}
 />
 {/key}
 

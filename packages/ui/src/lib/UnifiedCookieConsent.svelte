@@ -342,12 +342,12 @@
   
   <!-- Main Banner Container -->
   <div class="fixed inset-x-0 bottom-0 z-[9999]">
-    <div class="bg-white border-t border-gray-200 shadow-xl backdrop-blur-xl bg-white/95">
+    <div class="bg-[color:var(--surface-base)]/95 border-t border-[color:var(--border-subtle)] shadow-xl backdrop-blur-xl">
       <div class="max-w-6xl mx-auto">
         
         {#if showLanguageSelector && !hasExistingConsent}
           <!-- Language Selection (First Time Visitors) -->
-          <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+          <div class="p-6 border-b border-[color:var(--border-subtle)] bg-[color:var(--surface-secondary)]">
             <div class="text-center mb-4">
               <h3 class="text-lg font-bold text-[color:var(--text-primary)]">Welcome to Driplo! 🌍</h3>
               <p class="text-sm text-[color:var(--text-secondary)] mt-1">
@@ -375,8 +375,8 @@
                   onclick={() => selectedLocale = lang.code}
                   class="flex-1 min-h-[64px] p-4 rounded-xl border-2 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]
                     {selectedLocale === lang.code 
-                      ? 'border-blue-500 bg-blue-50 shadow-lg ring-2 ring-blue-200/50' 
-                      : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'}"
+                      ? 'border-[color:var(--brand-primary)] bg-[color:var(--surface-brand-subtle)] shadow-lg ring-2 ring-[color:var(--brand-primary)]/20' 
+                      : 'border-[color:var(--border-primary)] bg-[color:var(--surface-base)] hover:border-[color:var(--border-secondary)] hover:shadow-md'}"
                   title={`Choose ${lang.name}`}
                 >
                   <div class="flex items-center justify-center gap-3">
@@ -389,7 +389,7 @@
                     </div>
                     {#if selectedLocale === lang.code}
                       <div class="ml-2">
-                        <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                        <div class="w-6 h-6 bg-[color:var(--brand-primary)] rounded-full flex items-center justify-center">
                           <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                           </svg>
@@ -411,7 +411,7 @@
             <div class="flex-1">
               <div class="flex items-start gap-3 sm:gap-4">
                 <div class="flex-shrink-0">
-                  <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-black to-gray-700 rounded-xl flex items-center justify-center shadow-lg">
+                  <div class="w-10 h-10 sm:w-12 sm:h-12 bg-[color:var(--surface-strong)] rounded-xl flex items-center justify-center shadow-lg">
                     <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                             d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -528,15 +528,15 @@
             <div class="flex flex-col sm:flex-row lg:flex-col gap-2 lg:w-64">
               <button
                 onclick={acceptAll}
-                class="min-h-[44px] px-4 py-3 bg-black text-white rounded-xl font-semibold 
-                       hover:bg-gray-800 transition-all hover:scale-[1.02] shadow-lg text-sm"
+                class="min-h-[44px] px-4 py-3 bg-[color:var(--surface-strong)] text-[color:var(--text-inverse)] rounded-xl font-semibold 
+                       hover:bg-[color:var(--surface-strong)]/90 transition-all hover:scale-[1.02] shadow-lg text-sm"
               >
                 Accept All
               </button>
               
               <button
                 onclick={acceptNecessary}
-                class="min-h-[44px] px-4 py-3 bg-white text-[color:var(--text-secondary)] rounded-xl font-semibold 
+                class="min-h-[44px] px-4 py-3 bg-[color:var(--surface-base)] text-[color:var(--text-secondary)] rounded-xl font-semibold 
                        border-2 border-[color:var(--border-primary)] hover:border-[color:var(--border-secondary)] hover:bg-[color:var(--surface-secondary)] transition-all text-sm"
               >
                 Essential Only
@@ -553,8 +553,8 @@
               {:else}
                 <button
                   onclick={savePreferences}
-                  class="min-h-[44px] px-4 py-3 bg-gradient-to-r from-[color:var(--primary)] to-purple-600 
-                         text-white rounded-xl font-semibold hover:shadow-lg transition-all text-sm"
+                  class="min-h-[44px] px-4 py-3 bg-[color:var(--brand-primary)] 
+                         text-[color:var(--text-inverse)] rounded-xl font-semibold hover:shadow-lg hover:bg-[color:var(--brand-primary)]/90 transition-all text-sm"
                 >
                   Save My Choices
                 </button>
