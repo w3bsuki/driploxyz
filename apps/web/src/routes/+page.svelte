@@ -569,7 +569,7 @@
 <div class="min-h-screen bg-[color:var(--surface-subtle)] pb-20 sm:pb-0">
 	<main class="max-w-6xl mx-auto">
 		<!-- Hero Search -->
-		<div class="bg-white border-b border-gray-200">
+		<div class="bg-white/40 backdrop-blur-sm border-b border-gray-100">
 			<div class="px-4 sm:px-6 lg:px-8 py-4">
 				<!-- Hero Search -->
 				<div id="hero-search-container" class="max-w-2xl mx-auto relative mb-4">

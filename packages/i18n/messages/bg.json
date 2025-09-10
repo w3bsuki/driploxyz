@@ -1499,5 +1499,10 @@
   "footer_bulgaria": "България",
   "footer_allRightsReserved": "Всички права запазени.",
   "footer_newsletterPlaceholder": "Въведете имейла си",
-  "footer_subscribe": "Абонирай се"
+  "footer_subscribe": "Абонирай се",
+  
+  "badge_new": "НОВО",
+  "badge_brand": "МАРКА",
+  "badge_admin": "АДМИН",
+  "badge_pro": "ПРО"
 }

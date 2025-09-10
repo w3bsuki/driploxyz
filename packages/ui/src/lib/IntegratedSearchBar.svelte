@@ -44,7 +44,7 @@
 </script>
 
 <form onsubmit={handleSubmit} class="w-full {className}">
-  <div class="bg-gray-50 rounded-xl flex items-center relative">
+  <div class="bg-white rounded-xl flex items-center relative shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
     <!-- Left Section (Category Dropdown/Filter) -->
     {#if leftSection}
       <div class="shrink-0">

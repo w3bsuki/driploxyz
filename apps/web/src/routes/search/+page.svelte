@@ -453,7 +453,7 @@
   </div>
   
   <!-- Clean Header Section -->
-  <div class="bg-white sticky z-30 border-b border-gray-100" style="top: var(--app-header-offset, 56px);">
+  <div class="bg-white/40 backdrop-blur-sm sticky z-30 border-b border-gray-100" style="top: var(--app-header-offset, 56px);">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
       <!-- Search Container -->
@@ -572,7 +572,7 @@
   </div>
   
   <!-- Clean Filter Bar Above Products -->
-  <div class="bg-white border-b border-gray-100">
+  <div class="bg-white/40 backdrop-blur-sm border-b border-gray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
       
       <!-- Mobile Layout - Results Count + Filter Button + Filter Pills -->

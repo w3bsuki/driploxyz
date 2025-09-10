@@ -24,10 +24,10 @@
     ontouchstart: onTouchStart
   }: any = $props();
 
-  const base = 'category-nav-pill shrink-0 px-4 py-2 rounded-full text-sm font-medium flex items-center justify-center min-h-9 focus:outline-none focus:ring-2 focus:ring-[color:var(--state-focus)] transition-colors whitespace-nowrap';
+  const base = 'category-nav-pill shrink-0 px-4 py-2 rounded-full text-sm font-medium flex items-center justify-center min-h-9 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-colors whitespace-nowrap shadow-sm hover:shadow-md';
   const styles = variant === 'primary'
-    ? 'bg-[color:var(--primary)] text-[color:var(--primary-fg)] hover:bg-[color:var(--primary-hover)] disabled:opacity-75 disabled:cursor-not-allowed'
-    : 'bg-[color:var(--surface-subtle)] border border-[color:var(--border-default)] text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-muted)] hover:border-[color:var(--border-hover)] disabled:opacity-75 disabled:cursor-not-allowed';
+    ? 'bg-black text-white hover:bg-gray-800 disabled:opacity-75 disabled:cursor-not-allowed'
+    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200 hover:border-gray-300 disabled:opacity-75 disabled:cursor-not-allowed';
 
   // Optional override for spinner color; default based on variant
   const resolvedSpinnerColor = spinnerColor || (variant === 'primary' ? 'white' : 'gray');

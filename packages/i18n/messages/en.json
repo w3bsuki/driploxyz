@@ -1498,5 +1498,10 @@
   "footer_bulgaria": "Bulgaria",
   "footer_allRightsReserved": "All rights reserved.",
   "footer_newsletterPlaceholder": "Enter your email",
-  "footer_subscribe": "Subscribe"
+  "footer_subscribe": "Subscribe",
+  
+  "badge_new": "NEW",
+  "badge_brand": "BRAND",
+  "badge_admin": "ADMIN",
+  "badge_pro": "PRO"
 }

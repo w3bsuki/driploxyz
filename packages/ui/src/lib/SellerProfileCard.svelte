@@ -1,6 +1,8 @@
 <script lang="ts">
   import Avatar from './Avatar.svelte';
+  import NewSellerBadge from './NewSellerBadge.svelte';
   import type { Seller, Product } from './types/index';
+  import * as i18n from '@repo/i18n';
 
   interface Props {
     seller: Seller;
@@ -76,20 +78,18 @@
       <div class="mb-1.5">
         {#if seller.account_type === 'admin'}
           <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded-full shadow-sm bg-[oklch(0.55_0.25_25)] text-[oklch(1_0_0)]">
-            ADMIN
+            {i18n.badge_admin()}
           </span>
         {:else if seller.account_type === 'brand'}
           <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded-full shadow-sm bg-[oklch(0.25_0_0)] text-[oklch(1_0_0)]">
-            BRAND
+            {i18n.badge_brand()}
           </span>
         {:else if seller.account_type === 'pro'}
           <span class="inline-block px-2 py-0.5 text-[10px] font-bold rounded-full shadow-sm bg-[oklch(0.15_0_0)] text-[oklch(1_0_0)]">
-            PRO
+            {i18n.badge_pro()}
           </span>
         {:else if seller.account_type === 'personal'}
-          <span class="inline-block px-1.5 py-0.5 text-[9px] font-bold rounded-full shadow-sm bg-[oklch(0.92_0.1_140)] text-[oklch(0.4_0.15_140)] border border-[oklch(0.75_0.12_140)]">
-            NEW SELLER
-          </span>
+          <NewSellerBadge size="sm" />
         {/if}
       </div>
     {/if}
