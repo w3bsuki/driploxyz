@@ -6,10 +6,14 @@ Built with Svelte 5 + SvelteKit 2 for unmatched mobile performance. The perfect 
 
 ## ⚡ **Quick Start**
 
+> Requires Node.js 20.19.x LTS (or 22.12+). Engine‑strict is enabled.
+> Use `nvm use` (see `.nvmrc`) or install Node 20.19.0 before running.
+
 ```bash
-# Clone and install
+# Clone and install (ensure Node 20.19.0)
 git clone <repository-url>
 cd driplo-turbo-1
+nvm use || nvm install 20.19.0
 pnpm install
 
 # Setup environment

@@ -74,8 +74,8 @@
   <!-- Backdrop/Overlay -->
   <div 
     use:overlay 
-    class="fixed inset-0 z-50 bg-[color:var(--modal-overlay)] backdrop-blur-sm"
-    style="z-index: 9999;"
+    class="fixed inset-0 bg-black/20"
+    style="z-index: var(--z-50);"
   ></div>
 
   <!-- Dialog Content -->
@@ -84,7 +84,7 @@
     class="fixed left-1/2 top-1/2 z-50 w-full max-w-md -translate-x-1/2 -translate-y-1/2 transform px-4 focus:outline-none {className}"
     style="z-index: 10000;"
   >
-    <div class="bg-[color:var(--modal-bg)] rounded-[var(--modal-radius)] shadow-[var(--modal-shadow)] border border-[color:var(--border-subtle)] overflow-hidden">
+    <div class="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
       <!-- Header Section -->
       <div class="px-6 pt-6 pb-4">
         {#if title}
@@ -114,20 +114,12 @@
       {/if}
 
       <!-- Actions Section -->
-      <div class="bg-[color:var(--surface-subtle)] px-6 py-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:gap-2">
-        <!-- Default Cancel Button -->
-        <button 
-          use:close
-          class="btn btn-ghost min-h-[var(--touch-standard)] px-4 py-2 text-sm font-medium text-[color:var(--text-primary)] hover:bg-[color:var(--surface-muted)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[color:var(--state-focus)] rounded-[var(--radius-md)] transition-colors duration-[var(--duration-base)]"
-        >
-          Cancel
-        </button>
-        
-        <!-- Custom Actions -->
-        {#if actions}
+      {#if actions}
+        <div class="bg-gray-50 px-6 py-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end sm:gap-2">
+          <!-- Custom Actions -->
           {@render actions()}
-        {/if}
-      </div>
+        </div>
+      {/if}
     </div>
   </div>
 {/if}

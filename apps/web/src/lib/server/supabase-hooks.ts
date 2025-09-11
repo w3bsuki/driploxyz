@@ -19,8 +19,9 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   const PUBLIC_SUPABASE_URL = publicEnv.PUBLIC_SUPABASE_URL;
   const PUBLIC_SUPABASE_ANON_KEY = publicEnv.PUBLIC_SUPABASE_ANON_KEY;
 
+  // If not configured, gracefully skip auth setup to avoid breaking dev
   if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
-    throw error(500, 'Server configuration error. Please contact support.');
+    return;
   }
 
   // Create Supabase client via shared helper

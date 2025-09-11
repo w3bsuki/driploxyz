@@ -208,6 +208,7 @@
           aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}
           aria-controls="mobile-navigation"
+          aria-haspopup="dialog"
         >
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             {#if mobileMenuOpen}
@@ -326,6 +327,8 @@
         closeMenus();
         window.location.href = `/category/${category}`;
       }}
+      variant="drawer"
+      placement="left"
       translations={mobileNavTranslations}
     />
   {/if}

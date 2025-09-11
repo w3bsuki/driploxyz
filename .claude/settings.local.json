@@ -74,7 +74,8 @@
       "Bash(sed:*)",
       "Bash(npm run check:*)",
       "mcp__21st-dev__21st_magic_component_builder",
-      "Read(//k/k/driplo-turbo-1/**)"
+      "Read(//k/k/driplo-turbo-1/**)",
+      "Bash(npx svelte-check:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

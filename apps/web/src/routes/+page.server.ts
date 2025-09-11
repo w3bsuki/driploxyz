@@ -64,15 +64,28 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         .select(`
           id,
           username,
+          full_name,
           avatar_url,
           rating,
           sales_count,
+          followers_count,
+          bio,
+          verified,
+          created_at,
           products!products_seller_id_fkey!inner (
-            id
+            id,
+            title,
+            price,
+            condition,
+            created_at,
+            product_images!inner (
+              image_url
+            )
           )
         `)
         .eq('products.is_active', true)
         .eq('products.is_sold', false)
+        .eq('products.country_code', country || 'BG')
         .order('sales_count', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(8)
@@ -126,7 +139,7 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         .eq('is_sold', false)
         .eq('country_code', country || 'BG')
         .order('created_at', { ascending: false })
-        .limit(12)
+        .limit(50)
         .then(),
       3000,
       { data: [] } as any

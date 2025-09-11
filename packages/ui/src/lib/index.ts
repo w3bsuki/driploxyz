@@ -240,6 +240,7 @@ export { default as HeaderUserMenu } from './HeaderUserMenu.svelte';
 export { default as HeaderNav } from './HeaderNav.svelte';
 export { default as HeaderSearch } from './HeaderSearch.svelte';
 export { default as CategoryGrid } from './CategoryGrid.svelte';
+export { default as MegaMenuCategories } from './MegaMenuCategories.svelte';
 export { default as MobileNavigation } from './MobileNavigation.svelte';
 export { default as Footer } from './Footer.svelte';
 export { default as PartnerShowcase } from './PartnerShowcase.svelte';

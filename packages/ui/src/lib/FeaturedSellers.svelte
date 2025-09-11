@@ -32,9 +32,14 @@
   let canScrollRight = $state(false);
 
   function handleSellerClick(seller: Seller) {
+    // If parent provided a handler, delegate so the modal can render at page/layout level
+    if (onSellerClick) {
+      onSellerClick(seller);
+      return;
+    }
+    // Fallback: open local quick view (used when no parent handler is passed)
     selectedSeller = seller;
     showQuickView = true;
-    onSellerClick?.(seller);
   }
 
   function closeQuickView() {
@@ -160,16 +165,10 @@
   {/if}
 </section>
 
-{#if selectedSeller && showQuickView}
+{#if !onSellerClick && selectedSeller && showQuickView}
   <SellerQuickView
     seller={selectedSeller}
     isOpen={showQuickView}
     onClose={closeQuickView}
-    onViewProfile={() => {
-      closeQuickView();
-      if (typeof window !== 'undefined') {
-        window.location.href = `/profile/${selectedSeller.id}`;
-      }
-    }}
   />
 {/if}

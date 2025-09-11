@@ -71,6 +71,13 @@ export interface Seller extends Profile {
   total_products?: number;
   average_rating?: number;
   full_name?: string;
+  totalSales?: number;
+  recentProducts?: Array<{
+    id: string;
+    title: string;
+    price: number;
+    image: string;
+  }>;
 }
 
 export interface Category {
