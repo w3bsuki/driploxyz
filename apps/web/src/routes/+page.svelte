@@ -1,7 +1,6 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { EnhancedSearchBar, TrendingDropdown, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill } from '@repo/ui';
-	import CategoryPill from '$lib/components/CategoryPill.svelte';
+	import { EnhancedSearchBar, TrendingDropdown, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill, CategoryPill } from '@repo/ui';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
@@ -768,10 +767,10 @@
 						variant="primary"
 						label={i18n.search_all()}
 						loading={loadingCategory === 'all'}
-						spinnerColor="white"
 						disabled={loadingCategory === 'all'}
 						ariaLabel={i18n.search_viewAll()}
-						aria-current={$page.url.pathname === '/search' ? 'page' : undefined}
+						ariaCurrent={$page.url.pathname === '/search' ? 'page' : undefined}
+						data-prefetch="hover"
 						onmouseenter={() => preloadCode('/search')}
 						ontouchstart={() => preloadCode('/search')}
 						onclick={() => navigateToAllSearch()}
@@ -783,11 +782,14 @@
 						{@const category = mainCategories.find(c => c.slug === 'women')}
 						<CategoryPill 
 							label={i18n.category_women()}
+							emoji="👗"
 							loading={loadingCategory === category.slug}
-							spinnerColor="pink"
 							disabled={loadingCategory === category.slug}
 							ariaLabel={`${i18n.menu_browse()} ${i18n.category_women()}`}
+							itemCount={category?.product_count || 0}
+							showItemCount={!!category?.product_count && category.product_count > 0}
 							data-prefetch="hover"
+							data-category="women"
 							onmouseenter={() => prefetchCategoryPage(category.slug)}
 							ontouchstart={() => prefetchCategoryPage(category.slug)}
 							onclick={() => navigateToCategory(category.slug)}
@@ -800,11 +802,14 @@
 						{@const category = mainCategories.find(c => c.slug === 'men')}
 						<CategoryPill 
 							label={i18n.category_men()}
+							emoji="👔"
 							loading={loadingCategory === category.slug}
-							spinnerColor="blue"
 							disabled={loadingCategory === category.slug}
 							ariaLabel={`${i18n.menu_browse()} ${i18n.category_men()}`}
+							itemCount={category?.product_count || 0}
+							showItemCount={!!category?.product_count && category.product_count > 0}
 							data-prefetch="hover"
+							data-category="men"
 							onmouseenter={() => prefetchCategoryPage(category.slug)}
 							ontouchstart={() => prefetchCategoryPage(category.slug)}
 							onclick={() => navigateToCategory(category.slug)}
@@ -817,11 +822,14 @@
 						{@const category = mainCategories.find(c => c.slug === 'kids')}
 						<CategoryPill 
 							label={i18n.category_kids()}
+							emoji="👶"
 							loading={loadingCategory === category.slug}
-							spinnerColor="green"
 							disabled={loadingCategory === category.slug}
 							ariaLabel={`${i18n.menu_browse()} ${i18n.category_kids()}`}
+							itemCount={category?.product_count || 0}
+							showItemCount={!!category?.product_count && category.product_count > 0}
 							data-prefetch="hover"
+							data-category="kids"
 							onmouseenter={() => prefetchCategoryPage(category.slug)}
 							ontouchstart={() => prefetchCategoryPage(category.slug)}
 							onclick={() => navigateToCategory(category.slug)}
@@ -832,12 +840,13 @@
 					<!-- Virtual Categories - Unisex Product Types -->
 					{#each virtualCategories as virtualCategory, index}
 						<CategoryPill 
+							variant="outline"
 							label={virtualCategory.name}
 							loading={loadingCategory === virtualCategory.slug}
-							spinnerColor="purple"
 							disabled={loadingCategory === virtualCategory.slug}
 							ariaLabel={`${i18n.menu_browse()} ${virtualCategory.name}`}
 							data-prefetch="hover"
+							data-category={virtualCategory.slug}
 							onmouseenter={() => prefetchCategoryPage(virtualCategory.slug)}
 							ontouchstart={() => prefetchCategoryPage(virtualCategory.slug)}
 							onclick={() => navigateToCategory(virtualCategory.slug)}

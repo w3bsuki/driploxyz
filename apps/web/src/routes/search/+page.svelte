@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ProductCard, Button, IntegratedSearchBar, ProductCardSkeleton, BottomNav, StickyFilterModal, AppliedFilterPills, CategoryBottomSheet, type Product } from '@repo/ui';
+  import { ProductCard, Button, IntegratedSearchBar, ProductCardSkeleton, BottomNav, StickyFilterModal, AppliedFilterPills, CategoryBottomSheet, CategoryPill, type Product } from '@repo/ui';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { goto } from '$app/navigation';
   import { page, navigating } from '$app/stores';
@@ -503,30 +503,26 @@
         </IntegratedSearchBar>
       </div>
       
-      <!-- Quick Category & Price Pills -->
+      <!-- Quick Category Pills -->
       <div class="flex items-center gap-2 pb-3 overflow-x-auto scrollbar-hide">
         <!-- Main Category Pills -->
-        <button
+        <CategoryPill
+          variant={filters.category === null ? 'primary' : 'secondary'}
+          label={i18n.search_all()}
           onclick={() => handleCategorySelect(null)}
-          class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors min-h-9
-            {filters.category === null 
-              ? 'bg-black text-white' 
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-        >
-          {i18n.search_all()}
-        </button>
+          ariaLabel="Show all categories"
+          data-category="all"
+        />
         
         {#each mainCategories as cat}
-          <button
+          <CategoryPill
+            variant={filters.category === cat.key ? 'primary' : 'secondary'}
+            label={cat.label}
+            emoji={cat.icon}
             onclick={() => handleCategorySelect(cat.key)}
-            class="shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors flex items-center gap-1.5 min-h-9
-              {filters.category === cat.key 
-                ? 'bg-black text-white' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}"
-          >
-            <span>{cat.icon}</span>
-            {cat.label}
-          </button>
+            ariaLabel={`Filter by ${cat.label}`}
+            data-category={cat.key}
+          />
         {/each}
         
         <div class="w-px h-5 bg-gray-200 mx-2"></div>

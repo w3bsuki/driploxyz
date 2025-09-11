@@ -74,6 +74,7 @@ export { default as CheckoutSummary } from './CheckoutSummary.svelte';
 // Filter components
 export { default as FilterPill } from './FilterPill.svelte';
 export { default as FilterPillGroup } from './FilterPillGroup.svelte';
+export { default as CategoryPill } from './CategoryPill.svelte';
 export { default as CategoryFilterDropdown } from './CategoryFilterDropdown.svelte';
 export { default as FilterModal } from './FilterModal.svelte';
 export { default as StickyFilterModal } from './StickyFilterModal.svelte';

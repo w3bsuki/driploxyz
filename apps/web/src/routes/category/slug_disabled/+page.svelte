@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page, navigating } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, PartnerBanner, type Product, type BreadcrumbItem } from '@repo/ui';
+  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, PartnerBanner, CategoryPill, type Product, type BreadcrumbItem } from '@repo/ui';
   import * as i18n from '@repo/i18n';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { formatPrice } from '$lib/utils/price';
@@ -355,25 +355,29 @@
             {#if subcategories.length > 0}
               <!-- Show Level 2 subcategories (e.g., Clothing, Shoes, Accessories) -->
               {#each subcategories.filter(s => s.productCount > 0) as subcat}
-                <a 
-                  href="/category/{subcat.slug}"
-                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 no-underline"
-                >
-                  <span>{translateSubcategoryName(subcat.name)}</span>
-                  <span class="text-xs opacity-75">({subcat.productCount})</span>
-                </a>
+                <CategoryPill
+                  variant="secondary"
+                  label={translateSubcategoryName(subcat.name)}
+                  itemCount={subcat.productCount}
+                  showItemCount={true}
+                  onclick={() => goto(`/category/${subcat.slug}`)}
+                  ariaLabel={`Browse ${translateSubcategoryName(subcat.name)} (${subcat.productCount} items)`}
+                  data-category={subcat.slug}
+                />
               {/each}
               
             {:else if level3Categories.length > 0}
               <!-- Show Level 3 subcategories (e.g., T-Shirts, Dresses, Sneakers) -->
               {#each level3Categories.filter(l3cat => l3cat.productCount > 0) as l3cat}
-                <a 
-                  href="/category/{l3cat.slug}"
-                  class="px-4 py-2 rounded-full text-sm font-medium shrink-0 transition-colors duration-200 flex items-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 no-underline"
-                >
-                  <span>{translateSubcategoryName(l3cat.name)}</span>
-                  <span class="text-xs opacity-75">({l3cat.productCount})</span>
-                </a>
+                <CategoryPill
+                  variant="secondary"
+                  label={translateSubcategoryName(l3cat.name)}
+                  itemCount={l3cat.productCount}
+                  showItemCount={true}
+                  onclick={() => goto(`/category/${l3cat.slug}`)}
+                  ariaLabel={`Browse ${translateSubcategoryName(l3cat.name)} (${l3cat.productCount} items)`}
+                  data-category={l3cat.slug}
+                />
               {/each}
             {/if}
           </div>
