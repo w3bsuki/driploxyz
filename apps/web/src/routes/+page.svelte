@@ -559,12 +559,12 @@
 		}
 	}
 
-	// Get only top-level categories for navigation pills (first 3 main categories)
+	// Get only top-level categories for navigation pills (first 4 main categories including Unisex)
 	const mainCategories = $derived(
 		(data.categories || [])
 			.filter(cat => !cat.parent_id) // Only top-level categories
 			.sort((a, b) => a.sort_order - b.sort_order) // Sort by order
-			.slice(0, 3) // Take first 3 (Men, Women, Kids)
+			.slice(0, 4) // Take first 4 (Women, Men, Kids, Unisex)
 	);
 
 	// Virtual categories for quick access
@@ -837,6 +837,26 @@
 						/>
 					{/if}
 					
+					<!-- Unisex Category - Standard Action (36px) -->
+					{#if mainCategories.find(c => c.slug === 'unisex')}
+						{@const category = mainCategories.find(c => c.slug === 'unisex')}
+						<CategoryPill 
+							label={i18n.category_unisex()}
+							emoji="🌍"
+							loading={loadingCategory === category.slug}
+							disabled={loadingCategory === category.slug}
+							ariaLabel={`${i18n.menu_browse()} ${i18n.category_unisex()}`}
+							itemCount={category?.product_count || 0}
+							showItemCount={!!category?.product_count && category.product_count > 0}
+							data-prefetch="hover"
+							data-category="unisex"
+							onmouseenter={() => prefetchCategoryPage(category.slug)}
+							ontouchstart={() => prefetchCategoryPage(category.slug)}
+							onclick={() => navigateToCategory(category.slug)}
+							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 4)}
+						/>
+					{/if}
+					
 					<!-- Virtual Categories - Unisex Product Types -->
 					{#each virtualCategories as virtualCategory, index}
 						<CategoryPill 
@@ -850,7 +870,7 @@
 							onmouseenter={() => prefetchCategoryPage(virtualCategory.slug)}
 							ontouchstart={() => prefetchCategoryPage(virtualCategory.slug)}
 							onclick={() => navigateToCategory(virtualCategory.slug)}
-							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 4 + index)}
+							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 5 + index)}
 						/>
 					{/each}
 				</nav>
