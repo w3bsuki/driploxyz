@@ -175,7 +175,7 @@
           <div class="flex flex-col items-center">
             <!-- Avatar with verification badge -->
             <div class="relative mb-3">
-              <div class="w-20 h-20 rounded-full bg-gray-200 overflow-hidden border-4 border-white shadow-lg">
+              <div class="w-20 h-20 rounded-full bg-gray-200 overflow-hidden border-3 border-[color:var(--gray-300)] shadow-lg">
                 {#if normalizedSeller.avatar_url && !imageError}
                   <img 
                     src={normalizedSeller.avatar_url} 
@@ -225,7 +225,7 @@
             {/if}
 
             <!-- Username -->
-            <h2 class="text-xl font-bold text-gray-900 mb-1">@{normalizedSeller.username}</h2>
+            <h2 class="text-xl font-semibold text-[color:var(--gray-800)] mb-1 tracking-tight">@{normalizedSeller.username}</h2>
             
             <!-- Stats -->
             <div class="flex items-center gap-3 text-sm text-gray-600 font-medium mb-3">
@@ -255,7 +255,7 @@
             <div class="flex space-x-2 w-full">
               <button 
                 onclick={viewProfile} 
-                class="flex-1 py-2.5 bg-gradient-to-r from-[oklch(0.6_0.25_250)] to-[oklch(0.55_0.25_260)] text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+                class="flex-1 py-2.5 bg-[color:var(--gray-800)] hover:bg-[color:var(--gray-900)] text-white text-sm font-medium rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
               >
                 View Profile
               </button>
@@ -277,7 +277,7 @@
         <h3 class="text-sm font-semibold text-gray-900 mb-3">Recent Items</h3>
         {#if displayProducts.length > 0}
           <div class="grid grid-cols-2 gap-3">
-            {#each displayProducts.slice(0, 4) as product}
+            {#each displayProducts.slice(0, 6) as product}
               <div class="cursor-pointer w-full text-left group">
                 <div class="relative">
                   <img 

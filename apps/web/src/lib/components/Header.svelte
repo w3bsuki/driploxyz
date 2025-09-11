@@ -199,7 +199,7 @@
 <header class="border-b border-[color:var(--border-subtle)] bg-[color:var(--surface-base)] supports-[backdrop-filter]:backdrop-blur">
   <div class="px-2 sm:px-4 lg:px-6 safe-area">
     <!-- Bar -->
-    <div class="flex items-center justify-between h-14 sm:h-16">
+    <div class="flex items-center justify-between h-12 sm:h-16">
       <!-- Left: Mobile Menu + Logo -->
       <div class="flex items-center gap-0">
         <button

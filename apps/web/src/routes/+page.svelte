@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { EnhancedSearchBar, TrendingDropdown, SmartStickySearch, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill } from '@repo/ui';
+	import { EnhancedSearchBar, TrendingDropdown, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill } from '@repo/ui';
 	import CategoryPill from '$lib/components/CategoryPill.svelte';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
@@ -111,14 +111,16 @@
 
 	// Helper function to transform product data
 	function transformProduct(product: ProductWithImages): Product {
+		const images = (product.product_images || product.images || []).map(img => 
+			typeof img === 'string' ? img : img?.image_url || ''
+		).filter(Boolean);
+		
 		return {
 			id: product.id,
 			title: product.title,
 			price: product.price,
 			currency: i18n.common_currency(),
-			images: (product.product_images || product.images || []).map(img => 
-				typeof img === 'string' ? img : img?.image_url || ''
-			).filter(Boolean),
+			images,
 			condition: product.condition as Product['condition'] || 'good',
 			seller_id: product.seller_id,
 			category_id: product.category_id || '',
@@ -204,8 +206,9 @@
 	);
 
 	// Transform sellers for display (for FeaturedSellers component)
+	// Use topSellersData instead of sellersData because topSellers specifically gets sellers with active products
 	const sellers = $derived<Seller[]>(
-		(sellersData || []).map(seller => {
+		(topSellersData || []).map(seller => {
 			const productCount = seller.total_products || 0;
 			return {
 				id: seller.id,
@@ -228,6 +231,22 @@
 		})
 	);
 
+	// Create seller products mapping from featured products
+	const sellerProducts = $derived(() => {
+		const productsBySeller: Record<string, Product[]> = {};
+		
+		// Match products to sellers by seller_id
+		sellers.forEach(seller => {
+			const matchingProducts = products.filter(p => p.seller_id === seller.id);
+			
+			if (matchingProducts.length > 0) {
+				productsBySeller[seller.id] = matchingProducts.slice(0, 3);
+			}
+		});
+		
+		return productsBySeller;
+	});
+
 	// Debug data loading
 	$effect(() => {
 		log.debug('Data loading status', {
@@ -236,7 +255,13 @@
 			promotedProductsCount: promotedProducts?.length || 0,
 			filteredPromotedProductsCount: filteredPromotedProducts?.length || 0,
 			sellersCount: sellersData?.length || 0,
-			transformedSellersCount: sellers?.length || 0
+			transformedSellersCount: sellers?.length || 0,
+			sellerProductsKeys: Object.keys(sellerProducts),
+			sellerProductsDebug: sellerProducts,
+			sellersIds: sellers.map(s => s.id),
+			productsSellerIds: products.map(p => p.seller_id).filter(Boolean),
+			sampleProduct: products[0],
+			productsWithImages: products.filter(p => p.images && p.images.length > 0).length
 		});
 	});
 
@@ -667,8 +692,8 @@
 <div class="min-h-screen bg-[color:var(--surface-subtle)] pb-20 sm:pb-0">
 	<main>
 		<!-- Hero Search -->
-		<div class="bg-white/40 backdrop-blur-sm border-b border-gray-100 relative z-50">
-			<div class="px-2 sm:px-4 lg:px-6 py-3">
+		<div class="sticky top-12 sm:top-16 bg-white/40 backdrop-blur-sm border-b border-gray-100 z-40">
+			<div class="px-2 sm:px-4 lg:px-6 safe-area py-1.5">
 				<!-- Hero Search -->
 				<div id="hero-search-container" class="max-w-4xl mx-auto relative mb-3 z-50">
 					<EnhancedSearchBar
@@ -736,7 +761,7 @@
 				<nav 
 					id="category-pills"
 					aria-label={i18n.nav_browseCategories()}
-					class="flex items-center justify-start gap-2 sm:gap-3 overflow-x-auto no-scrollbar px-1 sm:px-2 sm:justify-center"
+					class="flex items-center justify-start gap-2 sm:gap-3 overflow-x-auto no-scrollbar px-2 sm:px-4 lg:px-6 safe-area sm:justify-center"
 				>
 					<!-- All Categories -->
 					<CategoryPill 
@@ -824,10 +849,10 @@
 		</div>
 
 		<!-- Featured Sellers Section -->
-		<div id="sellers-trigger" class="relative z-0">
+		<div id="sellers-trigger" class="relative z-0 pt-3">
 			<FeaturedSellers
 				sellers={sellers}
-				sellerProducts={{}}
+				sellerProducts={sellerProducts}
 				onSellerClick={handleSellerClick}
 				title={i18n.promoted_premiumSellers ? i18n.promoted_premiumSellers() : 'Featured Sellers'}
 			/>
@@ -942,19 +967,6 @@
 	}
 </style>
 
-<!-- Smart Sticky Search -->
-<SmartStickySearch 
-	bind:value={searchQuery}
-	onSearch={handleSearch}
-	placeholder={i18n.search_placeholder()}
-	observeTarget="#hero-search-container"
-	{mainCategories}
-	{virtualCategories}
-	{loadingCategory}
-	onNavigateToCategory={navigateToCategory}
-	onNavigateToAllSearch={navigateToAllSearch}
-	onPillKeyNav={handlePillKeyNav}
-/>
 
 <BottomNav 
 	currentPath={$page.url.pathname}

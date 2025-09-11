@@ -34,8 +34,8 @@
 </script>
 
 <button
-  class="w-full bg-white border border-gray-200 rounded-xl p-5 
-         hover:border-gray-300 hover:shadow-md active:scale-[0.98] 
+  class="w-full bg-[color:var(--gray-50)] border border-[color:var(--gray-200)] rounded-xl p-5 
+         hover:border-[color:var(--gray-300)] hover:shadow-md active:scale-[0.98] 
          transition-all duration-200 shadow-sm
          touch-manipulation focus-visible:outline-none focus-visible:ring-2 
          focus-visible:ring-blue-500 focus-visible:ring-offset-2 {className}"
@@ -46,7 +46,7 @@
   <div class="flex flex-col items-center mb-3">
     <!-- Avatar -->
     <div class="mb-2 relative">
-      <div class="w-14 h-14 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-sm">
+      <div class="w-14 h-14 rounded-full bg-gray-200 overflow-hidden border-2 border-[color:var(--gray-300)] shadow-sm">
         {#if seller.avatar_url && !imageError}
           <img 
             src={seller.avatar_url} 
@@ -109,7 +109,7 @@
 
     <!-- Username -->
     <div class="mb-1">
-      <span class="font-bold text-gray-900 text-base truncate max-w-[140px] block text-center">
+      <span class="font-semibold text-[color:var(--gray-800)] text-base truncate max-w-[140px] block text-center tracking-tight">
         @{seller.username || 'seller'}
       </span>
     </div>
@@ -135,9 +135,9 @@
   <div class="grid grid-cols-3 gap-2 mb-3">
     {#each previews as product}
       <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:border-gray-300 transition-colors">
-        {#if product.image_url || product.images?.[0]}
+        {#if product.images?.[0]}
           <img 
-            src={product.image_url || product.images?.[0]} 
+            src={product.images[0]} 
             alt={product.title}
             class="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
             loading="lazy"
@@ -163,7 +163,7 @@
   </div>
 
   <!-- Quick View Button -->
-  <div class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2.5 px-4 rounded-lg font-medium text-sm shadow-sm hover:shadow-md transition-all duration-200 text-center">
+  <div class="w-full bg-[color:var(--gray-800)] hover:bg-[color:var(--gray-900)] text-white py-2.5 px-4 rounded-lg font-medium text-sm shadow-sm hover:shadow-md transition-all duration-200 text-center">
     Quick View
   </div>
 </button>

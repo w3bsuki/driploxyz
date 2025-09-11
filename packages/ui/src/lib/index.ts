@@ -138,7 +138,6 @@ export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte
 
 // Search components
 export { default as TrendingDropdown } from './TrendingDropdown.svelte';
-export { default as SmartStickySearch } from './SmartStickySearch.svelte';
 export { default as SearchDropdown } from './SearchDropdown.svelte';
 export { default as EnhancedSearchBar } from './EnhancedSearchBar.svelte';
 
