@@ -52,9 +52,9 @@
     return touched[field] && !!errors[field];
   }
 
-  // Premium boost feature visibility
+  // Premium boost feature visibility - Pro and Brand accounts only
   const canUsePremiumBoost = $derived(
-    profile?.subscription_tier === 'premium' || 
+    (profile?.subscription_tier === 'pro' || profile?.subscription_tier === 'brand') && 
     (profile?.premium_boosts_remaining ?? 0) > 0
   );
 
@@ -136,9 +136,9 @@
         <div class="flex-1">
           <div class="flex items-center gap-2">
             <span class="font-semibold text-[color:var(--primary-900)]">{i18n.sell_premiumBoost()}</span>
-            {#if profile?.subscription_tier !== 'premium' && profile?.premium_boosts_remaining}
+            {#if profile?.premium_boosts_remaining}
               <span class="text-xs bg-[color:var(--primary-100)] text-[color:var(--primary-700)] px-2 py-0.5 rounded-full">
-                {profile.premium_boosts_remaining} {i18n.sell_premiumLeft()}
+                {profile.premium_boosts_remaining} {i18n.sell_creditsLeft()}
               </span>
             {/if}
           </div>

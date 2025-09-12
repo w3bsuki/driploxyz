@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { EnhancedSearchBar, TrendingDropdown, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill, CategoryPill } from '@repo/ui';
+	import { EnhancedSearchBar, TrendingDropdown, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill, CategoryPill, PromotedHighlights } from '@repo/ui';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
@@ -79,7 +79,7 @@
 		if (browser) {
 			// Always initialize favorite counts from products, regardless of login status
 			const counts: Record<string, number> = {};
-			[...promotedProducts, ...products].forEach(product => {
+			[...boostedProducts, ...regularProducts].forEach(product => {
 				if (product.favorite_count !== undefined) {
 					counts[product.id] = product.favorite_count;
 				}
@@ -204,6 +204,16 @@
 		}))
 	);
 
+	// Filter boosted products for the highlight section
+	const boostedProducts = $derived<Product[]>(
+		products.filter(product => product.is_boosted).slice(0, 8) // Limit to 8 boosted products
+	);
+
+	// Filter non-boosted products for the main listings
+	const regularProducts = $derived<Product[]>(
+		products.filter(product => !product.is_boosted)
+	);
+
 	// Transform sellers for display (for FeaturedSellers component)
 	// Use topSellersData instead of sellersData because topSellers specifically gets sellers with active products
 	const sellers = $derived<Seller[]>(
@@ -251,16 +261,15 @@
 		log.debug('Data loading status', {
 			dataLoaded,
 			featuredProductsCount: featuredProductsData?.length || 0,
-			promotedProductsCount: promotedProducts?.length || 0,
-			filteredPromotedProductsCount: filteredPromotedProducts?.length || 0,
+			boostedProductsCount: boostedProducts?.length || 0,
+			regularProductsCount: regularProducts?.length || 0,
+			totalProductsCount: products?.length || 0,
 			sellersCount: sellersData?.length || 0,
 			transformedSellersCount: sellers?.length || 0,
 			sellerProductsKeys: Object.keys(sellerProducts),
-			sellerProductsDebug: sellerProducts,
-			sellersIds: sellers.map(s => s.id),
-			productsSellerIds: products.map(p => p.seller_id).filter(Boolean),
-			sampleProduct: products[0],
-			productsWithImages: products.filter(p => p.images && p.images.length > 0).length
+			productsWithImages: products.filter(p => p.images && p.images.length > 0).length,
+			sampleBoostedProduct: boostedProducts[0],
+			sampleRegularProduct: regularProducts[0]
 		});
 	});
 
@@ -429,8 +438,20 @@
 
 	function handleSellerClick(seller: Seller) {
 		if (seller.premium) {
-			// Open quick view for premium sellers
-			selectedSeller = seller;
+			// Get seller's products with proper image data
+			const sellerProductsList = sellerProducts[seller.id] || [];
+			const recentProducts = sellerProductsList.slice(0, 9).map(product => ({
+				id: product.id,
+				title: product.title,
+				price: product.price,
+				image: (product.product_images && product.product_images[0]?.image_url) || product.images?.[0] || '/placeholder-product.svg'
+			}));
+			
+			// Open quick view for premium sellers with product data
+			selectedSeller = {
+				...seller,
+				recentProducts
+			};
 			showSellerModal = true;
 		} else {
 			// Navigate directly to profile for non-premium
@@ -877,21 +898,78 @@
 			</div>
 		</div>
 
-		<!-- Featured Sellers Section -->
-		<div id="sellers-trigger" class="relative z-0 pt-3">
-			<FeaturedSellers
-				sellers={sellers}
-				sellerProducts={sellerProducts}
+		<!-- Promoted Highlights Section -->
+		{#if dataLoaded && (filteredPromotedProducts.length > 0 || sellers.length > 0)}
+			<PromotedHighlights
+				promotedProducts={filteredPromotedProducts}
+				{sellers}
+				partners={partners}
+				onSellerSelect={handleSellerClick}
 				onSellerClick={handleSellerClick}
-				title={i18n.promoted_premiumSellers ? i18n.promoted_premiumSellers() : 'Featured Sellers'}
+				onPartnerClick={handlePartnerClick}
+				onProductClick={handleProductClick}
+				onProductBuy={handlePurchase}
+				onToggleFavorite={handleFavorite}
+				favoritesState={$favoritesStore}
+				{formatPrice}
+				translations={{
+					seller_premiumSeller: i18n.seller_premiumSeller(),
+					seller_premiumSellerDescription: i18n.seller_premiumSellerDescription(),
+					trending_promoted: i18n.trending_promoted(),
+					trending_featured: i18n.trending_featured(),
+					common_currency: i18n.common_currency(),
+					ui_scroll: i18n.ui_scroll ? i18n.ui_scroll() : 'Scroll',
+					promoted_hotPicks: i18n.promoted_hotPicks ? i18n.promoted_hotPicks() : 'Hot Picks',
+					promoted_premiumSellers: i18n.promoted_premiumSellers ? i18n.promoted_premiumSellers() : 'Premium Sellers',
+					categoryTranslation: translateCategory
+				}}
 			/>
-		</div>
+		{/if}
+
+		<!-- Boosted Listings Section -->
+		{#if dataLoaded && (boostedProducts.length > 0)}
+			<div id="boosted-listings" class="relative z-0 pt-3">
+				<FeaturedProducts
+					products={boostedProducts}
+					errors={data.errors}
+					sectionTitle="🚀 Boosted Listings"
+					onProductClick={handleProductClick}
+					onFavorite={handleFavorite}
+					onBrowseAll={handleBrowseAll}
+					onSellClick={handleSellClick}
+					{formatPrice}
+					favoritesState={$favoritesStore}
+					showViewAllButton={false}
+					translations={{
+						empty_noProducts: i18n.empty_noProducts(),
+						empty_startBrowsing: i18n.empty_startBrowsing(),
+						nav_sell: i18n.nav_sell(),
+						home_browseAll: i18n.home_browseAll(),
+						home_itemCount: i18n.home_itemCount(),
+						home_updatedMomentsAgo: i18n.home_updatedMomentsAgo(),
+						product_size: i18n.product_size(),
+						trending_newSeller: i18n.trending_newSeller(),
+						seller_unknown: i18n.seller_unknown(),
+						common_currency: i18n.common_currency(),
+						product_addToFavorites: i18n.product_addToFavorites(),
+						condition_brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
+						condition_newWithoutTags: i18n.sell_condition_newWithoutTags(),
+						condition_new: i18n.condition_new(),
+						condition_likeNew: i18n.condition_likeNew(),
+						condition_good: i18n.condition_good(),
+						condition_worn: i18n.sell_condition_worn(),
+						condition_fair: i18n.condition_fair(),
+						categoryTranslation: translateCategory
+					}}
+				/>
+			</div>
+		{/if}
 
 
-		<!-- FeaturedProducts -->
-		{#if dataLoaded && (products.length > 0)}
+		<!-- Regular Products (Newest Listings) -->
+		{#if dataLoaded && (regularProducts.length > 0)}
 			<FeaturedProducts
-				{products}
+				products={regularProducts}
 				errors={data.errors}
 				sectionTitle={i18n.home_newestListings()}
 				onProductClick={handleProductClick}

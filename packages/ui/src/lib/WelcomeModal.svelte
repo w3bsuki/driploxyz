@@ -58,12 +58,7 @@
   }: Props = $props();
 
   // Handle dialog open/close state
-  let isOpen = $state(show);
-  
-  // Sync show prop with internal state
-  $effect(() => {
-    isOpen = show;
-  });
+  let isOpen = $derived(show);
 
   const defaultSteps = $derived([
     {

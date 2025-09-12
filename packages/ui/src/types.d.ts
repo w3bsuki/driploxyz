@@ -25,6 +25,14 @@ export interface Product {
     status?: string;
     favorite_count?: number;
     is_promoted?: boolean;
+    is_boosted?: boolean;
+    boosted_until?: string;
+    seller_badges?: {
+        is_pro: boolean;
+        is_brand: boolean;
+        is_verified: boolean;
+    };
+    seller_subscription_tier?: 'free' | 'basic' | 'pro' | 'brand';
     product_images?: Array<{
         id: string;
         image_url: string;

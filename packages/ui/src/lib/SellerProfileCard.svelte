@@ -135,9 +135,9 @@
   <div class="grid grid-cols-3 gap-2 mb-3">
     {#each previews as product}
       <div class="aspect-square bg-gray-100 rounded-lg overflow-hidden border border-gray-200 hover:border-gray-300 transition-colors">
-        {#if product.images?.[0]}
+        {#if (product.product_images && product.product_images[0]?.image_url) || product.images?.[0]}
           <img 
-            src={product.images[0]} 
+            src={(product.product_images && product.product_images[0]?.image_url) || product.images?.[0]} 
             alt={product.title}
             class="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
             loading="lazy"

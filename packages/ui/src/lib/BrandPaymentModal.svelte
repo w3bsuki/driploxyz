@@ -32,7 +32,6 @@
   let cardContainer: HTMLDivElement | undefined = $state();
   let discountCode = $state('');
   let discountAmount = $state(0);
-  let finalPrice = $state(0);
   let discountError = $state('');
 
   // Set correct price and plan ID based on account type
@@ -45,14 +44,8 @@
       : '989b722e-4050-4c63-ac8b-ab105f14027c'  // Brand plan ID
   );
   
-  // Initialize final price - must be reactive
-  $effect(() => {
-    if (discountAmount > 0) {
-      finalPrice = basePrice - discountAmount;
-    } else {
-      finalPrice = basePrice;
-    }
-  });
+  // Initialize final price - reactive computed value
+  let finalPrice = $derived(discountAmount > 0 ? basePrice - discountAmount : basePrice);
 
   // Set initial discount code from prop - always sync with prop when modal opens
   $effect(() => {

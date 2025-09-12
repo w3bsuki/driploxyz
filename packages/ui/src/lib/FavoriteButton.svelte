@@ -27,17 +27,8 @@
   }: Props = $props();
 
   let isLoading = $state(false);
-  let currentFavorited = $state(favorited);
-  let favoriteCount = $state(product.favorite_count || 0);
-
-  $effect(() => {
-    currentFavorited = favorited;
-  });
-
-  $effect(() => {
-    // Use store count if available, otherwise fall back to product count
-    favoriteCount = favoritesState?.favoriteCounts[product.id] ?? product.favorite_count ?? 0;
-  });
+  let currentFavorited = $derived(favorited);
+  let favoriteCount = $derived(favoritesState?.favoriteCounts[product.id] ?? product.favorite_count ?? 0);
 
   // Compute tooltip content based on state
   const tooltipContent = $derived(() => {

@@ -1,5 +1,4 @@
 import { sequence } from '@sveltejs/kit/hooks';
-import { dev } from '$app/environment';
 import type { Handle, HandleServerError } from '@sveltejs/kit';
 
 import { setupEnvironment } from './env';

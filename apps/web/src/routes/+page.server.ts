@@ -123,13 +123,17 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
           favorite_count,
           slug,
           category_id,
+          is_boosted,
+          boosted_until,
+          boost_priority,
           product_images!inner (
             image_url
           ),
           profiles!products_seller_id_fkey (
             username,
             avatar_url,
-            account_type
+            account_type,
+            subscription_tier
           ),
           categories (
             slug
@@ -138,6 +142,7 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         .eq('is_active', true)
         .eq('is_sold', false)
         .eq('country_code', country || 'BG')
+        .order('boost_priority', { ascending: false })
         .order('created_at', { ascending: false })
         .limit(50)
         .then(),
@@ -200,8 +205,11 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
 
         // Transform products for frontend with proper category hierarchy
         featuredProducts = await Promise.all(rawProducts.map(async (item, index) => {
-          // AUTO PROMOTION: Promote newest listings (first 3 items since ordered by created_at DESC)
-          const isPromoted = index < 3 || MANUALLY_PROMOTED_IDS.includes(item.id);
+          // BOOST SYSTEM: Check if product is boosted and still active
+          const isBoosted = item.is_boosted && item.boosted_until && new Date(item.boosted_until) > new Date();
+          
+          // LEGACY PROMOTION: Keep manual promotion for specific products
+          const isPromoted = MANUALLY_PROMOTED_IDS.includes(item.id);
           
           // Get category hierarchy for this product (same logic as search page)
           let main_category_name: string | undefined;
@@ -238,6 +246,10 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
             }
           }
           
+          // Determine seller account type and badges
+          const sellerSubscriptionTier = item.profiles?.subscription_tier;
+          const sellerAccountType = item.profiles?.account_type;
+          
           return {
             id: item.id,
             title: item.title,
@@ -248,7 +260,10 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
             location: item.location,
             created_at: item.created_at,
             seller_id: item.seller_id,
-            is_promoted: isPromoted,
+            // BOOST SYSTEM: Replace old promotion logic with boost system
+            is_boosted: isBoosted,
+            is_promoted: isPromoted, // Keep legacy promotion for specific products
+            boosted_until: item.boosted_until,
             favorite_count: item.favorite_count || 0,
             images: item.product_images?.map((img: { image_url: string }) => img.image_url) || [],
             product_images: item.product_images?.map((img: { image_url: string }) => img.image_url) || [],
@@ -256,13 +271,20 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
             main_category_name,
             category_name,
             subcategory_name,
-            // Seller info - include both formats for compatibility
+            // Seller info - include both formats for compatibility with badge system
             seller_name: item.profiles?.username,
             seller_username: item.profiles?.username, // Required for getProductUrl
             seller_avatar: item.profiles?.avatar_url,
-            sellerAccountType: item.profiles?.account_type === 'brand' ? 'brand' : 
-                              item.profiles?.account_type === 'pro' || item.profiles?.account_type === 'premium' ? 'pro' :
+            seller_subscription_tier: sellerSubscriptionTier,
+            sellerAccountType: sellerAccountType === 'brand' ? 'brand' : 
+                              sellerAccountType === 'pro' || sellerAccountType === 'premium' ? 'pro' :
                               'new_seller',
+            // Badge system: Determine what badges to show
+            seller_badges: {
+              is_pro: sellerSubscriptionTier === 'pro',
+              is_brand: sellerSubscriptionTier === 'brand',
+              is_verified: item.profiles?.verified || false
+            },
             // Include slug for SEO URLs
             slug: item.slug,
             // Include profiles format for getProductUrl compatibility

@@ -52,12 +52,7 @@
   );
 
   // Convert our string value to the primitive's string | null format
-  let primitiveValue = $state<string | null>(value || null);
-  
-  // Sync primitive value with our public API
-  $effect(() => {
-    primitiveValue = value || null;
-  });
+  let primitiveValue = $derived<string | null>(value || null);
 
   // Handle value change and event mapping
   function handleValueChange(newValue: string | null) {

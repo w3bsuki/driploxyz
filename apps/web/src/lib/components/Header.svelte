@@ -8,10 +8,10 @@
     HeaderUserMenu,
     HeaderNav,
     HeaderSearch,
-    MobileNavigation,
+    MobileNavigationDrawer,
     ThemeToggle
   } from '@repo/ui';
-  import type { User, Profile } from '@repo/ui/types';
+  import type { User } from '@repo/ui/types';
   import * as i18n from '@repo/i18n';
   // Force fresh i18n import
   // Auth stores removed - using props directly
@@ -174,7 +174,7 @@
     categoryWomen: i18n.category_women(),
     categoryMen: i18n.category_men(),
     categoryKids: i18n.category_kids(),
-    categoryPets: i18n.category_pets(),
+    categoryUnisex: i18n.category_unisex(),
     help: 'Help Center',
     privacy: 'Privacy',
     terms: 'Terms',
@@ -307,10 +307,9 @@
   </div>
 
   <!-- Mobile Menu -->
-  {#if mobileMenuOpen}
-    <MobileNavigation
-      id="mobile-navigation"
-      isOpen={mobileMenuOpen}
+  <MobileNavigationDrawer
+    id="mobile-navigation"
+    isOpen={mobileMenuOpen}
       {isLoggedIn}
       user={currentUser}
       profile={currentProfile}
@@ -327,11 +326,8 @@
         closeMenus();
         window.location.href = `/category/${category}`;
       }}
-      variant="drawer"
-      placement="left"
       translations={mobileNavTranslations}
     />
-  {/if}
 </header>
 
 

@@ -227,7 +227,7 @@ export { default as Accordion } from './Accordion.svelte';
 export { default as SellerQuickView } from './SellerQuickView.svelte';
 
 // MOVED TO EXPERIMENTAL - Quick view components (unused)
-// export { default as HighlightQuickView } from './HighlightQuickView.svelte';
+export { default as HighlightQuickView } from './HighlightQuickView.svelte';
 
 // Auth components
 export { default as AuthPopup } from './AuthPopup.svelte';
@@ -243,6 +243,7 @@ export { default as HeaderSearch } from './HeaderSearch.svelte';
 export { default as CategoryGrid } from './CategoryGrid.svelte';
 export { default as MegaMenuCategories } from './MegaMenuCategories.svelte';
 export { default as MobileNavigation } from './MobileNavigation.svelte';
+export { default as MobileNavigationDrawer } from './MobileNavigationDrawer.svelte';
 export { default as Footer } from './Footer.svelte';
 export { default as PartnerShowcase } from './PartnerShowcase.svelte';
 export { default as PartnerBanner } from './PartnerBanner.svelte';

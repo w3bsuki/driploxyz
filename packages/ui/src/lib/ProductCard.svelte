@@ -190,9 +190,33 @@
       {priority}
     />
     
-    <!-- Condition badge only -->
+    <!-- Condition badge -->
     {#if product.condition}
       {@render conditionBadgeWithTooltip(product.condition)}
+    {/if}
+    
+    <!-- Boost badge (top right) -->
+    {#if product.is_boosted}
+      <div class="absolute top-1 right-1 z-20">
+        <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm">
+          BOOSTED
+        </div>
+      </div>
+    {/if}
+    
+    <!-- Pro/Brand badges (top right, below boost if present) -->
+    {#if product.seller_badges?.is_pro || product.seller_badges?.is_brand}
+      <div class="absolute {product.is_boosted ? 'top-9' : 'top-1'} right-1 z-20">
+        {#if product.seller_badges.is_brand}
+          <div class="bg-black text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm">
+            BRAND
+          </div>
+        {:else if product.seller_badges.is_pro}
+          <div class="bg-blue-600 text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm">
+            PRO
+          </div>
+        {/if}
+      </div>
     {/if}
   </div>
   

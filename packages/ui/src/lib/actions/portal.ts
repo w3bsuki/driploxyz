@@ -40,12 +40,16 @@ export function portal(
   }
 
   function destroy() {
+    // If original parent still exists, restore DOM to original position
     if (anchor.parentNode) {
       anchor.parentNode.insertBefore(node, anchor);
       anchor.parentNode.removeChild(anchor);
-    } else {
-      // Fallback: put it back at the end of body
-      document.body.appendChild(node);
+      return;
+    }
+
+    // Otherwise, remove the node safely to avoid lingering overlays
+    if (node.parentNode) {
+      node.parentNode.removeChild(node);
     }
   }
 

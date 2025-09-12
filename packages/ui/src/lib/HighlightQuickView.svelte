@@ -33,7 +33,11 @@
   const canPurchase = $derived(!requiresSizeSelection || selectedSize);
   const sellerInitial = $derived(product.seller_name?.charAt(0).toUpperCase() || 'S');
   const formattedPrice = $derived(`£${product.price.toFixed(2)}`);
-  const imageUrl = $derived(product.images?.[0] || '/placeholder-product.svg');
+  const imageUrl = $derived(
+    (product.product_images && product.product_images[0]?.image_url) ||
+    product.images?.[0] ||
+    '/placeholder-product.svg'
+  );
   
   // Auto-select single size
   $effect(() => {

@@ -239,30 +239,17 @@ export const actions = {
 
       // Handle premium boost if selected
       if (use_premium_boost) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('premium_boosts_remaining')
-          .eq('id', session.user.id)
-          .single();
-          
-        if (profile && profile.premium_boosts_remaining && profile.premium_boosts_remaining > 0) {
-          // Update product to be boosted
-          await supabase
-            .from('products')
-            .update({
-              is_boosted: true,
-              boost_type: 'premium',
-              boosted_until: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-            })
-            .eq('id', product.id);
-            
-          // Decrement boosts remaining
-          await supabase
-            .from('profiles')
-            .update({
-              premium_boosts_remaining: profile.premium_boosts_remaining - 1
-            })
-            .eq('id', session.user.id);
+        // Use the database function to handle boost logic atomically
+        const { data: boostResult } = await supabase.rpc('boost_product', {
+          p_user_id: session.user.id,
+          p_product_id: product.id,
+          p_boost_duration_days: 7
+        });
+        
+        // If boost failed, log but don't fail the entire product creation
+        if (boostResult && !boostResult.success) {
+          console.warn('Failed to boost product:', boostResult.error);
+          // Could store this in a log table or send notification
         }
       }
 
