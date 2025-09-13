@@ -613,7 +613,7 @@
           <div
             data-category-dropdown
             class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50 max-h-[70vh]"
-            onclick|stopPropagation
+            onclick={(e) => e.stopPropagation()}
           >
             <MegaMenuCategories
               onCategoryClick={handleMegaMenuCategorySelect}
