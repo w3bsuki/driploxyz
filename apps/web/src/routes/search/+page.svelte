@@ -461,8 +461,15 @@
         }
       };
 
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
+      // Add slight delay to prevent immediate closure
+      const timeoutId = setTimeout(() => {
+        document.addEventListener('click', handleClickOutside);
+      }, 100);
+
+      return () => {
+        clearTimeout(timeoutId);
+        document.removeEventListener('click', handleClickOutside);
+      };
     }
   });
   
@@ -563,8 +570,8 @@
   </div>
   
   <!-- Clean Header Section -->
-  <div class="bg-white/90 backdrop-blur-sm sticky z-30 border-b border-gray-100 shadow-sm" style="top: var(--app-header-offset, 56px);">
-    <div class="px-2 sm:px-4 lg:px-6">
+  <div class="bg-white/90 backdrop-blur-sm sticky z-40 border-b border-gray-100 shadow-sm" style="top: var(--app-header-offset, 56px);">
+    <div class="px-2 sm:px-4 lg:px-6 relative">
       
       <!-- Search Container -->
       <div class="py-3 relative">
@@ -572,12 +579,12 @@
           <!-- Category Trigger Button -->
           <button
             onclick={() => showCategoryDropdown = !showCategoryDropdown}
-            class="flex items-center gap-2 px-3 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-l-xl transition-colors duration-200 border border-r-0 border-gray-200 focus:outline-none focus:ring-0 bg-white"
+            class="flex items-center gap-2 px-4 py-3 text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-l-xl transition-colors duration-200 border border-r-0 border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 bg-white min-h-[48px]"
             aria-label="Select category"
             aria-expanded={showCategoryDropdown}
             data-category-trigger
           >
-            <span class="text-lg">
+            <span class="text-base">
               {filters.category ?
                 categoryHierarchy.categories.find(cat => cat.key === filters.category)?.icon || '📁' :
                 '📁'
@@ -603,7 +610,11 @@
 
         <!-- MegaMenuCategories -->
         {#if showCategoryDropdown}
-          <div data-category-dropdown class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50 max-h-[70vh]">
+          <div
+            data-category-dropdown
+            class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50 max-h-[70vh]"
+            onclick|stopPropagation
+          >
             <MegaMenuCategories
               onCategoryClick={handleMegaMenuCategorySelect}
               onClose={handleCategoryDropdownClose}
