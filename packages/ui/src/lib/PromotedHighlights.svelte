@@ -101,7 +101,7 @@
 
   function handleKeyNavigation(e: KeyboardEvent) {
     if (!hasProducts && !hasSellers) return;
-    
+
     switch(e.key) {
       case 'ArrowRight':
         e.preventDefault();
@@ -125,6 +125,33 @@
     const items = container?.querySelectorAll('[data-highlight-item]');
     items?.[currentFocusIndex]?.focus();
   }
+
+  // Generate avatar colors based on account type
+  function getAvatarColors(accountType: string): string {
+    const colors = {
+      'brand': 'from-purple-500 to-purple-700',
+      'pro': 'from-blue-500 to-blue-700',
+      'personal': 'from-gray-500 to-gray-700',
+      'new': 'from-green-500 to-green-700'
+    };
+    return colors[accountType as keyof typeof colors] || colors.personal;
+  }
+
+  // Simple scroll functions for chevrons
+  function scrollLeft() {
+    const container = document.querySelector('[data-highlights-container]');
+    if (container) {
+      container.scrollBy({ left: -280, behavior: 'smooth' });
+    }
+  }
+
+  function scrollRight() {
+    const container = document.querySelector('[data-highlights-container]');
+    if (container) {
+      container.scrollBy({ left: 280, behavior: 'smooth' });
+    }
+  }
+
 </script>
 
 <style>
@@ -139,7 +166,7 @@
   role="region"
 >
   
-  <!-- Section Header with Partners -->
+  <!-- Section Header with Navigation -->
   <div class="px-2 sm:px-4 lg:px-6 pt-3 pb-3">
     <!-- Show partners if available, otherwise show traditional header -->
     {#if partners.length > 0}
@@ -153,9 +180,9 @@
               title="{partner.name}{partner.description ? ` - ${partner.description}` : ''}"
             >
               <div class="w-4 h-4 rounded-full overflow-hidden bg-[color:var(--surface-muted)] flex-shrink-0">
-                <img 
-                  src={partner.logo} 
-                  alt={partner.name} 
+                <img
+                  src={partner.logo}
+                  alt={partner.name}
                   class="w-full h-full object-contain"
                 />
               </div>
@@ -172,14 +199,42 @@
         </div>
       </div>
     {:else}
-      <!-- Traditional header when no partners -->
-      <div class="flex items-center gap-2">
-        <h2 class="text-sm font-semibold text-[color:var(--text-primary)]">
-          {hasProducts ? (translations.promoted_hotPicks || 'Горещи предложения') : (translations.promoted_premiumSellers || 'Премиум продавачи')}
-        </h2>
-        <div class="text-xs font-medium px-2 py-0.5 rounded bg-[color:var(--accent-subtle)] text-[color:var(--accent-text)]">
-          Спонсорирано
+      <!-- Brands header with navigation -->
+      <div class="flex items-center justify-between">
+        <div class="flex flex-col">
+          <h2 class="text-sm font-semibold text-[color:var(--text-primary)]">
+            {hasProducts ? (translations.promoted_hotPicks || 'Горещи предложения') : 'Explore brands'}
+          </h2>
+          {#if !hasProducts && hasSellers}
+            <p class="text-xs text-[color:var(--text-secondary)] mt-0.5">
+              Discover unique brands and their latest collections
+            </p>
+          {/if}
         </div>
+
+        <!-- Navigation chevrons for brands -->
+        {#if !hasProducts && hasSellers && sellers.length > 1}
+          <div class="flex items-center gap-1">
+            <button
+              onclick={scrollLeft}
+              class="w-8 h-8 flex items-center justify-center rounded-full bg-[color:var(--surface-base)] border border-[color:var(--border-default)] hover:border-[color:var(--border-hover)] hover:bg-[color:var(--surface-muted)] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[color:var(--state-focus)]"
+              aria-label="Scroll left"
+            >
+              <svg class="w-4 h-4 text-[color:var(--text-secondary)]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+              </svg>
+            </button>
+            <button
+              onclick={scrollRight}
+              class="w-8 h-8 flex items-center justify-center rounded-full bg-[color:var(--surface-base)] border border-[color:var(--border-default)] hover:border-[color:var(--border-hover)] hover:bg-[color:var(--surface-muted)] transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[color:var(--state-focus)]"
+              aria-label="Scroll right"
+            >
+              <svg class="w-4 h-4 text-[color:var(--text-secondary)]" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
+              </svg>
+            </button>
+          </div>
+        {/if}
       </div>
     {/if}
   </div>
@@ -191,13 +246,13 @@
     {:else if hasSellers}
       <span class="sr-only">{sellers.length} premium sellers available</span>
     {/if}
-    <nav 
+    <nav
       aria-label="Promoted products carousel"
-      class="relative overflow-x-auto scrollbar-hide pb-2"
+      class="relative pb-2"
       onkeydown={handleKeyNavigation}
     >
-      <div 
-        class="flex flex-nowrap gap-2 sm:gap-3 scroll-snap-x"
+      <div
+        class="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
         data-highlights-container
         role="list"
       >
@@ -222,66 +277,87 @@
           {/each}
         {/if}
 
-        <!-- Premium Sellers (fallback) -->
+        <!-- Brands (fallback) -->
         {#if showSellers}
           {#each sellers as seller, index}
-            <div 
-              role="listitem" 
+            <div
+              role="listitem"
               data-highlight-item
-              class="relative shrink-0 snap-start"
+              class="relative flex-shrink-0 snap-start w-[calc(50%-0.5rem)]"
             >
               <button
                 onclick={() => onSellerClick(seller)}
-                class="group relative block focus:outline-none focus:ring-2 focus:ring-[color:var(--state-focus)] rounded-2xl transition-all duration-200"
+                class="group relative block w-full focus:outline-none focus:ring-2 focus:ring-[color:var(--state-focus)] rounded-2xl transition-all duration-200"
                 aria-label="View {seller.name}'s profile{seller.premium ? ' - Premium seller' : ''}"
                 tabindex={currentFocusIndex === index ? 0 : -1}
               >
-                <!-- Premium Seller Card -->
-                <div class="relative w-44 sm:w-52 md:w-56">
+                <!-- Brand Card - Perfect grid layout -->
+                <div class="relative w-full">
                   <div class="bg-[color:var(--surface-base)] rounded-2xl shadow-sm group-hover:shadow-md transition-all duration-200 group-hover:-translate-y-0.5 border border-[color:var(--border-default)] overflow-hidden p-4">
                     
-                    <!-- Premium Badge -->
-                    {#if seller.premium}
-                      <div class="absolute top-2 right-2 z-10">
-                        <div class="bg-[color:var(--primary)] text-[color:var(--primary-fg)] text-[10px] font-semibold px-2 py-0.5 rounded-full shadow-sm">
-                          PRO
-                        </div>
-                      </div>
-                    {/if}
                     
                     <!-- Seller Avatar -->
                     <div class="flex flex-col items-center text-center">
                       <div class="relative mb-3">
                         <div class="w-16 h-16 rounded-full overflow-hidden bg-[color:var(--surface-muted)] ring-2 ring-[color:var(--surface-base)] shadow">
-                          {#if seller.avatar}
-                            <img 
-                              src={seller.avatar} 
+                          {#if seller.avatar || seller.avatar_url}
+                            <img
+                              src={seller.avatar || seller.avatar_url}
                               alt="{seller.name}'s profile picture"
                               class="w-full h-full object-cover"
+                              onerror={(e) => {
+                                e.target.style.display = 'none';
+                                if (e.target.nextElementSibling) {
+                                  e.target.nextElementSibling.style.display = 'flex';
+                                }
+                              }}
                             />
+                            <!-- Fallback avatar -->
+                            <div class="w-full h-full bg-gradient-to-br {getAvatarColors(seller.account_type || 'personal')} flex items-center justify-center text-white font-semibold text-lg" style="display: none;">
+                              {seller.name?.charAt(0).toUpperCase() || 'S'}
+                            </div>
                           {:else}
-                            <div class="w-full h-full bg-gradient-to-br from-[color:var(--surface-muted)] to-[color:var(--surface-emphasis)] flex items-center justify-center text-[color:var(--text-secondary)] font-semibold text-lg">
+                            <!-- Default avatar with account type colors -->
+                            <div class="w-full h-full bg-gradient-to-br {getAvatarColors(seller.account_type || 'personal')} flex items-center justify-center text-white font-semibold text-lg">
                               {seller.name?.charAt(0).toUpperCase() || 'S'}
                             </div>
                           {/if}
                         </div>
-                        
-                        <!-- Premium Star -->
-                        {#if seller.premium}
-                          <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-[color:var(--primary)] rounded-full border-2 border-[color:var(--surface-base)] shadow flex items-center justify-center">
-                            <svg class="w-3 h-3 text-[color:var(--primary-fg)]" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                            </svg>
-                          </div>
-                        {/if}
+
+                        <!-- Badge System -->
+                        <div class="absolute -bottom-1 -right-1 flex items-center gap-1">
+                          {#if seller.account_type === 'admin'}
+                            <!-- Admin: Crown -->
+                            <div class="w-7 h-7 bg-yellow-600 rounded-full border-2 border-[color:var(--surface-base)] shadow flex items-center justify-center">
+                              <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M5 16L3 5l6 4 3-4 3 4 6-4-2 11H5z"/>
+                              </svg>
+                            </div>
+                          {:else if seller.account_type === 'brand'}
+                            <!-- Brand: Black Star -->
+                            <div class="w-7 h-7 bg-gray-800 rounded-full border-2 border-[color:var(--surface-base)] shadow flex items-center justify-center">
+                              <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                              </svg>
+                            </div>
+                          {:else if seller.account_type === 'pro' || seller.account_type === 'premium'}
+                            <!-- PRO/Premium: Black Checkmark -->
+                            <div class="w-7 h-7 bg-gray-800 rounded-full border-2 border-[color:var(--surface-base)] shadow flex items-center justify-center">
+                              <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                              </svg>
+                            </div>
+                          {/if}
+                          <!-- Free accounts get no badge -->
+                        </div>
                       </div>
                       
                       <!-- Seller Info -->
-                      <h3 class="font-semibold text-[color:var(--text-primary)] text-sm mb-1 line-clamp-1">
+                      <h3 class="font-semibold text-[color:var(--text-primary)] text-sm mb-1.5 line-clamp-1">
                         {seller.name}
                       </h3>
-                      
-                      <div class="flex items-center gap-2 text-xs text-[color:var(--text-secondary)] mb-2">
+
+                      <div class="flex items-center gap-2 text-xs text-[color:var(--text-secondary)] mb-1.5">
                         {#if seller.itemCount}
                           <span>{seller.itemCount} items</span>
                         {/if}
@@ -293,7 +369,7 @@
                       
                       <!-- Rating -->
                       {#if seller.rating}
-                        <div class="flex items-center gap-1 mb-2">
+                        <div class="flex items-center gap-1 mb-1.5">
                           <div class="flex">
                             {#each Array(5) as _, i}
                               <svg class="w-3 h-3 {i < Math.floor(seller.rating) ? 'text-[color:var(--accent-emphasis)]' : 'text-[color:var(--surface-emphasis)]'}" fill="currentColor" viewBox="0 0 20 20">
