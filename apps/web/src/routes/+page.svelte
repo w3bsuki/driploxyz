@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { EnhancedSearchBar, TrendingDropdown, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill, CategoryPill, PromotedHighlights } from '@repo/ui';
+	import { EnhancedSearchBar, SearchDropdown, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill, CategoryPill, PromotedHighlights } from '@repo/ui';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
@@ -17,6 +17,9 @@
 	import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '$lib/types';
 	import { getProductUrl } from '$lib/utils/seo-urls';
 	import { createLogger } from '$lib/utils/log';
+	import { CategoryService } from '$lib/services/categories';
+	import { ProfileService } from '$lib/services/profiles';
+	import { getCollectionsForContext } from '$lib/data/collections';
 
 	const log = createLogger('homepage');
 
@@ -31,6 +34,105 @@
 	let showTrendingDropdown = $state(false);
 	let loadingCategory = $state<string | null>(null);
 	let selectedPillIndex = $state(-1);
+	let activeDropdownTab = $state('trending');
+	let dropdownSearchQuery = $state('');
+
+	// Handle streamed data
+	let featuredProductsData = $state<any[]>([]);
+	let topBrandsData = $state<any[]>([]);
+	let topSellersData = $state<any[]>([]);
+	let sellersData = $state<any[]>([]);
+	let userFavoritesData = $state<Record<string, boolean>>({});
+	let dataLoaded = $state(false);
+
+	// Top brands data - clean data from dedicated server query
+	const topBrands = $derived(
+		(topBrandsData || []).map(brand => {
+			// Calculate trending percentage based on recent activity
+			const weeklySales = brand.weekly_sales_count || 0;
+			const totalSales = brand.sales_count || 0;
+			const monthlyViews = brand.monthly_views || 0;
+
+			// Calculate trending based on recent vs historical activity
+			let trending = '—';
+			if (totalSales > 0 && weeklySales > 0) {
+				const weeklyRate = (weeklySales / Math.max(totalSales, 1)) * 100;
+				if (weeklyRate >= 20) trending = '+' + Math.min(Math.round(weeklyRate), 99) + '%';
+				else if (weeklyRate >= 10) trending = '+' + Math.round(weeklyRate) + '%';
+				else if (weeklyRate >= 5) trending = '+' + Math.round(weeklyRate) + '%';
+			} else if (monthlyViews > 100) {
+				const viewTrend = Math.min(Math.round(monthlyViews / 50), 50);
+				trending = '+' + viewTrend + '%';
+			} else if (totalSales > 0) {
+				trending = '+12%';
+			}
+
+			return {
+				id: brand.id,
+				name: brand.full_name || brand.username,
+				items: brand.products?.length || 0,
+				avatar: brand.avatar_url,
+				verified: brand.verified || false,
+				trending
+			};
+		})
+	);
+
+	// Filtered brands based on search query
+	const filteredTopBrands = $derived(
+		dropdownSearchQuery.trim()
+			? topBrands.filter(brand =>
+				brand.name.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
+			)
+			: topBrands
+	);
+
+	// Top sellers data - clean data from dedicated server query
+	const displayTopSellers = $derived(
+		(topSellersData || []).map(seller => ({
+			id: seller.id,
+			name: seller.username || seller.full_name,
+			items: seller.products?.length || 0,
+			rating: seller.rating || 0,
+			avatar: seller.avatar_url,
+			verified: seller.verified || false,
+			sales: seller.sales_count || 0,
+			account_type: seller.account_type
+		}))
+	);
+
+	// Filtered sellers based on search query
+	const filteredDisplayTopSellers = $derived(
+		dropdownSearchQuery.trim()
+			? displayTopSellers.filter(seller =>
+				seller.name.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
+			)
+			: displayTopSellers
+	);
+
+	// Quick shop items - keeping these as shortcuts
+	const quickShopItems = [
+		{ label: 'Under $25', description: 'Budget finds', filter: 'max_price=25', icon: '💰' },
+		{ label: 'Drip Collection', description: 'Staff picks', filter: 'collection=drip', icon: '💧' },
+		{ label: 'Designer $100+', description: 'Premium pieces', filter: 'min_price=100', icon: '💎' },
+		{ label: 'New with Tags', description: 'Brand new condition', filter: 'condition=brand_new_with_tags', icon: '🏷️' },
+		{ label: 'Like New', description: 'Excellent condition', filter: 'condition=like_new', icon: '✨' }
+	];
+
+	// Filtered Quick Shop items based on search query
+	const filteredQuickShopItems = $derived(
+		dropdownSearchQuery.trim()
+			? quickShopItems.filter(item =>
+				item.label.toLowerCase().includes(dropdownSearchQuery.toLowerCase()) ||
+				item.description.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
+			)
+			: quickShopItems
+	);
+
+	// Search dropdown data
+	let dropdownCategories = $state<any[]>([]);
+	let dropdownSellers = $state<any[]>([]);
+	let dropdownCollections = $state<any[]>([]);
 	
 	// Component state
 	let sellersInView = $state(false);
@@ -47,6 +149,40 @@
 			updateKey++;
 		}
 	});
+
+	// Load search dropdown data
+	$effect(() => {
+		if (browser && data.supabase) {
+			loadSearchDropdownData();
+		}
+	});
+
+	async function loadSearchDropdownData() {
+		try {
+			// Load categories for main page context
+			const categoryService = new CategoryService(data.supabase);
+			const { data: categories, error: categoryError } = await categoryService.getSearchDropdownCategories('main');
+
+			if (!categoryError && categories) {
+				dropdownCategories = categoryService.transformForSearchDropdown(categories);
+			}
+
+			// Load top sellers
+			const profileService = new ProfileService(data.supabase);
+			const { data: sellers, error: sellerError } = await profileService.getTopSellersForDropdown(5);
+
+			if (!sellerError && sellers) {
+				dropdownSellers = profileService.transformSellersForDropdown(sellers);
+			}
+
+			// TODO: Load brand accounts from Supabase - for now using hardcoded data
+
+			// Load collections
+			dropdownCollections = getCollectionsForContext('main');
+		} catch (error) {
+			log.error('Failed to load search dropdown data:', error);
+		}
+	}
 
 	// Debug data (removed to prevent infinite loops)
 
@@ -74,36 +210,6 @@
 		}
 	});
 	
-	// Initialize favorites from server data on mount
-	$effect(() => {
-		if (browser) {
-			// Always initialize favorite counts from products, regardless of login status
-			const counts: Record<string, number> = {};
-			[...boostedProducts, ...regularProducts].forEach(product => {
-				if (product.favorite_count !== undefined) {
-					counts[product.id] = product.favorite_count;
-				}
-			});
-			
-			// Initialize favorites state from server if user is logged in
-			const updates: any = {
-				favoriteCounts: {
-					...counts
-				}
-			};
-
-			if (data.user && userFavoritesData) {
-				updates.favorites = {
-					...userFavoritesData
-				};
-			}
-
-			favoritesStore.update(state => ({
-				...state,
-				...updates
-			}));
-		}
-	});
 	
 	// Lazy load heavy components
 	// FeaturedSellers is now imported directly, no lazy loading needed
@@ -147,13 +253,6 @@
 		};
 	}
 
-	// Handle streamed data
-	let featuredProductsData = $state<any[]>([]);
-	let topSellersData = $state<any[]>([]);
-	let sellersData = $state<any[]>([]);
-	let userFavoritesData = $state<Record<string, boolean>>({});
-	let dataLoaded = $state(false);
-	
 	// Resolve streamed promises
 	$effect(() => {
 		if (data.featuredProducts instanceof Promise) {
@@ -163,25 +262,31 @@
 		} else {
 			featuredProductsData = data.featuredProducts || [];
 		}
-		
+
+		if (data.topBrands instanceof Promise) {
+			data.topBrands.then(brands => topBrandsData = brands || []);
+		} else {
+			topBrandsData = data.topBrands || [];
+		}
+
 		if (data.topSellers instanceof Promise) {
 			data.topSellers.then(sellers => topSellersData = sellers || []);
 		} else {
 			topSellersData = data.topSellers || [];
 		}
-		
+
 		if (data.sellers instanceof Promise) {
 			data.sellers.then(sellers => sellersData = sellers || []);
 		} else {
 			sellersData = data.sellers || [];
 		}
-		
+
 		if (data.userFavorites instanceof Promise) {
 			data.userFavorites.then(favorites => userFavoritesData = favorites || {});
 		} else {
 			userFavoritesData = data.userFavorites || {};
 		}
-		
+
 		// Mark data as loaded after processing
 		dataLoaded = true;
 	});
@@ -206,38 +311,70 @@
 
 	// Filter boosted products for the highlight section
 	const boostedProducts = $derived<Product[]>(
-		products.filter(product => product.is_boosted).slice(0, 8) // Limit to 8 boosted products
+		products.filter(product => product.is_promoted).slice(0, 8) // Limit to 8 boosted products
 	);
 
 	// Filter non-boosted products for the main listings
 	const regularProducts = $derived<Product[]>(
-		products.filter(product => !product.is_boosted)
+		products.filter(product => !product.is_promoted)
 	);
 
 	// Transform sellers for display (for FeaturedSellers component)
-	// Use topSellersData instead of sellersData because topSellers specifically gets sellers with active products
+	// Include approved sellers: kush3, indecisive_wear, tintin (admin)
 	const sellers = $derived<Seller[]>(
-		(topSellersData || []).map(seller => {
-			const productCount = seller.total_products || 0;
-			return {
-				id: seller.id,
-				name: seller.username || seller.full_name,
-				username: seller.username,
-				full_name: seller.full_name,
-				premium: productCount > 0 || seller.verified,
-				account_type: seller.username === 'indecisive_wear' ? 'brand' : 
-				             seller.account_type || (productCount > 10 ? 'pro' : productCount > 0 ? 'brand' : 'new'),
-				avatar: seller.avatar_url,
-				avatar_url: seller.avatar_url,
-				rating: seller.rating || 0,
-				average_rating: seller.rating || 0,
-				total_products: productCount,
-				itemCount: productCount,
-				followers: seller.followers_count || 0,
-				description: seller.bio,
-				is_verified: seller.verified || false
-			};
-		})
+		(topSellersData || [])
+			.filter(seller => {
+				const username = seller.username;
+				// Include approved real users
+				return username === 'kush3' || username === 'indecisive_wear' || username === 'tintin';
+			})
+			.map(seller => {
+				const productCount = seller.total_products || 0;
+				return {
+					id: seller.id,
+					name: seller.username || seller.full_name,
+					username: seller.username,
+					full_name: seller.full_name,
+					premium: productCount > 0 || seller.verified,
+					// Use ACTUAL account_type from backend, don't hardcode
+					account_type: seller.account_type,
+					avatar: seller.avatar_url,
+					avatar_url: seller.avatar_url,
+					rating: seller.rating || 0,
+					average_rating: seller.rating || 0,
+					total_products: productCount,
+					itemCount: productCount,
+					followers: seller.followers_count || 0,
+					description: seller.bio,
+					is_verified: seller.verified || false
+				};
+			})
+	);
+
+	// Transform brands for display (for PromotedHighlights component)
+	// Use real data from topBrands query - only verified brand accounts
+	const brands = $derived<Seller[]>(
+		(topBrandsData || [])
+			.map(brand => {
+				const productCount = brand.products?.length || 0;
+				return {
+					id: brand.id,
+					name: brand.username || brand.full_name,
+					username: brand.username,
+					full_name: brand.full_name,
+					premium: true, // All brands are premium
+					account_type: brand.account_type || 'brand',
+					avatar: brand.avatar_url,
+					avatar_url: brand.avatar_url,
+					rating: brand.rating || 0,
+					average_rating: brand.rating || 0,
+					total_products: productCount,
+					itemCount: productCount,
+					followers: brand.followers_count || 0,
+					description: brand.bio,
+					is_verified: brand.verified || false
+				};
+			})
 	);
 
 	// Create seller products mapping from featured products
@@ -256,8 +393,39 @@
 		return productsBySeller;
 	});
 
-	// Debug data loading
+	// Initialize favorites from server data on mount (after derived values are available)
 	$effect(() => {
+		if (browser && boostedProducts && regularProducts) {
+			// Always initialize favorite counts from products, regardless of login status
+			const counts: Record<string, number> = {};
+			[...boostedProducts, ...regularProducts].forEach(product => {
+				if (product.favorite_count !== undefined) {
+					counts[product.id] = product.favorite_count;
+				}
+			});
+
+			// Initialize favorites state from server if user is logged in
+			const updates: any = {
+				favoriteCounts: {
+					...counts
+				}
+			};
+
+			if (data.user && userFavoritesData) {
+				updates.favorites = {
+					...userFavoritesData
+				};
+			}
+
+			favoritesStore.update(state => ({
+				...state,
+				...updates
+			}));
+		}
+	});
+
+	// Debug data loading - commented out to avoid potential infinite loops
+	/*$effect(() => {
 		log.debug('Data loading status', {
 			dataLoaded,
 			featuredProductsCount: featuredProductsData?.length || 0,
@@ -271,26 +439,32 @@
 			sampleBoostedProduct: boostedProducts[0],
 			sampleRegularProduct: regularProducts[0]
 		});
-	});
+	});*/
 
-	// Transform top sellers for TrendingDropdown
+	// Transform top sellers for TrendingDropdown (filtered to approved users only)
 	const topSellers = $derived<Seller[]>(
-		(topSellersData || []).map(seller => ({
-			id: seller.id,
-			name: seller.username || seller.full_name,
-			username: seller.username,
-			premium: seller.sales_count > 0,
-			account_type: seller.sales_count > 10 ? 'pro' : seller.sales_count > 0 ? 'brand' : 'new',
-			avatar: seller.avatar_url,
-			avatar_url: seller.avatar_url,
-			rating: seller.rating || 0,
-			average_rating: seller.rating || 0,
-			total_products: seller.product_count || 0,
-			itemCount: seller.product_count || 0,
-			followers: seller.followers_count || 0,
-			description: seller.bio,
-			is_verified: seller.is_verified || false
-		}))
+		(topSellersData || [])
+			.filter(seller => {
+				const username = seller.username;
+				// Include approved real users
+				return username === 'kush3' || username === 'indecisive_wear' || username === 'tintin';
+			})
+			.map(seller => ({
+				id: seller.id,
+				name: seller.username || seller.full_name,
+				username: seller.username,
+				premium: seller.sales_count > 0,
+				account_type: seller.account_type, // Use backend account type
+				avatar: seller.avatar_url,
+				avatar_url: seller.avatar_url,
+				rating: seller.rating || 0,
+				average_rating: seller.rating || 0,
+				total_products: seller.product_count || 0,
+				itemCount: seller.product_count || 0,
+				followers: seller.followers_count || 0,
+				description: seller.bio,
+				is_verified: seller.is_verified || false
+			}))
 	);
 
 	// Partners data - production ready, no test data
@@ -333,6 +507,52 @@
 			return;
 		}
 		goto(getProductUrl(result));
+	}
+
+	// SearchDropdown event handlers
+	function handleDropdownCategorySelect(category: any) {
+		goto(`/category/${category.slug}`);
+		showTrendingDropdown = false;
+	}
+
+	function handleDropdownSellerSelect(seller: any) {
+		goto(`/profile/${seller.username}`);
+		showTrendingDropdown = false;
+	}
+
+	function handleDropdownCollectionSelect(collection: any) {
+		if (collection.key.startsWith('category=')) {
+			const categorySlug = collection.key.replace('category=', '');
+			goto(`/category/${categorySlug}`);
+		} else if (collection.key.startsWith('condition=')) {
+			const condition = collection.key.replace('condition=', '');
+			goto(`/search?condition=${condition}`);
+		} else {
+			// Handle other collection types (newest, under25, etc.)
+			switch (collection.key) {
+				case 'newest':
+					goto('/search?sort=newest');
+					break;
+				case 'under25':
+					goto('/search?max_price=25');
+					break;
+				case 'trending':
+					goto('/search?sort=trending');
+					break;
+				case 'popular':
+					goto('/search?sort=popular');
+					break;
+				case 'premium':
+					goto('/search?sort=premium');
+					break;
+				case 'favorites':
+					goto('/search?favorites=true');
+					break;
+				default:
+					goto(`/collection/${collection.key}`);
+			}
+		}
+		showTrendingDropdown = false;
 	}
 
 	async function handleFavorite(productId: string) {
@@ -588,17 +808,59 @@
 			.slice(0, 4) // Take first 4 (Women, Men, Kids, Unisex)
 	);
 
-	// Virtual categories for quick access
-	const virtualCategories = [
-		{ slug: 'clothing', name: i18n.category_clothing ? i18n.category_clothing() : 'Clothing' },
-		{ slug: 'shoes', name: i18n.category_shoesType ? i18n.category_shoesType() : 'Shoes' },
-		{ slug: 'bags', name: i18n.category_bagsType ? i18n.category_bagsType() : 'Bags' },
-		{ slug: 'accessories', name: i18n.category_accessoriesType ? i18n.category_accessoriesType() : 'Accessories' }
-	];
+	// Categories loaded with product counts
+
+	// Virtual categories for quick access with real product counts
+	const virtualCategories = $derived([
+		{
+			slug: 'clothing',
+			name: i18n.category_clothing ? i18n.category_clothing() : 'Clothing',
+			product_count: data.virtualCounts?.clothing || 0
+		},
+		{
+			slug: 'shoes',
+			name: i18n.category_shoesType ? i18n.category_shoesType() : 'Shoes',
+			product_count: data.virtualCounts?.shoes || 0
+		},
+		{
+			slug: 'bags',
+			name: i18n.category_bagsType ? i18n.category_bagsType() : 'Bags',
+			product_count: data.virtualCounts?.bags || 0
+		},
+		{
+			slug: 'accessories',
+			name: i18n.category_accessoriesType ? i18n.category_accessoriesType() : 'Accessories',
+			product_count: data.virtualCounts?.accessories || 0
+		}
+	]);
 
 	// Get category icon from constants
 	function getCategoryIcon(categoryName: string): string {
 		return CATEGORY_ICONS[categoryName] || DEFAULT_CATEGORY_ICON;
+	}
+
+	// Quick condition filters (most used) - matching search page
+	const quickConditionFilters = [
+		{ key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: i18n.sell_condition_brandNewWithTags() },
+		{ key: 'new_without_tags', label: i18n.sell_condition_newWithoutTags(), shortLabel: i18n.condition_new() },
+		{ key: 'like_new', label: i18n.condition_likeNew(), shortLabel: i18n.condition_likeNew() },
+		{ key: 'good', label: i18n.condition_good(), shortLabel: i18n.condition_good() }
+	];
+
+	// Selected condition state for main page
+	let selectedCondition = $state<string | null>(null);
+
+	function handleQuickCondition(conditionKey: string) {
+		// Toggle off if already selected, otherwise set new condition
+		if (selectedCondition === conditionKey) {
+			selectedCondition = null;
+			// Navigate to search without condition
+			goto('/search');
+		} else {
+			selectedCondition = conditionKey;
+			// Navigate to search with selected condition
+			goto(`/search?condition=${conditionKey}`);
+		}
 	}
 
 	// Prepare quick filters for hero search
@@ -614,9 +876,19 @@
 
 	function handleHeroFilterClick(filterValue: string) {
 		const url = new URL('/search', window.location.origin);
-		
+
+		// Handle new category navigation
+		if (filterValue.startsWith('category=')) {
+			const category = filterValue.replace('category=', '');
+			goto(`/category/${category}`);
+			return;
+		} else if (filterValue.startsWith('collection=')) {
+			const collection = filterValue.replace('collection=', '');
+			goto(`/collection/${collection}`);
+			return;
+		}
 		// Handle new V1 filters
-		if (filterValue === 'newest') {
+		else if (filterValue === 'newest') {
 			url.searchParams.set('sort', 'newest');
 		} else if (filterValue === 'under25') {
 			url.searchParams.set('max_price', '25');
@@ -630,7 +902,7 @@
 		} else if (filterValue.startsWith('condition=')) {
 			const condition = filterValue.replace('condition=', '');
 			url.searchParams.set('condition', condition);
-		} 
+		}
 		// Legacy filters
 		else if (filterValue.startsWith('price_under_')) {
 			const price = filterValue.replace('price_under_', '');
@@ -647,7 +919,7 @@
 		} else if (filterValue === 'new_today') {
 			url.searchParams.set('sort', 'newest');
 		}
-		
+
 		goto(url.pathname + url.search);
 	}
 
@@ -711,78 +983,232 @@
 {#key currentLang}
 <div class="min-h-screen bg-[color:var(--surface-subtle)] pb-20 sm:pb-0">
 	<main>
-		<!-- Hero Search -->
-		<div class="sticky top-12 sm:top-16 bg-white/40 backdrop-blur-sm border-b border-gray-100 z-40">
-			<div class="px-2 sm:px-4 lg:px-6 safe-area py-1.5">
-				<!-- Hero Search -->
-				<div id="hero-search-container" class="max-w-4xl mx-auto relative mb-3 z-50">
-					<EnhancedSearchBar
-						bind:searchValue={searchQuery}
-						onSearch={handleSearch}
-						placeholder={i18n.search_placeholder()}
-						searchId="hero-search-input"
-						searchFunction={handleQuickSearch}
-						showDropdown={true}
-						maxResults={6}
-					>
-						{#snippet rightSection()}
-							<button
-								onclick={() => showTrendingDropdown = !showTrendingDropdown}
-								class="h-12 px-3 rounded-r-xl hover:bg-gray-100 transition-colors flex items-center gap-1"
-								aria-expanded={showTrendingDropdown}
-								aria-haspopup="listbox"
-								aria-label={i18n.search_categories()}
-							>
-								<svg 
-									class="w-4 h-4 text-gray-600 transition-transform {showTrendingDropdown ? 'rotate-180' : ''}" 
-									fill="none" 
-									stroke="currentColor" 
-									viewBox="0 0 24 24"
-									aria-hidden="true"
+		<!-- Unified Search + Category Navigation Container -->
+		<div class="bg-white/90 backdrop-blur-sm sticky z-30 border-b border-gray-100 shadow-sm" style="top: var(--app-header-offset, 56px);">
+			<div class="px-2 sm:px-4 lg:px-6">
+				<!-- Unified Content Container -->
+				<div class="mx-auto relative">
+					<!-- Hero Search -->
+					<div id="hero-search-container" class="relative py-3">
+						<EnhancedSearchBar
+							bind:searchValue={searchQuery}
+							onSearch={handleSearch}
+							placeholder={i18n.search_placeholder()}
+							searchId="hero-search-input"
+							searchFunction={handleQuickSearch}
+							showDropdown={true}
+							maxResults={6}
+						>
+							{#snippet leftSection()}
+								<button
+									onclick={() => showTrendingDropdown = !showTrendingDropdown}
+									class="h-12 px-4 rounded-l-xl hover:bg-gray-100 transition-colors flex items-center gap-2"
+									aria-expanded={showTrendingDropdown}
+									aria-haspopup="listbox"
+									aria-label={i18n.search_categories()}
 								>
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-								</svg>
-								<span class="text-sm font-medium text-gray-600 hidden sm:inline">{i18n.search_categories()}</span>
-							</button>
-						{/snippet}
-					</EnhancedSearchBar>
+									<svg
+										class="w-4 h-4 text-gray-600 transition-transform {showTrendingDropdown ? 'rotate-180' : ''}"
+										fill="none"
+										stroke="currentColor"
+										viewBox="0 0 24 24"
+										aria-hidden="true"
+									>
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+									</svg>
+									<span class="text-sm font-medium text-gray-600 hidden sm:inline">{i18n.search_categories()}</span>
+								</button>
+							{/snippet}
+						</EnhancedSearchBar>
 
-					{#if showTrendingDropdown}
-						<div class="absolute z-[9999] w-full mt-2">
-							<TrendingDropdown
-								topSellers={topSellers}
-								quickFilters={heroQuickFilters}
-								onSellerClick={handleSellerClick}  
-								onFilterClick={handleHeroFilterClick}
-								translations={{
-									quickShop: i18n.search_quickShop(),
-									shopByCondition: i18n.search_shopByCondition(),
-									shopByPrice: i18n.search_shopByPrice(),
-									quickAccess: i18n.search_quickAccess(),
-									topSellers: i18n.search_topSellers(),
-									newWithTags: i18n.search_newWithTags(),
-									likeNew: i18n.search_likeNew(),
-									good: i18n.search_good(),
-									fair: i18n.search_fair(),
-									under25: i18n.search_under25(),
-									cheapest: i18n.search_cheapest(),
-									newest: i18n.search_newest(),
-									premium: i18n.search_premium(),
-									myFavorites: i18n.search_myFavorites(),
-									browseAll: i18n.search_browseAll(),
-									viewAllResults: i18n.search_viewAllResults()
-								}}
-							/>
-						</div>
-					{/if}
-				</div>
-				
-				<!-- Category Pills -->
-				<nav 
-					id="category-pills"
-					aria-label={i18n.nav_browseCategories()}
-					class="flex items-center justify-start gap-2 sm:gap-3 overflow-x-auto no-scrollbar px-2 sm:px-4 lg:px-6 safe-area sm:justify-center"
-				>
+						{#if showTrendingDropdown}
+							<div class="absolute top-full left-0 right-0 mt-1 z-50">
+								<div class="bg-white border border-gray-200 rounded-lg shadow-lg p-4">
+									<div class="flex items-center gap-1 mb-3 bg-gray-100 p-1 rounded-lg">
+										<button
+											onclick={() => activeDropdownTab = 'trending'}
+											class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'trending' ? 'bg-white text-[color:var(--text-primary)] shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+										>
+											Top Brands
+										</button>
+										<button
+											onclick={() => activeDropdownTab = 'sellers'}
+											class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'sellers' ? 'bg-white text-[color:var(--text-primary)] shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+										>
+											Top Sellers
+										</button>
+										<button
+											onclick={() => activeDropdownTab = 'quickshop'}
+											class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'quickshop' ? 'bg-white text-[color:var(--text-primary)] shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+										>
+											Quick Shop
+										</button>
+									</div>
+
+									<!-- Search Input -->
+									<div class="mb-4">
+										<div class="relative">
+											<svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+											</svg>
+											<input
+												type="text"
+												bind:value={dropdownSearchQuery}
+												placeholder={activeDropdownTab === 'trending' ? 'Search brands...' :
+															activeDropdownTab === 'sellers' ? 'Search sellers...' :
+															'Search quick actions...'}
+												class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[color:var(--input-focus-ring)] focus:border-[color:var(--input-focus-border)] bg-gray-50 hover:bg-white transition-colors"
+											/>
+											{#if dropdownSearchQuery.trim()}
+												<button
+													onclick={() => dropdownSearchQuery = ''}
+													class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 hover:text-gray-600"
+												>
+													<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+													</svg>
+												</button>
+											{/if}
+										</div>
+									</div>
+
+									{#if activeDropdownTab === 'trending'}
+										<div class="space-y-2">
+											{#if filteredTopBrands.length > 0}
+												{#each filteredTopBrands as brand}
+													<button
+														onclick={() => {
+															goto(`/search?brand=${encodeURIComponent(brand.name)}`);
+															showTrendingDropdown = false;
+														}}
+														class="w-full flex items-center gap-3 p-2 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+													>
+														<img
+															src={brand.avatar || '/avatars/1.png'}
+															alt={brand.name}
+															class="w-8 h-8 rounded-full object-cover flex-shrink-0"
+															onerror={() => (this.src = '/avatars/1.png')}
+														/>
+														<div class="flex-1 min-w-0">
+															<div class="flex items-center gap-2">
+																<span class="text-sm font-medium text-gray-900 group-hover:text-[color:var(--text-primary)]">{brand.name}</span>
+																{#if brand.verified}
+																	<svg class="w-3 h-3 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
+																		<path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+																	</svg>
+																{/if}
+																<span class="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded">{brand.trending}</span>
+															</div>
+															<span class="text-xs text-gray-500">{brand.items} items</span>
+														</div>
+													</button>
+												{/each}
+											{:else if dropdownSearchQuery.trim()}
+												<div class="text-center py-8 text-gray-500">
+													<svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+													</svg>
+													<p class="text-sm">No brands found matching "{dropdownSearchQuery}"</p>
+												</div>
+											{/if}
+										</div>
+									{:else if activeDropdownTab === 'sellers'}
+										<div class="space-y-2">
+											{#if filteredDisplayTopSellers.length > 0}
+												{#each filteredDisplayTopSellers as seller}
+												<button
+													onclick={() => {
+														goto(`/profile/${seller.name}`);
+														showTrendingDropdown = false;
+													}}
+													class="w-full flex items-center gap-3 p-2 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+												>
+													<img
+														src={seller.avatar || '/avatars/1.png'}
+														alt={seller.name}
+														class="w-8 h-8 rounded-full object-cover flex-shrink-0"
+														onerror={() => (this.src = '/avatars/1.png')}
+													/>
+													<div class="flex-1 min-w-0">
+														<div class="flex items-center gap-2">
+															<span class="text-sm font-medium text-gray-900 group-hover:text-[color:var(--text-primary)] truncate">{seller.name}</span>
+															{#if seller.verified}
+																<svg class="w-3 h-3 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
+																	<path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+																</svg>
+															{/if}
+														</div>
+														<div class="flex items-center gap-2 text-xs text-gray-500">
+															<span>{seller.items} items</span>
+															{#if seller.rating > 0}
+																<span>•</span>
+																<div class="flex items-center gap-1">
+																	<svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+																		<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+																	</svg>
+																	<span>{seller.rating.toFixed(1)}</span>
+																</div>
+															{/if}
+														</div>
+													</div>
+												</button>
+											{/each}
+											{:else if dropdownSearchQuery.trim()}
+												<div class="text-center py-8 text-gray-500">
+													<svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+													</svg>
+													<p class="text-sm">No sellers found matching "{dropdownSearchQuery}"</p>
+												</div>
+											{/if}
+										</div>
+									{:else if activeDropdownTab === 'quickshop'}
+										<div class="space-y-2">
+											{#if filteredQuickShopItems.length > 0}
+												{#each filteredQuickShopItems as item}
+												<button
+													onclick={() => {
+														if (item.filter === 'collection=drip') {
+															goto('/drip');
+														} else if (item.filter === 'category=vintage') {
+															goto('/search?category=vintage');
+														} else {
+															goto(`/search?${item.filter}`);
+														}
+														showTrendingDropdown = false;
+													}}
+													class="w-full flex items-center gap-2 p-2 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+												>
+													<span class="text-lg">{item.icon}</span>
+													<div class="flex-1 min-w-0">
+														<span class="text-sm font-medium text-gray-900 group-hover:text-[color:var(--text-primary)] block">{item.label}</span>
+														<span class="text-xs text-gray-500">{item.description}</span>
+													</div>
+												</button>
+											{/each}
+											{:else if dropdownSearchQuery.trim()}
+												<div class="text-center py-8 text-gray-500">
+													<svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+													</svg>
+													<p class="text-sm">No quick actions found matching "{dropdownSearchQuery}"</p>
+												</div>
+											{/if}
+										</div>
+									{:else}
+									{/if}
+								</div>
+							</div>
+						{/if}
+					</div>
+
+					<!-- Category Pills - Now part of unified container -->
+					<nav
+						id="category-pills"
+						aria-label={i18n.nav_browseCategories()}
+						class="flex items-center justify-start gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-3 sm:justify-center border-t border-gray-100/50"
+						style="margin-top: -1px;"
+					>
 					<!-- All Categories -->
 					<CategoryPill 
 						variant="primary"
@@ -801,14 +1227,14 @@
 					<!-- Women Category - Standard Action (36px) -->
 					{#if mainCategories.find(c => c.slug === 'women')}
 						{@const category = mainCategories.find(c => c.slug === 'women')}
-						<CategoryPill 
+						<CategoryPill
 							label={i18n.category_women()}
 							emoji="👗"
 							loading={loadingCategory === category.slug}
 							disabled={loadingCategory === category.slug}
 							ariaLabel={`${i18n.menu_browse()} ${i18n.category_women()}`}
-							itemCount={category?.product_count || 0}
-							showItemCount={!!category?.product_count && category.product_count > 0}
+							itemCount={category.product_count || 0}
+							showItemCount={category.product_count > 0}
 							data-prefetch="hover"
 							data-category="women"
 							onmouseenter={() => prefetchCategoryPage(category.slug)}
@@ -821,14 +1247,14 @@
 					<!-- Men Category - Standard Action (36px) -->
 					{#if mainCategories.find(c => c.slug === 'men')}
 						{@const category = mainCategories.find(c => c.slug === 'men')}
-						<CategoryPill 
+						<CategoryPill
 							label={i18n.category_men()}
 							emoji="👔"
 							loading={loadingCategory === category.slug}
 							disabled={loadingCategory === category.slug}
 							ariaLabel={`${i18n.menu_browse()} ${i18n.category_men()}`}
-							itemCount={category?.product_count || 0}
-							showItemCount={!!category?.product_count && category.product_count > 0}
+							itemCount={category.product_count || 0}
+							showItemCount={category.product_count > 0}
 							data-prefetch="hover"
 							data-category="men"
 							onmouseenter={() => prefetchCategoryPage(category.slug)}
@@ -841,14 +1267,14 @@
 					<!-- Kids Category - Standard Action (36px) -->
 					{#if mainCategories.find(c => c.slug === 'kids')}
 						{@const category = mainCategories.find(c => c.slug === 'kids')}
-						<CategoryPill 
+						<CategoryPill
 							label={i18n.category_kids()}
 							emoji="👶"
 							loading={loadingCategory === category.slug}
 							disabled={loadingCategory === category.slug}
 							ariaLabel={`${i18n.menu_browse()} ${i18n.category_kids()}`}
-							itemCount={category?.product_count || 0}
-							showItemCount={!!category?.product_count && category.product_count > 0}
+							itemCount={category.product_count || 0}
+							showItemCount={category.product_count > 0}
 							data-prefetch="hover"
 							data-category="kids"
 							onmouseenter={() => prefetchCategoryPage(category.slug)}
@@ -861,14 +1287,14 @@
 					<!-- Unisex Category - Standard Action (36px) -->
 					{#if mainCategories.find(c => c.slug === 'unisex')}
 						{@const category = mainCategories.find(c => c.slug === 'unisex')}
-						<CategoryPill 
+						<CategoryPill
 							label={i18n.category_unisex()}
 							emoji="🌍"
 							loading={loadingCategory === category.slug}
 							disabled={loadingCategory === category.slug}
 							ariaLabel={`${i18n.menu_browse()} ${i18n.category_unisex()}`}
-							itemCount={category?.product_count || 0}
-							showItemCount={!!category?.product_count && category.product_count > 0}
+							itemCount={category.product_count || 0}
+							showItemCount={category.product_count > 0}
 							data-prefetch="hover"
 							data-category="unisex"
 							onmouseenter={() => prefetchCategoryPage(category.slug)}
@@ -880,12 +1306,14 @@
 					
 					<!-- Virtual Categories - Unisex Product Types -->
 					{#each virtualCategories as virtualCategory, index}
-						<CategoryPill 
+						<CategoryPill
 							variant="outline"
 							label={virtualCategory.name}
 							loading={loadingCategory === virtualCategory.slug}
 							disabled={loadingCategory === virtualCategory.slug}
 							ariaLabel={`${i18n.menu_browse()} ${virtualCategory.name}`}
+							itemCount={virtualCategory.product_count}
+							showItemCount={true}
 							data-prefetch="hover"
 							data-category={virtualCategory.slug}
 							onmouseenter={() => prefetchCategoryPage(virtualCategory.slug)}
@@ -894,15 +1322,46 @@
 							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 5 + index)}
 						/>
 					{/each}
+
+					<!-- Separator -->
+					<div class="w-px h-5 bg-gray-200 mx-2"></div>
+
+					<!-- Condition Pills -->
+					{#each quickConditionFilters as condition, index}
+						<button
+							onclick={() => handleQuickCondition(condition.key)}
+							class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-9 relative overflow-hidden
+								{selectedCondition === condition.key
+									? index === 0 ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-md'
+										: index === 1 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
+										: index === 2 ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md'
+										: 'bg-gradient-to-r from-slate-600 to-gray-600 text-white shadow-md'
+									: 'bg-white text-gray-700 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:shadow-sm'}"
+							aria-label={`Filter by ${condition.label}`}
+						>
+							<span class="relative z-10 flex items-center gap-1">
+								{#if index === 0}
+									<span class="w-1.5 h-1.5 rounded-full {selectedCondition === condition.key ? 'bg-white' : 'bg-emerald-500'}"></span>
+								{:else if index === 1}
+									<span class="w-1.5 h-1.5 rounded-full {selectedCondition === condition.key ? 'bg-white' : 'bg-blue-500'}"></span>
+								{:else if index === 2}
+									<span class="w-1.5 h-1.5 rounded-full {selectedCondition === condition.key ? 'bg-white' : 'bg-amber-500'}"></span>
+								{:else}
+									<span class="w-1.5 h-1.5 rounded-full {selectedCondition === condition.key ? 'bg-white' : 'bg-slate-500'}"></span>
+								{/if}
+								{condition.shortLabel}
+							</span>
+						</button>
+					{/each}
 				</nav>
 			</div>
 		</div>
 
 		<!-- Promoted Highlights Section -->
-		{#if dataLoaded && (filteredPromotedProducts.length > 0 || sellers.length > 0)}
+		{#if dataLoaded && (filteredPromotedProducts.length > 0 || brands.length > 0)}
 			<PromotedHighlights
 				promotedProducts={filteredPromotedProducts}
-				{sellers}
+				sellers={brands}
 				partners={partners}
 				onSellerSelect={handleSellerClick}
 				onSellerClick={handleSellerClick}
@@ -921,6 +1380,9 @@
 					ui_scroll: i18n.ui_scroll ? i18n.ui_scroll() : 'Scroll',
 					promoted_hotPicks: i18n.promoted_hotPicks ? i18n.promoted_hotPicks() : 'Hot Picks',
 					promoted_premiumSellers: i18n.promoted_premiumSellers ? i18n.promoted_premiumSellers() : 'Premium Sellers',
+					explore_brands: i18n.explore_brands ? i18n.explore_brands() : 'Explore brands',
+					brands_discover_description: i18n.brands_discover_description ? i18n.brands_discover_description() : 'Discover unique brands and their latest collections',
+					brands_view_profile: i18n.brands_view_profile ? i18n.brands_view_profile() : 'View Profile',
 					categoryTranslation: translateCategory
 				}}
 			/>
@@ -932,14 +1394,15 @@
 				<FeaturedProducts
 					products={boostedProducts}
 					errors={data.errors}
-					sectionTitle="🚀 Boosted Listings"
+					sectionTitle={i18n.boosted_listings()}
 					onProductClick={handleProductClick}
 					onFavorite={handleFavorite}
 					onBrowseAll={handleBrowseAll}
 					onSellClick={handleSellClick}
 					{formatPrice}
 					favoritesState={$favoritesStore}
-					showViewAllButton={false}
+					showViewAllButton={true}
+					onViewAll={handleViewProProducts}
 					translations={{
 						empty_noProducts: i18n.empty_noProducts(),
 						empty_startBrowsing: i18n.empty_startBrowsing(),
@@ -952,6 +1415,7 @@
 						seller_unknown: i18n.seller_unknown(),
 						common_currency: i18n.common_currency(),
 						product_addToFavorites: i18n.product_addToFavorites(),
+						product_viewAll: i18n.product_viewAll(),
 						condition_brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
 						condition_newWithoutTags: i18n.sell_condition_newWithoutTags(),
 						condition_new: i18n.condition_new(),
@@ -992,6 +1456,7 @@
 					seller_unknown: i18n.seller_unknown(),
 					common_currency: i18n.common_currency(),
 					product_addToFavorites: i18n.product_addToFavorites(),
+					product_viewAll: i18n.product_viewAll(),
 					condition_brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
 					condition_newWithoutTags: i18n.sell_condition_newWithoutTags(),
 					condition_new: i18n.condition_new(),

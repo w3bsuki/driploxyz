@@ -626,7 +626,7 @@
       </div>
       
       <!-- Quick Category Pills -->
-      <div class="flex items-center gap-2 pb-3 overflow-x-auto scrollbar-hide">
+      <div class="flex items-center justify-start gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-3 sm:justify-center">
         <!-- Main Category Pills -->
         <CategoryPill
           variant={filters.category === null ? 'primary' : 'secondary'}

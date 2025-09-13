@@ -1,13 +1,17 @@
 <script lang="ts">
   import { page, navigating } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, FilterPill, type Product, type BreadcrumbItem } from '@repo/ui';
+  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, SearchDropdown, BottomNav, FilterPill, type Product, type BreadcrumbItem } from '@repo/ui';
   import * as i18n from '@repo/i18n';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { formatPrice } from '$lib/utils/price';
   import type { PageData } from './$types';
   import { invalidateAll } from '$app/navigation';
   import { getProductUrl } from '$lib/utils/seo-urls';
+  import { CategoryService } from '$lib/services/categories';
+  import { ProfileService } from '$lib/services/profiles';
+  import { getCollectionsForContext } from '$lib/data/collections';
+  import { browser } from '$app/environment';
   
   interface Props {
     data: PageData;
@@ -27,6 +31,41 @@
       invalidateAll();
     }
   });
+
+  // Load search dropdown data when component mounts
+  $effect(() => {
+    if (browser && data.supabase) {
+      loadSearchDropdownData();
+    }
+  });
+
+  async function loadSearchDropdownData() {
+    try {
+      // Determine context based on category level and slug
+      const categoryContext = resolution.l1?.slug || category.slug;
+
+      // Load categories for category page context
+      const categoryService = new CategoryService(data.supabase);
+      const { data: categories, error: categoryError } = await categoryService.getSearchDropdownCategories('category', categoryContext);
+
+      if (!categoryError && categories) {
+        searchDropdownCategories = categoryService.transformForSearchDropdown(categories);
+      }
+
+      // Load top sellers
+      const profileService = new ProfileService(data.supabase);
+      const { data: sellers, error: sellerError } = await profileService.getTopSellersForDropdown(5);
+
+      if (!sellerError && sellers) {
+        searchDropdownSellers = profileService.transformSellersForDropdown(sellers);
+      }
+
+      // Load collections for category context
+      searchDropdownCollections = getCollectionsForContext('category', categoryContext);
+    } catch (error) {
+      console.error('Failed to load search dropdown data:', error);
+    }
+  }
   
   // Translate category name using proper i18n
   function translateCategoryName(name: string): string {
@@ -150,6 +189,13 @@
   let showFilters = $state(false);
   let searchQuery = $state('');
   let showMegaMenu = $state(false);
+  let showSearchDropdown = $state(false);
+  let activeDropdownTab = $state('categories');
+
+  // Search dropdown data
+  let searchDropdownCategories = $state<any[]>([]);
+  let searchDropdownSellers = $state<any[]>([]);
+  let searchDropdownCollections = $state<any[]>([]);
   
   // Seller quick view modal state
   let selectedSeller = $state<any>(null);
@@ -246,6 +292,49 @@
 
   function handleMegaMenuToggle() {
     showMegaMenu = !showMegaMenu;
+  }
+
+  // Search dropdown event handlers
+  function handleDropdownCategorySelect(category: any) {
+    if (category.level === 1) {
+      goto(`/category/${category.key}`);
+    } else if (category.level === 2) {
+      goto(getCategoryUrl(category.parentKey, category.key));
+    } else if (category.level === 3) {
+      const parentKeys = category.parentKey?.split('-');
+      goto(getCategoryUrl(parentKeys?.[0], parentKeys?.[1], category.key));
+    }
+    showSearchDropdown = false;
+  }
+
+  function handleDropdownCollectionSelect(collection: any) {
+    // Handle collection selection based on key
+    if (collection.key.startsWith('category=')) {
+      const categoryKey = collection.key.replace('category=', '');
+      goto(`/category/${categoryKey}`);
+    } else if (collection.key.startsWith('condition=')) {
+      const conditionKey = collection.key.replace('condition=', '');
+      // Add condition filter to current category page
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set('condition', conditionKey);
+      goto(currentUrl.pathname + currentUrl.search);
+    } else if (collection.key === 'under25') {
+      // Add price filter to current category page
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set('max_price', '25');
+      goto(currentUrl.pathname + currentUrl.search);
+    } else if (collection.key === 'price-low' || collection.key === 'newest') {
+      // Add sort filter to current category page
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set('sort', collection.key);
+      goto(currentUrl.pathname + currentUrl.search);
+    }
+    showSearchDropdown = false;
+  }
+
+  function handleDropdownSellerSelect(seller: any) {
+    // Navigate to seller profile
+    goto(`/profile/${seller.username}`);
   }
 
 
@@ -349,6 +438,109 @@
                   </svg>
                   <span class="text-sm text-gray-600 hidden sm:inline">{i18n.category_categories()}</span>
                 </button>
+              {/snippet}
+
+              {#snippet rightSection()}
+                <div class="relative">
+                  <button
+                    onclick={() => showSearchDropdown = !showSearchDropdown}
+                    class="h-12 px-4 rounded-r-xl border-0 bg-transparent hover:bg-gray-50 transition-colors flex items-center gap-2 text-gray-600 border-l border-gray-200"
+                    aria-label="Open search options"
+                  >
+                    <svg class="w-4 h-4 transition-transform {showSearchDropdown ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {#if showSearchDropdown}
+                    <div class="absolute top-full left-0 right-0 mt-1 z-50">
+                      <div class="bg-white border border-gray-200 rounded-lg shadow-lg p-4">
+                        <div class="flex items-center gap-1 mb-4 bg-gray-100 p-1 rounded-lg">
+                          <button
+                            onclick={() => activeDropdownTab = 'categories'}
+                            class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'categories' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                          >
+                            {i18n.search_categories ? i18n.search_categories() : 'Categories'}
+                          </button>
+                          <button
+                            onclick={() => activeDropdownTab = 'sellers'}
+                            class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'sellers' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                          >
+                            {i18n.search_topSellers()}
+                          </button>
+                        </div>
+
+                        {#if activeDropdownTab === 'categories'}
+                          <div class="grid grid-cols-2 gap-3">
+                            {#each dropdownCategories as cat}
+                              <button
+                                onclick={() => {
+                                  goto(getCategoryUrl(resolution.l1?.slug || '', cat.slug));
+                                  showSearchDropdown = false;
+                                }}
+                                class="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+                              >
+                                <span class="text-2xl">📁</span>
+                                <div class="flex-1 min-w-0">
+                                  <span class="font-medium text-gray-900 group-hover:text-blue-600 truncate block">{translateSubcategoryName(cat.name)}</span>
+                                  {#if cat.productCount}
+                                    <span class="text-xs text-gray-500">({cat.productCount})</span>
+                                  {/if}
+                                </div>
+                              </button>
+                            {/each}
+                          </div>
+                        {:else if activeDropdownTab === 'sellers'}
+                          <div class="space-y-3">
+                            {#each searchDropdownSellers.slice(0, 5) as seller}
+                              <button
+                                onclick={() => {
+                                  goto(`/profile/${seller.username}`);
+                                  showSearchDropdown = false;
+                                }}
+                                class="w-full flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+                              >
+                                {#if seller.avatar_url}
+                                  <img
+                                    src={seller.avatar_url}
+                                    alt={seller.username}
+                                    class="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                                  />
+                                {:else}
+                                  <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center flex-shrink-0">
+                                    <span class="text-white font-semibold text-sm">{seller.username.charAt(0).toUpperCase()}</span>
+                                  </div>
+                                {/if}
+                                <div class="flex-1 min-w-0">
+                                  <div class="flex items-center gap-2">
+                                    <span class="font-medium text-gray-900 group-hover:text-blue-600 truncate">{seller.username}</span>
+                                    {#if seller.is_verified}
+                                      <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                      </svg>
+                                    {/if}
+                                  </div>
+                                  <div class="flex items-center gap-2 text-sm text-gray-500">
+                                    <span>{seller.total_products} items</span>
+                                    {#if seller.rating}
+                                      <span>•</span>
+                                      <div class="flex items-center gap-1">
+                                        <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                        <span>{seller.rating.toFixed(1)}</span>
+                                      </div>
+                                    {/if}
+                                  </div>
+                                </div>
+                              </button>
+                            {/each}
+                          </div>
+                        {/if}
+                      </div>
+                    </div>
+                  {/if}
+                </div>
               {/snippet}
             </IntegratedSearchBar>
             
