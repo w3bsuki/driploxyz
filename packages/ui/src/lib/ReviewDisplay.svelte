@@ -1,5 +1,5 @@
 <script lang="ts">
-	import ImageOptimized from './ImageOptimized.svelte';
+	// Using Svelte enhanced images
 	
 	interface Review {
 		id: string;
@@ -121,11 +121,12 @@
 			<div class="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
 				{#each review.image_urls.slice(0, 6) as imageUrl}
 					<div class="aspect-square relative rounded-lg overflow-hidden bg-[color:var(--surface-subtle)]">
-						<ImageOptimized
+						<img
 							src={imageUrl}
 							alt="Review photo"
 							class="w-full h-full object-cover hover:scale-105 transition-transform duration-200 cursor-pointer"
-							sizes="(max-width: 768px) 150px, 200px"
+							loading="lazy"
+							enhanced
 						/>
 					</div>
 				{/each}

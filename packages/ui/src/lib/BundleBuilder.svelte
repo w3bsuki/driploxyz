@@ -4,7 +4,7 @@
   import Button from './Button.svelte';
   import Dialog from './primitives/dialog/Dialog.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
-  import ImageOptimized from './ImageOptimized.svelte';
+  // Using Svelte enhanced images
   import Avatar from './Avatar.svelte';
   // Cache to prevent repeated fetches
   const sellerProductsCache = new Map<string, { products: Product[], timestamp: number }>();
@@ -260,10 +260,12 @@
             <div class="flex items-center gap-3 p-2 bg-white rounded-lg border border-[oklch(90%_0.02_250)]" 
                  class:border-[oklch(60%_0.2_250)]={item.id === initialItem.id}
                  >
-              <ImageOptimized
-                src={item.images?.[0] || item.first_image || '/placeholder-product.svg'} 
+              <img
+                src={item.images?.[0] || item.first_image || '/placeholder-product.svg'}
                 alt={item.title}
                 class="w-12 h-12 object-cover rounded-md flex-shrink-0"
+                loading="lazy"
+                enhanced
               />
               <div class="flex-1 min-w-0">
                 <h4 class="text-sm font-medium text-[oklch(10%_0.02_250)] truncate">{item.title}</h4>
@@ -320,10 +322,12 @@
                   </div>
                 {/if}
                 
-                <ImageOptimized
+                <img
                   src={product.images?.[0] || product.first_image || '/placeholder-product.svg'}
                   alt={product.title}
                   class="w-full aspect-square object-cover"
+                  loading="lazy"
+                  enhanced
                 />
                 <div class="p-2">
                   <h4 class="text-xs font-medium text-[oklch(10%_0.02_250)] truncate">{product.title}</h4>

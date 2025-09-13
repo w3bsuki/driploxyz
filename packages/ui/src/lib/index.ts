@@ -130,7 +130,6 @@ export { default as ProductSoldManager } from './ProductSoldManager.svelte';
 export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte';
 
 // Image components
-export { default as ImageOptimized } from './ImageOptimized.svelte';
 
 // Search components
 export { default as TrendingDropdown } from './TrendingDropdown.svelte';
