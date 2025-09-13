@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ProductCard, Button, IntegratedSearchBar, ProductCardSkeleton, BottomNav, StickyFilterModal, AppliedFilterPills, CategoryBottomSheet, CategoryPill, type Product } from '@repo/ui';
+  import { ProductCard, Button, IntegratedSearchBar, SearchDropdown, ProductCardSkeleton, BottomNav, StickyFilterModal, AppliedFilterPills, CategoryDropdown, MegaMenuCategories, CategoryPill, type Product } from '@repo/ui';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { goto } from '$app/navigation';
   import { page, navigating } from '$app/stores';
@@ -13,6 +13,9 @@
   import { debounce } from '$lib/utils/debounce';
   import { untrack } from 'svelte';
   import { getProductUrl } from '$lib/utils/seo-urls';
+  import { CategoryService } from '$lib/services/categories';
+  import { ProfileService } from '$lib/services/profiles';
+  import { getCollectionsForContext } from '$lib/data/collections';
   
   // Infinite scroll sentinel
   let loadMoreTrigger = $state<HTMLDivElement | null>(null);
@@ -36,11 +39,12 @@
   
   // Core UI state
   let showStickyFilterModal = $state(false);
-  let showCategoryBottomSheet = $state(false);
+  let showCategoryDropdown = $state(false);
   let isSearching = $state(false);
   let isFilterLoading = $state(false);
   let searchInput = $state('');
   let ariaLiveMessage = $state('');
+
   
   // Single derived filter state for performance
   let filters = $derived(filterStore.filters);
@@ -107,7 +111,74 @@
     
     return hierarchy;
   })());
-  
+
+  // Transform categoryHierarchy to MegaMenuCategories format
+  let megaMenuData = $derived(() => {
+    const categories = categoryHierarchy.categories.map(cat => {
+      const l1Category = {
+        id: cat.id,
+        name: cat.name,
+        slug: cat.key,
+        level: 1,
+        parent_id: null,
+        sort_order: 1,
+        is_active: true,
+        description: `${cat.name} fashion and accessories`,
+        image_url: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        product_count: 0,
+        children: [] as any[]
+      };
+
+      // Get subcategories (level 2) for this main category
+      if (categoryHierarchy.subcategories[cat.key]) {
+        l1Category.children = categoryHierarchy.subcategories[cat.key].map(subcat => {
+          const l2Category = {
+            id: subcat.id,
+            name: subcat.name,
+            slug: subcat.key,
+            level: 2,
+            parent_id: cat.id,
+            sort_order: 1,
+            is_active: true,
+            description: `${cat.name} ${subcat.name}`,
+            image_url: null,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            product_count: 0,
+            children: [] as any[]
+          };
+
+          // Get specific items (level 3) for this subcategory
+          const level3Key = `${cat.key}-${subcat.key}`;
+          if (categoryHierarchy.specifics[level3Key]) {
+            l2Category.children = categoryHierarchy.specifics[level3Key].map(specific => ({
+              id: specific.id,
+              name: specific.name,
+              slug: specific.key,
+              level: 3,
+              parent_id: subcat.id,
+              sort_order: 1,
+              is_active: true,
+              description: `${cat.name} ${specific.name}`,
+              image_url: null,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+              product_count: 0
+            }));
+          }
+
+          return l2Category;
+        });
+      }
+
+      return l1Category;
+    });
+
+    return categories;
+  });
+
   // Main categories for quick pills  
   const mainCategories = [
     { key: 'women', label: i18n.category_women(), icon: '👗' },
@@ -188,6 +259,7 @@
       syncFiltersToUrl(filters);
     }
   });
+
   
   // Get current sizes based on selected category
   let currentSizes = $derived(
@@ -328,34 +400,71 @@
     }, 300);
   }
 
-  // Handle category selection from bottom sheet
-  function handleBottomSheetCategorySelect(path: {category: string | null, subcategory: string | null, specific: string | null}) {
+  // Handle 3-level category selection from MegaMenuCategories
+  function handleMegaMenuCategorySelect(categorySlug: string, level: number, path: string[]) {
     isFilterLoading = true;
-    
-    // Update all category filters at once
-    filterStore.updateMultipleFilters({
-      category: path.category,
-      subcategory: path.subcategory,
-      specific: path.specific
-    });
-    
-    // Provide feedback
-    const categoryName = path.specific 
-      ? categoryHierarchy.specifics[`${path.category}-${path.subcategory}`]?.find(s => s.key === path.specific)?.name
-      : path.subcategory 
-        ? categoryHierarchy.subcategories[path.category || '']?.find(s => s.key === path.subcategory)?.name
-        : path.category
-          ? categoryHierarchy.categories.find(c => c.key === path.category)?.name
-          : i18n.category_all();
-          
-    ariaLiveMessage = `Selected: ${categoryName}`;
-    
+    showCategoryDropdown = false;
+
+    // Update filters based on the selected level and path
+    if (level === 1) {
+      // Level 1: Main category (women, men, kids, unisex)
+      filterStore.updateMultipleFilters({
+        category: categorySlug,
+        subcategory: null,
+        specific: null
+      });
+      ariaLiveMessage = `Selected category: ${categorySlug}`;
+    } else if (level === 2) {
+      // Level 2: Subcategory (clothing, shoes, accessories, etc.)
+      const mainCategory = path[0];
+      filterStore.updateMultipleFilters({
+        category: mainCategory,
+        subcategory: categorySlug,
+        specific: null
+      });
+      ariaLiveMessage = `Selected subcategory: ${categorySlug}`;
+    } else if (level === 3) {
+      // Level 3: Specific items (t-shirts, dresses, sneakers, etc.)
+      const mainCategory = path[0];
+      const subcategory = path[1];
+      filterStore.updateMultipleFilters({
+        category: mainCategory,
+        subcategory: subcategory,
+        specific: categorySlug
+      });
+      ariaLiveMessage = `Selected specific category: ${categorySlug}`;
+    }
+
     // Reset loading state after a brief delay
-    setTimeout(() => { 
+    setTimeout(() => {
       isFilterLoading = false;
       ariaLiveMessage = '';
     }, 300);
   }
+
+  // Handle closing the CategoryDropdown
+  function handleCategoryDropdownClose() {
+    showCategoryDropdown = false;
+  }
+
+  // Close dropdown when clicking outside
+  $effect(() => {
+    if (showCategoryDropdown) {
+      const handleClickOutside = (e: MouseEvent) => {
+        if (!e.target) return;
+        const dropdown = document.querySelector('[data-category-dropdown]');
+        const trigger = document.querySelector('[data-category-trigger]');
+        if (dropdown && trigger &&
+            !dropdown.contains(e.target as Node) &&
+            !trigger.contains(e.target as Node)) {
+          showCategoryDropdown = false;
+        }
+      };
+
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  });
   
   function handleQuickCondition(conditionKey: string) {
     isFilterLoading = true;
@@ -423,6 +532,7 @@
       filterStore.updateFilter(key as any, 'all');
     }
   }
+
   
   
   // Product category translations
@@ -453,54 +563,66 @@
   </div>
   
   <!-- Clean Header Section -->
-  <div class="bg-white/40 backdrop-blur-sm sticky z-30 border-b border-gray-100" style="top: var(--app-header-offset, 56px);">
+  <div class="bg-white/90 backdrop-blur-sm sticky z-30 border-b border-gray-100 shadow-sm" style="top: var(--app-header-offset, 56px);">
     <div class="px-2 sm:px-4 lg:px-6">
       
       <!-- Search Container -->
-      <div class="py-3">
-        <IntegratedSearchBar
-          bind:searchValue={searchInput}
-          placeholder={i18n.search_placeholder()}
-          onSearch={(query) => filterStore.updateFilter('query', query)}
-          onInput={handleSearch}
-          searchId="search-page-input"
-        >
-          {#snippet leftSection()}
-            <CategoryBottomSheet
-              bind:open={showCategoryBottomSheet}
-              {categoryHierarchy}
-              selectedPath={currentCategoryPath}
-              onCategorySelect={handleBottomSheetCategorySelect}
-              allCategoriesLabel={i18n.search_categories()}
-              backLabel={i18n.common_back()}
-              allLabel={i18n.category_all()}
-              class="h-12 rounded-l-xl border-0"
-            >
-              {#snippet trigger()}
-                <span class="text-base">
-                  {filters.category ? 
-                    categoryHierarchy.categories.find(cat => cat.key === filters.category)?.icon || '📁' : 
-                    '📁'
-                  }
-                </span>
-                <span>
-                  {filters.specific ? 
-                    categoryHierarchy.specifics[`${filters.category}-${filters.subcategory}`]?.find(cat => cat.key === filters.specific)?.name || 
-                    (filters.subcategory ? categoryHierarchy.subcategories[filters.category]?.find(cat => cat.key === filters.subcategory)?.name : i18n.category_all()) :
-                    filters.subcategory ? 
-                      categoryHierarchy.subcategories[filters.category]?.find(cat => cat.key === filters.subcategory)?.name :
-                      filters.category ? 
-                        categoryHierarchy.categories.find(cat => cat.key === filters.category)?.name : 
-                        i18n.category_all()
-                  }
-                </span>
-                <svg class="w-4 h-4 transition-transform {showCategoryBottomSheet ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              {/snippet}
-            </CategoryBottomSheet>
-          {/snippet}
-        </IntegratedSearchBar>
+      <div class="py-3 relative">
+        <div class="flex gap-0">
+          <!-- Category Trigger Button -->
+          <button
+            onclick={() => showCategoryDropdown = !showCategoryDropdown}
+            class="flex items-center gap-2 px-3 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-l-xl transition-colors duration-200 border border-r-0 border-gray-200 focus:outline-none focus:ring-0 bg-white"
+            aria-label="Select category"
+            aria-expanded={showCategoryDropdown}
+            data-category-trigger
+          >
+            <span class="text-lg">
+              {filters.category ?
+                categoryHierarchy.categories.find(cat => cat.key === filters.category)?.icon || '📁' :
+                '📁'
+              }
+            </span>
+            <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 {showCategoryDropdown ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <!-- Search Input -->
+          <div class="flex-1">
+            <IntegratedSearchBar
+              bind:searchValue={searchInput}
+              placeholder={i18n.search_placeholder()}
+              onSearch={(query) => filterStore.updateFilter('query', query)}
+              onInput={handleSearch}
+              searchId="search-page-input"
+              class="rounded-l-none border-l-0"
+            />
+          </div>
+        </div>
+
+        <!-- MegaMenuCategories -->
+        {#if showCategoryDropdown}
+          <div data-category-dropdown class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50 max-h-[70vh]">
+            <MegaMenuCategories
+              onCategoryClick={handleMegaMenuCategorySelect}
+              onClose={handleCategoryDropdownClose}
+              categories={megaMenuData}
+              translations={{
+                women: i18n.category_women(),
+                men: i18n.category_men(),
+                kids: i18n.category_kids(),
+                unisex: i18n.category_unisex(),
+                clothing: i18n.category_clothing(),
+                shoes: i18n.category_shoes(),
+                accessories: i18n.category_accessories(),
+                bags: i18n.category_bags(),
+                back: i18n.common_back(),
+                items: 'items'
+              }}
+            />
+          </div>
+        {/if}
       </div>
       
       <!-- Quick Category Pills -->
@@ -568,7 +690,7 @@
   </div>
   
   <!-- Clean Filter Bar Above Products -->
-  <div class="bg-white/40 backdrop-blur-sm border-b border-gray-100">
+  <div class="bg-white/90 backdrop-blur-sm border-b border-gray-100">
     <div class="px-2 sm:px-4 lg:px-6 py-3">
       
       <!-- Mobile Layout - Results Count + Filter Button + Filter Pills -->
