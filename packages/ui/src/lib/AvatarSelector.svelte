@@ -108,7 +108,7 @@
         class="relative group"
       >
         <div class="relative overflow-hidden rounded-xl border-2 transition-colors {selected === avatar ? 'border-black' : 'border-gray-200 hover:border-gray-300'}">
-          <img src={avatar} alt="Avatar option" class="w-full h-full object-cover" />
+          <img src={avatar} alt="Avatar option" class="w-full h-full object-cover" loading="lazy" enhanced />
           
           <!-- Selection indicator -->
           {#if selected === avatar}

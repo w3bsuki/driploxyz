@@ -981,11 +981,10 @@
 
 
 {#key currentLang}
-<div class="min-h-screen bg-[color:var(--surface-subtle)] pb-20 sm:pb-0">
-	<main>
-		<!-- Unified Search + Category Navigation Container -->
-		<div class="bg-white/90 backdrop-blur-sm sticky z-30 border-b border-gray-100 shadow-sm" style="top: var(--app-header-offset, 56px);">
-			<div class="px-2 sm:px-4 lg:px-6">
+
+<!-- Sticky Search + Category Navigation (Outside Main for Proper Positioning) -->
+<div class="bg-white/90 backdrop-blur-sm sticky z-50 border-b border-gray-100 shadow-sm" style="top: var(--app-header-offset, 56px) !important;">
+	<div class="px-2 sm:px-4 lg:px-6">
 				<!-- Unified Content Container -->
 				<div class="mx-auto relative">
 					<!-- Hero Search -->
@@ -1356,7 +1355,11 @@
 				</nav>
 			</div>
 		</div>
+	</div>
 
+<!-- Main Content Area -->
+<div class="min-h-screen bg-[color:var(--surface-subtle)] pb-20 sm:pb-0">
+	<main>
 		<!-- Promoted Highlights Section -->
 		{#if dataLoaded && (filteredPromotedProducts.length > 0 || brands.length > 0)}
 			<PromotedHighlights

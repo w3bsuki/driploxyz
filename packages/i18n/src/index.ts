@@ -4,36 +4,36 @@
 /// <reference path="./paraglide.d.ts" />
 
 // Export all message functions - Vite automatically tree-shakes unused ones
-export * from '../lib/paraglide/messages.js';
+export * from './paraglide/messages.js';
 
 // Type definitions 
 export type Locale = 'en' | 'bg';
 export type LanguageTag = Locale; // Compatibility alias
 
 // Re-export Paraglide runtime functions directly - let Paraglide handle locale detection
-// During packaging/build, runtime is emitted to lib/paraglide/runtime.js.
+// During packaging/build, runtime is emitted to src/paraglide/runtime.js.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export { setLocale, getLocale, isLocale, locales, baseLocale } from '../lib/paraglide/runtime.js';
+export { setLocale, getLocale, isLocale, locales, baseLocale } from './paraglide/runtime.js';
 
 // Local bindings for internal use
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { locales as runtimeLocales, setLocale as runtimeSetLocale } from '../lib/paraglide/runtime.js';
+import { locales as runtimeLocales, setLocale as runtimeSetLocale } from './paraglide/runtime.js';
 
 // Compatibility aliases for existing API
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export { getLocale as languageTag } from '../lib/paraglide/runtime.js';
+export { getLocale as languageTag } from './paraglide/runtime.js';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export { setLocale as setLanguageTag } from '../lib/paraglide/runtime.js';
+export { setLocale as setLanguageTag } from './paraglide/runtime.js';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export { locales as availableLanguageTags } from '../lib/paraglide/runtime.js';
+export { locales as availableLanguageTags } from './paraglide/runtime.js';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-export { isLocale as isAvailableLanguageTag } from '../lib/paraglide/runtime.js';
+export { isLocale as isAvailableLanguageTag } from './paraglide/runtime.js';
 
 // Helper constants
 export const languageNames: Record<Locale, string> = {

@@ -89,12 +89,14 @@
   class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary {className} overflow-hidden"
 >
   {#if src && !imageError}
-    <img 
-      {src} 
+    <img
+      {src}
       {alt}
       onerror={handleImageError}
       onload={handleImageLoad}
       class="w-full h-full object-cover"
+      loading="lazy"
+      enhanced
     />
   {:else}
     <div class="flex items-center justify-center w-full h-full bg-[color:var(--surface-muted)]">
@@ -107,12 +109,14 @@
   class="relative block {sizeClasses[size]} {shapeClass} {premium ? 'ring-1 ring-violet-500' : ''} cursor-default {className} overflow-hidden"
 >
   {#if src && !imageError}
-    <img 
-      {src} 
+    <img
+      {src}
       {alt}
       onerror={handleImageError}
       onload={handleImageLoad}
       class="w-full h-full object-cover"
+      loading="lazy"
+      enhanced
     />
   {:else}
     <div class="flex items-center justify-center w-full h-full bg-[color:var(--surface-muted)]">

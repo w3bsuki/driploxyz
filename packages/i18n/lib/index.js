@@ -4,7 +4,7 @@
 // Export all message functions - Vite automatically tree-shakes unused ones
 export * from './paraglide/messages.js';
 // Re-export Paraglide runtime functions directly - let Paraglide handle locale detection
-// During packaging/build, runtime is emitted to lib/paraglide/runtime.js.
+// During packaging/build, runtime is emitted to src/paraglide/runtime.js.
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 export { setLocale, getLocale, isLocale, locales, baseLocale } from './paraglide/runtime.js';

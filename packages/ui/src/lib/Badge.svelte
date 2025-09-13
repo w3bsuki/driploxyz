@@ -1,5 +1,4 @@
 <script lang="ts">
-  import * as BaseBadge from './components/ui/badge/badge.svelte';
   import type { BadgeVariant, BadgeSize } from '../types';
 
   interface Props {
@@ -10,31 +9,25 @@
     href?: string;
   }
 
-  let { 
-    variant = 'primary', 
+  let {
+    variant = 'primary',
     size = 'md',
     class: className = '',
     children,
     href
   }: Props = $props();
 
-  // Map legacy @repo/ui Badge variants to tv-based badge variants
-  const tvVariant = $derived(() => {
-    switch (variant) {
-      case 'primary':
-        return 'default';
-      case 'secondary':
-        return 'secondary';
-      case 'error':
-        return 'destructive';
-      // Variants without direct tv equivalents fall back to outline
-      case 'success':
-      case 'warning':
-      case 'info':
-      default:
-        return 'outline';
-    }
-  });
+  const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50';
+
+  const variantClasses = {
+    primary: 'bg-[color:var(--primary)] text-[color:var(--primary-fg)] hover:bg-[color:var(--primary)]/90',
+    secondary: 'bg-[color:var(--secondary)] text-[color:var(--secondary-fg)] hover:bg-[color:var(--secondary)]/90',
+    error: 'bg-[color:var(--destructive)] text-[color:var(--destructive-fg)] hover:bg-[color:var(--destructive)]/90',
+    success: 'bg-green-100 text-green-800 border border-green-200 hover:bg-green-200',
+    warning: 'bg-yellow-100 text-yellow-800 border border-yellow-200 hover:bg-yellow-200',
+    info: 'bg-blue-100 text-blue-800 border border-blue-200 hover:bg-blue-200',
+    outline: 'border border-[color:var(--border)] text-[color:var(--foreground)] hover:bg-[color:var(--accent)] hover:text-[color:var(--accent-fg)]'
+  } as const;
 
   const sizeClasses = {
     sm: 'px-2 py-0.5 text-xs',
@@ -42,23 +35,13 @@
     lg: 'px-3 py-1.5 text-base'
   } as const;
 
-  // Provide color overrides for variants not covered by tv
-  const colorOverrides = $derived(() => {
-    switch (variant) {
-      case 'success':
-        return 'bg-green-50 text-green-700 border-green-200';
-      case 'warning':
-        return 'bg-yellow-50 text-yellow-700 border-yellow-200';
-      case 'info':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
-      default:
-        return '';
-    }
-  });
-
-  const classes = $derived(`${sizeClasses[size]} ${colorOverrides} ${className}`);
+  const classes = $derived(`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`);
 </script>
 
-<BaseBadge.default variant={tvVariant} class={classes} href={href}>
+<svelte:element
+  this={href ? 'a' : 'span'}
+  {href}
+  class={classes}
+>
   {@render children?.()}
-</BaseBadge.default>
+</svelte:element>

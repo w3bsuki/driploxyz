@@ -8,7 +8,7 @@
     HeaderUserMenu,
     HeaderNav,
     HeaderSearch,
-    MobileNavigationDrawer,
+    MobileNavigationDialog,
     ThemeToggle
   } from '@repo/ui';
   import type { User } from '@repo/ui/types';
@@ -24,7 +24,7 @@
     notificationActions,
     messageToastActions
   } from '$lib/stores/notifications';
-  import { RealtimeNotificationService } from '$lib/services/realtime-notifications';
+  import { RealtimeNotificationService } from '$lib/services/realtimeNotifications';
   import { switchLanguage, languages } from '$lib/utils/language-switcher';
   import { browser } from '$app/environment';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
@@ -204,7 +204,7 @@
       <div class="flex items-center gap-0">
         <button
           onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
-          class="sm:hidden inline-flex items-center justify-center h-10 w-10 -ml-2 rounded-[var(--radius-md)] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] transition-colors duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]"
+          class="sm:hidden inline-flex items-center justify-center h-9 w-9 -ml-2 rounded-[var(--radius-md)] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] transition-colors duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]"
           aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}
           aria-controls="mobile-navigation"
@@ -307,7 +307,7 @@
   </div>
 
   <!-- Mobile Menu -->
-  <MobileNavigationDrawer
+  <MobileNavigationDialog
     id="mobile-navigation"
     isOpen={mobileMenuOpen}
       {isLoggedIn}

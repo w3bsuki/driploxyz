@@ -32,10 +32,12 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       featuredProducts: [],
       categories: [],
       topSellers: [],
+      topBrands: [],
       errors: {
-        products: 'Database not configured', 
+        products: 'Database not configured',
         categories: 'Database not configured',
-        sellers: 'Database not configured'
+        sellers: 'Database not configured',
+        brands: 'Database not configured'
       }
     };
   }
@@ -106,6 +108,40 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       { data: [] } as any
     );
 
+    const topBrandsPromise = withTimeout(
+      supabase
+        .from('profiles')
+        .select(`
+          id,
+          username,
+          full_name,
+          avatar_url,
+          verified,
+          account_type,
+          sales_count,
+          monthly_views,
+          weekly_sales_count,
+          followers_count,
+          bio,
+          created_at,
+          products!products_seller_id_fkey (
+            id,
+            title,
+            price,
+            condition,
+            created_at
+          )
+        `)
+        .eq('account_type', 'brand')
+        .eq('verified', true)
+        .order('sales_count', { ascending: false })
+        .order('followers_count', { ascending: false })
+        .limit(10)
+        .then(),
+      2500,
+      { data: [] } as any
+    );
+
     const featuredPromise = withTimeout(
       supabase
         .from('products')
@@ -150,10 +186,11 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       { data: [] } as any
     );
 
-    const [categoriesResult, topSellersResult, sellersResult, featuredResult] = await Promise.all([
+    const [categoriesResult, topSellersResult, sellersResult, topBrandsResult, featuredResult] = await Promise.all([
       categoriesPromise,
       topSellersPromise,
       sellersPromise,
+      topBrandsPromise,
       featuredPromise
     ]);
 
@@ -161,6 +198,7 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
     const categories = (categoriesResult as any).data || [];
     const topSellers = (topSellersResult as any).data || [];
     const sellers = (sellersResult as any).data || [];
+    const topBrands = (topBrandsResult as any).data || [];
     
     let featuredProducts: Array<{
       id: string;
@@ -328,19 +366,21 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       // Critical data for initial render
       categories,
       country: country || 'BG',
-      
+
       // Stream featured products (below the fold)
       featuredProducts: Promise.resolve(featuredProducts),
-      
+
       // Stream non-critical data
       topSellers: Promise.resolve(topSellers),
+      topBrands: Promise.resolve(topBrands),
       sellers: Promise.resolve(sellers),
       userFavorites: Promise.resolve(userFavorites),
-      
+
       errors: {
         products: featuredResult.status === 'rejected' ? 'Failed to load' : null,
         categories: categoriesResult.status === 'rejected' ? 'Failed to load' : null,
-        sellers: topSellersResult.status === 'rejected' ? 'Failed to load' : null
+        sellers: topSellersResult.status === 'rejected' ? 'Failed to load' : null,
+        brands: topBrandsResult.status === 'rejected' ? 'Failed to load' : null
       }
     };
     
@@ -352,10 +392,12 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       featuredProducts: [],
       categories: [],
       topSellers: [],
+      topBrands: [],
       errors: {
         products: 'Failed to load products',
         categories: 'Failed to load categories',
-        sellers: 'Failed to load sellers'
+        sellers: 'Failed to load sellers',
+        brands: 'Failed to load brands'
       }
     };
   }
