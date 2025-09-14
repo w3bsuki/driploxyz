@@ -46,6 +46,9 @@
 	let userFavoritesData = $state<Record<string, boolean>>({});
 	let dataLoaded = $state(false);
 
+	// Batched preview map for sellers/brands (populated client-side without MCP)
+	let sellerPreviewMap = $state<Record<string, Product[]>>({});
+
 	// Top brands data - clean data from dedicated server query
 	const topBrands = $derived(
 		(topBrandsData || []).map(brand => {
@@ -358,15 +361,44 @@
 
 	// Create entity→products mapping (works for sellers and brands) from featured products
 	const sellerProducts = $derived(() => {
-		const productsByEntity: Record<string, Product[]> = {};
+		const map: Record<string, Product[]> = {};
 		const entities = [...sellers, ...brands];
-		entities.forEach(entity => {
-			const matching = products.filter(p => p.seller_id === entity.id);
-			if (matching.length > 0) {
-				productsByEntity[entity.id] = matching.slice(0, 3);
-			}
-		});
-		return productsByEntity;
+		for (const entity of entities) {
+			const fromPreview = sellerPreviewMap[entity.id];
+			const fromFeatured = products.filter(p => p.seller_id === entity.id);
+			const chosen = (fromPreview && fromPreview.length > 0) ? fromPreview : fromFeatured;
+			if (chosen.length > 0) map[entity.id] = chosen.slice(0, 3);
+		}
+		return map;
+	});
+
+	// Client-side batched fetch of latest listings per seller/brand (no MCP needed)
+	$effect(() => {
+		if (!browser || !data.supabase) return;
+		const ids = [...sellers, ...brands].map(e => e.id).filter(Boolean);
+		if (ids.length === 0) return;
+
+		(async () => {
+			try {
+				// Fetch recent active listings for all visible entities in one go
+				const guessLimit = Math.min(ids.length * 5, 150); // heuristic: up to 5 per entity
+				const { data: rows, error } = await data.supabase
+					.from('products')
+					.select('id,title,price,seller_id,product_images(image_url)')
+					.in('seller_id', ids)
+					.eq('is_active', true)
+					.eq('is_sold', false)
+					.order('created_at', { ascending: false })
+					.limit(guessLimit);
+				if (error) return;
+				const grouped: Record<string, Product[]> = {} as any;
+				(rows || []).forEach((p: any) => {
+					if (!grouped[p.seller_id]) grouped[p.seller_id] = [] as any;
+					if (grouped[p.seller_id].length < 3) grouped[p.seller_id].push(p as Product);
+				});
+				sellerPreviewMap = grouped;
+			} catch {}
+		})();
 	});
 
 	// Initialize favorites from server data on mount (after derived values are available)

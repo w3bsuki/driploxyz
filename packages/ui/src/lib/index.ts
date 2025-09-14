@@ -43,16 +43,8 @@ export { default as SellerCard } from './SellerCard.svelte';
 export { default as ProductBreadcrumb } from './ProductBreadcrumb.svelte';
 export { default as ProductActions } from './ProductActions.svelte';
 
-// PDP Components
-export { default as StickyHeader } from './PDP/components/StickyHeader.svelte';
-
-// PDP Sections
-export { default as InfoSection } from './PDP/sections/InfoSection.svelte';
-export { default as ReviewsSection } from './PDP/sections/ReviewsSection.svelte';
-export { default as RecommendationsSection } from './PDP/sections/RecommendationsSection.svelte';
-export { default as GallerySection } from './PDP/sections/GallerySection.svelte';
-export { default as BuyBoxSection } from './PDP/sections/BuyBoxSection.svelte';
-export { default as SellerSection } from './PDP/sections/SellerSection.svelte';
+// Removed PDP Components - Over-engineered and unused
+// Current product page uses direct component imports which is better practice
 
 // Lazy-loaded components for performance
 export { default as LazyRecommendationsSection } from './lazy/LazyRecommendationsSection.svelte';
@@ -268,10 +260,8 @@ export * from './types';
 // Design tokens
 export * from './tokens';
 
-// PDP Components & Utilities
-export { default as PriceFormatter } from './PDP/components/PriceFormatter.svelte';
-export { default as SellerProductsSection } from './PDP/sections/SellerProductsSection.svelte';
-export * as pdpUtils from './PDP/utils';
+// Removed PDP utilities - were unused and over-engineered
+// Current product page has simpler, more maintainable approach
 
 // Description list primitives
 export { default as DescriptionList } from './components/description-list/DescriptionList.svelte';
