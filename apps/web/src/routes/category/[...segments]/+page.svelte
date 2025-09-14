@@ -480,7 +480,6 @@
                                 }}
                                 class="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
                               >
-                                <span class="text-2xl">📁</span>
                                 <div class="flex-1 min-w-0">
                                   <span class="font-medium text-gray-900 group-hover:text-blue-600 truncate block">{translateSubcategoryName(cat.name)}</span>
                                   {#if cat.productCount}

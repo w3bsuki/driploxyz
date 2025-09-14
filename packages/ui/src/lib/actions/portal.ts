@@ -21,7 +21,11 @@ export function portal(
   }
 
   function resolveTarget(t?: HTMLElement | string): HTMLElement {
-    if (!t) return document.body;
+    if (!t) {
+      // Prefer global overlay root if present
+      const overlayRoot = document.getElementById('overlay-root');
+      return overlayRoot ?? document.body;
+    }
     if (typeof t === 'string') {
       return document.querySelector(t) ?? document.body;
     }

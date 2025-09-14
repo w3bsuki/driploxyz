@@ -216,20 +216,13 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
           {#snippet leftSection()}
             <button
               onclick={() => showTrendingDropdown = !showTrendingDropdown}
-              class="h-12 px-4 bg-transparent hover:bg-gray-50 transition-all duration-200 flex items-center gap-2 focus:outline-none focus:bg-gray-50 border-r border-gray-200 rounded-l-lg"
+              class="h-12 px-3 bg-transparent hover:bg-gray-50 transition-all duration-200 flex items-center gap-2 focus:outline-none focus:bg-gray-50 border-r border-gray-200 rounded-l-lg"
               aria-expanded={showTrendingDropdown}
               aria-haspopup="listbox"
               aria-label={i18n.search_categories()}
             >
-              <span class="text-lg" role="img" aria-hidden="true">📂</span>
-              <svg
-                class="w-4 h-4 text-gray-600 transition-transform {showTrendingDropdown ? 'rotate-180' : ''}"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
               <span class="text-sm font-medium text-gray-600 hidden sm:inline">{i18n.search_categories()}</span>
             </button>
@@ -424,7 +417,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
       >
         <!-- All Categories -->
         <CategoryPill
-          variant="primary"
+          variant="muted"
           label={i18n.search_all()}
           loading={loadingCategory === 'all'}
           disabled={loadingCategory === 'all'}
@@ -441,7 +434,6 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
         {#each mainCategories as category, index}
           <CategoryPill
             label={category.name}
-            emoji={category.slug === 'women' ? '👗' : category.slug === 'men' ? '👔' : category.slug === 'kids' ? '👶' : category.slug === 'unisex' ? '🌍' : undefined}
             loading={loadingCategory === category.slug}
             disabled={loadingCategory === category.slug}
             ariaLabel={`Browse ${category.name}`}

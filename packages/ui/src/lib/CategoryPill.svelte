@@ -4,7 +4,7 @@
   // Clean, focused props interface
   interface CategoryPillProps {
     label: string;
-    variant?: 'primary' | 'secondary' | 'outline';
+    variant?: 'primary' | 'secondary' | 'outline' | 'muted';
     size?: 'sm' | 'md' | 'lg';
     loading?: boolean;
     disabled?: boolean;
@@ -85,7 +85,8 @@
   const variantStyles = {
     primary: 'bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] hover:bg-[color:var(--brand-primary)]/90 border-[color:var(--brand-primary)]',
     secondary: 'bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-muted)] hover:text-[color:var(--text-primary)] border-[color:var(--border-subtle)] hover:border-[color:var(--border-default)]',
-    outline: 'bg-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] border-[color:var(--border-default)] hover:border-[color:var(--border-hover)]'
+    outline: 'bg-transparent text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] border-[color:var(--border-default)] hover:border-[color:var(--border-hover)]',
+    muted: 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 border-gray-300 hover:border-gray-400'
   };
 
   const currentSize = sizeConfig[size];

@@ -24,6 +24,13 @@ interface MainCategory {
   icon: string;
 }
 
+interface Collection {
+  key: string;
+  label: string;
+  emoji: string;
+  product_count?: number;
+}
+
 interface Props {
   supabase: SupabaseClient<Database>;
   searchValue?: string;
@@ -56,6 +63,44 @@ let {
 
 // Component state
 let showCategoryDropdown = $state(false);
+let activeDropdownTab = $state('categories');
+let dropdownSearchQuery = $state('');
+
+// Collections data
+const collections: Collection[] = [
+  // Quick Shopping Collections
+  { key: 'newest', label: 'Newest', emoji: '🆕' },
+  { key: 'under25', label: 'Under 25 лв', emoji: '💰' },
+  { key: 'price-low', label: 'Cheapest', emoji: '📉' },
+  { key: 'premium', label: 'Premium', emoji: '⭐' },
+  // Condition Collections
+  { key: 'condition=brand_new_with_tags', label: 'New with Tags', emoji: '🏷️' },
+  { key: 'condition=like_new', label: 'Like New', emoji: '✨' },
+  { key: 'condition=good', label: 'Good', emoji: '👍' },
+  // Style Collections
+  { key: 'category=clothing', label: 'All Clothing', emoji: '👕' },
+  { key: 'category=shoes', label: 'All Shoes', emoji: '👟' },
+  { key: 'category=bags', label: 'All Bags', emoji: '👜' },
+  { key: 'category=accessories', label: 'All Accessories', emoji: '💍' }
+];
+
+// Filtered data for dropdown search
+const filteredCollections = $derived(
+  dropdownSearchQuery.trim()
+    ? collections.filter(collection =>
+        collection.label.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
+      )
+    : collections
+);
+
+const filteredConditions = $derived(
+  dropdownSearchQuery.trim()
+    ? conditionFilters.filter(condition =>
+        condition.label.toLowerCase().includes(dropdownSearchQuery.toLowerCase()) ||
+        condition.shortLabel.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
+      )
+    : conditionFilters
+);
 
 // Handle category dropdown
 function handleCategoryDropdownToggle(e: Event) {
@@ -85,6 +130,43 @@ function handleConditionPillClick(conditionKey: string) {
   } else {
     onFilterChange('condition', conditionKey);
   }
+}
+
+// Handle collection selection from dropdown
+function handleCollectionSelect(collection: Collection) {
+  if (collection.key.startsWith('category=')) {
+    const categorySlug = collection.key.replace('category=', '');
+    onCategorySelect(categorySlug);
+  } else if (collection.key.startsWith('condition=')) {
+    const condition = collection.key.replace('condition=', '');
+    onFilterChange('condition', condition);
+  } else {
+    // Handle other collection types (newest, under25, etc.)
+    switch (collection.key) {
+      case 'newest':
+        onFilterChange('sortBy', 'newest');
+        break;
+      case 'price-low':
+        onFilterChange('sortBy', 'price-low');
+        break;
+      case 'under25':
+        onFilterChange('maxPrice', '25');
+        break;
+      case 'premium':
+        onFilterChange('minPrice', '100');
+        break;
+      default:
+        // Generic collection - could navigate to a collection page
+        break;
+    }
+  }
+  handleCategoryDropdownClose();
+}
+
+// Handle condition selection from dropdown
+function handleConditionSelect(condition: FilterPillData) {
+  onFilterChange('condition', condition.key);
+  handleCategoryDropdownClose();
 }
 
 // Handle click outside for category dropdown
@@ -153,18 +235,108 @@ const currentCategoryDisplay = $derived(() => {
         {/snippet}
       </SearchInput>
 
-      <!-- MegaMenuCategories Dropdown -->
+      <!-- Tabbed Dropdown -->
       {#if showCategoryDropdown}
-        <div class="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50 max-h-[70vh]">
-          <MegaMenuCategories
-            onCategoryClick={handleMegaMenuCategorySelect}
-            onClose={handleCategoryDropdownClose}
-            categories={megaMenuData}
-            translations={{
-              allCategories: typeof i18n?.filter_allCategories === 'function' ? i18n.filter_allCategories() : 'All Categories',
-              browseAll: typeof i18n?.search_all === 'function' ? i18n.search_all() : 'Browse All'
-            }}
-          />
+        <div class="absolute top-full left-0 right-0 mt-1 z-50">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-4">
+            <!-- Tab Headers -->
+            <div class="flex items-center gap-1 mb-4 bg-gray-100 p-1 rounded-lg">
+              <button
+                onclick={() => activeDropdownTab = 'categories'}
+                class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'categories' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+              >
+                Categories
+              </button>
+              <button
+                onclick={() => activeDropdownTab = 'collections'}
+                class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'collections' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+              >
+                Collections
+              </button>
+              <button
+                onclick={() => activeDropdownTab = 'condition'}
+                class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'condition' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+              >
+                Condition
+              </button>
+            </div>
+
+            <!-- Search Input -->
+            <div class="mb-4">
+              <div class="relative">
+                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input
+                  type="text"
+                  bind:value={dropdownSearchQuery}
+                  placeholder={activeDropdownTab === 'categories' ? 'Search categories...' :
+                              activeDropdownTab === 'collections' ? 'Search collections...' :
+                              'Search conditions...'}
+                  class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 hover:bg-white transition-colors"
+                />
+                {#if dropdownSearchQuery.trim()}
+                  <button
+                    onclick={() => dropdownSearchQuery = ''}
+                    class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 hover:text-gray-600"
+                  >
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                  </button>
+                {/if}
+              </div>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="min-h-[200px] max-h-[300px] overflow-y-auto">
+              {#if activeDropdownTab === 'categories'}
+                <MegaMenuCategories
+                  categories={megaMenuData}
+                  onCategoryClick={handleMegaMenuCategorySelect}
+                  onClose={handleCategoryDropdownClose}
+                />
+              {:else if activeDropdownTab === 'collections'}
+                <div class="grid grid-cols-2 gap-2">
+                  {#each filteredCollections as collection}
+                    <button
+                      onclick={() => handleCollectionSelect(collection)}
+                      class="flex items-center gap-2 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+                    >
+                      <span class="text-lg">{collection.emoji}</span>
+                      <span class="font-medium text-gray-900 group-hover:text-blue-600 text-sm">{collection.label}</span>
+                    </button>
+                  {/each}
+                  {#if filteredCollections.length === 0 && dropdownSearchQuery.trim()}
+                    <div class="col-span-2 text-center py-4 text-gray-500">
+                      <p class="text-sm">No collections found</p>
+                    </div>
+                  {/if}
+                </div>
+              {:else if activeDropdownTab === 'condition'}
+                <div class="grid grid-cols-1 gap-2">
+                  {#each filteredConditions as condition}
+                    <button
+                      onclick={() => handleConditionSelect(condition)}
+                      class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+                    >
+                      <div>
+                        <div class="font-medium text-gray-900 group-hover:text-blue-600 text-sm">{condition.label}</div>
+                        {#if condition.shortLabel !== condition.label}
+                          <div class="text-xs text-gray-500">{condition.shortLabel}</div>
+                        {/if}
+                      </div>
+                    </button>
+                  {/each}
+                  {#if filteredConditions.length === 0 && dropdownSearchQuery.trim()}
+                    <div class="text-center py-4 text-gray-500">
+                      <p class="text-sm">No conditions found</p>
+                    </div>
+                  {/if}
+                </div>
+              {/if}
+            </div>
+          </div>
         </div>
       {/if}
     </div>

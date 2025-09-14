@@ -233,6 +233,10 @@
   .mobile-nav-open [data-bottom-nav] {
     display: none !important;
   }
+  /* Ensure any stray mobile nav dialog is hidden when closed */
+  html:not(.mobile-nav-open) .mobile-nav-dialog {
+    display: none !important;
+  }
   
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
      FORM CUSTOMIZATIONS — Mobile-First Input Styling

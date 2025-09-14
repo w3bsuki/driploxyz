@@ -78,7 +78,8 @@
       "Bash(npx svelte-check:*)",
       "Read(//k//**)",
       "Bash(taskkill:*)",
-      "mcp__playwright__browser_press_key"
+      "mcp__playwright__browser_press_key",
+      "mcp__svelte-docs__svelte_definition"
     ]
   },
   "enableAllProjectMcpServers": true,

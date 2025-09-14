@@ -254,6 +254,11 @@
           if (el && el.parentNode) {
             el.parentNode.removeChild(el);
           }
+          // Extra cleanup: remove any stray mobile nav dialogs in overlay root
+          const overlayRoot = document.getElementById('overlay-root') || document.body;
+          overlayRoot.querySelectorAll('.mobile-nav-dialog').forEach((node) => {
+            try { node.parentNode?.removeChild(node); } catch {}
+          });
         } catch {}
       });
     }
@@ -310,8 +315,8 @@
 {#if isOpen}
   <!-- Mobile menu with backdrop -->
   <div
-    use:portal
-    class="sm:hidden fixed inset-0 z-[10001]"
+    use:portal={'#overlay-root'}
+    class="sm:hidden fixed inset-0 z-[10001] pointer-events-none mobile-nav-dialog"
     style="z-index: 10001;"
     role="dialog"
     aria-modal="true"
@@ -319,21 +324,23 @@
     {id}
     bind:this={rootEl}
   >
-    <!-- Backdrop overlay -->
+    <!-- Backdrop overlay (starts below header) -->
     <div
-      class="fixed inset-0 z-[1] bg-black/30 transition-opacity duration-300 {isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
+      class="fixed left-0 right-0 bottom-0 z-[1] bg-black/30 transition-opacity duration-300 pointer-events-auto {isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
+      style="top: var(--app-header-offset, 56px);"
       onclick={handleBackdropClick}
     ></div>
 
-    <!-- Slide-down mobile menu panel -->
+    <!-- Slide-down mobile menu panel (under header; explicit height for internal scroll) -->
     <div
-      class="fixed z-[2] top-[56px] left-0 right-0 bg-white border-b border-gray-200 shadow-lg max-h-[calc(100vh-56px)] overflow-hidden transform transition-transform duration-300 ease-out {isOpen ? 'translate-y-0' : '-translate-y-full'}"
+      class="fixed z-[2] left-0 right-0 bg-white border-b border-gray-200 shadow-lg overflow-hidden transform transition-transform duration-300 ease-out pointer-events-auto {isOpen ? 'translate-y-0' : '-translate-y-full'}"
+      style="top: var(--app-header-offset, 56px); height: calc(100vh - var(--app-header-offset, 56px));"
       onclick={(e) => e.stopPropagation()}
     >
       <!-- Main content container -->
       <div class="h-full bg-white flex flex-col">
       <!-- Content area with scroll -->
-      <div class="flex-1 overflow-y-auto overscroll-contain">
+      <div class="flex-1 overflow-y-auto overscroll-contain" style="-webkit-overflow-scrolling: touch;">
         <div class="px-4 pt-6 pb-4 space-y-6">
 
           {#if isLoggedIn && user && profile}
@@ -375,7 +382,7 @@
                     <a
                       href="/sell"
                       onclick={closeMenu}
-                      class="px-3 py-2 bg-black text-white text-xs font-medium rounded-lg hover:bg-gray-800 active:bg-gray-900 transition-colors touch-manipulation text-center"
+                  class="px-3 py-3 bg-black text-white text-xs font-medium rounded-lg hover:bg-gray-800 active:bg-gray-900 transition-colors touch-manipulation text-center min-h-[44px]"
                     >
                       {translations.sellItems}
                     </a>
@@ -383,7 +390,7 @@
                     <a
                       href="/start-selling"
                       onclick={closeMenu}
-                      class="px-3 py-2 bg-black text-white text-xs font-medium rounded-lg hover:bg-gray-800 active:bg-gray-900 transition-colors touch-manipulation text-center"
+                  class="px-3 py-3 bg-black text-white text-xs font-medium rounded-lg hover:bg-gray-800 active:bg-gray-900 transition-colors touch-manipulation text-center min-h-[44px]"
                     >
                       {translations.startSelling}
                     </a>
@@ -413,16 +420,16 @@
               <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 px-2">
                 {translations.browseCategories}
               </h2>
-              <div class="space-y-3">
+              <div class="space-y-2.5">
               <!-- Women Category -->
               <button
                 onclick={() => handleCategoryClick('women', 1, ['women'])}
-                class="w-full flex items-center justify-between p-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                class="w-full flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
                 aria-label="Browse Women's items"
               >
                 <div class="flex items-center gap-4">
                   <!-- Category Icon -->
-                  <div class="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                     <span class="text-2xl">👗</span>
                   </div>
 
@@ -446,12 +453,12 @@
               <!-- Men Category -->
               <button
                 onclick={() => handleCategoryClick('men', 1, ['men'])}
-                class="w-full flex items-center justify-between p-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                class="w-full flex items-center justify-between py-2 px-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
                 aria-label="Browse Men's items"
               >
                 <div class="flex items-center gap-4">
                   <!-- Category Icon -->
-                  <div class="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                     <span class="text-2xl">👔</span>
                   </div>
 
@@ -475,7 +482,7 @@
               <!-- Kids Category -->
               <button
                 onclick={() => handleCategoryClick('kids', 1, ['kids'])}
-                class="w-full flex items-center justify-between p-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                class="w-full flex items-center justify-between py-2.5 px-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[var(--touch-standard)]"
                 aria-label="Browse Kids items"
               >
                 <div class="flex items-center gap-4">
@@ -535,11 +542,11 @@
             <!-- Quick Actions Section -->
             <div>
               <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 px-2">Quick Actions</h2>
-              <div class="grid grid-cols-3 gap-3">
+              <div class="grid grid-cols-3 gap-2.5">
                 <a
                   href="/search"
                   onclick={closeMenu}
-                  class="flex flex-col items-center p-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                  class="flex flex-col items-center px-2.5 py-2.5 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
                 >
                   <svg class="w-5 h-5 mb-1 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -550,7 +557,7 @@
                 <a
                   href="/brands"
                   onclick={closeMenu}
-                  class="flex flex-col items-center p-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                  class="flex flex-col items-center px-2.5 py-2.5 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
                 >
                   <svg class="w-5 h-5 mb-1 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -561,7 +568,7 @@
                 <a
                   href="/new"
                   onclick={closeMenu}
-                  class="flex flex-col items-center p-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                  class="flex flex-col items-center px-2.5 py-2.5 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
                 >
                   <svg class="w-5 h-5 mb-1 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -575,7 +582,7 @@
                   <a
                     href="/orders"
                     onclick={closeMenu}
-                    class="flex flex-col items-center p-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                    class="flex flex-col items-center px-2.5 py-2.5 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
                   >
                     <svg class="w-5 h-5 mb-1 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z" />
@@ -586,7 +593,7 @@
                   <a
                     href="/favorites"
                     onclick={closeMenu}
-                    class="flex flex-col items-center p-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
+                    class="flex flex-col items-center px-2.5 py-2.5 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
                   >
                     <svg class="w-5 h-5 mb-1 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -728,7 +735,7 @@
                 {#each selectedMainCategory.children as subcategory}
                   <button
                     onclick={() => handleSubcategoryClick(subcategory)}
-                    class="w-full flex items-center justify-between p-4 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[44px]"
+                  class="w-full flex items-center justify-between px-3 py-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
                   >
                     <div class="flex items-center gap-3">
                       <div class="text-left">
