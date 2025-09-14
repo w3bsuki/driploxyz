@@ -181,6 +181,20 @@ Available account types in profiles:
 
 ---
 
+## 💳 Discount Codes & Promotions
+
+**Active Discount Codes:** 1
+
+### Current Discount Codes
+| Code | Name | Description | Type | Value |
+|------|------|-------------|------|-------|
+| `INDECISIVE` | Indecisive Brand Test Discount | 99% discount for brand subscription testing | Percentage | 99% |
+
+**Applicable Plans:** Brand subscriptions
+**Usage:** Testing/promotional purposes
+
+---
+
 ## 💎 Subscription Plans & Pricing
 
 **Total Plans:** 5
@@ -367,21 +381,28 @@ Available account types in profiles:
 ## 🛠️ System Tables & Configurations
 
 ### Administrative Tables
-- **admin_actions** - Admin activity logging
-- **admin_notifications** - Admin-specific notifications
-- **system_logs** - System-wide logging
-- **manual_config_tasks** - Manual configuration tracking
-- **auth_config_tasks** - Authentication configuration tasks
+- **admin_actions** - Admin activity logging (0 records)
+- **admin_notifications** - Admin-specific notifications (0 records)
+- **system_logs** - System-wide logging (0 records)
+- **manual_config_tasks** - Manual configuration tracking (2 pending)
+  - OTP expiry time reduction (pending)
+  - Leaked password protection enable (pending)
+- **auth_config_tasks** - Authentication configuration tasks (3 pending)
 
 ### Processing Queues
-- **slug_processing_queue** - Product slug generation queue
-- **product_slug_history** - Slug change history
-- **username_history** - Username change history
+- **slug_processing_queue** - Product slug generation queue (23 pending)
+- **product_slug_history** - Slug change history (43 records)
+- **username_history** - Username change history (0 records)
 
 ### Analytics & Tracking
-- **product_views** - Product view tracking
-- **presence** - User online presence
-- **boost_history** - Product boost history
+- **product_views** - Product view tracking (0 records)
+- **presence** - User online presence (1 active session)
+- **boost_history** - Product boost history (2 records)
+
+### Bundle & Commerce Extensions
+- **bundle_sessions** - Multi-product purchase sessions (0 active)
+- **order_items** - Individual items within orders (0 records)
+- **user_payments** - Payment processing tracking (0 records)
 
 ### Content Moderation
 - **drip_nominations** - Drip collection nominations
@@ -416,7 +437,7 @@ Available account types in profiles:
 
 ### Live Counts (as of audit)
 - **Categories:** 143 active
-- **Products:** 42 listed
+- **Products:** 42 listed (42 images)
 - **Orders:** 1 recorded
 - **Messages:** 7 exchanges
 - **Favorites:** 36 saved
@@ -425,6 +446,13 @@ Available account types in profiles:
 - **Subscription Plans:** 5 tiers
 - **Country Configs:** 5 supported
 - **Badges:** 1 type available
+- **Discount Codes:** 1 active (99% brand discount)
+- **Boost History:** 2 records
+- **Slug Processing Queue:** 23 pending
+- **Product Slug History:** 43 changes
+- **Auth Config Tasks:** 3 pending
+- **Manual Config Tasks:** 2 pending (OTP expiry, leaked password protection)
+- **User Presence:** 1 active session
 
 ### Growth Areas
 - **Categories:** Well-established hierarchy

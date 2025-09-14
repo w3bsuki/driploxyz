@@ -46,10 +46,8 @@ export { default as ProductActions } from './ProductActions.svelte';
 // Removed PDP Components - Over-engineered and unused
 // Current product page uses direct component imports which is better practice
 
-// Lazy-loaded components for performance
-export { default as LazyRecommendationsSection } from './lazy/LazyRecommendationsSection.svelte';
-export { default as LazySellerProductsSection } from './lazy/LazySellerProductsSection.svelte';
-export { default as LazyReviewModal } from './lazy/LazyReviewModal.svelte';
+// Removed lazy-loaded PDP components - were over-engineered and unused
+// Current product page handles lazy loading more efficiently with IntersectionObserver
 
 // Seller components
 export { default as SellerProfile } from './SellerProfile.svelte';
