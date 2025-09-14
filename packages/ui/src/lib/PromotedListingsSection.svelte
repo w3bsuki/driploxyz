@@ -45,17 +45,17 @@
 </script>
 
 {#if activePromotedProducts.length > 0}
-	<section class="bg-[color:var(--surface-subtle)] py-3">
+	<section class="py-3">
 		<div class="px-2 sm:px-4 lg:px-6">
 			<!-- Section Header aligned with FeaturedSellers, with chevrons in title row -->
 			<div class="mb-3">
 				<div class="flex items-center justify-between">
 					<div class="flex-1">
 						<h2 class="text-base font-normal text-gray-900 leading-tight">
-							{translations.promoted_listings || 'Promoted Listings'}
+							{translations.promoted_listings}
 						</h2>
 						<p class="text-xs text-gray-500">
-							{translations.promoted_description || 'Featured items from pro sellers'}
+							{translations.promoted_description}
 						</p>
 					</div>
 					<div class="flex items-center gap-2 ml-3">

@@ -1082,8 +1082,8 @@
 			favoritesState={$favoritesStore}
 			{formatPrice}
 			translations={{
-				promoted_listings: "Promoted Products",
-				promoted_description: "Featured items from verified sellers",
+				promoted_listings: i18n.promoted_listings(),
+				promoted_description: i18n.promoted_description(),
 				common_currency: i18n.common_currency(),
 				product_addToFavorites: i18n.product_addToFavorites(),
 				seller_unknown: i18n.seller_unknown(),
@@ -1105,8 +1105,8 @@
 	<FeaturedSellers
 		sellers={(activeTab === 'brands' ? brands : sellers)}
 		onSellerClick={handleSellerClick}
-		title="Highlight Sellers"
-		description={ activeTab === 'brands' ? 'Verified brands' : 'Top-rated and verified sellers' }
+		title={i18n.highlight_sellers()}
+		description={ activeTab === 'brands' ? i18n.verified_brands() : i18n.top_rated_sellers() }
 		class="mt-2 sm:mt-3"
 		showToggle={true}
 		activeTab={activeTab}
@@ -1115,7 +1115,7 @@
 {/if}
 
 <!-- Main Content Area -->
-<div class="min-h-screen bg-[color:var(--surface-subtle)] pb-20 sm:pb-0">
+<div class="min-h-screen bg-[color:var(--surface-base)] pb-20 sm:pb-0">
 	<main>
 		<!-- Promoted Products Section moved below Highlight Sellers/Brands -->
 
@@ -1228,8 +1228,8 @@
 					favoritesState={$favoritesStore}
 					{formatPrice}
 					translations={{
-						promoted_listings: "Promoted Products",
-						promoted_description: "Featured items from verified sellers",
+						promoted_listings: i18n.promoted_listings(),
+						promoted_description: i18n.promoted_description(),
 						common_currency: i18n.common_currency(),
 						product_addToFavorites: i18n.product_addToFavorites(),
 						seller_unknown: i18n.seller_unknown(),

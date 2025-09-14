@@ -29,15 +29,20 @@
     showMore = false
   }: Props = $props();
 
-  // Generate filter pills from current filters
+  // Generate filter pills from current filters with defensive programming
   let filterPills = $derived((() => {
     const pills: FilterPill[] = [];
 
-    // Category hierarchy
+    // Ensure filters object exists and has properties before accessing
+    if (!filters || typeof filters !== 'object') {
+      return pills;
+    }
+
+    // Category hierarchy with null checks
     if (filters.category) {
       pills.push({
         key: 'category',
-        label: categoryLabels[filters.category] || filters.category,
+        label: categoryLabels?.[filters.category] || filters.category,
         value: filters.category,
         type: 'category',
         removable: true
@@ -47,7 +52,7 @@
     if (filters.subcategory) {
       pills.push({
         key: 'subcategory',
-        label: categoryLabels[filters.subcategory] || filters.subcategory,
+        label: categoryLabels?.[filters.subcategory] || filters.subcategory,
         value: filters.subcategory,
         type: 'subcategory',
         removable: true
@@ -57,14 +62,14 @@
     if (filters.specific) {
       pills.push({
         key: 'specific',
-        label: categoryLabels[filters.specific] || filters.specific,
+        label: categoryLabels?.[filters.specific] || filters.specific,
         value: filters.specific,
         type: 'specific',
         removable: true
       });
     }
 
-    // Other filters
+    // Other filters with defensive checks
     if (filters.size && filters.size !== 'all') {
       pills.push({
         key: 'size',
@@ -102,7 +107,7 @@
       });
     }
 
-    // Price range
+    // Price range with defensive checks
     if (filters.minPrice || filters.maxPrice) {
       let priceLabel = 'Price: ';
       if (filters.minPrice && filters.maxPrice) {
@@ -112,7 +117,7 @@
       } else if (filters.maxPrice) {
         priceLabel += `up to ${filters.maxPrice} лв`;
       }
-      
+
       pills.push({
         key: 'price',
         label: priceLabel,
@@ -122,7 +127,7 @@
       });
     }
 
-    // Sort (if not default)
+    // Sort (if not default) with defensive check
     if (filters.sortBy && filters.sortBy !== 'relevance') {
       const sortLabels: Record<string, string> = {
         'price-low': 'Price: Low to High',

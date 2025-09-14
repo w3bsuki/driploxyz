@@ -94,7 +94,7 @@
   <!-- Header -->
   <div class="px-2 sm:px-4 lg:px-6 mb-3">
     <div class="flex items-center justify-between">
-      <div class="flex-1">
+      <div class="flex-1 min-w-0">
         <h2 class="text-base font-normal text-gray-900 leading-tight">{title}</h2>
         {#if description}
           <p class="text-xs text-gray-500">{description}</p>
@@ -105,10 +105,10 @@
         {/if}
       </div>
       
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2 ml-3">
         <!-- Custom header actions / optional toggle -->
         {#if showToggle}
-          <div class="flex items-center mr-2">
+          <div class="flex items-center">
             <div class="inline-flex p-0.5 rounded-full bg-gray-100 border border-gray-200">
               <button
                 class="px-3 py-1.5 text-xs font-medium rounded-full {activeTab === 'brands' ? 'bg-white text-gray-900 shadow-sm border border-gray-200' : 'text-gray-700'}"

@@ -199,7 +199,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
 </script>
 
 <!-- Sticky Search + Category Navigation -->
-<div class="bg-white/90 backdrop-blur-sm sticky z-50 border-b border-gray-100 shadow-sm" style="top: var(--app-header-offset, 56px) !important;">
+<div class="bg-[color:var(--surface-base)] sticky z-50 border-b border-[color:var(--border-subtle)]">
   <div class="px-2 sm:px-4 lg:px-6">
     <div class="mx-auto relative">
       <!-- Hero Search -->
@@ -238,11 +238,11 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
 
         {#if showTrendingDropdown}
           <div class="absolute top-full left-0 right-0 mt-1 z-50">
-            <div class="bg-white border border-gray-200 rounded-lg shadow-lg p-4">
-              <div class="flex items-center gap-1 mb-3 bg-gray-100 p-1 rounded-lg">
+            <div class="bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] shadow-lg p-[var(--space-4)]">
+              <div class="flex items-center gap-1 mb-3 bg-[color:var(--surface-subtle)] p-1 rounded-[var(--radius-md)]">
                 <button
                   onclick={() => activeDropdownTab = 'trending'}
-                  class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'trending' ? 'bg-white text-[color:var(--text-primary)] shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                  class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'trending' ? 'bg-[color:var(--surface-base)] text-[color:var(--text-primary)] shadow-sm' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}"
                 >
                   Top Brands
                 </button>

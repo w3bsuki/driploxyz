@@ -11,8 +11,6 @@
   interface Props {
     currentPath: string;
     unreadMessageCount?: number;
-    isNavigating?: boolean;
-    navigatingTo?: string;
     profileHref?: string;
     isAuthenticated?: boolean;
     labels?: {
@@ -24,16 +22,14 @@
     };
   }
 
-  let { 
+  let {
     currentPath,
     unreadMessageCount = 0,
-    isNavigating = false,
-    navigatingTo = '',
     profileHref = '/account',
     isAuthenticated = false,
     labels = {
       home: 'Home',
-      search: 'Search', 
+      search: 'Search',
       sell: 'Sell',
       messages: 'Messages',
       profile: 'Profile'
@@ -100,49 +96,37 @@
       
       <a
         href={item.href}
-        class="flex flex-col items-center justify-center 
-               min-h-[var(--touch-primary)] py-[var(--space-2)]
+        class="flex items-center justify-center
+               min-h-[var(--touch-primary)] py-[var(--space-3)]
                no-underline hover:no-underline touch-manipulation"
         data-sveltekit-preload-data="hover"
         aria-current={active ? 'page' : undefined}
+        aria-label={item.label}
+        title={item.label}
       >
         <!-- Icon -->
-        <div class="relative mb-[var(--space-1)]">
-          <svg 
-            class="w-6 h-6 {active ? 'text-[color:var(--brand-primary)]' : 'text-[color:var(--text-tertiary)]'}"
+        <div class="relative">
+          <svg
+            class="w-7 h-7 transition-colors duration-200 {active ? 'text-[color:var(--brand-primary)]' : 'text-[color:var(--text-tertiary)] hover:text-[color:var(--text-secondary)]'}"
             fill="none"
-            stroke="currentColor" 
+            stroke="currentColor"
             viewBox="0 0 24 24"
-            stroke-width={active ? '2' : '1.5'}
+            stroke-width="1.5"
           >
             <path d={item.icon} />
           </svg>
 
-          <!-- Badge -->
-          {#if item.showBadge && unreadMessageCount > 0}
-            <div 
+          <!-- Badge for messages only -->
+          {#if item.showBadge && item.id === 'messages' && unreadMessageCount > 0}
+            <div
               class="absolute -top-1 -right-1 min-w-4 h-4 px-1
-                     bg-[color:var(--status-error-solid)] text-[color:var(--text-inverse)] 
+                     bg-[color:var(--status-error-solid)] text-[color:var(--text-inverse)]
                      text-[10px] font-bold rounded-full flex items-center justify-center"
             >
               {unreadMessageCount > 99 ? '99' : unreadMessageCount}
             </div>
-          {:else if item.id === 'sell' && !isAuthenticated}
-            <!-- Selling hint for unauthenticated users -->
-            <div 
-              class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5
-                     bg-[color:var(--brand-primary)] rounded-full animate-pulse"
-              title="Start selling your items"
-            ></div>
           {/if}
         </div>
-
-        <!-- Label -->
-        <span 
-          class="text-[10px] font-medium {active ? 'text-[color:var(--brand-primary)]' : 'text-[color:var(--text-tertiary)]'}"
-        >
-          {item.label}
-        </span>
       </a>
     {/each}
   </div>

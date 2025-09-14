@@ -138,6 +138,7 @@ export { default as EnhancedSearchBar } from './EnhancedSearchBar.svelte';
 export { default as SearchInput } from './SearchInput.svelte';
 export { default as MainPageSearchBar } from './MainPageSearchBar.svelte';
 export { default as SearchPageSearchBar } from './SearchPageSearchBar.svelte';
+export { default as CategorySearchBar } from './CategorySearchBar.svelte';
 
 // Virtual scrolling and search components
 export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';

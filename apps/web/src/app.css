@@ -229,6 +229,10 @@
 
 /* Component layer - custom styles that work with Tailwind */
 @layer components {
+  /* Hide global bottom nav when mobile nav dialog is open */
+  .mobile-nav-open [data-bottom-nav] {
+    display: none !important;
+  }
   
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
      FORM CUSTOMIZATIONS — Mobile-First Input Styling

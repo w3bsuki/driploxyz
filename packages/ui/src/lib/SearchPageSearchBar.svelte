@@ -58,7 +58,9 @@ let {
 let showCategoryDropdown = $state(false);
 
 // Handle category dropdown
-function handleCategoryDropdownToggle() {
+function handleCategoryDropdownToggle(e: Event) {
+  e.preventDefault();
+  e.stopPropagation();
   showCategoryDropdown = !showCategoryDropdown;
 }
 
@@ -66,7 +68,7 @@ function handleCategoryDropdownClose() {
   showCategoryDropdown = false;
 }
 
-function handleMegaMenuCategorySelect(categorySlug: string) {
+function handleMegaMenuCategorySelect(categorySlug: string, level: number, path: string[]) {
   onCategorySelect(categorySlug);
   handleCategoryDropdownClose();
 }
@@ -77,7 +79,7 @@ function handleCategoryPillClick(categoryKey: string) {
 }
 
 function handleConditionPillClick(conditionKey: string) {
-  const currentCondition = appliedFilters.condition;
+  const currentCondition = appliedFilters?.condition;
   if (currentCondition === conditionKey) {
     onFilterRemove('condition');
   } else {
@@ -104,7 +106,7 @@ $effect(() => {
 
 // Determine current category for display
 const currentCategoryDisplay = $derived(() => {
-  const category = appliedFilters.category;
+  const category = appliedFilters?.category;
   if (category) {
     const mainCat = mainCategories.find(c => c.key === category);
     if (mainCat) {
@@ -112,7 +114,10 @@ const currentCategoryDisplay = $derived(() => {
     }
     return { label: category, icon: '📂' };
   }
-  return { label: i18n.filter_allCategories(), icon: '📂' };
+  return {
+    label: typeof i18n?.filter_allCategories === 'function' ? i18n.filter_allCategories() : 'All Categories',
+    icon: '📂'
+  };
 });
 </script>
 
@@ -123,7 +128,7 @@ const currentCategoryDisplay = $derived(() => {
     <div class="py-2 relative search-dropdown-container">
       <SearchInput
         bind:searchValue={searchValue}
-        placeholder={i18n.search_placeholder()}
+        placeholder={typeof i18n?.search_placeholder === 'function' ? i18n.search_placeholder() : 'Search...'}
         onSearch={onSearch}
         searchId="search-page-input"
         showDropdown={false}
@@ -131,6 +136,7 @@ const currentCategoryDisplay = $derived(() => {
         {#snippet leftSection()}
           <button
             onclick={handleCategoryDropdownToggle}
+            type="button"
             class="h-12 px-4 bg-transparent hover:bg-gray-50 transition-all duration-200 flex items-center gap-2 focus:outline-none focus:bg-gray-50 border-r border-gray-200 rounded-l-lg"
             aria-expanded={showCategoryDropdown}
             aria-haspopup="listbox"
@@ -155,8 +161,8 @@ const currentCategoryDisplay = $derived(() => {
             onClose={handleCategoryDropdownClose}
             categories={megaMenuData}
             translations={{
-              allCategories: i18n.filter_allCategories(),
-              browseAll: i18n.search_all()
+              allCategories: typeof i18n?.filter_allCategories === 'function' ? i18n.filter_allCategories() : 'All Categories',
+              browseAll: typeof i18n?.search_all === 'function' ? i18n.search_all() : 'Browse All'
             }}
           />
         </div>
@@ -168,7 +174,7 @@ const currentCategoryDisplay = $derived(() => {
       <!-- Category Pills -->
       {#each mainCategories as category}
         <CategoryPill
-          variant={appliedFilters.category === category.key ? 'primary' : 'outline'}
+          variant={appliedFilters?.category === category.key ? 'primary' : 'outline'}
           label={category.label}
           emoji={category.icon}
           onclick={() => handleCategoryPillClick(category.key)}
@@ -181,7 +187,7 @@ const currentCategoryDisplay = $derived(() => {
         <button
           onclick={() => handleConditionPillClick(condition.key)}
           class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-9
-            {appliedFilters.condition === condition.key
+            {appliedFilters?.condition === condition.key
               ? 'bg-[color:var(--brand-primary)] text-white shadow-sm'
               : 'bg-white text-gray-700 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:shadow-sm'}"
           aria-label={`Filter by ${condition.label}`}
@@ -192,19 +198,19 @@ const currentCategoryDisplay = $derived(() => {
     </nav>
 
     <!-- Applied Filters -->
-    {#if Object.keys(appliedFilters).length > 0}
+    {#if appliedFilters && Object.keys(appliedFilters).length > 0}
       <div class="pb-2">
         <AppliedFilterPills
           {appliedFilters}
           onRemoveFilter={onFilterRemove}
           onClearAll={onClearAllFilters}
           translations={{
-            clearAll: i18n.filter_clearAll(),
-            priceRange: i18n.filter_priceRange(),
-            size: i18n.product_size(),
-            condition: i18n.product_condition(),
-            brand: i18n.product_brand(),
-            category: i18n.product_category()
+            clearAll: typeof i18n?.filter_clearAll === 'function' ? i18n.filter_clearAll() : 'Clear All',
+            priceRange: typeof i18n?.filter_priceRange === 'function' ? i18n.filter_priceRange() : 'Price Range',
+            size: typeof i18n?.product_size === 'function' ? i18n.product_size() : 'Size',
+            condition: typeof i18n?.product_condition === 'function' ? i18n.product_condition() : 'Condition',
+            brand: typeof i18n?.product_brand === 'function' ? i18n.product_brand() : 'Brand',
+            category: typeof i18n?.product_category === 'function' ? i18n.product_category() : 'Category'
           }}
         />
       </div>

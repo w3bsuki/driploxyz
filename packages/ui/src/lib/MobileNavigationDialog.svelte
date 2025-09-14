@@ -115,13 +115,33 @@
   let categoryBreadcrumb = $state([]);
 
   // Enhanced menu state management with proper cleanup
+  let rootEl: HTMLDivElement | null = null;
+
   $effect(() => {
     if (!browser) return;
 
     if (isOpen) {
+      // Remove any stale instances with the same id before opening
+      try {
+        const wrapperId = id || 'mobile-navigation';
+        const selector = `#${wrapperId}`;
+        document.querySelectorAll(selector).forEach((el) => {
+          if (el !== rootEl) {
+            el.parentNode?.removeChild(el);
+          }
+        });
+      } catch {}
+
       // Add body scroll lock when menu opens
       document.body.classList.add('overflow-hidden');
       document.documentElement.classList.add('overflow-hidden');
+      // Also add a sentinel class to control global UI (e.g., hide bottom nav)
+      document.documentElement.classList.add('mobile-nav-open');
+
+      // Blur any active input (closes search dropdowns/quick pills overlays)
+      try {
+        (document.activeElement as HTMLElement | null)?.blur?.();
+      } catch {}
 
       // Add escape key handler
       function handleKeyDown(e: KeyboardEvent) {
@@ -144,12 +164,14 @@
         // Always cleanup scroll lock on cleanup
         document.body.classList.remove('overflow-hidden');
         document.documentElement.classList.remove('overflow-hidden');
+        document.documentElement.classList.remove('mobile-nav-open');
         previousActive?.focus?.();
       };
     } else {
       // Remove body scroll lock when menu closes
       document.body.classList.remove('overflow-hidden');
       document.documentElement.classList.remove('overflow-hidden');
+      document.documentElement.classList.remove('mobile-nav-open');
     }
   });
 
@@ -222,6 +244,19 @@
 
     // Call parent close handler
     onClose();
+
+    // Hard fail-safe: forcibly remove any lingering portal node by id
+    if (browser) {
+      queueMicrotask(() => {
+        try {
+          const wrapperId = id || 'mobile-navigation';
+          const el = document.getElementById(wrapperId);
+          if (el && el.parentNode) {
+            el.parentNode.removeChild(el);
+          }
+        } catch {}
+      });
+    }
   }
 
   // Handle search from mobile search component
@@ -276,21 +311,23 @@
   <!-- Mobile menu with backdrop -->
   <div
     use:portal
-    class="sm:hidden fixed inset-0 z-[100]"
+    class="sm:hidden fixed inset-0 z-[10001]"
+    style="z-index: 10001;"
     role="dialog"
     aria-modal="true"
     aria-label="Mobile navigation menu"
     {id}
+    bind:this={rootEl}
   >
     <!-- Backdrop overlay -->
     <div
-      class="fixed inset-0 bg-black/20 transition-opacity duration-300 {isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
+      class="fixed inset-0 z-[1] bg-black/30 transition-opacity duration-300 {isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
       onclick={handleBackdropClick}
     ></div>
 
     <!-- Slide-down mobile menu panel -->
     <div
-      class="fixed top-[56px] left-0 right-0 bg-white border-b border-gray-200 shadow-lg max-h-[calc(100vh-56px)] overflow-hidden transform transition-transform duration-300 ease-out {isOpen ? 'translate-y-0' : '-translate-y-full'}"
+      class="fixed z-[2] top-[56px] left-0 right-0 bg-white border-b border-gray-200 shadow-lg max-h-[calc(100vh-56px)] overflow-hidden transform transition-transform duration-300 ease-out {isOpen ? 'translate-y-0' : '-translate-y-full'}"
       onclick={(e) => e.stopPropagation()}
     >
       <!-- Main content container -->
