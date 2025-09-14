@@ -1546,5 +1546,17 @@
   "engagement_banner_description": "Запазвайте любими артикули, започнете да продавате и се свързвайте с любители на модата",
   "engagement_banner_signUp": "Регистрирай се",
   "engagement_banner_later": "По-късно",
-  "engagement_banner_dismiss": "Затвори"
+  "engagement_banner_dismiss": "Затвори",
+
+  "nav_topBrands": "Брандове",
+  "nav_topSellers": "Продавачи",
+  "nav_quickShop": "Бърз Shop",
+  "nav_languageTheme": "Език и тема",
+  "nav_supportCenter": "Център за поддръжка",
+
+  "orders_statusDelivered": "Доставено",
+  "orders_statusShipped": "Изпратено",
+  "orders_statusPaid": "Платено",
+  "orders_statusPending": "В очакване",
+  "orders_statusCancelled": "Отменено"
 }

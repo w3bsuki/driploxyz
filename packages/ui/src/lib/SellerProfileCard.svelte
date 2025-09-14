@@ -76,14 +76,14 @@
             </span>
           {:else if seller.account_type === 'brand'}
             <!-- Use new BrandBadge component -->
-            <BrandBadge size="sm" position="static" variant="black" />
+            <BrandBadge size="xs" position="static" variant="black" />
           {:else if seller.account_type === 'pro'}
             <!-- Use new ProBadge component -->
-            <ProBadge size="sm" position="static" />
+            <ProBadge size="xs" position="static" />
           {:else if seller.account_type === 'personal' || hasVerifiedBadge}
-            <!-- Clean verified badge -->
-            <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center border-2 border-white">
-              <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 20 20" fill="currentColor">
+            <!-- Clean verified badge - smaller size -->
+            <div class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center border-2 border-white">
+              <svg class="w-2.5 h-2.5 text-white" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
               </svg>
             </div>

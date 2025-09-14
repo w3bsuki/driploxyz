@@ -221,7 +221,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
               aria-haspopup="listbox"
               aria-label={i18n.search_categories()}
             >
-              <span class="text-sm font-medium text-gray-600">Browse</span>
+              <span class="text-sm font-medium text-gray-600">{i18n.menu_browse()}</span>
               <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
@@ -237,19 +237,19 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
                   onclick={() => activeDropdownTab = 'trending'}
                   class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'trending' ? 'bg-[color:var(--surface-base)] text-[color:var(--text-primary)] shadow-sm' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}"
                 >
-                  Top Brands
+                  {i18n.nav_topBrands()}
                 </button>
                 <button
                   onclick={() => activeDropdownTab = 'sellers'}
                   class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'sellers' ? 'bg-white text-[color:var(--text-primary)] shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
                 >
-                  Top Sellers
+                  {i18n.nav_topSellers()}
                 </button>
                 <button
                   onclick={() => activeDropdownTab = 'quickshop'}
                   class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'quickshop' ? 'bg-white text-[color:var(--text-primary)] shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
                 >
-                  Quick Shop
+                  {i18n.nav_quickShop()}
                 </button>
               </div>
 

@@ -1,6 +1,7 @@
 <script lang="ts">
   import SellerProfileCard from './SellerProfileCard.svelte';
   import SellerQuickView from './SellerQuickView.svelte';
+  import * as i18n from '@repo/i18n';
   import type { Seller, Product } from './types/index';
 
   interface Props {
@@ -128,7 +129,7 @@
 
         {#if onViewAll}
           <button class="px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 rounded hover:bg-blue-50" onclick={onViewAll}>
-            View All
+            {i18n.search_viewAll()}
           </button>
         {/if}
       </div>

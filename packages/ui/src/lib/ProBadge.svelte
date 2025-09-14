@@ -1,6 +1,6 @@
 <script lang="ts">
   interface Props {
-    size?: 'sm' | 'md' | 'lg';
+    size?: 'xs' | 'sm' | 'md' | 'lg';
     class?: string;
     tooltipText?: string;
     position?: 'static' | 'absolute';
@@ -14,14 +14,16 @@
   }: Props = $props();
 
   // Ultrathink: Perfect sizing system for mobile-first approach
-  // sm: 16px icon (product cards), md: 20px (profiles), lg: 24px (headers)
+  // xs: 12px icon (tiny badges), sm: 16px icon (product cards), md: 20px (profiles), lg: 24px (headers)
   const sizeClasses = {
+    xs: 'w-3 h-3', // 12px - tiny checkmarks for seller cards
     sm: 'w-4 h-4', // 16px - perfect for product card corners
     md: 'w-5 h-5', // 20px - profile cards and larger contexts
     lg: 'w-6 h-6'  // 24px - headers and prominent display
   };
 
   const containerClasses = {
+    xs: 'w-4 h-4', // 16px container for 12px icon (2px padding)
     sm: 'w-6 h-6', // 24px container for 16px icon (4px padding)
     md: 'w-7 h-7', // 28px container for 20px icon
     lg: 'w-8 h-8'  // 32px container for 24px icon
@@ -50,7 +52,7 @@
 >
   <!-- Perfect checkmark SVG optimized for each size -->
   <svg
-    class="{sizeClasses[size]} text-white"
+    class="{sizeClasses[size]} text-black"
     fill="currentColor"
     viewBox="0 0 20 20"
     aria-hidden="true"

@@ -28,11 +28,11 @@
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'delivered': return 'Delivered';
-      case 'shipped': return 'Shipped';
-      case 'paid': return 'Paid';
-      case 'pending': return 'Pending';
-      case 'cancelled': return 'Cancelled';
+      case 'delivered': return i18n.orders_statusDelivered();
+      case 'shipped': return i18n.orders_statusShipped();
+      case 'paid': return i18n.orders_statusPaid();
+      case 'pending': return i18n.orders_statusPending();
+      case 'cancelled': return i18n.orders_statusCancelled();
       default: return status;
     }
   };

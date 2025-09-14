@@ -6,6 +6,7 @@
   import ThemeToggle from './ThemeToggle.svelte';
   import { portal } from './actions/portal';
   import { browser } from '$app/environment';
+  import * as i18n from '@repo/i18n';
   import type { Database } from '@repo/database';
 
   type Category = Database['public']['Tables']['categories']['Row'];
@@ -307,11 +308,12 @@
 
   // Format item count for display
   function formatItemCount(count: number): string {
-    if (count === undefined || count === null || isNaN(count)) return '0 items';
-    if (count === 0) return '0 items';
-    if (count < 1000) return `${count} items`;
-    if (count < 1000000) return `${(count / 1000).toFixed(1)}k items`;
-    return `${(count / 1000000).toFixed(1)}m items`;
+    const itemsText = i18n.home_itemCount();
+    if (count === undefined || count === null || isNaN(count)) return `0 ${itemsText}`;
+    if (count === 0) return `0 ${itemsText}`;
+    if (count < 1000) return `${count} ${itemsText}`;
+    if (count < 1000000) return `${(count / 1000).toFixed(1)}k ${itemsText}`;
+    return `${(count / 1000000).toFixed(1)}m ${itemsText}`;
   }
 </script>
 
@@ -621,7 +623,7 @@
               <div class="bg-white rounded-xl border border-gray-200 p-4 space-y-4">
                 <!-- Language & Theme -->
                 <div class="flex items-center justify-between">
-                  <span class="text-sm font-medium text-gray-900">Language & Theme</span>
+                  <span class="text-sm font-medium text-gray-900">{i18n.nav_languageTheme()}</span>
                   <div class="flex items-center gap-2">
                     <LanguageSwitcher
                       currentLanguage={currentLanguage}
@@ -638,7 +640,7 @@
 
             <!-- Support Links -->
             <div>
-              <h2 class="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2 px-2">{translations.supportLabel}</h2>
+              <h2 class="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2 px-2">{i18n.nav_supportCenter()}</h2>
               <div class="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
                 <a
                   href="/help"
