@@ -61,6 +61,19 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
     console.error('Auth timeout in layout:', error);
   }
 
+  // Try to load top-level categories for sticky search/pills
+  let mainCategories: Array<{ id: string; name: string; slug: string; level?: number; parent_id?: string | null; sort_order?: number; product_count?: number | null }> = [];
+  try {
+    const { data: catData } = await supabase
+      .from('categories')
+      .select('id,name,slug,level,parent_id,sort_order,product_count')
+      .eq('level', 1)
+      .order('sort_order', { ascending: true });
+    if (catData) mainCategories = catData as any;
+  } catch (e) {
+    // Non-fatal: keep empty mainCategories
+  }
+
   return {
     session,
     supabase,
@@ -71,6 +84,7 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
     region: data?.region,
     detectedRegion: data?.detectedRegion,
     shouldPromptRegionSwitch: data?.shouldPromptRegionSwitch,
-    currency: data?.currency
+    currency: data?.currency,
+    mainCategories
   };
 };

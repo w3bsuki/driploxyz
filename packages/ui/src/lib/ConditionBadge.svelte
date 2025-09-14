@@ -37,6 +37,6 @@
   };
 </script>
 
-<span class="inline-flex items-center px-2 py-0.5 rounded-[var(--radius-md)] text-[10px] font-medium bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-700 uppercase">
+<span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-gray-100 text-gray-800 uppercase tracking-wide">
   {conditionLabels[condition]}
 </span>

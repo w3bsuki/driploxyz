@@ -93,28 +93,26 @@
 </script>
 
 {#snippet conditionBadgeWithTooltip(condition: any)}
-  <div class="absolute top-0 left-1 z-20">
-    <Tooltip 
-      content={getConditionTooltip(condition)}
-      positioning={{ side: 'bottom', align: 'start' }}
-      openDelay={600}
-      closeDelay={200}
-    >
-      {#snippet trigger()}
-        <ConditionBadge 
-          condition={condition as any}
-          translations={{
-            brandNewWithTags: translations.brandNewWithTags,
-            newWithoutTags: translations.newWithoutTags || translations.new,
-            likeNew: translations.likeNew,
-            good: translations.good,
-            worn: translations.worn,
-            fair: translations.fair
-          }}
-        />
-      {/snippet}
-    </Tooltip>
-  </div>
+  <Tooltip
+    content={getConditionTooltip(condition)}
+    positioning={{ side: 'bottom', align: 'start' }}
+    openDelay={600}
+    closeDelay={200}
+  >
+    {#snippet trigger()}
+      <ConditionBadge
+        condition={condition as any}
+        translations={{
+          brandNewWithTags: translations.brandNewWithTags,
+          newWithoutTags: translations.newWithoutTags || translations.new,
+          likeNew: translations.likeNew,
+          good: translations.good,
+          worn: translations.worn,
+          fair: translations.fair
+        }}
+      />
+    {/snippet}
+  </Tooltip>
 {/snippet}
 
 {#snippet titleWithTooltip(title: string, showTooltip: boolean)}
@@ -196,10 +194,6 @@
       {priority}
     />
     
-    <!-- Condition badge -->
-    {#if product.condition}
-      {@render conditionBadgeWithTooltip(product.condition)}
-    {/if}
     
     <!-- Ultrathink: Clean badge system - icons only, perfect positioning -->
 
@@ -231,36 +225,44 @@
         {/if}
       </div>
     {/if}
+
   </div>
   
   <!-- Content -->
   <div class="px-1 pt-1.5 pb-1.5 relative">
-    
-    <!-- Wishlist button positioned absolutely -->
-    <div class="absolute top-1.5 right-1 z-10">
-      <FavoriteButton 
-        {product}
-        {favorited}
-        {favoritesState}
-        onFavorite={() => onFavorite?.(product.id)}
-        addToFavoritesText={translations.addToFavorites}
-        removeFromFavoritesText={translations.removeFromFavorites}
-        absolute={false}
-        showCount={true}
-      />
+
+    <!-- Top row: Condition badge (left) and Wishlist button (right) -->
+    <div class="flex items-start justify-between mb-0.5">
+      <div>
+        {#if product.condition}
+          {@render conditionBadgeWithTooltip(product.condition)}
+        {/if}
+      </div>
+      <div>
+        <FavoriteButton
+          {product}
+          {favorited}
+          {favoritesState}
+          onFavorite={() => onFavorite?.(product.id)}
+          addToFavoritesText={translations.addToFavorites}
+          removeFromFavoritesText={translations.removeFromFavorites}
+          absolute={false}
+          showCount={false}
+        />
+      </div>
     </div>
-    
+
     <!-- Main Category (clean layout) -->
-    <div class="min-h-3.5 mb-0.5 pr-12">
+    <div class="min-h-3.5 mb-0.5 -mt-1 ml-1">
       {#if product.main_category_name || product.category_name}
         <p class="text-xs font-medium text-gray-600 uppercase tracking-wider leading-none truncate">
           {translations.categoryTranslation ? translations.categoryTranslation(product.main_category_name || product.category_name || '') : (product.main_category_name || product.category_name)}
         </p>
       {/if}
     </div>
-    
+
     <!-- Title with tooltip for truncated text -->
-    <div class="pr-12">
+    <div class="ml-1">
       {@render titleWithTooltip(product.title, shouldShowTitleTooltip)}
     </div>
     
@@ -271,13 +273,15 @@
         product.brand,
         product.size ? `${translations.size} ${product.size}` : null
       ].filter(Boolean).join(' • ')}
-      
-      {@render productDetailsText(fullDetailsText, shouldShowCategoryTooltip)}
+
+      <div class="ml-1">
+        {@render productDetailsText(fullDetailsText, shouldShowCategoryTooltip)}
+      </div>
     {/if}
-    
+
     <!-- Price -->
-    <div class="-mt-0.5">
-      <ProductPrice 
+    <div class="-mt-0.5 ml-1">
+      <ProductPrice
         price={product.price}
         currency={translations.currency}
         formatPrice={translations.formatPrice}

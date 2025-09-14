@@ -67,11 +67,21 @@
     </div>
   </section>
 
+  <!-- Logo Variants Section -->
+  <section class="variants-section">
+    <h2 class="section-title">🎨 Logo & Branding</h2>
+    <p class="section-desc">Explore different typography and branding approaches</p>
+
+    <div class="demo-links">
+      <a href="/demo/logos" class="demo-link classic featured">Logo Variants & Typography</a>
+    </div>
+  </section>
+
   <!-- Original Variants Section -->
   <section class="variants-section">
     <h2 class="section-title">Component Library Variants</h2>
     <p class="section-desc">Using existing @repo/ui components</p>
-    
+
     <div class="demo-links">
       <a href="/demo/variant1" class="demo-link classic">Variant 1 - Clean</a>
       <a href="/demo/variant2" class="demo-link classic">Variant 2 - Detailed</a>
@@ -252,6 +262,18 @@
     background: rgba(255, 255, 255, 1);
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .demo-link.classic.featured {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: 1px solid transparent;
+  }
+
+  .demo-link.classic.featured:hover {
+    background: linear-gradient(90deg, #5a6fd8 0%, #6a4190 100%);
+    color: white;
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
   }
   
   .preview {

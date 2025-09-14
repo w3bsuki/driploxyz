@@ -105,7 +105,10 @@
       terms: 'Terms',
       returns: 'Returns',
       trustSafety: 'Trust & Safety',
-      searchPlaceholder: 'Search for items...'
+      searchPlaceholder: 'Search for items...',
+      quickActionsLabel: 'Quick Actions',
+      settingsLabel: 'Settings',
+      supportLabel: 'Support'
     }
   }: Props = $props();
 
@@ -316,7 +319,7 @@
   <!-- Mobile menu with backdrop -->
   <div
     use:portal={'#overlay-root'}
-    class="sm:hidden fixed inset-0 z-40 pointer-events-none mobile-nav-dialog"
+    class="sm:hidden fixed inset-0 z-[10001] pointer-events-none mobile-nav-dialog"
     role="dialog"
     aria-modal="true"
     aria-label="Mobile navigation menu"
@@ -357,9 +360,12 @@
 
                 <!-- User Info -->
                 <div class="flex-1 min-w-0">
-                  <div class="font-semibold text-gray-900 text-lg truncate">{userDisplayName}</div>
+                  <div class="font-semibold text-gray-900 text-base truncate">{userDisplayName}</div>
+                  {#if profile?.username}
+                    <div class="text-xs text-gray-600 truncate">@{profile.username}</div>
+                  {/if}
                   {#if userStats}
-                    <div class="flex items-center gap-3 mt-1 text-sm text-gray-600">
+                    <div class="flex items-center gap-3 mt-1 text-xs text-gray-600">
                       {#if userStats.rating}
                         <div class="flex items-center gap-1">
                           <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -368,6 +374,12 @@
                           <span>{userStats.rating.toFixed(1)}</span>
                         </div>
                       {/if}
+                      <div class="flex items-center gap-1">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z" />
+                        </svg>
+                        <span>{userStats.itemsSold} sold</span>
+                      </div>
                       {#if userStats.memberSince}
                         <span>Member since {userStats.memberSince}</span>
                       {/if}
@@ -416,7 +428,7 @@
           {#if currentView === 'main'}
             <!-- Main Categories -->
             <div>
-              <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 px-2">
+              <h2 class="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2 px-2">
                 {translations.browseCategories}
               </h2>
               <div class="space-y-2.5">
@@ -540,7 +552,7 @@
 
             <!-- Quick Actions Section -->
             <div>
-              <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 px-2">Quick Actions</h2>
+              <h2 class="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2 px-2">{translations.quickActionsLabel}</h2>
               <div class="grid grid-cols-3 gap-2.5">
                 <a
                   href="/search"
@@ -561,7 +573,7 @@
                   <svg class="w-5 h-5 mb-1 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                   </svg>
-                  <span class="text-xs font-medium text-gray-900 text-center">Популярни</span>
+                  <span class="text-xs font-medium text-gray-900 text-center">{translations.popularBrands}</span>
                 </a>
 
                 <a
@@ -605,7 +617,7 @@
 
             <!-- Settings Section -->
             <div>
-              <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 px-2">Settings</h2>
+              <h2 class="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2 px-2">{translations.settingsLabel}</h2>
               <div class="bg-white rounded-xl border border-gray-200 p-4 space-y-4">
                 <!-- Language & Theme -->
                 <div class="flex items-center justify-between">
@@ -626,7 +638,7 @@
 
             <!-- Support Links -->
             <div>
-              <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 px-2">Support</h2>
+              <h2 class="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2 px-2">{translations.supportLabel}</h2>
               <div class="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
                 <a
                   href="/help"

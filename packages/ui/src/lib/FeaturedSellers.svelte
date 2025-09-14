@@ -94,30 +94,9 @@
 <section class="w-full py-3 mt-2 sm:mt-3 {className}">
   <!-- Header with inline left-aligned tabs for pixel-perfect mobile layout -->
   <div class="px-2 sm:px-4 lg:px-6 mb-3">
-    <div class="flex items-start justify-between gap-3">
+    <div class="flex items-center justify-between gap-3">
       <div class="flex-1 min-w-0">
-        <!-- Title with inline tabs -->
-        <div class="flex items-center gap-3 mb-1">
-          <h2 class="text-base font-normal text-gray-900 leading-tight">{title}</h2>
-
-          <!-- Inline tab toggle - moved to left side, integrated with title -->
-          {#if showToggle}
-            <div class="flex items-center">
-              <div class="inline-flex bg-gray-100 rounded-lg p-0.5 border border-gray-200">
-                <button
-                  class="min-h-[36px] px-2.5 py-1 text-xs font-medium rounded-md transition-all duration-200 {activeTab === 'brands' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-800'}"
-                  aria-pressed={activeTab === 'brands'}
-                  onclick={() => onToggle?.('brands')}
-                >Brands</button>
-                <button
-                  class="min-h-[36px] px-2.5 py-1 text-xs font-medium rounded-md transition-all duration-200 {activeTab === 'sellers' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-800'}"
-                  aria-pressed={activeTab === 'sellers'}
-                  onclick={() => onToggle?.('sellers')}
-                >Sellers</button>
-              </div>
-            </div>
-          {/if}
-        </div>
+        <h2 class="text-base font-normal text-gray-900 leading-tight">{title}</h2>
 
         <!-- Description line -->
         {#if description}
@@ -129,12 +108,30 @@
         {/if}
       </div>
 
-      <!-- Right side actions (minimal) -->
-      {#if onViewAll}
-        <button class="min-h-[36px] px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 rounded-lg hover:bg-blue-50" onclick={onViewAll}>
-          View All
-        </button>
-      {/if}
+      <!-- Right side actions - properly centered with left content -->
+      <div class="flex items-center gap-2">
+        <!-- Tab toggle - back on right side, smaller and properly aligned -->
+        {#if showToggle}
+          <div class="inline-flex bg-gray-100 rounded-md p-0.5 border border-gray-200">
+            <button
+              class="px-2 py-1 text-xs font-medium rounded transition-all duration-200 {activeTab === 'brands' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-800'}"
+              aria-pressed={activeTab === 'brands'}
+              onclick={() => onToggle?.('brands')}
+            >Brands</button>
+            <button
+              class="px-2 py-1 text-xs font-medium rounded transition-all duration-200 {activeTab === 'sellers' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-800'}"
+              aria-pressed={activeTab === 'sellers'}
+              onclick={() => onToggle?.('sellers')}
+            >Sellers</button>
+          </div>
+        {/if}
+
+        {#if onViewAll}
+          <button class="px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 rounded hover:bg-blue-50" onclick={onViewAll}>
+            View All
+          </button>
+        {/if}
+      </div>
     </div>
   </div>
 

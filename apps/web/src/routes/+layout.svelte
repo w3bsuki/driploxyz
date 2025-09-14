@@ -17,7 +17,7 @@
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications';
-  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer, ToastProvider, Footer, ErrorBoundary, OrderNotificationToast, TopProgress } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer, ToastProvider, Footer, ErrorBoundary, OrderNotificationToast, TopProgress, CategorySearchBar } from '@repo/ui';
   import RegionSwitchModal from '$lib/components/RegionSwitchModal.svelte';
   import { page } from '$app/stores';
   import { initializeLanguage, switchLanguage } from '$lib/utils/language-switcher';
@@ -68,11 +68,43 @@
   const isSearchPage = $derived($page.route.id?.includes('/search'));
   const isCategoryPage = $derived($page.route.id?.includes('/category'));
   const isProductPage = $derived($page.route.id?.includes('/product'));
+  const isHomePage = $derived($page.url.pathname === '/');
   
   // Show search in header on pages where users expect to search
   const shouldShowHeaderSearch = $derived(
     isSearchPage || isCategoryPage || isProductPage
   );
+
+  // Sticky search visibility: show on home, category, search
+  const shouldShowStickySearch = $derived(
+    !isAuthPage && !isOnboardingPage && !isSellPage && (isHomePage || isCategoryPage || isSearchPage)
+  );
+
+  // Handlers for sticky search bar
+  function handleStickySearch(query: string) {
+    if (!query?.trim()) return;
+    if (typeof window !== 'undefined') {
+      window.location.href = `/search?q=${encodeURIComponent(query.trim())}`;
+    }
+  }
+  function handleStickyCategorySelect(slug: string, _level: number = 1, _path: string[] = []) {
+    if (typeof window !== 'undefined') {
+      window.location.href = `/category/${slug}`;
+    }
+  }
+  function handleStickyConditionFilter(condition: string) {
+    if (!condition) return;
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.origin + '/search');
+      url.searchParams.set('condition', condition);
+      window.location.href = url.toString();
+    }
+  }
+  function handleStickyNavigateAll() {
+    if (typeof window !== 'undefined') {
+      window.location.href = '/search';
+    }
+  }
   
   // Check if we should show region prompt
   $effect(() => {
@@ -233,6 +265,8 @@
       <Header user={data?.user} profile={data?.profile} showSearch={shouldShowHeaderSearch} />
     </div>
   {/if}
+
+  <!-- Sticky search removed - individual pages handle their own search bars -->
   <!-- Route progress just below header -->
   <TopProgress />
   <ErrorBoundary>

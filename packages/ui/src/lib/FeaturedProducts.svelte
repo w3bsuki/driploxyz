@@ -75,7 +75,7 @@
 >
   <!-- Enhanced Section Header - Mobile-First -->
   <div class="mb-4 sm:mb-6">
-    <div class="flex items-start justify-between">
+    <div class="flex items-center justify-between">
       <div class="flex-1">
         <h2 class="text-base font-normal text-gray-900 tracking-tight leading-tight">
           {sectionTitle}
@@ -86,19 +86,17 @@
           </p>
         {/if}
       </div>
-      
-      <!-- Ultrathink: Clean ViewAll button - 44px touch target, pixel-perfect -->
+
       {#if showViewAllButton && hasProducts}
         <button
           onclick={onViewAll}
-          class="min-h-[44px] px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900
+          class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900
                  rounded-lg border border-gray-200 hover:border-gray-300
-                 font-medium text-sm transition-all duration-200
-                 flex items-center gap-2 touch-manipulation
-                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                 font-medium text-xs transition-all duration-200
+                 flex items-center gap-1.5"
         >
           <span>View All</span>
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
         </button>

@@ -187,7 +187,10 @@
     privacy: 'Privacy',
     terms: 'Terms',
     returns: 'Returns',
-    trustSafety: 'Trust & Safety'
+    trustSafety: 'Trust & Safety',
+    quickActionsLabel: i18n.common_quickActions ? i18n.common_quickActions() : 'Quick Actions',
+    settingsLabel: i18n.nav_settings(),
+    supportLabel: i18n.common_support ? i18n.common_support() : 'Support'
   });
 
   // Search function for quick results dropdown

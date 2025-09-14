@@ -1537,5 +1537,16 @@
   "badge_new": "NEW",
   "badge_brand": "BRAND",
   "badge_admin": "ADMIN",
-  "badge_pro": "PRO"
+  "badge_pro": "PRO",
+
+  "nav_topBrands": "Top Brands",
+  "nav_topSellers": "Top Sellers",
+  "nav_languageTheme": "Language & Theme",
+  "nav_supportCenter": "Support Centre",
+
+  "orders_statusDelivered": "Delivered",
+  "orders_statusShipped": "Shipped",
+  "orders_statusPaid": "Paid",
+  "orders_statusPending": "Pending",
+  "orders_statusCancelled": "Cancelled"
 }

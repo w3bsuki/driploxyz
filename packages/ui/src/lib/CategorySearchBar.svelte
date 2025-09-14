@@ -245,7 +245,7 @@ const activeFilterCount = $derived(() => {
           >
             <span class="text-lg flex-shrink-0" role="img" aria-hidden="true">{currentCategoryDisplay.icon}</span>
             <div class="flex flex-col items-start min-w-0 hidden sm:flex">
-              {#if currentCategoryDisplay.breadcrumb.length > 1}
+              {#if currentCategoryDisplay.breadcrumb && currentCategoryDisplay.breadcrumb.length > 1}
                 <span class="text-xs text-gray-500 truncate max-w-32">
                   {currentCategoryDisplay.breadcrumb.slice(0, -1).join(' → ')}
                 </span>

@@ -50,9 +50,12 @@
   let filters = $derived(filterStore.filters);
   let pendingFilters = $derived(filterStore.pendingFilters);
   let previewFilteredProducts = $derived(filterStore.previewFilteredProducts);
-  
+
+  // Debug: Check if client-side code is running
+  console.log('🔍 Client - Script running, data.categoryHierarchy:', data.categoryHierarchy);
+
   // Category hierarchy from server data
-  let categoryHierarchy = $derived((() => {
+  let categoryHierarchy = $derived(() => {
     if (!data.categoryHierarchy || Object.keys(data.categoryHierarchy).length === 0) {
       return {
         categories: [],
@@ -108,12 +111,20 @@
       if (bIndex === -1) return -1;
       return aIndex - bIndex;
     });
-    
+
     return hierarchy;
-  })());
+  });
 
   // Transform categoryHierarchy to MegaMenuCategories format
   let megaMenuData = $derived(() => {
+    console.log('🔍 Client - categoryHierarchy structure:', categoryHierarchy);
+    console.log('🔍 Client - categoryHierarchy.categories length:', categoryHierarchy.categories?.length || 0);
+
+    if (!categoryHierarchy.categories || categoryHierarchy.categories.length === 0) {
+      console.log('🔍 Client - No categories found, returning empty array');
+      return [];
+    }
+
     const categories = categoryHierarchy.categories.map(cat => {
       const l1Category = {
         id: cat.id,
@@ -175,6 +186,13 @@
 
       return l1Category;
     });
+
+    console.log('🔍 Client - Transformed megaMenuData length:', categories.length);
+    if (categories.length > 0) {
+      console.log('🔍 Client - First transformed category:', categories[0]);
+    } else {
+      console.log('🔍 Client - No categories transformed, original categoryHierarchy was:', categoryHierarchy);
+    }
 
     return categories;
   });

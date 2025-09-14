@@ -201,6 +201,29 @@ const currentCategoryDisplay = $derived(() => {
     icon: '📂'
   };
 });
+
+// Flatten categories (level 1/2/3) for typeahead matching in the search input
+const flatCategories = $derived(() => {
+  const result: Array<{ level: number; name: string; slug: string; path: string[] }> = [];
+  for (const l1 of megaMenuData || []) {
+    result.push({ level: 1, name: l1.name, slug: l1.slug, path: [l1.slug] });
+    for (const l2 of l1.children || []) {
+      result.push({ level: 2, name: l2.name, slug: l2.slug, path: [l1.slug, l2.slug] });
+      for (const l3 of l2.children || []) {
+        result.push({ level: 3, name: l3.name, slug: l3.slug, path: [l1.slug, l2.slug, l3.slug] });
+      }
+    }
+  }
+  return result;
+});
+
+const categoryMatches = $derived(() => {
+  const q = (searchValue || '').trim().toLowerCase();
+  if (!q) return [] as Array<{ level: number; name: string; slug: string; path: string[] }>;
+  return flatCategories
+    .filter(c => c.name.toLowerCase().includes(q))
+    .slice(0, 10);
+});
 </script>
 
 <!-- Sticky Search Bar -->
@@ -224,16 +247,36 @@ const currentCategoryDisplay = $derived(() => {
             aria-haspopup="listbox"
             aria-label="Select category"
           >
-            <span class="text-lg" role="img" aria-hidden="true">{currentCategoryDisplay.icon}</span>
-            <span class="text-sm font-medium text-gray-600 hidden sm:inline max-w-20 truncate">
-              {currentCategoryDisplay.label}
-            </span>
+            <span class="text-sm font-medium text-gray-600">Browse</span>
             <svg class="w-4 h-4 text-gray-600 transition-transform duration-200 {showCategoryDropdown ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
         {/snippet}
       </SearchInput>
+
+      <!-- Typeahead: Category matches as user types -->
+      {#if (searchValue || '').trim().length > 0 && categoryMatches.length > 0}
+        <div class="absolute top-full left-0 right-0 mt-1 z-50">
+          <div class="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+            <div class="max-h-[50vh] overflow-y-auto">
+              <div class="p-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Categories</div>
+              {#each categoryMatches as c}
+                <button
+                  onclick={() => handleMegaMenuCategorySelect(c.slug, c.level, c.path)}
+                  class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-left transition-colors"
+                >
+                  <span class="text-gray-400 text-xs w-8">{c.level === 1 ? 'L1' : c.level === 2 ? 'L2' : 'L3'}</span>
+                  <span class="flex-1 text-sm text-gray-900">{c.name}</span>
+                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              {/each}
+            </div>
+          </div>
+        </div>
+      {/if}
 
       <!-- Tabbed Dropdown -->
       {#if showCategoryDropdown}

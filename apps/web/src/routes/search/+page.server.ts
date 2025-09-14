@@ -442,6 +442,10 @@ export const load = (async ({ url, locals, setHeaders }) => {
     // Build proper 3-level hierarchy for UI
     const categoryHierarchy = allCategories ? buildCategoryHierarchy(allCategories as Category[]) : {};
 
+    console.log('🔍 Search Server - allCategories length:', allCategories?.length || 0);
+    console.log('🔍 Search Server - categoryHierarchy keys:', Object.keys(categoryHierarchy));
+    console.log('🔍 Search Server - categoryHierarchy:', JSON.stringify(categoryHierarchy, null, 2));
+
     // Get Level 1 categories for pills
     const level1Categories = allCategories?.filter(c => c.level === 1) || [];
     

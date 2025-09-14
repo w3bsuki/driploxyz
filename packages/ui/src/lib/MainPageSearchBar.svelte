@@ -221,10 +221,10 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
               aria-haspopup="listbox"
               aria-label={i18n.search_categories()}
             >
-              <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+              <span class="text-sm font-medium text-gray-600">Browse</span>
+              <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
-              <span class="text-sm font-medium text-gray-600 hidden sm:inline">{i18n.search_categories()}</span>
             </button>
           {/snippet}
         </SearchInput>

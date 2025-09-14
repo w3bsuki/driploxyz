@@ -1,35 +1,58 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  
+
+  interface Props {
+    subtitle?: string;
+    size?: 'sm' | 'md' | 'lg';
+  }
+
+  let { subtitle, size = 'md' }: Props = $props();
+
   let isVisible = $state(true);
   let logoRef = $state<HTMLElement>();
-  
+
   onMount(() => {
     if (!logoRef) return;
-    
+
     // Simple visibility optimization - pause when page hidden
     const handleVisibilityChange = () => {
       isVisible = !document.hidden;
     };
-    
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   });
+
+  // Tech startup typography using design system tokens - balanced with header elements
+  const logoClasses = {
+    sm: 'text-xl sm:text-2xl font-semibold leading-tight tracking-tight',
+    md: 'text-xl sm:text-2xl md:text-3xl font-semibold leading-tight tracking-tight',
+    lg: 'text-2xl sm:text-3xl md:text-4xl font-semibold leading-tight tracking-tight'
+  };
+
+  const subtitleClasses = {
+    sm: 'text-xs font-medium tracking-wide',
+    md: 'text-sm font-medium tracking-wide',
+    lg: 'text-base font-medium tracking-wide'
+  };
 </script>
 
-<a href="/" class="flex items-center no-underline hover:no-underline" bind:this={logoRef}>
-  <span class="text-xl sm:text-2xl font-extrabold leading-none tracking-tight text-[color:var(--text-primary)]">Driplo</span>
-  <span class="emoji-carousel text-xl sm:text-2xl ml-0.5">
-    <span class="emoji-track {isVisible ? 'animate' : 'paused'}">
-      <span>👗</span>
-      <span>👔</span>
-      <span>👶</span>
-      <span>🐕</span>
-    </span>
+<a
+  href="/"
+  class="flex {subtitle ? 'flex-col items-start' : 'items-center'} no-underline hover:no-underline group transition-opacity duration-200"
+  bind:this={logoRef}
+>
+  <span class="{logoClasses[size]} text-[color:var(--text-primary)] group-hover:text-[color:var(--text-secondary)] transition-colors duration-200">
+    driplo.
   </span>
+  {#if subtitle}
+    <span class="{subtitleClasses[size]} text-[color:var(--text-tertiary)] mt-0.5 uppercase">
+      {subtitle}
+    </span>
+  {/if}
 </a>
 
 <style>
