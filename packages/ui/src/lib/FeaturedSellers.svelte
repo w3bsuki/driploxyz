@@ -90,12 +90,36 @@
   );
 </script>
 
-<section class="w-full {className}">
-  <!-- Header -->
+<!-- Ultrathink: Standardized section with consistent spacing pattern -->
+<section class="w-full py-3 mt-2 sm:mt-3 {className}">
+  <!-- Header with inline left-aligned tabs for pixel-perfect mobile layout -->
   <div class="px-2 sm:px-4 lg:px-6 mb-3">
-    <div class="flex items-center justify-between">
+    <div class="flex items-start justify-between gap-3">
       <div class="flex-1 min-w-0">
-        <h2 class="text-base font-normal text-gray-900 leading-tight">{title}</h2>
+        <!-- Title with inline tabs -->
+        <div class="flex items-center gap-3 mb-1">
+          <h2 class="text-base font-normal text-gray-900 leading-tight">{title}</h2>
+
+          <!-- Inline tab toggle - moved to left side, integrated with title -->
+          {#if showToggle}
+            <div class="flex items-center">
+              <div class="inline-flex bg-gray-100 rounded-lg p-0.5 border border-gray-200">
+                <button
+                  class="min-h-[36px] px-2.5 py-1 text-xs font-medium rounded-md transition-all duration-200 {activeTab === 'brands' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-800'}"
+                  aria-pressed={activeTab === 'brands'}
+                  onclick={() => onToggle?.('brands')}
+                >Brands</button>
+                <button
+                  class="min-h-[36px] px-2.5 py-1 text-xs font-medium rounded-md transition-all duration-200 {activeTab === 'sellers' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-800'}"
+                  aria-pressed={activeTab === 'sellers'}
+                  onclick={() => onToggle?.('sellers')}
+                >Sellers</button>
+              </div>
+            </div>
+          {/if}
+        </div>
+
+        <!-- Description line -->
         {#if description}
           <p class="text-xs text-gray-500">{description}</p>
         {:else if displaySellers.length > 0}
@@ -104,36 +128,19 @@
           </p>
         {/if}
       </div>
-      
-      <div class="flex items-center gap-2 ml-3">
-        <!-- Custom header actions / optional toggle -->
-        {#if showToggle}
-          <div class="flex items-center">
-            <div class="inline-flex p-0.5 rounded-full bg-gray-100 border border-gray-200">
-              <button
-                class="px-3 py-1.5 text-xs font-medium rounded-full {activeTab === 'brands' ? 'bg-white text-gray-900 shadow-sm border border-gray-200' : 'text-gray-700'}"
-                aria-pressed={activeTab === 'brands'}
-                onclick={() => onToggle?.('brands')}
-              >Brands</button>
-              <button
-                class="px-3 py-1.5 text-xs font-medium rounded-full {activeTab === 'sellers' ? 'bg-white text-gray-900 shadow-sm border border-gray-200' : 'text-gray-700'}"
-                aria-pressed={activeTab === 'sellers'}
-                onclick={() => onToggle?.('sellers')}
-              >Sellers</button>
-            </div>
-          </div>
-        {/if}
-        {#if onViewAll}
-          <button class="text-sm font-medium text-blue-600 hover:text-blue-700 focus:outline-none focus:text-blue-700" onclick={onViewAll}>
-            View All
-          </button>
-        {/if}
-      </div>
+
+      <!-- Right side actions (minimal) -->
+      {#if onViewAll}
+        <button class="min-h-[36px] px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 rounded-lg hover:bg-blue-50" onclick={onViewAll}>
+          View All
+        </button>
+      {/if}
     </div>
   </div>
 
   <!-- Sellers -->
   {#if loading}
+    <!-- Ultrathink: Standardized spacing in loading state -->
     <div class="flex gap-2 sm:gap-3 px-2 sm:px-4 lg:px-6 overflow-x-hidden">
       {#each Array(3) as _}
         <div class="bg-white border border-gray-200 rounded-xl p-4 animate-pulse flex-shrink-0" style="width: calc(50vw - 8px);">
@@ -153,10 +160,12 @@
       {/each}
     </div>
   {:else if displaySellers.length === 0}
+    <!-- Ultrathink: Standardized spacing in empty state -->
     <div class="text-center py-8 px-2 sm:px-4 lg:px-6">
       <p class="text-gray-500">No sellers available</p>
     </div>
   {:else}
+    <!-- Ultrathink: Standardized spacing in sellers container -->
     <div bind:this={scrollContainer} class="flex gap-2 sm:gap-3 px-2 sm:px-4 lg:px-6 overflow-x-auto scrollbar-hide" onscroll={updateScrollButtons}>
       {#each displaySellers as seller}
         <div class="flex-shrink-0 snap-start w-1/2 sm:w-1/3 lg:w-1/4 xl:w-1/5" data-seller-card>

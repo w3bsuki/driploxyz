@@ -4,18 +4,17 @@
     class?: string;
     tooltipText?: string;
     position?: 'static' | 'absolute';
-    variant?: 'black' | 'gold';
   }
 
   let {
     size = 'sm',
     class: className = '',
-    tooltipText = 'Brand Account - Verified business or designer brand',
-    position = 'static',
-    variant = 'black'
+    tooltipText = 'Pro Account - Verified seller with premium features',
+    position = 'static'
   }: Props = $props();
 
-  // Ultrathink: Consistent sizing with ProBadge for perfect alignment
+  // Ultrathink: Perfect sizing system for mobile-first approach
+  // sm: 16px icon (product cards), md: 20px (profiles), lg: 24px (headers)
   const sizeClasses = {
     sm: 'w-4 h-4', // 16px - perfect for product card corners
     md: 'w-5 h-5', // 20px - profile cards and larger contexts
@@ -28,17 +27,12 @@
     lg: 'w-8 h-8'  // 32px container for 24px icon
   };
 
-  // Brand badge variants for different contexts
-  const variantClasses = {
-    black: 'bg-gray-900 text-white',
-    gold: 'bg-yellow-500 text-gray-900'
-  };
-
-  // Clean brand badge styling with variant support
+  // Clean, professional pro badge styling
+  // Using design system tokens for consistency
   const badgeClass = $derived(`
     ${position === 'absolute' ? 'absolute' : 'relative'}
     ${containerClasses[size]}
-    ${variantClasses[variant]}
+    bg-[color:var(--success-solid)]
     rounded-full
     flex items-center justify-center
     border-2 border-white
@@ -47,23 +41,25 @@
   `.trim().replace(/\s+/g, ' '));
 </script>
 
-<!-- Brand Badge with perfect star icon -->
+<!-- Pro Badge with perfect checkmark icon -->
 <div
   class={badgeClass}
   role="img"
   aria-label={tooltipText}
   title={tooltipText}
 >
-  <!-- Perfect star SVG optimized for each size -->
+  <!-- Perfect checkmark SVG optimized for each size -->
   <svg
-    class="{sizeClasses[size]}"
+    class="{sizeClasses[size]} text-white"
     fill="currentColor"
     viewBox="0 0 20 20"
     aria-hidden="true"
   >
-    <!-- Ultrathink: Optimized 5-point star path for perfect pixel alignment -->
+    <!-- Ultrathink: Optimized checkmark path for perfect pixel alignment -->
     <path
-      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+      fill-rule="evenodd"
+      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+      clip-rule="evenodd"
     />
   </svg>
 </div>

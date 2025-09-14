@@ -68,9 +68,9 @@
   const gridId = $derived(`product-grid-${Math.random().toString(36).substr(2, 9)}`);
 </script>
 
-<!-- Product Grid Section -->
-<section 
-  class="px-2 sm:px-4 lg:px-6 py-3"
+<!-- Ultrathink: Product Grid Section with standardized spacing -->
+<section
+  class="px-2 sm:px-4 lg:px-6 py-3 mt-2 sm:mt-3"
   aria-label={sectionTitle}
 >
   <!-- Enhanced Section Header - Mobile-First -->
@@ -87,13 +87,21 @@
         {/if}
       </div>
       
+      <!-- Ultrathink: Clean ViewAll button - 44px touch target, pixel-perfect -->
       {#if showViewAllButton && hasProducts}
-        <Button variant="outline" size="sm" onclick={onViewAll} class="gap-1">
-          View All
+        <button
+          onclick={onViewAll}
+          class="min-h-[44px] px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900
+                 rounded-lg border border-gray-200 hover:border-gray-300
+                 font-medium text-sm transition-all duration-200
+                 flex items-center gap-2 touch-manipulation
+                 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        >
+          <span>View All</span>
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
           </svg>
-        </Button>
+        </button>
       {/if}
     </div>
   </div>

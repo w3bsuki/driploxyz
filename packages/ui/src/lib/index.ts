@@ -100,6 +100,7 @@ export { default as PayoutMethodSelector } from './PayoutMethodSelector.svelte';
 export { default as OnboardingSuccessModal } from './OnboardingSuccessModal.svelte';
 
 // Specialized badges (domain-specific)
+export { default as ProBadge } from './ProBadge.svelte';
 export { default as BrandBadge } from './BrandBadge.svelte';
 export { default as UserBadge } from './UserBadge.svelte';
 export { default as ConditionBadge } from './ConditionBadge.svelte';

@@ -316,8 +316,7 @@
   <!-- Mobile menu with backdrop -->
   <div
     use:portal={'#overlay-root'}
-    class="sm:hidden fixed inset-0 z-[10001] pointer-events-none mobile-nav-dialog"
-    style="z-index: 10001;"
+    class="sm:hidden fixed inset-0 z-40 pointer-events-none mobile-nav-dialog"
     role="dialog"
     aria-modal="true"
     aria-label="Mobile navigation menu"

@@ -5,6 +5,8 @@
   import ProductPrice from './ProductPrice.svelte';
   import FavoriteButton from './FavoriteButton.svelte';
   import UserBadge from './UserBadge.svelte';
+  import ProBadge from './ProBadge.svelte';
+  import BrandBadge from './BrandBadge.svelte';
   import { Tooltip } from './primitives/tooltip';
   
   interface Props {
@@ -199,26 +201,33 @@
       {@render conditionBadgeWithTooltip(product.condition)}
     {/if}
     
-    <!-- Boost badge (top right) -->
+    <!-- Ultrathink: Clean badge system - icons only, perfect positioning -->
+
+    <!-- Boost badge (top right) - clean design, no gradients -->
     {#if product.is_boosted && showBoostBadge}
       <div class="absolute top-1 right-1 z-20">
-        <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm">
-          BOOSTED
+        <div class="bg-purple-600 text-white px-2 py-0.5 rounded text-xs font-semibold">
+          BOOST
         </div>
       </div>
     {/if}
-    
-    <!-- Pro/Brand badges (top right, below boost if present) -->
+
+    <!-- Pro/Brand icon badges (top right, positioned precisely) -->
     {#if showSellerBadges && (product.seller_badges?.is_pro || product.seller_badges?.is_brand)}
-      <div class="absolute {product.is_boosted && showBoostBadge ? 'top-9' : 'top-1'} right-1 z-20">
+      <div class="absolute top-1 {product.is_boosted && showBoostBadge ? 'right-16' : 'right-1'} z-20">
         {#if product.seller_badges.is_brand}
-          <div class="bg-black text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm">
-            BRAND
-          </div>
+          <BrandBadge
+            size="sm"
+            position="static"
+            variant="black"
+            tooltipText="Brand Account"
+          />
         {:else if product.seller_badges.is_pro}
-          <div class="bg-blue-600 text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm">
-            PRO
-          </div>
+          <ProBadge
+            size="sm"
+            position="static"
+            tooltipText="Pro Account"
+          />
         {/if}
       </div>
     {/if}

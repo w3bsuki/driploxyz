@@ -45,7 +45,8 @@
 </script>
 
 {#if activePromotedProducts.length > 0}
-	<section class="py-3">
+	<!-- Ultrathink: Standardized spacing pattern -->
+	<section class="py-3 mt-2 sm:mt-3">
 		<div class="px-2 sm:px-4 lg:px-6">
 			<!-- Section Header aligned with FeaturedSellers, with chevrons in title row -->
 			<div class="mb-3">
@@ -58,20 +59,21 @@
 							{translations.promoted_description}
 						</p>
 					</div>
-					<div class="flex items-center gap-2 ml-3">
+					<!-- Ultrathink: Perfect chevron alignment and sizing -->
+					<div class="flex items-center gap-1.5 ml-3">
 						<button
 							onclick={() => promotedScrollContainer?.scrollBy({ left: -280, behavior: 'smooth' })}
-							class="w-8 h-8 rounded-full bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-sm flex items-center justify-center"
+							class="w-7 h-7 rounded-full bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center"
 							aria-label="Scroll left"
 						>
-							<svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" /></svg>
+							<svg class="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
 						</button>
 						<button
 							onclick={() => promotedScrollContainer?.scrollBy({ left: 280, behavior: 'smooth' })}
-							class="w-8 h-8 rounded-full bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 shadow-sm flex items-center justify-center"
+							class="w-7 h-7 rounded-full bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center"
 							aria-label="Scroll right"
 						>
-							<svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" /></svg>
+							<svg class="w-3.5 h-3.5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
 						</button>
 					</div>
 				</div>
