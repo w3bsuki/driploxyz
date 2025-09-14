@@ -12,6 +12,9 @@
     title?: string;
     description?: string;
     class?: string;
+    showToggle?: boolean;
+    activeTab?: 'sellers' | 'brands';
+    onToggle?: (tab: 'sellers' | 'brands') => void;
   }
 
   let { 
@@ -22,10 +25,13 @@
     loading = false,
     title = 'Featured Sellers',
     description = '',
-    class: className = '' 
+    class: className = '',
+    showToggle = false,
+    activeTab = 'sellers',
+    onToggle
   }: Props = $props();
 
-  let selectedSeller = $state<Seller | null>(null);
+  let selectedSeller = $state<any>(null);
   let showQuickView = $state(false);
   let scrollContainer = $state<HTMLElement>();
   let canScrollLeft = $state(false);
@@ -74,9 +80,14 @@
     }
   }
 
-  const displaySellers = $derived(sellers.filter(seller => 
-    seller && seller.id && seller.username
-  ));
+  const displaySellers = $derived(
+    sellers
+      .filter((seller) => seller && seller.id && seller.username)
+      .map((s) => ({
+        ...s,
+        avatar_url: s.avatar_url ?? ''
+      })) as unknown as any[]
+  );
 </script>
 
 <section class="w-full {className}">
@@ -95,27 +106,23 @@
       </div>
       
       <div class="flex items-center gap-2">
-        <!-- Scroll chevrons -->
-        <div class="flex items-center gap-1">
-          <button 
-            class="w-8 h-8 rounded-full bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm hover:shadow-md flex items-center justify-center" 
-            onclick={scrollLeft}
-            disabled={!canScrollLeft || loading}
-          >
-            <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <button 
-            class="w-8 h-8 rounded-full bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-sm hover:shadow-md flex items-center justify-center" 
-            onclick={scrollRight}
-            disabled={!canScrollRight || loading}
-          >
-            <svg class="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
+        <!-- Custom header actions / optional toggle -->
+        {#if showToggle}
+          <div class="flex items-center mr-2">
+            <div class="inline-flex p-0.5 rounded-full bg-gray-100 border border-gray-200">
+              <button
+                class="px-3 py-1.5 text-xs font-medium rounded-full {activeTab === 'brands' ? 'bg-white text-gray-900 shadow-sm border border-gray-200' : 'text-gray-700'}"
+                aria-pressed={activeTab === 'brands'}
+                onclick={() => onToggle?.('brands')}
+              >Brands</button>
+              <button
+                class="px-3 py-1.5 text-xs font-medium rounded-full {activeTab === 'sellers' ? 'bg-white text-gray-900 shadow-sm border border-gray-200' : 'text-gray-700'}"
+                aria-pressed={activeTab === 'sellers'}
+                onclick={() => onToggle?.('sellers')}
+              >Sellers</button>
+            </div>
+          </div>
+        {/if}
         {#if onViewAll}
           <button class="text-sm font-medium text-blue-600 hover:text-blue-700 focus:outline-none focus:text-blue-700" onclick={onViewAll}>
             View All
@@ -152,7 +159,7 @@
   {:else}
     <div bind:this={scrollContainer} class="flex gap-2 sm:gap-3 px-2 sm:px-4 lg:px-6 overflow-x-auto scrollbar-hide" onscroll={updateScrollButtons}>
       {#each displaySellers as seller}
-        <div class="flex-shrink-0 snap-start" style="width: calc(50vw - 8px);" data-seller-card>
+        <div class="flex-shrink-0 snap-start w-1/2 sm:w-1/3 lg:w-1/4 xl:w-1/5" data-seller-card>
           <SellerProfileCard
             {seller}
             productPreviews={getSellerPreviews(seller.id)}
@@ -167,7 +174,7 @@
 
 {#if !onSellerClick && selectedSeller && showQuickView}
   <SellerQuickView
-    seller={selectedSeller}
+    seller={selectedSeller as any}
     isOpen={showQuickView}
     onClose={closeQuickView}
   />

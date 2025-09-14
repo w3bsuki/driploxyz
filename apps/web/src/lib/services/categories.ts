@@ -576,14 +576,14 @@ export class CategoryService {
     try {
       // Get ancestors
       const { data: ancestors, error: ancestorsError } = await this.getAncestors(categoryId);
-      
+
       if (ancestorsError) {
         return { data: [], error: ancestorsError };
       }
 
       // Get current category
       const { data: currentCategory, error: currentError } = await this.getCategory(categoryId);
-      
+
       if (currentError || !currentCategory) {
         return { data: ancestors, error: null };
       }
@@ -605,4 +605,5 @@ export class CategoryService {
       return { data: [], error: 'Failed to build complete breadcrumb' };
     }
   }
+
 }

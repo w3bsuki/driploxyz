@@ -18,6 +18,8 @@
     index?: number;
     totalCount?: number;
     favoritesState?: { favoriteCounts: Record<string, number> };
+    showBoostBadge?: boolean;
+    showSellerBadges?: boolean;
     translations?: {
       size?: string;
       currency?: string;
@@ -46,6 +48,8 @@
     index = 0,
     totalCount = 1,
     favoritesState,
+    showBoostBadge = true,
+    showSellerBadges = true,
     translations = {
       size: 'Size',
       currency: '$',
@@ -79,14 +83,14 @@
   };
 
   // Check if text needs truncation tooltip (simplified check)
-  const shouldShowTitleTooltip = $derived(product.title && product.title.length > 50);
+  const shouldShowTitleTooltip = $derived(!!(product.title && product.title.length > 50));
   const shouldShowCategoryTooltip = $derived(
-    product.specific_category_name && product.brand && product.size && 
-    `${product.specific_category_name} • ${product.brand} • ${translations.size} ${product.size}`.length > 60
+    !!(product.specific_category_name && product.brand && product.size && 
+    `${product.specific_category_name} • ${product.brand} • ${translations.size} ${product.size}`.length > 60)
   );
 </script>
 
-{#snippet conditionBadgeWithTooltip(condition: string)}
+{#snippet conditionBadgeWithTooltip(condition: any)}
   <div class="absolute top-0 left-1 z-20">
     <Tooltip 
       content={getConditionTooltip(condition)}
@@ -96,7 +100,7 @@
     >
       {#snippet trigger()}
         <ConditionBadge 
-          condition={condition}
+          condition={condition as any}
           translations={{
             brandNewWithTags: translations.brandNewWithTags,
             newWithoutTags: translations.newWithoutTags || translations.new,
@@ -196,7 +200,7 @@
     {/if}
     
     <!-- Boost badge (top right) -->
-    {#if product.is_boosted}
+    {#if product.is_boosted && showBoostBadge}
       <div class="absolute top-1 right-1 z-20">
         <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm">
           BOOSTED
@@ -205,8 +209,8 @@
     {/if}
     
     <!-- Pro/Brand badges (top right, below boost if present) -->
-    {#if product.seller_badges?.is_pro || product.seller_badges?.is_brand}
-      <div class="absolute {product.is_boosted ? 'top-9' : 'top-1'} right-1 z-20">
+    {#if showSellerBadges && (product.seller_badges?.is_pro || product.seller_badges?.is_brand)}
+      <div class="absolute {product.is_boosted && showBoostBadge ? 'top-9' : 'top-1'} right-1 z-20">
         {#if product.seller_badges.is_brand}
           <div class="bg-black text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm">
             BRAND

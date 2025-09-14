@@ -186,6 +186,7 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       { data: [] } as any
     );
 
+
     const [categoriesResult, topSellersResult, sellersResult, topBrandsResult, featuredResult] = await Promise.all([
       categoriesPromise,
       topSellersPromise,

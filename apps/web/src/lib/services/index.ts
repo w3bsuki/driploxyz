@@ -5,22 +5,26 @@ import type { Stripe } from 'stripe';
 // Service imports
 import { ProductService } from './products';
 import { CategoryService } from './categories';
+import { CollectionService } from './collections';
 import { ProfileService } from './profiles';
 import { SubscriptionService } from './subscriptions';
 import { TransactionService } from './transactions';
 import { PayoutService } from './payouts';
 import { FavoriteService } from './favorites';
 import { createStripeService, StripeService } from './stripe';
+import { BoostService, createBoostService } from './boost';
 
 // Service class exports
 export { ProductService } from './products';
 export { CategoryService } from './categories';
+export { CollectionService } from './collections';
 export { ProfileService } from './profiles';
 export { SubscriptionService } from './subscriptions';
 export { TransactionService } from './transactions';
 export { PayoutService } from './payouts';
 export { FavoriteService } from './favorites';
 export { createStripeService, StripeService } from './stripe';
+export { BoostService, createBoostService } from './boost';
 
 // Type exports
 export type {
@@ -44,6 +48,12 @@ export type {
   FavoriteWithProduct
 } from './favorites';
 
+export type {
+  BrandCollection,
+  CollectionWithProducts,
+  CollectionFilters
+} from './collections';
+
 /**
  * Service factory to create all services with a Supabase client
  * @param supabase - Supabase client instance
@@ -53,11 +63,13 @@ export function createServices(supabase: SupabaseClient<Database>, stripeInstanc
   return {
     products: new ProductService(supabase),
     categories: new CategoryService(supabase),
+    collections: new CollectionService(supabase),
     profiles: new ProfileService(supabase),
     subscriptions: new SubscriptionService(supabase),
     transactions: new TransactionService(supabase),
     payouts: new PayoutService(supabase),
     favorites: new FavoriteService(supabase),
+    boost: new BoostService(supabase),
     stripe: stripeInstance ? createStripeService(supabase, stripeInstance) : null
   };
 }
@@ -68,24 +80,28 @@ export function createServices(supabase: SupabaseClient<Database>, stripeInstanc
 export class ServiceManager {
   public products: ProductService;
   public categories: CategoryService;
+  public collections: CollectionService;
   public profiles: ProfileService;
   public subscriptions: SubscriptionService;
   public transactions: TransactionService;
   public payouts: PayoutService;
   public favorites: FavoriteService;
+  public boost: BoostService;
   public stripe: StripeService | null;
 
   constructor(
-    _supabase: SupabaseClient<Database>, 
+    _supabase: SupabaseClient<Database>,
     _stripeInstance?: Stripe | null
   ) {
     this.products = new ProductService(_supabase);
     this.categories = new CategoryService(_supabase);
+    this.collections = new CollectionService(_supabase);
     this.profiles = new ProfileService(_supabase);
     this.subscriptions = new SubscriptionService(_supabase);
     this.transactions = new TransactionService(_supabase);
     this.payouts = new PayoutService(_supabase);
     this.favorites = new FavoriteService(_supabase);
+    this.boost = new BoostService(_supabase);
     this.stripe = _stripeInstance ? createStripeService(_supabase, _stripeInstance) : null;
   }
 
@@ -95,11 +111,13 @@ export class ServiceManager {
   updateClient(supabase: SupabaseClient<Database>, stripeInstance?: Stripe | null) {
     this.products = new ProductService(supabase);
     this.categories = new CategoryService(supabase);
+    this.collections = new CollectionService(supabase);
     this.profiles = new ProfileService(supabase);
     this.subscriptions = new SubscriptionService(supabase);
     this.transactions = new TransactionService(supabase);
     this.payouts = new PayoutService(supabase);
     this.favorites = new FavoriteService(supabase);
+    this.boost = new BoostService(supabase);
     this.stripe = stripeInstance ? createStripeService(supabase, stripeInstance) : null;
   }
 }

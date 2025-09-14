@@ -40,22 +40,22 @@
           {i18n.nav_home()}
         </button>
         <span>•</span>
-        <span class="text-gray-900 font-medium">Drip Collections</span>
+        <span class="text-gray-900 font-medium">Designer Collections</span>
       </nav>
 
       <!-- Page Info -->
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div class="flex items-center gap-3 mb-2">
-            <span class="text-3xl">🔥</span>
-            <h1 class="text-3xl font-bold text-gray-900">Drip Collections</h1>
+            <span class="text-3xl">💎</span>
+            <h1 class="text-3xl font-bold text-gray-900">Designer Collections</h1>
           </div>
           <p class="text-gray-600 mb-2 max-w-2xl">
-            Discover curated streetwear collections and trending fashion picks
+            Discover curated designer collections and luxury fashion pieces
           </p>
           <div class="flex items-center gap-4 text-sm">
             <span class="bg-gray-100 text-gray-700 px-2 py-1 rounded-full">
-              Streetwear Collections
+              Designer Collections
             </span>
             <span class="text-gray-500">
               {data.collections.length} collections
@@ -66,10 +66,10 @@
         <!-- Collection Actions -->
         <div class="flex items-center gap-2">
           <button
-            onclick={() => goto('/designer')}
+            onclick={() => goto('/drip')}
             class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
           >
-            Designer Collections
+            Drip Collections
           </button>
           <button
             onclick={() => goto('/search')}
@@ -92,7 +92,7 @@
             class="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-300 hover:shadow-lg transition-all text-left group"
           >
             <div class="flex items-center gap-3 mb-4">
-              <span class="text-2xl">🔥</span>
+              <span class="text-2xl">💎</span>
               <span class="font-semibold text-lg text-gray-900 group-hover:text-[color:var(--brand-primary)] transition-colors">
                 {collection.name}
               </span>
@@ -109,7 +109,7 @@
                 {collection.product_count} products
               </span>
               <span class="text-sm font-medium text-[color:var(--brand-primary)] bg-[color:var(--surface-brand-subtle)] px-3 py-1 rounded-full">
-                Drip
+                Designer
               </span>
             </div>
           </button>
@@ -119,18 +119,18 @@
       <!-- Empty State -->
       <div class="text-center py-16">
         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <span class="text-3xl">🔥</span>
+          <span class="text-3xl">💎</span>
         </div>
-        <h3 class="text-lg font-semibold text-gray-900 mb-2">No drip collections yet</h3>
+        <h3 class="text-lg font-semibold text-gray-900 mb-2">No designer collections yet</h3>
         <p class="text-gray-500 mb-6 max-w-md mx-auto">
-          Streetwear collections are being curated. Check back soon for amazing finds!
+          Designer collections are being curated. Check back soon for luxury fashion!
         </p>
         <div class="flex items-center justify-center gap-3">
           <button
-            onclick={() => goto('/designer')}
+            onclick={() => goto('/drip')}
             class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
           >
-            Browse Designer Collections
+            Browse Drip Collections
           </button>
           <button
             onclick={() => goto('/search')}

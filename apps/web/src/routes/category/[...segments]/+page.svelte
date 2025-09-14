@@ -418,7 +418,7 @@
       {/if}
       
       <!-- Search Bar with Integrated Design -->
-      <div class="pb-4">
+      <div class="pb-2">
         <div class="max-w-2xl mx-auto">
           <div class="relative">
             <IntegratedSearchBar

@@ -101,15 +101,13 @@
 </script>
 
 <form onsubmit={handleSubmit} class="w-full relative {className}">
-  <div class="bg-white rounded-xl flex items-center relative shadow-sm border border-gray-200 hover:shadow-md transition-shadow {dropdownVisible && searchValue?.trim() ? 'rounded-b-none border-b-0' : ''}">
+  <div class="bg-white rounded-xl flex items-center relative border border-gray-200 transition-all duration-200 {dropdownVisible && searchValue?.trim() ? 'rounded-b-none shadow-lg border-b-gray-200' : 'shadow-sm hover:shadow-md hover:border-gray-300'}">
     <!-- Left Section (Category Dropdown/Filter) -->
     {#if leftSection}
       <div class="shrink-0">
         {@render leftSection()}
       </div>
 
-      <!-- Vertical Separator -->
-      <div class="w-px h-6 bg-gray-300"></div>
     {/if}
     
     <!-- Search Input -->
@@ -124,7 +122,7 @@
         onfocus={handleFocus}
         onblur={handleBlur}
         {placeholder}
-        class="w-full h-12 pl-10 {rightSection ? 'pr-16' : 'pr-4'} bg-transparent border-0 text-base placeholder-gray-500 focus:ring-0 focus:outline-none"
+        class="w-full h-12 pl-10 {rightSection ? 'pr-16' : 'pr-4'} bg-transparent border-0 text-base placeholder-gray-400 focus:ring-0 focus:outline-none focus:placeholder-gray-300 transition-colors"
         autocomplete="off"
         spellcheck="false"
         aria-label={placeholder}
@@ -136,8 +134,6 @@
 
     <!-- Right Section (Dropdown/Actions) -->
     {#if rightSection}
-      <!-- Vertical Separator -->
-      <div class="w-px h-6 bg-gray-300"></div>
       
       <div class="shrink-0">
         {@render rightSection()}
@@ -152,7 +148,7 @@
       onSearch={searchFunction}
       onSelect={handleProductSelect}
       {maxResults}
-      class="border-t-0"
+      class="border-t-0 rounded-t-none shadow-lg border-gray-200"
     />
   {/if}
 </form>

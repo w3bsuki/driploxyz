@@ -3,36 +3,36 @@ import type { PageServerLoad } from './$types';
 import { createLogger } from '$lib/utils/log';
 import { CollectionService } from '$lib/services/collections';
 
-const log = createLogger('drip-collections-page');
+const log = createLogger('designer-collections-page');
 
 export const load = (async ({
   locals: { supabase, safeGetSession }
 }) => {
   const { session, user } = await safeGetSession();
 
-  log.debug('Loading drip collections');
+  log.debug('Loading designer collections');
 
   try {
     const collectionService = new CollectionService(supabase);
 
-    // Get all drip collections (active ones)
+    // Get all designer collections (active ones)
     const { data: collections, error: collectionsError } = await collectionService.getBrandCollections({
-      collection_type: 'drip',
+      collection_type: 'designer',
       is_active: true,
-      is_featured: null // Get all active drip collections, not just featured
+      is_featured: null // Get all active designer collections, not just featured
     });
 
     if (collectionsError) {
-      log.error('Error loading drip collections', collectionsError);
+      log.error('Error loading designer collections', collectionsError);
       return {
         collections: [],
         user,
         session,
         profile: user ? { username: user.user_metadata?.username || user.email?.split('@')[0] } : null,
         meta: {
-          title: 'Drip Collections - Driplo',
-          description: 'Discover curated streetwear collections and trending fashion',
-          canonical: '/drip'
+          title: 'Designer Collections - Driplo',
+          description: 'Discover curated designer collections and luxury fashion',
+          canonical: '/designer'
         }
       };
     }
@@ -45,14 +45,14 @@ export const load = (async ({
         username: user.user_metadata?.username || user.email?.split('@')[0]
       } : null,
       meta: {
-        title: 'Drip Collections - Driplo',
-        description: 'Discover curated streetwear collections and trending fashion',
-        canonical: '/drip'
+        title: 'Designer Collections - Driplo',
+        description: 'Discover curated designer collections and luxury fashion',
+        canonical: '/designer'
       }
     };
 
   } catch (err) {
-    log.error('Unexpected error in drip collections page load', err);
-    throw error(500, 'Something went wrong loading the drip collections');
+    log.error('Unexpected error in designer collections page load', err);
+    throw error(500, 'Something went wrong loading the designer collections');
   }
 }) satisfies PageServerLoad;

@@ -132,11 +132,19 @@
 
       document.addEventListener('keydown', handleKeyDown);
 
+      // Trap focus to menu while open (mobile a11y)
+      const previousActive = document.activeElement as HTMLElement | null;
+      queueMicrotask(() => {
+        const firstFocusable = (document.querySelector('#' + id + ' button, #' + id + ' a, #' + id + ' input, #' + id + ' select, #' + id + ' textarea') as HTMLElement | null);
+        firstFocusable?.focus();
+      });
+
       return () => {
         document.removeEventListener('keydown', handleKeyDown);
         // Always cleanup scroll lock on cleanup
         document.body.classList.remove('overflow-hidden');
         document.documentElement.classList.remove('overflow-hidden');
+        previousActive?.focus?.();
       };
     } else {
       // Remove body scroll lock when menu closes
@@ -672,113 +680,45 @@
                 </button>
                 <h1 class="text-lg font-semibold text-gray-900">
                   {selectedMainCategory.name}
+                  {#if categoryBreadcrumb.length > 1}
+                    <span class="text-gray-500"> / {categoryBreadcrumb[categoryBreadcrumb.length - 1].name}</span>
+                  {/if}
                 </h1>
               </div>
 
-              <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wide mb-3 px-2">
-                {selectedMainCategory.name} Categories
-              </h2>
-
-              <!-- "View All" button for main category -->
-              <div class="mb-4">
-                <button
-                  onclick={() => handleSubcategoryClick(selectedMainCategory)}
-                  class="w-full flex items-center justify-between p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors touch-manipulation min-h-[40px]"
-                >
-                  <div class="flex items-center gap-3">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                    </svg>
-                    <span class="font-semibold">View All {selectedMainCategory.name}</span>
-                  </div>
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-
               <!-- Subcategories List -->
-              <div class="space-y-2">
+              <div class="space-y-3">
                 {#each selectedMainCategory.children as subcategory}
                   <button
                     onclick={() => handleSubcategoryClick(subcategory)}
-                    class="w-full flex items-center justify-between p-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[36px]"
+                    class="w-full flex items-center justify-between p-4 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[44px]"
                   >
                     <div class="flex items-center gap-3">
-                      <span class="text-sm font-medium text-gray-900">{subcategory.name}</span>
-                      {#if subcategory.product_count !== undefined && subcategory.product_count > 0}
-                        <span class="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">
-                          {subcategory.product_count}
-                        </span>
-                      {/if}
+                      <div class="text-left">
+                        <div class="font-medium text-gray-900">{subcategory.name}</div>
+                        <div class="text-sm text-gray-500">
+                          {formatItemCount(subcategory.product_count || 0)}
+                        </div>
+                      </div>
                     </div>
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
+
+                    <!-- Arrow for further subcategories -->
+                    {#if subcategory.children && subcategory.children.length > 0}
+                      <div class="flex-shrink-0 text-gray-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    {/if}
                   </button>
                 {/each}
               </div>
             </div>
           {/if}
 
-          <!-- Safe area bottom padding -->
-          <div class="h-8"></div>
         </div>
       </div>
       </div>
     </div>
   </div>
 {/if}
-
-<style>
-  /* Prevent scrolling on body when menu is open */
-  :global(body.overflow-hidden),
-  :global(html.overflow-hidden) {
-    overflow: hidden !important;
-    position: fixed !important;
-    width: 100% !important;
-  }
-
-  /* Safe area support for devices with notches */
-  .safe-area-top {
-    padding-top: env(safe-area-inset-top);
-  }
-
-  .safe-area-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
-  /* Enhanced touch targets */
-  button, a {
-    -webkit-tap-highlight-color: transparent;
-    -webkit-user-select: none;
-    user-select: none;
-  }
-
-  /* iOS Safari specific fixes */
-  @supports (-webkit-touch-callout: none) {
-    button, a {
-      -webkit-touch-callout: none;
-    }
-  }
-
-  /* Smooth scrolling for mobile */
-  .overflow-y-auto {
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
-    overscroll-behavior: contain;
-  }
-
-  /* Prevent zoom on inputs */
-  input, select, textarea {
-    font-size: 16px;
-  }
-
-  /* Better backdrop filter support */
-  @supports (backdrop-filter: blur(4px)) {
-    .backdrop-blur-sm {
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
-  }
-</style>

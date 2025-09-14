@@ -523,9 +523,9 @@ export class ProfileService {
   /**
    * Get users that a user is following
    */
-  async getFollowing(userId: string, limit = 50): Promise<{ 
-    data: Profile[]; 
-    error: string | null 
+  async getFollowing(userId: string, limit = 50): Promise<{
+    data: Profile[];
+    error: string | null
   }> {
     try {
       const { data, error } = await this.supabase
@@ -549,6 +549,25 @@ export class ProfileService {
     } catch (error) {
       console.error('Error in getFollowing:', error);
       return { data: [], error: 'Failed to fetch following' };
+    }
+  }
+
+  /**
+   * Get top sellers for dropdown display
+   */
+  async getTopSellersForDropdown(limit = 5): Promise<{ data: Profile[]; error: string | null }> {
+    try {
+      // Use the existing getTopSellers method but return simpler format
+      const { data: topSellers, error } = await this.getTopSellers(limit);
+
+      if (error) {
+        return { data: [], error };
+      }
+
+      return { data: topSellers, error: null };
+    } catch (error) {
+      console.error('Error in getTopSellersForDropdown:', error);
+      return { data: [], error: 'Failed to fetch top sellers for dropdown' };
     }
   }
 }

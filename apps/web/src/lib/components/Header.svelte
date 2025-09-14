@@ -28,6 +28,7 @@
   import { switchLanguage, languages } from '$lib/utils/language-switcher';
   import { browser } from '$app/environment';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
+  import { afterNavigate } from '$app/navigation';
   import { ProductService } from '$lib/services/products';
   
   interface Props {
@@ -108,6 +109,13 @@
 
   function closeMenus() {
     mobileMenuOpen = false;
+  }
+
+  // Mobile-perfect behavior: auto-close on route change (official API)
+  if (browser) {
+    afterNavigate(() => {
+      if (mobileMenuOpen) mobileMenuOpen = false;
+    });
   }
 
   // Initialize notification service when user logs in
@@ -199,12 +207,12 @@
 <header class="border-b border-[color:var(--border-subtle)] bg-[color:var(--surface-base)] supports-[backdrop-filter]:backdrop-blur">
   <div class="px-2 sm:px-4 lg:px-6 safe-area">
     <!-- Bar -->
-    <div class="flex items-center justify-between h-12 sm:h-16">
+    <div class="flex items-center justify-between h-14 sm:h-16">
       <!-- Left: Mobile Menu + Logo -->
       <div class="flex items-center gap-0">
         <button
           onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
-          class="sm:hidden inline-flex items-center justify-center h-9 w-9 -ml-2 rounded-[var(--radius-md)] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] transition-colors duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]"
+          class="sm:hidden inline-flex items-center justify-center h-10 w-10 -ml-2 rounded-[var(--radius-md)] text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] transition-colors duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)]"
           aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={mobileMenuOpen}
           aria-controls="mobile-navigation"

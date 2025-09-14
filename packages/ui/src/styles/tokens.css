@@ -258,7 +258,7 @@
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   
   /* Brand Colors */
-  --brand-primary: var(--gray-950);  /* Pure black for premium feel */
+  --brand-primary: var(--gray-700);  /* Dark grey instead of black for better UX */
   --brand-secondary: var(--purple-500);
   --brand-accent: var(--orange-500);
   

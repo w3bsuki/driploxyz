@@ -135,6 +135,9 @@ export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte
 export { default as TrendingDropdown } from './TrendingDropdown.svelte';
 export { default as SearchDropdown } from './SearchDropdown.svelte';
 export { default as EnhancedSearchBar } from './EnhancedSearchBar.svelte';
+export { default as SearchInput } from './SearchInput.svelte';
+export { default as MainPageSearchBar } from './MainPageSearchBar.svelte';
+export { default as SearchPageSearchBar } from './SearchPageSearchBar.svelte';
 
 // Virtual scrolling and search components
 export { default as VirtualProductGrid } from './VirtualProductGrid.svelte';
@@ -250,6 +253,9 @@ export { default as ProductPrice } from './ProductPrice.svelte';
 // Feature components - NEWLY MIGRATED
 export { default as FeaturedProducts } from './FeaturedProducts.svelte';
 export { default as PromotedHighlights } from './PromotedHighlights.svelte';
+export { default as PromotedListingsSection } from './PromotedListingsSection.svelte';
+export { default as BoostManagement } from './BoostManagement.svelte';
+export { default as ProductCardWithTracking } from './ProductCardWithTracking.svelte';
 
 // Semantic CSS styles should be imported directly by consuming applications
 // import '../styles/semantic.css';

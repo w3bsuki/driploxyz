@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ProductCard, Button, EnhancedSearchBar, SearchDropdown, ProductCardSkeleton, BottomNav, StickyFilterModal, AppliedFilterPills, CategoryDropdown, MegaMenuCategories, CategoryPill, type Product } from '@repo/ui';
+  import { ProductCard, Button, SearchPageSearchBar, SearchDropdown, ProductCardSkeleton, BottomNav, StickyFilterModal, AppliedFilterPills, CategoryDropdown, MegaMenuCategories, CategoryPill, type Product } from '@repo/ui';
   import { unreadMessageCount } from '$lib/stores/messageNotifications';
   import { goto } from '$app/navigation';
   import { page, navigating } from '$app/stores';
@@ -42,7 +42,7 @@
   let showCategoryDropdown = $state(false);
   let isSearching = $state(false);
   let isFilterLoading = $state(false);
-  let searchInput = $state('');
+  let searchQuery = $state('');
   let ariaLiveMessage = $state('');
 
   
@@ -249,7 +249,7 @@
         untrack(() => filterStore.updateMultipleFilters(serverFilters));
       }
       
-      searchInput = data.searchQuery || '';
+      searchQuery = data.searchQuery || '';
     }
   });
   
@@ -370,8 +370,8 @@
 
   // Watch search input changes for live filtering
   $effect(() => {
-    if (searchInput !== filters.query) {
-      handleSearch(searchInput);
+    if (searchQuery !== filters.query) {
+      handleSearch(searchQuery);
     }
   });
   
@@ -488,7 +488,7 @@
   
   function clearAllFilters() {
     filterStore.resetFilters();
-    searchInput = '';
+    searchQuery = '';
   }
   
   function handleSortChange(e: Event) {
@@ -513,7 +513,7 @@
 
   function handleClearFilters() {
     filterStore.resetFilters();
-    searchInput = '';
+    searchQuery = '';
   }
 
   function handleRemoveAppliedFilter(key: string) {
@@ -538,6 +538,53 @@
       filterStore.updateFilter('sortBy', 'relevance');
     } else {
       filterStore.updateFilter(key as any, 'all');
+    }
+  }
+
+  // Handler for SearchPageSearchBar category selection
+  function handleSearchPageCategorySelect(categorySlug: string) {
+    isFilterLoading = true;
+    ariaLiveMessage = categorySlug ? `Selected category: ${categorySlug}` : 'Cleared category filter';
+
+    // Use existing MegaMenu category selection logic
+    // Extract category path from the megaMenuData to determine level and path
+    let level = 1;
+    let path: string[] = [categorySlug];
+
+    // Find the category in megaMenuData to determine its level and path
+    for (const l1Cat of megaMenuData) {
+      if (l1Cat.slug === categorySlug) {
+        level = 1;
+        path = [categorySlug];
+        break;
+      }
+      for (const l2Cat of l1Cat.children || []) {
+        if (l2Cat.slug === categorySlug) {
+          level = 2;
+          path = [l1Cat.slug, categorySlug];
+          break;
+        }
+        for (const l3Cat of l2Cat.children || []) {
+          if (l3Cat.slug === categorySlug) {
+            level = 3;
+            path = [l1Cat.slug, l2Cat.slug, categorySlug];
+            break;
+          }
+        }
+      }
+    }
+
+    handleMegaMenuCategorySelect(categorySlug, level, path);
+  }
+
+  // Handler for SearchPageSearchBar filter changes
+  function handleSearchPageFilterChange(key: string, value: any) {
+    if (key === 'category') {
+      handleCategorySelect(value);
+    } else if (key === 'condition') {
+      handleQuickCondition(value);
+    } else {
+      filterStore.updateFilter(key as any, value);
     }
   }
 
@@ -570,132 +617,24 @@
     {ariaLiveMessage}
   </div>
   
-  <!-- Clean Header Section -->
-  <div class="bg-white/90 backdrop-blur-sm sticky z-40 border-b border-gray-100 shadow-sm" style="top: var(--app-header-offset, 56px);">
-    <div class="px-2 sm:px-4 lg:px-6 relative">
-      
-      <!-- Search Container -->
-      <div class="py-3 relative search-dropdown-container">
-        <EnhancedSearchBar
-          bind:searchValue={searchInput}
-          placeholder={i18n.search_placeholder()}
-          onSearch={(query) => filterStore.updateFilter('query', query)}
-          searchId="search-page-input"
-          showDropdown={false}
-        >
-          {#snippet leftSection()}
-            <button
-              onclick={handleCategoryDropdownToggle}
-              class="h-12 px-4 rounded-l-xl hover:bg-gray-100 transition-colors flex items-center gap-2"
-              aria-expanded={showCategoryDropdown}
-              aria-haspopup="listbox"
-              aria-label="Select category"
-            >
-              <span class="text-base">
-                {filters.category ?
-                  categoryHierarchy.categories.find(cat => cat.key === filters.category)?.icon || '📁' :
-                  '📁'
-                }
-              </span>
-              <svg class="w-4 h-4 text-gray-400 transition-transform duration-200 {showCategoryDropdown ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-          {/snippet}
-        </EnhancedSearchBar>
-
-        <!-- MegaMenuCategories Dropdown -->
-        {#if showCategoryDropdown}
-          <div
-            class="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-50 max-h-[70vh]"
-          >
-            <MegaMenuCategories
-              onCategoryClick={handleMegaMenuCategorySelect}
-              onClose={handleCategoryDropdownClose}
-              categories={megaMenuData}
-              translations={{
-                women: i18n.category_women(),
-                men: i18n.category_men(),
-                kids: i18n.category_kids(),
-                unisex: i18n.category_unisex(),
-                clothing: i18n.category_clothing(),
-                shoes: i18n.category_shoes(),
-                accessories: i18n.category_accessories(),
-                bags: i18n.category_bags(),
-                back: i18n.common_back(),
-                items: 'items'
-              }}
-            />
-          </div>
-        {/if}
-      </div>
-      
-      <!-- Quick Category Pills -->
-      <div class="flex items-center justify-start gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-3 sm:justify-center">
-        <!-- Main Category Pills -->
-        <CategoryPill
-          variant={filters.category === null ? 'primary' : 'secondary'}
-          label={i18n.search_all()}
-          onclick={() => handleCategorySelect(null)}
-          ariaLabel="Show all categories"
-          data-category="all"
-        />
-        
-        {#each mainCategories as cat}
-          <CategoryPill
-            variant={filters.category === cat.key ? 'primary' : 'secondary'}
-            label={cat.label}
-            emoji={cat.icon}
-            onclick={() => handleCategorySelect(cat.key)}
-            ariaLabel={`Filter by ${cat.label}`}
-            data-category={cat.key}
-          />
-        {/each}
-        
-        <div class="w-px h-5 bg-gray-200 mx-2"></div>
-        
-        <!-- Condition Pills -->
-        {#each quickConditionFilters as condition, index}
-          <button
-            onclick={() => handleQuickCondition(condition.key)}
-            class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-9 relative overflow-hidden
-              {filters.condition === condition.key
-                ? index === 0 ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-md' 
-                  : index === 1 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
-                  : index === 2 ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md'
-                  : 'bg-gradient-to-r from-slate-600 to-gray-600 text-white shadow-md'
-                : 'bg-white text-gray-700 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:shadow-sm'}"
-          >
-            <span class="relative z-10 flex items-center gap-1">
-              {#if index === 0}
-                <span class="w-1.5 h-1.5 rounded-full {filters.condition === condition.key ? 'bg-white' : 'bg-emerald-500'}"></span>
-              {:else if index === 1}
-                <span class="w-1.5 h-1.5 rounded-full {filters.condition === condition.key ? 'bg-white' : 'bg-blue-500'}"></span>
-              {:else if index === 2}
-                <span class="w-1.5 h-1.5 rounded-full {filters.condition === condition.key ? 'bg-white' : 'bg-amber-500'}"></span>
-              {:else}
-                <span class="w-1.5 h-1.5 rounded-full {filters.condition === condition.key ? 'bg-white' : 'bg-slate-500'}"></span>
-              {/if}
-              {condition.shortLabel}
-            </span>
-          </button>
-        {/each}
-        
-        <!-- Clear All Quick Action -->
-        {#if activeFilterCount > 0}
-          <button
-            onclick={clearAllFilters}
-            class="shrink-0 px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
-          >
-            {i18n.search_clearAll()}
-          </button>
-        {/if}
-      </div>
-    </div>
-  </div>
+  <!-- Search Page Search Bar -->
+  <SearchPageSearchBar
+    supabase={data.supabase}
+    bind:searchValue={searchQuery}
+    megaMenuData={megaMenuData}
+    mainCategories={mainCategories}
+    conditionFilters={quickConditionFilters}
+    appliedFilters={filters}
+    i18n={i18n}
+    onSearch={(query) => filterStore.updateFilter('query', query)}
+    onCategorySelect={handleSearchPageCategorySelect}
+    onFilterChange={handleSearchPageFilterChange}
+    onFilterRemove={handleRemoveAppliedFilter}
+    onClearAllFilters={clearAllFilters}
+  />
   
   <!-- Clean Filter Bar Above Products -->
-  <div class="bg-white/90 backdrop-blur-sm border-b border-gray-100">
+  <div class="bg-white/95 backdrop-blur-sm border-b border-gray-100">
     <div class="px-2 sm:px-4 lg:px-6 py-3">
       
       <!-- Mobile Layout - Results Count + Filter Button + Filter Pills -->

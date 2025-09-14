@@ -76,7 +76,9 @@
       "mcp__21st-dev__21st_magic_component_builder",
       "Read(//k/k/driplo-turbo-1/**)",
       "Bash(npx svelte-check:*)",
-      "Read(//k//**)"
+      "Read(//k//**)",
+      "Bash(taskkill:*)",
+      "mcp__playwright__browser_press_key"
     ]
   },
   "enableAllProjectMcpServers": true,

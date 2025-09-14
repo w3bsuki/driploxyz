@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { EnhancedSearchBar, SearchDropdown, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill, CategoryPill, PromotedHighlights } from '@repo/ui';
+	import { MainPageSearchBar, EnhancedSearchBar, SearchDropdown, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill, CategoryPill, PromotedHighlights, PromotedListingsSection } from '@repo/ui';
 	import type { Product, User, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	import { unreadMessageCount } from '$lib/stores/messageNotifications';
@@ -26,16 +26,17 @@
 	let { data }: { data: PageData } = $props();
 
 	let searchQuery = $state('');
+	let dropdownSearchQuery = $state('');
+	let activeDropdownTab = $state('trending');
+	let showTrendingDropdown = $state(false);
 	let selectedSeller = $state<Seller | null>(null);
 	let selectedPartner = $state<any>(null);
 	let showSellerModal = $state(false);
 	let showPartnerModal = $state(false);
 	let showCategoryDropdown = $state(false);
-	let showTrendingDropdown = $state(false);
 	let loadingCategory = $state<string | null>(null);
 	let selectedPillIndex = $state(-1);
-	let activeDropdownTab = $state('trending');
-	let dropdownSearchQuery = $state('');
+	let activeTab = $state<'sellers' | 'brands'>('sellers');
 
 	// Handle streamed data
 	let featuredProductsData = $state<any[]>([]);
@@ -78,16 +79,7 @@
 		})
 	);
 
-	// Filtered brands based on search query
-	const filteredTopBrands = $derived(
-		dropdownSearchQuery.trim()
-			? topBrands.filter(brand =>
-				brand.name.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
-			)
-			: topBrands
-	);
-
-	// Top sellers data - clean data from dedicated server query
+	// Top sellers data - clean data for MainPageSearchBar
 	const displayTopSellers = $derived(
 		(topSellersData || []).map(seller => ({
 			id: seller.id,
@@ -101,15 +93,6 @@
 		}))
 	);
 
-	// Filtered sellers based on search query
-	const filteredDisplayTopSellers = $derived(
-		dropdownSearchQuery.trim()
-			? displayTopSellers.filter(seller =>
-				seller.name.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
-			)
-			: displayTopSellers
-	);
-
 	// Quick shop items - keeping these as shortcuts
 	const quickShopItems = [
 		{ label: 'Under $25', description: 'Budget finds', filter: 'max_price=25', icon: '💰' },
@@ -118,16 +101,6 @@
 		{ label: 'New with Tags', description: 'Brand new condition', filter: 'condition=brand_new_with_tags', icon: '🏷️' },
 		{ label: 'Like New', description: 'Excellent condition', filter: 'condition=like_new', icon: '✨' }
 	];
-
-	// Filtered Quick Shop items based on search query
-	const filteredQuickShopItems = $derived(
-		dropdownSearchQuery.trim()
-			? quickShopItems.filter(item =>
-				item.label.toLowerCase().includes(dropdownSearchQuery.toLowerCase()) ||
-				item.description.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
-			)
-			: quickShopItems
-	);
 
 	// Search dropdown data
 	let dropdownCategories = $state<any[]>([]);
@@ -140,6 +113,16 @@
 	// Language state - already initialized in +layout.svelte
 	let currentLang = $state(i18n.getLocale());
 	let updateKey = $state(0);
+
+	// Sync searchQuery with URL parameters on page load/navigation
+	$effect(() => {
+		if (browser) {
+			const urlSearchQuery = $page.url.searchParams.get('q') || '';
+			if (urlSearchQuery !== searchQuery) {
+				searchQuery = urlSearchQuery;
+			}
+		}
+	});
 
 	// Track language changes and setup route preloading
 	$effect(() => {
@@ -161,10 +144,11 @@
 		try {
 			// Load categories for main page context
 			const categoryService = new CategoryService(data.supabase);
-			const { data: categories, error: categoryError } = await categoryService.getSearchDropdownCategories('main');
+			// Fallback: use main categories for dropdown since getSearchDropdownCategories is not available
+			const { data: categories, error: categoryError } = await categoryService.getMainCategories();
 
 			if (!categoryError && categories) {
-				dropdownCategories = categoryService.transformForSearchDropdown(categories);
+				dropdownCategories = categories;
 			}
 
 			// Load top sellers
@@ -172,7 +156,7 @@
 			const { data: sellers, error: sellerError } = await profileService.getTopSellersForDropdown(5);
 
 			if (!sellerError && sellers) {
-				dropdownSellers = profileService.transformSellersForDropdown(sellers);
+				dropdownSellers = sellers;
 			}
 
 			// TODO: Load brand accounts from Supabase - for now using hardcoded data
@@ -186,29 +170,6 @@
 
 	// Debug data (removed to prevent infinite loops)
 
-	// Handle click outside for trending dropdown
-	$effect(() => {
-		if (typeof window !== 'undefined') {
-			function handleClickOutside(e: MouseEvent) {
-				const target = e.target as HTMLElement;
-				if (!target.closest('#hero-search-container')) {
-					showTrendingDropdown = false;
-				}
-			}
-
-			if (showTrendingDropdown) {
-				document.addEventListener('click', handleClickOutside);
-				return () => document.removeEventListener('click', handleClickOutside);
-			}
-		}
-	});
-
-	// Hide trending dropdown when user starts typing in search
-	$effect(() => {
-		if (searchQuery.trim()) {
-			showTrendingDropdown = false;
-		}
-	});
 	
 	
 	// Lazy load heavy components
@@ -248,6 +209,11 @@
 			seller_rating: product.seller_rating,
 			// PROMOTION: Keep the is_promoted field from server
 			is_promoted: product.is_promoted || false,
+			// BOOST: Keep the is_boosted field from server
+			is_boosted: product.is_boosted || false,
+			// SELLER SUBSCRIPTION: Keep seller tier and badges from server
+			seller_subscription_tier: product.seller_subscription_tier,
+			seller_badges: product.seller_badges,
 			// SEO: Include slug for URL generation
 			slug: product.slug || null
 		};
@@ -287,17 +253,29 @@
 			userFavoritesData = data.userFavorites || {};
 		}
 
+
 		// Mark data as loaded after processing
 		dataLoaded = true;
 	});
 
-	// Transform promoted products for highlights
+	// Transform promoted products for highlights - only from pro sellers
 	const promotedProducts = $derived<Product[]>(
-		(featuredProductsData || []).map(transformProduct).map(p => ({
-			...p,
-			category_name: p.category_name || p.main_category_name || 'Uncategorized',
-			main_category_name: p.main_category_name || p.category_name || 'Uncategorized'
-		}))
+		(featuredProductsData || [])
+			.filter(product =>
+				// Only include products from pro/premium/brand sellers or boosted products
+				product.seller_subscription_tier === 'pro' ||
+				product.seller_subscription_tier === 'premium' ||
+				product.seller_subscription_tier === 'brand' ||
+				product.seller_badges?.is_pro ||
+				product.seller_badges?.is_brand ||
+				product.is_boosted
+			)
+			.map(transformProduct)
+			.map(p => ({
+				...p,
+				category_name: p.category_name || p.main_category_name || 'Uncategorized',
+				main_category_name: p.main_category_name || p.category_name || 'Uncategorized'
+			}))
 	);
 
 	// Transform products to match Product interface
@@ -311,12 +289,12 @@
 
 	// Filter boosted products for the highlight section
 	const boostedProducts = $derived<Product[]>(
-		products.filter(product => product.is_promoted).slice(0, 8) // Limit to 8 boosted products
+		products.filter(product => product.is_boosted).slice(0, 8) // Limit to 8 boosted products
 	);
 
 	// Filter non-boosted products for the main listings
 	const regularProducts = $derived<Product[]>(
-		products.filter(product => !product.is_promoted)
+		products.filter(product => !product.is_boosted)
 	);
 
 	// Transform sellers for display (for FeaturedSellers component)
@@ -377,6 +355,7 @@
 			})
 	);
 
+
 	// Create seller products mapping from featured products
 	const sellerProducts = $derived(() => {
 		const productsBySeller: Record<string, Product[]> = {};
@@ -424,22 +403,24 @@
 		}
 	});
 
-	// Debug data loading - commented out to avoid potential infinite loops
-	/*$effect(() => {
-		log.debug('Data loading status', {
-			dataLoaded,
-			featuredProductsCount: featuredProductsData?.length || 0,
-			boostedProductsCount: boostedProducts?.length || 0,
-			regularProductsCount: regularProducts?.length || 0,
-			totalProductsCount: products?.length || 0,
-			sellersCount: sellersData?.length || 0,
-			transformedSellersCount: sellers?.length || 0,
-			sellerProductsKeys: Object.keys(sellerProducts),
-			productsWithImages: products.filter(p => p.images && p.images.length > 0).length,
-			sampleBoostedProduct: boostedProducts[0],
-			sampleRegularProduct: regularProducts[0]
-		});
-	});*/
+	// Debug data loading - temporary
+	$effect(() => {
+		if (dataLoaded) {
+			console.log('PROMOTED SECTIONS DEBUG:', {
+				dataLoaded,
+				featuredProductsCount: featuredProductsData?.length || 0,
+				promotedProductsCount: promotedProducts?.length || 0,
+				boostedProductsCount: boostedProducts?.length || 0,
+				regularProductsCount: regularProducts?.length || 0,
+				sampleBoostedProduct: boostedProducts?.[0] ? {
+					id: boostedProducts[0].id,
+					title: boostedProducts[0].title,
+					is_boosted: boostedProducts[0].is_boosted,
+					seller_subscription_tier: boostedProducts[0].seller_subscription_tier
+				} : null
+			});
+		}
+	});
 
 	// Transform top sellers for TrendingDropdown (filtered to approved users only)
 	const topSellers = $derived<Seller[]>(
@@ -473,6 +454,83 @@
 	function handleSearch(query: string) {
 		if (query.trim()) {
 			goto(`/search?q=${encodeURIComponent(query)}`);
+		} else if (!query.trim() && $page.url.searchParams.has('q')) {
+			// Clear search param if query is empty
+			const url = new URL($page.url);
+			url.searchParams.delete('q');
+			goto(url.pathname + url.search, { replaceState: true });
+		}
+	}
+
+	// Handle category selection from MainPageSearchBar
+	function handleMainPageCategorySelect(categorySlug: string) {
+		goto(`/category/${categorySlug}`);
+	}
+
+	// Handle filter changes from MainPageSearchBar
+	function handleMainPageFilterChange(key: string, value: any) {
+		const url = new URL('/search', window.location.origin);
+		url.searchParams.set(key, value);
+		goto(url.pathname + url.search);
+	}
+
+	// Handle condition filter from MainPageSearchBar
+	function handleMainPageConditionFilter(condition: string) {
+		if (selectedCondition === condition) {
+			selectedCondition = null;
+			goto('/search');
+		} else {
+			selectedCondition = condition;
+			goto(`/search?condition=${condition}`);
+		}
+	}
+
+	// Handle navigate to all from MainPageSearchBar
+	async function handleMainPageNavigateToAll() {
+		loadingCategory = 'all';
+		try {
+			await goto('/search');
+		} finally {
+			loadingCategory = null;
+		}
+	}
+
+	// Handle pill keyboard navigation from MainPageSearchBar
+	function handleMainPagePillKeyNav(e: KeyboardEvent, index: number) {
+		const pills = document.querySelectorAll('#category-pills button');
+		const totalPills = mainCategories.length + 1 + virtualCategories.length;
+
+		switch(e.key) {
+			case 'ArrowRight':
+				e.preventDefault();
+				selectedPillIndex = Math.min(index + 1, totalPills - 1);
+				(pills[selectedPillIndex] as HTMLElement)?.focus();
+				break;
+			case 'ArrowLeft':
+				e.preventDefault();
+				selectedPillIndex = Math.max(index - 1, 0);
+				(pills[selectedPillIndex] as HTMLElement)?.focus();
+				break;
+			case 'Home':
+				e.preventDefault();
+				selectedPillIndex = 0;
+				(pills[0] as HTMLElement)?.focus();
+				break;
+			case 'End':
+				e.preventDefault();
+				selectedPillIndex = totalPills - 1;
+				(pills[totalPills - 1] as HTMLElement)?.focus();
+				break;
+		}
+	}
+
+	// Handle prefetch category from MainPageSearchBar
+	async function handleMainPagePrefetchCategory(categorySlug: string) {
+		try {
+			await preloadCode(`/category/${categorySlug}`);
+			await preloadData(`/category/${categorySlug}`);
+		} catch (e) {
+			// Continue without preload if failed
 		}
 	}
 
@@ -509,15 +567,13 @@
 		goto(getProductUrl(result));
 	}
 
-	// SearchDropdown event handlers
+	// SearchDropdown event handlers (unused with new MainPageSearchBar)
 	function handleDropdownCategorySelect(category: any) {
 		goto(`/category/${category.slug}`);
-		showTrendingDropdown = false;
 	}
 
 	function handleDropdownSellerSelect(seller: any) {
 		goto(`/profile/${seller.username}`);
-		showTrendingDropdown = false;
 	}
 
 	function handleDropdownCollectionSelect(collection: any) {
@@ -552,7 +608,6 @@
 					goto(`/collection/${collection.key}`);
 			}
 		}
-		showTrendingDropdown = false;
 	}
 
 	async function handleFavorite(productId: string) {
@@ -728,6 +783,7 @@
 		selectedPartner = null;
 	}
 
+
 	function closeSellerModal() {
 		showSellerModal = false;
 		selectedSeller = null;
@@ -806,6 +862,15 @@
 			.filter(cat => !cat.parent_id) // Only top-level categories
 			.sort((a, b) => a.sort_order - b.sort_order) // Sort by order
 			.slice(0, 4) // Take first 4 (Women, Men, Kids, Unisex)
+			.map(cat => ({
+				slug: cat.slug,
+				name: translateCategory(cat.name),
+				product_count: cat.product_count || 0,
+				// Keep legacy properties for compatibility
+				key: cat.slug,
+				label: translateCategory(cat.name),
+				icon: getCategoryIcon(cat.name)
+			}))
 	);
 
 	// Categories loaded with product counts
@@ -982,455 +1047,77 @@
 
 {#key currentLang}
 
-<!-- Sticky Search + Category Navigation (Outside Main for Proper Positioning) -->
-<div class="bg-white/90 backdrop-blur-sm sticky z-50 border-b border-gray-100 shadow-sm" style="top: var(--app-header-offset, 56px) !important;">
-	<div class="px-2 sm:px-4 lg:px-6">
-				<!-- Unified Content Container -->
-				<div class="mx-auto relative">
-					<!-- Hero Search -->
-					<div id="hero-search-container" class="relative py-3">
-						<EnhancedSearchBar
-							bind:searchValue={searchQuery}
-							onSearch={handleSearch}
-							placeholder={i18n.search_placeholder()}
-							searchId="hero-search-input"
-							searchFunction={handleQuickSearch}
-							showDropdown={true}
-							maxResults={6}
-						>
-							{#snippet leftSection()}
-								<button
-									onclick={() => showTrendingDropdown = !showTrendingDropdown}
-									class="h-12 px-4 rounded-l-xl hover:bg-gray-100 transition-colors flex items-center gap-2"
-									aria-expanded={showTrendingDropdown}
-									aria-haspopup="listbox"
-									aria-label={i18n.search_categories()}
-								>
-									<svg
-										class="w-4 h-4 text-gray-600 transition-transform {showTrendingDropdown ? 'rotate-180' : ''}"
-										fill="none"
-										stroke="currentColor"
-										viewBox="0 0 24 24"
-										aria-hidden="true"
-									>
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-									</svg>
-									<span class="text-sm font-medium text-gray-600 hidden sm:inline">{i18n.search_categories()}</span>
-								</button>
-							{/snippet}
-						</EnhancedSearchBar>
+<!-- Main Page Search Bar -->
+<MainPageSearchBar
+	supabase={data.supabase}
+	bind:searchValue={searchQuery}
+	topBrands={topBrands}
+	topSellers={displayTopSellers}
+	quickShopItems={quickShopItems}
+	mainCategories={mainCategories}
+	virtualCategories={virtualCategories}
+	conditionFilters={quickConditionFilters}
+	i18n={i18n}
+	currentLang={currentLang}
+	selectedCondition={selectedCondition}
+	loadingCategory={loadingCategory}
+	onSearch={handleSearch}
+	onQuickSearch={handleQuickSearch}
+	onCategorySelect={handleMainPageCategorySelect}
+	onConditionFilter={handleMainPageConditionFilter}
+	onFilterChange={handleMainPageFilterChange}
+	onNavigateToAll={handleMainPageNavigateToAll}
+	onPillKeyNav={handleMainPagePillKeyNav}
+	onPrefetchCategory={handleMainPagePrefetchCategory}
+/>
 
-						{#if showTrendingDropdown}
-							<div class="absolute top-full left-0 right-0 mt-1 z-50">
-								<div class="bg-white border border-gray-200 rounded-lg shadow-lg p-4">
-									<div class="flex items-center gap-1 mb-3 bg-gray-100 p-1 rounded-lg">
-										<button
-											onclick={() => activeDropdownTab = 'trending'}
-											class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'trending' ? 'bg-white text-[color:var(--text-primary)] shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
-										>
-											Top Brands
-										</button>
-										<button
-											onclick={() => activeDropdownTab = 'sellers'}
-											class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'sellers' ? 'bg-white text-[color:var(--text-primary)] shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
-										>
-											Top Sellers
-										</button>
-										<button
-											onclick={() => activeDropdownTab = 'quickshop'}
-											class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'quickshop' ? 'bg-white text-[color:var(--text-primary)] shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
-										>
-											Quick Shop
-										</button>
-									</div>
-
-									<!-- Search Input -->
-									<div class="mb-4">
-										<div class="relative">
-											<svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-											</svg>
-											<input
-												type="text"
-												bind:value={dropdownSearchQuery}
-												placeholder={activeDropdownTab === 'trending' ? 'Search brands...' :
-															activeDropdownTab === 'sellers' ? 'Search sellers...' :
-															'Search quick actions...'}
-												class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[color:var(--input-focus-ring)] focus:border-[color:var(--input-focus-border)] bg-gray-50 hover:bg-white transition-colors"
-											/>
-											{#if dropdownSearchQuery.trim()}
-												<button
-													onclick={() => dropdownSearchQuery = ''}
-													class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 hover:text-gray-600"
-												>
-													<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-													</svg>
-												</button>
-											{/if}
-										</div>
-									</div>
-
-									{#if activeDropdownTab === 'trending'}
-										<div class="space-y-2">
-											{#if filteredTopBrands.length > 0}
-												{#each filteredTopBrands as brand}
-													<button
-														onclick={() => {
-															goto(`/search?brand=${encodeURIComponent(brand.name)}`);
-															showTrendingDropdown = false;
-														}}
-														class="w-full flex items-center gap-3 p-2 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
-													>
-														<img
-															src={brand.avatar || '/avatars/1.png'}
-															alt={brand.name}
-															class="w-8 h-8 rounded-full object-cover flex-shrink-0"
-															onerror={() => (this.src = '/avatars/1.png')}
-														/>
-														<div class="flex-1 min-w-0">
-															<div class="flex items-center gap-2">
-																<span class="text-sm font-medium text-gray-900 group-hover:text-[color:var(--text-primary)]">{brand.name}</span>
-																{#if brand.verified}
-																	<svg class="w-3 h-3 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
-																		<path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-																	</svg>
-																{/if}
-																<span class="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded">{brand.trending}</span>
-															</div>
-															<span class="text-xs text-gray-500">{brand.items} items</span>
-														</div>
-													</button>
-												{/each}
-											{:else if dropdownSearchQuery.trim()}
-												<div class="text-center py-8 text-gray-500">
-													<svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-													</svg>
-													<p class="text-sm">No brands found matching "{dropdownSearchQuery}"</p>
-												</div>
-											{/if}
-										</div>
-									{:else if activeDropdownTab === 'sellers'}
-										<div class="space-y-2">
-											{#if filteredDisplayTopSellers.length > 0}
-												{#each filteredDisplayTopSellers as seller}
-												<button
-													onclick={() => {
-														goto(`/profile/${seller.name}`);
-														showTrendingDropdown = false;
-													}}
-													class="w-full flex items-center gap-3 p-2 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
-												>
-													<img
-														src={seller.avatar || '/avatars/1.png'}
-														alt={seller.name}
-														class="w-8 h-8 rounded-full object-cover flex-shrink-0"
-														onerror={() => (this.src = '/avatars/1.png')}
-													/>
-													<div class="flex-1 min-w-0">
-														<div class="flex items-center gap-2">
-															<span class="text-sm font-medium text-gray-900 group-hover:text-[color:var(--text-primary)] truncate">{seller.name}</span>
-															{#if seller.verified}
-																<svg class="w-3 h-3 text-gray-900" fill="currentColor" viewBox="0 0 20 20">
-																	<path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-																</svg>
-															{/if}
-														</div>
-														<div class="flex items-center gap-2 text-xs text-gray-500">
-															<span>{seller.items} items</span>
-															{#if seller.rating > 0}
-																<span>•</span>
-																<div class="flex items-center gap-1">
-																	<svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-																		<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-																	</svg>
-																	<span>{seller.rating.toFixed(1)}</span>
-																</div>
-															{/if}
-														</div>
-													</div>
-												</button>
-											{/each}
-											{:else if dropdownSearchQuery.trim()}
-												<div class="text-center py-8 text-gray-500">
-													<svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-													</svg>
-													<p class="text-sm">No sellers found matching "{dropdownSearchQuery}"</p>
-												</div>
-											{/if}
-										</div>
-									{:else if activeDropdownTab === 'quickshop'}
-										<div class="space-y-2">
-											{#if filteredQuickShopItems.length > 0}
-												{#each filteredQuickShopItems as item}
-												<button
-													onclick={() => {
-														if (item.filter === 'collection=drip') {
-															goto('/drip');
-														} else if (item.filter === 'category=vintage') {
-															goto('/search?category=vintage');
-														} else {
-															goto(`/search?${item.filter}`);
-														}
-														showTrendingDropdown = false;
-													}}
-													class="w-full flex items-center gap-2 p-2 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
-												>
-													<span class="text-lg">{item.icon}</span>
-													<div class="flex-1 min-w-0">
-														<span class="text-sm font-medium text-gray-900 group-hover:text-[color:var(--text-primary)] block">{item.label}</span>
-														<span class="text-xs text-gray-500">{item.description}</span>
-													</div>
-												</button>
-											{/each}
-											{:else if dropdownSearchQuery.trim()}
-												<div class="text-center py-8 text-gray-500">
-													<svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-													</svg>
-													<p class="text-sm">No quick actions found matching "{dropdownSearchQuery}"</p>
-												</div>
-											{/if}
-										</div>
-									{:else}
-									{/if}
-								</div>
-							</div>
-						{/if}
-					</div>
-
-					<!-- Category Pills - Now part of unified container -->
-					<nav
-						id="category-pills"
-						aria-label={i18n.nav_browseCategories()}
-						class="flex items-center justify-start gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-3 sm:justify-center border-t border-gray-100/50"
-						style="margin-top: -1px;"
-					>
-					<!-- All Categories -->
-					<CategoryPill 
-						variant="primary"
-						label={i18n.search_all()}
-						loading={loadingCategory === 'all'}
-						disabled={loadingCategory === 'all'}
-						ariaLabel={i18n.search_viewAll()}
-						ariaCurrent={$page.url.pathname === '/search' ? 'page' : undefined}
-						data-prefetch="hover"
-						onmouseenter={() => preloadCode('/search')}
-						ontouchstart={() => preloadCode('/search')}
-						onclick={() => navigateToAllSearch()}
-						onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 0)}
-					/>
-					
-					<!-- Women Category - Standard Action (36px) -->
-					{#if mainCategories.find(c => c.slug === 'women')}
-						{@const category = mainCategories.find(c => c.slug === 'women')}
-						<CategoryPill
-							label={i18n.category_women()}
-							emoji="👗"
-							loading={loadingCategory === category.slug}
-							disabled={loadingCategory === category.slug}
-							ariaLabel={`${i18n.menu_browse()} ${i18n.category_women()}`}
-							itemCount={category.product_count || 0}
-							showItemCount={category.product_count > 0}
-							data-prefetch="hover"
-							data-category="women"
-							onmouseenter={() => prefetchCategoryPage(category.slug)}
-							ontouchstart={() => prefetchCategoryPage(category.slug)}
-							onclick={() => navigateToCategory(category.slug)}
-							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 1)}
-						/>
-					{/if}
-					
-					<!-- Men Category - Standard Action (36px) -->
-					{#if mainCategories.find(c => c.slug === 'men')}
-						{@const category = mainCategories.find(c => c.slug === 'men')}
-						<CategoryPill
-							label={i18n.category_men()}
-							emoji="👔"
-							loading={loadingCategory === category.slug}
-							disabled={loadingCategory === category.slug}
-							ariaLabel={`${i18n.menu_browse()} ${i18n.category_men()}`}
-							itemCount={category.product_count || 0}
-							showItemCount={category.product_count > 0}
-							data-prefetch="hover"
-							data-category="men"
-							onmouseenter={() => prefetchCategoryPage(category.slug)}
-							ontouchstart={() => prefetchCategoryPage(category.slug)}
-							onclick={() => navigateToCategory(category.slug)}
-							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 2)}
-						/>
-					{/if}
-					
-					<!-- Kids Category - Standard Action (36px) -->
-					{#if mainCategories.find(c => c.slug === 'kids')}
-						{@const category = mainCategories.find(c => c.slug === 'kids')}
-						<CategoryPill
-							label={i18n.category_kids()}
-							emoji="👶"
-							loading={loadingCategory === category.slug}
-							disabled={loadingCategory === category.slug}
-							ariaLabel={`${i18n.menu_browse()} ${i18n.category_kids()}`}
-							itemCount={category.product_count || 0}
-							showItemCount={category.product_count > 0}
-							data-prefetch="hover"
-							data-category="kids"
-							onmouseenter={() => prefetchCategoryPage(category.slug)}
-							ontouchstart={() => prefetchCategoryPage(category.slug)}
-							onclick={() => navigateToCategory(category.slug)}
-							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 3)}
-						/>
-					{/if}
-					
-					<!-- Unisex Category - Standard Action (36px) -->
-					{#if mainCategories.find(c => c.slug === 'unisex')}
-						{@const category = mainCategories.find(c => c.slug === 'unisex')}
-						<CategoryPill
-							label={i18n.category_unisex()}
-							emoji="🌍"
-							loading={loadingCategory === category.slug}
-							disabled={loadingCategory === category.slug}
-							ariaLabel={`${i18n.menu_browse()} ${i18n.category_unisex()}`}
-							itemCount={category.product_count || 0}
-							showItemCount={category.product_count > 0}
-							data-prefetch="hover"
-							data-category="unisex"
-							onmouseenter={() => prefetchCategoryPage(category.slug)}
-							ontouchstart={() => prefetchCategoryPage(category.slug)}
-							onclick={() => navigateToCategory(category.slug)}
-							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 4)}
-						/>
-					{/if}
-					
-					<!-- Virtual Categories - Unisex Product Types -->
-					{#each virtualCategories as virtualCategory, index}
-						<CategoryPill
-							variant="outline"
-							label={virtualCategory.name}
-							loading={loadingCategory === virtualCategory.slug}
-							disabled={loadingCategory === virtualCategory.slug}
-							ariaLabel={`${i18n.menu_browse()} ${virtualCategory.name}`}
-							itemCount={virtualCategory.product_count}
-							showItemCount={true}
-							data-prefetch="hover"
-							data-category={virtualCategory.slug}
-							onmouseenter={() => prefetchCategoryPage(virtualCategory.slug)}
-							ontouchstart={() => prefetchCategoryPage(virtualCategory.slug)}
-							onclick={() => navigateToCategory(virtualCategory.slug)}
-							onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 5 + index)}
-						/>
-					{/each}
-
-					<!-- Separator -->
-					<div class="w-px h-5 bg-gray-200 mx-2"></div>
-
-					<!-- Condition Pills -->
-					{#each quickConditionFilters as condition, index}
-						<button
-							onclick={() => handleQuickCondition(condition.key)}
-							class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-9 relative overflow-hidden
-								{selectedCondition === condition.key
-									? index === 0 ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-md'
-										: index === 1 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
-										: index === 2 ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md'
-										: 'bg-gradient-to-r from-slate-600 to-gray-600 text-white shadow-md'
-									: 'bg-white text-gray-700 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:shadow-sm'}"
-							aria-label={`Filter by ${condition.label}`}
-						>
-							<span class="relative z-10 flex items-center gap-1">
-								{#if index === 0}
-									<span class="w-1.5 h-1.5 rounded-full {selectedCondition === condition.key ? 'bg-white' : 'bg-emerald-500'}"></span>
-								{:else if index === 1}
-									<span class="w-1.5 h-1.5 rounded-full {selectedCondition === condition.key ? 'bg-white' : 'bg-blue-500'}"></span>
-								{:else if index === 2}
-									<span class="w-1.5 h-1.5 rounded-full {selectedCondition === condition.key ? 'bg-white' : 'bg-amber-500'}"></span>
-								{:else}
-									<span class="w-1.5 h-1.5 rounded-full {selectedCondition === condition.key ? 'bg-white' : 'bg-slate-500'}"></span>
-								{/if}
-								{condition.shortLabel}
-							</span>
-						</button>
-					{/each}
-				</nav>
-			</div>
-		</div>
+<!-- Promoted Products Section (under search) -->
+{#if dataLoaded && (boostedProducts.length > 0 || products.length > 0)}
+	<div id="promoted-products" class="relative z-0 mt-2 sm:mt-3">
+		<PromotedListingsSection
+			promotedProducts={boostedProducts.length > 0 ? boostedProducts : products.slice(0, 8)}
+			onProductClick={handleProductClick}
+			onFavorite={handleFavorite}
+			onBuy={handlePurchase}
+			favoritesState={$favoritesStore}
+			{formatPrice}
+			translations={{
+				promoted_listings: "Promoted Products",
+				promoted_description: "Featured items from verified sellers",
+				common_currency: i18n.common_currency(),
+				product_addToFavorites: i18n.product_addToFavorites(),
+				seller_unknown: i18n.seller_unknown(),
+				condition_brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
+				condition_newWithoutTags: i18n.sell_condition_newWithoutTags(),
+				condition_new: i18n.condition_new(),
+				condition_likeNew: i18n.condition_likeNew(),
+				condition_good: i18n.condition_good(),
+				condition_worn: i18n.sell_condition_worn(),
+				condition_fair: i18n.condition_fair(),
+				categoryTranslation: translateCategory
+			}}
+		/>
 	</div>
+{/if}
+
+<!-- Highlight Sellers/Brands Section (below promoted) -->
+{#if dataLoaded && sellers.length > 0}
+	<FeaturedSellers
+		sellers={(activeTab === 'brands' ? brands : sellers)}
+		onSellerClick={handleSellerClick}
+		title="Highlight Sellers"
+		description={ activeTab === 'brands' ? 'Verified brands' : 'Top-rated and verified sellers' }
+		class="mt-2 sm:mt-3"
+		showToggle={true}
+		activeTab={activeTab}
+		onToggle={(tab) => { activeTab = tab }}
+	/>
+{/if}
 
 <!-- Main Content Area -->
 <div class="min-h-screen bg-[color:var(--surface-subtle)] pb-20 sm:pb-0">
 	<main>
-		<!-- Promoted Highlights Section -->
-		{#if dataLoaded && (filteredPromotedProducts.length > 0 || brands.length > 0)}
-			<PromotedHighlights
-				promotedProducts={filteredPromotedProducts}
-				sellers={brands}
-				partners={partners}
-				onSellerSelect={handleSellerClick}
-				onSellerClick={handleSellerClick}
-				onPartnerClick={handlePartnerClick}
-				onProductClick={handleProductClick}
-				onProductBuy={handlePurchase}
-				onToggleFavorite={handleFavorite}
-				favoritesState={$favoritesStore}
-				{formatPrice}
-				translations={{
-					seller_premiumSeller: i18n.seller_premiumSeller(),
-					seller_premiumSellerDescription: i18n.seller_premiumSellerDescription(),
-					trending_promoted: i18n.trending_promoted(),
-					trending_featured: i18n.trending_featured(),
-					common_currency: i18n.common_currency(),
-					ui_scroll: i18n.ui_scroll ? i18n.ui_scroll() : 'Scroll',
-					promoted_hotPicks: i18n.promoted_hotPicks ? i18n.promoted_hotPicks() : 'Hot Picks',
-					promoted_premiumSellers: i18n.promoted_premiumSellers ? i18n.promoted_premiumSellers() : 'Premium Sellers',
-					explore_brands: i18n.explore_brands ? i18n.explore_brands() : 'Explore brands',
-					brands_discover_description: i18n.brands_discover_description ? i18n.brands_discover_description() : 'Discover unique brands and their latest collections',
-					brands_view_profile: i18n.brands_view_profile ? i18n.brands_view_profile() : 'View Profile',
-					categoryTranslation: translateCategory
-				}}
-			/>
-		{/if}
-
-		<!-- Boosted Listings Section -->
-		{#if dataLoaded && (boostedProducts.length > 0)}
-			<div id="boosted-listings" class="relative z-0 pt-3">
-				<FeaturedProducts
-					products={boostedProducts}
-					errors={data.errors}
-					sectionTitle={i18n.boosted_listings()}
-					onProductClick={handleProductClick}
-					onFavorite={handleFavorite}
-					onBrowseAll={handleBrowseAll}
-					onSellClick={handleSellClick}
-					{formatPrice}
-					favoritesState={$favoritesStore}
-					showViewAllButton={true}
-					onViewAll={handleViewProProducts}
-					translations={{
-						empty_noProducts: i18n.empty_noProducts(),
-						empty_startBrowsing: i18n.empty_startBrowsing(),
-						nav_sell: i18n.nav_sell(),
-						home_browseAll: i18n.home_browseAll(),
-						home_itemCount: i18n.home_itemCount(),
-						home_updatedMomentsAgo: i18n.home_updatedMomentsAgo(),
-						product_size: i18n.product_size(),
-						trending_newSeller: i18n.trending_newSeller(),
-						seller_unknown: i18n.seller_unknown(),
-						common_currency: i18n.common_currency(),
-						product_addToFavorites: i18n.product_addToFavorites(),
-						product_viewAll: i18n.product_viewAll(),
-						condition_brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
-						condition_newWithoutTags: i18n.sell_condition_newWithoutTags(),
-						condition_new: i18n.condition_new(),
-						condition_likeNew: i18n.condition_likeNew(),
-						condition_good: i18n.condition_good(),
-						condition_worn: i18n.sell_condition_worn(),
-						condition_fair: i18n.condition_fair(),
-						categoryTranslation: translateCategory
-					}}
-				/>
-			</div>
-		{/if}
+		<!-- Promoted Products Section moved below Highlight Sellers/Brands -->
 
 
 		<!-- Regular Products (Newest Listings) -->
@@ -1529,6 +1216,35 @@
 				</div>
 			</div>
 		{/if}
+
+		<!-- Promoted Products Section (now below Newest Listings) -->
+		{#if dataLoaded && (boostedProducts.length > 0 || products.length > 0)}
+			<div id="promoted-products" class="relative z-0 mt-4 sm:mt-6">
+				<PromotedListingsSection
+					promotedProducts={boostedProducts.length > 0 ? boostedProducts : products.slice(0, 8)}
+					onProductClick={handleProductClick}
+					onFavorite={handleFavorite}
+					onBuy={handlePurchase}
+					favoritesState={$favoritesStore}
+					{formatPrice}
+					translations={{
+						promoted_listings: "Promoted Products",
+						promoted_description: "Featured items from verified sellers",
+						common_currency: i18n.common_currency(),
+						product_addToFavorites: i18n.product_addToFavorites(),
+						seller_unknown: i18n.seller_unknown(),
+						condition_brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
+						condition_newWithoutTags: i18n.sell_condition_newWithoutTags(),
+						condition_new: i18n.condition_new(),
+						condition_likeNew: i18n.condition_likeNew(),
+						condition_good: i18n.condition_good(),
+						condition_worn: i18n.sell_condition_worn(),
+						condition_fair: i18n.condition_fair(),
+						categoryTranslation: translateCategory
+					}}
+				/>
+			</div>
+		{/if}
 	</main>
 </div>
 
@@ -1539,6 +1255,13 @@
 	}
 	.scrollbar-hide::-webkit-scrollbar {
 		display: none;
+	}
+
+	.line-clamp-2 {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 </style>
 
