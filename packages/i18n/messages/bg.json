@@ -1550,7 +1550,15 @@
 
   "nav_topBrands": "Брандове",
   "nav_topSellers": "Продавачи",
-  "nav_quickShop": "Бърз Shop",
+  "nav_quickShop": "Колекции",
+
+  "collections_drip": "Drip",
+  "collections_designer": "Дизайнерски",
+  "collections_designerPremium": "Дизайнерски 100$+",
+  "collections_newWithTags": "Нови с етикети",
+  "collections_likeNew": "Като нови",
+  "collections_under25": "До 25 лв",
+
   "nav_languageTheme": "Език и тема",
   "nav_supportCenter": "Център за поддръжка",
 

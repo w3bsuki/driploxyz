@@ -356,20 +356,17 @@
 	);
 
 
-	// Create seller products mapping from featured products
+	// Create entity→products mapping (works for sellers and brands) from featured products
 	const sellerProducts = $derived(() => {
-		const productsBySeller: Record<string, Product[]> = {};
-		
-		// Match products to sellers by seller_id
-		sellers.forEach(seller => {
-			const matchingProducts = products.filter(p => p.seller_id === seller.id);
-			
-			if (matchingProducts.length > 0) {
-				productsBySeller[seller.id] = matchingProducts.slice(0, 3);
+		const productsByEntity: Record<string, Product[]> = {};
+		const entities = [...sellers, ...brands];
+		entities.forEach(entity => {
+			const matching = products.filter(p => p.seller_id === entity.id);
+			if (matching.length > 0) {
+				productsByEntity[entity.id] = matching.slice(0, 3);
 			}
 		});
-		
-		return productsBySeller;
+		return productsByEntity;
 	});
 
 	// Initialize favorites from server data on mount (after derived values are available)
@@ -1104,6 +1101,7 @@
 {#if dataLoaded && sellers.length > 0}
 	<FeaturedSellers
 		sellers={(activeTab === 'brands' ? brands : sellers)}
+		sellerProducts={sellerProducts}
 		onSellerClick={handleSellerClick}
 		title={i18n.highlight_sellers()}
 		description={ activeTab === 'brands' ? i18n.verified_brands() : i18n.top_rated_sellers() }

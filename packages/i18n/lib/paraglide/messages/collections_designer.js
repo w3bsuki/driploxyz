@@ -1,12 +1,12 @@
 // eslint-disable
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
-const bg_nav_quickshop1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Колекции`
+const bg_collections_designer = /** @type {(inputs: {}) => string} */ () => {
+	return `Дизайнерски`
 };
 
-const en_nav_quickshop1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Collections`
+const en_collections_designer = /** @type {(inputs: {}) => string} */ () => {
+	return `Designer`
 };
 
 /**
@@ -22,13 +22,12 @@ const en_nav_quickshop1 = /** @type {(inputs: {}) => string} */ () => {
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
-const nav_quickshop1 = (inputs = {}, options = {}) => {
+export const collections_designer = (inputs = {}, options = {}) => {
 	if (experimentalMiddlewareLocaleSplitting && isServer === false) {
-		return /** @type {any} */ (globalThis).__paraglide_ssr.nav_quickshop1(inputs) 
+		return /** @type {any} */ (globalThis).__paraglide_ssr.collections_designer(inputs) 
 	}
 	const locale = options.locale ?? getLocale()
-	trackMessageCall("nav_quickshop1", locale)
-	if (locale === "bg") return bg_nav_quickshop1(inputs)
-	return en_nav_quickshop1(inputs)
+	trackMessageCall("collections_designer", locale)
+	if (locale === "bg") return bg_collections_designer(inputs)
+	return en_collections_designer(inputs)
 };
-export { nav_quickshop1 as "nav_quickShop" }

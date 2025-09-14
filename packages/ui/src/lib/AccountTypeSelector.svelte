@@ -74,7 +74,7 @@
         'No ads in your listings'
       ],
       price: `25 BGN`,
-      icon: '⭐',
+      icon: '💎',
       popular: true
     },
     {

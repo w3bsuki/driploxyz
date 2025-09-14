@@ -1541,7 +1541,15 @@
 
   "nav_topBrands": "Top Brands",
   "nav_topSellers": "Top Sellers",
-  "nav_quickShop": "Quick Shop",
+  "nav_quickShop": "Collections",
+
+  "collections_drip": "Drip",
+  "collections_designer": "Designer",
+  "collections_designerPremium": "Designer 100$+",
+  "collections_newWithTags": "New with Tags",
+  "collections_likeNew": "Like New",
+  "collections_under25": "Under 25",
+
   "nav_languageTheme": "Language & Theme",
   "nav_supportCenter": "Support Centre",
 

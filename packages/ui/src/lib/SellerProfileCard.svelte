@@ -47,11 +47,11 @@
   <!-- Seller Info Section -->
   <div class="flex flex-col items-center mb-3">
     <!-- Avatar -->
-    <div class="mb-2 relative">
+    <div class="mb-2">
       <div class="w-14 h-14 rounded-full bg-gray-200 overflow-hidden border-2 border-[color:var(--gray-300)] shadow-sm">
         {#if seller.avatar_url && !imageError}
-          <img 
-            src={seller.avatar_url} 
+          <img
+            src={seller.avatar_url}
             alt={seller.username || seller.full_name || 'Seller'}
             class="w-full h-full object-cover"
             loading="lazy"
@@ -66,38 +66,37 @@
           </div>
         {/if}
       </div>
-      <!-- Ultrathink: Clean account badges using new components -->
-      {#if seller.account_type || hasVerifiedBadge}
-        <div class="absolute -bottom-1 -right-1">
-          {#if seller.account_type === 'admin'}
-            <!-- Keep admin text badge for authority (no shadows) -->
-            <span class="inline-block px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-red-600 text-white border border-white">
-              {i18n.badge_admin()}
-            </span>
-          {:else if seller.account_type === 'brand'}
-            <!-- Use new BrandBadge component -->
-            <BrandBadge size="xs" position="static" variant="black" />
-          {:else if seller.account_type === 'pro'}
-            <!-- Use new ProBadge component -->
-            <ProBadge size="xs" position="static" />
-          {:else if seller.account_type === 'personal' || hasVerifiedBadge}
-            <!-- Clean verified badge - smaller size -->
-            <div class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center border-2 border-white">
-              <svg class="w-2.5 h-2.5 text-white" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-              </svg>
-            </div>
-          {/if}
-        </div>
-      {/if}
     </div>
 
 
-    <!-- Username -->
-    <div class="mb-1">
-      <span class="font-semibold text-[color:var(--gray-800)] text-base truncate max-w-[140px] block text-center tracking-tight">
-        @{seller.username || 'seller'}
+    <!-- Username with badge -->
+    <div class="mb-1 flex items-center justify-center gap-1.5">
+      <span class="font-semibold text-[color:var(--gray-800)] text-base truncate max-w-[120px] text-center tracking-tight">
+        {seller.username || 'seller'}
       </span>
+
+      <!-- Account badges moved here -->
+      {#if seller.account_type || hasVerifiedBadge}
+        {#if seller.account_type === 'admin'}
+          <!-- Keep admin text badge for authority -->
+          <span class="inline-block px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-red-600 text-white">
+            {i18n.badge_admin()}
+          </span>
+        {:else if seller.account_type === 'brand'}
+          <!-- Use new BrandBadge component -->
+          <BrandBadge size="s" position="static" variant="black" />
+        {:else if seller.account_type === 'pro'}
+          <!-- Use new ProBadge component -->
+          <ProBadge size="s" position="static" />
+        {:else if seller.account_type === 'personal' || hasVerifiedBadge}
+          <!-- Clean verified badge -->
+          <div class="w-5 h-5 bg-black rounded-full flex items-center justify-center">
+            <svg class="w-2.5 h-2.5 text-white" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+          </div>
+        {/if}
+      {/if}
     </div>
 
     <!-- Stats -->

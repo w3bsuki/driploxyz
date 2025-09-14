@@ -67,22 +67,22 @@ let activeDropdownTab = $state('categories');
 let dropdownSearchQuery = $state('');
 
 // Collections data
-const collections: Collection[] = [
+const collections = $derived<Collection[]>([
   // Quick Shopping Collections
   { key: 'newest', label: 'Newest', emoji: '🆕' },
-  { key: 'under25', label: 'Under 25 лв', emoji: '💰' },
+  { key: 'under25', label: i18n.collections_under25 || 'Under 25', emoji: '💰' },
   { key: 'price-low', label: 'Cheapest', emoji: '📉' },
-  { key: 'premium', label: 'Premium', emoji: '⭐' },
+  { key: 'premium', label: i18n.collections_designerPremium || 'Designer 100$+', emoji: '💎' },
   // Condition Collections
-  { key: 'condition=brand_new_with_tags', label: 'New with Tags', emoji: '🏷️' },
-  { key: 'condition=like_new', label: 'Like New', emoji: '✨' },
+  { key: 'condition=brand_new_with_tags', label: i18n.collections_newWithTags || 'New with Tags', emoji: '🏷️' },
+  { key: 'condition=like_new', label: i18n.collections_likeNew || 'Like New', emoji: '✨' },
   { key: 'condition=good', label: 'Good', emoji: '👍' },
   // Style Collections
   { key: 'category=clothing', label: 'All Clothing', emoji: '👕' },
   { key: 'category=shoes', label: 'All Shoes', emoji: '👟' },
   { key: 'category=bags', label: 'All Bags', emoji: '👜' },
   { key: 'category=accessories', label: 'All Accessories', emoji: '💍' }
-];
+]);
 
 // Filtered data for dropdown search
 const filteredCollections = $derived(
