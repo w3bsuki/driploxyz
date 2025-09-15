@@ -2,10 +2,12 @@
 export { default as Badge } from './Badge.svelte';
 export type { SvelteComponent as _BadgeComponent } from 'svelte';
 export { default as Banner } from './Banner.svelte';
+export { default as SectionBanner } from './SectionBanner.svelte';
 export { default as Button } from './Button.svelte';
 export { default as Input } from './Input.svelte';
 export { default as Card } from './Card.svelte';
 export { default as Modal } from './Modal.svelte';
+export { default as Overlay } from './Overlay.svelte';
 export { default as ProductCard } from './ProductCard.svelte';
 export { default as IntegratedSearchBar } from './IntegratedSearchBar.svelte';
 export { default as CategoryDropdown } from './CategoryDropdown.svelte';
@@ -15,6 +17,8 @@ export { default as SellerProfileCard } from './SellerProfileCard.svelte';
 export { default as FeaturedSellers } from './FeaturedSellers.svelte';
 export { default as Breadcrumb } from './Breadcrumb.svelte';
 export { default as ErrorBoundary } from './ErrorBoundary.svelte';
+export { default as DynamicContentErrorBoundary } from './DynamicContentErrorBoundary.svelte';
+export { default as LazyImage } from './LazyImage.svelte';
 export { default as EngagementBanner } from './EngagementBanner.svelte';
 
 // Enhanced product components
@@ -83,11 +87,12 @@ export { default as TypingIndicator } from './TypingIndicator.svelte';
 // Onboarding components
 export { default as WelcomeModal } from './WelcomeModal.svelte';
 export { default as OnboardingStep } from './OnboardingStep.svelte';
+// TODO: Move these to onboarding route after production release
 export { default as AccountTypeSelector } from './AccountTypeSelector.svelte';
 export { default as AvatarSelector } from './AvatarSelector.svelte';
 export { default as SocialLinksEditor } from './SocialLinksEditor.svelte';
 export { default as PayoutMethodSelector } from './PayoutMethodSelector.svelte';
-export { default as OnboardingSuccessModal } from './OnboardingSuccessModal.svelte';
+// REMOVED: OnboardingSuccessModal - onboarding-specific
 
 // Specialized badges (domain-specific)
 export { default as ProBadge } from './ProBadge.svelte';
@@ -99,11 +104,11 @@ export { default as PremiumBadge } from './PremiumBadge.svelte';
 export { default as AdminBadge } from './AdminBadge.svelte';
 
 // Admin Management Components (moved to respective apps)
-export { default as BrandPaymentModal } from './BrandPaymentModal.svelte';
-export { default as WelcomeTutorialFlow } from './WelcomeTutorialFlow.svelte';
+// REMOVED: BrandPaymentModal - admin-specific
+// REMOVED: WelcomeTutorialFlow - unused
 
 // Country/Region components
-export { default as CountryDetectionBanner } from './CountryDetectionBanner.svelte';
+// REMOVED: CountryDetectionBanner - unused
 
 // Order and Review components
 export { default as OrderStatus } from './OrderStatus.svelte';
@@ -117,8 +122,8 @@ export { default as ReviewPrompt } from './ReviewPrompt.svelte';
 // Product sold status components
 export { default as SoldOverlay } from './SoldOverlay.svelte';
 export { default as SoldNotificationToast } from './SoldNotificationToast.svelte';
-export { default as ProductSoldManager } from './ProductSoldManager.svelte';
-export { default as SoldNotificationPanel } from './SoldNotificationPanel.svelte';
+// REMOVED: ProductSoldManager - over-engineered
+// REMOVED: SoldNotificationPanel - over-engineered
 
 // Image components
 
@@ -209,8 +214,7 @@ export { default as Accordion } from './Accordion.svelte';
 // Seller components
 export { default as SellerQuickView } from './SellerQuickView.svelte';
 
-// MOVED TO EXPERIMENTAL - Quick view components (unused)
-export { default as HighlightQuickView } from './HighlightQuickView.svelte';
+// REMOVED: HighlightQuickView - unused experimental component
 
 // Auth components
 export { default as AuthPopup } from './AuthPopup.svelte';

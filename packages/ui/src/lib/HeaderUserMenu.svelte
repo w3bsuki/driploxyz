@@ -1,5 +1,6 @@
 <script lang="ts">
   import Avatar from './Avatar.svelte';
+  import type { AvatarVariant, AvatarSize } from '../types';
   import Menu from './primitives/menu/Menu.svelte';
   
   interface Props {
@@ -11,6 +12,8 @@
     onSignOut: () => void;
     onClose: () => void;
     signingOut?: boolean;
+    avatarVariant?: AvatarVariant;
+    avatarSize?: AvatarSize; // base size; responsive overrides via class
     translations?: {
       myProfile?: string;
       orders?: string;
@@ -31,6 +34,8 @@
     onSignOut, 
     onClose,
     signingOut = false,
+    avatarVariant = 'circle',
+    avatarSize = 'sm',
     translations = {
       myProfile: 'My Profile',
       orders: 'Orders',
@@ -56,15 +61,18 @@
   gutter={12}
   portal="body"
   menuClass="menu w-auto sm:w-56 z-[60] bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] shadow-[var(--shadow-lg)] rounded-[var(--radius-lg)]"
-  triggerClass="p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-0 outline-0 shadow-none rounded-full cursor-pointer inline-flex items-center justify-center"
+  triggerClass="p-0 bg-transparent hover:bg-transparent focus:bg-transparent active:bg-transparent border-0 outline-0 shadow-none rounded-full cursor-pointer inline-flex items-center justify-center min-w-[44px] min-h-[44px] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary"
+  ariaLabel={`Open user menu for ${userDisplayName}`}
 >
   {#snippet trigger()}
     <Avatar 
       name={userDisplayName} 
-      src={profile?.avatar_url} 
-      size="sm"
+      src={profile?.avatar_url}
+      alt={`${userDisplayName}'s avatar`}
+      size={avatarSize}
+      variant={avatarVariant}
       fallback={initials}
-      class="hover:ring-2 hover:ring-[color:var(--border-emphasis)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary transition-all cursor-pointer"
+      class="sm:w-12 sm:h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary transition-all cursor-pointer"
     />
   {/snippet}
   

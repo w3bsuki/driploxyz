@@ -4,8 +4,8 @@
   import Avatar from './Avatar.svelte';
   import LanguageSwitcher from './LanguageSwitcher.svelte';
   import ThemeToggle from './ThemeToggle.svelte';
-  import { portal } from './actions/portal';
   import { browser } from '$app/environment';
+  import { portal } from './actions/portal';
   import * as i18n from '@repo/i18n';
   import type { Database } from '@repo/database';
 
@@ -34,6 +34,8 @@
     onLanguageChange: (lang: string) => void;
     signingOut?: boolean;
     searchFunction?: (query: string) => Promise<{ data: any[]; error: string | null }>;
+    unreadMessages?: number;
+    unreadNotifications?: number;
     translations?: {
       sellItems?: string;
       myProfile?: string;
@@ -118,65 +120,34 @@
   let selectedMainCategory = $state(null);
   let categoryBreadcrumb = $state([]);
 
-  // Enhanced menu state management with proper cleanup
-  let rootEl = $state<HTMLDivElement | null>(null);
+  // Dialog element reference
+  let dialogElement = $state<HTMLDivElement | null>(null);
 
+  // Simple escape key handling and body scroll lock
   $effect(() => {
     if (!browser) return;
 
-    if (isOpen) {
-      // Remove any stale instances with the same id before opening
-      try {
-        const wrapperId = id || 'mobile-navigation';
-        const selector = `#${wrapperId}`;
-        document.querySelectorAll(selector).forEach((el) => {
-          if (el !== rootEl) {
-            el.parentNode?.removeChild(el);
-          }
-        });
-      } catch {}
-
-      // Add body scroll lock when menu opens
-      document.body.classList.add('overflow-hidden');
-      document.documentElement.classList.add('overflow-hidden');
-      // Also add a sentinel class to control global UI (e.g., hide bottom nav)
-      document.documentElement.classList.add('mobile-nav-open');
-
-      // Blur any active input (closes search dropdowns/quick pills overlays)
-      try {
-        (document.activeElement as HTMLElement | null)?.blur?.();
-      } catch {}
-
-      // Add escape key handler
-      function handleKeyDown(e: KeyboardEvent) {
-        if (e.key === 'Escape') {
-          closeMenu();
-        }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape' && isOpen) {
+        closeMenu();
       }
+    }
 
-      document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
 
-      // Trap focus to menu while open (mobile a11y)
-      const previousActive = document.activeElement as HTMLElement | null;
-      queueMicrotask(() => {
-        const firstFocusable = (document.querySelector('#' + id + ' button, #' + id + ' a, #' + id + ' input, #' + id + ' select, #' + id + ' textarea') as HTMLElement | null);
-        firstFocusable?.focus();
-      });
-
-      return () => {
-        document.removeEventListener('keydown', handleKeyDown);
-        // Always cleanup scroll lock on cleanup
-        document.body.classList.remove('overflow-hidden');
-        document.documentElement.classList.remove('overflow-hidden');
-        document.documentElement.classList.remove('mobile-nav-open');
-        previousActive?.focus?.();
-      };
+    if (isOpen) {
+      document.body.classList.add('overflow-hidden');
+      document.documentElement.classList.add('mobile-nav-open');
     } else {
-      // Remove body scroll lock when menu closes
       document.body.classList.remove('overflow-hidden');
-      document.documentElement.classList.remove('overflow-hidden');
       document.documentElement.classList.remove('mobile-nav-open');
     }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.classList.remove('overflow-hidden');
+      document.documentElement.classList.remove('mobile-nav-open');
+    };
   });
 
 
@@ -227,39 +198,15 @@
 
   // No backdrop handler needed - Vinted style menu
 
-  // Enhanced close menu function with cleanup
+  // Simple close menu function
   function closeMenu() {
     // Reset all navigation state
     currentView = 'main';
     selectedMainCategory = null;
     categoryBreadcrumb = [];
 
-    // Force cleanup body scroll lock immediately
-    if (browser) {
-      document.body.classList.remove('overflow-hidden');
-      document.documentElement.classList.remove('overflow-hidden');
-    }
-
     // Call parent close handler
     onClose();
-
-    // Hard fail-safe: forcibly remove any lingering portal node by id
-    if (browser) {
-      queueMicrotask(() => {
-        try {
-          const wrapperId = id || 'mobile-navigation';
-          const el = document.getElementById(wrapperId);
-          if (el && el.parentNode) {
-            el.parentNode.removeChild(el);
-          }
-          // Extra cleanup: remove any stray mobile nav dialogs in overlay root
-          const overlayRoot = document.getElementById('overlay-root') || document.body;
-          overlayRoot.querySelectorAll('.mobile-nav-dialog').forEach((node) => {
-            try { node.parentNode?.removeChild(node); } catch {}
-          });
-        } catch {}
-      });
-    }
   }
 
   // Handle search from mobile search component
@@ -268,15 +215,22 @@
     closeMenu();
   }
 
-  // Navigation stats for user profile
-  const userStats = $derived(() => {
-    if (!profile?.stats) return null;
-    return {
-      itemsSold: profile.stats.items_sold || 0,
-      rating: profile.stats.average_rating,
-      memberSince: profile.created_at ? new Date(profile.created_at).getFullYear().toString() : undefined
-    };
+  // Lightweight profile stats (tolerant to missing fields)
+  const profileStats = $derived(() => {
+    const s = profile?.stats || {};
+    const ratingRaw = typeof s.average_rating === 'number' ? s.average_rating : (typeof s.rating === 'number' ? s.rating : 0);
+    const rating = Number.isFinite(ratingRaw) ? ratingRaw : 0;
+    const itemsSold = typeof s.items_sold === 'number' ? s.items_sold : (typeof s.sales === 'number' ? s.sales : 0);
+    const listings = typeof s.active_listings === 'number' ? s.active_listings : (typeof s.listings === 'number' ? s.listings : (typeof s.listings_count === 'number' ? s.listings_count : 0));
+    return { rating, itemsSold, listings };
   });
+
+  function formatRating(r: number): string {
+    if (!Number.isFinite(r)) return '0';
+    const rounded = Math.round(r * 10) / 10;
+    // Show integer ratings without trailing .0 (e.g., 0, 4)
+    return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+  }
 
   // Real category counts from props
   const categoryCounts = $derived(() => {
@@ -311,36 +265,22 @@
   }
 </script>
 
-{#if isOpen}
-  <!-- Mobile menu - Full screen overlay -->
+<!-- Mobile menu - Full screen overlay (always rendered for smooth transitions) -->
+<div
+  use:portal
+  class="sm:hidden fixed inset-0 z-[99999] mobile-nav-dialog transition-all duration-300 ease-out {isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}"
+  style="position: fixed; top: var(--app-header-offset, 56px); left: 0; right: 0; bottom: 0; z-index: 99999;"
+  role="dialog"
+  aria-label="Mobile navigation menu"
+  {id}
+  bind:this={dialogElement}
+>
+  <!-- Full-screen mobile menu panel -->
   <div
-    use:portal={'#overlay-root'}
-    class="sm:hidden fixed inset-0 z-[60] mobile-nav-dialog"
-    role="dialog"
-    aria-modal="true"
-    aria-label="Mobile navigation menu"
-    {id}
-    bind:this={rootEl}
+    class="h-full bg-white shadow-lg overflow-hidden transition-opacity transition-transform duration-300 ease-out {isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'}"
   >
-    <!-- Full-screen mobile menu panel -->
-    <div
-      class="h-full bg-white shadow-lg overflow-hidden transform transition-transform duration-300 ease-out {isOpen ? 'translate-y-0' : '-translate-y-full'}"
-    >
       <!-- Main content container -->
-      <div class="h-full bg-white flex flex-col">
-        <!-- Header with close button -->
-        <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-white">
-          <div class="text-lg font-bold text-gray-900">driplo</div>
-          <button
-            onclick={closeMenu}
-            class="flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
-            aria-label="Close menu"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+      <div class="h-full bg-white flex flex-col relative">
 
         <!-- Content area with scroll -->
         <div class="flex-1 overflow-y-auto overscroll-contain" style="-webkit-overflow-scrolling: touch;">
@@ -348,68 +288,79 @@
 
           {#if isLoggedIn && user && profile}
             <!-- Enhanced User Profile Section -->
-            <div class="bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
-              <div class="flex items-center space-x-4">
+            <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 relative">
+              <!-- Notifications quick action (top-right) -->
+              <a
+                href="/notifications"
+                onclick={closeMenu}
+                aria-label="Notifications"
+                class="absolute top-2 right-2 inline-flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 text-gray-600"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                </svg>
+                {#if typeof unreadNotifications === 'number' && unreadNotifications > 0}
+                  <span class="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {unreadNotifications > 99 ? '99' : unreadNotifications}
+                  </span>
+                {/if}
+              </a>
+              <div class="flex items-center gap-3">
                 <!-- User Avatar -->
                 <Avatar
                   name={userDisplayName}
                   src={profile?.avatar_url}
-                  size="lg"
+                  size="md"
                   fallback={initials}
-                  class="ring-2 ring-white shadow-sm"
+                  style="width: 44px; height: 44px;"
                 />
 
                 <!-- User Info -->
                 <div class="flex-1 min-w-0">
-                  <div class="font-semibold text-gray-900 text-base truncate">{userDisplayName}</div>
-                  {#if profile?.username}
-                    <div class="text-xs text-gray-600 truncate">@{profile.username}</div>
-                  {/if}
-                  {#if userStats}
-                    <div class="flex items-center gap-3 mt-1 text-xs text-gray-600">
-                      {#if userStats.rating}
-                        <div class="flex items-center gap-1">
-                          <svg class="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                          <span>{userStats.rating.toFixed(1)}</span>
-                        </div>
-                      {/if}
-                      <div class="flex items-center gap-1">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 12H6L5 9z" />
-                        </svg>
-                        <span>{userStats.itemsSold} sold</span>
-                      </div>
-                      {#if userStats.memberSince}
-                        <span>Member since {userStats.memberSince}</span>
-                      {/if}
+                  <div class="flex items-center gap-2 min-w-0">
+                    <div class="font-semibold text-gray-900 text-sm truncate">{userDisplayName}</div>
+                    <div class="flex items-center gap-1 text-[11px] text-gray-600 flex-shrink-0">
+                      <svg class="w-3.5 h-3.5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      <span>{formatRating(profileStats.rating)}</span>
                     </div>
+                  </div>
+                  {#if profile?.username}
+                    <div class="text-xs text-gray-500 truncate">@{profile.username}</div>
                   {/if}
+                </div>
                 </div>
 
-                <!-- Profile actions -->
-                <div class="flex flex-col gap-2">
-                  {#if canSell}
-                    <a
-                      href="/sell"
-                      onclick={closeMenu}
-                  class="px-3 py-3 bg-black text-white text-xs font-medium rounded-lg hover:bg-gray-800 active:bg-gray-900 transition-colors touch-manipulation text-center min-h-[44px]"
-                    >
-                      {translations.sellItems}
-                    </a>
-                  {:else}
-                    <a
-                      href="/start-selling"
-                      onclick={closeMenu}
-                  class="px-3 py-3 bg-black text-white text-xs font-medium rounded-lg hover:bg-gray-800 active:bg-gray-900 transition-colors touch-manipulation text-center min-h-[44px]"
-                    >
-                      {translations.startSelling}
-                    </a>
-                  {/if}
+                <!-- Quick actions: compact and aligned -->
+                <div class="mt-3 grid grid-cols-2 gap-2">
+                  <a
+                    href="/account"
+                    onclick={closeMenu}
+                    class="inline-flex items-center justify-center min-h-[40px] px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-900"
+                  >
+                    <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    {translations.myProfile || 'View Profile'}
+                  </a>
+                  <a
+                    href="/messages"
+                    onclick={closeMenu}
+                    class="relative inline-flex items-center justify-center min-h-[40px] px-3 text-sm font-medium rounded-lg border border-gray-200 bg-white hover:bg-gray-50 active:bg-gray-100 text-gray-900"
+                  >
+                    <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zM12 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm3.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337 5.972 5.972 0 01-3.035 1.557 4.48 4.48 0 00.467-1.226c.233-1.162-.758-2.204-1.535-2.943C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+                    </svg>
+                    {i18n.nav_messages()}
+                    {#if typeof unreadMessages === 'number' && unreadMessages > 0}
+                      <span class="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {unreadMessages > 99 ? '99' : unreadMessages}
+                      </span>
+                    {/if}
+                  </a>
                 </div>
               </div>
-            </div>
           {/if}
 
           <!-- Search Section -->
@@ -494,7 +445,7 @@
               <!-- Kids Category -->
               <button
                 onclick={() => handleCategoryClick('kids', 1, ['kids'])}
-                class="w-full flex items-center justify-between py-2.5 px-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[var(--touch-standard)]"
+                class="w-full flex items-center justify-between py-2.5 px-3 bg-gray-50 border border-gray-200 hover:border-gray-300 hover:bg-gray-100 hover:shadow-sm rounded-lg transition-colors touch-manipulation min-h-[40px]"
                 aria-label="Browse Kids items"
               >
                 <div class="flex items-center gap-4">
@@ -655,7 +606,7 @@
                 <a
                   href="/privacy"
                   onclick={closeMenu}
-                  class="flex items-center px-3 py-3 text-gray-900 hover:bg-gray-100 transition-colors border-b border-gray-200 last:border-b-0 touch-manipulation min-h-[36px]"
+                  class="flex items-center px-3 py-3 text-gray-900 hover:bg-gray-100 transition-colors border-b border-gray-200 last:border-b-0 touch-manipulation min-h-[40px]"
                 >
                   <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -666,7 +617,7 @@
                 <a
                   href="/terms"
                   onclick={closeMenu}
-                  class="flex items-center px-3 py-3 text-gray-900 hover:bg-gray-100 transition-colors border-b border-gray-200 last:border-b-0 touch-manipulation min-h-[36px]"
+                  class="flex items-center px-3 py-3 text-gray-900 hover:bg-gray-100 transition-colors border-b border-gray-200 last:border-b-0 touch-manipulation min-h-[40px]"
                 >
                   <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -683,7 +634,7 @@
                 <button
                   onclick={() => { closeMenu(); onSignOut(); }}
                   disabled={signingOut}
-                  class="w-full flex items-center justify-center px-4 py-4 text-red-600 hover:text-red-700 hover:bg-red-50 active:bg-red-100 rounded-xl transition-all duration-200 border border-red-200 hover:border-red-300 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation min-h-[44px]"
+                  class="w-full flex items-center justify-center px-4 py-3.5 text-red-600 hover:text-red-700 hover:bg-red-50 active:bg-red-100 rounded-xl transition-all duration-200 border border-red-200 hover:border-red-300 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation min-h-[40px]"
                 >
                   {#if signingOut}
                     <svg class="animate-spin w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24">
@@ -706,14 +657,14 @@
                   <a
                     href="/login"
                     onclick={closeMenu}
-                    class="flex items-center justify-center px-4 py-4 text-gray-900 hover:text-gray-700 hover:bg-gray-50 active:bg-gray-100 rounded-xl transition-all duration-200 border border-gray-200 hover:border-gray-300 touch-manipulation min-h-[44px]"
+                    class="flex items-center justify-center px-4 py-3.5 text-gray-900 hover:text-gray-700 hover:bg-gray-50 active:bg-gray-100 rounded-xl transition-all duration-200 border border-gray-200 hover:border-gray-300 touch-manipulation min-h-[40px]"
                   >
                     <span class="font-semibold">{translations.signIn}</span>
                   </a>
                   <a
                     href="/signup"
                     onclick={closeMenu}
-                    class="flex items-center justify-center px-4 py-4 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 active:bg-gray-900 transition-all duration-200 touch-manipulation min-h-[44px]"
+                    class="flex items-center justify-center px-4 py-3.5 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 active:bg-gray-900 transition-all duration-200 touch-manipulation min-h-[40px]"
                   >
                     <span>{translations.signUp}</span>
                   </a>
@@ -727,7 +678,7 @@
               <div class="flex items-center gap-3 mb-4">
                 <button
                   onclick={handleBackToMain}
-                  class="flex items-center justify-center min-w-[36px] min-h-[36px] rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors touch-manipulation"
+                  class="flex items-center justify-center min-w-[40px] min-h-[40px] rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors touch-manipulation"
                   aria-label="Back to main menu"
                 >
                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -772,9 +723,8 @@
             </div>
           {/if}
 
-          </div>
         </div>
       </div>
     </div>
   </div>
-{/if}
+</div>

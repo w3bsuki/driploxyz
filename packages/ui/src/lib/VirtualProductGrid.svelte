@@ -68,7 +68,7 @@
   }: Props = $props();
 
   let containerElement: HTMLDivElement;
-  let sentinelElement: HTMLDivElement;
+  let sentinelElement = $state<HTMLDivElement>();
   let scrollTop = $state(0);
   let containerWidth = $state(0);
   let mounted = $state(false);

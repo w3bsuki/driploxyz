@@ -79,7 +79,11 @@
       "Read(//k//**)",
       "Bash(taskkill:*)",
       "mcp__playwright__browser_press_key",
-      "mcp__svelte-docs__svelte_definition"
+      "mcp__svelte-docs__svelte_definition",
+      "mcp__playwright__browser_evaluate",
+      "WebFetch(domain:dr1plo.vercel.app)",
+      "Bash(netstat:*)",
+      "WebFetch(domain:ux.stackexchange.com)"
     ]
   },
   "enableAllProjectMcpServers": true,

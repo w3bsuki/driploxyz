@@ -49,8 +49,8 @@
   let lastTouchTime = 0;
   
   let mainImageRef: HTMLElement;
-  let fullscreenRef: HTMLElement;
-  let thumbnailsRef: HTMLElement;
+  let fullscreenRef = $state<HTMLElement>();
+  let thumbnailsRef = $state<HTMLElement>();
 
   function selectImage(index: number) {
     if (index === selectedImage || index < 0 || index >= images.length) return;

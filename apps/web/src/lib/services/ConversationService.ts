@@ -140,7 +140,7 @@ export class ConversationService {
         return false;
       }
 
-      const response = await fetch(`${this.supabase.supabaseUrl}/functions/v1/send-message`, {
+      const response = await fetch(`${(this.supabase as any).supabaseUrl}/functions/v1/send-message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -246,7 +246,7 @@ export class ConversationService {
       });
 
       if (error) {
-        messagingLogger.error('Failed to load messages', error, { conversationId, errorDetails: error });
+        messagingLogger.error('Failed to load messages', String(error), { conversationId, errorDetails: String(error) });
         return [];
       }
 
@@ -274,10 +274,10 @@ export class ConversationService {
 
       return messages;
     } catch (error) {
-      messagingLogger.error('Error loading messages', error, { 
-        conversationId, 
-        errorMessage: error?.message,
-        errorStack: error?.stack,
+      messagingLogger.error('Error loading messages', String(error), {
+        conversationId,
+        errorMessage: error instanceof Error ? error.message : String(error),
+        errorStack: error instanceof Error ? error.stack : undefined,
         errorDetails: JSON.stringify(error)
       });
       return [];

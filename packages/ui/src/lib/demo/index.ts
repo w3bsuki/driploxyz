@@ -2,9 +2,12 @@
 // These are showcase implementations of modern mobile-first product pages
 // inspired by the best in class marketplace apps
 
-export { default as DepopStyleProductPage } from './DepopStyleProductPage.svelte';
-export { default as VintedStyleProductPage } from './VintedStyleProductPage.svelte'; 
-export { default as InstagramStyleProductPage } from './InstagramStyleProductPage.svelte';
+export { default as DemoShowcase } from './DemoShowcase.svelte';
+
+// TODO: Create these demo components
+// export { default as DepopStyleProductPage } from './DepopStyleProductPage.svelte';
+// export { default as VintedStyleProductPage } from './VintedStyleProductPage.svelte';
+// export { default as InstagramStyleProductPage } from './InstagramStyleProductPage.svelte';
 
 // Sample data for testing the demos
 export const sampleDepopProduct = {

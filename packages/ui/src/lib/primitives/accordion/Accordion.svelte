@@ -39,33 +39,33 @@
   }
 </script>
 
-<div class="accordion {className}" use:melt={$root}>
+<div class="accordion {className}" use:root={$root}>
   {#each items as accordionItem (accordionItem.id)}
-    <div class="accordion-item" use:melt={$item(accordionItem.id)}>
-      <button 
+    <div class="accordion-item" use:item={$item(accordionItem.id)}>
+      <button
         class="accordion-trigger"
         class:expanded={isExpanded(accordionItem.id)}
-        use:melt={$trigger(accordionItem.id)}
+        use:trigger={$trigger(accordionItem.id)}
         type="button"
       >
         <span class="accordion-title">{accordionItem.title}</span>
-        <svg 
-          class="accordion-chevron" 
+        <svg
+          class="accordion-chevron"
           class:rotated={isExpanded(accordionItem.id)}
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24" 
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
           stroke-width="1.5"
-          width="20" 
+          width="20"
           height="20"
         >
           <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
         </svg>
       </button>
-      
-      <div 
+
+      <div
         class="accordion-content"
-        use:melt={$content(accordionItem.id)}
+        use:content={$content(accordionItem.id)}
       >
         <div class="accordion-content-inner">
           {#if accordionItem.contentSnippet}

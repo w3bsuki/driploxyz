@@ -176,7 +176,7 @@ export async function signOut(_supabase: SupabaseClient<Database>) {
       clearTimeout(timeoutId);
     } catch (error) {
       // Log error but continue with logout
-      authLogger.warn('Logout request failed', { error });
+      authLogger.warn('Logout request failed', { error: String(error) });
     }
     
     // Use window.location for immediate redirect instead of awaiting import

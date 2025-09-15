@@ -96,7 +96,6 @@
       onload={handleImageLoad}
       class="w-full h-full object-cover"
       loading="lazy"
-      enhanced
     />
   {:else}
     <div class="flex items-center justify-center w-full h-full bg-[color:var(--surface-muted)]">
@@ -116,7 +115,6 @@
       onload={handleImageLoad}
       class="w-full h-full object-cover"
       loading="lazy"
-      enhanced
     />
   {:else}
     <div class="flex items-center justify-center w-full h-full bg-[color:var(--surface-muted)]">

@@ -24,9 +24,10 @@
 
 ## 🏷️ Categories System
 
-**Total Categories:** 143
+**Total Categories:** 159 (143 original + 16 "Other" categories)
 **Hierarchy Levels:** 3
 **Structure:** Hierarchical parent-child relationships
+**Flexibility:** "Other" categories at Level 3 with custom subcategory field
 
 ### Level 1 - Main Categories (6)
 | Name | Slug | Sort Order | Status |
@@ -73,8 +74,8 @@
 **Drip Categories:**
 - High-End Streetwear (`high-end-streetwear`)
 
-### Level 3 - Specific Items
-**Examples of Level 3 Categories:**
+### Level 3 - Specific Items + Flexible "Other" Categories
+**Standard Level 3 Categories:**
 - T-Shirts (`men-t-shirts`, `unisex-t-shirts`)
 - Sneakers (`men-sneakers`, `women-sneakers`, `kids-sneakers`, `unisex-sneakers`)
 - Dresses (`women-dresses`)
@@ -85,12 +86,22 @@
 - Handbags (`women-handbags`)
 - Bags & Purses (`women-bags-purses`)
 
+**NEW: "Other" Categories (16 total):**
+- `men-clothing-other`, `men-shoes-other`, `men-accessories-other`, `men-bags-other`
+- `women-clothing-other`, `women-shoes-other`, `women-accessories-other`, `women-bags-other`
+- `kids-clothing-other`, `kids-shoes-other`, `kids-accessories-other`, `kids-bags-other`
+- `unisex-clothing-other`, `unisex-shoes-other`, `unisex-accessories-other`, `unisex-bags-other`
+
+**Custom Subcategory System:**
+When users select "Other" categories, they can specify custom subcategory names (e.g., "Scarf", "Balaclava", "Poncho") stored in the `custom_subcategory` field.
+
 ---
 
-## 🎨 Brand Collections
+## 🎨 Brand Collections & Management
 
 **Total Collections:** 17
 **Collection Types:** 2 (Designer, Drip)
+**Brand System:** Free-text input with smart curation
 
 ### Designer Collections (7)
 | Brand | Slug | Featured | Product Count | Status |
@@ -116,6 +127,22 @@
 | Stone Island | `stone-island` | ✅ | 1 | Active |
 | Streetwear | `streetwear` | ✅ | 5 | Active |
 | Vintage | `vintage` | ✅ | 0 | Active |
+
+### Brand Suggestions System (NEW)
+
+**Purpose:** Auto-curation of user-submitted brand names
+
+**brand_suggestions Table:**
+- **brand_name** - User-entered brand name
+- **usage_count** - How many times used (increments automatically)
+- **status** - pending/approved/rejected/merged
+- **merged_to_brand** - If merged, points to canonical brand name
+
+**Admin Workflow:**
+1. Users enter any brand name when listing (e.g., "Indecisive Wear")
+2. New brands tracked in brand_suggestions table
+3. Popular brands (high usage_count) reviewed for promotion
+4. Approved brands added to brand_collections for featured status
 
 ---
 
@@ -404,6 +431,11 @@ Available account types in profiles:
 - **order_items** - Individual items within orders (0 records)
 - **user_payments** - Payment processing tracking (0 records)
 
+### NEW: Flexible Categorization System
+- **brand_suggestions** - User-submitted brand curation (0 records, new table)
+- **custom_subcategory** - Custom category names in products table (new field)
+- **"Other" categories** - 16 catch-all categories at Level 3 (new entries)
+
 ### Content Moderation
 - **drip_nominations** - Drip collection nominations
 - **reviews** - User reviews and ratings
@@ -436,13 +468,14 @@ Available account types in profiles:
 ## 📈 Current Data Summary
 
 ### Live Counts (as of audit)
-- **Categories:** 143 active
-- **Products:** 42 listed (42 images)
+- **Categories:** 159 active (143 original + 16 "Other" categories)
+- **Products:** 42 listed (42 images) + custom_subcategory field
 - **Orders:** 1 recorded
 - **Messages:** 7 exchanges
 - **Favorites:** 36 saved
 - **Profiles:** 6 registered
 - **Brand Collections:** 17 available
+- **Brand Suggestions:** 0 (new table for curation)
 - **Subscription Plans:** 5 tiers
 - **Country Configs:** 5 supported
 - **Badges:** 1 type available

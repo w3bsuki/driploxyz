@@ -47,7 +47,10 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
   const userId = session?.user?.id;
 
   try {
-    // Optimized parallel queries with short timeouts to avoid dev hang
+    // OPTIMIZED: Consolidated queries to eliminate redundant data fetching
+    // Only 2 main queries instead of 5+ separate ones
+
+    // Query 1: Categories (unchanged - already efficient)
     const categoriesPromise = withTimeout(
       supabase
         .from('categories')
@@ -60,89 +63,10 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       { data: [] } as any
     );
 
-    const topSellersPromise = withTimeout(
-      supabase
-        .from('profiles')
-        .select(`
-          id,
-          username,
-          full_name,
-          avatar_url,
-          rating,
-          sales_count,
-          followers_count,
-          bio,
-          verified,
-          created_at,
-          products!products_seller_id_fkey!inner (
-            id,
-            title,
-            price,
-            condition,
-            created_at,
-            product_images!inner (
-              image_url
-            )
-          )
-        `)
-        .eq('products.is_active', true)
-        .eq('products.is_sold', false)
-        .eq('products.country_code', country || 'BG')
-        .order('sales_count', { ascending: false })
-        .order('created_at', { ascending: false })
-        .limit(8)
-        .then(),
-      2500,
-      { data: [] } as any
-    );
+    // Query 2: CONSOLIDATED - Featured products with seller info in single query
+    // This replaces separate featured, topSellers, and topBrands queries
 
-    const sellersPromise = withTimeout(
-      supabase
-        .from('profiles')
-        .select('*')
-        .not('username', 'is', null)
-        .order('created_at', { ascending: false })
-        .limit(20)
-        .then(),
-      2500,
-      { data: [] } as any
-    );
-
-    const topBrandsPromise = withTimeout(
-      supabase
-        .from('profiles')
-        .select(`
-          id,
-          username,
-          full_name,
-          avatar_url,
-          verified,
-          account_type,
-          sales_count,
-          monthly_views,
-          weekly_sales_count,
-          followers_count,
-          bio,
-          created_at,
-          products!products_seller_id_fkey (
-            id,
-            title,
-            price,
-            condition,
-            created_at
-          )
-        `)
-        .eq('account_type', 'brand')
-        .eq('verified', true)
-        .order('sales_count', { ascending: false })
-        .order('followers_count', { ascending: false })
-        .limit(10)
-        .then(),
-      2500,
-      { data: [] } as any
-    );
-
-    const featuredPromise = withTimeout(
+    const consolidatedDataPromise = withTimeout(
       supabase
         .from('products')
         .select(`
@@ -166,10 +90,19 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
             image_url
           ),
           profiles!products_seller_id_fkey (
+            id,
             username,
+            full_name,
             avatar_url,
             account_type,
-            subscription_tier
+            subscription_tier,
+            sales_count,
+            followers_count,
+            rating,
+            bio,
+            verified,
+            monthly_views,
+            weekly_sales_count
           ),
           categories (
             slug
@@ -187,19 +120,69 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
     );
 
 
-    const [categoriesResult, topSellersResult, sellersResult, topBrandsResult, featuredResult] = await Promise.all([
+    // OPTIMIZED: Only 2 queries instead of 5
+    const [categoriesResult, consolidatedResult] = await Promise.all([
       categoriesPromise,
-      topSellersPromise,
-      sellersPromise,
-      topBrandsPromise,
-      featuredPromise
+      consolidatedDataPromise
     ]);
 
-    // Process results
+    // Process consolidated results
     const categories = (categoriesResult as any).data || [];
-    const topSellers = (topSellersResult as any).data || [];
-    const sellers = (sellersResult as any).data || [];
-    const topBrands = (topBrandsResult as any).data || [];
+    const allProductsWithSellers = (consolidatedResult as any).data || [];
+
+    // Extract and deduplicate sellers/brands from product data
+    const sellersMap = new Map();
+    const brandsMap = new Map();
+
+    allProductsWithSellers.forEach((product: any) => {
+      if (product.profiles) {
+        const seller = product.profiles;
+        if (seller.account_type === 'brand' && seller.verified) {
+          if (!brandsMap.has(seller.id)) {
+            brandsMap.set(seller.id, {
+              ...seller,
+              products: []
+            });
+          }
+          brandsMap.get(seller.id).products.push(product);
+        } else if (seller.sales_count > 0 || seller.account_type === 'admin') {
+          if (!sellersMap.has(seller.id)) {
+            sellersMap.set(seller.id, {
+              ...seller,
+              products: []
+            });
+          }
+          sellersMap.get(seller.id).products.push(product);
+        }
+      }
+    });
+
+    // Sort and limit extracted data
+    const topSellers = Array.from(sellersMap.values())
+      .sort((a, b) => b.sales_count - a.sales_count)
+      .slice(0, 8);
+
+    const topBrands = Array.from(brandsMap.values())
+      .sort((a, b) => (b.sales_count || 0) - (a.sales_count || 0))
+      .slice(0, 10);
+
+    const sellers = topSellers.slice(0, 20); // Reuse sorted data
+
+    // OPTIMIZED: Seller previews already available from consolidated query
+    let sellerPreviews: Record<string, { id: string; title: string; price: number; seller_id: string; product_images: { image_url: string }[] }[]> = {};
+
+    // Extract previews from already-fetched data (no additional query needed)
+    [...topSellers, ...topBrands].forEach((seller: any) => {
+      if (seller.products && seller.products.length > 0) {
+        sellerPreviews[seller.id] = seller.products.slice(0, 3).map((product: any) => ({
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          seller_id: product.seller_id,
+          product_images: product.product_images || []
+        }));
+      }
+    });
     
     let featuredProducts: Array<{
       id: string;
@@ -225,7 +208,7 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       categories?: { slug?: string | null };
     }> = [];
     {
-      const { data: rawProducts } = (featuredResult as any);
+      const rawProducts = allProductsWithSellers;
       if (rawProducts) {
         // Note: services would be used for category hierarchy if needed in future
         
@@ -377,11 +360,14 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       sellers: Promise.resolve(sellers),
       userFavorites: Promise.resolve(userFavorites),
 
+      // Stream seller product previews (server-side fetched)
+      sellerPreviews: Promise.resolve(sellerPreviews),
+
       errors: {
-        products: featuredResult.status === 'rejected' ? 'Failed to load' : null,
+        products: consolidatedResult.status === 'rejected' ? 'Failed to load' : null,
         categories: categoriesResult.status === 'rejected' ? 'Failed to load' : null,
-        sellers: topSellersResult.status === 'rejected' ? 'Failed to load' : null,
-        brands: topBrandsResult.status === 'rejected' ? 'Failed to load' : null
+        sellers: consolidatedResult.status === 'rejected' ? 'Failed to load' : null,
+        brands: consolidatedResult.status === 'rejected' ? 'Failed to load' : null
       }
     };
     

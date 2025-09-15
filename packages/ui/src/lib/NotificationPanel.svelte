@@ -1,7 +1,6 @@
 <script lang="ts">
   import Avatar from './Avatar.svelte';
   import Button from './Button.svelte';
-  import { portal } from './actions/portal';
   
   interface Translations {
     title?: string;
@@ -88,21 +87,20 @@
       window.location.href = notification.action_url;
     }
   }
+
 </script>
 
 {#if show}
-  <!-- Portal container for proper z-index stacking -->
-  <div use:portal={'#overlay-root'}>
-    <!-- Glass Morphism Backdrop -->
-    <button
-      class="fixed inset-0 bg-black/20 supports-[backdrop-filter]:backdrop-blur-sm z-[100] border-0 cursor-default"
-      onclick={onClose}
-      aria-label="Close notifications panel"
-      tabindex="-1"
-    ></button>
+  <!-- Glass Morphism Backdrop -->
+  <button
+    class="fixed inset-0 bg-black/20 supports-[backdrop-filter]:backdrop-blur-sm z-[100] border-0 cursor-default"
+    onclick={onClose}
+    aria-label="Close notifications panel"
+    tabindex="-1"
+  ></button>
 
-    <!-- Notification Panel -->
-    <div class="fixed top-16 left-2 right-2 sm:left-auto sm:right-4 sm:w-96 sm:max-w-[calc(100vw-2rem)] z-[110] {className}">
+  <!-- Notification Panel -->
+  <div class="fixed top-16 left-2 right-2 sm:left-auto sm:right-4 sm:w-96 sm:max-w-[calc(100vw-2rem)] z-[110] {className}">
     <div class="bg-white supports-[backdrop-filter]:bg-white/95 supports-[backdrop-filter]:backdrop-blur-xl rounded-2xl shadow-lg ring-1 ring-black/5
       border border-gray-200 supports-[backdrop-filter]:border-white/20 overflow-hidden max-h-[70vh] sm:max-h-[80vh] flex flex-col">
       
@@ -124,7 +122,7 @@
 {translations.markAllRead || 'Mark all read'}
             </Button>
           {/if}
-          <button 
+          <button
             onclick={onClose}
             class="p-1 text-gray-400 hover:text-gray-500 rounded-lg hover:bg-gray-100/50"
             aria-label="Close notifications"
@@ -242,7 +240,6 @@
       {/if}
     </div>
     </div>
-  </div>
 {/if}
 
 <style>

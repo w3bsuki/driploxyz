@@ -27,8 +27,8 @@ export interface CollectionWithProducts extends BrandCollection {
     images: string[];
     condition: string;
     seller_id: string;
-    created_at: string;
-    updated_at: string;
+    created_at: string | null;
+    updated_at: string | null;
   }[];
 }
 
@@ -159,7 +159,9 @@ export class CollectionService {
         ...product,
         images: product.product_images
           ?.sort((a, b) => (a.display_order || 0) - (b.display_order || 0))
-          .map(img => img.image_url) || []
+          .map(img => img.image_url) || [],
+        created_at: product.created_at || new Date().toISOString(),
+        updated_at: product.updated_at || new Date().toISOString()
       })) || [];
 
       return { data: transformedProducts, error: null };
@@ -243,7 +245,7 @@ export class CollectionService {
       }
 
       // Update the collection's product count
-      const { data, error } = await this.supabase
+      const { error } = await this.supabase
         .from('brand_collections')
         .update({ product_count: count || 0, updated_at: new Date().toISOString() })
         .eq('id', collectionId);

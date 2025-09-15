@@ -71,7 +71,11 @@
 
     <!-- Username with badge -->
     <div class="mb-1 flex items-center justify-center gap-1.5">
-      <!-- Account badges moved here - on the left like @ was -->
+      <span class="font-semibold text-[color:var(--gray-800)] text-base truncate max-w-[120px] text-center tracking-tight">
+        {seller.username || 'seller'}
+      </span>
+
+      <!-- Account badges after username like Twitter/X -->
       {#if seller.account_type || hasVerifiedBadge}
         {#if seller.account_type === 'admin'}
           <!-- Keep admin text badge for authority -->
@@ -93,10 +97,6 @@
           </div>
         {/if}
       {/if}
-
-      <span class="font-semibold text-[color:var(--gray-800)] text-base truncate max-w-[120px] text-center tracking-tight">
-        {seller.username || 'seller'}
-      </span>
     </div>
 
     <!-- Stats -->

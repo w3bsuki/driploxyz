@@ -91,22 +91,22 @@ let showTrendingDropdown = $state(false);
 let activeDropdownTab = $state('trending');
 let dropdownSearchQuery = $state('');
 
-// Derived data for dropdown
-const filteredTopBrands = $derived(
-  dropdownSearchQuery.trim()
-    ? topBrands.filter(brand =>
-        brand.name.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
-      )
-    : topBrands
-);
+// Optimized derived data for dropdown - using $derived.by() for better performance
+const filteredTopBrands = $derived.by(() => {
+  if (!dropdownSearchQuery.trim()) return topBrands;
+  const query = dropdownSearchQuery.toLowerCase();
+  return topBrands.filter(brand =>
+    brand.name.toLowerCase().includes(query)
+  );
+});
 
-const filteredTopSellers = $derived(
-  dropdownSearchQuery.trim()
-    ? topSellers.filter(seller =>
-        seller.name.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
-      )
-    : topSellers
-);
+const filteredTopSellers = $derived.by(() => {
+  if (!dropdownSearchQuery.trim()) return topSellers;
+  const query = dropdownSearchQuery.toLowerCase();
+  return topSellers.filter(seller =>
+    seller.name.toLowerCase().includes(query)
+  );
+});
 
 // Quick shop items
 const quickShopItems = [
@@ -117,18 +117,25 @@ const quickShopItems = [
   { label: 'Like New', description: 'Excellent condition', filter: 'condition=like_new', icon: '✨' }
 ];
 
-const filteredQuickShopItems = $derived(
-  dropdownSearchQuery.trim()
-    ? quickShopItems.filter(item =>
-        item.label.toLowerCase().includes(dropdownSearchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
-      )
-    : quickShopItems
-);
+// Optimized quick shop items filtering
+const filteredQuickShopItems = $derived.by(() => {
+  if (!dropdownSearchQuery.trim()) return quickShopItems;
+  const query = dropdownSearchQuery.toLowerCase();
+  return quickShopItems.filter(item =>
+    item.label.toLowerCase().includes(query) ||
+    item.description.toLowerCase().includes(query)
+  );
+});
 
-// Handle click outside for trending dropdown
+// Consolidated effects for better performance
 $effect(() => {
-  if (typeof window !== 'undefined') {
+  // Hide trending dropdown when user starts typing in search
+  if (searchQuery.trim()) {
+    showTrendingDropdown = false;
+  }
+
+  // Handle click outside for trending dropdown
+  if (typeof window !== 'undefined' && showTrendingDropdown) {
     function handleClickOutside(e: MouseEvent) {
       const target = e.target as HTMLElement;
       if (!target.closest('#hero-search-container')) {
@@ -136,17 +143,8 @@ $effect(() => {
       }
     }
 
-    if (showTrendingDropdown) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
-  }
-});
-
-// Hide trending dropdown when user starts typing in search
-$effect(() => {
-  if (searchQuery.trim()) {
-    showTrendingDropdown = false;
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }
 });
 

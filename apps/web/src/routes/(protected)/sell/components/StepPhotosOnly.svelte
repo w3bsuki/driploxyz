@@ -74,7 +74,7 @@
           placeholder={i18n.sell_descriptionPlaceholder()}
           rows="4"
           maxlength="500"
-          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black/10 focus:border-gray-400 resize-none text-base transition-colors"
+          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black/10 focus:border-gray-400 resize-none text-base text-[16px] transition-colors"
         ></textarea>
         <div class="text-xs text-gray-400 mt-1 text-right">
           {formData.description.length}/500

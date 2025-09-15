@@ -7,20 +7,33 @@ import { build, files, version } from '$service-worker';
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
 const CACHE_NAME = `driplo-v${version}`;
+const DYNAMIC_CACHE = `driplo-dynamic-v${version}`;
+const OFFLINE_CACHE = `driplo-offline-v${version}`;
 
-// Assets to cache
+// Assets to cache immediately
 const ASSETS = [
 	...build, // JS/CSS bundles
 	...files  // Static files
 ];
 
+// Routes to cache dynamically
+const DYNAMIC_ROUTES = [
+	'/',
+	'/search',
+	'/categories',
+	'/sellers'
+];
+
+// Offline fallback page
+const OFFLINE_PAGE = '/offline';
+
 // Install event - cache assets
 sw.addEventListener('install', (event) => {
 	event.waitUntil(
-		caches
-			.open(CACHE_NAME)
-			.then((cache) => cache.addAll(ASSETS))
-			.then(() => sw.skipWaiting())
+		Promise.all([
+			caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)),
+			caches.open(OFFLINE_CACHE).then((cache) => cache.add(OFFLINE_PAGE))
+		]).then(() => sw.skipWaiting())
 	);
 });
 
@@ -29,8 +42,11 @@ sw.addEventListener('activate', (event) => {
 	event.waitUntil(
 		caches.keys().then(async (keys) => {
 			// Delete old caches
+			const currentCaches = [CACHE_NAME, DYNAMIC_CACHE, OFFLINE_CACHE];
 			for (const key of keys) {
-				if (key !== CACHE_NAME) await caches.delete(key);
+				if (!currentCaches.includes(key)) {
+					await caches.delete(key);
+				}
 			}
 			await sw.clients.claim();
 		})
@@ -41,74 +57,64 @@ sw.addEventListener('activate', (event) => {
 sw.addEventListener('fetch', (event) => {
 	const { request } = event;
 	const url = new URL(request.url);
-	
+
 	// Skip non-GET requests
 	if (request.method !== 'GET') return;
-	
-	// Skip API requests
-	if (url.pathname.startsWith('/api/')) return;
-	
-	// Skip auth requests
-	if (url.pathname.startsWith('/auth/')) return;
-	
-	// Handle navigation requests (HTML pages) - let browser handle normally
-	if (request.mode === 'navigate') {
-		// Don't intercept navigation to prevent delays
-		return;
-	}
-	
-	// Handle asset requests
-	if (ASSETS.includes(url.pathname)) {
-		event.respondWith(
-			caches.match(request).then((cached) => cached || fetch(request))
-		);
-		return;
-	}
-	
-	// Handle image requests with cache-first strategy
-	if (request.destination === 'image') {
-		event.respondWith(
-			caches.match(request).then((cached) => {
-				if (cached) return cached;
-				
-				return fetch(request).then((response) => {
-					// Cache successful image responses
-					if (response.ok) {
-						const responseClone = response.clone();
-						caches.open(CACHE_NAME).then((cache) => {
-							cache.put(request, responseClone);
-						});
-					}
-					return response;
-				}).catch(() => {
-					// Return placeholder image on failure
-					return new Response(
-						`<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
-							<rect width="100%" height="100%" fill="#f3f4f6"/>
-							<text x="50%" y="50%" font-family="system-ui" font-size="16" fill="#9ca3af" text-anchor="middle" dy=".3em">Image unavailable offline</text>
-						</svg>`,
-						{
-							headers: { 'Content-Type': 'image/svg+xml' }
-						}
-					);
-				});
-			})
-		);
-		return;
-	}
-	
-	// Let browser handle other requests normally to prevent delays
-	// Don't intercept unless it's a cached asset or image
+
+	// Skip external requests
+	if (url.origin !== location.origin) return;
+
+	// Skip API requests (except for favorites background sync)
+	if (url.pathname.startsWith('/api/') && !url.pathname.includes('favorites')) return;
+
+	event.respondWith(handleRequest(request));
 });
 
-// Background sync for offline actions
-sw.addEventListener('sync', (event: any) => {
+async function handleRequest(request: Request): Promise<Response> {
+	const url = new URL(request.url);
+
+	// Check cache first for static assets
+	if (ASSETS.includes(url.pathname)) {
+		const cached = await caches.match(request);
+		if (cached) return cached;
+	}
+
+	try {
+		// Try network first for dynamic content
+		const response = await fetch(request);
+
+		// Cache successful responses for dynamic routes
+		if (response.ok && DYNAMIC_ROUTES.some(route => url.pathname.startsWith(route))) {
+			const cache = await caches.open(DYNAMIC_CACHE);
+			cache.put(request, response.clone());
+		}
+
+		return response;
+	} catch (error) {
+		// Network failed, try cache
+		const cached = await caches.match(request);
+		if (cached) return cached;
+
+		// Fallback to offline page for navigation requests
+		if (request.mode === 'navigate') {
+			const offlineResponse = await caches.match(OFFLINE_PAGE);
+			if (offlineResponse) return offlineResponse;
+		}
+
+		// Final fallback
+		throw error;
+	}
+}
+
+// Background sync for favorites (when available)
+sw.addEventListener('sync', (event) => {
 	if (event.tag === 'sync-favorites') {
 		event.waitUntil(syncFavorites());
 	}
 });
 
 async function syncFavorites() {
-	// Sync favorited items when back online
-	// This would sync with your Supabase backend
+	// This would sync offline favorite changes when back online
+	// Implementation depends on your favorites storage strategy
+	console.log('Syncing favorites in background...');
 }

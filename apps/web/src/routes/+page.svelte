@@ -105,11 +105,6 @@
 		{ label: 'Like New', description: 'Excellent condition', filter: 'condition=like_new', icon: '✨' }
 	];
 
-	// Search dropdown data
-	let dropdownCategories = $state<any[]>([]);
-	let dropdownSellers = $state<any[]>([]);
-	let dropdownCollections = $state<any[]>([]);
-	
 	// Component state
 	let sellersInView = $state(false);
 
@@ -136,40 +131,8 @@
 		}
 	});
 
-	// Load search dropdown data
-	$effect(() => {
-		if (browser && data.supabase) {
-			loadSearchDropdownData();
-		}
-	});
-
-	async function loadSearchDropdownData() {
-		try {
-			// Load categories for main page context
-			const categoryService = new CategoryService(data.supabase);
-			// Fallback: use main categories for dropdown since getSearchDropdownCategories is not available
-			const { data: categories, error: categoryError } = await categoryService.getMainCategories();
-
-			if (!categoryError && categories) {
-				dropdownCategories = categories;
-			}
-
-			// Load top sellers
-			const profileService = new ProfileService(data.supabase);
-			const { data: sellers, error: sellerError } = await profileService.getTopSellersForDropdown(5);
-
-			if (!sellerError && sellers) {
-				dropdownSellers = sellers;
-			}
-
-			// TODO: Load brand accounts from Supabase - for now using hardcoded data
-
-			// Load collections
-			dropdownCollections = getCollectionsForContext('main');
-		} catch (error) {
-			log.error('Failed to load search dropdown data:', error);
-		}
-	}
+	// Use server-provided data instead of client-side fetching for better performance
+	// Server already loads categories and sellers in +page.server.ts
 
 	// Debug data (removed to prevent infinite loops)
 
@@ -261,9 +224,12 @@
 		dataLoaded = true;
 	});
 
-	// Transform promoted products for highlights - only from pro sellers
-	const promotedProducts = $derived<Product[]>(
-		(featuredProductsData || [])
+	// Optimized promoted products computation using $derived.by() for better performance
+	const promotedProducts = $derived.by(() => {
+		const rawProducts = featuredProductsData || [];
+		if (rawProducts.length === 0) return [];
+
+		return rawProducts
 			.filter(product =>
 				// Only include products from pro/premium/brand sellers or boosted products
 				product.seller_subscription_tier === 'pro' ||
@@ -273,41 +239,55 @@
 				product.seller_badges?.is_brand ||
 				product.is_boosted
 			)
-			.map(transformProduct)
-			.map(p => ({
-				...p,
-				category_name: p.category_name || p.main_category_name || 'Uncategorized',
-				main_category_name: p.main_category_name || p.category_name || 'Uncategorized'
-			}))
-	);
+			.map(product => {
+				const transformed = transformProduct(product);
+				return {
+					...transformed,
+					category_name: transformed.category_name || transformed.main_category_name || 'Uncategorized',
+					main_category_name: transformed.main_category_name || transformed.category_name || 'Uncategorized'
+				};
+			});
+	});
 
-	// Transform products to match Product interface
-	const products = $derived<Product[]>(
-		(featuredProductsData || []).map(transformProduct).map(p => ({
-			...p,
-			category_name: p.category_name || p.main_category_name || 'Uncategorized',
-			main_category_name: p.main_category_name || p.category_name || 'Uncategorized'
-		}))
-	);
+	// Optimized products transformation using $derived.by()
+	const products = $derived.by(() => {
+		const rawProducts = featuredProductsData || [];
+		if (rawProducts.length === 0) return [];
 
-	// Filter boosted products for the highlight section
-	const boostedProducts = $derived<Product[]>(
-		products.filter(product => product.is_boosted).slice(0, 8) // Limit to 8 boosted products
-	);
+		return rawProducts.map(product => {
+			const transformed = transformProduct(product);
+			return {
+				...transformed,
+				category_name: transformed.category_name || transformed.main_category_name || 'Uncategorized',
+				main_category_name: transformed.main_category_name || transformed.category_name || 'Uncategorized'
+			};
+		});
+	});
 
-	// Filter non-boosted products for the main listings
-	const regularProducts = $derived<Product[]>(
-		products.filter(product => !product.is_boosted)
-	);
+	// Optimized product filtering using $derived.by()
+	const boostedProducts = $derived.by(() => {
+		return products.filter(product => product.is_boosted).slice(0, 8); // Limit to 8 boosted products
+	});
 
-	// Transform sellers for display (for FeaturedSellers component)
-	// Include approved sellers: kush3, indecisive_wear, tintin (admin)
-	const sellers = $derived<Seller[]>(
-		(topSellersData || [])
+	const regularProducts = $derived.by(() => {
+		return products.filter(product => !product.is_boosted);
+	});
+
+	// Optimized sellers transformation using $derived.by()
+	const sellers = $derived.by(() => {
+		const rawSellers = topSellersData || [];
+		if (rawSellers.length === 0) return [];
+
+		return rawSellers
 			.filter(seller => {
 				const username = seller.username;
-				// Include approved real users
-				return username === 'kush3' || username === 'indecisive_wear' || username === 'tintin';
+				// Include verified users with active listings or admin accounts
+				return seller.verified && (seller.sales_count > 0 || seller.account_type === 'admin') && (
+					username === 'kush3' ||
+					username === 'indecisive_wear' ||
+					username === 'Tintin' ||
+					seller.account_type === 'brand'
+				);
 			})
 			.map(seller => {
 				const productCount = seller.total_products || 0;
@@ -329,80 +309,63 @@
 					description: seller.bio,
 					is_verified: seller.verified || false
 				};
-			})
-	);
+			});
+	});
 
-	// Transform brands for display (for PromotedHighlights component)
-	// Use real data from topBrands query - only verified brand accounts
-	const brands = $derived<Seller[]>(
-		(topBrandsData || [])
-			.map(brand => {
-				const productCount = brand.products?.length || 0;
-				return {
-					id: brand.id,
-					name: brand.username || brand.full_name,
-					username: brand.username,
-					full_name: brand.full_name,
-					premium: true, // All brands are premium
-					account_type: brand.account_type || 'brand',
-					avatar: brand.avatar_url,
-					avatar_url: brand.avatar_url,
-					rating: brand.rating || 0,
-					average_rating: brand.rating || 0,
-					total_products: productCount,
-					itemCount: productCount,
-					followers: brand.followers_count || 0,
-					description: brand.bio,
-					is_verified: brand.verified || false
-				};
-			})
-	);
+	// Optimized brands transformation using $derived.by()
+	const brands = $derived.by(() => {
+		const rawBrands = topBrandsData || [];
+		if (rawBrands.length === 0) return [];
+
+		return rawBrands.map(brand => {
+			const productCount = brand.products?.length || 0;
+			return {
+				id: brand.id,
+				name: brand.username || brand.full_name,
+				username: brand.username,
+				full_name: brand.full_name,
+				premium: true, // All brands are premium
+				account_type: brand.account_type || 'brand',
+				avatar: brand.avatar_url,
+				avatar_url: brand.avatar_url,
+				rating: brand.rating || 0,
+				average_rating: brand.rating || 0,
+				total_products: productCount,
+				itemCount: productCount,
+				followers: brand.followers_count || 0,
+				description: brand.bio,
+				is_verified: brand.verified || false
+			};
+		});
+	});
 
 
-	// Create entity→products mapping (works for sellers and brands) from featured products
-	const sellerProducts = $derived(() => {
+	// Optimized seller products mapping using $derived.by()
+	const sellerProducts = $derived.by(() => {
 		const map: Record<string, Product[]> = {};
 		const entities = [...sellers, ...brands];
+
+		if (entities.length === 0) return map;
+
 		for (const entity of entities) {
-			const fromPreview = sellerPreviewMap[entity.id];
-			const fromFeatured = products.filter(p => p.seller_id === entity.id);
-			const chosen = (fromPreview && fromPreview.length > 0) ? fromPreview : fromFeatured;
-			if (chosen.length > 0) map[entity.id] = chosen.slice(0, 3);
+			const serverPreviews = sellerPreviewMap[entity.id];
+			if (serverPreviews && serverPreviews.length > 0) {
+				map[entity.id] = serverPreviews.slice(0, 3);
+			}
 		}
 		return map;
 	});
 
-	// Client-side batched fetch of latest listings per seller/brand (no MCP needed)
+	// Consolidated effect for data initialization to reduce re-renders
 	$effect(() => {
-		if (!browser || !data.supabase) return;
-		const ids = [...sellers, ...brands].map(e => e.id).filter(Boolean);
-		if (ids.length === 0) return;
+		// Handle seller previews
+		if (data.sellerPreviews instanceof Promise) {
+			data.sellerPreviews.then(previews => sellerPreviewMap = previews || {});
+		} else {
+			sellerPreviewMap = data.sellerPreviews || {};
+		}
 
-		(async () => {
-			try {
-				// Fetch recent active listings for all visible entities in one go
-				const guessLimit = Math.min(ids.length * 5, 150); // heuristic: up to 5 per entity
-				const { data: rows, error } = await data.supabase
-					.from('products')
-					.select('id,title,price,seller_id,product_images(image_url)')
-					.in('seller_id', ids)
-					.eq('is_active', true)
-					.eq('is_sold', false)
-					.order('created_at', { ascending: false })
-					.limit(guessLimit);
-				if (error) return;
-				const grouped: Record<string, Product[]> = {} as any;
-				(rows || []).forEach((p: any) => {
-					if (!grouped[p.seller_id]) grouped[p.seller_id] = [] as any;
-					if (grouped[p.seller_id].length < 3) grouped[p.seller_id].push(p as Product);
-				});
-				sellerPreviewMap = grouped;
-			} catch {}
-		})();
-	});
-
-	// Initialize favorites from server data on mount (after derived values are available)
-	$effect(() => {
+		// Initialize favorites from server data when products are available
 		if (browser && boostedProducts && regularProducts) {
 			// Always initialize favorite counts from products, regardless of login status
 			const counts: Record<string, number> = {};
@@ -432,32 +395,20 @@
 		}
 	});
 
-	// Debug data loading - temporary
-	$effect(() => {
-		if (dataLoaded) {
-			console.log('PROMOTED SECTIONS DEBUG:', {
-				dataLoaded,
-				featuredProductsCount: featuredProductsData?.length || 0,
-				promotedProductsCount: promotedProducts?.length || 0,
-				boostedProductsCount: boostedProducts?.length || 0,
-				regularProductsCount: regularProducts?.length || 0,
-				sampleBoostedProduct: boostedProducts?.[0] ? {
-					id: boostedProducts[0].id,
-					title: boostedProducts[0].title,
-					is_boosted: boostedProducts[0].is_boosted,
-					seller_subscription_tier: boostedProducts[0].seller_subscription_tier
-				} : null
-			});
-		}
-	});
+	// Production cleanup - debug logs removed for better performance
 
 	// Transform top sellers for TrendingDropdown (filtered to approved users only)
 	const topSellers = $derived<Seller[]>(
 		(topSellersData || [])
 			.filter(seller => {
 				const username = seller.username;
-				// Include approved real users
-				return username === 'kush3' || username === 'indecisive_wear' || username === 'tintin';
+				// Include verified users with active listings or admin accounts
+				return seller.verified && (seller.sales_count > 0 || seller.account_type === 'admin') && (
+					username === 'kush3' ||
+					username === 'indecisive_wear' ||
+					username === 'Tintin' ||
+					seller.account_type === 'brand'
+				);
 			})
 			.map(seller => ({
 				id: seller.id,

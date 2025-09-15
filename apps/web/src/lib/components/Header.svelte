@@ -11,7 +11,7 @@
     MobileNavigationDialog,
     ThemeToggle
   } from '@repo/ui';
-  import type { User } from '@repo/ui/types';
+  import type { User, Profile } from '@repo/ui/types';
   import * as i18n from '@repo/i18n';
   // Force fresh i18n import
   // Auth stores removed - using props directly
@@ -24,6 +24,7 @@
     notificationActions,
     messageToastActions
   } from '$lib/stores/notifications';
+  import { unreadMessageCount as unreadMessageCountStore } from '$lib/stores/messageNotifications';
   import { RealtimeNotificationService } from '$lib/services/realtimeNotifications';
   import { switchLanguage, languages } from '$lib/utils/language-switcher';
   import { browser } from '$app/environment';
@@ -207,7 +208,11 @@
   }
 </script>
 
-<header class="border-b border-[color:var(--border-subtle)] bg-[color:var(--surface-base)] supports-[backdrop-filter]:backdrop-blur">
+<header
+  class="border-b border-[color:var(--border-subtle)] bg-[color:var(--surface-base)] supports-[backdrop-filter]:backdrop-blur"
+  role="banner"
+  aria-label="Site header"
+>
   <div class="px-2 sm:px-4 lg:px-6 safe-area">
     <!-- Bar -->
     <div class="flex items-center justify-between h-14 sm:h-16">
@@ -327,6 +332,8 @@
       {userDisplayName}
       {initials}
       canSell={userCanSell}
+      unreadMessages={$unreadMessageCountStore}
+      unreadNotifications={$unreadCount}
       currentLanguage={currentLang}
       {languages}
       {signingOut}

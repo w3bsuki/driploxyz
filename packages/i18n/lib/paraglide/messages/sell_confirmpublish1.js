@@ -2,7 +2,7 @@
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
 const bg_sell_confirmpublish1 = /** @type {(inputs: {}) => string} */ () => {
-	return `Потвърди и публикувай`
+	return `Публикувай`
 };
 
 const en_sell_confirmpublish1 = /** @type {(inputs: {}) => string} */ () => {

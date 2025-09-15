@@ -1,16 +1,13 @@
 <script lang="ts">
-  import DepopStyleProductPage from './DepopStyleProductPage.svelte';
-  import VintedStyleProductPage from './VintedStyleProductPage.svelte';
-  import InstagramStyleProductPage from './InstagramStyleProductPage.svelte';
-  import { 
-    sampleDepopProduct, 
-    sampleVintedProduct, 
-    sampleInstagramProduct, 
-    sampleComments 
+  import {
+    sampleDepopProduct,
+    sampleVintedProduct,
+    sampleInstagramProduct,
+    sampleComments
   } from './index.js';
 
   type DemoStyle = 'depop' | 'vinted' | 'instagram';
-  
+
   let activeDemo = $state<DemoStyle>('depop');
   let showMobileFrame = $state(true);
 
@@ -76,16 +73,43 @@
   <!-- Demo Display -->
   <div class="demo-display">
     <div class="demo-container {showMobileFrame ? 'mobile-frame' : 'full-width'}">
-      {#if activeDemo === 'depop'}
-        <DepopStyleProductPage product={sampleDepopProduct} />
-      {:else if activeDemo === 'vinted'}
-        <VintedStyleProductPage product={sampleVintedProduct} />
-      {:else if activeDemo === 'instagram'}
-        <InstagramStyleProductPage 
-          product={sampleInstagramProduct} 
-          comments={sampleComments}
-        />
-      {/if}
+      <div class="demo-placeholder">
+        <div class="placeholder-content">
+          <div class="placeholder-icon">🚧</div>
+          <h3>{activeDemo.charAt(0).toUpperCase() + activeDemo.slice(1)} Style Demo</h3>
+          <p>Demo component coming soon!</p>
+          <div class="demo-preview">
+            {#if activeDemo === 'depop'}
+              <div class="preview-dark">
+                <div class="mock-header">@{sampleDepopProduct.seller.username}</div>
+                <div class="mock-image"></div>
+                <div class="mock-details">
+                  <div class="mock-title">{sampleDepopProduct.title}</div>
+                  <div class="mock-price">£{sampleDepopProduct.price}</div>
+                </div>
+              </div>
+            {:else if activeDemo === 'vinted'}
+              <div class="preview-light">
+                <div class="mock-header">Vinted Style</div>
+                <div class="mock-image"></div>
+                <div class="mock-details">
+                  <div class="mock-title">{sampleVintedProduct.title}</div>
+                  <div class="mock-price">€{sampleVintedProduct.price}</div>
+                </div>
+              </div>
+            {:else if activeDemo === 'instagram'}
+              <div class="preview-social">
+                <div class="mock-header">@{sampleInstagramProduct.seller.username}</div>
+                <div class="mock-image"></div>
+                <div class="mock-details">
+                  <div class="mock-title">{sampleInstagramProduct.title}</div>
+                  <div class="mock-price">{sampleInstagramProduct.currency}{sampleInstagramProduct.price}</div>
+                </div>
+              </div>
+            {/if}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -355,6 +379,100 @@
     color: #6b7280;
     margin: 0;
     line-height: 1.5;
+  }
+
+  /* Demo Placeholder Styles */
+  .demo-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9fafb;
+    padding: 40px 20px;
+  }
+
+  .placeholder-content {
+    text-align: center;
+    max-width: 300px;
+  }
+
+  .placeholder-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  .placeholder-content h3 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: #1f2937;
+  }
+
+  .placeholder-content p {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0 0 24px 0;
+  }
+
+  .demo-preview {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+  }
+
+  .preview-dark {
+    background: #000;
+    color: #fff;
+    padding: 16px;
+  }
+
+  .preview-light {
+    background: #fff;
+    color: #000;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .preview-social {
+    background: linear-gradient(45deg, #405de6, #5851db, #833ab4, #c13584, #e1306c, #fd1d1d);
+    color: #fff;
+    padding: 16px;
+  }
+
+  .mock-header {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    opacity: 0.9;
+  }
+
+  .mock-image {
+    width: 100%;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+
+  .preview-light .mock-image {
+    background: #f3f4f6;
+  }
+
+  .mock-details {
+    text-align: left;
+  }
+
+  .mock-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    opacity: 0.9;
+  }
+
+  .mock-price {
+    font-size: 16px;
+    font-weight: 700;
   }
 
   /* Mobile Responsiveness */

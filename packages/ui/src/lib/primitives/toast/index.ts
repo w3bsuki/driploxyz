@@ -11,6 +11,9 @@ export { default as ToastContainer } from './ToastContainer.svelte';
 // Store and helpers
 export { toasts, toastHelpers, setToastProvider } from './store';
 
+// Modern alias for the toast store
+export { toasts as modernToasts } from './store';
+
 // Types
 export type {
   Toast as ToastData,

@@ -1,6 +1,7 @@
 <script lang="ts">
   import ProductCard from './ProductCard.svelte';
   import Button from './Button.svelte';
+  import SectionBanner from './SectionBanner.svelte';
   import { ProductCardSkeleton } from './skeleton/index';
   import type { Product } from './types/index';
 
@@ -73,36 +74,16 @@
   class="px-2 sm:px-4 lg:px-6 py-3 mt-2 sm:mt-3"
   aria-label={sectionTitle}
 >
-  <!-- Enhanced Section Header - Mobile-First -->
-  <div class="mb-4 sm:mb-6">
-    <div class="flex items-center justify-between">
-      <div class="flex-1">
-        <h2 class="text-base font-normal text-gray-900 tracking-tight leading-tight">
-          {sectionTitle}
-        </h2>
-        {#if hasProducts}
-          <p class="text-xs sm:text-sm text-gray-500 font-normal" style="letter-spacing: -0.01em;">
-            {products.length} {translations.home_itemCount} • {translations.home_updatedMomentsAgo}
-          </p>
-        {/if}
-      </div>
-
-      {#if showViewAllButton && hasProducts}
-        <button
-          onclick={onViewAll}
-          class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900
-                 rounded-lg border border-gray-200 hover:border-gray-300
-                 font-medium text-xs transition-all duration-200
-                 flex items-center gap-1.5"
-        >
-          <span>View All</span>
-          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      {/if}
-    </div>
-  </div>
+  <!-- Section Banner -->
+  <SectionBanner
+    title={sectionTitle}
+    subtitle={hasProducts ? `${products.length} ${translations.home_itemCount} • ${translations.home_updatedMomentsAgo}` : undefined}
+    variant="newest"
+    itemCount={hasProducts ? products.length : undefined}
+    showViewAll={showViewAllButton && hasProducts}
+    onViewAll={onViewAll}
+    class="mb-4 sm:mb-6"
+  />
   
   <!-- Quick Filter Pills - Mobile-First -->
   {#if showQuickFilters && hasProducts}

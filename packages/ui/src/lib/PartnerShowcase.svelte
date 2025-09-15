@@ -27,7 +27,7 @@
     scrollSpeed = 30000
   }: Props = $props();
 
-  let scrollContainer: HTMLDivElement;
+  let scrollContainer = $state<HTMLDivElement>();
   let isScrolling = $state(false);
 
   function handlePartnerClick(partner: Partner) {

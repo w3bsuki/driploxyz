@@ -9,7 +9,7 @@
   // Dynamic imports for code-splitting - components loaded only when needed
   let StepPhotosOnly: any = $state(null);
   let StepCategory: any = $state(null);
-  let StepProductInfo: any = $state(null);
+  // StepProductInfo removed - now using sub-step carousel in StepCategory
   let StepPricing: any = $state(null);
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import { onMount } from 'svelte';
@@ -58,14 +58,9 @@
           const module = await import('./components/StepCategory.svelte');
           StepCategory = module.default;
         }
+        // StepProductInfo removed - now using sub-step carousel in StepCategory
         break;
       case 3:
-        if (!StepProductInfo) {
-          const module = await import('./components/StepProductInfo.svelte');
-          StepProductInfo = module.default;
-        }
-        break;
-      case 4:
         if (!StepPricing) {
           const module = await import('./components/StepPricing.svelte');
           StepPricing = module.default;
@@ -291,80 +286,59 @@
     formData.type_category_id &&
     // Allow proceeding with just 2 tiers if no 3rd tier exists
     (formData.category_id || specificCategories.length === 0) &&
-    formData.condition // Now condition is required in Step 2
+    formData.condition
+    // Removed brand and size - now handled in separate step after sub-step carousel
   );
-  
+
   const canProceedStep3 = $derived(
-    formData.brand && 
-    formData.size // Condition removed from Step 3 validation
-  );
-  
-  const canProceedStep4 = $derived(
     formData.price > 0 && formData.shipping_cost >= 0
   );
   
   const canSubmit = $derived(
     // For testing, allow submission without images
-    formData.title.length >= 3 && 
+    formData.title.length >= 3 &&
     formData.gender_category_id &&
     formData.type_category_id &&
     // Use type_category_id if no specific category exists
     (formData.category_id || specificCategories.length === 0) &&
-    formData.brand && 
-    formData.size && 
     formData.condition &&
-    formData.price > 0 && 
+    formData.price > 0 &&
     formData.shipping_cost >= 0
+    // Note: brand and size temporarily removed for sub-step flow testing
+    // TODO: Add brand/size fields to Step 2 or create Step 2.5 for product details
   );
 
   // Helper function to get step titles for accessibility announcements
   function getStepTitle(stepNumber: number): string {
     switch (stepNumber) {
       case 1: return i18n.sell_step1();
-      case 2: return i18n.sell_step2();
-      case 3: return i18n.sell_step3();
-      case 4: return i18n.sell_step4();
-      case 5: return i18n.sell_step4(); // Review step shares title with pricing
+      case 2: return 'Category & Details';
+      case 3: return i18n.sell_step4(); // Pricing
+      case 4: return 'Review Listing'; // Review step
       default: return '';
     }
   }
 
-  // Better navigation with accessibility considerations
+  // Simplified navigation - no scrolling needed with full viewport steps
   function navigateToStep() {
+    // Focus management for accessibility
     if (stepContainer) {
-      // Focus management for screen readers with step announcement
-      focusWithAnnouncement(
-        stepContainer, 
-        `Step ${currentStep} of 5: ${getStepTitle(currentStep)}`
-      );
-    } else {
-      // Fallback: scroll to top of content area with motion preference support
-      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const contentArea = document.querySelector('.overflow-y-auto');
-      
-      if (contentArea) {
-        // Scroll within the content container
-        contentArea.scrollTo({ 
-          top: 0, 
-          behavior: prefersReducedMotion ? 'auto' : 'smooth' 
-        });
-      } else {
-        // Final fallback: window scroll
-        window.scrollTo({ 
-          top: 0, 
-          behavior: prefersReducedMotion ? 'auto' : 'smooth' 
-        });
-      }
+      setTimeout(() => {
+        focusWithAnnouncement(
+          stepContainer,
+          `Step ${currentStep} of 5: ${getStepTitle(currentStep)}`
+        );
+      }, 100);
     }
   }
 </script>
 
 <svelte:head>
   <title>List an Item • Driplo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
 </svelte:head>
 
-<div class="h-screen bg-white flex flex-col fixed inset-0">
+<div class="h-screen bg-white flex flex-col fixed inset-0 sell-form-container">
   <!-- Validation Popup - Top of screen -->
   {#if showValidationPopup}
     <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top duration-200">
@@ -376,65 +350,47 @@
       </div>
     </div>
   {/if}
-  
-  <!-- Clean Progress Bar -->
-  <div class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-    <!-- Close button -->
-    <button 
-      onclick={() => goto('/')}
-      class="absolute right-3 top-3 p-2 hover:bg-gray-100 rounded-full transition-colors z-10"
-      aria-label="Close"
-    >
-      <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
-    
-    <!-- Step info and progress -->
-    <div class="px-4 py-4 pr-12">
-      <div class="flex items-center justify-between mb-3">
-        <div>
-          <h2 class="text-sm font-semibold text-gray-900">
-            {#if currentStep === 1}
-              {i18n.sell_step1()}
-            {:else if currentStep === 2}
-              {i18n.sell_step2()}
-            {:else if currentStep === 3}
-              {i18n.sell_step3()}
-            {:else if currentStep === 4}
-              {i18n.sell_step4()}
-            {:else if currentStep === 5}
-              {i18n.sell_step4()}
-            {/if}
-          </h2>
-          <p class="text-xs text-gray-500 mt-0.5">
-            Step {currentStep} of 5
-          </p>
-        </div>
+
+  <!-- Minimal Header - Just close button and progress -->
+  <div class="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3">
+    <div class="flex items-center justify-between">
+      <!-- Close button -->
+      <button
+        onclick={() => goto('/')}
+        class="p-2 hover:bg-gray-100 rounded-full transition-colors"
+        aria-label="Close"
+      >
+        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Progress indicator -->
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-gray-500">Step {currentStep} of 4</span>
         {#if isDraftSaved}
-          <div class="flex items-center gap-1.5 text-green-600">
-            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+          <div class="flex items-center gap-1 text-green-600">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
             </svg>
             <span class="text-xs font-medium">Saved</span>
           </div>
         {/if}
       </div>
-      
-      <!-- Progress bar -->
-      <div class="w-full bg-gray-100 rounded-full h-1 overflow-hidden">
-        <div 
-          class="h-full bg-[color:var(--primary)] rounded-full transition-all duration-300 ease-out {isProgressing ? 'animate-pulse' : ''}"
-          style="width: {((currentStep - 1) / 4) * 100}%"
-        ></div>
-      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden mt-2">
+      <div
+        class="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full transition-all duration-500 ease-out {isProgressing ? 'animate-pulse' : ''}"
+        style="width: {((currentStep - 1) / 3) * 100}%"
+      ></div>
     </div>
   </div>
 
-  <!-- Content - flex-1 to fill available space -->
-  <!-- Scrollable content area between fixed header and footer -->
-  <div class="flex-1 overflow-y-auto pt-[72px] pb-[88px]">
-    <div class="max-w-lg mx-auto px-4 py-4">
+  <!-- Full Viewport Content - No scrolling, full height -->
+  <div class="flex-1 bg-gray-50 flex flex-col">
+    <div class="flex-1 flex flex-col max-w-lg mx-auto w-full px-4">
     {#if data.needsBrandSubscription}
       <!-- Brand subscription required -->
       <div class="text-center py-12">
@@ -600,6 +556,8 @@
                     }
                   }}
                 />
+
+                <!-- Product Details removed - now handled in StepCategory sub-steps -->
               {:else}
                 <div class="flex items-center justify-center py-8">
                   <div class="text-sm text-gray-500">{i18n.loading()}</div>
@@ -609,41 +567,10 @@
           </div>
         {/if}
         
-        <!-- Step 3: Product Details -->
+        
+        <!-- Step 3: Pricing (previously Step 4) -->
         {#if currentStep === 3}
-          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 3 of 5: {i18n.sell_step3()}" class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
-            <ErrorBoundary
-              resetKeys={[currentStep]}
-              onError={(error) => {
-                console.error('Error in Step 3 (Product Info):', error);
-                toasts.error('An error occurred while loading product details step. Please try again.');
-              }}
-            >
-              {#if StepProductInfo}
-                <StepProductInfo
-                  bind:formData
-                  sizeOptions={sizeOptions}
-                  errors={{}}
-                  touched={{}}
-                  onFieldChange={(field, value) => {
-                    // Trigger validation if needed
-                  }}
-                  onFieldBlur={(field) => {
-                    // Mark field as touched
-                  }}
-                />
-              {:else}
-                <div class="flex items-center justify-center py-8">
-                  <div class="text-sm text-gray-500">{i18n.loading()}</div>
-                </div>
-              {/if}
-            </ErrorBoundary>
-          </div>
-        {/if}
-        
-        <!-- Step 4: Pricing -->
-        {#if currentStep === 4}
-          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 4 of 5: {i18n.sell_step4()}" class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
+          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 3 of 4: Pricing" class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
             <ErrorBoundary
               resetKeys={[currentStep]}
               onError={(error) => {
@@ -674,40 +601,40 @@
           </div>
         {/if}
         
-        <!-- Step 5: Review -->
-        {#if currentStep === 5}
-          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 5 of 5: Review listing" class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
-            <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-              <div class="text-center mb-6">
-                <h2 class="text-lg font-semibold text-gray-900 mb-1">{i18n.sell_reviewListing()}</h2>
+        <!-- Step 4: Review (previously Step 5) -->
+        {#if currentStep === 4}
+          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 4 of 4: Review listing" class="space-y-4 animate-in fade-in slide-in-from-right duration-300">
+            <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+              <div class="text-center mb-4">
+                <h2 class="text-base font-semibold text-gray-900 mb-1">{i18n.sell_reviewListing()}</h2>
                 <p class="text-sm text-gray-600">Everything look good? Your listing will appear like this:</p>
               </div>
               
-              <!-- Enhanced Preview Card -->
-              <div class="bg-gray-50 rounded-xl border border-gray-300 overflow-hidden max-w-sm mx-auto">
+              <!-- Compact Mobile Preview Card -->
+              <div class="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden max-w-xs mx-auto shadow-sm">
                 <!-- Image Gallery Preview -->
                 {#if uploadedImages.length > 0}
                   <div class="relative">
-                    <img 
-                      src={uploadedImages[0].url} 
+                    <img
+                      src={uploadedImages[0].url}
                       alt={formData.title}
-                      class="w-full h-56 object-cover"
+                      class="w-full h-40 object-cover"
                     />
                     {#if uploadedImages.length > 1}
-                      <div class="absolute top-2 right-2 bg-[color:var(--primary)]/70 text-[color:var(--primary-fg)] text-xs px-2 py-1 rounded-full">
+                      <div class="absolute top-2 right-2 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
                         1/{uploadedImages.length}
                       </div>
                     {/if}
                   </div>
                 {:else}
-                  <div class="h-56 bg-gray-200 flex items-center justify-center">
+                  <div class="h-40 bg-gray-200 flex items-center justify-center">
                     <p class="text-gray-500 text-sm">No images uploaded</p>
                   </div>
                 {/if}
-                
-                <div class="p-4 space-y-3">
+
+                <div class="p-3 space-y-2">
                   <!-- Category Breadcrumb -->
-                  <div class="text-xs text-gray-500 uppercase tracking-wide">
+                  <div class="text-xs text-gray-500 uppercase tracking-wide line-clamp-1">
                     {#if genderCategories.find(c => c.id === formData.gender_category_id)}
                       {genderCategories.find(c => c.id === formData.gender_category_id)?.name}
                     {/if}
@@ -715,79 +642,59 @@
                       › {typeCategories.find(c => c.id === formData.type_category_id)?.name}
                     {/if}
                   </div>
-                  
-                  <h3 class="font-semibold text-lg line-clamp-2">{formData.title}</h3>
-                  
+
+                  <h3 class="font-semibold text-base line-clamp-2 leading-tight">{formData.title}</h3>
+
                   <!-- Price Section -->
-                  <div class="flex items-center justify-between">
+                  <div class="flex items-start justify-between">
                     <div>
-                      <span class="text-2xl font-bold text-gray-900">${formData.price}</span>
+                      <span class="text-xl font-bold text-gray-900">${formData.price}</span>
                       {#if formData.shipping_cost > 0}
-                        <div class="text-sm text-gray-500">+ ${formData.shipping_cost} shipping</div>
+                        <div class="text-xs text-gray-500">+ ${formData.shipping_cost} shipping</div>
                       {:else if formData.shipping_cost === 0}
-                        <div class="text-sm text-green-600 font-medium">{i18n.sell_free()} {i18n.sell_shippingCost()}</div>
+                        <div class="text-xs text-green-600 font-medium">Free shipping</div>
                       {/if}
                     </div>
                     <div class="text-right">
-                      <div class="text-xs text-gray-500">{i18n.sell_yourEarnings()}</div>
+                      <div class="text-xs text-gray-500">You earn</div>
                       <div class="text-sm font-semibold text-green-600">${(formData.price * 0.9).toFixed(2)}</div>
                     </div>
                   </div>
-                  
-                  <!-- Product Details -->
-                  <div class="flex flex-wrap gap-1.5">
-                    <span class="px-2 py-1 bg-white border text-xs rounded-full">{formData.brand}</span>
-                    <span class="px-2 py-1 bg-white border text-xs rounded-full">{i18n.product_size()} {formData.size}</span>
-                    <span class="px-2 py-1 bg-white border text-xs rounded-full capitalize">{formData.condition.replace('_', ' ').replace('-', ' ')}</span>
-                    {#if formData.color}
-                      <span class="px-2 py-1 bg-white border text-xs rounded-full">{formData.color}</span>
-                    {/if}
+
+                  <!-- Product Details - Compact -->
+                  <div class="flex flex-wrap gap-1">
+                    <span class="px-1.5 py-0.5 bg-white border text-xs rounded">{formData.brand}</span>
+                    <span class="px-1.5 py-0.5 bg-white border text-xs rounded">Size {formData.size}</span>
+                    <span class="px-1.5 py-0.5 bg-white border text-xs rounded capitalize">{formData.condition.replace('_', ' ').replace('-', ' ')}</span>
                   </div>
-                  
-                  <!-- Description -->
+
+                  <!-- Description - Compact -->
                   {#if formData.description}
-                    <div class="pt-2 border-t border-gray-200">
-                      <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">{formData.description}</p>
-                    </div>
+                    <p class="text-xs text-gray-600 leading-relaxed line-clamp-2">{formData.description}</p>
                   {/if}
-                  
-                  <!-- Tags -->
-                  {#if formData.tags && formData.tags.length > 0}
+
+                  <!-- Tags & Premium Boost - Compact Row -->
+                  <div class="flex items-center justify-between">
                     <div class="flex flex-wrap gap-1">
-                      {#each formData.tags.slice(0, 3) as tag}
-                        <span class="text-xs text-gray-500">#{tag}</span>
-                      {/each}
-                      {#if formData.tags.length > 3}
-                        <span class="text-xs text-gray-400">+{formData.tags.length - 3} {i18n.sell_moreTag()}</span>
+                      {#if formData.tags && formData.tags.length > 0}
+                        {#each formData.tags.slice(0, 2) as tag}
+                          <span class="text-xs text-gray-500">#{tag}</span>
+                        {/each}
+                        {#if formData.tags.length > 2}
+                          <span class="text-xs text-gray-400">+{formData.tags.length - 2}</span>
+                        {/if}
                       {/if}
                     </div>
-                  {/if}
-                  
-                  <!-- Premium Boost Indicator -->
-                  {#if formData.use_premium_boost}
-                    <div class="flex items-center justify-center gap-2 py-2 bg-purple-100 border border-purple-200 rounded-lg">
-                      <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                      <span class="text-xs font-medium text-purple-700">{i18n.sell_premiumBoost()}</span>
-                    </div>
-                  {/if}
-                </div>
-              </div>
-              
-              <!-- Summary Stats -->
-              <div class="mt-6 grid grid-cols-3 gap-4 p-3 bg-gray-50 rounded-lg">
-                <div class="text-center">
-                  <div class="text-lg font-bold text-gray-900">{uploadedImages.length}</div>
-                  <div class="text-xs text-gray-500">{i18n.sell_photos()}</div>
-                </div>
-                <div class="text-center">
-                  <div class="text-lg font-bold text-gray-900">${formData.price}</div>
-                  <div class="text-xs text-gray-500">{i18n.price()}</div>
-                </div>
-                <div class="text-center">
-                  <div class="text-lg font-bold text-green-600">${(formData.price * 0.9).toFixed(2)}</div>
-                  <div class="text-xs text-gray-500">{i18n.sell_yourEarnings()}</div>
+
+                    {#if formData.use_premium_boost}
+                      <div class="flex items-center gap-1 px-2 py-1 bg-purple-100 rounded text-xs">
+                        <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        <span class="text-purple-700 font-medium">Boosted</span>
+                      </div>
+                    {/if}
+                  </div>
                 </div>
               </div>
               
@@ -806,9 +713,9 @@
     </div>
   </div>
   
-  <!-- Enhanced Sticky Navigation - Better touch targets -->
+  <!-- Single Bottom Navigation - No longer fixed, part of flex layout -->
   {#if !data.needsBrandSubscription && !showSuccess}
-    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-4 py-4 z-40 shadow-lg shadow-black/5">
+    <div class="flex-shrink-0 bg-white border-t border-gray-200 px-4 py-4">
       <div class="max-w-lg mx-auto flex gap-3">
         {#if currentStep > 1}
           <Button
@@ -825,7 +732,7 @@
               }, 150);
             }}
             disabled={submitting}
-            class="flex-1 min-h-[48px]"
+            class="flex-1 min-h-[48px] text-base"
           >
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -834,15 +741,14 @@
           </Button>
         {/if}
         
-        {#if currentStep < 5}
+        {#if currentStep < 4}
           <Button
             type="button"
             variant="primary"
             onclick={() => {
               if ((currentStep === 1 && canProceedStep1) ||
                   (currentStep === 2 && canProceedStep2) ||
-                  (currentStep === 3 && canProceedStep3) ||
-                  (currentStep === 4 && canProceedStep4)) {
+                  (currentStep === 3 && canProceedStep3)) {
                 isProgressing = true;
                 publishError = null;
                 setTimeout(async () => {
@@ -871,12 +777,6 @@
                     showValidation('Please select item condition');
                   }
                 } else if (currentStep === 3) {
-                  if (!formData.brand) {
-                    showValidation('Please enter a brand');
-                  } else if (!formData.size) {
-                    showValidation('Please select a size');
-                  }
-                } else if (currentStep === 4) {
                   if (!formData.price || formData.price <= 0) {
                     showValidation('Please enter a price');
                   }
@@ -884,14 +784,14 @@
               }
             }}
             disabled={submitting}
-            class="flex-1 min-h-[48px]"
+            class="flex-1 min-h-[48px] text-base"
           >
             {i18n.common_next()}
             <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </Button>
-        {:else if currentStep === 5}
+        {:else if currentStep === 4}
           <Button
             type="button"
             variant="primary"
@@ -902,7 +802,7 @@
               }
             }}
             disabled={submitting || !canSubmit}
-            class="flex-1 min-h-[48px]"
+            class="flex-1 min-h-[48px] text-base"
           >
             {#if submitting}
               <span class="flex items-center justify-center">
@@ -1053,5 +953,11 @@
   
   .animate-spin {
     animation: spin 1s linear infinite;
+  }
+
+  /* Mobile touch improvements - simplified for full viewport layout */
+  .sell-form-container {
+    touch-action: pan-y;
+    overscroll-behavior: none;
   }
 </style>

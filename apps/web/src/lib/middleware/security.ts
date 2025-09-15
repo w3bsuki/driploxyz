@@ -10,13 +10,38 @@ import { createMethodNotAllowedResponse, logger } from './error-handler.js';
  * Security headers for all API responses
  */
 const SECURITY_HEADERS = {
+  // Prevent MIME type sniffing
   'X-Content-Type-Options': 'nosniff',
+
+  // Prevent iframe embedding (clickjacking protection)
   'X-Frame-Options': 'DENY',
+
+  // Enable XSS filtering
   'X-XSS-Protection': '1; mode=block',
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+
+  // Force HTTPS for 1 year
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+
+  // Control referrer information
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-  'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none';"
+
+  // Restrict browser features
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
+
+  // Content Security Policy - Production ready
+  'Content-Security-Policy': [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://checkout.stripe.com https://browser.sentry-cdn.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "img-src 'self' data: blob: https: *.supabase.co *.stripe.com",
+    "font-src 'self' data: https://fonts.gstatic.com",
+    "connect-src 'self' https: wss: *.supabase.co *.stripe.com *.sentry.io",
+    "frame-src 'self' https://js.stripe.com https://checkout.stripe.com",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "upgrade-insecure-requests"
+  ].join('; ')
 };
 
 /**

@@ -25,6 +25,7 @@
     menuClass?: string;
     portal?: string | HTMLElement;
     gutter?: number;
+    ariaLabel?: string;
   }
 
   let {
@@ -39,7 +40,8 @@
     triggerClass = '',
     menuClass = '',
     portal: portalTarget = null,
-    gutter = 8
+    gutter = 8,
+    ariaLabel = ''
   }: Props = $props();
 
   const {
@@ -97,6 +99,7 @@
   class="{triggerClasses} focus:!outline-none active:!outline-none"
   aria-haspopup="true"
   aria-expanded={$menuOpen}
+  aria-label={ariaLabel || undefined}
   style="outline: none !important; box-shadow: none !important;"
 >
   {#if trigger}

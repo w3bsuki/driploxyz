@@ -11,7 +11,7 @@
   import Header from '$lib/components/Header.svelte';
   import '../app.css';
   // Deploy to driplo.xyz - force redeploy
-  import { invalidate } from '$app/navigation';
+  import { invalidate, preloadCode, preloadData } from '$app/navigation';
   import { browser, dev } from '$app/environment';
   // Auth stores removed - we use server data directly
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
@@ -44,6 +44,31 @@
       }, 500);
     }
   }
+
+  // Preload critical category routes for faster navigation
+  $effect(() => {
+    if (browser) {
+      // Preload main category routes on app load for instant navigation
+      const criticalRoutes = [
+        '/search',
+        '/search?category=women',
+        '/search?category=men',
+        '/search?category=kids'
+      ];
+
+      // Preload in background after initial render
+      setTimeout(() => {
+        criticalRoutes.forEach(async (route) => {
+          try {
+            await preloadCode(route);
+            await preloadData(route);
+          } catch (e) {
+            // Preload failed, continue silently
+          }
+        });
+      }, 1000);
+    }
+  });
 
   // Language initialization - Header component handles switching
   $effect(() => {
@@ -374,3 +399,5 @@
 
 <!-- Geo-based Locale Suggestion -->
 <!-- GeoLocaleSuggestion removed - using LocaleDetectionBanner via LocaleDetector instead -->
+
+<!-- Overlay root is defined once in apps/web/src/app.html -->

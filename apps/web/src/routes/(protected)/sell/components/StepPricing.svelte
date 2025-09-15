@@ -138,7 +138,7 @@
             <span class="font-semibold text-[color:var(--primary-900)]">{i18n.sell_premiumBoost()}</span>
             {#if profile?.premium_boosts_remaining}
               <span class="text-xs bg-[color:var(--primary-100)] text-[color:var(--primary-700)] px-2 py-0.5 rounded-full">
-                {profile.premium_boosts_remaining} {i18n.sell_creditsLeft()}
+                {profile.premium_boosts_remaining} {i18n.sell_premiumLeft()}
               </span>
             {/if}
           </div>

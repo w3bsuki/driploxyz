@@ -55,6 +55,12 @@ export function portal(
     if (node.parentNode) {
       node.parentNode.removeChild(node);
     }
+
+    // Additional cleanup: ensure no orphaned nodes remain in overlay root
+    const overlayRoot = document.getElementById('overlay-root');
+    if (overlayRoot && overlayRoot.contains(node)) {
+      overlayRoot.removeChild(node);
+    }
   }
 
   return { update, destroy };

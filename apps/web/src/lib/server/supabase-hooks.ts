@@ -1,6 +1,5 @@
 import { env as publicEnv } from '$env/dynamic/public';
 import { building } from '$app/environment';
-import { error } from '@sveltejs/kit';
 import type { Database } from '@repo/database';
 import type { RequestEvent } from '@sveltejs/kit';
 import { createAuthHelpers } from '@repo/core-auth';

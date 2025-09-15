@@ -83,7 +83,7 @@ export type Database = {
           id?: string
           is_read?: boolean | null
           message: string
-          priority: string
+          priority?: string
           title: string
           type: string
           updated_at?: string | null
@@ -247,6 +247,132 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      boost_history: {
+        Row: {
+          boost_type: string
+          boosted_at: string | null
+          created_at: string | null
+          credits_used: number
+          expires_at: string
+          id: string
+          product_id: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          boost_type?: string
+          boosted_at?: string | null
+          created_at?: string | null
+          credits_used?: number
+          expires_at: string
+          id?: string
+          product_id: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          boost_type?: string
+          boosted_at?: string | null
+          created_at?: string | null
+          credits_used?: number
+          expires_at?: string
+          id?: string
+          product_id?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "boost_history_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "boost_history_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brand_collections: {
+        Row: {
+          collection_type: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_featured: boolean
+          logo_url: string | null
+          name: string
+          product_count: number
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          collection_type: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          logo_url?: string | null
+          name: string
+          product_count?: number
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          collection_type?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_featured?: boolean
+          logo_url?: string | null
+          name?: string
+          product_count?: number
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      brand_suggestions: {
+        Row: {
+          brand_name: string
+          created_at: string | null
+          id: string
+          merged_to_brand: string | null
+          status: string | null
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          brand_name: string
+          created_at?: string | null
+          id?: string
+          merged_to_brand?: string | null
+          status?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          brand_name?: string
+          created_at?: string | null
+          id?: string
+          merged_to_brand?: string | null
+          status?: string | null
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: []
       }
       brands: {
         Row: {
@@ -507,6 +633,76 @@ export type Database = {
         }
         Relationships: []
       }
+      drip_nominations: {
+        Row: {
+          admin_notes: string | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          nominated_at: string | null
+          nominated_by: string
+          product_id: string
+          quality_score: number | null
+          rejection_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          nominated_at?: string | null
+          nominated_by: string
+          product_id: string
+          quality_score?: number | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          nominated_at?: string | null
+          nominated_by?: string
+          product_id?: string
+          quality_score?: number | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "drip_nominations_nominated_by_fkey"
+            columns: ["nominated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "drip_nominations_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "drip_nominations_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       favorites: {
         Row: {
           created_at: string | null
@@ -618,6 +814,7 @@ export type Database = {
           id: string
           image_urls: string[] | null
           is_read: boolean | null
+          message_type: string | null
           order_id: string | null
           product_id: string | null
           read_at: string | null
@@ -633,6 +830,7 @@ export type Database = {
           id?: string
           image_urls?: string[] | null
           is_read?: boolean | null
+          message_type?: string | null
           order_id?: string | null
           product_id?: string | null
           read_at?: string | null
@@ -648,6 +846,7 @@ export type Database = {
           id?: string
           image_urls?: string[] | null
           is_read?: boolean | null
+          message_type?: string | null
           order_id?: string | null
           product_id?: string | null
           read_at?: string | null
@@ -1078,24 +1277,99 @@ export type Database = {
           },
         ]
       }
+      product_slug_history: {
+        Row: {
+          changed_at: string | null
+          old_slug: string
+          product_id: string
+        }
+        Insert: {
+          changed_at?: string | null
+          old_slug: string
+          product_id: string
+        }
+        Update: {
+          changed_at?: string | null
+          old_slug?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_slug_history_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      product_views: {
+        Row: {
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          product_id: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          product_id: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          product_id?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_views_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           archived_at: string | null
           auto_archive_after_days: number | null
+          boost_history_id: string | null
+          boost_priority: number | null
           boost_type: string | null
           boosted_until: string | null
           brand: string | null
+          brand_collection_id: string | null
           category_id: string
           color: string | null
           commission_rate: number | null
           condition: Database["public"]["Enums"]["product_condition"]
           country_code: string | null
           created_at: string | null
+          custom_subcategory: string | null
           description: string
-          favorite_count: number | null
+          drip_admin_notes: string | null
+          drip_approved_at: string | null
+          drip_nominated_at: string | null
+          drip_nominated_by: string | null
+          drip_quality_score: number | null
+          drip_rejected_at: string | null
+          drip_rejection_reason: string | null
+          drip_reviewed_by: string | null
+          drip_status: string | null
+          favorite_count: number
           id: string
           is_active: boolean | null
           is_boosted: boolean | null
+          is_drip_candidate: boolean | null
           is_featured: boolean | null
           is_sold: boolean | null
           location: string | null
@@ -1109,6 +1383,7 @@ export type Database = {
           shipping_cost: number | null
           size: string | null
           slug: string | null
+          slug_locked: boolean | null
           sold_at: string | null
           status: string | null
           tags: string[] | null
@@ -1119,20 +1394,34 @@ export type Database = {
         Insert: {
           archived_at?: string | null
           auto_archive_after_days?: number | null
+          boost_history_id?: string | null
+          boost_priority?: number | null
           boost_type?: string | null
           boosted_until?: string | null
           brand?: string | null
+          brand_collection_id?: string | null
           category_id: string
           color?: string | null
           commission_rate?: number | null
           condition: Database["public"]["Enums"]["product_condition"]
           country_code?: string | null
           created_at?: string | null
+          custom_subcategory?: string | null
           description: string
-          favorite_count?: number | null
+          drip_admin_notes?: string | null
+          drip_approved_at?: string | null
+          drip_nominated_at?: string | null
+          drip_nominated_by?: string | null
+          drip_quality_score?: number | null
+          drip_rejected_at?: string | null
+          drip_rejection_reason?: string | null
+          drip_reviewed_by?: string | null
+          drip_status?: string | null
+          favorite_count?: number
           id?: string
           is_active?: boolean | null
           is_boosted?: boolean | null
+          is_drip_candidate?: boolean | null
           is_featured?: boolean | null
           is_sold?: boolean | null
           location?: string | null
@@ -1146,6 +1435,7 @@ export type Database = {
           shipping_cost?: number | null
           size?: string | null
           slug?: string | null
+          slug_locked?: boolean | null
           sold_at?: string | null
           status?: string | null
           tags?: string[] | null
@@ -1156,20 +1446,34 @@ export type Database = {
         Update: {
           archived_at?: string | null
           auto_archive_after_days?: number | null
+          boost_history_id?: string | null
+          boost_priority?: number | null
           boost_type?: string | null
           boosted_until?: string | null
           brand?: string | null
+          brand_collection_id?: string | null
           category_id?: string
           color?: string | null
           commission_rate?: number | null
           condition?: Database["public"]["Enums"]["product_condition"]
           country_code?: string | null
           created_at?: string | null
+          custom_subcategory?: string | null
           description?: string
-          favorite_count?: number | null
+          drip_admin_notes?: string | null
+          drip_approved_at?: string | null
+          drip_nominated_at?: string | null
+          drip_nominated_by?: string | null
+          drip_quality_score?: number | null
+          drip_rejected_at?: string | null
+          drip_rejection_reason?: string | null
+          drip_reviewed_by?: string | null
+          drip_status?: string | null
+          favorite_count?: number
           id?: string
           is_active?: boolean | null
           is_boosted?: boolean | null
+          is_drip_candidate?: boolean | null
           is_featured?: boolean | null
           is_sold?: boolean | null
           location?: string | null
@@ -1183,6 +1487,7 @@ export type Database = {
           shipping_cost?: number | null
           size?: string | null
           slug?: string | null
+          slug_locked?: boolean | null
           sold_at?: string | null
           status?: string | null
           tags?: string[] | null
@@ -1192,10 +1497,38 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "products_boost_history_id_fkey"
+            columns: ["boost_history_id"]
+            isOneToOne: false
+            referencedRelation: "boost_history"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_brand_collection_id_fkey"
+            columns: ["brand_collection_id"]
+            isOneToOne: false
+            referencedRelation: "brand_collections"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "products_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_drip_nominated_by_fkey"
+            columns: ["drip_nominated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "products_drip_reviewed_by_fkey"
+            columns: ["drip_reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
@@ -1214,6 +1547,7 @@ export type Database = {
           avatar_url: string | null
           avg_shipping_hours: number | null
           bio: string | null
+          boost_credits_used_this_month: number | null
           brand_status: string | null
           country_code: string | null
           created_at: string | null
@@ -1227,6 +1561,7 @@ export type Database = {
           grace_period_ends_at: string | null
           id: string
           last_active_at: string | null
+          last_boost_reset_date: string | null
           last_password_change: string | null
           last_payout_at: string | null
           last_stats_update: string | null
@@ -1250,6 +1585,7 @@ export type Database = {
           social_links: Json | null
           subscription_expires_at: string | null
           subscription_tier: string | null
+          total_boosts_used: number | null
           total_reviews: number | null
           total_sales: number | null
           total_sales_value: number | null
@@ -1268,6 +1604,7 @@ export type Database = {
           avatar_url?: string | null
           avg_shipping_hours?: number | null
           bio?: string | null
+          boost_credits_used_this_month?: number | null
           brand_status?: string | null
           country_code?: string | null
           created_at?: string | null
@@ -1281,6 +1618,7 @@ export type Database = {
           grace_period_ends_at?: string | null
           id: string
           last_active_at?: string | null
+          last_boost_reset_date?: string | null
           last_password_change?: string | null
           last_payout_at?: string | null
           last_stats_update?: string | null
@@ -1304,6 +1642,7 @@ export type Database = {
           social_links?: Json | null
           subscription_expires_at?: string | null
           subscription_tier?: string | null
+          total_boosts_used?: number | null
           total_reviews?: number | null
           total_sales?: number | null
           total_sales_value?: number | null
@@ -1322,6 +1661,7 @@ export type Database = {
           avatar_url?: string | null
           avg_shipping_hours?: number | null
           bio?: string | null
+          boost_credits_used_this_month?: number | null
           brand_status?: string | null
           country_code?: string | null
           created_at?: string | null
@@ -1335,6 +1675,7 @@ export type Database = {
           grace_period_ends_at?: string | null
           id?: string
           last_active_at?: string | null
+          last_boost_reset_date?: string | null
           last_password_change?: string | null
           last_payout_at?: string | null
           last_stats_update?: string | null
@@ -1358,6 +1699,7 @@ export type Database = {
           social_links?: Json | null
           subscription_expires_at?: string | null
           subscription_tier?: string | null
+          total_boosts_used?: number | null
           total_reviews?: number | null
           total_sales?: number | null
           total_sales_value?: number | null
@@ -1859,33 +2201,67 @@ export type Database = {
           },
         ]
       }
-    }
-    Views: {
-      user_conversations: {
+      username_history: {
         Row: {
-          is_read: boolean | null
-          last_message: string | null
-          last_message_at: string | null
-          other_user_id: string | null
-          product_id: string | null
-          product_title: string | null
-          receiver_avatar_url: string | null
-          receiver_username: string | null
-          sender_avatar_url: string | null
-          sender_username: string | null
+          changed_at: string | null
+          old_username: string
+          user_id: string
+        }
+        Insert: {
+          changed_at?: string | null
+          old_username: string
+          user_id: string
+        }
+        Update: {
+          changed_at?: string | null
+          old_username?: string
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "messages_product_id_fkey"
-            columns: ["product_id"]
+            foreignKeyName: "username_history_user_id_fkey"
+            columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "products"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
       }
     }
+    Views: {
+      [_ in never]: never
+    }
     Functions: {
+      approve_drip_product: {
+        Args: {
+          admin_id_param: string
+          admin_notes_param?: string
+          product_id_param: string
+          quality_score_param?: number
+        }
+        Returns: boolean
+      }
+      audit_rls_status: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          policies_count: number
+          rls_enabled: boolean
+          security_status: string
+          table_name: string
+        }[]
+      }
+      boost_product: {
+        Args: {
+          p_boost_duration_days?: number
+          p_product_id: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
+      calculate_seller_trending: {
+        Args: { seller_id: string }
+        Returns: string
+      }
       can_message_about_product: {
         Args: { product_id: string; sender_id: string }
         Returns: boolean
@@ -1922,57 +2298,69 @@ export type Database = {
         Args: { product_uuid: string }
         Returns: undefined
       }
+      expire_old_boosts: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       generate_unique_username: {
         Args: { base_username: string }
         Returns: string
       }
       get_category_ancestors: {
-        Args: { category_uuid: string }
+        Args: { category_id: string }
         Returns: {
-          ancestor_id: string
+          id: string
+          level: number
+          name: string
+          slug: string
         }[]
       }
       get_category_descendants: {
         Args: { category_uuid: string }
         Returns: {
-          descendant_id: string
+          id: string
         }[]
       }
       get_category_hierarchy: {
         Args: { category_uuid: string }
         Returns: Json
       }
-      get_conversation_messages: {
-        Args:
-          | {
-              current_user_id: string
-              other_user_id: string
-              product_id_param?: string
-            }
-          | {
-              p_before_time?: string
-              p_limit?: number
-              p_other_user_id: string
-              p_product_id?: string
-              p_user_id: string
-            }
+      get_conversation_messages_secure: {
+        Args: { limit_count?: number; other_user_id: string }
         Returns: {
           content: string
+          conversation_id: string
           created_at: string
           id: string
-          image_urls: string[]
-          is_read: boolean
-          product_id: string
-          receiver_avatar_url: string
+          read: boolean
           receiver_id: string
-          receiver_username: string
-          sender_avatar_url: string
           sender_id: string
-          sender_username: string
+          sender_profile: Json
         }[]
       }
       get_homepage_data: {
         Args: { p_country_code?: string; p_limit?: number }
+        Returns: Json
+      }
+      get_popular_brands: {
+        Args: { limit_count?: number }
+        Returns: {
+          brand_name: string
+          is_verified: boolean
+          product_count: number
+        }[]
+      }
+      get_price_suggestions: {
+        Args: {
+          p_brand?: string
+          p_category_id: string
+          p_condition?: Database["public"]["Enums"]["product_condition"]
+          p_size?: string
+        }
+        Returns: Json
+      }
+      get_product_metrics: {
+        Args: { p_product_id: string }
         Returns: Json
       }
       get_product_suggestions: {
@@ -2009,39 +2397,39 @@ export type Database = {
           | { category_name: string; country_code?: string }
           | { category_name_input: string }
         Returns: {
-          condition: string
-          first_image: string
-          id: string
-          price: number
-          seller_username: string
-          size: string
-          title: string
+          category_id: string
         }[]
       }
       get_products_in_category_tree: {
-        Args: { category_uuid: string }
+        Args: { category_id: string }
         Returns: {
-          product_id: string
+          created_at: string
+          id: string
+          price: number
+          title: string
         }[]
       }
-      get_user_conversations: {
-        Args:
-          | { p_limit?: number; p_user_id: string }
-          | { user_id_param: string }
+      get_user_conversations_secure: {
+        Args: { conv_limit?: number }
         Returns: {
-          conversation_id: string
-          is_product_conversation: boolean
-          last_message: string
-          last_message_time: string
-          other_user_avatar: string
-          other_user_id: string
-          other_user_last_active: string
-          other_user_name: string
-          product_id: string
-          product_image: string
-          product_price: number
-          product_title: string
-          unread_count: number
+          created_at: string
+          id: string
+          last_message_at: string
+          last_message_content: string
+          other_participant: Json
+          participant_one_id: string
+          participant_two_id: string
+          status: string
+          unread_count_p1: number
+          unread_count_p2: number
+          updated_at: string
+        }[]
+      }
+      get_virtual_category_counts: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          product_count: number
+          virtual_type: string
         }[]
       }
       increment_favorite_count: {
@@ -2069,15 +2457,9 @@ export type Database = {
         }
         Returns: string
       }
-      mark_conversation_read: {
-        Args:
-          | { current_user_id: string; other_user_id: string }
-          | {
-              p_other_user_id: string
-              p_product_id?: string
-              p_user_id: string
-            }
-        Returns: number
+      mark_conversation_read_secure: {
+        Args: { other_user_id: string }
+        Returns: boolean
       }
       mark_message_delivered: {
         Args: { p_message_id: string }
@@ -2091,47 +2473,82 @@ export type Database = {
         Args: { p_commission_rate?: number; p_order_id: string }
         Returns: Json
       }
+      product_slug_base_secure: {
+        Args: { product_title: string }
+        Returns: string
+      }
       queue_slug_generation: {
         Args: { p_product_id: string }
         Returns: undefined
       }
-      search_products: {
+      reject_drip_product: {
         Args: {
-          p_category_id?: string
-          p_country_code?: string
-          p_limit?: number
-          p_max_price?: number
-          p_min_price?: number
-          search_query: string
+          admin_id_param: string
+          admin_notes_param?: string
+          product_id_param: string
+          rejection_reason_param: string
         }
+        Returns: boolean
+      }
+      reset_monthly_boost_credits: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      search_categories: {
+        Args: { limit_count?: number; search_term: string }
+        Returns: {
+          id: string
+          level: number
+          name: string
+          parent_id: string
+        }[]
+      }
+      search_products_secure: {
+        Args:
+          | {
+              p_category_id?: string
+              p_country_code?: string
+              p_limit?: number
+              p_max_price?: number
+              p_min_price?: number
+              search_query: string
+            }
+          | {
+              p_category_id?: string
+              p_country_code?: string
+              p_limit?: number
+              p_max_price?: number
+              p_min_price?: number
+              search_query?: string
+            }
         Returns: {
           brand: string
-          category_id: string
           category_name: string
-          category_slug: string
-          condition: Database["public"]["Enums"]["product_condition"]
-          country_code: string
+          condition: string
           created_at: string
           description: string
           id: string
-          image_url: string
-          location: string
+          image_urls: string[]
+          is_promoted: boolean
           price: number
-          rank: number
           seller_avatar: string
-          seller_id: string
           seller_username: string
           size: string
           title: string
         }[]
       }
+      slugify: {
+        Args: { input_text: string }
+        Returns: string
+      }
       track_product_view: {
         Args: {
+          p_ip_address?: unknown
           p_product_id: string
-          p_session_id?: string
-          p_viewer_id?: string
+          p_user_agent?: string
+          p_user_id?: string
         }
-        Returns: undefined
+        Returns: boolean
       }
       track_profile_view: {
         Args: {
@@ -2168,6 +2585,8 @@ export type Database = {
         | "delivered"
         | "cancelled"
         | "disputed"
+        | "failed"
+        | "completed"
       product_condition:
         | "brand_new_with_tags"
         | "new_without_tags"
@@ -2311,6 +2730,8 @@ export const Constants = {
         "delivered",
         "cancelled",
         "disputed",
+        "failed",
+        "completed",
       ],
       product_condition: [
         "brand_new_with_tags",

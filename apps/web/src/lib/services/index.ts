@@ -12,7 +12,7 @@ import { TransactionService } from './transactions';
 import { PayoutService } from './payouts';
 import { FavoriteService } from './favorites';
 import { createStripeService, StripeService } from './stripe';
-import { BoostService, createBoostService } from './boost';
+import { BoostService } from './boost';
 
 // Service class exports
 export { ProductService } from './products';

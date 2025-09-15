@@ -17,15 +17,28 @@
   import { ProfileService } from '$lib/services/profiles';
   import { getCollectionsForContext } from '$lib/data/collections';
   
-  // Infinite scroll sentinel
+  // Infinite scroll sentinel - properly managed with reactive cleanup
   let loadMoreTrigger = $state<HTMLDivElement | null>(null);
+  let intersectionObserver = $state<IntersectionObserver | null>(null);
+
+  // Only use $effect for DOM side effects like intersection observer
   $effect(() => {
-    if (!browser || !loadMoreTrigger) return;
-    const io = new IntersectionObserver(([entry]) => {
+    if (!browser || !loadMoreTrigger) {
+      intersectionObserver?.disconnect();
+      intersectionObserver = null;
+      return;
+    }
+
+    intersectionObserver = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) loadMore();
     }, { rootMargin: '400px 0px' });
-    io.observe(loadMoreTrigger);
-    return () => io.disconnect();
+
+    intersectionObserver.observe(loadMoreTrigger);
+
+    return () => {
+      intersectionObserver?.disconnect();
+      intersectionObserver = null;
+    };
   });
 
   interface Props {
@@ -51,8 +64,7 @@
   let pendingFilters = $derived(filterStore.pendingFilters);
   let previewFilteredProducts = $derived(filterStore.previewFilteredProducts);
 
-  // Debug: Check if client-side code is running
-  console.log('🔍 Client - Script running, data.categoryHierarchy:', data.categoryHierarchy);
+  // Client-side script initialized
 
   // Category hierarchy from server data
   let categoryHierarchy = $derived(() => {
@@ -117,11 +129,7 @@
 
   // Transform categoryHierarchy to MegaMenuCategories format
   let megaMenuData = $derived(() => {
-    console.log('🔍 Client - categoryHierarchy structure:', categoryHierarchy);
-    console.log('🔍 Client - categoryHierarchy.categories length:', categoryHierarchy.categories?.length || 0);
-
     if (!categoryHierarchy.categories || categoryHierarchy.categories.length === 0) {
-      console.log('🔍 Client - No categories found, returning empty array');
       return [];
     }
 
@@ -187,13 +195,6 @@
       return l1Category;
     });
 
-    console.log('🔍 Client - Transformed megaMenuData length:', categories.length);
-    if (categories.length > 0) {
-      console.log('🔍 Client - First transformed category:', categories[0]);
-    } else {
-      console.log('🔍 Client - No categories transformed, original categoryHierarchy was:', categoryHierarchy);
-    }
-
     return categories;
   });
 
@@ -232,16 +233,12 @@
     { key: 'fair', label: i18n.condition_fair(), emoji: '👌' }
   ];
   
-  // Initialize from server data and load persisted filters
-  $effect(() => {
-    if (data.products) {
-      untrack(() => filterStore.setProducts(data.products));
-    }
-    
-    // Load persisted filters first (untracked to prevent circular dependencies)
-    untrack(() => filterStore.loadPersistedFilters());
-    
-    // Then apply server-provided filters (URL params override persisted)
+  // Initialize filters from server data - only needs to run once on mount
+  let filtersInitialized = $state(false);
+  if (!filtersInitialized && data.products) {
+    filterStore.setProducts(data.products);
+    filterStore.loadPersistedFilters();
+
     if (data.filters) {
       const serverFilters = {
         query: data.searchQuery || '',
@@ -255,25 +252,26 @@
         maxPrice: data.filters.maxPrice || '',
         sortBy: data.filters.sortBy || 'relevance'
       };
-      
+
       // Only override persisted filters if URL has non-default values
       const hasUrlFilters = Object.entries(serverFilters).some(([key, value]) => {
         if (key === 'sortBy') return value !== 'relevance';
         if (typeof value === 'string' && (value === 'all' || value === '')) return false;
         return value !== null;
       });
-      
+
       if (hasUrlFilters) {
-        untrack(() => filterStore.updateMultipleFilters(serverFilters));
+        filterStore.updateMultipleFilters(serverFilters);
       }
-      
+
       searchQuery = data.searchQuery || '';
     }
-  });
+    filtersInitialized = true;
+  }
   
-  // Sync to URL on filter changes (client-side)
+  // URL syncing - use $effect only for browser side effects
   $effect(() => {
-    if (browser) {
+    if (browser && filtersInitialized) {
       syncFiltersToUrl(filters);
     }
   });
@@ -380,18 +378,14 @@
     filterStore.updateFilter('query', query);
   }, 300);
 
-  function handleSearch(value: string) {
+
+  // Debounced search handler - moved to input event handler
+  function handleSearchInput(value: string) {
+    searchQuery = value;
     isSearching = true;
     handleSearchDebounced(value);
     setTimeout(() => { isSearching = false; }, 350);
   }
-
-  // Watch search input changes for live filtering
-  $effect(() => {
-    if (searchQuery !== filters.query) {
-      handleSearch(searchQuery);
-    }
-  });
   
   // Current category path for bottom sheet
   let currentCategoryPath = $derived({
@@ -477,19 +471,23 @@
     showCategoryDropdown = !showCategoryDropdown;
   }
 
-  // Close dropdown when clicking outside
+  // Click outside handler - proper DOM side effect management
   $effect(() => {
-    if (showCategoryDropdown) {
-      const handleClick = (e: MouseEvent) => {
-        const target = e.target as HTMLElement;
-        if (!target.closest('.search-dropdown-container')) {
-          showCategoryDropdown = false;
-        }
-      };
+    if (!showCategoryDropdown) return;
 
-      setTimeout(() => document.addEventListener('click', handleClick), 0);
-      return () => document.removeEventListener('click', handleClick);
-    }
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.search-dropdown-container')) {
+        showCategoryDropdown = false;
+      }
+    };
+
+    // Use microtask to ensure dropdown is rendered before adding listener
+    queueMicrotask(() => {
+      document.addEventListener('click', handleClick);
+    });
+
+    return () => document.removeEventListener('click', handleClick);
   });
   
   function handleQuickCondition(conditionKey: string) {
@@ -644,7 +642,7 @@
     conditionFilters={quickConditionFilters}
     appliedFilters={filters}
     i18n={i18n}
-    onSearch={(query) => filterStore.updateFilter('query', query)}
+    onSearch={handleSearchInput}
     onCategorySelect={handleSearchPageCategorySelect}
     onFilterChange={handleSearchPageFilterChange}
     onFilterRemove={handleRemoveAppliedFilter}

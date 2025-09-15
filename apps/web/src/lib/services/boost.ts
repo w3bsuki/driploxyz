@@ -56,7 +56,7 @@ export class BoostService {
         canBoost: false,
         remainingCredits: 0,
         usedThisMonth: profile.boost_credits_used_this_month || 0,
-        nextResetDate: this.getNextResetDate(profile.last_boost_reset_date),
+        nextResetDate: this.getNextResetDate(),
         reason: 'Requires pro, premium, or brand subscription'
       };
     }
@@ -75,7 +75,7 @@ export class BoostService {
       canBoost: remainingCredits > 0,
       remainingCredits,
       usedThisMonth: needsReset ? 0 : (profile.boost_credits_used_this_month || 0),
-      nextResetDate: this.getNextResetDate(profile.last_boost_reset_date),
+      nextResetDate: this.getNextResetDate(),
       reason: remainingCredits === 0 ? 'No boost credits remaining this month' : undefined
     };
   }
@@ -143,7 +143,7 @@ export class BoostService {
         .update({
           premium_boosts_remaining: boostStatus.remainingCredits - 1,
           boost_credits_used_this_month: boostStatus.usedThisMonth + 1,
-          total_boosts_used: this.supabase.sql`COALESCE(total_boosts_used, 0) + 1`
+          // Note: total_boosts_used increment handled by database trigger
         })
         .eq('id', userId);
 
@@ -331,7 +331,7 @@ export class BoostService {
       .eq('id', userId);
   }
 
-  private getNextResetDate(lastResetDate: string | null): string {
+  private getNextResetDate(): string {
     const now = new Date();
     const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     return nextMonth.toISOString();

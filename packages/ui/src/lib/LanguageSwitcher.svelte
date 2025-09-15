@@ -76,6 +76,9 @@
 		<button
 			onclick={() => showDropdown = !showDropdown}
 			class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-200 transition-colors duration-200 hover:shadow-md active:scale-98"
+			aria-haspopup="menu"
+			aria-expanded={showDropdown}
+			aria-label="Change language"
 		>
 			{#if currentLang.flag}
 				<span>{currentLang.flag}</span>
