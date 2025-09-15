@@ -119,7 +119,7 @@
   let categoryBreadcrumb = $state([]);
 
   // Enhanced menu state management with proper cleanup
-  let rootEl: HTMLDivElement | null = null;
+  let rootEl = $state<HTMLDivElement | null>(null);
 
   $effect(() => {
     if (!browser) return;
@@ -225,13 +225,7 @@
     }
   }
 
-  // Handle backdrop clicks to close menu
-  function handleBackdropClick(e: MouseEvent) {
-    // Always close when clicking on backdrop - it should only be the backdrop layer
-    e.preventDefault();
-    e.stopPropagation();
-    closeMenu();
-  }
+  // No backdrop handler needed - Vinted style menu
 
   // Enhanced close menu function with cleanup
   function closeMenu() {
@@ -318,34 +312,39 @@
 </script>
 
 {#if isOpen}
-  <!-- Mobile menu with backdrop -->
+  <!-- Mobile menu - Full screen overlay -->
   <div
     use:portal={'#overlay-root'}
-    class="sm:hidden fixed inset-0 z-[10001] pointer-events-none mobile-nav-dialog"
+    class="sm:hidden fixed inset-0 z-[60] mobile-nav-dialog"
     role="dialog"
     aria-modal="true"
     aria-label="Mobile navigation menu"
     {id}
     bind:this={rootEl}
   >
-    <!-- Backdrop overlay (starts below header) -->
+    <!-- Full-screen mobile menu panel -->
     <div
-      class="fixed left-0 right-0 bottom-0 z-[1] bg-black/30 transition-opacity duration-300 pointer-events-auto {isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
-      style="top: var(--app-header-offset, 56px);"
-      onclick={handleBackdropClick}
-    ></div>
-
-    <!-- Slide-down mobile menu panel (under header; explicit height for internal scroll) -->
-    <div
-      class="fixed z-[2] left-0 right-0 bg-white border-b border-gray-200 shadow-lg overflow-hidden transform transition-transform duration-300 ease-out pointer-events-auto {isOpen ? 'translate-y-0' : '-translate-y-full'}"
-      style="top: var(--app-header-offset, 56px); height: calc(100vh - var(--app-header-offset, 56px));"
-      onclick={(e) => e.stopPropagation()}
+      class="h-full bg-white shadow-lg overflow-hidden transform transition-transform duration-300 ease-out {isOpen ? 'translate-y-0' : '-translate-y-full'}"
     >
       <!-- Main content container -->
       <div class="h-full bg-white flex flex-col">
-      <!-- Content area with scroll -->
-      <div class="flex-1 overflow-y-auto overscroll-contain" style="-webkit-overflow-scrolling: touch;">
-        <div class="px-4 pt-6 pb-4 space-y-6">
+        <!-- Header with close button -->
+        <div class="flex items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-white">
+          <div class="text-lg font-bold text-gray-900">driplo</div>
+          <button
+            onclick={closeMenu}
+            class="flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
+            aria-label="Close menu"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Content area with scroll -->
+        <div class="flex-1 overflow-y-auto overscroll-contain" style="-webkit-overflow-scrolling: touch;">
+          <div class="px-4 pt-6 pb-4 space-y-6">
 
           {#if isLoggedIn && user && profile}
             <!-- Enhanced User Profile Section -->
@@ -773,8 +772,8 @@
             </div>
           {/if}
 
+          </div>
         </div>
-      </div>
       </div>
     </div>
   </div>

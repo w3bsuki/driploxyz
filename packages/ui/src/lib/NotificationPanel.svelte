@@ -1,6 +1,7 @@
 <script lang="ts">
   import Avatar from './Avatar.svelte';
   import Button from './Button.svelte';
+  import { portal } from './actions/portal';
   
   interface Translations {
     title?: string;
@@ -90,25 +91,26 @@
 </script>
 
 {#if show}
-  <!-- Glass Morphism Backdrop -->
-  <button 
-    class="fixed inset-0 bg-black/20 supports-[backdrop-filter]:backdrop-blur-sm z-40 border-0 cursor-default"
-    onclick={onClose}
-    aria-label="Close notifications panel"
-    tabindex="-1"
-  ></button>
+  <!-- Portal container for proper z-index stacking -->
+  <div use:portal={'#overlay-root'}>
+    <!-- Glass Morphism Backdrop -->
+    <button
+      class="fixed inset-0 bg-black/20 supports-[backdrop-filter]:backdrop-blur-sm z-[100] border-0 cursor-default"
+      onclick={onClose}
+      aria-label="Close notifications panel"
+      tabindex="-1"
+    ></button>
 
-  <!-- Notification Panel -->
-  <div class="fixed top-16 right-4 w-96 max-w-[calc(100vw-2rem)] z-50 safe-area-x {className}">
-    <div class="bg-white supports-[backdrop-filter]:bg-white/95 supports-[backdrop-filter]:backdrop-blur-xl rounded-2xl shadow-lg ring-1 ring-black/5 
-      border border-gray-200 supports-[backdrop-filter]:border-white/20 overflow-hidden max-h-[80vh] flex flex-col">
+    <!-- Notification Panel -->
+    <div class="fixed top-16 left-2 right-2 sm:left-auto sm:right-4 sm:w-96 sm:max-w-[calc(100vw-2rem)] z-[110] {className}">
+    <div class="bg-white supports-[backdrop-filter]:bg-white/95 supports-[backdrop-filter]:backdrop-blur-xl rounded-2xl shadow-lg ring-1 ring-black/5
+      border border-gray-200 supports-[backdrop-filter]:border-white/20 overflow-hidden max-h-[70vh] sm:max-h-[80vh] flex flex-col">
       
       <!-- Header -->
       <div class="flex items-center justify-between p-4 border-b border-gray-100 supports-[backdrop-filter]:border-gray-100/50 bg-white supports-[backdrop-filter]:bg-white/50">
         <div>
-          <h3 class="font-semibold text-gray-900">{translations.title || 'Notifications'}</h3>
           {#if unreadCount > 0}
-            <p class="text-xs text-gray-500">{unreadCount} {translations.unread || 'unread'}</p>
+            <p class="text-sm font-medium text-gray-900">{unreadCount} {translations.unread || 'unread'}</p>
           {/if}
         </div>
         <div class="flex items-center space-x-2">
@@ -238,6 +240,7 @@
           </Button>
         </div>
       {/if}
+    </div>
     </div>
   </div>
 {/if}
