@@ -73,7 +73,7 @@
 
 <!-- Product Grid Section with standardized spacing (tokens) -->
 <section
-  class="px-2 sm:px-4 lg:px-6 py-[var(--gutter-sm)] sm:py-[var(--gutter-md)] {className}"
+  class="px-2 sm:px-4 lg:px-6 pb-[var(--gutter-sm)] sm:pb-[var(--gutter-md)] {className}"
   aria-label={sectionTitle}
 >
   <!-- Section Banner -->

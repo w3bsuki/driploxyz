@@ -224,6 +224,12 @@
   
   // Popular brands
   const popularBrands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Uniqlo', 'Gap', 'Levi\'s', 'North Face'];
+
+  // Available colors
+  const availableColors = [
+    'Black', 'White', 'Gray', 'Brown', 'Beige', 'Navy', 'Blue', 'Red',
+    'Pink', 'Purple', 'Green', 'Yellow', 'Orange', 'Gold', 'Silver', 'Multicolor'
+  ];
   
   // Conditions
   const conditions = [
@@ -641,6 +647,11 @@
     mainCategories={mainCategories}
     conditionFilters={conditions}
     appliedFilters={filters}
+    availableSizes={currentSizes}
+    availableColors={availableColors}
+    availableBrands={popularBrands}
+    currentResultCount={displayProducts.length}
+    totalResultCount={filterStore.allProducts.length}
     {i18n}
     onSearch={handleSearchInput}
     onCategorySelect={handleSearchPageCategorySelect}
@@ -698,10 +709,17 @@
               },
               {
                 key: 'brand',
-                label: i18n.filter_brand(), 
+                label: i18n.filter_brand(),
                 type: 'pills',
                 value: pendingFilters.brand,
                 options: currentBrands.map(brand => ({ value: brand, label: brand }))
+              },
+              {
+                key: 'color',
+                label: i18n.filter_color ? i18n.filter_color() : 'Color',
+                type: 'pills',
+                value: pendingFilters.color,
+                options: availableColors.map(color => ({ value: color.toLowerCase(), label: color, color: color.toLowerCase() }))
               },
               {
                 key: 'price',

@@ -63,7 +63,7 @@
 
 {#if activePromotedProducts.length > 0}
 	<!-- Standardized spacing pattern via tokens -->
-	<section class="px-2 sm:px-4 lg:px-6 py-[var(--gutter-sm)] sm:py-[var(--gutter-md)] {className}">
+	<section class="px-2 sm:px-4 lg:px-6 pb-0 {className}">
 		<!-- Section Banner -->
 		<SectionBanner
 			title={translations.promoted_listings}
@@ -79,7 +79,7 @@
 
 		<!-- Horizontal Scrollable Cards matching grid card sizes -->
 		<div class="relative">
-			<div class="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide pb-2 promoted-cards-container" style="scroll-snap-type: x mandatory;" data-promoted-scroll bind:this={promotedScrollContainer}>
+			<div class="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide promoted-cards-container" style="scroll-snap-type: x mandatory;" data-promoted-scroll bind:this={promotedScrollContainer}>
 				{#each activePromotedProducts as product (product.id)}
 					<div class="flex-shrink-0 snap-start promoted-card" data-promoted-card>
 						<ProductCard
@@ -120,11 +120,7 @@
     display: none;
   }
 
-  /* Match exact grid card sizes */
-  .promoted-cards-container {
-    padding-left: 0.5rem; /* px-2 */
-    padding-right: 0.5rem;
-  }
+  /* Match exact grid card sizes - use same padding as section container */
 
   .promoted-card {
     /* Mobile: 2 columns like grid-cols-2 */
@@ -132,11 +128,6 @@
   }
 
   @media (min-width: 640px) {
-    .promoted-cards-container {
-      padding-left: 1rem; /* sm:px-4 */
-      padding-right: 1rem;
-    }
-
     .promoted-card {
       /* Small screens: 3 columns like sm:grid-cols-3 */
       width: calc((100vw - 2rem - 2rem) / 3); /* 100vw - padding - gaps */
@@ -144,11 +135,6 @@
   }
 
   @media (min-width: 1024px) {
-    .promoted-cards-container {
-      padding-left: 1.5rem; /* lg:px-6 */
-      padding-right: 1.5rem;
-    }
-
     .promoted-card {
       /* Large screens: 4 columns like lg:grid-cols-4 */
       width: calc((100vw - 3rem - 3rem) / 4);

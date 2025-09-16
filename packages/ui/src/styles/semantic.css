@@ -412,9 +412,15 @@
   height: 2rem;
   font-size: 1rem;
 }
+.section-banner-compact .section-banner-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+}
+
 .section-banner-compact .section-banner-subtitle {
   margin-top: 0.125rem;
   font-size: var(--text-xs);
+  font-weight: var(--font-normal);
 }
 
 .section-banner-content {
@@ -453,22 +459,22 @@
 
 .section-banner-title {
   font-size: var(--text-lg);
-  font-weight: var(--font-bold);
+  font-weight: var(--font-semibold);
   color: var(--text-primary);
   margin: 0;
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  letter-spacing: -0.025em;
+  letter-spacing: -0.015em;
 }
 
 .section-banner-count {
   font-size: var(--text-xs);
   font-weight: var(--font-medium);
-  background-color: #475569;
-  color: white;
-  padding: 0.125rem 0.5rem;
-  border-radius: var(--radius-full);
+  background-color: rgba(100, 116, 139, 0.1);
+  color: var(--text-muted);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
   border: none;
 }
 
@@ -518,8 +524,8 @@
 }
 
 .section-banner-nav-btn {
-  width: 2.75rem; /* 44px touch target */
-  height: 2.75rem;
+  width: 2.5rem; /* 40px for better proportion */
+  height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -528,6 +534,7 @@
   border: none;
   color: white;
   transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .section-banner-nav-btn:hover {
@@ -535,8 +542,8 @@
 }
 
 .section-banner-nav-btn svg {
-  width: 1rem;
-  height: 1rem;
+  width: 0.875rem;
+  height: 0.875rem;
   flex-shrink: 0;
 }
 
@@ -549,7 +556,7 @@
 }
 
 .section-banner-toggle-btn {
-  padding: 0.375rem 0.75rem;
+  padding: 0.25rem 0.5rem;
   font-size: var(--text-xs);
   font-weight: var(--font-medium);
   border-radius: calc(var(--radius-md) - 0.125rem);
@@ -557,7 +564,7 @@
   color: #64748b;
   background-color: transparent;
   border: none;
-  min-height: 2rem; /* 32px touch target for small buttons */
+  min-height: 1.75rem; /* 28px for more compact mobile look */
 }
 
 .section-banner-toggle-btn:hover {
@@ -572,42 +579,51 @@
 
 /* Section Banner Variants - Subtle Greys */
 .section-banner-newest {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
   border: 1px solid #e2e8f0;
   color: var(--text-primary);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .section-banner-newest .section-banner-icon {
-  background-color: #334155;
+  background-color: #475569;
   color: white;
+  box-shadow: 0 2px 8px rgba(71, 85, 105, 0.2);
 }
 
 .section-banner-promoted {
-  background: linear-gradient(135deg, #fefbff 0%, #f8f4ff 100%);
-  border: 1px solid #e9d5ff;
+  background: linear-gradient(135deg, #fcfcfe 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
   color: var(--text-primary);
+  backdrop-filter: blur(8px);
 }
 
 .section-banner-promoted .section-banner-icon {
-  background-color: #7c3aed;
+  background-color: #a855f7;
   color: white;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.2);
 }
 
 .section-banner-sellers {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 1px solid #bae6fd;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #e2e8f0;
   color: var(--text-primary);
+  backdrop-filter: blur(8px);
 }
 
 .section-banner-sellers .section-banner-icon {
-  background-color: #0284c7;
+  background-color: #64748b;
   color: white;
+  box-shadow: 0 2px 8px rgba(100, 116, 139, 0.2);
 }
 
 .section-banner-default {
-  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
-  border: 1px solid #d1d5db;
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border: 1px solid #e5e7eb;
   color: var(--text-primary);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 /* Mobile-specific adjustments */
@@ -620,24 +636,24 @@
   }
 
   .section-banner-nav-btn {
-    width: 2.25rem; /* 36px instead of 44px for mobile */
-    height: 2.25rem;
+    width: 2rem; /* 32px for better mobile proportion */
+    height: 2rem;
   }
 
   .section-banner-nav-btn svg {
-    width: 0.875rem; /* Smaller chevrons */
-    height: 0.875rem;
+    width: 0.75rem; /* Even smaller chevrons for compact look */
+    height: 0.75rem;
   }
 
   .section-banner-view-all {
-    padding: 0.375rem 0.75rem; /* Match toggle buttons exactly */
-    font-size: var(--text-xs); /* Match toggle buttons */
-    min-height: 2rem; /* 32px to match toggle buttons */
+    padding: 0.25rem 0.5rem; /* More compact padding for mobile */
+    font-size: var(--text-xs);
+    min-height: 1.75rem; /* 28px for more compact mobile look */
   }
 
   .section-banner-view-all-icon {
-    width: 0.875rem; /* Slightly larger icon to match text size */
-    height: 0.875rem;
+    width: 0.75rem; /* Smaller icon for compact look */
+    height: 0.75rem;
   }
 }
 

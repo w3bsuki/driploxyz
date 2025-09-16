@@ -93,7 +93,7 @@
 </script>
 
 <!-- Standardized section with consistent spacing pattern (tokens) -->
-<section class="px-2 sm:px-4 lg:px-6 py-[var(--gutter-sm)] sm:py-[var(--gutter-md)] {className}">
+<section class="px-2 sm:px-4 lg:px-6 pb-0 {className}">
   <!-- Section Banner -->
   <SectionBanner
     {title}

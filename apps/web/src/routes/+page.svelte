@@ -1102,7 +1102,7 @@
 				condition_fair: i18n.condition_fair(),
 				categoryTranslation: translateCategory
 			}}
-			class="pt-0"
+			class="pt-1"
 		/>
 	</div>
 {/if}
@@ -1115,7 +1115,7 @@
 		onSellerClick={handleSellerClick}
 		title={i18n.highlight_sellers()}
 		description={activeTab === 'brands' ? i18n.verified_brands() : i18n.top_rated_sellers()}
-		class="pt-0 pb-0"
+		class="pt-[var(--space-2)]"
 		showToggle={true}
 		activeTab={activeTab}
 		onToggle={(tab) => { activeTab = tab }}
@@ -1142,7 +1142,7 @@
 				favoritesState={$favoritesStore}
 				showViewAllButton={true}
 				onViewAll={handleViewProProducts}
-				class="pt-0 mt-[var(--gutter-xxs)] sm:mt-[var(--gutter-xs)]"
+				class="pt-1"
 				translations={{
 					empty_noProducts: i18n.empty_noProducts(),
 					empty_startBrowsing: i18n.empty_startBrowsing(),

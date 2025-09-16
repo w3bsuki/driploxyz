@@ -38,6 +38,11 @@ interface Props {
   mainCategories?: MainCategory[];
   conditionFilters?: FilterPillData[];
   appliedFilters?: Record<string, any>;
+  availableSizes?: string[];
+  availableColors?: string[];
+  availableBrands?: string[];
+  currentResultCount?: number;
+  totalResultCount?: number;
   i18n: any;
   onSearch: (query: string) => void;
   onCategorySelect: (categorySlug: string) => void;
@@ -53,6 +58,11 @@ let {
   mainCategories = [],
   conditionFilters = [],
   appliedFilters = {},
+  availableSizes = [],
+  availableColors = [],
+  availableBrands = [],
+  currentResultCount = 0,
+  totalResultCount = 0,
   i18n,
   onSearch,
   onCategorySelect,
@@ -103,6 +113,31 @@ const filteredConditions = $derived(
     : conditionFilters
 );
 
+// Filtered data for new filter types
+const filteredSizes = $derived(
+  dropdownSearchQuery.trim()
+    ? availableSizes.filter(size =>
+        size.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
+      )
+    : availableSizes
+);
+
+const filteredColors = $derived(
+  dropdownSearchQuery.trim()
+    ? availableColors.filter(color =>
+        color.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
+      )
+    : availableColors
+);
+
+const filteredBrands = $derived(
+  dropdownSearchQuery.trim()
+    ? availableBrands.filter(brand =>
+        brand.toLowerCase().includes(dropdownSearchQuery.toLowerCase())
+      )
+    : availableBrands
+);
+
 // Handle category dropdown
 function handleCategoryDropdownToggle(e: Event) {
   e.preventDefault();
@@ -119,7 +154,24 @@ function handleMegaMenuCategorySelect(categorySlug: string, level: number, path:
   handleCategoryDropdownClose();
 }
 
-// Handle filter pills
+// Handle smart pill clicks
+function handleSmartPillClick(pillKey: string, level: number) {
+  if (level === 1) {
+    // Main category selection
+    onFilterChange('category', pillKey);
+    onFilterChange('subcategory', null);
+    onFilterChange('specific', null);
+  } else if (level === 2) {
+    // Subcategory selection
+    onFilterChange('subcategory', pillKey);
+    onFilterChange('specific', null);
+  } else if (level === 3) {
+    // Specific category selection
+    onFilterChange('specific', pillKey);
+  }
+}
+
+// Handle filter pills (legacy - keeping for compatibility)
 function handleCategoryPillClick(categoryKey: string) {
   onFilterChange('category', categoryKey);
 }
@@ -198,6 +250,39 @@ function handleConditionSelect(condition: FilterPillData) {
   handleCategoryDropdownClose();
 }
 
+// Handle size selection from dropdown
+function handleSizeSelect(size: string) {
+  onFilterChange('size', size);
+  handleCategoryDropdownClose();
+}
+
+// Handle color selection from dropdown
+function handleColorSelect(color: string) {
+  onFilterChange('color', color);
+  handleCategoryDropdownClose();
+}
+
+// Handle brand selection from dropdown
+function handleBrandSelect(brand: string) {
+  onFilterChange('brand', brand);
+  handleCategoryDropdownClose();
+}
+
+// Handle breadcrumb navigation
+function handleBreadcrumbClick(level: number) {
+  const { category, subcategory, specific } = appliedFilters || {};
+
+  if (level === 1) {
+    // Go back to level 1 - clear subcategory and specific
+    onFilterChange('subcategory', null);
+    onFilterChange('specific', null);
+  } else if (level === 2 && subcategory) {
+    // Go back to level 2 - clear specific only
+    onFilterChange('specific', null);
+  }
+  // Level 3 doesn't need to clear anything as it's the most specific
+}
+
 // Handle click outside for category dropdown
 $effect(() => {
   if (typeof window !== 'undefined') {
@@ -215,19 +300,65 @@ $effect(() => {
   }
 });
 
-// Determine current category for display
-const currentCategoryDisplay = $derived(() => {
-  const category = appliedFilters?.category;
+// Build breadcrumb path for selected categories
+const categoryBreadcrumbs = $derived(() => {
+  const breadcrumbs: Array<{ key: string; label: string; level: number }> = [];
+
+  const { category, subcategory, specific } = appliedFilters || {};
+
+  // Level 1: Main category
   if (category) {
     const mainCat = mainCategories.find(c => c.key === category);
-    if (mainCat) {
-      return { label: mainCat.label, icon: mainCat.icon };
-    }
-    return { label: category, icon: '📂' };
+    breadcrumbs.push({
+      key: category,
+      label: mainCat?.label || category,
+      level: 1
+    });
+  }
+
+  // Level 2: Subcategory
+  if (subcategory && category) {
+    // Find the subcategory name in the megaMenuData
+    const l1Cat = megaMenuData.find(cat => cat.slug === category);
+    const l2Cat = l1Cat?.children?.find(subcat => subcat.slug === subcategory);
+    breadcrumbs.push({
+      key: subcategory,
+      label: l2Cat?.name || subcategory,
+      level: 2
+    });
+  }
+
+  // Level 3: Specific category
+  if (specific && category && subcategory) {
+    // Find the specific category name in the megaMenuData
+    const l1Cat = megaMenuData.find(cat => cat.slug === category);
+    const l2Cat = l1Cat?.children?.find(subcat => subcat.slug === subcategory);
+    const l3Cat = l2Cat?.children?.find(spec => spec.slug === specific);
+    breadcrumbs.push({
+      key: specific,
+      label: l3Cat?.name || specific,
+      level: 3
+    });
+  }
+
+  return breadcrumbs;
+});
+
+// Determine current category for display
+const currentCategoryDisplay = $derived(() => {
+  if (categoryBreadcrumbs.length > 0) {
+    const lastCrumb = categoryBreadcrumbs[categoryBreadcrumbs.length - 1];
+    const mainCat = mainCategories.find(c => c.key === appliedFilters?.category);
+    return {
+      label: lastCrumb.label,
+      icon: mainCat?.icon || '📂',
+      breadcrumbs: categoryBreadcrumbs
+    };
   }
   return {
     label: typeof i18n?.filter_allCategories === 'function' ? i18n.filter_allCategories() : 'All Categories',
-    icon: '📂'
+    icon: '📂',
+    breadcrumbs: []
   };
 });
 
@@ -253,6 +384,74 @@ const categoryMatches = $derived(() => {
     .filter(c => c.name.toLowerCase().includes(q))
     .slice(0, 10);
 });
+
+// Smart pill system - determine what pills to show based on current selection
+const smartPillData = $derived(() => {
+  const { category, subcategory } = appliedFilters || {};
+
+  if (category && subcategory && megaMenuData && megaMenuData.length > 0) {
+    // Level 3: Show specific items (dresses, t-shirts, etc.)
+    const l1Cat = megaMenuData.find(cat => cat.slug === category);
+    const l2Cat = l1Cat?.children?.find(subcat => subcat.slug === subcategory);
+    const specificItems = l2Cat?.children || [];
+
+    return {
+      level: 3,
+      pills: specificItems.map(item => ({
+        key: item.slug || item.name,
+        label: item.name,
+        icon: '🔸',
+        active: appliedFilters?.specific === item.slug
+      })) || [],
+      showMainCategories: false
+    };
+  } else if (category && megaMenuData && megaMenuData.length > 0) {
+    // Level 2: Show subcategories (clothing, shoes, etc.)
+    const l1Cat = megaMenuData.find(cat => cat.slug === category);
+    const subcategories = l1Cat?.children || [];
+
+    return {
+      level: 2,
+      pills: subcategories.map(subcat => ({
+        key: subcat.slug || subcat.name,
+        label: subcat.name,
+        icon: getSubcategoryIcon(subcat.name),
+        active: appliedFilters?.subcategory === subcat.slug
+      })) || [],
+      showMainCategories: false
+    };
+  } else {
+    // Level 1: Show main categories
+    return {
+      level: 1,
+      pills: (mainCategories || []).map(cat => ({
+        key: cat.key,
+        label: cat.label,
+        icon: cat.icon,
+        active: appliedFilters?.category === cat.key
+      })),
+      showMainCategories: true
+    };
+  }
+});
+
+// Helper function to get appropriate icons for subcategories
+function getSubcategoryIcon(name: string): string {
+  const iconMap: Record<string, string> = {
+    'Clothing': '👕',
+    'Shoes': '👟',
+    'Bags': '👜',
+    'Accessories': '💍',
+    'Dresses': '👗',
+    'Tops': '👔',
+    'Jeans': '👖',
+    'Sweaters': '🧥',
+    'Sneakers': '👟',
+    'Boots': '🥾',
+    'Heels': '👠'
+  };
+  return iconMap[name] || '🔸';
+}
 </script>
 
 <!-- Sticky Search Bar (compact) -->
@@ -277,6 +476,11 @@ const categoryMatches = $derived(() => {
             aria-label="Select category"
           >
             <span class="text-sm font-medium text-[color:var(--text-secondary)]">Browse</span>
+            {#if currentResultCount !== undefined}
+              <span class="px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-600 rounded-full">
+                {currentResultCount.toLocaleString()}
+              </span>
+            {/if}
             <svg class="w-4 h-4 text-[color:var(--text-secondary)] transition-transform duration-200 {showCategoryDropdown ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
@@ -311,23 +515,41 @@ const categoryMatches = $derived(() => {
       {#if showCategoryDropdown}
         <div class="absolute top-full left-0 right-0 mt-1 z-50">
           <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-4 min-h-[350px] max-h-[80vh] overflow-hidden">
-            <!-- Tab Headers -->
-            <div class="flex items-center gap-1 mb-4 bg-gray-100 p-1 rounded-lg">
+            <!-- Tab Headers - Scrollable on mobile -->
+            <div class="flex items-center gap-1 mb-4 bg-gray-100 p-1 rounded-lg overflow-x-auto">
               <button
                 onclick={() => activeDropdownTab = 'categories'}
-                class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'categories' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                class="shrink-0 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'categories' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
               >
                 Categories
               </button>
               <button
                 onclick={() => activeDropdownTab = 'collections'}
-                class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'collections' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                class="shrink-0 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'collections' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
               >
                 Collections
               </button>
               <button
+                onclick={() => activeDropdownTab = 'size'}
+                class="shrink-0 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'size' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+              >
+                Size
+              </button>
+              <button
+                onclick={() => activeDropdownTab = 'color'}
+                class="shrink-0 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'color' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+              >
+                Color
+              </button>
+              <button
+                onclick={() => activeDropdownTab = 'brand'}
+                class="shrink-0 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'brand' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+              >
+                Brand
+              </button>
+              <button
                 onclick={() => activeDropdownTab = 'condition'}
-                class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'condition' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                class="shrink-0 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'condition' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
               >
                 Condition
               </button>
@@ -344,6 +566,9 @@ const categoryMatches = $derived(() => {
                   bind:value={dropdownSearchQuery}
                   placeholder={activeDropdownTab === 'categories' ? 'Search categories...' :
                               activeDropdownTab === 'collections' ? 'Search collections...' :
+                              activeDropdownTab === 'size' ? 'Search sizes...' :
+                              activeDropdownTab === 'color' ? 'Search colors...' :
+                              activeDropdownTab === 'brand' ? 'Search brands...' :
                               'Search conditions...'}
                   class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 hover:bg-white transition-colors"
                 />
@@ -385,6 +610,63 @@ const categoryMatches = $derived(() => {
                     </div>
                   {/if}
                 </div>
+              {:else if activeDropdownTab === 'size'}
+                <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  {#each filteredSizes as size}
+                    <button
+                      onclick={() => handleSizeSelect(size)}
+                      class="flex items-center justify-center p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group
+                        {appliedFilters?.size === size ? 'bg-blue-50 border-blue-300 text-blue-700' : ''}"
+                    >
+                      <span class="font-medium text-sm">{size}</span>
+                    </button>
+                  {/each}
+                  {#if filteredSizes.length === 0}
+                    <div class="col-span-full text-center py-4 text-gray-500">
+                      <p class="text-sm">{dropdownSearchQuery.trim() ? 'No sizes found' : 'No sizes available'}</p>
+                    </div>
+                  {/if}
+                </div>
+              {:else if activeDropdownTab === 'color'}
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {#each filteredColors as color}
+                    <button
+                      onclick={() => handleColorSelect(color)}
+                      class="flex items-center gap-2 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group
+                        {appliedFilters?.color === color ? 'bg-blue-50 border-blue-300 text-blue-700' : ''}"
+                    >
+                      <div class="w-4 h-4 rounded-full border border-gray-300 flex-shrink-0" style="background-color: {color.toLowerCase()}"></div>
+                      <span class="font-medium text-sm">{color}</span>
+                    </button>
+                  {/each}
+                  {#if filteredColors.length === 0}
+                    <div class="col-span-full text-center py-4 text-gray-500">
+                      <p class="text-sm">{dropdownSearchQuery.trim() ? 'No colors found' : 'No colors available'}</p>
+                    </div>
+                  {/if}
+                </div>
+              {:else if activeDropdownTab === 'brand'}
+                <div class="grid grid-cols-1 gap-2">
+                  {#each filteredBrands as brand}
+                    <button
+                      onclick={() => handleBrandSelect(brand)}
+                      class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group
+                        {appliedFilters?.brand === brand ? 'bg-blue-50 border-blue-300 text-blue-700' : ''}"
+                    >
+                      <span class="font-medium text-gray-900 group-hover:text-blue-600 text-sm">{brand}</span>
+                      {#if appliedFilters?.brand === brand}
+                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                      {/if}
+                    </button>
+                  {/each}
+                  {#if filteredBrands.length === 0}
+                    <div class="text-center py-4 text-gray-500">
+                      <p class="text-sm">{dropdownSearchQuery.trim() ? 'No brands found' : 'No brands available'}</p>
+                    </div>
+                  {/if}
+                </div>
               {:else if activeDropdownTab === 'condition'}
                 <div class="grid grid-cols-1 gap-2">
                   {#each filteredConditions as condition}
@@ -413,19 +695,71 @@ const categoryMatches = $derived(() => {
       {/if}
     </div>
 
-    <!-- Quick Filter Pills -->
-    <nav id="category-pills" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-[var(--gutter-xxs)] pt-[var(--gutter-xxs)]" aria-label="Quick filters">
-      <!-- Category Pills -->
-      {#each mainCategories as category, index}
+    <!-- Category Breadcrumbs -->
+    {#if categoryBreadcrumbs.length > 0}
+      <div class="flex items-center justify-between px-1 py-2 text-sm">
+        <div class="flex items-center gap-1">
+          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0l-4 4m4-4l-4-4" />
+          </svg>
+        {#each categoryBreadcrumbs as crumb, index}
+          <button
+            onclick={() => handleBreadcrumbClick(crumb.level)}
+            class="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium
+              {index === categoryBreadcrumbs.length - 1 ? 'text-blue-600' : 'hover:underline'}"
+            aria-label={`Navigate to ${crumb.label} level`}
+          >
+            {crumb.label}
+          </button>
+          {#if index < categoryBreadcrumbs.length - 1}
+            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          {/if}
+        {/each}
+        <button
+          onclick={() => {
+            onFilterChange('category', null);
+            onFilterChange('subcategory', null);
+            onFilterChange('specific', null);
+          }}
+          class="ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors duration-200"
+          aria-label="Clear category filter"
+          title="Clear category selection"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+        </div>
+
+        <!-- Result count for current selection -->
+        {#if currentResultCount !== undefined}
+          <div class="text-xs text-gray-500 font-medium">
+            {currentResultCount.toLocaleString()} items
+          </div>
+        {/if}
+      </div>
+    {/if}
+
+    <!-- Smart Filter Pills -->
+    <nav id="category-pills" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-[var(--gutter-xxs)] pt-[var(--gutter-xxs)]" aria-label="Smart category filters">
+      <!-- Dynamic Category Pills -->
+      {#each smartPillData.pills as pill, index}
         <CategoryPill
-          variant={appliedFilters?.category === category.key ? 'primary' : 'outline'}
-          label={category.label}
-          emoji={category.icon}
-          onclick={() => handleCategoryPillClick(category.key)}
+          variant={pill.active ? 'primary' : 'outline'}
+          label={pill.label}
+          emoji={pill.icon}
+          onclick={() => handleSmartPillClick(pill.key, smartPillData.level)}
           class="shrink-0 min-h-11"
           onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, index)}
         />
       {/each}
+
+      <!-- Separator between category and condition pills -->
+      {#if smartPillData.pills.length > 0 && conditionFilters.length > 0}
+        <div class="w-px h-6 bg-gray-300 mx-1"></div>
+      {/if}
 
       <!-- Condition Pills -->
       {#each conditionFilters as condition, cIdx}

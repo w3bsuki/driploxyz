@@ -102,7 +102,7 @@
 
   // Sticky search visibility for different page types
   const shouldShowStickySearch = $derived(
-    !isAuthPage && !isOnboardingPage && !isSellPage && (isCategoryPage || isSearchPage)
+    !isAuthPage && !isOnboardingPage && !isSellPage && isCategoryPage && !isSearchPage
   );
 
   const shouldShowMainPageSearch = $derived(
