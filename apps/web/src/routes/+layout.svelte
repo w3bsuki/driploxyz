@@ -17,7 +17,7 @@
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications';
-  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer, ToastProvider, Footer, ErrorBoundary, OrderNotificationToast, TopProgress, CategorySearchBar } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer, ToastProvider, Footer, ErrorBoundary, OrderNotificationToast, TopProgress, CategorySearchBar, MainPageSearchBar } from '@repo/ui';
   import RegionSwitchModal from '$lib/components/RegionSwitchModal.svelte';
   import { page } from '$app/stores';
   import { initializeLanguage, switchLanguage } from '$lib/utils/language-switcher';
@@ -100,24 +100,155 @@
     isSearchPage || isCategoryPage || isProductPage
   );
 
-  // Sticky search visibility: show on home, category, search
+  // Sticky search visibility for different page types
   const shouldShowStickySearch = $derived(
-    !isAuthPage && !isOnboardingPage && !isSellPage && (isHomePage || isCategoryPage || isSearchPage)
+    !isAuthPage && !isOnboardingPage && !isSellPage && (isCategoryPage || isSearchPage)
+  );
+
+  const shouldShowMainPageSearch = $derived(
+    !isAuthPage && !isOnboardingPage && !isSellPage && isHomePage
   );
 
   // Compact, shared sticky search settings for browse pages
   let stickySearchQuery = $state('');
-  const mainCategories = [
-    { key: 'women', label: i18n.category_women(), icon: '👗' },
-    { key: 'men', label: i18n.category_men(), icon: '👔' },
-    { key: 'kids', label: i18n.category_kids(), icon: '👶' },
-    { key: 'unisex', label: i18n.category_unisex(), icon: '🌍' }
-  ];
+
+  // Use real categories from database, with fallback to basic structure
+  const mainCategoriesWithCounts = $derived(() => {
+    if (data?.mainCategories && data.mainCategories.length > 0) {
+      return data.mainCategories.map(cat => ({
+        key: cat.slug,
+        label: cat.name,
+        icon: getIconForCategory(cat.slug),
+        slug: cat.slug,
+        name: cat.name,
+        product_count: 0 // Will be updated with real counts later
+      }));
+    }
+
+    // Fallback to basic categories if database is empty
+    return [
+      { key: 'women', label: i18n.category_women(), icon: '👗', slug: 'women', name: i18n.category_women(), product_count: 0 },
+      { key: 'men', label: i18n.category_men(), icon: '👔', slug: 'men', name: i18n.category_men(), product_count: 0 },
+      { key: 'kids', label: i18n.category_kids(), icon: '👶', slug: 'kids', name: i18n.category_kids(), product_count: 0 },
+      { key: 'unisex', label: i18n.category_unisex(), icon: '🌍', slug: 'unisex', name: i18n.category_unisex(), product_count: 0 }
+    ];
+  });
+
+  // Helper function to get icon for category
+  function getIconForCategory(slug: string): string {
+    const iconMap: Record<string, string> = {
+      'women': '👗',
+      'men': '👔',
+      'kids': '👶',
+      'unisex': '🌍',
+      'clothing': '👕',
+      'shoes': '👟',
+      'bags': '👜',
+      'accessories': '💍'
+    };
+    return iconMap[slug] || '📁';
+  }
   const conditionFilters = [
     { key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: i18n.sell_condition_brandNewWithTags() },
     { key: 'new_without_tags', label: i18n.sell_condition_newWithoutTags(), shortLabel: i18n.condition_new() },
     { key: 'like_new', label: i18n.condition_likeNew(), shortLabel: i18n.condition_likeNew() },
     { key: 'good', label: i18n.condition_good(), shortLabel: i18n.condition_good() }
+  ];
+
+  // Dropdown data for search components
+  const dropdownCategories = $derived(() => {
+    return mainCategoriesWithCounts.map(cat => ({
+      id: cat.key,
+      name: cat.label,
+      slug: cat.key,
+      emoji: cat.icon,
+      level: 1,
+      product_count: cat.product_count || 0,
+      children: []
+    }));
+  });
+
+  // Mock sellers data for dropdown - in production this would come from server
+  const dropdownSellers = [
+    {
+      id: '1',
+      username: 'kush3',
+      full_name: 'Kush Store',
+      avatar_url: '/avatars/1.png',
+      total_products: 47,
+      rating: 4.8,
+      is_verified: true
+    },
+    {
+      id: '2',
+      username: 'indecisive_wear',
+      full_name: 'Indecisive Wear',
+      avatar_url: '/avatars/2.png',
+      total_products: 23,
+      rating: 4.9,
+      is_verified: true
+    },
+    {
+      id: '3',
+      username: 'Tintin',
+      full_name: 'Tintin Vintage',
+      avatar_url: '/avatars/3.png',
+      total_products: 156,
+      rating: 4.7,
+      is_verified: true
+    }
+  ];
+
+  // Collections data for dropdown
+  const dropdownCollections = [
+    {
+      key: 'trending',
+      label: i18n.trending_now ? i18n.trending_now() : 'Trending Now',
+      emoji: '🔥',
+      product_count: 234
+    },
+    {
+      key: 'new-arrivals',
+      label: i18n.nav_newArrivals ? i18n.nav_newArrivals() : 'New Arrivals',
+      emoji: '✨',
+      product_count: 89
+    },
+    {
+      key: 'vintage',
+      label: i18n.category_vintage ? i18n.category_vintage() : 'Vintage',
+      emoji: '🕰️',
+      product_count: 312
+    },
+    {
+      key: 'designer',
+      label: i18n.category_designer ? i18n.category_designer() : 'Designer',
+      emoji: '💎',
+      product_count: 156
+    }
+  ];
+
+  // Virtual categories for quick access (clothing, shoes, etc.)
+  const virtualCategories = [
+    {
+      slug: 'clothing',
+      name: i18n.category_clothing ? i18n.category_clothing() : 'Clothing',
+      product_count: 145
+    },
+    {
+      slug: 'shoes',
+      name: i18n.category_shoesType ? i18n.category_shoesType() : 'Shoes',
+      product_count: 89
+    },
+    {
+      slug: 'bags',
+      name: i18n.category_bagsType ? i18n.category_bagsType() : 'Bags',
+      product_count: 67
+    },
+    {
+      slug: 'accessories',
+      name: i18n.category_accessoriesType ? i18n.category_accessoriesType() : 'Accessories',
+      product_count: 123
+    }
   ];
 
   // Quick search for dropdown results in the shared sticky bar
@@ -362,12 +493,36 @@
     </div>
   {/if}
 
-  {#if shouldShowStickySearch}
+  {#if shouldShowMainPageSearch}
+    <MainPageSearchBar
+      supabase={supabase}
+      bind:searchQuery={stickySearchQuery}
+      topBrands={[]}
+      topSellers={dropdownSellers}
+      mainCategories={mainCategoriesWithCounts}
+      virtualCategories={virtualCategories}
+      conditionFilters={conditionFilters}
+      selectedCondition={null}
+      loadingCategory={null}
+      currentLang="bg"
+      i18n={i18n}
+      onSearch={handleStickySearch}
+      onQuickSearch={handleStickyQuickSearch}
+      onCategorySelect={(slug) => handleStickyCategorySelect(slug, 1, [slug])}
+      onConditionFilter={(condition) => handleStickyFilterChange('condition', condition)}
+      onNavigateToAll={() => handleStickySearch('')}
+      onPillKeyNav={() => {}}
+      onPrefetchCategory={() => {}}
+      dropdownCategories={dropdownCategories}
+      dropdownSellers={dropdownSellers}
+      dropdownCollections={dropdownCollections}
+    />
+  {:else if shouldShowStickySearch}
     <CategorySearchBar
       supabase={supabase}
       bind:searchValue={stickySearchQuery}
       megaMenuData={[]}
-      mainCategories={mainCategories}
+      mainCategories={mainCategoriesWithCounts}
       conditionFilters={conditionFilters}
       appliedFilters={{}}
       i18n={i18n}
@@ -378,6 +533,9 @@
       onFilterRemove={handleStickyFilterRemove}
       onClearAllFilters={handleStickyClearAll}
       enableQuickResults={true}
+      dropdownCategories={dropdownCategories}
+      dropdownSellers={dropdownSellers}
+      dropdownCollections={dropdownCollections}
     />
   {/if}
   <!-- Route progress just below header -->
