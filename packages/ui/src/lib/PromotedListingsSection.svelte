@@ -43,7 +43,7 @@
   const activePromotedProducts: UIProduct[] = $derived(
     (promotedProducts || []).slice(0, 8)
   );
-  
+
   let promotedScrollContainer = $state<HTMLElement | null>(null);
 
   function scrollLeft() {
@@ -77,37 +77,33 @@
 			class="mb-[var(--gutter-sm)]"
 		/>
 
-		<!-- Horizontal Scrollable Cards, width aligned to seller cards -->
+		<!-- Horizontal Scrollable Cards matching grid card sizes -->
 		<div class="relative">
-			<div class="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-2" style="scroll-snap-type: x mandatory;" data-promoted-scroll bind:this={promotedScrollContainer}>
+			<div class="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide pb-2 promoted-cards-container" style="scroll-snap-type: x mandatory;" data-promoted-scroll bind:this={promotedScrollContainer}>
 				{#each activePromotedProducts as product (product.id)}
-					<div class="flex-shrink-0 snap-start w-1/2 sm:w-1/3 lg:w-1/4 xl:w-1/5" data-promoted-card>
-							<div class="relative">
-								<!-- Clean cards: no badges -->
-
-								<ProductCard
-									{product}
-									onclick={onProductClick}
-									onFavorite={onFavorite}
-									favorited={favoritesState.favorites?.[product.id] || false}
-									favoritesState={favoritesState}
-									showBoostBadge={false}
-									showSellerBadges={false}
-									translations={{
-										addToFavorites: translations.product_addToFavorites,
-										currency: translations.common_currency,
-										brandNewWithTags: translations.condition_brandNewWithTags,
-										newWithoutTags: translations.condition_newWithoutTags,
-										new: translations.condition_new,
-										likeNew: translations.condition_likeNew,
-										good: translations.condition_good,
-										worn: translations.condition_worn,
-										fair: translations.condition_fair,
-										formatPrice: formatPrice,
-										categoryTranslation: translations.categoryTranslation
-									}}
-								/>
-							</div>
+					<div class="flex-shrink-0 snap-start promoted-card" data-promoted-card>
+						<ProductCard
+							{product}
+							onclick={onProductClick}
+							onFavorite={onFavorite}
+							favorited={favoritesState.favorites?.[product.id] || false}
+							favoritesState={favoritesState}
+							showBoostBadge={false}
+							showSellerBadges={false}
+							translations={{
+								addToFavorites: translations.product_addToFavorites,
+								currency: translations.common_currency,
+								brandNewWithTags: translations.condition_brandNewWithTags,
+								newWithoutTags: translations.condition_newWithoutTags,
+								new: translations.condition_new,
+								likeNew: translations.condition_likeNew,
+								good: translations.condition_good,
+								worn: translations.condition_worn,
+								fair: translations.condition_fair,
+								formatPrice: formatPrice,
+								categoryTranslation: translations.categoryTranslation
+							}}
+						/>
 					</div>
 				{/each}
 			</div>
@@ -123,4 +119,47 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Match exact grid card sizes */
+  .promoted-cards-container {
+    padding-left: 0.5rem; /* px-2 */
+    padding-right: 0.5rem;
+  }
+
+  .promoted-card {
+    /* Mobile: 2 columns like grid-cols-2 */
+    width: calc((100vw - 1rem - 0.75rem) / 2); /* 100vw - padding - gap */
+  }
+
+  @media (min-width: 640px) {
+    .promoted-cards-container {
+      padding-left: 1rem; /* sm:px-4 */
+      padding-right: 1rem;
+    }
+
+    .promoted-card {
+      /* Small screens: 3 columns like sm:grid-cols-3 */
+      width: calc((100vw - 2rem - 2rem) / 3); /* 100vw - padding - gaps */
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .promoted-cards-container {
+      padding-left: 1.5rem; /* lg:px-6 */
+      padding-right: 1.5rem;
+    }
+
+    .promoted-card {
+      /* Large screens: 4 columns like lg:grid-cols-4 */
+      width: calc((100vw - 3rem - 3rem) / 4);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .promoted-card {
+      /* XL screens: 5 columns like xl:grid-cols-5 */
+      width: calc((100vw - 3rem - 4rem) / 5);
+    }
+  }
 </style>
+

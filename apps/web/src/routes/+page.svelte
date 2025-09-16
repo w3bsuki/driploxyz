@@ -1053,27 +1053,29 @@
 
 {#key currentLang}
 
-<!-- Main Page Search Bar with "Разгледай" dropdown and category pills -->
-<MainPageSearchBar
-	supabase={data.supabase}
-	bind:searchQuery={searchQuery}
-	topBrands={topBrands}
-	topSellers={displayTopSellers}
-	mainCategories={mainCategories}
-	virtualCategories={virtualCategories}
-	conditionFilters={quickConditionFilters}
-	{i18n}
-	{currentLang}
-	{selectedCondition}
-	{loadingCategory}
-	onSearch={handleMainPageSearch}
-	onQuickSearch={handleMainPageQuickSearch}
-	onCategorySelect={handleMainPageCategorySelect}
-	onConditionFilter={handleMainPageConditionFilter}
-	onNavigateToAll={handleMainPageNavigateToAll}
-	onPillKeyNav={handleMainPagePillKeyNav}
-	onPrefetchCategory={handleMainPagePrefetchCategory}
-/>
+<!-- Main Page Search Bar with real data and handlers -->
+<div class="sticky top-[60px] z-40 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+	<MainPageSearchBar
+		supabase={data.supabase}
+		bind:searchQuery={searchQuery}
+		topBrands={topBrands}
+		topSellers={displayTopSellers}
+		mainCategories={mainCategories}
+		virtualCategories={virtualCategories}
+		conditionFilters={quickConditionFilters}
+		{i18n}
+		{currentLang}
+		{selectedCondition}
+		{loadingCategory}
+		onSearch={handleMainPageSearch}
+		onQuickSearch={handleMainPageQuickSearch}
+		onCategorySelect={handleMainPageCategorySelect}
+		onConditionFilter={handleMainPageConditionFilter}
+		onNavigateToAll={handleMainPageNavigateToAll}
+		onPillKeyNav={handleMainPagePillKeyNav}
+		onPrefetchCategory={handleMainPagePrefetchCategory}
+	/>
+</div>
 
 <!-- Promoted Products Section (motivation for sellers) -->
 {#if dataLoaded && (boostedProducts.length > 0 || products.length > 0)}

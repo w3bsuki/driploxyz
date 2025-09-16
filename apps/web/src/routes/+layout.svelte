@@ -493,31 +493,7 @@
     </div>
   {/if}
 
-  {#if shouldShowMainPageSearch}
-    <MainPageSearchBar
-      supabase={supabase}
-      bind:searchQuery={stickySearchQuery}
-      topBrands={[]}
-      topSellers={dropdownSellers}
-      mainCategories={mainCategoriesWithCounts}
-      virtualCategories={virtualCategories}
-      conditionFilters={conditionFilters}
-      selectedCondition={null}
-      loadingCategory={null}
-      currentLang="bg"
-      i18n={i18n}
-      onSearch={handleStickySearch}
-      onQuickSearch={handleStickyQuickSearch}
-      onCategorySelect={(slug) => handleStickyCategorySelect(slug, 1, [slug])}
-      onConditionFilter={(condition) => handleStickyFilterChange('condition', condition)}
-      onNavigateToAll={() => handleStickySearch('')}
-      onPillKeyNav={() => {}}
-      onPrefetchCategory={() => {}}
-      dropdownCategories={dropdownCategories}
-      dropdownSellers={dropdownSellers}
-      dropdownCollections={dropdownCollections}
-    />
-  {:else if shouldShowStickySearch}
+  {#if shouldShowStickySearch}
     <CategorySearchBar
       supabase={supabase}
       bind:searchValue={stickySearchQuery}
