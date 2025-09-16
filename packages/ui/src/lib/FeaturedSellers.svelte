@@ -19,7 +19,7 @@
     onToggle?: (tab: 'sellers' | 'brands') => void;
   }
 
-  let { 
+  let {
     sellers = [],
     sellerProducts = {},
     onSellerClick,

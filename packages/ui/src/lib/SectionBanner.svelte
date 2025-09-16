@@ -74,20 +74,20 @@
       {#if showToggle}
         <div class="section-banner-toggle">
           <button
-            onclick={() => onToggle?.('brands')}
-            class="section-banner-toggle-btn {activeTab === 'brands' ? 'active' : ''}"
-            type="button"
-            aria-pressed={activeTab === 'brands'}
-          >
-            Brands
-          </button>
-          <button
             onclick={() => onToggle?.('sellers')}
             class="section-banner-toggle-btn {activeTab === 'sellers' ? 'active' : ''}"
             type="button"
             aria-pressed={activeTab === 'sellers'}
           >
             Sellers
+          </button>
+          <button
+            onclick={() => onToggle?.('brands')}
+            class="section-banner-toggle-btn {activeTab === 'brands' ? 'active' : ''}"
+            type="button"
+            aria-pressed={activeTab === 'brands'}
+          >
+            Brands
           </button>
         </div>
       {/if}

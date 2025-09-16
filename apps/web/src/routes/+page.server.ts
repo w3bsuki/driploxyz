@@ -120,15 +120,52 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
     );
 
 
-    // OPTIMIZED: Only 2 queries instead of 5
-    const [categoriesResult, consolidatedResult] = await Promise.all([
+    // Query 3: Category product counts using RPC functions for real data
+    const categoryCountsPromise = withTimeout(
+      Promise.all([
+        // Main category counts using RPC function
+        supabase.rpc('get_category_product_counts', { p_country_code: country || 'BG' }),
+        // Virtual category counts using RPC function
+        supabase.rpc('get_virtual_category_counts', { p_country_code: country || 'BG' })
+      ]),
+      2500,
+      [{ data: [] }, { data: [] }] as any
+    );
+
+    // OPTIMIZED: Now 3 queries for complete data
+    const [categoriesResult, consolidatedResult, categoryCountsResult] = await Promise.all([
       categoriesPromise,
-      consolidatedDataPromise
+      consolidatedDataPromise,
+      categoryCountsPromise
     ]);
 
     // Process consolidated results
     const categories = (categoriesResult as any).data || [];
     const allProductsWithSellers = (consolidatedResult as any).data || [];
+
+    // Process category counts using real data from RPC functions
+    let categoryProductCounts: Record<string, number> = {};
+    let virtualCategoryCounts: Record<string, number> = {};
+
+    if (categoryCountsResult && Array.isArray(categoryCountsResult)) {
+      const [mainCountsResult, virtualCountsResult] = categoryCountsResult;
+
+      // Process main category counts from RPC function
+      if (mainCountsResult?.data) {
+        mainCountsResult.data.forEach((row: any) => {
+          if (row.category_level === 1) { // Only top-level categories
+            categoryProductCounts[row.category_slug] = row.product_count || 0;
+          }
+        });
+      }
+
+      // Process virtual category counts from RPC function
+      if (virtualCountsResult?.data) {
+        virtualCountsResult.data.forEach((row: any) => {
+          virtualCategoryCounts[row.category_type] = row.product_count || 0;
+        });
+      }
+    }
 
     // Extract and deduplicate sellers/brands from product data
     const sellersMap = new Map();
@@ -350,6 +387,10 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       // Critical data for initial render
       categories,
       country: country || 'BG',
+
+      // Real category product counts for search pills
+      categoryProductCounts,
+      virtualCategoryCounts,
 
       // Stream featured products (below the fold)
       featuredProducts: Promise.resolve(featuredProducts),

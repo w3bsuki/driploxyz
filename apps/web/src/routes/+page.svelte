@@ -836,7 +836,7 @@
 		}
 	}
 
-	// Get only top-level categories for navigation pills (first 4 main categories including Unisex)
+	// Get only top-level categories for navigation pills with real product counts
 	const mainCategories = $derived(
 		(data.categories || [])
 			.filter(cat => !cat.parent_id) // Only top-level categories
@@ -845,7 +845,7 @@
 			.map(cat => ({
 				slug: cat.slug,
 				name: translateCategory(cat.name),
-				product_count: cat.product_count || 0,
+				product_count: data.categoryProductCounts?.[cat.slug] || 0, // Real count from server
 				// Keep legacy properties for compatibility
 				key: cat.slug,
 				label: translateCategory(cat.name),
@@ -860,22 +860,22 @@
 		{
 			slug: 'clothing',
 			name: i18n.category_clothing ? i18n.category_clothing() : 'Clothing',
-			product_count: data.virtualCounts?.clothing || 0
+			product_count: data.virtualCategoryCounts?.clothing || 0 // Real count from server
 		},
 		{
 			slug: 'shoes',
 			name: i18n.category_shoesType ? i18n.category_shoesType() : 'Shoes',
-			product_count: data.virtualCounts?.shoes || 0
+			product_count: data.virtualCategoryCounts?.shoes || 0 // Real count from server
 		},
 		{
 			slug: 'bags',
 			name: i18n.category_bagsType ? i18n.category_bagsType() : 'Bags',
-			product_count: data.virtualCounts?.bags || 0
+			product_count: data.virtualCategoryCounts?.bags || 0 // Real count from server
 		},
 		{
 			slug: 'accessories',
 			name: i18n.category_accessoriesType ? i18n.category_accessoriesType() : 'Accessories',
-			product_count: data.virtualCounts?.accessories || 0
+			product_count: data.virtualCategoryCounts?.accessories || 0 // Real count from server
 		}
 	]);
 
@@ -886,8 +886,7 @@
 
 	// Quick condition filters (most used) - matching search page
 	const quickConditionFilters = [
-		{ key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: i18n.sell_condition_brandNewWithTags() },
-		{ key: 'new_without_tags', label: i18n.sell_condition_newWithoutTags(), shortLabel: i18n.condition_new() },
+		{ key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: 'New with tags' },
 		{ key: 'like_new', label: i18n.condition_likeNew(), shortLabel: i18n.condition_likeNew() },
 		{ key: 'good', label: i18n.condition_good(), shortLabel: i18n.condition_good() }
 	];
@@ -993,6 +992,33 @@
 		promotedFilter = promotedFilter === filterKey ? 'all' : filterKey;
 	}
 
+	// MainPageSearchBar handlers
+	function handleMainPageSearch(query: string) {
+		const url = new URL('/search', window.location.origin);
+		if (query.trim()) {
+			url.searchParams.set('q', query.trim());
+		}
+		goto(url.pathname + url.search);
+	}
+
+	async function handleMainPageQuickSearch(query: string) {
+		if (!query.trim()) return { data: [], error: null };
+
+		try {
+			const { data: products, error } = await data.supabase
+				.from('products')
+				.select('id, title, price, seller_id, product_images(image_url)')
+				.ilike('title', `%${query}%`)
+				.eq('country_code', data.country || 'BG')
+				.limit(6);
+
+			if (error) return { data: [], error: error.message };
+			return { data: products || [], error: null };
+		} catch (err) {
+			return { data: [], error: 'Search failed' };
+		}
+	}
+
 	// Filter promoted products based on selected filter
 	const filteredPromotedProducts = $derived(() => {
 		if (promotedFilter === 'all') {
@@ -1027,18 +1053,66 @@
 
 {#key currentLang}
 
-<!-- Sticky search now supplied by root layout -->
-<!-- Promoted Products Section (under search) -->
-<!-- Removed duplicate; promoted section is rendered below with standardized spacing -->
+<!-- Main Page Search Bar with "Разгледай" dropdown and category pills -->
+<MainPageSearchBar
+	supabase={data.supabase}
+	bind:searchQuery={searchQuery}
+	topBrands={topBrands}
+	topSellers={displayTopSellers}
+	mainCategories={mainCategories}
+	virtualCategories={virtualCategories}
+	conditionFilters={quickConditionFilters}
+	{i18n}
+	{currentLang}
+	{selectedCondition}
+	{loadingCategory}
+	onSearch={handleMainPageSearch}
+	onQuickSearch={handleMainPageQuickSearch}
+	onCategorySelect={handleMainPageCategorySelect}
+	onConditionFilter={handleMainPageConditionFilter}
+	onNavigateToAll={handleMainPageNavigateToAll}
+	onPillKeyNav={handleMainPagePillKeyNav}
+	onPrefetchCategory={handleMainPagePrefetchCategory}
+/>
 
-<!-- Highlight Sellers/Brands Section (below promoted) -->
+<!-- Promoted Products Section (motivation for sellers) -->
+{#if dataLoaded && (boostedProducts.length > 0 || products.length > 0)}
+	<div class="relative z-0">
+		<PromotedListingsSection
+			promotedProducts={boostedProducts.length > 0 ? boostedProducts : products.slice(0, 8)}
+			onProductClick={handleProductClick}
+			onFavorite={handleFavorite}
+			onBuy={handlePurchase}
+			favoritesState={$favoritesStore}
+			{formatPrice}
+			translations={{
+				promoted_listings: i18n.promoted_listings(),
+				promoted_description: i18n.promoted_description(),
+				common_currency: i18n.common_currency(),
+				product_addToFavorites: i18n.product_addToFavorites(),
+				seller_unknown: i18n.seller_unknown(),
+				condition_brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
+				condition_newWithoutTags: i18n.sell_condition_newWithoutTags(),
+				condition_new: i18n.condition_new(),
+				condition_likeNew: i18n.condition_likeNew(),
+				condition_good: i18n.condition_good(),
+				condition_worn: i18n.sell_condition_worn(),
+				condition_fair: i18n.condition_fair(),
+				categoryTranslation: translateCategory
+			}}
+			class="pt-0"
+		/>
+	</div>
+{/if}
+
+<!-- Highlight Sellers/Brands Section -->
 {#if dataLoaded && sellers.length > 0}
   <FeaturedSellers
 		sellers={(activeTab === 'brands' ? brands : sellers)}
 		sellerProducts={sellerProducts}
 		onSellerClick={handleSellerClick}
 		title={i18n.highlight_sellers()}
-		description={ activeTab === 'brands' ? i18n.verified_brands() : i18n.top_rated_sellers() }
+		description={activeTab === 'brands' ? i18n.verified_brands() : i18n.top_rated_sellers()}
 		class="pt-0 pb-0"
 		showToggle={true}
 		activeTab={activeTab}
@@ -1150,35 +1224,6 @@
 			</div>
 		{/if}
 
-		<!-- Promoted Products Section (now below Newest Listings) -->
-		{#if dataLoaded && (boostedProducts.length > 0 || products.length > 0)}
-			<div id="promoted-products" class="relative z-0 mt-[var(--gutter-xs)] sm:mt-[var(--gutter-sm)]">
-				<PromotedListingsSection
-					promotedProducts={boostedProducts.length > 0 ? boostedProducts : products.slice(0, 8)}
-					onProductClick={handleProductClick}
-					onFavorite={handleFavorite}
-					onBuy={handlePurchase}
-					favoritesState={$favoritesStore}
-					{formatPrice}
-					translations={{
-						promoted_listings: i18n.promoted_listings(),
-						promoted_description: i18n.promoted_description(),
-						common_currency: i18n.common_currency(),
-						product_addToFavorites: i18n.product_addToFavorites(),
-						seller_unknown: i18n.seller_unknown(),
-						condition_brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
-						condition_newWithoutTags: i18n.sell_condition_newWithoutTags(),
-						condition_new: i18n.condition_new(),
-						condition_likeNew: i18n.condition_likeNew(),
-						condition_good: i18n.condition_good(),
-						condition_worn: i18n.sell_condition_worn(),
-						condition_fair: i18n.condition_fair(),
-						categoryTranslation: translateCategory
-					}}
-					class="pt-0"
-				/>
-			</div>
-		{/if}
 	</main>
 </div>
 
