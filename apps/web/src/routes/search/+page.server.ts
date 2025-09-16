@@ -402,10 +402,34 @@ export const load = (async ({ url, locals, setHeaders }) => {
       };
     });
 
+    // Get real category product counts using RPC function
+    let categoryProductCounts: Record<string, number> = {};
+    try {
+      const { data: countData } = await locals.supabase.rpc('get_category_product_counts', {
+        p_country_code: country
+      });
+
+      if (countData) {
+        countData.forEach((row: any) => {
+          if (row.category_level === 1) { // Only top-level categories
+            categoryProductCounts[row.category_slug] = row.product_count || 0;
+          }
+        });
+      }
+    } catch (err) {
+      if (dev) console.warn('Category counts RPC failed:', err);
+      // Fallback to estimated counts
+      const totalEstimate = count || 0;
+      level1Categories.forEach(cat => {
+        categoryProductCounts[cat.slug] = Math.floor(totalEstimate / level1Categories.length);
+      });
+    }
+
     return {
       products: transformedProducts,
       categories: sortedCategories,
       categoryHierarchy,
+      categoryProductCounts,
       searchQuery: query,
       total: count || 0,
       hasMore: transformedProducts.length === pageSize, // Simple check for more results

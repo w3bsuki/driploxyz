@@ -230,7 +230,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
 
         {#if showTrendingDropdown}
           <div class="absolute top-full left-0 right-0 mt-1 z-50">
-            <div class="bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] shadow-lg p-[var(--space-4)]">
+            <div class="bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] rounded-[var(--radius-md)] shadow-lg p-[var(--space-4)] min-h-[300px] max-h-[80vh] overflow-y-auto">
               <div class="flex items-center gap-1 mb-3 bg-[color:var(--surface-subtle)] p-1 rounded-[var(--radius-md)]">
                 <button
                   onclick={() => activeDropdownTab = 'trending'}
@@ -471,29 +471,14 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
 
         <!-- Condition Pills -->
         {#each conditionFilters as condition, index}
-          <button
-            type="button"
+          <CategoryPill
+            variant={selectedCondition === condition.key ? 'primary' : 'secondary'}
+            label={condition.shortLabel}
+            emoji={index === 0 ? '🏷️' : index === 1 ? '💎' : '👍'}
+            ariaLabel={`Filter by ${condition.label}`}
             onclick={() => handleQuickCondition(condition.key)}
-            class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-11 relative overflow-hidden
-              {selectedCondition === condition.key
-                ? 'bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] border border-[color:var(--brand-primary)]'
-                : 'bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)] border border-[color:var(--border-default)] hover:border-[color:var(--border-emphasis)] hover:bg-[color:var(--surface-base)]'}"
-            aria-label={`Filter by ${condition.label}`}
-            aria-pressed={selectedCondition === condition.key}
-          >
-            <span class="relative z-10 flex items-center gap-1">
-              {#if index === 0}
-                <span class="w-1.5 h-1.5 rounded-full {selectedCondition === condition.key ? 'bg-white' : 'bg-emerald-500'}"></span>
-              {:else if index === 1}
-                <span class="w-1.5 h-1.5 rounded-full {selectedCondition === condition.key ? 'bg-white' : 'bg-blue-500'}"></span>
-              {:else if index === 2}
-                <span class="w-1.5 h-1.5 rounded-full {selectedCondition === condition.key ? 'bg-white' : 'bg-amber-500'}"></span>
-              {:else}
-                <span class="w-1.5 h-1.5 rounded-full {selectedCondition === condition.key ? 'bg-white' : 'bg-slate-500'}"></span>
-              {/if}
-              {condition.shortLabel}
-            </span>
-          </button>
+            class="min-h-11"
+          />
         {/each}
       </nav>
     </div>

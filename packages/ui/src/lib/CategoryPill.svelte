@@ -67,17 +67,17 @@
     sm: {
       base: 'px-3 py-1.5 text-xs min-h-8',
       icon: 'w-3 h-3',
-      gap: 'gap-1'
+      gap: 'gap-0.5'
     },
     md: {
       base: 'px-4 py-2 text-sm min-h-9',
-      icon: 'w-4 h-4', 
-      gap: 'gap-1.5'
+      icon: 'w-4 h-4',
+      gap: 'gap-0.5'
     },
     lg: {
       base: 'px-5 py-2.5 text-base min-h-10',
       icon: 'w-5 h-5',
-      gap: 'gap-2'
+      gap: 'gap-0.5'
     }
   };
 
@@ -94,7 +94,7 @@
   
   // Base classes
   const baseClasses = `
-    category-pill shrink-0 rounded-full font-medium flex items-center justify-center 
+    category-pill shrink-0 rounded-full font-medium flex items-center justify-between
     transition-all duration-200 whitespace-nowrap border
     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--state-focus)] focus-visible:ring-offset-1
     disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-current
@@ -148,25 +148,28 @@
     </span>
   {/if}
 
-  <!-- Label -->
-  <span class="truncate">{label}</span>
+  <!-- Content wrapper for perfect spacing -->
+  <div class="flex items-center gap-1 flex-1 justify-between">
+    <!-- Label -->
+    <span class="truncate">{label}</span>
 
-  <!-- Right badge (item count) -->
-  {#if hasRightBadge && itemCount !== undefined}
-    <span 
-      class={`
-        inline-flex items-center justify-center rounded-full 
-        bg-[color:var(--surface-accent)] text-[color:var(--text-accent)] 
-        font-semibold leading-none
-        ${size === 'sm' ? 'text-[10px] px-1.5 py-0.5 min-w-4 h-4' : 
-          size === 'md' ? 'text-xs px-2 py-0.5 min-w-5 h-5' : 
-          'text-sm px-2.5 py-1 min-w-6 h-6'}
-      `}
-      aria-hidden="true"
-    >
-      {formatItemCount(itemCount)}
-    </span>
-  {/if}
+    <!-- Right badge (item count) -->
+    {#if hasRightBadge && itemCount !== undefined}
+      <span
+        class={`
+          inline-flex items-center justify-center rounded-full
+          bg-[color:var(--surface-accent)] text-[color:var(--text-accent)]
+          font-semibold leading-none
+          ${size === 'sm' ? 'text-[10px] px-1 py-0 min-w-4 h-3.5' :
+            size === 'md' ? 'text-xs px-1 py-0 min-w-4 h-4' :
+            'text-sm px-1.5 py-0 min-w-5 h-5'}
+        `}
+        aria-hidden="true"
+      >
+        {formatItemCount(itemCount)}
+      </span>
+    {/if}
+  </div>
 </button>
 
 <style>

@@ -198,13 +198,13 @@
     return categories;
   });
 
-  // Main categories for quick pills  
-  const mainCategories = [
-    { key: 'women', label: i18n.category_women(), icon: '👗' },
-    { key: 'men', label: i18n.category_men(), icon: '👔' },
-    { key: 'kids', label: i18n.category_kids(), icon: '👶' },
-    { key: 'unisex', label: i18n.category_unisex(), icon: '🌍' }
-  ];
+  // Main categories for quick pills with real product counts
+  const mainCategories = $derived([
+    { key: 'women', label: i18n.category_women(), icon: '👗', product_count: data.categoryProductCounts?.['women'] || 0 },
+    { key: 'men', label: i18n.category_men(), icon: '👔', product_count: data.categoryProductCounts?.['men'] || 0 },
+    { key: 'kids', label: i18n.category_kids(), icon: '👶', product_count: data.categoryProductCounts?.['kids'] || 0 },
+    { key: 'unisex', label: i18n.category_unisex(), icon: '🌍', product_count: data.categoryProductCounts?.['unisex'] || 0 }
+  ]);
   
   // Quick condition filters (most used)
   const quickConditionFilters = [
@@ -632,8 +632,22 @@
   <div aria-live="polite" aria-atomic="true" class="sr-only">
     {ariaLiveMessage}
   </div>
-  
-  <!-- Sticky search now supplied by root layout -->
+
+  <!-- Search Page Search Bar with Category Hierarchy Dropdown -->
+  <SearchPageSearchBar
+    supabase={data.supabase}
+    bind:searchValue={searchQuery}
+    megaMenuData={megaMenuData}
+    mainCategories={mainCategories}
+    conditionFilters={conditions}
+    appliedFilters={filters}
+    {i18n}
+    onSearch={handleSearchInput}
+    onCategorySelect={handleSearchPageCategorySelect}
+    onFilterChange={handleSearchPageFilterChange}
+    onFilterRemove={handleRemoveAppliedFilter}
+    onClearAllFilters={handleClearFilters}
+  />
   
   <!-- Clean Filter Bar Above Products -->
   <div class="bg-white/95 backdrop-blur-sm border-b border-gray-100">

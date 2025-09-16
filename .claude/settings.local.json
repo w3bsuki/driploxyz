@@ -83,7 +83,8 @@
       "mcp__playwright__browser_evaluate",
       "WebFetch(domain:dr1plo.vercel.app)",
       "Bash(netstat:*)",
-      "WebFetch(domain:ux.stackexchange.com)"
+      "WebFetch(domain:ux.stackexchange.com)",
+      "WebFetch(domain:dribbble.com)"
     ]
   },
   "enableAllProjectMcpServers": true,
