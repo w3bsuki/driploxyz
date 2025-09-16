@@ -65,6 +65,7 @@ let {
 let showCategoryDropdown = $state(false);
 let activeDropdownTab = $state('categories');
 let dropdownSearchQuery = $state('');
+let selectedPillIndex = $state(-1);
 
 // Collections data
 const collections = $derived<Collection[]>([
@@ -129,6 +130,34 @@ function handleConditionPillClick(conditionKey: string) {
     onFilterRemove('condition');
   } else {
     onFilterChange('condition', conditionKey);
+  }
+}
+
+// Roving tabindex for horizontal pill nav
+function handlePillKeyNav(e: KeyboardEvent, index: number) {
+  const pills = document.querySelectorAll('#category-pills button');
+  const totalPills = (mainCategories?.length || 0) + (conditionFilters?.length || 0);
+  switch (e.key) {
+    case 'ArrowRight':
+      e.preventDefault();
+      selectedPillIndex = Math.min(index + 1, totalPills - 1);
+      (pills[selectedPillIndex] as HTMLElement)?.focus();
+      break;
+    case 'ArrowLeft':
+      e.preventDefault();
+      selectedPillIndex = Math.max(index - 1, 0);
+      (pills[selectedPillIndex] as HTMLElement)?.focus();
+      break;
+    case 'Home':
+      e.preventDefault();
+      selectedPillIndex = 0;
+      (pills[0] as HTMLElement)?.focus();
+      break;
+    case 'End':
+      e.preventDefault();
+      selectedPillIndex = totalPills - 1;
+      (pills[totalPills - 1] as HTMLElement)?.focus();
+      break;
   }
 }
 
@@ -226,11 +255,11 @@ const categoryMatches = $derived(() => {
 });
 </script>
 
-<!-- Sticky Search Bar -->
-<div class="bg-white/90 backdrop-blur-sm sticky z-50 border-b border-gray-100 shadow-sm" style="top: var(--app-header-offset, 56px) !important;">
-  <div class="px-2 sm:px-4 lg:px-6 relative">
+<!-- Sticky Search Bar (compact) -->
+<div class="bg-[color:var(--surface-base)]/90 supports-[backdrop-filter]:backdrop-blur-sm sticky z-40 border-b border-[color:var(--border-subtle)]" style="top: var(--app-header-offset, 56px) !important;">
+  <div class="px-2 sm:px-4 lg:px-6 relative py-[var(--gutter-xxs)] sm:py-[var(--gutter-xs)]">
     <!-- Search Container -->
-    <div class="py-2 relative search-dropdown-container">
+    <div class="py-0 relative search-dropdown-container">
       <SearchInput
         bind:searchValue={searchValue}
         placeholder={typeof i18n?.search_placeholder === 'function' ? i18n.search_placeholder() : 'Search...'}
@@ -242,13 +271,13 @@ const categoryMatches = $derived(() => {
           <button
             onclick={handleCategoryDropdownToggle}
             type="button"
-            class="h-12 px-4 bg-transparent hover:bg-gray-50 transition-all duration-200 flex items-center gap-2 focus:outline-none focus:bg-gray-50 border-r border-gray-200 rounded-l-lg"
+            class="h-11 px-4 bg-transparent hover:bg-[color:var(--surface-subtle)] transition-all duration-200 flex items-center gap-2 focus:outline-none focus:bg-[color:var(--surface-subtle)] border-r border-[color:var(--border-subtle)] rounded-l-lg"
             aria-expanded={showCategoryDropdown}
             aria-haspopup="listbox"
             aria-label="Select category"
           >
-            <span class="text-sm font-medium text-gray-600">Browse</span>
-            <svg class="w-4 h-4 text-gray-600 transition-transform duration-200 {showCategoryDropdown ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span class="text-sm font-medium text-[color:var(--text-secondary)]">Browse</span>
+            <svg class="w-4 h-4 text-[color:var(--text-secondary)] transition-transform duration-200 {showCategoryDropdown ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
@@ -385,27 +414,31 @@ const categoryMatches = $derived(() => {
     </div>
 
     <!-- Quick Filter Pills -->
-    <nav class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-2 pt-1" aria-label="Quick filters">
+    <nav id="category-pills" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-[var(--gutter-xxs)] pt-[var(--gutter-xxs)]" aria-label="Quick filters">
       <!-- Category Pills -->
-      {#each mainCategories as category}
+      {#each mainCategories as category, index}
         <CategoryPill
           variant={appliedFilters?.category === category.key ? 'primary' : 'outline'}
           label={category.label}
           emoji={category.icon}
           onclick={() => handleCategoryPillClick(category.key)}
-          class="shrink-0"
+          class="shrink-0 min-h-11"
+          onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, index)}
         />
       {/each}
 
       <!-- Condition Pills -->
-      {#each conditionFilters as condition}
+      {#each conditionFilters as condition, cIdx}
         <button
+          type="button"
           onclick={() => handleConditionPillClick(condition.key)}
-          class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-9
+          class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-11
             {appliedFilters?.condition === condition.key
-              ? 'bg-[color:var(--brand-primary)] text-white shadow-sm'
-              : 'bg-white text-gray-700 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:shadow-sm'}"
+              ? 'bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] border border-[color:var(--brand-primary)]'
+              : 'bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)] border border-[color:var(--border-default)] hover:border-[color:var(--border-emphasis)] hover:bg-[color:var(--surface-base)]'}"
           aria-label={`Filter by ${condition.label}`}
+          aria-pressed={appliedFilters?.condition === condition.key}
+          onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, (mainCategories?.length || 0) + cIdx)}
         >
           {condition.shortLabel}
         </button>

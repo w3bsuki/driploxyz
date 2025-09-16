@@ -1,6 +1,7 @@
 <script lang="ts">
   import SellerProfileCard from './SellerProfileCard.svelte';
   import SellerQuickView from './SellerQuickView.svelte';
+  import SectionBanner from './SectionBanner.svelte';
   import * as i18n from '@repo/i18n';
   import type { Seller, Product } from './types/index';
 
@@ -91,55 +92,27 @@
   );
 </script>
 
-<!-- Ultrathink: Standardized section with consistent spacing pattern -->
-<section class="w-full py-3 mt-2 sm:mt-3 {className}">
-  <!-- Header with inline left-aligned tabs for pixel-perfect mobile layout -->
-  <div class="px-2 sm:px-4 lg:px-6 mb-3">
-    <div class="flex items-center justify-between gap-3">
-      <div class="flex-1 min-w-0">
-        <h2 class="text-base font-normal text-gray-900 leading-tight">{title}</h2>
-
-        <!-- Description line -->
-        {#if description}
-          <p class="text-xs text-gray-500">{description}</p>
-        {:else if displaySellers.length > 0}
-          <p class="text-xs text-gray-500">
-            {displaySellers.length} seller{displaySellers.length === 1 ? '' : 's'} • updated recently
-          </p>
-        {/if}
-      </div>
-
-      <!-- Right side actions - properly centered with left content -->
-      <div class="flex items-center gap-2">
-        <!-- Tab toggle - back on right side, smaller and properly aligned -->
-        {#if showToggle}
-          <div class="inline-flex bg-gray-100 rounded-md p-0.5 border border-gray-200">
-            <button
-              class="px-2 py-1 text-xs font-medium rounded transition-all duration-200 {activeTab === 'brands' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-800'}"
-              aria-pressed={activeTab === 'brands'}
-              onclick={() => onToggle?.('brands')}
-            >Brands</button>
-            <button
-              class="px-2 py-1 text-xs font-medium rounded transition-all duration-200 {activeTab === 'sellers' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600 hover:text-gray-800'}"
-              aria-pressed={activeTab === 'sellers'}
-              onclick={() => onToggle?.('sellers')}
-            >Sellers</button>
-          </div>
-        {/if}
-
-        {#if onViewAll}
-          <button class="px-2 py-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors duration-200 rounded hover:bg-blue-50" onclick={onViewAll}>
-            {i18n.search_viewAll()}
-          </button>
-        {/if}
-      </div>
-    </div>
-  </div>
+<!-- Standardized section with consistent spacing pattern (tokens) -->
+<section class="px-2 sm:px-4 lg:px-6 py-[var(--gutter-sm)] sm:py-[var(--gutter-md)] {className}">
+  <!-- Section Banner -->
+  <SectionBanner
+    {title}
+    subtitle={description || (displaySellers.length > 0 ? `${displaySellers.length} seller${displaySellers.length === 1 ? '' : 's'} • updated recently` : undefined)}
+    variant="sellers"
+    density="compact"
+    itemCount={displaySellers.length > 0 ? displaySellers.length : undefined}
+    {showToggle}
+    {activeTab}
+    {onToggle}
+    showViewAll={!!onViewAll}
+    onViewAll={onViewAll}
+    class="mb-[var(--gutter-sm)]"
+  />
 
   <!-- Sellers -->
   {#if loading}
     <!-- Ultrathink: Standardized spacing in loading state -->
-    <div class="flex gap-2 sm:gap-3 px-2 sm:px-4 lg:px-6 overflow-x-hidden">
+    <div class="flex gap-2 sm:gap-3 overflow-x-hidden">
       {#each Array(3) as _}
         <div class="bg-white border border-gray-200 rounded-xl p-4 animate-pulse flex-shrink-0" style="width: calc(50vw - 8px);">
           <div class="flex flex-col items-center">
@@ -159,12 +132,12 @@
     </div>
   {:else if displaySellers.length === 0}
     <!-- Ultrathink: Standardized spacing in empty state -->
-    <div class="text-center py-8 px-2 sm:px-4 lg:px-6">
+    <div class="text-center py-8">
       <p class="text-gray-500">No sellers available</p>
     </div>
   {:else}
     <!-- Ultrathink: Standardized spacing in sellers container -->
-    <div bind:this={scrollContainer} class="flex gap-2 sm:gap-3 px-2 sm:px-4 lg:px-6 overflow-x-auto scrollbar-hide" onscroll={updateScrollButtons}>
+    <div bind:this={scrollContainer} class="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide" onscroll={updateScrollButtons}>
       {#each displaySellers as seller}
         <div class="flex-shrink-0 snap-start w-1/2 sm:w-1/3 lg:w-1/4 xl:w-1/5" data-seller-card>
           <SellerProfileCard

@@ -119,6 +119,17 @@
 
 /* Global styles */
 @layer base {
+  /* Spacing aliases (8/12/16px rhythm) for easy, consistent gutters */
+  :root {
+    --gutter-xxs: var(--space-1); /* 4px */
+    --gutter-xs: var(--space-2);  /* 8px */
+    --gutter-sm: var(--space-3);  /* 12px */
+    --gutter-md: var(--space-4);  /* 16px */
+    --gutter-lg: var(--space-5);  /* 20px */
+
+    /* Pill gradient aliases removed: using flat brand color for selected pills */
+  }
+
   /* Mobile-first typography */
   html {
     font-size: 16px; /* Prevent mobile zoom */

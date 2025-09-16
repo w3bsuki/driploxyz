@@ -1027,68 +1027,19 @@
 
 {#key currentLang}
 
-<!-- Main Page Search Bar -->
-<MainPageSearchBar
-	supabase={data.supabase}
-	bind:searchValue={searchQuery}
-	topBrands={topBrands}
-	topSellers={displayTopSellers}
-	quickShopItems={quickShopItems}
-	mainCategories={mainCategories}
-	virtualCategories={virtualCategories}
-	conditionFilters={quickConditionFilters}
-	i18n={i18n}
-	currentLang={currentLang}
-	selectedCondition={selectedCondition}
-	loadingCategory={loadingCategory}
-	onSearch={handleSearch}
-	onQuickSearch={handleQuickSearch}
-	onCategorySelect={handleMainPageCategorySelect}
-	onConditionFilter={handleMainPageConditionFilter}
-	onFilterChange={handleMainPageFilterChange}
-	onNavigateToAll={handleMainPageNavigateToAll}
-	onPillKeyNav={handleMainPagePillKeyNav}
-	onPrefetchCategory={handleMainPagePrefetchCategory}
-/>
-
+<!-- Sticky search now supplied by root layout -->
 <!-- Promoted Products Section (under search) -->
-{#if dataLoaded && (boostedProducts.length > 0 || products.length > 0)}
-	<div id="promoted-products" class="relative z-0 mt-2 sm:mt-3">
-		<PromotedListingsSection
-			promotedProducts={boostedProducts.length > 0 ? boostedProducts : products.slice(0, 8)}
-			onProductClick={handleProductClick}
-			onFavorite={handleFavorite}
-			onBuy={handlePurchase}
-			favoritesState={$favoritesStore}
-			{formatPrice}
-			translations={{
-				promoted_listings: i18n.promoted_listings(),
-				promoted_description: i18n.promoted_description(),
-				common_currency: i18n.common_currency(),
-				product_addToFavorites: i18n.product_addToFavorites(),
-				seller_unknown: i18n.seller_unknown(),
-				condition_brandNewWithTags: i18n.sell_condition_brandNewWithTags(),
-				condition_newWithoutTags: i18n.sell_condition_newWithoutTags(),
-				condition_new: i18n.condition_new(),
-				condition_likeNew: i18n.condition_likeNew(),
-				condition_good: i18n.condition_good(),
-				condition_worn: i18n.sell_condition_worn(),
-				condition_fair: i18n.condition_fair(),
-				categoryTranslation: translateCategory
-			}}
-		/>
-	</div>
-{/if}
+<!-- Removed duplicate; promoted section is rendered below with standardized spacing -->
 
 <!-- Highlight Sellers/Brands Section (below promoted) -->
 {#if dataLoaded && sellers.length > 0}
-	<FeaturedSellers
+  <FeaturedSellers
 		sellers={(activeTab === 'brands' ? brands : sellers)}
 		sellerProducts={sellerProducts}
 		onSellerClick={handleSellerClick}
 		title={i18n.highlight_sellers()}
 		description={ activeTab === 'brands' ? i18n.verified_brands() : i18n.top_rated_sellers() }
-		class="mt-2 sm:mt-3"
+		class="pt-0 pb-0"
 		showToggle={true}
 		activeTab={activeTab}
 		onToggle={(tab) => { activeTab = tab }}
@@ -1115,6 +1066,7 @@
 				favoritesState={$favoritesStore}
 				showViewAllButton={true}
 				onViewAll={handleViewProProducts}
+				class="pt-0 mt-[var(--gutter-xxs)] sm:mt-[var(--gutter-xs)]"
 				translations={{
 					empty_noProducts: i18n.empty_noProducts(),
 					empty_startBrowsing: i18n.empty_startBrowsing(),
@@ -1200,7 +1152,7 @@
 
 		<!-- Promoted Products Section (now below Newest Listings) -->
 		{#if dataLoaded && (boostedProducts.length > 0 || products.length > 0)}
-			<div id="promoted-products" class="relative z-0 mt-4 sm:mt-6">
+			<div id="promoted-products" class="relative z-0 mt-[var(--gutter-xs)] sm:mt-[var(--gutter-sm)]">
 				<PromotedListingsSection
 					promotedProducts={boostedProducts.length > 0 ? boostedProducts : products.slice(0, 8)}
 					onProductClick={handleProductClick}
@@ -1223,6 +1175,7 @@
 						condition_fair: i18n.condition_fair(),
 						categoryTranslation: translateCategory
 					}}
+					class="pt-0"
 				/>
 			</div>
 		{/if}

@@ -63,7 +63,7 @@
   );
 </script>
 
-<div class="space-y-4">
+<div class="space-y-3">
   <!-- Price Input with Suggestions -->
   <div>
     <PriceInput
@@ -77,19 +77,16 @@
     />
     
     {#if priceSuggestion?.suggested}
-      <div class="mt-2 p-3 bg-[color:var(--status-info-bg)] border border-[color:var(--status-info-border)] rounded-lg">
-        <div class="text-sm">
+      <div class="mt-2 p-2 bg-[color:var(--status-info-bg)] border border-[color:var(--status-info-border)] rounded-lg">
+        <div class="text-xs">
           <p class="font-medium text-[color:var(--status-info-text)]">
             {i18n.sell_suggested()}: {i18n.currency_symbol()}{priceSuggestion.suggested.toFixed(2)}
           </p>
           {#if priceSuggestion.range}
-            <p class="text-[color:var(--status-info-text)] text-xs mt-1">
+            <p class="text-[color:var(--status-info-text)] mt-0.5">
               {i18n.sell_similarItems()}: {i18n.currency_symbol()}{priceSuggestion.range.min} - {i18n.currency_symbol()}{priceSuggestion.range.max}
             </p>
           {/if}
-          <p class="text-xs text-[color:var(--status-info-text)] mt-1">
-            {i18n.sell_confidence()}: {priceSuggestion.confidence}
-          </p>
         </div>
       </div>
     {/if}
@@ -123,46 +120,51 @@
     </p>
   </div>
   
-  <!-- Premium Boost Option -->
+  <!-- Premium Boost Option - Collapsible -->
   {#if canUsePremiumBoost}
-    <div class="border-2 border-[color:var(--primary-200)] rounded-xl p-4 bg-gradient-to-br from-[color:var(--primary-50)] to-[color:var(--primary-100)]">
-      <label class="flex items-start gap-3 cursor-pointer">
-        <input
-          type="checkbox"
-          bind:checked={formData.use_premium_boost}
-          name="use_premium_boost"
-          class="mt-1 w-5 h-5 text-primary rounded border-[color:var(--primary-300)] focus:ring-[color:var(--state-focus)]"
-        />
-        <div class="flex-1">
-          <div class="flex items-center gap-2">
-            <span class="font-semibold text-[color:var(--primary-900)]">{i18n.sell_premiumBoost()}</span>
-            {#if profile?.premium_boosts_remaining}
-              <span class="text-xs bg-[color:var(--primary-100)] text-[color:var(--primary-700)] px-2 py-0.5 rounded-full">
-                {profile.premium_boosts_remaining} {i18n.sell_premiumLeft()}
-              </span>
-            {/if}
-          </div>
-          <p class="text-sm text-[color:var(--primary-700)] mt-1">
-            {i18n.sell_getVisibility()}
-          </p>
-          <ul class="text-xs text-[color:var(--primary-600)] mt-2 space-y-1">
-            <li>• {i18n.sell_featuredSearch()}</li>
-            <li>• {i18n.sell_homepageSpotlight()}</li>
-            <li>• {i18n.sell_pushNotifications()}</li>
-          </ul>
+    <details class="border border-[color:var(--primary-200)] rounded-lg bg-[color:var(--primary-50)]">
+      <summary class="px-3 py-2 cursor-pointer hover:bg-[color:var(--primary-100)] rounded-lg transition-colors">
+        <div class="flex items-center gap-2">
+          <span class="text-base">{boostEmoji}</span>
+          <span class="font-medium text-[color:var(--primary-900)] text-sm">{i18n.sell_premiumBoost()}</span>
+          {#if profile?.premium_boosts_remaining}
+            <span class="text-xs bg-[color:var(--primary-200)] text-[color:var(--primary-800)] px-2 py-0.5 rounded-full">
+              {profile.premium_boosts_remaining} left
+            </span>
+          {/if}
         </div>
-      </label>
-    </div>
+      </summary>
+      <div class="px-3 pb-3">
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            bind:checked={formData.use_premium_boost}
+            name="use_premium_boost"
+            class="mt-1 w-4 h-4 text-primary rounded border-[color:var(--primary-300)] focus:ring-[color:var(--state-focus)]"
+          />
+          <div class="flex-1">
+            <p class="text-sm text-[color:var(--primary-700)] mb-2">
+              {i18n.sell_getVisibility()}
+            </p>
+            <ul class="text-xs text-[color:var(--primary-600)] space-y-1">
+              <li>• {i18n.sell_featuredSearch()}</li>
+              <li>• {i18n.sell_homepageSpotlight()}</li>
+              <li>• {i18n.sell_pushNotifications()}</li>
+            </ul>
+          </div>
+        </label>
+      </div>
+    </details>
   {/if}
   
-  <!-- Pricing Summary - Cleaner Design -->
+  <!-- Pricing Summary - Compact Design -->
   <div class="bg-[color:var(--surface-base)] border border-[color:var(--border-default)] rounded-lg">
-    <div class="px-4 py-3 border-b border-[color:var(--border-subtle)]">
+    <div class="px-3 py-2 border-b border-[color:var(--border-subtle)]">
       <h4 class="text-sm font-medium text-[color:var(--text-primary)]">{i18n.sell_estimatedEarnings()}</h4>
     </div>
-    <div class="p-4 space-y-3">
+    <div class="p-3 space-y-2">
       <!-- Item pricing -->
-      <div class="space-y-2">
+      <div class="space-y-1.5">
         <div class="flex justify-between text-sm">
           <span class="text-[color:var(--text-secondary)]">{i18n.sell_listingPrice()}</span>
           <span class="font-medium">{i18n.currency_symbol()}{safePrice.toFixed(2)}</span>
@@ -178,19 +180,19 @@
           </span>
         </div>
       </div>
-      
+
       <!-- Total -->
-      <div class="pt-3 border-t border-gray-200">
+      <div class="pt-2 border-t border-gray-200">
         <div class="flex justify-between items-center">
           <span class="text-sm font-medium text-gray-900">{i18n.sell_totalBuyerPays()}</span>
-          <span class="text-lg font-bold text-gray-900">
+          <span class="text-base font-bold text-gray-900">
             {i18n.currency_symbol()}{(safePrice + safeShippingCost).toFixed(2)}
           </span>
         </div>
       </div>
-      
+
       <!-- Earnings breakdown -->
-      <div class="pt-3 border-t border-gray-100 space-y-1.5">
+      <div class="pt-2 border-t border-gray-100 space-y-1">
         <div class="flex justify-between text-xs">
           <span class="text-gray-500">{i18n.sell_driploFee()} (10%)</span>
           <span class="text-gray-500">-{i18n.currency_symbol()}{(safePrice * 0.1).toFixed(2)}</span>

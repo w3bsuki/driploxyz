@@ -22,11 +22,11 @@
 </script>
 
 <div class="space-y-4">
-  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+  <div class="bg-[color:var(--surface-base)] rounded-xl border border-[color:var(--border-subtle)] shadow-sm p-4 sm:p-5">
     <!-- Upload Photos Section -->
     <div class="mb-5">
-      <h3 class="text-lg font-semibold text-gray-900 mb-1">{i18n.sell_photos()}</h3>
-      <p class="text-sm text-gray-500 mb-4">{i18n.sell_uploadPhotos_description()}</p>
+      <h3 class="text-lg font-semibold text-[color:var(--text-primary)] mb-1">{i18n.sell_photos()}</h3>
+      <p class="text-sm text-[color:var(--text-tertiary)] mb-4">{i18n.sell_uploadPhotos_description()}</p>
       
       <ImageUploaderSupabase
       maxImages={10}
@@ -48,7 +48,7 @@
     </div>
 
     <!-- Title & Description -->
-    <div class="space-y-5 pt-1 border-t border-gray-50">
+    <div class="space-y-5 pt-1 border-t border-[color:var(--border-subtle)]">
       <div>
         <Input
           type="text"
@@ -59,13 +59,13 @@
           name="title"
           maxlength={100}
         />
-        <div class="text-xs text-gray-400 mt-1 text-right">
+        <div class="text-xs text-[color:var(--text-quaternary)] mt-1 text-right">
           {formData.title.length}/100
         </div>
       </div>
     
       <div>
-        <label for="product-description" class="block text-sm font-medium text-gray-900 mb-2">
+        <label for="product-description" class="block text-sm font-medium text-[color:var(--text-primary)] mb-2">
           {i18n.sell_description()}
         </label>
         <textarea
@@ -74,9 +74,9 @@
           placeholder={i18n.sell_descriptionPlaceholder()}
           rows="4"
           maxlength="500"
-          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black/10 focus:border-gray-400 resize-none text-base text-[16px] transition-colors"
+          class="w-full px-4 py-3 border border-[color:var(--border-subtle)] rounded-xl focus:ring-2 focus:ring-[color:var(--focus-ring)] focus:border-[color:var(--border-focus)] resize-none text-base text-[16px] transition-colors bg-[color:var(--surface-base)] text-[color:var(--text-primary)]"
         ></textarea>
-        <div class="text-xs text-gray-400 mt-1 text-right">
+        <div class="text-xs text-[color:var(--text-quaternary)] mt-1 text-right">
           {formData.description.length}/500
         </div>
       </div>

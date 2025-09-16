@@ -105,6 +105,35 @@
     !isAuthPage && !isOnboardingPage && !isSellPage && (isHomePage || isCategoryPage || isSearchPage)
   );
 
+  // Compact, shared sticky search settings for browse pages
+  let stickySearchQuery = $state('');
+  const mainCategories = [
+    { key: 'women', label: i18n.category_women(), icon: '👗' },
+    { key: 'men', label: i18n.category_men(), icon: '👔' },
+    { key: 'kids', label: i18n.category_kids(), icon: '👶' },
+    { key: 'unisex', label: i18n.category_unisex(), icon: '🌍' }
+  ];
+  const conditionFilters = [
+    { key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: i18n.sell_condition_brandNewWithTags() },
+    { key: 'new_without_tags', label: i18n.sell_condition_newWithoutTags(), shortLabel: i18n.condition_new() },
+    { key: 'like_new', label: i18n.condition_likeNew(), shortLabel: i18n.condition_likeNew() },
+    { key: 'good', label: i18n.condition_good(), shortLabel: i18n.condition_good() }
+  ];
+
+  // Quick search for dropdown results in the shared sticky bar
+  async function handleStickyQuickSearch(query: string) {
+    if (!query?.trim() || !supabase) {
+      return { data: [], error: null } as any;
+    }
+    try {
+      const { ProductService } = await import('$lib/services/products');
+      const productService = new ProductService(supabase);
+      return await productService.searchProducts(query, { limit: 6 });
+    } catch (error) {
+      return { data: [], error: 'Search failed' } as any;
+    }
+  }
+
   // Handlers for sticky search bar
   function handleStickySearch(query: string) {
     if (!query?.trim()) return;
@@ -115,6 +144,48 @@
   function handleStickyCategorySelect(slug: string, _level: number = 1, _path: string[] = []) {
     if (typeof window !== 'undefined') {
       window.location.href = `/category/${slug}`;
+    }
+  }
+  function handleStickyFilterChange(key: string, value: any) {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.origin + '/search');
+    // Map UI keys to URL params
+    switch (key) {
+      case 'sortBy':
+        url.searchParams.set('sort', String(value));
+        break;
+      case 'minPrice':
+        url.searchParams.set('min_price', String(value));
+        break;
+      case 'maxPrice':
+        url.searchParams.set('max_price', String(value));
+        break;
+      default:
+        url.searchParams.set(key, String(value));
+    }
+    window.location.href = url.toString();
+  }
+  function handleStickyFilterRemove(key: string) {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.origin + '/search');
+    switch (key) {
+      case 'sortBy':
+        url.searchParams.delete('sort');
+        break;
+      case 'minPrice':
+        url.searchParams.delete('min_price');
+        break;
+      case 'maxPrice':
+        url.searchParams.delete('max_price');
+        break;
+      default:
+        url.searchParams.delete(key);
+    }
+    window.location.href = url.toString();
+  }
+  function handleStickyClearAll() {
+    if (typeof window !== 'undefined') {
+      window.location.href = '/search';
     }
   }
   function handleStickyConditionFilter(condition: string) {
@@ -291,7 +362,24 @@
     </div>
   {/if}
 
-  <!-- Sticky search removed - individual pages handle their own search bars -->
+  {#if shouldShowStickySearch}
+    <CategorySearchBar
+      supabase={supabase}
+      bind:searchValue={stickySearchQuery}
+      megaMenuData={[]}
+      mainCategories={mainCategories}
+      conditionFilters={conditionFilters}
+      appliedFilters={{}}
+      i18n={i18n}
+      onSearch={handleStickySearch}
+      onQuickSearch={handleStickyQuickSearch}
+      onCategorySelect={handleStickyCategorySelect}
+      onFilterChange={handleStickyFilterChange}
+      onFilterRemove={handleStickyFilterRemove}
+      onClearAllFilters={handleStickyClearAll}
+      enableQuickResults={true}
+    />
+  {/if}
   <!-- Route progress just below header -->
   <TopProgress />
   <ErrorBoundary>

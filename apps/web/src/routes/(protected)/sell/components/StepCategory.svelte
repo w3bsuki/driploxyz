@@ -303,20 +303,26 @@
           {/if}
         </div>
 
-        <div class="grid grid-cols-2 gap-4" role="group" aria-labelledby="gender-label">
+        <div class="space-y-2" role="listbox" aria-labelledby="gender-label">
           {#each genderCategories as category}
             <button
               type="button"
               onclick={() => selectGender(category.id)}
-              class="flex flex-col items-center px-4 py-4 text-sm font-medium rounded-xl border-2 transition-all duration-200 min-h-[44px] {
+              role="option"
+              aria-selected={formData.gender_category_id === category.id}
+              class="flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-lg border-2 transition-all duration-200 w-full min-h-[40px] text-left {
                 formData.gender_category_id === category.id
-                  ? 'border-black bg-black text-white shadow-lg transform scale-105'
+                  ? 'border-black bg-black text-white shadow-md'
                   : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400'
               }"
-              aria-pressed={formData.gender_category_id === category.id}
             >
-              <span class="text-2xl mb-2">{getEmoji(category.name)}</span>
-              <span class="text-sm font-medium">{translateCategory(category.name)}</span>
+              <span class="text-base flex-shrink-0">{getEmoji(category.name)}</span>
+              <span class="font-medium flex-1">{translateCategory(category.name)}</span>
+              {#if formData.gender_category_id === category.id}
+                <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+              {/if}
             </button>
           {/each}
         </div>
@@ -425,20 +431,30 @@
           {/if}
         </div>
 
-        <div class="grid grid-cols-1 gap-3" role="group" aria-labelledby="condition-label">
+        <div class="space-y-2" role="listbox" aria-labelledby="condition-label">
           {#each conditions as condition}
             <button
               type="button"
               onclick={() => selectCondition(condition.value)}
-              class="px-4 py-3 text-center rounded-xl border-2 transition-all duration-200 text-sm min-h-[44px] {
+              role="option"
+              aria-selected={formData.condition === condition.value}
+              class="px-4 py-3 text-left rounded-lg border-2 transition-all duration-200 w-full min-h-[40px] {
                 formData.condition === condition.value
-                  ? 'border-black bg-black text-white shadow-lg'
+                  ? 'border-black bg-black text-white shadow-md'
                   : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:border-gray-400'
               }"
-              aria-pressed={formData.condition === condition.value}
             >
-              <div class="font-semibold text-sm">{condition.label}</div>
-              <div class="text-xs opacity-80 mt-1">{condition.description}</div>
+              <div class="flex items-center justify-between">
+                <div class="flex-1">
+                  <div class="font-medium text-sm">{condition.label}</div>
+                  <div class="text-xs opacity-75 mt-0.5">{condition.description}</div>
+                </div>
+                {#if formData.condition === condition.value}
+                  <svg class="w-4 h-4 flex-shrink-0 ml-2" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                  </svg>
+                {/if}
+              </div>
             </button>
           {/each}
         </div>

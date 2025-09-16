@@ -101,7 +101,7 @@
 </script>
 
 <form onsubmit={handleSubmit} class="w-full relative {className}">
-  <div class="bg-white rounded-xl flex items-center relative border border-gray-200 transition-all duration-200 {dropdownVisible && searchValue?.trim() ? 'rounded-b-none shadow-lg border-b-gray-200' : 'shadow-sm hover:shadow-md hover:border-gray-300'}">
+  <div class="bg-[color:var(--surface-emphasis)] rounded-lg flex items-center relative border border-[color:var(--border-subtle)] transition-all duration-200 {dropdownVisible && searchValue?.trim() ? 'rounded-b-none shadow-sm border-b-[color:var(--border-subtle)]' : 'shadow-none hover:border-[color:var(--border-emphasis)] hover:bg-[color:var(--surface-muted)]'}">
     <!-- Left Section (Category Dropdown/Filter) -->
     {#if leftSection}
       <div class="shrink-0">
@@ -122,12 +122,12 @@
         onfocus={handleFocus}
         onblur={handleBlur}
         {placeholder}
-        class="w-full h-12 pl-10 {rightSection ? 'pr-16' : 'pr-4'} bg-transparent border-0 text-base placeholder-gray-400 focus:ring-0 focus:outline-none focus:placeholder-gray-300 transition-colors"
+        class="w-full h-11 pl-10 {rightSection ? 'pr-16' : 'pr-4'} bg-transparent border-0 text-base text-[color:var(--text-primary)] placeholder:text-[color:var(--text-muted)] focus:ring-0 focus:outline-none transition-colors"
         autocomplete="off"
         spellcheck="false"
         aria-label={placeholder}
       />
-      <svg class="absolute left-3 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <svg class="absolute left-3 top-3.5 w-5 h-5 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
       </svg>
     </div>
@@ -148,7 +148,7 @@
       onSearch={searchFunction}
       onSelect={handleProductSelect}
       {maxResults}
-      class="border-t-0 rounded-t-none shadow-lg border-gray-200"
+      class="border-t-0 rounded-t-none shadow-sm border-[color:var(--border-subtle)]"
     />
   {/if}
 </form>

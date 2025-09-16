@@ -61,6 +61,8 @@
     class?: string;
     // Visibility control
     visible?: boolean;
+    // A11y: id of the listbox for combobox association
+    listboxId?: string;
     // Data props for context-aware content
     categories?: CategoryHierarchy[];
     sellers?: Seller[];
@@ -91,6 +93,7 @@
     showCategories = true,
     class: className = '',
     visible = false,
+    listboxId = 'search-dropdown-listbox',
     categories = [],
     sellers = [],
     collections = [],
@@ -389,7 +392,7 @@
           {error}
         </div>
       {:else if results.length > 0}
-        <div class="border-b border-gray-100">
+        <div class="border-b border-gray-100" role="listbox" id={listboxId} aria-label={defaultTranslations.products}>
           <div class="px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
             Products
           </div>
@@ -397,6 +400,9 @@
             <button
               class="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-50 text-left transition-colors {selectedIndex === index ? 'bg-blue-50' : ''}"
               onclick={() => handleProductSelect(product)}
+              role="option"
+              aria-selected={selectedIndex === index}
+              id={`${listboxId}-option-${index}`}
             >
               {#if product.images?.[0]?.image_url}
                 <img

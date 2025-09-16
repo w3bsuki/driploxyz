@@ -6,16 +6,15 @@
   import { enhance } from '$app/forms';
   import { Button, toasts, ErrorBoundary } from '@repo/ui';
   import { uploadImages, deleteImage } from '$lib/supabase/storage';
-  // Dynamic imports for code-splitting - components loaded only when needed
-  let StepPhotosOnly: any = $state(null);
-  let StepCategory: any = $state(null);
-  // StepProductInfo removed - now using sub-step carousel in StepCategory
-  let StepPricing: any = $state(null);
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import { onMount } from 'svelte';
   import * as i18n from '@repo/i18n';
   import { analyzeImageForCategories, mergeSuggestions, type CategorySuggestion } from '$lib/utils/imageAnalysis';
   import { scrollIntoView, focusWithAnnouncement } from '$lib/utils/navigation';
+  // Static imports - no more dynamic loading
+  import StepPhotosOnly from './components/StepPhotosOnly.svelte';
+  import StepCategory from './components/StepCategory.svelte';
+  import StepPricing from './components/StepPricing.svelte';
 
   interface Props {
     data: PageData;
@@ -44,30 +43,7 @@
     }, 3000);
   }
   
-  // Dynamic component loading functions for code-splitting
-  async function loadStepComponent(step: number) {
-    switch (step) {
-      case 1:
-        if (!StepPhotosOnly) {
-          const module = await import('./components/StepPhotosOnly.svelte');
-          StepPhotosOnly = module.default;
-        }
-        break;
-      case 2:
-        if (!StepCategory) {
-          const module = await import('./components/StepCategory.svelte');
-          StepCategory = module.default;
-        }
-        // StepProductInfo removed - now using sub-step carousel in StepCategory
-        break;
-      case 3:
-        if (!StepPricing) {
-          const module = await import('./components/StepPricing.svelte');
-          StepPricing = module.default;
-        }
-        break;
-    }
-  }
+  // Dynamic loading removed - all components now statically imported
   let formElement = $state<HTMLFormElement>();
   let isDraftSaved = $state(false);
   let saveTimeout: ReturnType<typeof setTimeout>;
@@ -210,10 +186,7 @@
     }
   }
 
-  onMount(async () => {
-    // Load initial step component
-    await loadStepComponent(currentStep);
-    
+  onMount(() => {
     // Clear any old draft with wrong values
     const saved = localStorage.getItem('sell-form-draft');
     if (saved) {
@@ -319,6 +292,17 @@
     }
   }
 
+  // Helper function to get step instructions
+  function getStepInstructions(stepNumber: number): string {
+    switch (stepNumber) {
+      case 1: return 'Add photos and describe your item to attract buyers';
+      case 2: return 'Select the category and condition that best matches your item';
+      case 3: return 'Set your price and boost options to maximize visibility';
+      case 4: return 'Review everything looks good, then publish your listing';
+      default: return '';
+    }
+  }
+
   // Simplified navigation - no scrolling needed with full viewport steps
   function navigateToStep() {
     // Focus management for accessibility
@@ -326,7 +310,7 @@
       setTimeout(() => {
         focusWithAnnouncement(
           stepContainer,
-          `Step ${currentStep} of 5: ${getStepTitle(currentStep)}`
+          `Step ${currentStep} of 4: ${getStepTitle(currentStep)}`
         );
       }, 100);
     }
@@ -338,11 +322,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
 </svelte:head>
 
-<div class="h-screen bg-white flex flex-col fixed inset-0 sell-form-container">
+<div class="min-h-[100dvh] bg-[color:var(--surface-base)] flex flex-col sell-form-container">
   <!-- Validation Popup - Top of screen -->
   {#if showValidationPopup}
     <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] animate-in fade-in slide-in-from-top duration-200">
-      <div class="bg-red-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 max-w-sm">
+      <div class="bg-[color:var(--status-error-solid)] text-[color:var(--status-error-solid-fg)] px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 max-w-sm">
         <svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
         </svg>
@@ -351,62 +335,65 @@
     </div>
   {/if}
 
-  <!-- Minimal Header - Just close button and progress -->
-  <div class="flex-shrink-0 bg-white border-b border-gray-100 px-4 py-3">
+  <!-- Compact Mobile Header -->
+  <div class="flex-shrink-0 bg-[color:var(--surface-base)] border-b border-[color:var(--border-subtle)] px-4 py-3">
     <div class="flex items-center justify-between">
-      <!-- Close button -->
+      <!-- Back button -->
       <button
         onclick={() => goto('/')}
-        class="p-2 hover:bg-gray-100 rounded-full transition-colors"
-        aria-label="Close"
+        class="flex items-center justify-center w-10 h-10 hover:bg-[color:var(--surface-subtle)] rounded-full transition-colors"
+        aria-label="Close listing form"
       >
-        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 text-[color:var(--text-secondary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
 
-      <!-- Progress indicator -->
-      <div class="flex items-center gap-2">
-        <span class="text-sm text-gray-500">Step {currentStep} of 4</span>
-        {#if isDraftSaved}
-          <div class="flex items-center gap-1 text-green-600">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-            </svg>
-            <span class="text-xs font-medium">Saved</span>
-          </div>
-        {/if}
+      <!-- Step title with inline progress -->
+      <div class="flex-1 text-center">
+        <h1 class="text-base font-semibold text-[color:var(--text-primary)]">
+          {getStepTitle(currentStep)}
+        </h1>
+        <div class="text-xs text-[color:var(--text-tertiary)] mt-0.5">
+          Step {currentStep} of 4
+          {#if isDraftSaved}
+            • <span class="text-[color:var(--status-success-text)]">Saved</span>
+          {/if}
+        </div>
       </div>
-    </div>
 
-    <!-- Progress bar -->
-    <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden mt-2">
-      <div
-        class="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full transition-all duration-500 ease-out {isProgressing ? 'animate-pulse' : ''}"
-        style="width: {((currentStep - 1) / 3) * 100}%"
-      ></div>
+      <!-- Progress indicator -->
+      <div class="w-10 h-10 flex items-center justify-center">
+        <div class="w-8 h-8 rounded-full bg-[color:var(--surface-subtle)] flex items-center justify-center">
+          <div
+            class="w-6 h-6 rounded-full bg-[color:var(--brand-primary)] flex items-center justify-center relative overflow-hidden"
+            style="mask: conic-gradient(from 0deg, transparent 0deg, transparent {((currentStep - 1) / 3) * 360}deg, black {((currentStep - 1) / 3) * 360}deg);"
+          >
+            <div class="w-4 h-4 rounded-full bg-[color:var(--surface-base)]"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Full Viewport Content - No scrolling, full height -->
-  <div class="flex-1 bg-gray-50 flex flex-col">
-    <div class="flex-1 flex flex-col max-w-lg mx-auto w-full px-4">
+  <!-- Scrollable Content Area -->
+  <div class="flex-1 bg-[color:var(--surface-subtle)] flex flex-col overflow-y-auto">
     {#if data.needsBrandSubscription}
       <!-- Brand subscription required -->
-      <div class="text-center py-12">
-        <div class="inline-flex items-center justify-center w-16 h-16 bg-purple-100 rounded-full mb-4">
+      <div class="text-center py-12 max-w-lg mx-auto w-full px-4">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-[color:var(--brand-primary-subtle)] rounded-full mb-4">
           <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
           </svg>
         </div>
-        
+
         <h2 class="text-xl font-bold text-gray-900 mb-2">Upgrade to Sell</h2>
         <p class="text-gray-600 mb-6">
           Brand accounts need an active subscription to list products.
         </p>
-        
-        <Button 
-          variant="primary" 
+
+        <Button
+          variant="primary"
           onclick={() => goto('/settings/subscription')}
           class="w-full max-w-xs"
         >
@@ -414,71 +401,72 @@
         </Button>
       </div>
     {:else}
-      <!-- Multi-step Form -->
-      <form 
-        method="POST"
-        action="?/create"
-        bind:this={formElement}
-        use:enhance={({ formData: formDataObj }) => {
-          submitting = true;
-          publishError = null;
-          
-          // Capture current formData state to avoid Svelte warning
-          const currentFormData = { ...formData };
-          
-          // Validate condition before form submission
-          // Ensure condition is ALWAYS sent with valid value
-          const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'];
-          const conditionValue = currentFormData.condition && validConditions.includes(currentFormData.condition) ? currentFormData.condition : 'good';
-          formDataObj.set('condition', conditionValue);
-          
-          // Add all OTHER form data (skip condition since we already handled it)
-          Object.entries(currentFormData).forEach(([key, value]) => {
-            if (key === 'condition') return; // Skip condition - already handled above
-            if (key === 'tags') {
-              formDataObj.append(key, JSON.stringify(value));
-            } else if (typeof value === 'boolean' || typeof value === 'number') {
-              formDataObj.append(key, value.toString());
-            } else {
-              formDataObj.append(key, value as string);
-            }
-          });
-          
-          formDataObj.append('photo_urls', JSON.stringify(uploadedImages.map(img => img.url)));
-          formDataObj.append('photo_paths', JSON.stringify(uploadedImages.map(img => img.path)));
-          
-          return async ({ result, update }) => {
-            submitting = false;
-            
-            if (result.type === 'failure') {
-              // Handle errors
-              const errorMessage = result.data?.errors?._form || 'Failed to create listing';
-              publishError = errorMessage;
-              toasts.error(errorMessage);
-            } else if (result.type === 'success' && result.data?.success) {
-              // SUCCESS! Product created
-              showSuccess = true;
-              toasts.success('Listing published successfully!');
-              
-              const productId = result.data.productId;
-              
-              // Redirect to product page after 1.5 seconds
-              setTimeout(() => {
-                if (productId) {
-                  goto(`/product/${productId}`);
-                } else {
-                  goto('/');
-                }
-              }, 1500);
-            }
-            
-            await update();
-          };
-        }}
-      >
+      <!-- Multi-step Form Container -->
+      <div class="flex-1 flex flex-col max-w-lg mx-auto w-full px-4 pb-4">
+        <form
+          method="POST"
+          action="?/create"
+          bind:this={formElement}
+          use:enhance={({ formData: formDataObj }) => {
+            submitting = true;
+            publishError = null;
+
+            // Capture current formData state to avoid Svelte warning
+            const currentFormData = { ...formData };
+
+            // Validate condition before form submission
+            // Ensure condition is ALWAYS sent with valid value
+            const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'];
+            const conditionValue = currentFormData.condition && validConditions.includes(currentFormData.condition) ? currentFormData.condition : 'good';
+            formDataObj.set('condition', conditionValue);
+
+            // Add all OTHER form data (skip condition since we already handled it)
+            Object.entries(currentFormData).forEach(([key, value]) => {
+              if (key === 'condition') return; // Skip condition - already handled above
+              if (key === 'tags') {
+                formDataObj.append(key, JSON.stringify(value));
+              } else if (typeof value === 'boolean' || typeof value === 'number') {
+                formDataObj.append(key, value.toString());
+              } else {
+                formDataObj.append(key, value as string);
+              }
+            });
+
+            formDataObj.append('photo_urls', JSON.stringify(uploadedImages.map(img => img.url)));
+            formDataObj.append('photo_paths', JSON.stringify(uploadedImages.map(img => img.path)));
+
+            return async ({ result, update }) => {
+              submitting = false;
+
+              if (result.type === 'failure') {
+                // Handle errors
+                const errorMessage = result.data?.errors?._form || 'Failed to create listing';
+                publishError = errorMessage;
+                toasts.error(errorMessage);
+              } else if (result.type === 'success' && result.data?.success) {
+                // SUCCESS! Product created
+                showSuccess = true;
+                toasts.success('Listing published successfully!');
+
+                const productId = result.data.productId;
+
+                // Redirect to product page after 1.5 seconds
+                setTimeout(() => {
+                  if (productId) {
+                    goto(`/product/${productId}`);
+                  } else {
+                    goto('/');
+                  }
+                }, 1500);
+              }
+
+              await update();
+            };
+          }}
+        >
         <!-- Step 1: Photos Only -->
         {#if currentStep === 1}
-          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 1 of 5: {i18n.sell_step1()}">
+          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 1 of 4: {i18n.sell_step1()}">
             <ErrorBoundary
               resetKeys={[currentStep]}
               onError={(error) => {
@@ -486,29 +474,23 @@
                 toasts.error('An error occurred while loading photos step. Please try again.');
               }}
             >
-              {#if StepPhotosOnly}
-                <StepPhotosOnly
-                  bind:formData
-                  bind:uploadedImages
-                  bind:isUploadingImages
-                  onImageUpload={handleImageUpload}
-                  onImageDelete={handleImageDelete}
-                  onFieldChange={(field, value) => {
-                    // Could add validation here if needed
-                  }}
-                />
-              {:else}
-                <div class="flex items-center justify-center py-8">
-                  <div class="text-sm text-gray-500">{i18n.loading()}</div>
-                </div>
-              {/if}
+              <StepPhotosOnly
+                bind:formData
+                bind:uploadedImages
+                bind:isUploadingImages
+                onImageUpload={handleImageUpload}
+                onImageDelete={handleImageDelete}
+                onFieldChange={(field, value) => {
+                  // Could add validation here if needed
+                }}
+              />
             </ErrorBoundary>
           </div>
         {/if}
 
         <!-- Step 2: Category Selection -->
         {#if currentStep === 2}
-          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 2 of 5: {i18n.sell_step2()}">
+          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 2 of 4: {i18n.sell_step2()}">
             <ErrorBoundary
               resetKeys={[currentStep]}
               onError={(error) => {
@@ -516,53 +498,45 @@
                 toasts.error('An error occurred while loading category step. Please try again.');
               }}
             >
-              {#if StepCategory}
-                <StepCategory
-                  categories={data.categories}
-                  bind:formData
-                  suggestions={categorySuggestions}
-                  showSuggestions={showSuggestions}
-                  onFieldChange={(field, value) => {
-                    // Update category fields
-                    if (field === 'gender') formData.gender_category_id = value;
-                    if (field === 'type') formData.type_category_id = value;
-                    if (field === 'specific') formData.category_id = value;
-                    if (field === 'condition') formData.condition = value;
-                  }}
-                  onDismissSuggestions={() => showSuggestions = false}
-                  onApplySuggestions={() => {
-                    if (categorySuggestions) {
-                      // Map suggestion to actual category IDs
-                      if (categorySuggestions.gender) {
-                        const genderCat = genderCategories.find(c => c.name === categorySuggestions.gender);
-                        if (genderCat) {
-                          formData.gender_category_id = genderCat.id;
-                        }
+              <StepCategory
+                categories={data.categories}
+                bind:formData
+                suggestions={categorySuggestions}
+                showSuggestions={showSuggestions}
+                onFieldChange={(field, value) => {
+                  // Update category fields
+                  if (field === 'gender') formData.gender_category_id = value;
+                  if (field === 'type') formData.type_category_id = value;
+                  if (field === 'specific') formData.category_id = value;
+                  if (field === 'condition') formData.condition = value;
+                }}
+                onDismissSuggestions={() => showSuggestions = false}
+                onApplySuggestions={() => {
+                  if (categorySuggestions) {
+                    // Map suggestion to actual category IDs
+                    if (categorySuggestions.gender) {
+                      const genderCat = genderCategories.find(c => c.name === categorySuggestions.gender);
+                      if (genderCat) {
+                        formData.gender_category_id = genderCat.id;
                       }
-                      if (categorySuggestions.type && formData.gender_category_id) {
-                        const typeCat = typeCategories.find(c => c.name === categorySuggestions.type);
-                        if (typeCat) {
-                          formData.type_category_id = typeCat.id;
-                        }
-                      }
-                      if (categorySuggestions.specific && formData.type_category_id) {
-                        const specificCat = specificCategories.find(c => c.name === categorySuggestions.specific);
-                        if (specificCat) {
-                          formData.category_id = specificCat.id;
-                        }
-                      }
-                      showSuggestions = false;
-                      toasts.success('Applied category suggestions!');
                     }
-                  }}
-                />
-
-                <!-- Product Details removed - now handled in StepCategory sub-steps -->
-              {:else}
-                <div class="flex items-center justify-center py-8">
-                  <div class="text-sm text-gray-500">{i18n.loading()}</div>
-                </div>
-              {/if}
+                    if (categorySuggestions.type && formData.gender_category_id) {
+                      const typeCat = typeCategories.find(c => c.name === categorySuggestions.type);
+                      if (typeCat) {
+                        formData.type_category_id = typeCat.id;
+                      }
+                    }
+                    if (categorySuggestions.specific && formData.type_category_id) {
+                      const specificCat = specificCategories.find(c => c.name === categorySuggestions.specific);
+                      if (specificCat) {
+                        formData.category_id = specificCat.id;
+                      }
+                    }
+                    showSuggestions = false;
+                    toasts.success('Applied category suggestions!');
+                  }
+                }}
+              />
             </ErrorBoundary>
           </div>
         {/if}
@@ -570,33 +544,27 @@
         
         <!-- Step 3: Pricing (previously Step 4) -->
         {#if currentStep === 3}
-          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 3 of 4: Pricing" class="space-y-5 animate-in fade-in slide-in-from-right duration-300 min-h-[50vh]">
+          <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 3 of 4: Pricing" class="space-y-4 animate-in fade-in slide-in-from-right duration-300">
             <ErrorBoundary
               resetKeys={[currentStep]}
               onError={(error) => {
-                console.error('Error in Step 4 (Pricing):', error);
+                console.error('Error in Step 3 (Pricing):', error);
                 toasts.error('An error occurred while loading pricing step. Please try again.');
               }}
             >
-              {#if StepPricing}
-                <StepPricing
-                  bind:formData
-                  profile={data.profile}
-                  {priceSuggestion}
-                  errors={{}}
-                  touched={{}}
-                  onFieldChange={(field, value) => {
-                    // Could trigger price suggestion update here
-                  }}
-                  onFieldBlur={(field) => {
-                    // Mark field as touched
-                  }}
-                />
-              {:else}
-                <div class="flex items-center justify-center py-8">
-                  <div class="text-sm text-gray-500">{i18n.loading()}</div>
-                </div>
-              {/if}
+              <StepPricing
+                bind:formData
+                profile={data.profile}
+                {priceSuggestion}
+                errors={{}}
+                touched={{}}
+                onFieldChange={(field, value) => {
+                  // Could trigger price suggestion update here
+                }}
+                onFieldBlur={(field) => {
+                  // Mark field as touched
+                }}
+              />
             </ErrorBoundary>
           </div>
         {/if}
@@ -604,14 +572,14 @@
         <!-- Step 4: Review (previously Step 5) -->
         {#if currentStep === 4}
           <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 4 of 4: Review listing" class="space-y-4 animate-in fade-in slide-in-from-right duration-300">
-            <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+            <div class="bg-[color:var(--surface-base)] rounded-lg border border-[color:var(--border-subtle)] shadow-sm p-4">
               <div class="text-center mb-4">
                 <h2 class="text-base font-semibold text-gray-900 mb-1">{i18n.sell_reviewListing()}</h2>
                 <p class="text-sm text-gray-600">Everything look good? Your listing will appear like this:</p>
               </div>
               
               <!-- Compact Mobile Preview Card -->
-              <div class="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden max-w-xs mx-auto shadow-sm">
+              <div class="bg-[color:var(--surface-subtle)] rounded-lg border border-[color:var(--border-subtle)] overflow-hidden max-w-xs mx-auto shadow-sm">
                 <!-- Image Gallery Preview -->
                 {#if uploadedImages.length > 0}
                   <div class="relative">
@@ -621,13 +589,13 @@
                       class="w-full h-40 object-cover"
                     />
                     {#if uploadedImages.length > 1}
-                      <div class="absolute top-2 right-2 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                      <div class="absolute top-2 right-2 bg-[color:var(--overlay-high)] text-[color:var(--text-inverse)] text-xs px-1.5 py-0.5 rounded">
                         1/{uploadedImages.length}
                       </div>
                     {/if}
                   </div>
                 {:else}
-                  <div class="h-40 bg-gray-200 flex items-center justify-center">
+                  <div class="h-40 bg-[color:var(--surface-secondary)] flex items-center justify-center">
                     <p class="text-gray-500 text-sm">No images uploaded</p>
                   </div>
                 {/if}
@@ -663,9 +631,9 @@
 
                   <!-- Product Details - Compact -->
                   <div class="flex flex-wrap gap-1">
-                    <span class="px-1.5 py-0.5 bg-white border text-xs rounded">{formData.brand}</span>
-                    <span class="px-1.5 py-0.5 bg-white border text-xs rounded">Size {formData.size}</span>
-                    <span class="px-1.5 py-0.5 bg-white border text-xs rounded capitalize">{formData.condition.replace('_', ' ').replace('-', ' ')}</span>
+                    <span class="px-1.5 py-0.5 bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] text-xs rounded">{formData.brand}</span>
+                    <span class="px-1.5 py-0.5 bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] text-xs rounded">Size {formData.size}</span>
+                    <span class="px-1.5 py-0.5 bg-[color:var(--surface-base)] border border-[color:var(--border-subtle)] text-xs rounded capitalize">{formData.condition.replace('_', ' ').replace('-', ' ')}</span>
                   </div>
 
                   <!-- Description - Compact -->
@@ -687,7 +655,7 @@
                     </div>
 
                     {#if formData.use_premium_boost}
-                      <div class="flex items-center gap-1 px-2 py-1 bg-purple-100 rounded text-xs">
+                      <div class="flex items-center gap-1 px-2 py-1 bg-[color:var(--brand-primary-subtle)] rounded text-xs">
                         <svg class="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                         </svg>
@@ -699,70 +667,62 @@
               </div>
               
               {#if publishError}
-                <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+                <div class="mt-4 p-4 bg-[color:var(--status-error-subtle)] border border-[color:var(--status-error-border)] rounded-xl">
                   <p class="text-sm text-red-600">{publishError}</p>
                 </div>
               {/if}
             </div>
           </div>
         {/if}
-        
+
         <!-- CRITICAL: NO HIDDEN INPUTS - all data handled in enhance function -->
-      </form>
-    {/if}
-    </div>
-  </div>
-  
-  <!-- Single Bottom Navigation - No longer fixed, part of flex layout -->
-  {#if !data.needsBrandSubscription && !showSuccess}
-    <div class="flex-shrink-0 bg-white border-t border-gray-200 px-4 py-4">
-      <div class="max-w-lg mx-auto flex gap-3">
+        </form>
+      </div>
+
+      <!-- Form Navigation - Above Bottom Nav -->
+      {#if !showSuccess}
+        <div class="sticky bottom-0 bg-[color:var(--surface-base)] border-t border-[color:var(--border-subtle)] px-4 py-3 sm:relative sm:border-0 sm:bg-transparent sm:px-0">
+          <div class="max-w-lg mx-auto flex gap-3">
         {#if currentStep > 1}
-          <Button
+          <button
             type="button"
-            variant="ghost"
             onclick={() => {
               isProgressing = true;
               publishError = null;
-              setTimeout(async () => {
+              setTimeout(() => {
                 currentStep--;
-                await loadStepComponent(currentStep);
                 navigateToStep();
                 isProgressing = false;
               }, 150);
             }}
             disabled={submitting}
-            class="flex-1 min-h-[48px] text-base"
+            class="flex items-center justify-center gap-2 px-4 py-3 min-h-[var(--touch-primary)] rounded-lg border-2 border-[color:var(--border-primary)] bg-[color:var(--surface-base)] text-[color:var(--text-secondary)] font-medium hover:bg-[color:var(--surface-subtle)] hover:border-[color:var(--border-secondary)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-1"
+            aria-label="Go back to previous step"
           >
-            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
-            {i18n.common_back()}
-          </Button>
+            <span>{i18n.common_back()}</span>
+          </button>
         {/if}
-        
+
         {#if currentStep < 4}
-          <Button
+          <button
             type="button"
-            variant="primary"
             onclick={() => {
               if ((currentStep === 1 && canProceedStep1) ||
                   (currentStep === 2 && canProceedStep2) ||
                   (currentStep === 3 && canProceedStep3)) {
                 isProgressing = true;
                 publishError = null;
-                setTimeout(async () => {
+                setTimeout(() => {
                   currentStep++;
-                  await loadStepComponent(currentStep);
                   navigateToStep();
                   isProgressing = false;
                 }, 150);
               } else {
                 // Show specific validation message
                 if (currentStep === 1) {
-                  // if (uploadedImages.length === 0) {
-                  //   showValidation('Please upload at least 1 photo');
-                  // } else 
                   if (formData.title.length < 3) {
                     showValidation('Title must be at least 3 characters');
                   } else if (formData.description.length < 10) {
@@ -784,17 +744,17 @@
               }
             }}
             disabled={submitting}
-            class="flex-1 min-h-[48px] text-base"
+            class="flex items-center justify-center gap-2 px-4 py-3 min-h-[var(--touch-primary)] rounded-lg bg-[color:var(--brand-primary)] text-[color:var(--brand-primary-fg)] font-medium hover:bg-[color:var(--brand-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-1"
+            aria-label="Continue to next step"
           >
-            {i18n.common_next()}
-            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span>{i18n.common_next()}</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
-          </Button>
+          </button>
         {:else if currentStep === 4}
-          <Button
+          <button
             type="button"
-            variant="primary"
             onclick={() => {
               publishError = null;
               if (formElement) {
@@ -802,31 +762,32 @@
               }
             }}
             disabled={submitting || !canSubmit}
-            class="flex-1 min-h-[48px] text-base"
+            class="flex items-center justify-center gap-2 px-4 py-3 min-h-[var(--touch-primary)] rounded-lg bg-[color:var(--brand-primary)] text-[color:var(--brand-primary-fg)] font-medium hover:bg-[color:var(--brand-primary-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-1"
+            aria-label="Publish your listing"
           >
             {#if submitting}
-              <span class="flex items-center justify-center">
-                <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {i18n.sell_publishing()}
-              </span>
+              <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <span>{i18n.sell_publishing()}</span>
             {:else}
-              {i18n.sell_confirmPublish()}
-              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <span>{i18n.sell_confirmPublish()}</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
             {/if}
-          </Button>
+          </button>
         {/if}
-      </div>
-    </div>
-  {/if}
+          </div>
+        </div>
+      {/if}
+    {/if}
+  </div>
     
   <!-- Success Screen -->
   {#if showSuccess}
-    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-white">
+    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-[color:var(--surface-base)]">
       <div class="text-center px-6 py-12 max-w-md mx-auto w-full">
         <!-- Clean Success Icon -->
         <div class="mb-6">
@@ -843,7 +804,7 @@
         
         <!-- Product Preview -->
         {#if uploadedImages[0]}
-          <div class="mb-6 bg-gray-50 rounded-lg p-3 flex items-center gap-3">
+          <div class="mb-6 bg-[color:var(--surface-subtle)] rounded-lg p-3 flex items-center gap-3">
             <img 
               src={uploadedImages[0].url} 
               alt={formData.title}
@@ -860,7 +821,7 @@
         <div class="space-y-2">
           <button
             onclick={() => goto('/')}
-            class="w-full px-4 py-3 bg-[color:var(--primary)] text-[color:var(--primary-fg)] rounded-lg font-medium hover:bg-[color:var(--primary-600)] transition-colors"
+            class="w-full px-4 py-3 bg-[color:var(--brand-primary)] text-[color:var(--brand-primary-fg)] rounded-lg font-medium hover:bg-[color:var(--brand-primary-hover)] transition-colors"
           >
             {i18n.sell_viewListing()}
           </button>
@@ -887,7 +848,7 @@
               };
               uploadedImages = [];
             }}
-            class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg font-medium hover:bg-gray-50 transition-colors"
+            class="w-full px-4 py-3 border-2 border-[color:var(--border-primary)] rounded-lg font-medium hover:bg-[color:var(--surface-subtle)] transition-colors"
           >
             {i18n.sell_listAnother()}
           </button>
@@ -895,9 +856,7 @@
       </div>
     </div>
   {/if}
-</div>
-
-<style>
+</div><style>
   @keyframes animate-in {
     from {
       opacity: 0;
@@ -955,9 +914,9 @@
     animation: spin 1s linear infinite;
   }
 
-  /* Mobile touch improvements - simplified for full viewport layout */
+  /* Mobile touch improvements */
   .sell-form-container {
-    touch-action: pan-y;
-    overscroll-behavior: none;
+    touch-action: manipulation;
   }
 </style>
+

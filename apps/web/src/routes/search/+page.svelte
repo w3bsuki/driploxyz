@@ -633,21 +633,7 @@
     {ariaLiveMessage}
   </div>
   
-  <!-- Search Page Search Bar -->
-  <SearchPageSearchBar
-    supabase={data.supabase}
-    bind:searchValue={searchQuery}
-    megaMenuData={megaMenuData}
-    mainCategories={mainCategories}
-    conditionFilters={quickConditionFilters}
-    appliedFilters={filters}
-    i18n={i18n}
-    onSearch={handleSearchInput}
-    onCategorySelect={handleSearchPageCategorySelect}
-    onFilterChange={handleSearchPageFilterChange}
-    onFilterRemove={handleRemoveAppliedFilter}
-    onClearAllFilters={clearAllFilters}
-  />
+  <!-- Sticky search now supplied by root layout -->
   
   <!-- Clean Filter Bar Above Products -->
   <div class="bg-white/95 backdrop-blur-sm border-b border-gray-100">

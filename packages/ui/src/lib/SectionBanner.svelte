@@ -3,12 +3,16 @@
     title: string;
     subtitle?: string;
     variant?: 'newest' | 'promoted' | 'sellers' | 'default';
+    density?: 'default' | 'compact';
     itemCount?: number;
     showNavigation?: boolean;
     onScrollLeft?: () => void;
     onScrollRight?: () => void;
     onViewAll?: () => void;
     showViewAll?: boolean;
+    showToggle?: boolean;
+    activeTab?: 'sellers' | 'brands';
+    onToggle?: (tab: 'sellers' | 'brands') => void;
     class?: string;
   }
 
@@ -16,16 +20,21 @@
     title,
     subtitle,
     variant = 'default',
+    density = 'default',
     itemCount,
     showNavigation = false,
     onScrollLeft,
     onScrollRight,
     onViewAll,
     showViewAll = false,
+    showToggle = false,
+    activeTab = 'sellers',
+    onToggle,
     class: className = ''
   }: Props = $props();
 
   const variantClass = $derived(`section-banner-${variant}`);
+  const densityClass = $derived(density === 'compact' ? 'section-banner-compact' : '');
   const iconForVariant = $derived(() => {
     switch (variant) {
       case 'newest': return '⚡';
@@ -36,7 +45,7 @@
   });
 </script>
 
-<div class="section-banner {variantClass} {className}">
+<div class="section-banner {variantClass} {densityClass} {className}">
   <div class="section-banner-content">
     <!-- Left side: Icon, Title, Subtitle -->
     <div class="section-banner-info">
@@ -60,8 +69,29 @@
       </div>
     </div>
 
-    <!-- Right side: Navigation controls -->
+    <!-- Right side: Toggle and Navigation controls -->
     <div class="section-banner-actions">
+      {#if showToggle}
+        <div class="section-banner-toggle">
+          <button
+            onclick={() => onToggle?.('brands')}
+            class="section-banner-toggle-btn {activeTab === 'brands' ? 'active' : ''}"
+            type="button"
+            aria-pressed={activeTab === 'brands'}
+          >
+            Brands
+          </button>
+          <button
+            onclick={() => onToggle?.('sellers')}
+            class="section-banner-toggle-btn {activeTab === 'sellers' ? 'active' : ''}"
+            type="button"
+            aria-pressed={activeTab === 'sellers'}
+          >
+            Sellers
+          </button>
+        </div>
+      {/if}
+
       {#if showViewAll}
         <button
           onclick={onViewAll}

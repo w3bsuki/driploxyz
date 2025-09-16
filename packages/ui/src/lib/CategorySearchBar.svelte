@@ -24,41 +24,46 @@ interface MainCategory {
   icon: string;
 }
 
-interface Props {
-  supabase: SupabaseClient<Database>;
-  searchValue?: string;
-  megaMenuData?: CategoryWithChildren[];
-  mainCategories?: MainCategory[];
-  conditionFilters?: FilterPillData[];
-  appliedFilters?: Record<string, any>;
-  currentCategory?: string | null;
-  i18n: any;
-  onSearch: (query: string) => void;
-  onCategorySelect: (categorySlug: string, level: number, path: string[]) => void;
-  onFilterChange: (key: string, value: any) => void;
-  onFilterRemove: (key: string) => void;
-  onClearAllFilters: () => void;
-}
+  interface Props {
+    supabase: SupabaseClient<Database>;
+    searchValue?: string;
+    megaMenuData?: CategoryWithChildren[];
+    mainCategories?: MainCategory[];
+    conditionFilters?: FilterPillData[];
+    appliedFilters?: Record<string, any>;
+    currentCategory?: string | null;
+    i18n: any;
+    onSearch: (query: string) => void;
+    onQuickSearch?: (query: string) => Promise<{ data: any[]; error: string | null }>;
+    onCategorySelect: (categorySlug: string, level: number, path: string[]) => void;
+    onFilterChange: (key: string, value: any) => void;
+    onFilterRemove: (key: string) => void;
+    onClearAllFilters: () => void;
+    enableQuickResults?: boolean;
+  }
 
-let {
-  supabase,
-  searchValue = $bindable(''),
-  megaMenuData = [],
-  mainCategories = [],
-  conditionFilters = [],
-  appliedFilters = {},
-  currentCategory = null,
-  i18n,
-  onSearch,
-  onCategorySelect,
-  onFilterChange,
-  onFilterRemove,
-  onClearAllFilters
-}: Props = $props();
+  let {
+    supabase,
+    searchValue = $bindable(''),
+    megaMenuData = [],
+    mainCategories = [],
+    conditionFilters = [],
+    appliedFilters = {},
+    currentCategory = null,
+    i18n,
+    onSearch,
+    onQuickSearch,
+    onCategorySelect,
+    onFilterChange,
+    onFilterRemove,
+    onClearAllFilters,
+    enableQuickResults = true
+  }: Props = $props();
 
 // Component state using Svelte 5 runes
 let showCategoryDropdown = $state(false);
-let isNavigating = $state(false);
+  let isNavigating = $state(false);
+  let selectedPillIndex = $state(-1);
 
 // Enhanced category display logic
 const currentCategoryDisplay = $derived(() => {
@@ -177,12 +182,40 @@ function handleCategoryPillClick(categoryKey: string) {
   }
 }
 
-function handleConditionPillClick(conditionKey: string) {
+  function handleConditionPillClick(conditionKey: string) {
   const currentCondition = appliedFilters?.condition;
   if (currentCondition === conditionKey) {
     onFilterRemove('condition');
   } else {
     onFilterChange('condition', conditionKey);
+  }
+
+  // Roving tabindex for horizontal pill nav
+  function handlePillKeyNav(e: KeyboardEvent, index: number) {
+    const pills = document.querySelectorAll('#category-pills button');
+    const totalPills = (mainCategories?.length || 0) + (conditionFilters?.length || 0);
+    switch (e.key) {
+      case 'ArrowRight':
+        e.preventDefault();
+        selectedPillIndex = Math.min(index + 1, totalPills - 1);
+        (pills[selectedPillIndex] as HTMLElement)?.focus();
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        selectedPillIndex = Math.max(index - 1, 0);
+        (pills[selectedPillIndex] as HTMLElement)?.focus();
+        break;
+      case 'Home':
+        e.preventDefault();
+        selectedPillIndex = 0;
+        (pills[0] as HTMLElement)?.focus();
+        break;
+      case 'End':
+        e.preventDefault();
+        selectedPillIndex = totalPills - 1;
+        (pills[totalPills - 1] as HTMLElement)?.focus();
+        break;
+    }
   }
 }
 
@@ -220,23 +253,25 @@ const activeFilterCount = $derived(() => {
 });
 </script>
 
-<!-- Category-Specific Sticky Search Bar -->
-<div class="bg-white/90 backdrop-blur-sm sticky z-50 border-b border-gray-100 shadow-sm" style="top: var(--app-header-offset, 56px) !important;">
-  <div class="px-2 sm:px-4 lg:px-6 relative">
+<!-- Category-Specific Sticky Search Bar (compact) -->
+<div class="bg-[color:var(--surface-base)]/90 supports-[backdrop-filter]:backdrop-blur-sm sticky z-40 border-b border-[color:var(--border-subtle)]" style="top: var(--app-header-offset, 56px) !important;">
+  <div class="px-2 sm:px-4 lg:px-6 relative py-[var(--gutter-xxs)] sm:py-[var(--gutter-xs)]">
     <!-- Search Container with Advanced Category Navigation -->
-    <div class="py-2 relative category-search-dropdown-container">
+    <div class="py-0 relative category-search-dropdown-container">
       <SearchInput
         bind:searchValue={searchValue}
         placeholder={i18n.search_placeholder ? i18n.search_placeholder() : 'Search in category...'}
         onSearch={onSearch}
         searchId="category-search-input"
-        showDropdown={false}
+        showDropdown={enableQuickResults}
+        searchFunction={onQuickSearch}
+        maxResults={6}
       >
         {#snippet leftSection()}
           <button
             onclick={handleCategoryDropdownToggle}
             type="button"
-            class="h-12 px-4 bg-transparent hover:bg-gray-50 transition-all duration-200 flex items-center gap-2 focus:outline-none focus:bg-gray-50 border-r border-gray-200 rounded-l-lg min-w-0 flex-shrink-0"
+            class="h-11 px-4 bg-transparent hover:bg-[color:var(--surface-subtle)] transition-all duration-200 flex items-center gap-2 focus:outline-none focus:bg-[color:var(--surface-subtle)] border-r border-[color:var(--border-subtle)] rounded-l-lg min-w-0 flex-shrink-0"
             class:animate-pulse={isNavigating}
             aria-expanded={showCategoryDropdown}
             aria-haspopup="listbox"
@@ -246,19 +281,19 @@ const activeFilterCount = $derived(() => {
             <span class="text-lg flex-shrink-0" role="img" aria-hidden="true">{currentCategoryDisplay.icon}</span>
             <div class="flex flex-col items-start min-w-0 hidden sm:flex">
               {#if currentCategoryDisplay.breadcrumb && currentCategoryDisplay.breadcrumb.length > 1}
-                <span class="text-xs text-gray-500 truncate max-w-32">
+                <span class="text-xs text-[color:var(--text-tertiary)] truncate max-w-32">
                   {currentCategoryDisplay.breadcrumb.slice(0, -1).join(' → ')}
                 </span>
-                <span class="text-sm font-medium text-gray-900 truncate max-w-32">
+                <span class="text-sm font-medium text-[color:var(--text-primary)] truncate max-w-32">
                   {currentCategoryDisplay.breadcrumb[currentCategoryDisplay.breadcrumb.length - 1]}
                 </span>
               {:else}
-                <span class="text-sm font-medium text-gray-600 truncate max-w-32">
+                <span class="text-sm font-medium text-[color:var(--text-secondary)] truncate max-w-32">
                   {currentCategoryDisplay.label}
                 </span>
               {/if}
             </div>
-            <svg class="w-4 h-4 text-gray-600 transition-transform duration-200 flex-shrink-0 {showCategoryDropdown ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-[color:var(--text-secondary)] transition-transform duration-200 flex-shrink-0 {showCategoryDropdown ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
           </button>
@@ -292,7 +327,7 @@ const activeFilterCount = $derived(() => {
     </div>
 
     <!-- Enhanced Quick Filter Pills -->
-    <nav class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-2 pt-1" aria-label="Quick filters">
+    <nav id="category-pills" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-[var(--gutter-xxs)] pt-[var(--gutter-xxs)]" aria-label="Quick filters">
       <!-- Main Category Pills -->
       {#each mainCategories as category}
         <CategoryPill
@@ -300,21 +335,25 @@ const activeFilterCount = $derived(() => {
           label={category.label}
           emoji={category.icon}
           onclick={() => handleCategoryPillClick(category.key)}
-          class="shrink-0"
+          class="shrink-0 min-h-11"
           disabled={isNavigating}
+          onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, index)}
         />
       {/each}
 
       <!-- Condition Pills -->
-      {#each conditionFilters as condition}
+      {#each conditionFilters as condition, cIdx}
         <button
+          type="button"
           onclick={() => handleConditionPillClick(condition.key)}
           disabled={isNavigating}
-          class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-9 disabled:opacity-50 disabled:cursor-not-allowed
-            {appliedFilters?.condition === condition.key
-              ? 'bg-[color:var(--brand-primary)] text-white shadow-sm'
-              : 'bg-white text-gray-700 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:shadow-sm'}"
+            class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-11 disabled:opacity-50 disabled:cursor-not-allowed
+              {appliedFilters?.condition === condition.key
+                ? 'bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] border border-[color:var(--brand-primary)]'
+                : 'bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)] border border-[color:var(--border-default)] hover:border-[color:var(--border-emphasis)] hover:bg-[color:var(--surface-base)]'}"
           aria-label={`Filter by ${condition.label}`}
+          aria-pressed={appliedFilters?.condition === condition.key}
+          onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, (mainCategories?.length || 0) + cIdx)}
         >
           {condition.shortLabel}
         </button>
@@ -342,6 +381,7 @@ const activeFilterCount = $derived(() => {
       </div>
     {/if}
   </div>
+
 </div>
 
 <style>

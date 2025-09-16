@@ -43,6 +43,7 @@
     onQuickFilter?: (condition: string) => void;
     showViewAllButton?: boolean;
     onViewAll?: () => void;
+    class?: string;
   }
 
   let { 
@@ -60,7 +61,8 @@
     showQuickFilters = false,
     onQuickFilter,
     showViewAllButton = false,
-    onViewAll
+    onViewAll,
+    class: className = ''
   }: Props = $props();
   
   // Derived states
@@ -69,9 +71,9 @@
   const gridId = $derived(`product-grid-${Math.random().toString(36).substr(2, 9)}`);
 </script>
 
-<!-- Ultrathink: Product Grid Section with standardized spacing -->
+<!-- Product Grid Section with standardized spacing (tokens) -->
 <section
-  class="px-2 sm:px-4 lg:px-6 py-3 mt-2 sm:mt-3"
+  class="px-2 sm:px-4 lg:px-6 py-[var(--gutter-sm)] sm:py-[var(--gutter-md)] {className}"
   aria-label={sectionTitle}
 >
   <!-- Section Banner -->
@@ -79,10 +81,11 @@
     title={sectionTitle}
     subtitle={hasProducts ? `${products.length} ${translations.home_itemCount} • ${translations.home_updatedMomentsAgo}` : undefined}
     variant="newest"
+    density="compact"
     itemCount={hasProducts ? products.length : undefined}
     showViewAll={showViewAllButton && hasProducts}
     onViewAll={onViewAll}
-    class="mb-4 sm:mb-6"
+    class="mb-[var(--gutter-sm)] sm:mb-[var(--gutter-md)]"
   />
   
   <!-- Quick Filter Pills - Mobile-First -->
@@ -227,7 +230,7 @@
 
   <!-- Load More -->
   {#if hasProducts}
-    <nav class="text-center mt-4 sm:mt-6" aria-label="Load more products">
+    <nav class="text-center mt-[var(--gutter-md)] sm:mt-[var(--gutter-lg)]" aria-label="Load more products">
       <Button 
         variant="ghost" 
         size="lg" 

@@ -196,12 +196,12 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
 }
 </script>
 
-<!-- Sticky Search + Category Navigation -->
-<div class="bg-[color:var(--surface-base)] sticky z-50 border-b border-[color:var(--border-subtle)]">
-  <div class="px-2 sm:px-4 lg:px-6">
+<!-- Sticky Search + Category Navigation (compact) -->
+<div class="bg-[color:var(--surface-base)] sticky top-[var(--app-header-offset)] z-40 border-b border-[color:var(--border-subtle)]">
+  <div class="px-2 sm:px-4 lg:px-6 py-[var(--gutter-xxs)] sm:py-[var(--gutter-xs)]">
     <div class="mx-auto relative">
       <!-- Hero Search -->
-      <div id="hero-search-container" class="relative py-2">
+      <div id="hero-search-container" class="relative py-0">
         <SearchInput
           bind:searchValue={searchQuery}
           onSearch={onSearch}
@@ -213,14 +213,15 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
         >
           {#snippet leftSection()}
             <button
+              type="button"
               onclick={() => showTrendingDropdown = !showTrendingDropdown}
-              class="h-12 px-3 bg-transparent hover:bg-gray-50 transition-all duration-200 flex items-center gap-2 focus:outline-none focus:bg-gray-50 border-r border-gray-200 rounded-l-lg"
+              class="h-11 px-3 bg-transparent hover:bg-[color:var(--surface-subtle)] transition-all duration-200 flex items-center gap-2 focus:outline-none focus:bg-[color:var(--surface-subtle)] border-r border-[color:var(--border-subtle)] rounded-l-lg"
               aria-expanded={showTrendingDropdown}
               aria-haspopup="listbox"
               aria-label={i18n.search_categories()}
             >
-              <span class="text-sm font-medium text-gray-600">{i18n.menu_browse()}</span>
-              <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <span class="text-sm font-medium text-[color:var(--text-secondary)]">{i18n.menu_browse()}</span>
+              <svg class="w-3 h-3 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
               </svg>
             </button>
@@ -254,7 +255,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
               <!-- Search Input -->
               <div class="mb-4">
                 <div class="relative">
-                  <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                   </svg>
                   <input
@@ -411,7 +412,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
       <nav
         id="category-pills"
         aria-label={i18n.nav_browseCategories()}
-        class="flex items-center justify-start gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-2 pt-1 sm:justify-center"
+        class="flex items-center justify-start gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pt-[var(--gutter-xxs)] pb-[var(--gutter-xxs)] sm:justify-center"
       >
         <!-- All Categories -->
         <CategoryPill
@@ -426,6 +427,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
           ontouchstart={() => preloadCode('/search')}
           onclick={onNavigateToAll}
           onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 0)}
+          class="min-h-11"
         />
 
         <!-- Main Categories -->
@@ -443,6 +445,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
             ontouchstart={() => prefetchCategoryPage(category.slug)}
             onclick={() => onCategorySelect(category.slug)}
             onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, index + 1)}
+            class="min-h-11"
           />
         {/each}
 
@@ -462,21 +465,21 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
             ontouchstart={() => prefetchCategoryPage(virtualCategory.slug)}
             onclick={() => onCategorySelect(virtualCategory.slug)}
             onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, mainCategories.length + 1 + index)}
+            class="min-h-11"
           />
         {/each}
 
         <!-- Condition Pills -->
         {#each conditionFilters as condition, index}
           <button
+            type="button"
             onclick={() => handleQuickCondition(condition.key)}
-            class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-9 relative overflow-hidden
+            class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-11 relative overflow-hidden
               {selectedCondition === condition.key
-                ? index === 0 ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-md'
-                  : index === 1 ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md'
-                  : index === 2 ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-md'
-                  : 'bg-gradient-to-r from-slate-600 to-gray-600 text-white shadow-md'
-                : 'bg-white text-gray-700 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:shadow-sm'}"
+                ? 'bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] border border-[color:var(--brand-primary)]'
+                : 'bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)] border border-[color:var(--border-default)] hover:border-[color:var(--border-emphasis)] hover:bg-[color:var(--surface-base)]'}"
             aria-label={`Filter by ${condition.label}`}
+            aria-pressed={selectedCondition === condition.key}
           >
             <span class="relative z-10 flex items-center gap-1">
               {#if index === 0}
