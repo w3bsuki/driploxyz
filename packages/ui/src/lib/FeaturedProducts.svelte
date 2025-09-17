@@ -1,7 +1,7 @@
 <script lang="ts">
   import ProductCard from './ProductCard.svelte';
   import Button from './Button.svelte';
-  import SectionBanner from './SectionBanner.svelte';
+  import NewestListingsBanner from './components/home/NewestListingsBanner.svelte';
   import { ProductCardSkeleton } from './skeleton/index';
   import type { Product } from './types/product';
 
@@ -39,8 +39,9 @@
     translations: Translations;
     sectionTitle?: string;
     favoritesState?: any;
-    showQuickFilters?: boolean;
-    onQuickFilter?: (condition: string) => void;
+    showCategoryTabs?: boolean;
+    activeCategory?: 'fresh' | 'recent';
+    onCategoryChange?: (category: 'fresh' | 'recent') => void;
     showViewAllButton?: boolean;
     onViewAll?: () => void;
     class?: string;
@@ -58,8 +59,9 @@
     translations,
     sectionTitle = 'Newest listings', // Will be overridden by parent with proper translation
     favoritesState,
-    showQuickFilters = false,
-    onQuickFilter,
+    showCategoryTabs = false,
+    activeCategory = 'fresh',
+    onCategoryChange,
     showViewAllButton = false,
     onViewAll,
     class: className = ''
@@ -73,86 +75,25 @@
 
 <!-- Product Grid Section with standardized spacing (tokens) -->
 <section
-  class="px-2 sm:px-4 lg:px-6 pb-[var(--gutter-sm)] sm:pb-[var(--gutter-md)] {className}"
+  class="pb-3 sm:pb-4 {className}"
   aria-label={sectionTitle}
 >
   <!-- Section Banner -->
-  <SectionBanner
-    title={sectionTitle}
-    subtitle={hasProducts ? `${products.length} ${translations.home_itemCount} • ${translations.home_updatedMomentsAgo}` : undefined}
-    variant="newest"
-    density="compact"
+  <NewestListingsBanner
+    heading={sectionTitle}
+    copy={hasProducts ? `${products.length} ${translations.home_itemCount} • ${translations.home_updatedMomentsAgo}` : undefined}
     itemCount={hasProducts ? products.length : undefined}
-    showViewAll={showViewAllButton && hasProducts}
-    onViewAll={onViewAll}
-    class="mb-[var(--gutter-sm)] sm:mb-[var(--gutter-md)]"
+    cta={showViewAllButton && hasProducts && onViewAll ? { label: 'View All', action: onViewAll } : undefined}
+    showCategoryTabs={showCategoryTabs && hasProducts}
+    {activeCategory}
+    onCategoryChange={onCategoryChange}
   />
   
-  <!-- Quick Filter Pills - Mobile-First -->
-  {#if showQuickFilters && hasProducts}
-    <div class="mb-4 sm:mb-5">
-      <div class="flex gap-2 overflow-x-auto scrollbar-hide pb-2">
-        <button
-          onclick={() => onQuickFilter?.('new')}
-          class="min-h-[36px] shrink-0 px-3 py-1.5 
-                 rounded-full text-xs font-semibold transition-all duration-200
-                 bg-[color:var(--success-subtle)] text-[color:var(--success-text)]
-                 border border-[color:var(--success-border)]
-                 hover:bg-[color:var(--success-muted)] active:scale-95
-                 focus:outline-none focus:ring-2 focus:ring-[color:var(--success)]/20"
-        >
-          <span class="mr-1" role="img" aria-hidden="true">✨</span>
-          {translations.condition_new}
-        </button>
-        
-        <button
-          onclick={() => onQuickFilter?.('like-new')}
-          class="min-h-[36px] shrink-0 px-3 py-1.5 
-                 rounded-full text-xs font-semibold transition-all duration-200
-                 bg-[color:var(--info-subtle)] text-[color:var(--info-text)]
-                 border border-[color:var(--info-border)]
-                 hover:bg-[color:var(--info-muted)] active:scale-95
-                 focus:outline-none focus:ring-2 focus:ring-[color:var(--info)]/20"
-        >
-          <span class="mr-1" role="img" aria-hidden="true">💎</span>
-          {translations.condition_likeNew}
-        </button>
-        
-        <button
-          onclick={() => onQuickFilter?.('good')}
-          class="min-h-[36px] shrink-0 px-3 py-1.5 
-                 rounded-full text-xs font-semibold transition-all duration-200
-                 bg-[color:var(--surface-muted)] text-[color:var(--text-secondary)]
-                 border border-[color:var(--border-subtle)]
-                 hover:bg-[color:var(--surface-subtle)] hover:text-[color:var(--text-primary)]
-                 active:scale-95
-                 focus:outline-none focus:ring-2 focus:ring-[color:var(--primary)]/20"
-        >
-          <span class="mr-1" role="img" aria-hidden="true">👍</span>
-          {translations.condition_good}
-        </button>
-        
-        <button
-          onclick={() => onQuickFilter?.('fair')}
-          class="min-h-[36px] shrink-0 px-3 py-1.5 
-                 rounded-full text-xs font-semibold transition-all duration-200
-                 bg-[color:var(--surface-muted)] text-[color:var(--text-secondary)]
-                 border border-[color:var(--border-subtle)]
-                 hover:bg-[color:var(--surface-subtle)] hover:text-[color:var(--text-primary)]
-                 active:scale-95
-                 focus:outline-none focus:ring-2 focus:ring-[color:var(--primary)]/20"
-        >
-          <span class="mr-1" role="img" aria-hidden="true">👌</span>
-          {translations.condition_fair}
-        </button>
-      </div>
-    </div>
-  {/if}
   
   <!-- Loading State -->
   {#if loading}
-    <div 
-      class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3"
+    <div
+      class="px-2 sm:px-4 lg:px-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3"
       role="status"
       aria-busy="true"
       aria-live="polite"
@@ -165,9 +106,9 @@
     </div>
   <!-- Featured Products Grid - Mobile-First Responsive -->
   {:else if hasProducts}
-    <div 
+    <div
       id={gridId}
-      class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"
+      class="px-2 sm:px-4 lg:px-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"
       role="list"
       aria-label="Product grid with {products.length} items"
     >
@@ -207,8 +148,8 @@
       {/each}
     </div>
   {:else}
-    <div 
-      class="text-center py-12"
+    <div
+      class="px-2 sm:px-4 lg:px-6 text-center py-12"
       role="status"
       aria-label="No products available"
     >

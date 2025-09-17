@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Product as UIProduct } from './types/product';
   import { ProductCard } from './';
-  import SectionBanner from './SectionBanner.svelte';
+  import PromotedListingsBanner from './components/home/PromotedListingsBanner.svelte';
 
   interface Props {
     promotedProducts: UIProduct[];
@@ -25,6 +25,9 @@
       condition_fair: string;
       categoryTranslation: (categoryName: string) => string;
     };
+    showToggle?: boolean;
+    activeTab?: 'sellers' | 'brands';
+    onToggle?: (tab: 'sellers' | 'brands') => void;
     class?: string;
   }
 
@@ -36,6 +39,9 @@
     favoritesState,
     formatPrice,
     translations,
+    showToggle = false,
+    activeTab = 'sellers',
+    onToggle,
     class: className = ''
   }: Props = $props();
 
@@ -62,23 +68,23 @@
 </script>
 
 {#if activePromotedProducts.length > 0}
-	<!-- Standardized spacing pattern via tokens -->
-	<section class="px-2 sm:px-4 lg:px-6 pb-0 {className}">
+	<!-- Enhanced section with separator banner -->
+	<section class="pb-3 sm:pb-4 {className}">
 		<!-- Section Banner -->
-		<SectionBanner
-			title={translations.promoted_listings}
-			subtitle={translations.promoted_description}
-			variant="promoted"
-			density="compact"
+		<PromotedListingsBanner
+			heading={translations.promoted_listings}
+			copy={translations.promoted_description}
 			itemCount={activePromotedProducts.length}
 			showNavigation={true}
+			{showToggle}
+			{activeTab}
+			{onToggle}
 			onScrollLeft={scrollLeft}
 			onScrollRight={scrollRight}
-			class="mb-[var(--gutter-sm)]"
 		/>
 
 		<!-- Horizontal Scrollable Cards matching grid card sizes -->
-		<div class="relative">
+		<div class="relative px-2 sm:px-4 lg:px-6">
 			<div class="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-hide promoted-cards-container" style="scroll-snap-type: x mandatory;" data-promoted-scroll bind:this={promotedScrollContainer}>
 				{#each activePromotedProducts as product (product.id)}
 					<div class="flex-shrink-0 snap-start promoted-card" data-promoted-card>

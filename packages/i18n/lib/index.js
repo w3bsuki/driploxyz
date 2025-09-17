@@ -1,6 +1,7 @@
 // Paraglide v2+ zero-bundle i18n
 // Proper tree-shaking approach: export * allows Vite to tree-shake unused messages
-/// <reference path="./paraglide.d.ts" />
+/// <reference path='./paraglide.d.ts' />
+/// <reference path='./generated-messages.d.ts' />
 // Export all message functions - Vite automatically tree-shakes unused ones
 export * from './paraglide/messages.js';
 // Re-export Paraglide runtime functions directly - let Paraglide handle locale detection

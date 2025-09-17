@@ -41,11 +41,6 @@
      */
     closeDelay?: number;
     
-    /**
-     * Whether to close on escape key
-     * @default true
-     */
-    closeOnEscape?: boolean;
     
     /**
      * Whether to close when trigger loses focus
@@ -98,7 +93,6 @@
     positioning = { side: 'top', align: 'center' },
     openDelay = 700,
     closeDelay = 300,
-    closeOnEscape = true,
     closeOnPointerDown = true,
     disabled = false,
     triggerClass = '',
@@ -130,7 +124,6 @@
     },
     openDelay,
     closeDelay,
-    closeOnEscape,
     closeOnPointerDown,
     onOpenChange: onOpenChange ? (details: any) => {
       onOpenChange(details.next);

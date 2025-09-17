@@ -1,86 +1,14 @@
 <script lang="ts">
-  import type { Database } from '@repo/database';
-  import { goto } from '$app/navigation';
+  // Note: goto function should be passed as prop when used in SvelteKit apps
   import { isBrowser } from './utils/runtime.js';
-
-  // Define ProductWithImages type locally since it might not be exported from database
-  type Product = Database['public']['Tables']['products']['Row'];
-  type ProductImage = Database['public']['Tables']['product_images']['Row'];
-
-  export interface ProductWithImages extends Product {
-    images: ProductImage[];
-    category_name?: string;
-    seller_name?: string;
-    seller_username?: string;
-    seller_rating?: number;
-  }
-
-  // Context types for different search experiences
-  export type SearchContext = 'main' | 'search' | 'category';
-
-  // Category hierarchy types
-  export interface CategoryHierarchy {
-    id: string;
-    name: string;
-    slug: string;
-    emoji?: string;
-    product_count?: number;
-    level?: number;
-    parent_id?: string;
-    children?: CategoryHierarchy[];
-  }
-
-  // Seller type
-  export interface Seller {
-    id: string;
-    username: string;
-    full_name?: string;
-    avatar_url?: string;
-    total_products: number;
-    rating?: number;
-    is_verified?: boolean;
-  }
-
-  // Collection type
-  export interface Collection {
-    key: string;
-    label: string;
-    emoji: string;
-    product_count?: number;
-  }
-
-  interface Props {
-    query: string;
-    context?: SearchContext;
-    categoryContext?: string | CategoryHierarchy | null; // For category-specific filtering
-    onSearch?: (query: string) => Promise<{ data: ProductWithImages[]; error: string | null }>;
-    onSelect?: (product: ProductWithImages) => void;
-    onClose?: () => void;
-    maxResults?: number;
-    showCategories?: boolean;
-    class?: string;
-    // Visibility control
-    visible?: boolean;
-    // A11y: id of the listbox for combobox association
-    listboxId?: string;
-    // Data props for context-aware content
-    categories?: CategoryHierarchy[];
-    sellers?: Seller[];
-    collections?: Collection[];
-    // Event handlers
-    onCategorySelect?: (category: CategoryHierarchy) => void;
-    onSellerSelect?: (seller: Seller) => void;
-    onCollectionSelect?: (collection: Collection) => void;
-    // Translations
-    translations?: {
-      categories?: string;
-      collections?: string;
-      sellers?: string;
-      products?: string;
-      searching?: string;
-      viewAllResults?: string;
-    };
-  }
+  import type {
+    ProductWithImages,
+    CategoryWithChildren,
+    SearchSeller,
+    Collection,
+    SearchContext,
+    SearchDropdownProps
+  } from './search/types';
 
   let {
     query,
@@ -101,7 +29,7 @@
     onSellerSelect,
     onCollectionSelect,
     translations = {}
-  }: Props = $props();
+  }: SearchDropdownProps = $props();
 
   let results: ProductWithImages[] = $state([]);
   let loading = $state(false);
@@ -110,7 +38,7 @@
   let dropdownVisible = $derived(visible);
   let selectedIndex = $state(-1);
   let activeTab = $state<'categories' | 'collections' | 'sellers'>('categories');
-  let navigationStack = $state<{ categories: CategoryHierarchy[], level: number }>({ categories: [], level: 1 });
+  let navigationStack = $state<{ categories: CategoryWithChildren[], level: number }>({ categories: [], level: 1 });
 
   const recentSearches = $state<string[]>([]);
 
@@ -160,7 +88,7 @@
           return categories.filter(cat => {
             // Show level 2+ categories that belong to current category context
             return cat.level && cat.level > 1 &&
-                   (cat.parentKey === categoryContext || cat.key.startsWith(`${categoryContext}-`));
+                   (cat.parent_id === categoryContext || cat.slug.startsWith(`${categoryContext}-`));
           });
         } else if (categoryContext && typeof categoryContext === 'object' && categoryContext.children) {
           return categoryContext.children.filter(cat => (cat.product_count || 0) > 0);
@@ -263,8 +191,10 @@
     if (onSelect) {
       onSelect(product);
     } else {
-      // Default behavior - navigate to product page
-      goto(`/product/${product.id}`);
+      // Default behavior - navigate to product page (via parent)
+      if (isBrowser) {
+        window.location.href = `/product/${product.id}`;
+      }
     }
     if (onClose) onClose();
     selectedIndex = -1;
@@ -272,12 +202,14 @@
 
   function handleSearchSelect(searchQuery: string) {
     saveRecentSearch(searchQuery);
-    goto(`/search?q=${encodeURIComponent(searchQuery)}`);
+    if (isBrowser) {
+      window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
+    }
     if (onClose) onClose();
     selectedIndex = -1;
   }
 
-  function handleCategorySelect(category: CategoryHierarchy) {
+  function handleCategorySelect(category: CategoryWithChildren) {
     if (onCategorySelect) {
       onCategorySelect(category);
       if (onClose) onClose();
@@ -289,7 +221,9 @@
       };
     } else {
       // Navigate to category page
-      goto(`/category/${category.slug}`);
+      if (isBrowser) {
+        window.location.href = `/category/${category.slug}`;
+      }
       if (onClose) onClose();
       selectedIndex = -1;
     }
@@ -300,18 +234,22 @@
       onCollectionSelect(collection);
       if (onClose) onClose();
     } else {
-      goto(`/collection/${collection.key}`);
+      if (isBrowser) {
+        window.location.href = `/collection/${collection.key}`;
+      }
       if (onClose) onClose();
       selectedIndex = -1;
     }
   }
 
-  function handleSellerSelect(seller: Seller) {
+  function handleSellerSelect(seller: SearchSeller) {
     if (onSellerSelect) {
       onSellerSelect(seller);
       if (onClose) onClose();
     } else {
-      goto(`/profile/${seller.username}`);
+      if (isBrowser) {
+        window.location.href = `/profile/${seller.username}`;
+      }
       if (onClose) onClose();
       selectedIndex = -1;
     }
@@ -375,8 +313,11 @@
 
 {#if dropdownVisible}
   <div
-    class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-xl shadow-lg z-50 {className}"
+    class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-b-[var(--input-radius)] shadow-lg z-50 {className}"
     onclick={(e) => e.stopPropagation()}
+    onkeydown={(e) => { if (e.key === 'Escape') handleClickOutside(); }}
+    role="dialog"
+    aria-label="Search results and browse options"
   >
     {#if query && query.trim()}
       <!-- Search Results Section -->
@@ -446,7 +387,7 @@
     <div class="p-4">
       <!-- Tab Headers - Dynamic based on context -->
       <div class="flex items-center gap-1 mb-4 bg-gray-100 p-1 rounded-lg">
-        {#each availableTabs as tab}
+        {#each availableTabs() as tab}
           <button
             class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeTab === tab.key ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
             onclick={() => activeTab = tab.key}
@@ -478,7 +419,7 @@
 
               <!-- Categories Grid -->
               <div class="grid grid-cols-2 gap-3">
-                {#each displayCategories as category}
+                {#each displayCategories() as category}
                   <button
                     class="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
                     onclick={() => handleCategorySelect(category)}
@@ -500,7 +441,7 @@
               </div>
 
               <!-- Empty state for categories -->
-              {#if displayCategories.length === 0}
+              {#if displayCategories().length === 0}
                 <div class="text-center py-8 text-gray-500">
                   <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -511,7 +452,7 @@
 
             {:else if activeTab === 'collections'}
               <div class="grid grid-cols-2 gap-3">
-                {#each displayCollections as collection}
+                {#each displayCollections() as collection}
                   <button
                     class="flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
                     onclick={() => handleCollectionSelect(collection)}
@@ -529,7 +470,7 @@
 
             {:else if activeTab === 'sellers'}
               <div class="space-y-3">
-                {#each displaySellers as seller}
+                {#each displaySellers() as seller}
                   <button
                     class="w-full flex items-center gap-3 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
                     onclick={() => handleSellerSelect(seller)}
@@ -573,7 +514,7 @@
                 <!-- View More Sellers Button -->
                 {#if sellers.length > 5}
                   <button
-                    onclick={() => goto('/sellers')}
+                    onclick={() => { if (isBrowser) window.location.href = '/sellers'; }}
                     class="w-full px-4 py-3 text-center text-blue-600 hover:bg-blue-50 text-sm font-medium transition-colors border-t border-gray-100 rounded-lg"
                   >
                     View All Sellers ({sellers.length})

@@ -1,5 +1,6 @@
 <script lang="ts">
   interface Props {
+    currentAvatar?: string;
     onUpload?: (avatarUrl: string) => void;
     onError?: (error: string) => void;
     uploadFunction: (file: File) => Promise<string>;
@@ -93,7 +94,7 @@
 
   function handleDragLeave(event: DragEvent) {
     event.preventDefault();
-    if (!event.currentTarget?.contains?.(event.relatedTarget as Node)) {
+    if (!(event.currentTarget as HTMLElement)?.contains?.(event.relatedTarget as Node)) {
       isDragging = false;
     }
   }

@@ -3,6 +3,11 @@ export { default as Badge } from './Badge.svelte';
 export type { SvelteComponent as _BadgeComponent } from 'svelte';
 export { default as Banner } from './Banner.svelte';
 export { default as SectionBanner } from './SectionBanner.svelte';
+
+// Home banner components
+export { default as PromotedListingsBanner } from './components/home/PromotedListingsBanner.svelte';
+export { default as FeaturedSellersBanner } from './components/home/FeaturedSellersBanner.svelte';
+export { default as NewestListingsBanner } from './components/home/NewestListingsBanner.svelte';
 export { default as Button } from './Button.svelte';
 export { default as Input } from './Input.svelte';
 export { default as Card } from './Card.svelte';

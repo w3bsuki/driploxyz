@@ -1,0 +1,9 @@
+Block N Type Check Results (2025-09-17)
+
+> @repo/ui@0.0.0 check K:\driplo-turbo-1\packages\ui
+> svelte-check --tsconfig ./tsconfig.json
+
+Loading svelte-check in workspace: k:\driplo-turbo-1\packages\ui
+Getting Svelte diagnostics...
+
+svelte-check found 275 errors and 69 warnings in 57 files

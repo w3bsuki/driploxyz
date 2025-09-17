@@ -1,0 +1,26 @@
+# Block A Fresh Diagnostics
+Date: 2025-09-17
+Branch: targeted-type-cleanup
+
+## Current Status
+**Errors:** 320 TypeScript errors
+**Warnings:** 75 warnings  
+**Files flagged:** 63 files
+
+## Top Priority DOM/A11y Issues Identified
+
+### 1. Tooltip.svelte (Line 133)
+Error: Object literal may only specify known properties, and 'closeOnEscape' does not exist in type 'CreateTooltipProps'. (ts)
+**Issue:** closeOnEscape property not recognized in tooltip library
+
+### 2. SellerProfileCard.svelte (Line 84)  
+Error: Property 'badge_admin' does not exist on type 'typeof import(i18n)'. (ts)
+**Issue:** Missing badge_admin translation key in i18n bundle
+
+### 3. AdminModal.svelte (Line 99)
+Warn: Non-interactive element div should not be assigned mouse or keyboard event listeners
+**Issue:** A11y warning persists despite adding tabindex=-1
+
+### 4. SellerQuickView.svelte (Line 127)
+Warn: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler  
+**Issue:** Backdrop div needs keyboard handler or should be a button

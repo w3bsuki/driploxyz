@@ -1,36 +1,12 @@
 <script lang="ts">
   import * as i18n from '@repo/i18n';
-  const m: any = i18n;
   import Badge from './Badge.svelte';
   import FavoriteButton from './FavoriteButton.svelte';
   import ConditionBadge from './ConditionBadge.svelte';
   import { DescriptionList, DescriptionTerm, DescriptionDetails } from './index';
+  import type { ProductInfoProps, ProductAttribute, TabConfiguration } from './types/panels';
 
-  interface Props {
-    title: string;
-    brand?: string;
-    size?: string;
-    color?: string;
-    material?: string;
-    condition?: string;
-    description?: string;
-    favoriteCount: number;
-    isFavorited: boolean;
-    onFavorite?: () => void;
-    showQuickFacts?: boolean;
-    category?: string;
-    productId: string;
-    seller?: {
-      id: string;
-      username: string;
-      avatar?: string | null;
-      joinedAt?: string;
-      verified?: boolean;
-    };
-    showSellerRow?: boolean;
-  }
-
-  let { 
+  let {
     title,
     brand,
     size,
@@ -46,7 +22,7 @@
     productId,
     seller,
     showSellerRow = false
-  }: Props = $props();
+  }: ProductInfoProps = $props();
 
   // State management
   let activeTab = $state('shipping');
@@ -54,21 +30,37 @@
   let showFacts = $state(true);
 
   // Computed properties
-  const attributes = $derived(() => [
-    condition && { key: 'condition', label: 'Condition', value: condition, type: 'badge' },
-    brand && { key: 'brand', label: 'Brand', value: brand, type: 'badge' },
-    size && { key: 'size', label: 'Size', value: size, type: 'text' },
-    color && { key: 'color', label: 'Color', value: color, type: 'text' },
-    material && { key: 'material', label: 'Material', value: material, type: 'text' },
-    category && { key: 'category', label: 'Category', value: category, type: 'text' }
-  ].filter(Boolean));
+  const attributes = $derived.by(() => {
+    const list: ProductAttribute[] = [];
+
+    if (condition) {
+      list.push({ key: 'condition', label: 'Condition', value: condition, type: 'badge' });
+    }
+    if (brand) {
+      list.push({ key: 'brand', label: 'Brand', value: brand, type: 'badge' });
+    }
+    if (size) {
+      list.push({ key: 'size', label: 'Size', value: size, type: 'text' });
+    }
+    if (color) {
+      list.push({ key: 'color', label: 'Color', value: color, type: 'text' });
+    }
+    if (material) {
+      list.push({ key: 'material', label: 'Material', value: material, type: 'text' });
+    }
+    if (category) {
+      list.push({ key: 'category', label: 'Category', value: category, type: 'text' });
+    }
+
+    return list;
+  });
 
   const hasDescription = $derived(description && description.trim().length > 0);
   const hasAttributes = $derived(showQuickFacts && attributes.length > 0);
-  const showSizeGuideButton = $derived(() => {
-    return !!(category && ['clothing', 'shoes', 'accessories'].some(cat => 
-      category.toLowerCase().includes(cat)
-    ) && size);
+  const showSizeGuideButton = $derived.by(() => {
+    if (!category || !size) return false;
+    const normalized = category.toLowerCase();
+    return ['clothing', 'shoes', 'accessories'].some(cat => normalized.includes(cat));
   });
 
   // Seller info
@@ -76,14 +68,15 @@
   const sellerDisplayName = $derived(seller?.username ? `@${seller.username}` : null);
 
   // Tab configuration (move description out of tabs into its own container)
-  const tabs = $derived(() => [
-    { 
-      id: 'shipping', 
-      label: 'Shipping', 
-      count: 3,
-      show: true 
-    }
-  ].filter(tab => tab.show));
+  const tabs = $derived.by(() => {
+    const base: TabConfiguration[] = [
+      { id: 'shipping', label: 'Shipping', count: 3, show: true },
+      { id: 'details', label: 'Details', count: attributes.length, show: hasAttributes },
+      { id: 'returns', label: 'Returns', count: 1, show: true }
+    ];
+
+    return base.filter(tab => tab.show);
+  });
 
   function handleSizeGuide() {
     showSizeGuide = true;
@@ -104,7 +97,7 @@
     {#if condition || brand || size}
       <div class="meta-inline" aria-label="Quick facts">
         {#if condition}
-          <ConditionBadge condition={condition as any} />
+          <ConditionBadge condition={condition} />
         {/if}
         {#if brand}
           <span class="meta-sep">•</span>
@@ -143,7 +136,7 @@
           <DescriptionTerm>{attr.label}</DescriptionTerm>
           <DescriptionDetails>
             {#if attr.key === 'condition'}
-              <ConditionBadge condition={attr.value as any} />
+              <ConditionBadge condition={attr.value} />
             {:else}
               {attr.value}
             {/if}

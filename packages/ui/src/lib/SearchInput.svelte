@@ -88,7 +88,7 @@ function handleProductSelect(product: ProductWithImages) {
 </script>
 
 <div class="relative w-full {className}">
-  <form onsubmit={handleSubmit} class="bg-[color:var(--surface-emphasis)] rounded-lg flex items-center relative shadow-none border border-[color:var(--border-subtle)] hover:bg-[color:var(--surface-muted)] focus-within:bg-[color:var(--surface-muted)] transition-colors">
+  <form onsubmit={handleSubmit} class="bg-[color:var(--surface-emphasis)] rounded-[var(--input-radius)] flex items-center relative shadow-none border border-[color:var(--border-subtle)] hover:bg-[color:var(--surface-muted)] focus-within:bg-[color:var(--surface-muted)] transition-colors">
     {#if leftSection}
       {@render leftSection()}
     {/if}

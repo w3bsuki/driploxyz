@@ -67,6 +67,7 @@
   "product_size": "Size",
   "product_condition": "Condition",
   "product_brand": "Brand",
+  "product_category": "Category",
   "product_description": "Description",
   "product_seller": "Seller",
   "product_reviews": "Reviews",
@@ -1471,6 +1472,8 @@
   "filter_modal_applied": "Applied",
   "filter_modal_filter": "filter",
   "filter_modal_filters": "filters",
+  "filter_clearAll": "Clear All",
+  "filter_allCategories": "All Categories",
   
   "filter_pills_ariaPressed": "filter applied",
   "filter_pills_ariaLabel": "{label} filter applied",

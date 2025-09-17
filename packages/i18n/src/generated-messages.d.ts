@@ -224,3 +224,48 @@ export declare function error_failedToCreateProduct(): string;
 
 // Other message functions that may be used
 export declare function hello(): string;
+
+// Category dropdown accessibility helpers
+export declare function category_dropdown_allCategories(): string;
+export declare function category_dropdown_categories(): string;
+export declare function category_dropdown_backToCategories(): string;
+export declare function category_dropdown_selectedCategory(inputs: { name: string }): string;
+export declare function category_dropdown_allCategoriesSelected(): string;
+export declare function category_dropdown_selectedSubcategory(inputs: { name: string }): string;
+export declare function category_dropdown_allSubcategorySelected(inputs: { category: string }): string;
+export declare function category_dropdown_selectedSpecific(inputs: { name: string }): string;
+export declare function category_dropdown_allSpecificSelected(inputs: { subcategory: string }): string;
+export declare function category_dropdown_allFiltersCleared(): string;
+export declare function category_dropdown_ariaLabel(inputs: { selectedText: string }): string;
+export declare function category_dropdown_listboxAriaLabel(): string;
+
+// Filter modal helpers
+export declare function filter_modal_title(): string;
+export declare function filter_modal_applyFilters(): string;
+export declare function filter_modal_clearAll(): string;
+export declare function filter_modal_close(): string;
+export declare function filter_modal_minPrice(): string;
+export declare function filter_modal_maxPrice(): string;
+export declare function filter_modal_modalDescription(): string;
+export declare function filter_modal_applied(): string;
+export declare function filter_modal_filter(): string;
+export declare function filter_modal_filters(): string;
+
+// Filter UI helpers
+export declare function filter_ui_applied(): string;
+export declare function filter_ui_removed(): string;
+export declare function filter_ui_allFiltersCleared(): string;
+export declare function filter_ui_filterOptionsAriaLabel(): string;
+export declare function filter_ui_keyboardNavHelp(): string;
+// Search collection helpers
+export declare function collections_under25(): string;
+export declare function collections_designerPremium(): string;
+export declare function collections_newWithTags(): string;
+export declare function collections_likeNew(): string;
+
+// Additional filter helpers
+export declare function filter_clearAll(): string;
+export declare function filter_allCategories(): string;
+
+// Product metadata helpers
+export declare function product_category(): string;

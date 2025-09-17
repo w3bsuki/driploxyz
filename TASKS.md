@@ -4,11 +4,13 @@
 
 ## 🔥 High Priority (This Week)
 
-- [ ] **TypeScript Error Hunt**: Drive from 71 errors → 0 errors
-  - [ ] Fix import paths (`@repo/ui` vs relative imports)
-  - [ ] Replace `any` types with proper type guards
-  - [ ] Add proper Svelte 5 component prop types
-  - [ ] Fix server vs client import violations
+- [ ] **TypeScript Error Hunt**: Drive from 318 errors → <150 errors (Block I-L)
+  - [x] Fixed modal/backdrop accessibility warnings (Block E)
+  - [x] Migrated legacy aliases (is_promoted → is_featured) (Block F)
+  - [x] Converted slots to Svelte 5 snippets (Block G)
+  - [ ] Fix DynamicContentErrorBoundary Sentry typing (Block I)
+  - [ ] Resolve badge array typing issues (Block J)
+  - [ ] Fix shipping estimator iterables (Block K)
 
 - [ ] **Svelte 5 Migration Audit**: Remove all legacy syntax
   - [ ] Replace `export let` → `$props()`

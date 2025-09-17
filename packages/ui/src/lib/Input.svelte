@@ -12,7 +12,7 @@
     class?: string;
     id?: string;
     name?: string;
-    autocomplete?: string;
+    autocomplete?: HTMLInputElement['autocomplete'];
     inputmode?: 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url';
     oninput?: (event: Event) => void;
     onchange?: (event: Event) => void;

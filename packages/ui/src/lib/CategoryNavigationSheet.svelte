@@ -104,7 +104,7 @@
 
       <!-- Sheet content from left -->
       <div
-        class="relative flex w-80 max-w-[80vw] flex-col bg-background shadow-xl"
+        class="relative flex w-80 max-w-[80vw] flex-col bg-[color:var(--surface-base)] shadow-xl"
         style="padding-top: env(safe-area-inset-top);"
       >
         <!-- Header -->

@@ -14,6 +14,8 @@
     activeTab?: 'sellers' | 'brands';
     onToggle?: (tab: 'sellers' | 'brands') => void;
     class?: string;
+    separator?: boolean;
+    colorTheme?: 'subtle' | 'accent' | 'gradient' | 'charcoal' | 'navy' | 'graphite';
   }
 
   let {
@@ -30,11 +32,37 @@
     showToggle = false,
     activeTab = 'sellers',
     onToggle,
-    class: className = ''
+    class: className = '',
+    separator = false,
+    colorTheme = 'charcoal'
   }: Props = $props();
 
   const variantClass = $derived(`section-banner-${variant}`);
   const densityClass = $derived(density === 'compact' ? 'section-banner-compact' : '');
+
+  // Clean separator styling with proper color themes
+  const separatorClasses = $derived(() => {
+    if (!separator) return '';
+
+    const baseClasses = 'py-3 sm:py-4 mx-2 sm:mx-4 lg:mx-6 px-4 sm:px-6 rounded-[var(--radius-sm)] mb-3 sm:mb-4';
+
+    switch (colorTheme) {
+      case 'charcoal':
+        return `${baseClasses} bg-gray-900 text-white`;
+      case 'navy':
+        return `${baseClasses} bg-blue-900 text-white`;
+      case 'graphite':
+        return `${baseClasses} bg-slate-800 text-white`;
+      case 'accent':
+        return `${baseClasses} bg-blue-50 text-blue-900`;
+      case 'gradient':
+        return `${baseClasses} bg-gradient-to-r from-gray-100 to-gray-200 text-gray-900`;
+      case 'subtle':
+      default:
+        return `${baseClasses} bg-gray-100 text-gray-900`;
+    }
+  });
+
   const iconForVariant = $derived(() => {
     switch (variant) {
       case 'newest':
@@ -57,7 +85,7 @@
   });
 </script>
 
-<div class="section-banner {variantClass} {densityClass} {className}">
+<div class="section-banner {variantClass} {densityClass} {separatorClasses} {className}">
   <div class="section-banner-content">
     <!-- Left side: Icon, Title, Subtitle -->
     <div class="section-banner-info">

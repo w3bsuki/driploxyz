@@ -2,33 +2,9 @@
   import { createToggleGroup } from '@melt-ui/svelte';
   import type { Snippet } from 'svelte';
   import { tick } from 'svelte';
-  import { filter_ui_applied, filter_ui_removed, filter_modal_filter, filter_ui_filterOptionsAriaLabel, filter_ui_keyboardNavHelp } from '@repo/i18n';
-
-  interface FilterOption {
-    value: string;
-    label: string;
-    icon?: string;
-    shortLabel?: string;
-    color?: string;
-    bgGradient?: string;
-  }
-
-  interface Props {
-    value?: string | null;
-    options: FilterOption[];
-    multiple?: boolean;
-    disabled?: boolean;
-    label?: string;
-    class?: string;
-    pillClass?: string;
-    activePillClass?: string;
-    onValueChange?: (value: string | null) => void;
-    children?: Snippet<[FilterOption]>;
-    /** Announce changes to screen readers */
-    announceChanges?: boolean;
-    /** Custom announcement text template */
-    announcementTemplate?: (option: FilterOption, isActive: boolean) => string;
-  }
+  import { filter_ui_applied, filter_ui_removed, filter_modal_filter } from '@repo/i18n';
+  import { filter_ui_filterOptionsAriaLabel, filter_ui_keyboardNavHelp } from '@repo/i18n';
+  import type { FilterPillGroupProps, FilterOption } from '@repo/ui/types';
 
   let {
     value = $bindable(null),
@@ -43,7 +19,7 @@
     children,
     announceChanges = true,
     announcementTemplate
-  }: Props = $props();
+  }: FilterPillGroupProps = $props();
 
   // Track current focused index for keyboard navigation
   let focusedIndex = $state(-1);
@@ -61,8 +37,7 @@
     onValueChange: ({ next }) => {
       const newValue = next || null;
       const changedOption = options.find(opt => opt.value === newValue);
-      
-      value = newValue;
+
       onValueChange?.(newValue);
       
       // Announce changes to screen readers
@@ -129,7 +104,7 @@
           event.preventDefault();
           const option = options[currentIndex];
           const newValue = $isPressed(option.value) ? null : option.value;
-          value = newValue;
+          toggleValue.set(newValue);
           onValueChange?.(newValue);
           
           // Announce the change

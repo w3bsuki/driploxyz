@@ -6,7 +6,7 @@ Complete project setup for new developers.
 
 1. **Check Node version**:
    ```bash
-   node --version  # Should be 20.19.x or 22.12+
+   node --version  # Should be 22.12.x (preferred) or 20.19.x
    nvm use         # Use .nvmrc version
    ```
 
@@ -45,7 +45,7 @@ Complete project setup for new developers.
 
 ## Common Issues
 
-- **Node version mismatch**: Use `nvm use` or install Node 20.19.0
+- **Node version mismatch**: Use `nvm use` or install Node 22.12.0
 - **pnpm not found**: `npm install -g pnpm`
 - **Port 5173 busy**: Change port in `vite.config.ts`
 - **TypeScript errors**: Check `TECHNICAL.md` for patterns

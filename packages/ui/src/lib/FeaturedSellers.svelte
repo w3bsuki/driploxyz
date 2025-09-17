@@ -1,7 +1,7 @@
 <script lang="ts">
   import SellerProfileCard from './SellerProfileCard.svelte';
   import SellerQuickView from './SellerQuickView.svelte';
-  import SectionBanner from './SectionBanner.svelte';
+  import FeaturedSellersBanner from './components/home/FeaturedSellersBanner.svelte';
   import * as i18n from '@repo/i18n';
   import type { Seller } from './types/index';
   import type { Product } from './types/product';
@@ -93,27 +93,23 @@
   );
 </script>
 
-<!-- Standardized section with consistent spacing pattern (tokens) -->
-<section class="px-2 sm:px-4 lg:px-6 pb-0 {className}">
+<!-- Enhanced section with separator banner -->
+<section class="pb-3 sm:pb-4 {className}">
   <!-- Section Banner -->
-  <SectionBanner
-    {title}
-    subtitle={description || (displaySellers.length > 0 ? `${displaySellers.length} seller${displaySellers.length === 1 ? '' : 's'} • updated recently` : undefined)}
-    variant="sellers"
-    density="compact"
+  <FeaturedSellersBanner
+    heading={title}
+    copy={description || (displaySellers.length > 0 ? `${displaySellers.length} seller${displaySellers.length === 1 ? '' : 's'} • updated recently` : undefined)}
     itemCount={displaySellers.length > 0 ? displaySellers.length : undefined}
     {showToggle}
     {activeTab}
     {onToggle}
-    showViewAll={!!onViewAll}
-    onViewAll={onViewAll}
-    class="mb-[var(--gutter-sm)]"
+    cta={onViewAll ? { label: 'View All', action: onViewAll } : undefined}
   />
 
   <!-- Sellers -->
   {#if loading}
     <!-- Ultrathink: Standardized spacing in loading state -->
-    <div class="flex gap-2 sm:gap-3 overflow-x-hidden">
+    <div class="px-2 sm:px-4 lg:px-6 flex gap-2 sm:gap-3 overflow-x-hidden">
       {#each Array(3) as _}
         <div class="bg-white border border-gray-200 rounded-xl p-4 animate-pulse flex-shrink-0" style="width: calc(50vw - 8px);">
           <div class="flex flex-col items-center">
@@ -133,12 +129,13 @@
     </div>
   {:else if displaySellers.length === 0}
     <!-- Ultrathink: Standardized spacing in empty state -->
-    <div class="text-center py-8">
+    <div class="px-2 sm:px-4 lg:px-6 text-center py-8">
       <p class="text-gray-500">No sellers available</p>
     </div>
   {:else}
     <!-- Ultrathink: Standardized spacing in sellers container -->
-    <div bind:this={scrollContainer} class="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide" onscroll={updateScrollButtons}>
+    <div class="px-2 sm:px-4 lg:px-6">
+      <div bind:this={scrollContainer} class="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide" onscroll={updateScrollButtons}>
       {#each displaySellers as seller}
         <div class="flex-shrink-0 snap-start w-1/2 sm:w-1/3 lg:w-1/4 xl:w-1/5" data-seller-card>
           <SellerProfileCard
@@ -149,6 +146,7 @@
           />
         </div>
       {/each}
+      </div>
     </div>
   {/if}
 </section>

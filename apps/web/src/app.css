@@ -113,6 +113,19 @@
   --color-warning: var(--status-warning-solid);
   --color-info: var(--status-info-solid);
   --color-accent-orange: var(--orange-500);
+
+  /* Professional separator banner colors using OKLCH */
+  --color-banner-charcoal: oklch(0.15 0.015 270);
+  --color-banner-charcoal-border: oklch(0.25 0.02 270);
+  --color-banner-charcoal-text: oklch(0.95 0.005 270);
+
+  --color-banner-navy: oklch(0.25 0.04 240);
+  --color-banner-navy-border: oklch(0.35 0.06 240);
+  --color-banner-navy-text: oklch(0.95 0.005 270);
+
+  --color-banner-graphite: oklch(0.18 0.02 270);
+  --color-banner-graphite-border: oklch(0.28 0.025 270);
+  --color-banner-graphite-text: oklch(0.95 0.005 60);
 }
 
 /* Theme is now attribute-based via data-theme on <html>. */

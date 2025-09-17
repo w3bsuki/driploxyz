@@ -109,6 +109,9 @@ export * from './product';
 // Search Types
 export * from './search';
 
+// Filter Types
+export * from './filters';
+
 // Global type declarations
 declare global {
   interface Window {

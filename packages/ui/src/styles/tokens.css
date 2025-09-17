@@ -323,7 +323,7 @@
   --btn-padding-sm: var(--space-3);
   --btn-padding-md: var(--space-4);
   --btn-padding-lg: var(--space-6);
-  --btn-radius: var(--radius-md);
+  --btn-radius: var(--radius-sm);
   --btn-font-sm: var(--text-xs);
   --btn-font-md: var(--text-sm);
   --btn-font-lg: var(--text-base);
@@ -332,7 +332,7 @@
   --input-height: var(--touch-primary);
   --input-padding: var(--space-3);
   --input-border: var(--border-default);
-  --input-radius: var(--radius-md);
+  --input-radius: var(--radius-sm);
   --input-font: var(--text-base);
   --input-bg: var(--surface-base);
   --input-focus-border: var(--state-focus);
@@ -342,7 +342,7 @@
   --card-padding-sm: var(--space-3);
   --card-padding-md: var(--space-4);
   --card-padding-lg: var(--space-6);
-  --card-radius: var(--radius-lg);
+  --card-radius: var(--radius-sm);
   --card-shadow: var(--shadow-sm);
   --card-border: var(--border-subtle);
   --card-bg: var(--surface-base);

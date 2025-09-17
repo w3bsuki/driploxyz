@@ -3,6 +3,7 @@
   import type { Snippet } from 'svelte';
   import { tick } from 'svelte';
   import * as i18n from '@repo/i18n';
+  import type { CategoryFilterDropdownProps, CategoryOption, CategoryHierarchy } from '@repo/ui/types';
   
   // Enhanced category translation with fallback system
   function translateCategoryName(categoryName: string | undefined | null, categoryId?: string): string {
@@ -36,35 +37,6 @@
       .trim();
   }
 
-  interface CategoryOption {
-    key: string;
-    name: string;
-    icon: string;
-    id: string;
-    hasChildren?: boolean;
-  }
-
-  interface CategoryHierarchy {
-    categories: CategoryOption[];
-    subcategories: Record<string, CategoryOption[]>;
-    specifics: Record<string, CategoryOption[]>;
-  }
-
-  interface Props {
-    categoryHierarchy: CategoryHierarchy;
-    selectedCategory?: string | null;
-    selectedSubcategory?: string | null;
-    selectedSpecific?: string | null;
-    placeholder?: string;
-    disabled?: boolean;
-    class?: string;
-    onCategorySelect?: (category: string | null, subcategory: string | null, specific: string | null) => void;
-    trigger?: Snippet<[{ selectedText: string; isOpen: boolean }]>;
-    categoryItem?: Snippet<[CategoryOption, { level: number; isSelected: boolean }]>;
-    /** Announce category changes to screen readers */
-    announceChanges?: boolean;
-  }
-
   let {
     categoryHierarchy,
     selectedCategory = $bindable(null),
@@ -77,7 +49,7 @@
     trigger,
     categoryItem,
     announceChanges = true
-  }: Props = $props();
+  }: CategoryFilterDropdownProps = $props();
 
   // Navigation state
   let currentLevel = $state(1); // 1=gender, 2=type, 3=specific

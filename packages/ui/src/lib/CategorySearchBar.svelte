@@ -1,127 +1,69 @@
 <script lang="ts">
-import type { Database } from '@repo/database';
 import SearchInput from './SearchInput.svelte';
 import MegaMenuCategories from './MegaMenuCategories.svelte';
 import CategoryPill from './CategoryPill.svelte';
 import AppliedFilterPills from './AppliedFilterPills.svelte';
+import { buildCategoryBreadcrumbs, type CategoryBreadcrumbItem } from './search/utils';
+import type {
+  CategoryWithChildren,
+  SearchMainCategory,
+  CategorySearchBarProps,
+  SearchAppliedFilters
+} from './search/types';
+import type { FilterOption, FilterValue } from '@repo/ui/types';
 
-type Category = Database['public']['Tables']['categories']['Row'];
-
-interface CategoryWithChildren extends Category {
-  children?: CategoryWithChildren[];
-}
-
-interface FilterPillData {
-  key: string;
-  label: string;
-  shortLabel: string;
-}
-
-interface MainCategory {
-  key: string;
-  label: string;
-  icon: string;
-}
-
-  interface Props {
-    searchValue?: string;
-    megaMenuData?: CategoryWithChildren[];
-    mainCategories?: MainCategory[];
-    conditionFilters?: FilterPillData[];
-    appliedFilters?: Record<string, any>;
-    currentCategory?: string | null;
-    i18n: any;
-    onSearch: (query: string) => void;
-    onQuickSearch?: (query: string) => Promise<{ data: any[]; error: string | null }>;
-    onCategorySelect: (categorySlug: string, level: number, path: string[]) => void;
-    onFilterChange: (key: string, value: any) => void;
-    onFilterRemove: (key: string) => void;
-    onClearAllFilters: () => void;
-    enableQuickResults?: boolean;
-  }
-
-  let {
-    searchValue = $bindable(''),
-    megaMenuData = [],
-    mainCategories = [],
-    conditionFilters = [],
-    appliedFilters = {},
-    currentCategory = null,
-    i18n,
-    onSearch,
-    onQuickSearch,
-    onCategorySelect,
-    onFilterChange,
-    onFilterRemove,
-    onClearAllFilters,
-    enableQuickResults = true
-  }: Props = $props();
+let {
+  searchValue = $bindable(''),
+  megaMenuData = [] as CategoryWithChildren[],
+  mainCategories = [] as SearchMainCategory[],
+  conditionFilters = [] as FilterOption[],
+  appliedFilters = {} as SearchAppliedFilters,
+  currentCategory = null,
+  i18n,
+  onSearch,
+  onQuickSearch,
+  onCategorySelect,
+  onFilterChange,
+  onFilterRemove,
+  onClearAllFilters,
+  enableQuickResults = true
+}: CategorySearchBarProps = $props();
 
 // Component state using Svelte 5 runes
 let showCategoryDropdown = $state(false);
-  let isNavigating = $state(false);
-  let selectedPillIndex = $state(-1);
+let isNavigating = $state(false);
+let selectedPillIndex = $state(-1);
+
+function i18nText(value: unknown, fallback: string): string {
+  return typeof value === 'function' ? (value as () => string)() : fallback;
+}
+
+function setFilter(key: string, value: FilterValue) {
+  onFilterChange(key, value);
+}
+
+const categoryBreadcrumbs = $derived.by<CategoryBreadcrumbItem[]>(() =>
+  buildCategoryBreadcrumbs(appliedFilters, megaMenuData, mainCategories)
+);
 
 // Enhanced category display logic
 const currentCategoryDisplay = $derived(() => {
-  // If we have a specific category path, show it
-  if (appliedFilters?.specific) {
-    // Find the specific item in the hierarchy to get proper display name
-    for (const l1Cat of megaMenuData) {
-      for (const l2Cat of l1Cat.children || []) {
-        for (const l3Cat of l2Cat.children || []) {
-          if (l3Cat.slug === appliedFilters.specific) {
-            return {
-              label: `${l1Cat.name} → ${l2Cat.name} → ${l3Cat.name}`,
-              icon: getCategoryIcon(l1Cat.name),
-              breadcrumb: [l1Cat.name, l2Cat.name, l3Cat.name]
-            };
-          }
-        }
-      }
-    }
-  }
+  if (categoryBreadcrumbs.length > 0) {
+    const breadcrumbLabels = categoryBreadcrumbs.map(crumb => crumb.label);
+    const mainCategory = mainCategories.find(cat => cat.key === appliedFilters?.category);
+    const iconSource = mainCategory?.icon ?? getCategoryIcon(breadcrumbLabels[0] ?? '');
 
-  // If we have a subcategory, show the path
-  if (appliedFilters?.subcategory) {
-    for (const l1Cat of megaMenuData) {
-      for (const l2Cat of l1Cat.children || []) {
-        if (l2Cat.slug === appliedFilters.subcategory) {
-          return {
-            label: `${l1Cat.name} → ${l2Cat.name}`,
-            icon: getCategoryIcon(l1Cat.name),
-            breadcrumb: [l1Cat.name, l2Cat.name]
-          };
-        }
-      }
-    }
-  }
-
-  // If we have a main category, show it
-  if (appliedFilters?.category) {
-    const mainCat = mainCategories.find(c => c.key === appliedFilters.category);
-    if (mainCat) {
-      return {
-        label: mainCat.label,
-        icon: mainCat.icon,
-        breadcrumb: [mainCat.label]
-      };
-    }
-    // Fallback to megaMenuData
-    const megaCat = megaMenuData.find(c => c.slug === appliedFilters.category);
-    if (megaCat) {
-      return {
-        label: megaCat.name,
-        icon: getCategoryIcon(megaCat.name),
-        breadcrumb: [megaCat.name]
-      };
-    }
+    return {
+      label: breadcrumbLabels.join(' → '),
+      icon: iconSource,
+      breadcrumb: breadcrumbLabels
+    };
   }
 
   return {
-    label: i18n.filter_allCategories ? i18n.filter_allCategories() : 'All Categories',
+    label: i18nText(i18n.filter_allCategories, 'All Categories'),
     icon: '📂',
-    breadcrumb: []
+    breadcrumb: [] as string[]
   };
 });
 
@@ -167,6 +109,34 @@ function handleMegaMenuCategorySelect(categorySlug: string, level: number, path:
   }, 300);
 }
 
+// Roving tabindex for horizontal pill nav
+function handlePillKeyNav(e: KeyboardEvent, index: number) {
+  const pills = document.querySelectorAll('#category-pills button');
+  const totalPills = (mainCategories?.length || 0) + (conditionFilters?.length || 0);
+  switch (e.key) {
+    case 'ArrowRight':
+      e.preventDefault();
+      selectedPillIndex = Math.min(index + 1, totalPills - 1);
+      (pills[selectedPillIndex] as HTMLElement)?.focus();
+      break;
+    case 'ArrowLeft':
+      e.preventDefault();
+      selectedPillIndex = Math.max(index - 1, 0);
+      (pills[selectedPillIndex] as HTMLElement)?.focus();
+      break;
+    case 'Home':
+      e.preventDefault();
+      selectedPillIndex = 0;
+      (pills[0] as HTMLElement)?.focus();
+      break;
+    case 'End':
+      e.preventDefault();
+      selectedPillIndex = totalPills - 1;
+      (pills[totalPills - 1] as HTMLElement)?.focus();
+      break;
+  }
+}
+
 // Handle filter pills
 function handleCategoryPillClick(categoryKey: string) {
   const currentCategory = appliedFilters?.category;
@@ -179,41 +149,14 @@ function handleCategoryPillClick(categoryKey: string) {
   }
 }
 
-  function handleConditionPillClick(conditionKey: string) {
+function handleConditionPillClick(conditionKey: string) {
   const currentCondition = appliedFilters?.condition;
   if (currentCondition === conditionKey) {
     onFilterRemove('condition');
   } else {
-    onFilterChange('condition', conditionKey);
+    setFilter('condition', conditionKey);
   }
 
-  // Roving tabindex for horizontal pill nav
-  function handlePillKeyNav(e: KeyboardEvent, index: number) {
-    const pills = document.querySelectorAll('#category-pills button');
-    const totalPills = (mainCategories?.length || 0) + (conditionFilters?.length || 0);
-    switch (e.key) {
-      case 'ArrowRight':
-        e.preventDefault();
-        selectedPillIndex = Math.min(index + 1, totalPills - 1);
-        (pills[selectedPillIndex] as HTMLElement)?.focus();
-        break;
-      case 'ArrowLeft':
-        e.preventDefault();
-        selectedPillIndex = Math.max(index - 1, 0);
-        (pills[selectedPillIndex] as HTMLElement)?.focus();
-        break;
-      case 'Home':
-        e.preventDefault();
-        selectedPillIndex = 0;
-        (pills[0] as HTMLElement)?.focus();
-        break;
-      case 'End':
-        e.preventDefault();
-        selectedPillIndex = totalPills - 1;
-        (pills[totalPills - 1] as HTMLElement)?.focus();
-        break;
-    }
-  }
 }
 
 // Handle click outside for category dropdown
@@ -234,7 +177,7 @@ $effect(() => {
 });
 
 // Active filter count for display
-const activeFilterCount = $derived(() => {
+const activeFilterCount = $derived.by(() => {
   if (!appliedFilters) return 0;
 
   return [
@@ -261,7 +204,6 @@ const activeFilterCount = $derived(() => {
         onSearch={onSearch}
         searchId="category-search-input"
         showDropdown={enableQuickResults}
-        searchFunction={onQuickSearch}
         maxResults={6}
       >
         {#snippet leftSection()}
@@ -275,18 +217,18 @@ const activeFilterCount = $derived(() => {
             aria-label="Select category"
             disabled={isNavigating}
           >
-            <span class="text-lg flex-shrink-0" role="img" aria-hidden="true">{currentCategoryDisplay.icon}</span>
+            <span class="text-lg flex-shrink-0" role="img" aria-hidden="true">{currentCategoryDisplay().icon}</span>
             <div class="flex flex-col items-start min-w-0 hidden sm:flex">
-              {#if currentCategoryDisplay.breadcrumb && currentCategoryDisplay.breadcrumb.length > 1}
+              {#if currentCategoryDisplay().breadcrumb && currentCategoryDisplay().breadcrumb.length > 1}
                 <span class="text-xs text-[color:var(--text-tertiary)] truncate max-w-32">
-                  {currentCategoryDisplay.breadcrumb.slice(0, -1).join(' → ')}
+                  {currentCategoryDisplay().breadcrumb.slice(0, -1).join(' → ')}
                 </span>
                 <span class="text-sm font-medium text-[color:var(--text-primary)] truncate max-w-32">
-                  {currentCategoryDisplay.breadcrumb[currentCategoryDisplay.breadcrumb.length - 1]}
+                  {currentCategoryDisplay().breadcrumb[currentCategoryDisplay().breadcrumb.length - 1]}
                 </span>
               {:else}
                 <span class="text-sm font-medium text-[color:var(--text-secondary)] truncate max-w-32">
-                  {currentCategoryDisplay.label}
+                  {currentCategoryDisplay().label}
                 </span>
               {/if}
             </div>
@@ -305,8 +247,6 @@ const activeFilterCount = $derived(() => {
             onClose={handleCategoryDropdownClose}
             categories={megaMenuData}
             translations={{
-              allCategories: i18n.filter_allCategories ? i18n.filter_allCategories() : 'All Categories',
-              browseAll: i18n.search_all ? i18n.search_all() : 'Browse All',
               back: i18n.common_back ? i18n.common_back() : 'Back',
               items: i18n.search_items ? i18n.search_items() : 'items',
               women: i18n.category_women ? i18n.category_women() : 'Women',
@@ -326,7 +266,7 @@ const activeFilterCount = $derived(() => {
     <!-- Enhanced Quick Filter Pills -->
     <nav id="category-pills" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-[var(--gutter-xxs)] pt-[var(--gutter-xxs)]" aria-label="Quick filters">
       <!-- Main Category Pills -->
-      {#each mainCategories as category}
+      {#each mainCategories as category, index}
         <CategoryPill
           variant={appliedFilters?.category === category.key ? 'primary' : 'outline'}
           label={category.label}
@@ -342,14 +282,14 @@ const activeFilterCount = $derived(() => {
       {#each conditionFilters as condition, cIdx}
         <button
           type="button"
-          onclick={() => handleConditionPillClick(condition.key)}
+          onclick={() => handleConditionPillClick((condition.key ?? condition.value))}
           disabled={isNavigating}
             class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-11 disabled:opacity-50 disabled:cursor-not-allowed
-              {appliedFilters?.condition === condition.key
+              {appliedFilters?.condition === (condition.key ?? condition.value)
                 ? 'bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] border border-[color:var(--brand-primary)]'
                 : 'bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)] border border-[color:var(--border-default)] hover:border-[color:var(--border-emphasis)] hover:bg-[color:var(--surface-base)]'}"
           aria-label={`Filter by ${condition.label}`}
-          aria-pressed={appliedFilters?.condition === condition.key}
+          aria-pressed={appliedFilters?.condition === (condition.key ?? condition.value)}
           onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, (mainCategories?.length || 0) + cIdx)}
         >
           {condition.shortLabel}
@@ -358,7 +298,7 @@ const activeFilterCount = $derived(() => {
     </nav>
 
     <!-- Applied Filters with Enhanced Category Display -->
-    {#if activeFilterCount > 0}
+    {#if activeFilterCount() > 0}
       <div class="pb-2">
         <AppliedFilterPills
           filters={appliedFilters || {}}
@@ -403,3 +343,4 @@ const activeFilterCount = $derived(() => {
     }
   }
 </style>
+

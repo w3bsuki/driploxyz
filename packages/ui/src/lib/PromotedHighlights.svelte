@@ -357,7 +357,7 @@
                       
                       <!-- Seller Info -->
                       <h3 class="font-semibold text-[color:var(--text-primary)] text-sm mb-1.5 line-clamp-1">
-                        {seller.display_name || seller.username}
+                        {seller.displayName || seller.username}
                       </h3>
 
                       <div class="flex items-center gap-2 text-xs text-[color:var(--text-secondary)] mb-1.5">

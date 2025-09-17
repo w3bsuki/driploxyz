@@ -7,63 +7,7 @@
   import { isBrowser } from './utils/runtime.js';
   import { portal } from './actions/portal';
   import * as i18n from '@repo/i18n';
-  import type { Database } from '@repo/database';
-
-  type Category = Database['public']['Tables']['categories']['Row'];
-
-  interface CategoryWithChildren extends Category {
-    children?: CategoryWithChildren[];
-    product_count?: number;
-  }
-
-  interface Props {
-    id?: string;
-    isOpen: boolean;
-    isLoggedIn: boolean;
-    user?: any;
-    profile?: any;
-    userDisplayName?: string;
-    initials?: string;
-    canSell?: boolean;
-    currentLanguage: string;
-    languages: any[];
-    categories?: CategoryWithChildren[]; // Real category data
-    onClose: () => void;
-    onSignOut: () => void;
-    onCategoryClick: (category: string, level?: number, path?: string[]) => void;
-    onLanguageChange: (lang: string) => void;
-    signingOut?: boolean;
-    searchFunction?: (query: string) => Promise<{ data: any[]; error: string | null }>;
-    unreadMessages?: number;
-    unreadNotifications?: number;
-    translations?: {
-      sellItems?: string;
-      myProfile?: string;
-      startSelling?: string;
-      settings?: string;
-      signOut?: string;
-      signingOut?: string;
-      signIn?: string;
-      signUp?: string;
-      browseCategories?: string;
-      whatLookingFor?: string;
-      browseAll?: string;
-      popularBrands?: string;
-      newToday?: string;
-      orders?: string;
-      favorites?: string;
-      categoryWomen?: string;
-      categoryMen?: string;
-      categoryKids?: string;
-      categoryUnisex?: string;
-      help?: string;
-      privacy?: string;
-      terms?: string;
-      returns?: string;
-      trustSafety?: string;
-      searchPlaceholder?: string;
-    };
-  }
+  import type { CategoryWithChildren, CategoryBreadcrumb, MobileNavigationDialogProps } from './search/types';
 
   let {
     id,
@@ -83,6 +27,8 @@
     onLanguageChange,
     signingOut = false,
     searchFunction,
+    unreadMessages,
+    unreadNotifications,
     translations = {
       sellItems: 'Sell Items',
       myProfile: 'My Profile',
@@ -113,12 +59,12 @@
       settingsLabel: 'Settings',
       supportLabel: 'Support'
     }
-  }: Props = $props();
+  }: MobileNavigationDialogProps = $props();
 
   // Category navigation state - now within the same menu
   let currentView = $state('main'); // 'main' | 'subcategory'
-  let selectedMainCategory = $state(null);
-  let categoryBreadcrumb = $state([]);
+  let selectedMainCategory = $state<CategoryWithChildren | null>(null);
+  let categoryBreadcrumb = $state<CategoryBreadcrumb[]>([]);
 
   // Dialog element reference
   let dialogElement = $state<HTMLDivElement | null>(null);
@@ -168,7 +114,7 @@
   }
 
   // Handle subcategory click - check for level 3 first
-  function handleSubcategoryClick(subcategory) {
+  function handleSubcategoryClick(subcategory: CategoryWithChildren) {
     if (subcategory.children && subcategory.children.length > 0) {
       // Has level 3 subcategories - show them
       selectedMainCategory = subcategory;
@@ -187,7 +133,7 @@
       // Go back one level in breadcrumb
       categoryBreadcrumb = categoryBreadcrumb.slice(0, -1);
       const parentCategory = categories.find(cat => cat.slug === categoryBreadcrumb[0].slug);
-      selectedMainCategory = parentCategory;
+      selectedMainCategory = parentCategory || null;
     } else {
       // Go back to main menu
       currentView = 'main';
@@ -217,11 +163,11 @@
 
   // Lightweight profile stats (tolerant to missing fields)
   const profileStats = $derived(() => {
-    const s = profile?.stats || {};
-    const ratingRaw = typeof s.average_rating === 'number' ? s.average_rating : (typeof s.rating === 'number' ? s.rating : 0);
+    // Access profile fields directly since stats doesn't exist in Profile type
+    const ratingRaw = typeof profile?.avg_rating === 'number' ? profile.avg_rating : (typeof profile?.rating === 'number' ? profile.rating : 0);
     const rating = Number.isFinite(ratingRaw) ? ratingRaw : 0;
-    const itemsSold = typeof s.items_sold === 'number' ? s.items_sold : (typeof s.sales === 'number' ? s.sales : 0);
-    const listings = typeof s.active_listings === 'number' ? s.active_listings : (typeof s.listings === 'number' ? s.listings : (typeof s.listings_count === 'number' ? s.listings_count : 0));
+    const itemsSold = typeof profile?.total_sales === 'number' ? profile.total_sales : 0;
+    const listings = typeof profile?.active_listings_count === 'number' ? profile.active_listings_count : 0;
     return { rating, itemsSold, listings };
   });
 
@@ -256,7 +202,7 @@
 
   // Format item count for display
   function formatItemCount(count: number): string {
-    const itemsText = i18n.home_itemCount();
+    const itemsText = 'items'; // Fallback text since home_itemCount doesn't exist
     if (count === undefined || count === null || isNaN(count)) return `0 ${itemsText}`;
     if (count === 0) return `0 ${itemsText}`;
     if (count < 1000) return `${count} ${itemsText}`;
@@ -309,7 +255,7 @@
                 <!-- User Avatar -->
                 <Avatar
                   name={userDisplayName}
-                  src={profile?.avatar_url}
+                  src={profile?.avatar_url || undefined}
                   size="md"
                   fallback={initials}
                   style="width: 44px; height: 44px;"
@@ -323,7 +269,7 @@
                       <svg class="w-3.5 h-3.5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
-                      <span>{formatRating(profileStats.rating)}</span>
+                      <span>{formatRating(profileStats().rating)}</span>
                     </div>
                   </div>
                   {#if profile?.username}
@@ -352,7 +298,7 @@
                     <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zM12 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm3.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zM21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337 5.972 5.972 0 01-3.035 1.557 4.48 4.48 0 00.467-1.226c.233-1.162-.758-2.204-1.535-2.943C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
                     </svg>
-                    {i18n.nav_messages()}
+                    Messages
                     {#if typeof unreadMessages === 'number' && unreadMessages > 0}
                       <span class="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-red-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                         {unreadMessages > 99 ? '99' : unreadMessages}
@@ -400,7 +346,7 @@
                   <div class="flex-1 text-left">
                     <div class="font-semibold text-gray-900 text-base">{translations.categoryWomen}</div>
                     <div class="text-sm text-gray-500">
-                      {formatItemCount(categoryCounts.women)}
+                      {formatItemCount(categoryCounts().women)}
                     </div>
                   </div>
                 </div>
@@ -429,7 +375,7 @@
                   <div class="flex-1 text-left">
                     <div class="font-semibold text-gray-900 text-base">{translations.categoryMen}</div>
                     <div class="text-sm text-gray-500">
-                      {formatItemCount(categoryCounts.men)}
+                      {formatItemCount(categoryCounts().men)}
                     </div>
                   </div>
                 </div>
@@ -458,7 +404,7 @@
                   <div class="flex-1 text-left">
                     <div class="font-semibold text-gray-900 text-base">{translations.categoryKids}</div>
                     <div class="text-sm text-gray-500">
-                      {formatItemCount(categoryCounts.kids)}
+                      {formatItemCount(categoryCounts().kids)}
                     </div>
                   </div>
                 </div>
@@ -487,7 +433,7 @@
                   <div class="flex-1 text-left">
                     <div class="font-semibold text-gray-900 text-base">{translations.categoryUnisex}</div>
                     <div class="text-sm text-gray-500">
-                      {formatItemCount(categoryCounts.unisex)}
+                      {formatItemCount(categoryCounts().unisex)}
                     </div>
                   </div>
                 </div>
@@ -573,7 +519,7 @@
               <div class="bg-white rounded-xl border border-gray-200 p-4 space-y-4">
                 <!-- Language & Theme -->
                 <div class="flex items-center justify-between">
-                  <span class="text-sm font-medium text-gray-900">{i18n.nav_languageTheme()}</span>
+                  <span class="text-sm font-medium text-gray-900">Language & Theme</span>
                   <div class="flex items-center gap-2">
                     <LanguageSwitcher
                       currentLanguage={currentLanguage}
@@ -590,7 +536,7 @@
 
             <!-- Support Links -->
             <div>
-              <h2 class="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2 px-2">{i18n.nav_supportCenter()}</h2>
+              <h2 class="text-xs font-medium text-gray-700 uppercase tracking-wide mb-2 px-2">Support</h2>
               <div class="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
                 <a
                   href="/help"

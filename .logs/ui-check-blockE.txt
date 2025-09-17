@@ -1,0 +1,100 @@
+
+> @repo/ui@0.0.0 check K:\driplo-turbo-1\packages\ui
+> svelte-check --tsconfig ./tsconfig.json
+
+Loading svelte-check in workspace: k:\driplo-turbo-1\packages\ui
+Getting Svelte diagnostics...
+
+k:\driplo-turbo-1\packages\ui\[32msrc\lib\AdminModal.svelte[39m:99:5
+[33mWarn[39m: Non-interactive element `<section>` should not be assigned mouse or keyboard event listeners
+https://svelte.dev/e/a11y_no_noninteractive_element_interactions (svelte)
+[36m    <!-- Modal Container -->
+    [35m<section
+      class="relative mx-auto border shadow-lg rounded-md bg-white {sizeClasses[size]} {variantClasses[variant]} {className}"
+      onclick={(e) => e.stopPropagation()}
+      onkeydown={(e) => e.key === 'Escape' && e.stopPropagation()}
+      role="document"
+      tabindex="-1"
+    >
+      <!-- Header -->
+      <div class="flex items-center justify-between p-4 border-b {variantClasses[variant]}">
+        <h3
+          id="modal-title"
+          class="text-lg font-medium {titleVariantClasses[variant]}"
+        >
+          {title}
+        </h3>
+
+        {#if showCloseButton}
+          <button
+            onclick={handleClose}
+            class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 rounded-md hover:bg-gray-100 transition-colors"
+            aria-label="Close modal"
+            type="button"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        {/if}
+      </div>
+
+      <!-- Content -->
+      <div class="p-4">
+        <slot />
+      </div>
+
+      <!-- Footer (if provided) -->
+      {#if $$slots.footer}
+        <div class="flex items-center justify-end gap-3 px-4 py-3 border-t border-gray-200 bg-gray-50 rounded-b-md">
+          <slot name="footer" />
+        </div>
+      {/if}
+    </section>[36m
+  </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\lib\AdminModal.svelte[39m:131:9
+[33mWarn[39m: Using `<slot>` to render parent content is deprecated. Use `{@render ...}` tags instead
+https://svelte.dev/e/slot_element_deprecated (svelte)
+[36m      <div class="p-4">
+        [35m<slot />[36m
+      </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\lib\AdminModal.svelte[39m:137:11
+[33mWarn[39m: Using `<slot>` to render parent content is deprecated. Use `{@render ...}` tags instead
+https://svelte.dev/e/slot_element_deprecated (svelte)
+[36m        <div class="flex items-center justify-end gap-3 px-4 py-3 border-t border-gray-200 bg-gray-50 rounded-b-md">
+          [35m<slot name="footer" />[36m
+        </div>[39m
+
+k:\driplo-turbo-1\packages\ui\[32msrc\lib\SellerQuickView.svelte[39m:127:3
+[33mWarn[39m: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+[36m  <!-- Backdrop with click to close -->
+  [35m<div 
+    class="fixed inset-0 bg-black/50 backdrop-blur-sm"
+    style="z-index: var(--z-max, 999999)"
+    transition:fade={{ duration: 200 }}
+    onclick={onClose}
+    role="button"
+    tabindex="-1"
+    aria-label="Close modal"
+  >
+    <!-- Modal - Always centered -->
+    <div 
+      class="fixed inset-0 flex items-center justify-center p-4 pointer-events-none"
+      style="z-index: calc(var(--z-max, 999999) + 1)"
+      transition:fly={{ y: 20, opacity: 0, duration: 200 }}
+    >
+      <div 
+        class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative pointer-events-auto"
+        onclick={(e) => e.stopPropagation()}
+      >
+        
+        <!-- Close button -->
+        <button
+          onclick={onClose}
+          class="absolute top-3 right-3 p-1.5 rounded-full bg-white/80 hover:bg-gray-100 transition-colors z-20"
+          aria-label="Close"
+        >
+          <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

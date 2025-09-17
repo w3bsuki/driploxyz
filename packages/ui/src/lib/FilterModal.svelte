@@ -4,48 +4,7 @@
   import { tick } from 'svelte';
   import FilterPillGroup from './FilterPillGroup.svelte';
   import * as i18n from '@repo/i18n';
-
-  interface FilterOption {
-    value: string;
-    label: string;
-    icon?: string;
-    shortLabel?: string;
-    color?: string;
-    bgGradient?: string;
-  }
-
-  interface FilterSection {
-    key: string;
-    label: string;
-    type: 'pills' | 'range' | 'custom';
-    options?: FilterOption[];
-    value?: string | null;
-    minValue?: string;
-    maxValue?: string;
-    placeholder?: { min?: string; max?: string };
-  }
-
-  interface Props {
-    open?: boolean;
-    sections: FilterSection[];
-    activeFilterCount?: number;
-    class?: string;
-    title?: string;
-    applyLabel?: string;
-    clearLabel?: string;
-    closeLabel?: string;
-    minPriceLabel?: string;
-    maxPriceLabel?: string;
-    onApply?: (filters: Record<string, any>) => void;
-    onClear?: () => void;
-    onFilterChange?: (key: string, value: any) => void;
-    trigger?: Snippet;
-    customSection?: Snippet<[FilterSection]>;
-    /** Announce filter changes to screen readers */
-    announceChanges?: boolean;
-    /** Custom announcement template for filter changes */
-    announcementTemplate?: (filterKey: string, filterValue: any, sectionLabel: string) => string;
-  }
+  import type { FilterModalProps, FilterSection, FilterValue } from '@repo/ui/types';
 
   let {
     open = $bindable(false),
@@ -65,7 +24,7 @@
     customSection,
     announceChanges = true,
     announcementTemplate
-  }: Props = $props();
+  }: FilterModalProps = $props();
 
   // Focus management
   let triggerElement: HTMLElement | null = null;
@@ -183,11 +142,11 @@
   });
 
   // Local filter state for the modal
-  let localFilters = $state<Record<string, any>>({});
+  let localFilters = $state<Record<string, FilterValue>>({});
 
   // Initialize local filters from sections
   $effect(() => {
-    const initial: Record<string, any> = {};
+    const initial: Record<string, FilterValue> = {};
     sections.forEach(section => {
       if (section.type === 'range') {
         initial[`${section.key}_min`] = section.minValue || '';
@@ -200,7 +159,7 @@
   });
 
   // Handle individual filter changes
-  function handleFilterChange(key: string, value: any) {
+  function handleFilterChange(key: string, value: FilterValue) {
     const section = sections.find(s => s.key === key || key.startsWith(s.key));
     
     localFilters[key] = value;

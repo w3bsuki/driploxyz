@@ -1,15 +1,11 @@
 <script lang="ts">
   import * as i18n from '@repo/i18n';
+  import type { FooterProps } from './types/panels';
 
-  interface Props {
-    currentLanguage?: string;
-    onLanguageChange?: (lang: string) => void;
-  }
-
-  let { 
+  let {
     currentLanguage = 'en',
     onLanguageChange
-  }: Props = $props();
+  }: FooterProps = $props();
 
   let email = $state('');
   let isSubscribing = $state(false);

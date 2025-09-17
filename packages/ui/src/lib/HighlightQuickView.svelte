@@ -1,23 +1,14 @@
 <script lang="ts">
-  import type { Product } from './types/product';
+  import type { HighlightQuickViewProps } from './types/panels';
 
-  interface Props {
-    product: Product;
-    onClose: () => void;
-    onAddToCart?: (productId: string, selectedSize?: string) => void;
-    onToggleFavorite?: (productId: string) => void;
-    isFavorited?: boolean;
-    isLoadingFavorite?: boolean;
-  }
-
-  let { 
-    product, 
-    onClose, 
-    onAddToCart, 
-    onToggleFavorite, 
-    isFavorited = false, 
-    isLoadingFavorite = false 
-  }: Props = $props();
+  let {
+    product,
+    onClose,
+    onAddToCart,
+    onToggleFavorite,
+    isFavorited = false,
+    isLoadingFavorite = false
+  }: HighlightQuickViewProps = $props();
 
   let selectedSize = $state<string>('');
   let showSellerInfo = $state(false);
@@ -28,10 +19,11 @@
   const TAB_KEY = 'Tab';
   
   // Derived states
-  const hasMultipleSizes = $derived(product.sizes && product.sizes.length > 1);
-  const requiresSizeSelection = $derived(product.sizes && product.sizes.length > 0);
+  const availableSizes = $derived(product.availableSizes ?? (product.size ? [product.size] : []));
+  const hasMultipleSizes = $derived(availableSizes.length > 1);
+  const requiresSizeSelection = $derived(availableSizes.length > 0);
   const canPurchase = $derived(!requiresSizeSelection || selectedSize);
-  const sellerInitial = $derived(product.seller_name?.charAt(0).toUpperCase() || 'S');
+  const sellerInitial = $derived(product.sellerName?.charAt(0).toUpperCase() || 'S');
   const formattedPrice = $derived(`£${product.price.toFixed(2)}`);
   const imageUrl = $derived(
     (product.product_images && product.product_images[0]?.image_url) ||
@@ -41,8 +33,8 @@
   
   // Auto-select single size
   $effect(() => {
-    if (product.sizes?.length === 1 && !selectedSize) {
-      selectedSize = product.sizes[0];
+    if (availableSizes.length === 1 && !selectedSize) {
+      selectedSize = availableSizes[0];
     }
   });
   
@@ -105,6 +97,7 @@
   aria-modal="true"
   aria-labelledby="modal-title-{product.id}"
   aria-describedby="modal-desc-{product.id}"
+  tabindex="-1"
 >
   <!-- Modal content -->
   <div 
@@ -133,18 +126,18 @@
       </button>
       
       <!-- Seller info button -->
-      {#if product.seller_name}
-        <button 
+      {#if product.sellerName}
+        <button
           onclick={toggleSellerInfo}
           class="absolute bottom-2 left-2 flex items-center gap-1.5 bg-white/95 md:backdrop-blur-sm rounded-full shadow-sm hover:bg-white transition-colors duration-200 {showSellerInfo ? 'px-2.5 py-1.5' : 'pr-2'} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black"
-          aria-label="View seller information for {product.seller_name}"
+          aria-label="View seller information for {product.sellerName}"
           aria-expanded={showSellerInfo}
         >
           <div class="w-7 h-7 rounded-full border-2 border-white bg-gray-200 overflow-hidden flex-shrink-0">
-            {#if product.seller_avatar}
-              <img 
-                src={product.seller_avatar} 
-                alt="{product.seller_name} avatar" 
+            {#if product.sellerAvatar}
+              <img
+                src={product.sellerAvatar}
+                alt="{product.sellerName} avatar"
                 class="w-full h-full object-cover"
               />
             {:else}
@@ -153,26 +146,26 @@
               </div>
             {/if}
           </div>
-          <div 
+          <div
             class="overflow-hidden transition-colors duration-200 {showSellerInfo ? 'max-w-40' : 'max-w-20'}"
             aria-hidden={!showSellerInfo}
           >
             {#if showSellerInfo}
               <div class="text-left">
-                <p class="text-xs font-medium text-gray-900">{product.seller_name}</p>
-                {#if product.seller_rating}
+                <p class="text-xs font-medium text-gray-900">{product.sellerName}</p>
+                {#if product.sellerRating}
                   <div class="flex items-center gap-0.5">
                     <svg class="w-3 h-3 text-yellow-500 fill-current" viewBox="0 0 20 20" aria-hidden="true">
                       <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
                     </svg>
-                    <span class="text-xs text-gray-500" aria-label="Rating: {product.seller_rating} stars">
-                      {product.seller_rating}
+                    <span class="text-xs text-gray-500" aria-label="Rating: {product.sellerRating} stars">
+                      {product.sellerRating}
                     </span>
                   </div>
                 {/if}
               </div>
             {:else}
-              <span class="text-xs text-gray-900 font-medium whitespace-nowrap">{product.seller_name}</span>
+              <span class="text-xs text-gray-900 font-medium whitespace-nowrap">{product.sellerName}</span>
             {/if}
           </div>
         </button>
@@ -207,7 +200,7 @@
           Size {hasMultipleSizes ? '(required)' : ''}
         </legend>
         <div class="flex gap-1 flex-wrap" role="radiogroup" aria-required="true">
-          {#each product.sizes as size}
+          {#each availableSizes as size}
             <button
               onclick={() => selectedSize = size}
               class="px-2 py-1 text-xs border rounded transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black {selectedSize === size ? 'bg-black text-white border-black' : 'border-gray-300 hover:border-gray-400'}"
@@ -226,11 +219,11 @@
     <div id="modal-desc-{product.id}" class="sr-only">
       <p>Quick view for {product.title}</p>
       <p>Price: {formattedPrice}</p>
-      {#if product.seller_name}
-        <p>Sold by {product.seller_name}</p>
+      {#if product.sellerName}
+        <p>Sold by {product.sellerName}</p>
       {/if}
       {#if requiresSizeSelection}
-        <p>Available sizes: {product.sizes.join(', ')}</p>
+        <p>Available sizes: {availableSizes.join(', ')}</p>
       {/if}
     </div>
 

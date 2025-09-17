@@ -81,9 +81,9 @@
       <!-- Image Container with overlays -->
       <div class="relative w-full">
         <!-- Product Image -->
-        <div class="aspect-square w-full overflow-hidden rounded-lg" style="background-color: oklch(0.96 0.005 270);">
-          <img 
-            src={imageUrl} 
+        <div class="aspect-square w-full overflow-hidden rounded-[var(--card-radius)]" style="background-color: oklch(0.96 0.005 270);">
+          <img
+            src={imageUrl}
             alt="{product.title} product image"
             class="w-full h-full object-cover"
             loading="lazy"
@@ -94,7 +94,7 @@
         <!-- Overlay row: subtle PRO badge and favorite (right) -->
         <div class="absolute top-2 left-2 right-2 z-20 flex items-center justify-between">
           <div class="flex items-center gap-1.5">
-            {#if product.is_promoted}
+            {#if product.is_featured}
               <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wide shadow-sm backdrop-blur-sm bg-white/85 text-gray-900 border border-gray-200">PRO</span>
             {/if}
           </div>

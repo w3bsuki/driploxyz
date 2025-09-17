@@ -124,11 +124,12 @@
 
 {#if isOpen}
   <!-- Backdrop with click to close -->
-  <div 
+  <div
     class="fixed inset-0 bg-black/50 backdrop-blur-sm"
     style="z-index: var(--z-max, 999999)"
     transition:fade={{ duration: 200 }}
     onclick={onClose}
+    onkeydown={(e) => e.key === 'Escape' && onClose()}
     role="button"
     tabindex="-1"
     aria-label="Close modal"
@@ -139,9 +140,13 @@
       style="z-index: calc(var(--z-max, 999999) + 1)"
       transition:fly={{ y: 20, opacity: 0, duration: 200 }}
     >
-      <div 
+      <div
         class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative pointer-events-auto"
         onclick={(e) => e.stopPropagation()}
+        onkeydown={(e) => e.key === 'Escape' && e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        tabindex="-1"
       >
         
         <!-- Close button -->

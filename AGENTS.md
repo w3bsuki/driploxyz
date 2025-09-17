@@ -29,3 +29,4 @@ Follow Conventional Commits (`feat:`, `fix:`, `chore:`, etc.) with concise, impe
 - Persist client-visible state in the URL when necessary; avoid storing long-lived data in global variables or leaked module scope on the server.
 - Use form actions in `+page.server.ts` for mutations, return `{ errors }` for validation, `throw redirect(...)` for navigation.
 - Configure adapters via `svelte.config.js`; prefer `$lib/*` aliases for shared modules and keep the global types in `src/app.d.ts` in sync with `pnpm svelte-kit sync`.
+

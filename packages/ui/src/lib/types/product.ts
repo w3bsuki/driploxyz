@@ -18,6 +18,7 @@ export interface ProductUIFields {
   images: string[];
   slug?: string; // Generated from title for SEO-friendly URLs
   currency?: string; // Derived from country_code for price formatting
+  availableSizes?: string[]; // Computed from size_options or size field
   sellerName: string;
   sellerRating: number;
   sellerAvatar?: string;

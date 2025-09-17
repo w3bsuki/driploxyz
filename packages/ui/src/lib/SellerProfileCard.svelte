@@ -81,7 +81,7 @@
         {#if seller.account_type === 'admin'}
           <!-- Keep admin text badge for authority -->
           <span class="inline-block px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-red-600 text-white">
-            {i18n.badge_admin()}
+            ADMIN
           </span>
         {:else if seller.account_type === 'brand'}
           <!-- Use new BrandBadge component -->

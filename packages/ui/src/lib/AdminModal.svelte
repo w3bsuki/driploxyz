@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+  import type { Snippet } from 'svelte';
 
   interface Props {
     open?: boolean;
@@ -9,6 +10,8 @@
     showCloseButton?: boolean;
     closeOnBackdrop?: boolean;
     class?: string;
+    children?: Snippet;
+    footer?: Snippet;
   }
 
   let {
@@ -18,7 +21,9 @@
     variant = 'default',
     showCloseButton = true,
     closeOnBackdrop = true,
-    class: className = ''
+    class: className = '',
+    children,
+    footer
   }: Props = $props();
 
   const dispatch = createEventDispatcher<{
@@ -98,8 +103,6 @@
     <!-- Modal Container -->
     <div
       class="relative mx-auto border shadow-lg rounded-md bg-white {sizeClasses[size]} {variantClasses[variant]} {className}"
-      onclick={(e) => e.stopPropagation()}
-      onkeydown={(e) => e.key === 'Escape' && e.stopPropagation()}
       role="document"
     >
       <!-- Header -->
@@ -127,13 +130,15 @@
 
       <!-- Content -->
       <div class="p-4">
-        <slot />
+        {#if children}
+          {@render children()}
+        {/if}
       </div>
 
       <!-- Footer (if provided) -->
-      {#if $$slots.footer}
+      {#if footer}
         <div class="flex items-center justify-end gap-3 px-4 py-3 border-t border-gray-200 bg-gray-50 rounded-b-md">
-          <slot name="footer" />
+          {@render footer()}
         </div>
       {/if}
     </div>
