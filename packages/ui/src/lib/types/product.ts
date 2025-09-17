@@ -17,6 +17,7 @@ export interface ProductUIFields {
   // UI-specific computed properties (NEVER override database fields)
   images: string[];
   slug?: string; // Generated from title for SEO-friendly URLs
+  currency?: string; // Derived from country_code for price formatting
   sellerName: string;
   sellerRating: number;
   sellerAvatar?: string;
@@ -39,16 +40,23 @@ export interface ProductUIFields {
   }>;
 
   // Legacy compatibility properties (marked for future removal)
-  /** @deprecated Use seller_id instead */
+  /** @deprecated Use seller_id instead - TODO: Remove after all consumers migrated */
   sellerId: string;
-  /** @deprecated Use created_at instead */
+  /** @deprecated Use created_at instead - TODO: Remove after all consumers migrated */
   createdAt: string;
-  /** @deprecated Use is_featured from database */
+  /** @deprecated Use is_featured from database - TODO: Remove after all consumers migrated */
   is_promoted?: boolean;
 }
 
 // Main Product type for UI components - intersection of database row and UI fields
 export type Product = ProductRow & ProductUIFields;
+
+// Lightweight product type for components that only need minimal data
+export interface ProductPreview {
+  id: string;
+  favorite_count: number;
+  is_sold?: boolean;
+}
 
 // Legacy alias for backwards compatibility
 /** @deprecated Use Product or ProductRow instead */
@@ -96,6 +104,7 @@ export function transformToUIProduct(data: ProductWithUIData): Product {
     // UI-specific computed fields only
     images: images.map(img => img.image_url),
     slug: generateSlugFromTitle(product.title),
+    currency: getCurrencyFromCountryCode(product.country_code),
     sellerName: seller.username,
     sellerRating: seller.rating,
     sellerAvatar: seller.avatar,
@@ -139,4 +148,56 @@ function generateSlugFromTitle(title: string): string {
     .replace(/[^\w\s-]/g, '') // Remove special characters
     .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
     .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+}
+
+// Utility function to derive currency from country code
+function getCurrencyFromCountryCode(countryCode: string | null): string {
+  if (!countryCode) return 'USD'; // Default currency
+
+  const currencyMap: Record<string, string> = {
+    'US': 'USD',
+    'GB': 'GBP',
+    'EU': 'EUR',
+    'DE': 'EUR',
+    'FR': 'EUR',
+    'IT': 'EUR',
+    'ES': 'EUR',
+    'NL': 'EUR',
+    'CA': 'CAD',
+    'AU': 'AUD',
+    'JP': 'JPY',
+    'KR': 'KRW',
+    'CN': 'CNY',
+    'IN': 'INR',
+    'BR': 'BRL',
+    'MX': 'MXN',
+    'SG': 'SGD',
+    'HK': 'HKD',
+    'CH': 'CHF',
+    'SE': 'SEK',
+    'NO': 'NOK',
+    'DK': 'DKK',
+    'PL': 'PLN',
+    'CZ': 'CZK',
+    'HU': 'HUF',
+    'RO': 'RON',
+    'BG': 'BGN',
+    'HR': 'HRK',
+    'SI': 'EUR',
+    'SK': 'EUR',
+    'LT': 'EUR',
+    'LV': 'EUR',
+    'EE': 'EUR',
+    'MT': 'EUR',
+    'CY': 'EUR',
+    'LU': 'EUR',
+    'AT': 'EUR',
+    'BE': 'EUR',
+    'FI': 'EUR',
+    'IE': 'EUR',
+    'PT': 'EUR',
+    'GR': 'EUR'
+  };
+
+  return currencyMap[countryCode.toUpperCase()] || 'USD';
 }

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { Product } from './types/product';
+  import type { Product, ProductPreview } from './types/product';
   import { Tooltip } from './primitives/tooltip';
 
   interface Props {
-    product: Product;
+    product: Product | ProductPreview;
     favorited?: boolean;
     onFavorite?: () => void;
     addToFavoritesText?: string;
