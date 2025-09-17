@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { ButtonVariant, ButtonSize } from '../types';
+  import { melt } from '@melt-ui/svelte';
 
   interface Props {
     variant?: ButtonVariant;
@@ -12,19 +13,21 @@
     onclick?: (event: MouseEvent) => void;
     class?: string;
     children?: import('svelte').Snippet;
+    use?: Array<any>;  // For Melt UI actions and other use directives
   }
 
-  let { 
-    variant = 'primary', 
-    size = 'md', 
-    disabled = false, 
+  let {
+    variant = 'primary',
+    size = 'md',
+    disabled = false,
     loading = false,
     href,
     type = 'button',
     form,
     onclick,
     class: className = '',
-    children
+    children,
+    use
   }: Props = $props();
 
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-[var(--btn-radius)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 transition-colors duration-[var(--duration-fast)] relative select-none';
@@ -53,7 +56,7 @@
 </script>
 
 {#if href}
-  <a {href} class={classes} aria-busy={loading}>
+  <a {href} class={classes} aria-busy={loading} use:melt={use?.[1]}>
     {#if loading}
       <svg class="{spinnerSizes[size]} mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
@@ -63,7 +66,7 @@
     {@render children?.()}
   </a>
 {:else}
-  <button {type} {disabled} {onclick} {form} class={classes} aria-busy={loading}>
+  <button {type} {disabled} {onclick} {form} class={classes} aria-busy={loading} use:melt={use?.[1]}>
     {#if loading}
       <svg class="{spinnerSizes[size]} mr-2 animate-spin" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3"></circle>
