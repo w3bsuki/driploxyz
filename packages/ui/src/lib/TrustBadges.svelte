@@ -1,4 +1,14 @@
 <script lang="ts">
+  interface BadgeConfig {
+    id: string;
+    icon: string;
+    title: string;
+    subtitle: string;
+    color: string;
+    clickable: boolean;
+    onClick?: () => void;
+  }
+
   interface Props {
     showProtection?: boolean;
     showSecurePayment?: boolean;
@@ -23,8 +33,8 @@
     onReturnPolicyClick
   }: Props = $props();
 
-  const badges = $derived(() => {
-    const badgeList = [];
+  const badges = $derived((): BadgeConfig[] => {
+    const badgeList: BadgeConfig[] = [];
 
     if (showProtection) {
       badgeList.push({
@@ -102,7 +112,7 @@
 </script>
 
 <div class={containerClasses}>
-  {#each badges as badge}
+  {#each badges() as badge}
     {#if badge.clickable}
       <button
         onclick={badge.onClick}
