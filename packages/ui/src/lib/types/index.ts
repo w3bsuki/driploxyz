@@ -108,3 +108,12 @@ export * from './product';
 
 // Search Types
 export * from './search';
+
+// Global type declarations
+declare global {
+  interface Window {
+    Sentry?: {
+      captureException?: (err: unknown, context?: unknown) => void;
+    };
+  }
+}
