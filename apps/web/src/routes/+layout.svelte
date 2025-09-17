@@ -13,6 +13,7 @@
   // Deploy to driplo.xyz - force redeploy
   import { invalidate, preloadCode, preloadData } from '$app/navigation';
   import { browser, dev } from '$app/environment';
+  import { injectAnalytics } from '@vercel/analytics/sveltekit';
   // Auth stores removed - we use server data directly
   import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
@@ -361,9 +362,11 @@
     };
   });
   
-  // Initialize performance optimizations on mount
+  // Initialize performance optimizations and analytics on mount
   $effect(() => {
     if (browser) {
+      // Initialize Vercel Analytics
+      injectAnalytics({ mode: dev ? 'development' : 'production' });
       
       // Critical resource hints for faster loading
       const preconnectUrls = [

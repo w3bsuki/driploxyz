@@ -89,14 +89,18 @@
   <div
     class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-start justify-center pt-10 sm:pt-20"
     onclick={handleBackdropClick}
+    onkeydown={(e) => e.key === 'Escape' && handleClose()}
     role="dialog"
     aria-modal="true"
     aria-labelledby="modal-title"
+    tabindex="-1"
   >
     <!-- Modal Container -->
     <div
       class="relative mx-auto border shadow-lg rounded-md bg-white {sizeClasses[size]} {variantClasses[variant]} {className}"
       onclick={(e) => e.stopPropagation()}
+      onkeydown={(e) => e.key === 'Escape' && e.stopPropagation()}
+      role="document"
     >
       <!-- Header -->
       <div class="flex items-center justify-between p-4 border-b {variantClasses[variant]}">

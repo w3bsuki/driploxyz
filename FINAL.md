@@ -1,721 +1,199 @@
-# FINAL PRODUCTION AUDIT: Complete Component Inventory
-*Driplo Marketplace - Every Single Exported Component*
-
-## Executive Summary
-**Total Components Audited: 180+ UI Components**
-- **Core UI Library**: 180+ exported components from @repo/ui (cleaned up)
-- **Page Implementation**: 4+ main page structures analyzed
-- **Layout System**: 15+ infrastructure components
-- **Mobile/Desktop Variants**: Full responsive coverage
-- **Production Ready**: All components integrated and tested
-- **Architecture**: Simplified by removing unused PDP over-engineering
+# Production Hardening & Debt Eradication Plan
+**Scope**: Entire `driplo-turbo` monorepo (apps/web, apps/admin, apps/docs, packages/*, supabase, scripts)
+**Objective**: Eliminate tech debt, dead code, and over-engineering while guaranteeing production-grade stability. This plan assumes the `Targeted Type System Refactor Plan` in `errors.md` is executed first.
 
 ---
 
-## 🎯 CORE UI PACKAGE EXPORTS (`@repo/ui`)
-*Source: `packages/ui/src/lib/index.ts`*
+## Phase 0 - Coordination & Baseline (Day 0)
+1. Create tracking issue/epic and feature branch family (`git checkout -b final-hardening/phase-0`).
+2. Capture current health:
+   - `pnpm -w turbo run lint check-types test`
+   - `pnpm --filter web build`, `pnpm --filter admin build`, `pnpm --filter docs build`
+   - `pnpm --filter @repo/ui check`
+   - `pnpm performance-audit`
+3. Snapshot bundle sizes (`node performance-tests/bundle-analysis.js > .logs/bundle-baseline.json`).
+4. Generate dependency graph (`pnpm ls --depth 3 > .logs/pnpm-graph.txt`).
+5. Export Supabase schema (`supabase db dump --local --file supabase/schema-baseline.sql`).
+6. Communicate freeze rules: no feature work until plan merged; require green lint+type+test gates on every PR.
 
-### **Core UI Components (17)**
-```typescript
-- Badge
-- Banner
-- Button
-- Input
-- Card
-- Modal
-- ProductCard
-- IntegratedSearchBar
-- CategoryDropdown
-- CategoryBottomSheet
-- Avatar
-- SellerProfileCard
-- FeaturedSellers
-- Breadcrumb
-- ErrorBoundary
-- EngagementBanner
-- LoadingSpinner
-```
-
-### **Enhanced Product Components (3)**
-```typescript
-- BuyBox
-- ShippingEstimator
-- TrustBadges
-```
-
-### **Product Page Components (5)**
-```typescript
-- ProductGallery
-- ProductInfo
-- ProductSeller
-- ProductBuyBox
-- ProductReviews
-```
-
-### **Form & Selector Components (14)**
-```typescript
-- SizeSelector
-- ConditionReport
-- SellerCard
-- ProductBreadcrumb
-- ProductActions
-- Select
-- ConditionSelector
-- BrandSelector
-- CategorySelector
-- CollapsibleCategorySelector
-- ImageUploader
-- ImageUploaderSupabase
-- AvatarUploader
-- PriceInput
-- TagInput
-```
-
-### **Lazy-Loaded Components (3)**
-```typescript
-- LazyRecommendationsSection
-- LazySellerProductsSection
-- LazyReviewModal
-```
-
-### **Payment Components (2)**
-```typescript
-- PaymentForm
-- CheckoutSummary
-```
-
-### **Filter System Components (10)**
-```typescript
-- FilterPill
-- FilterPillGroup
-- CategoryPill
-- CategoryFilterDropdown
-- FilterModal
-- StickyFilterModal
-- AppliedFilters
-- AppliedFilterPills
-- FilterResultsAnnouncer
-- RatingModal
-```
-
-### **Notification Components (6)**
-```typescript
-- NotificationBell
-- NotificationPanel
-- MessageNotificationToast
-- FollowNotificationToast
-- TypingIndicator
-- OrderNotificationToast
-```
-
-### **Onboarding Components (7)**
-```typescript
-- WelcomeModal
-- OnboardingStep
-- AccountTypeSelector
-- AvatarSelector
-- SocialLinksEditor
-- PayoutMethodSelector
-- OnboardingSuccessModal
-```
-
-### **Specialized Badges (8)**
-```typescript
-- ProBadge
-- BrandBadge
-- UserBadge
-- ConditionBadge
-- NewSellerBadge
-- PremiumBadge
-- AdminBadge
-- CountryDetectionBanner
-```
-
-### **Order & Review Management (9)**
-```typescript
-- OrderStatus
-- OrderTimeline
-- OrderActions
-- ReviewModal
-- ReviewDisplay
-- RatingSummary
-- ReviewPrompt
-- SoldOverlay
-- SoldNotificationToast
-- ProductSoldManager
-- SoldNotificationPanel
-```
-
-### **Search Components (8)**
-```typescript
-- TrendingDropdown
-- SearchDropdown
-- EnhancedSearchBar
-- SearchInput
-- MainPageSearchBar
-- SearchPageSearchBar
-- CategorySearchBar
-- VirtualProductGrid
-- LazySearchResults
-```
-
-### **Skeleton Loading Components (7)**
-```typescript
-- ProductCardSkeleton
-- ProductDetailSkeleton
-- SellerCardSkeleton
-- CategoryCardSkeleton
-- ListItemSkeleton
-- TextSkeleton
-- ImageSkeleton
-```
-
-### **Internationalization Components (4)**
-```typescript
-- LanguageSwitcher
-- UnifiedCookieConsent
-- LocaleDetectionBanner
-- SEOMetaTags
-```
-
-### **Navigation Components (3)**
-```typescript
-- TopProgress
-- BottomNav
-- TabGroup
-- Tabs (primitives/)
-```
-
-### **Header System Components (15)**
-```typescript
-- HeaderLogo
-- HeaderUserMenu
-- HeaderNav
-- HeaderSearch
-- CategoryGrid
-- MegaMenuCategories
-- MobileNavigation
-- MobileNavigationDialog
-- MobileMenuSearch
-- CategoryNavigationSheet
-- Footer
-- PartnerShowcase
-- PartnerBanner
-- ProductHighlight
-- TrendingSection
-- ThemeToggle
-```
-
-### **Product Display Components (8)**
-```typescript
-- FavoriteButton
-- ProductImage
-- ProductMeta
-- ProductPrice
-- FeaturedProducts
-- PromotedHighlights
-- PromotedListingsSection
-- BoostManagement
-- ProductCardWithTracking
-```
-
-### **Seller Components (4)**
-```typescript
-- SellerProfile
-- QuickActions
-- SellerQuickView
-- HighlightQuickView
-```
-
-### **Auth Components (2)**
-```typescript
-- AuthPopup
-- BundleBuilder
-```
-
-### **Admin & Business Components (2)**
-```typescript
-- BrandPaymentModal
-- WelcomeTutorialFlow
-```
-
-### **Toast System Components (8)**
-```typescript
-// Legacy Toast System
-- ToastContainer
-- TutorialToast
-- toasts (store)
-- ToastMessage (type)
-
-// Modern Melt UI Toast System
-- Toast
-- ToastProvider
-- MeltToastContainer
-- toastHelpers
-- toastPatterns
-- toastUtils
-- modernToasts (store)
-```
-
-### **Pricing Components (2)**
-```typescript
-- PricingCard
-- Accordion
-```
-
-### **Description List Primitives (3)**
-```typescript
-- DescriptionList
-- DescriptionTerm
-- DescriptionDetails
-```
-
-### **Product Page Implementation**
-```typescript
-// Current working product page (apps/web/src/routes/product/[seller]/[slug]/+page.svelte)
-// Uses direct component imports - simpler and more maintainable than PDP folder approach
-// 494 lines of production-ready, mobile-first code with proper SEO and performance
-```
-
-### **Performance Utilities (2)**
-```typescript
-- lazyLoad (utils)
-- imagePreloader (utils)
-```
-
-### **Melt UI Primitives (1)**
-```typescript
-- primitives/* (complete Melt UI system)
-```
+**Exit Criteria**: Baseline logs captured in `.logs/`, branch protection updated, stakeholders notified.
 
 ---
 
-## 📱 MAIN PAGE IMPLEMENTATION
-*Source: `apps/web/src/routes/+page.svelte`*
+## Phase 1 - Integrate Type System Cleanup (Day 1-2)
+1. Merge branch from `errors.md` plan; resolve conflicts in `packages/ui` and `apps/web` before proceeding.
+2. Enforce Supabase-first typing:
+   - Ensure `packages/ui/src/lib/types/index.ts` re-exports `Tables<'...'>` aliases.
+   - Confirm `Product = ProductRow & ProductUIFields` pattern shipped.
+3. Run `pnpm --filter @repo/ui check` and fix residual DOM typing warnings flagged in the errors plan.
+4. Gate future changes with `pnpm -w turbo run check-types` on CI.
 
-### **Primary Search Interface**
-```svelte
-MainPageSearchBar - Main search with:
-  ├── EnhancedSearchBar integration
-  ├── SearchDropdown for results
-  ├── CategoryDropdown for navigation
-  ├── QuickShopItems pills
-  ├── MainCategories navigation
-  ├── VirtualCategories shortcuts
-  └── ConditionFilters quick access
-```
-
-### **Product Display Sections**
-```svelte
-1. PromotedListingsSection
-   ├── Boosted products (priority)
-   ├── Pro seller products
-   └── Premium subscription products
-
-2. FeaturedSellers
-   ├── Top sellers (kush3, indecisive_wear, tintin)
-   ├── Brand accounts toggle
-   └── SellerQuickView modal integration
-
-3. FeaturedProducts
-   ├── Regular products grid
-   ├── ProductCard components
-   ├── Favorite functionality
-   └── "Browse All" CTA
-```
-
-### **Layout Infrastructure**
-```svelte
-BottomNav - Mobile navigation with:
-  ├── Home, Search, Sell, Messages, Profile
-  ├── Unread message count badge
-  └── Authentication state awareness
-
-SellerQuickView - Premium seller modal:
-  ├── Seller profile details
-  ├── Recent products showcase
-  └── Profile navigation
-
-AuthPopup - Authentication overlay:
-  ├── Sign in / Sign up forms
-  ├── Context-aware messaging
-  └── Responsive design
-```
+**Exit Criteria**: Type errors reduced below 150, UI product helpers documented, DOM typing warnings resolved.
 
 ---
 
-## 🔍 SEARCH PAGE IMPLEMENTATION
-*Source: `apps/web/src/routes/search/+page.svelte`*
+## Phase 2 - Data & API Integrity (Day 2-3)
+1. Supabase schema audit:
+   - Diff `supabase/migrations` vs generated types; regenerate via `pnpm --filter @repo/database generate`.
+   - Remove unused functions/triggers under `supabase/functions`.
+2. Server module cleanup:
+   - `apps/web/src/lib/server` and `apps/admin/src/lib/server`: delete unused helpers, ensure each exports explicit return types.
+   - Enforce Zod-based validation for all `+page.server.ts` actions.
+3. API alignment:
+   - Audit `apps/web/src/routes/(lang)/*/+page.server.ts` for duplicate fetch logic; centralize in `src/lib/server/services`.
+   - Replace REST fetches with Supabase client where possible; document remaining external calls in `docs/api-map.md`.
+4. Data access tests:
+   - Add Vitest suites for repositories/services mocking Supabase responses.
 
-### **Search Interface**
-```svelte
-SearchPageSearchBar - Advanced search with:
-  ├── MegaMenuCategories (3-level hierarchy)
-  ├── AppliedFilterPills display
-  ├── Quick category selection
-  └── Filter integration
-```
-
-### **Filter System**
-```svelte
-StickyFilterModal - Mobile/desktop filtering:
-  ├── Size selection pills
-  ├── Condition filter pills
-  ├── Brand selection pills
-  ├── Price range inputs
-  ├── Sort by options
-  └── Preview result counts
-
-AppliedFilterPills - Active filter display:
-  ├── Category breadcrumbs
-  ├── Individual filter removal
-  ├── Clear all functionality
-  └── Mobile/desktop variants
-```
-
-### **Results Display**
-```svelte
-ProductCard grid with:
-  ├── Infinite scroll (IntersectionObserver)
-  ├── Product image galleries
-  ├── Seller information
-  ├── Condition badges
-  ├── Price formatting
-  └── SEO-friendly URLs
-```
-
-### **Category Navigation**
-```svelte
-MegaMenuCategories - Hierarchical navigation:
-  ├── Level 1: Gender (women, men, kids, unisex)
-  ├── Level 2: Product types (clothing, shoes, accessories)
-  ├── Level 3: Specific items (t-shirts, sneakers, etc.)
-  └── Dynamic product counts
-```
+**Exit Criteria**: All server loads/actions typed, redundant server helpers removed, Supabase schema and generated types in sync.
 
 ---
 
-## 🏗️ LAYOUT INFRASTRUCTURE
-*Source: `apps/web/src/routes/+layout.svelte`*
+## Phase 3 - UI Library Rationalisation (Day 3-5)
+1. Remove `shadcn/ui` bloat per `cleanup.md` Phase 1:
+   - Replace Badge and Sheet usage with native components.
+   - Delete `packages/ui/src/lib/components/ui/*` once replacements land.
+2. Consolidate mobile navigation (cleanup Phase 2):
+   - Enhance `MobileNavigation.svelte` to support variants.
+  - Delete `MobileNavigationDialog.svelte`, `MobileNavigationDrawer.svelte`, `CategoryNavigationSheet.svelte` after consumer updates.
+3. Audit `packages/ui/src/lib/components` for duplicates:
+   - Use `rg "@deprecated"` and `ts-prune` to identify unused exports.
+   - Remove dead layout primitives (`Flex`, `Stack`) if unused.
+4. Align design tokens:
+   - Store source of truth in `packages/ui/src/lib/tokens` (create if missing) using the `DesignTokens` type.
+   - Ensure `apps/web` consumes tokens via `@repo/ui/tokens` rather than duplicating Tailwind config.
+5. Storybook/docs (if applicable):
+   - If a Storybook directory exists under `packages/ui`, update stories to match new exports or remove stubs.
 
-### **Header System**
-```svelte
-Header - Main navigation with:
-  ├── HeaderLogo (brand identity)
-  ├── MobileNavigationDialog (mobile menu)
-  ├── HeaderUserMenu (authenticated users)
-  ├── HeaderNav (desktop navigation)
-  ├── HeaderSearch (context-aware)
-  ├── NotificationBell (real-time alerts)
-  ├── LanguageSwitcher (i18n support)
-  └── ThemeToggle (dark/light mode)
-```
-
-### **Global Components**
-```svelte
-ToastProvider - Global notification system:
-  ├── MessageNotificationToast
-  ├── FollowNotificationToast
-  ├── OrderNotificationToast
-  └── Modern Melt UI toast system
-
-Footer - Site footer with:
-  ├── Company information
-  ├── Legal links
-  ├── Language switching
-  ├── Newsletter signup
-  └── Social media links
-
-TopProgress - Route loading indicator
-ErrorBoundary - Error handling wrapper
-UnifiedCookieConsent - GDPR compliance
-```
-
-### **Authentication Integration**
-```svelte
-Supabase auth state management:
-  ├── Session monitoring
-  ├── Token refresh handling
-  ├── Real-time subscriptions
-  └── Performance optimizations
-```
+**Exit Criteria**: UI package exports reduced to active set, bundle size decreases, design tokens consolidated, no `components/ui/` remnants.
 
 ---
 
-## 🎨 DEMO PAGE COMPONENTS
-*Source: `apps/web/src/routes/demo/+page.svelte`*
+## Phase 4 - Application Feature Simplification (Day 5-8)
+### apps/web
+1. Route audit under `src/routes/(lang)`:
+   - Remove stale routes (for example legacy `/drops`, `/beta` placeholders) after confirming no nav links.
+   - Ensure each `+page.svelte` uses Svelte 5 runes (`$state`, `$derived`) and avoids mutable module scope state.
+2. Component hygiene:
+   - Move shared feature logic into `src/lib/features/*` (listings, search, checkout).
+   - Delete duplicated components found in `src/lib/components/legacy` (if present).
+   - Replace manual fetch wrappers with `@repo/utils` helpers.
+3. Accessibility sprint:
+   - Fix `AdminModal.svelte` style warnings across components.
+   - Run `pnpm --filter web test:a11y` and resolve issues.
+4. State management:
+   - Remove leftover `stores/legacy*.ts`; replace with `$state` or context factories.
 
-### **Showcase Components**
-```svelte
-Premium Demo Cards:
-  ├── Gradient backgrounds
-  ├── Feature highlights
-  ├── Badge system (New, Ultra)
-  └── Hover animations
+### apps/admin
+1. Harden auth guard in `src/hooks.server.ts`; remove unused roles.
+2. Collapse redundant dashboards under `src/routes/analytics` and `src/routes/listings` (single layout + load per area).
+3. Delete unused assets in `src/lib/assets` or move essential assets to CDN storage.
+4. Align admin UI imports with `@repo/ui` after cleanup.
 
-Navigation Links:
-  ├── Logo variants
-  ├── Component variants
-  ├── Feature demos
-  └── Typography showcase
-```
+### apps/docs
+1. Remove duplicate markdown/MDX files not linked in navigation.
+2. Ensure docs use `@repo/ui` theme tokens; drop custom CSS duplicates.
+3. Run static build and fix broken links (`pnpm --filter docs build && pnpm --filter docs lint:links` or add script).
 
----
-
-## 🎯 MOBILE VS DESKTOP VARIANTS
-
-### **Mobile-Specific Components**
-- `MobileNavigationDialog` - Full-screen mobile menu
-- `MobileMenuSearch` - Mobile search interface
-- `CategoryNavigationSheet` - Mobile category picker
-- `StickyFilterModal` - Mobile filter overlay
-- Touch-optimized `ProductCard` components
-- Mobile-first `BottomNav` navigation
-
-### **Desktop-Specific Features**
-- `HeaderNav` - Horizontal desktop navigation
-- `HeaderSearch` - Inline search bar
-- `MegaMenuCategories` - Dropdown category menu
-- Desktop filter controls in search
-- Hover states and animations
-- Multi-column layouts
-
-### **Responsive Components**
-- `SearchPageSearchBar` - Adapts to screen size
-- `FeaturedProducts` - Grid responsive behavior
-- `AppliedFilterPills` - Mobile/desktop display variants
-- `Header` - Complete responsive transformation
-- All card components with touch/hover states
+**Exit Criteria**: No orphan routes/components, Svelte runes compliance verified, docs/admin share consistent UI primitives.
 
 ---
 
-## 🔗 INTEGRATION POINTS
+## Phase 5 - Styling, Assets, and Bundle Hygiene (Day 8-9)
+1. Purge CSS:
+   - Run Tailwind purge (configure if missing) to identify unused classes.
+   - Delete unused `.scss` or `.css` files under `apps/web/src/lib/styles`.
+2. Asset cleanup:
+   - Remove unused media in `apps/web/static` and `packages/ui/src/lib/assets`.
+   - Compress remaining assets via `pnpm image-optim` (add script using `sharp` or `squoosh-cli`).
+3. Code splitting review:
+   - Ensure heavy sections stay lazy-loaded (for example `LazyRecommendationsSection`).
+   - Verify bundle manifests after `pnpm --filter web build -- --analyze`.
+4. Remove dead scripts:
+   - Delete redundant files under `scripts/` (for example merge `advanced-bundle-analysis.js` with `bundle-analysis.js`).
 
-### **State Management**
-```typescript
-// Filter system
-createProductFilter() - Reactive filter state
-syncFiltersToUrl() - URL synchronization
-filterStore - Global filter management
-
-// Favorites system
-favoritesStore - User favorites state
-favoritesActions - Favorite management
-authPopupStore - Authentication modals
-
-// Notifications
-activeNotification - Message notifications
-activeFollowNotification - Follow alerts
-activeOrderNotification - Order updates
-```
-
-### **Service Integrations**
-```typescript
-// Search functionality
-ProductService - Product search/filtering
-CategoryService - Category management
-ProfileService - User profile data
-
-// Real-time features
-RealtimeNotificationService - Live notifications
-Supabase subscriptions - Data synchronization
-```
-
-### **Internationalization**
-```typescript
-// Language support
-i18n module - Translation system
-LanguageSwitcher - Language selection
-LocaleDetectionBanner - Auto-detection
-Cyrillic typography support
-```
+**Exit Criteria**: Bundle diff shows meaningful reduction, CSS coverage at least 90 percent (Chrome coverage), no unused assets remain.
 
 ---
 
-## 🚀 PRODUCTION READINESS CHECKLIST
+## Phase 6 - Testing and Quality Gates (Day 9-10)
+1. Update Vitest config to fail on `console.warn` and `console.error`.
+2. Expand unit tests for `@repo/utils` and `@repo/core-*` packages.
+3. Playwright suites:
+   - Refresh fixtures in `apps/web/tests/fixtures` to match new data models.
+   - Ensure `test-results/` is ignored by git.
+4. Add contract tests for Supabase functions using `supabase-js` in test mode.
+5. Configure coverage thresholds (minimum 80 percent statements) and publish to `coverage/` per workspace.
 
-### ✅ **Core Features Complete**
-- [x] Full component library (200+ components)
-- [x] Search and filtering system
-- [x] Product display and interaction
-- [x] User authentication and profiles
-- [x] Real-time notifications
-- [x] Mobile-responsive design
-- [x] Internationalization support
-- [x] Performance optimizations
-
-### ✅ **Quality Assurance**
-- [x] TypeScript strict mode compliance
-- [x] Accessibility features implemented
-- [x] Mobile-first responsive design
-- [x] SEO-friendly URL structure
-- [x] Error boundary coverage
-- [x] Loading state management
-- [x] Touch-optimized interactions
-
-### ✅ **Infrastructure**
-- [x] Supabase integration complete
-- [x] Real-time subscriptions active
-- [x] Cookie consent system
-- [x] Language detection
-- [x] Theme switching support
-- [x] Performance monitoring
+**Exit Criteria**: `pnpm -w turbo run test test:e2e` green, coverage reports stored, CI updated to run all suites.
 
 ---
 
-## 📊 COMPONENT STATISTICS
+## Phase 7 - Tooling and Developer Experience (Day 10-11)
+1. ESLint:
+   - Ensure `@repo/eslint-config` covers Svelte 5 and TypeScript rules.
+   - Remove duplicate `.eslintrc` files; prefer flat config entry per workspace.
+2. Prettier:
+   - Align `.prettierrc` across apps to monorepo default; delete redundant `.prettierignore` entries.
+3. Turbo/NPM scripts:
+   - Review `turbo.json`; ensure pipelines include `lint`, `check-types`, `test`, `build` for each workspace.
+   - Remove unused scripts from each `package.json`.
+4. Git hooks and CI:
+   - Configure Husky or `turbo run precommit` if desired.
+   - Ensure GitHub Actions workflows mirror local gates.
+5. Developer docs:
+   - Update `README.md`, `TECHNICAL.md`, and `PRODUCTION.md` with the new workflow and commands.
 
-| Category | Count | Status |
-|----------|-------|--------|
-| Core UI Components | 17 | ✅ Production Ready |
-| Product Components | 20 | ✅ Production Ready |
-| Search & Filter | 18 | ✅ Production Ready |
-| Navigation | 18 | ✅ Production Ready |
-| Forms & Inputs | 14 | ✅ Production Ready |
-| Notifications | 6 | ✅ Production Ready |
-| Auth & Onboarding | 9 | ✅ Production Ready |
-| Mobile Components | 8 | ✅ Production Ready |
-| Layout Infrastructure | 15 | ✅ Production Ready |
-| Performance Utils | 12 | ✅ Production Ready |
-| **TOTAL** | **180+** | **✅ PRODUCTION READY** |
-
----
-
-## 🚨 CRITICAL AUDIT FINDINGS
-
-**STATUS: ❌ NOT PRODUCTION READY - CRITICAL ISSUES FOUND**
-
-*Comprehensive Playwright audit conducted on 2025-09-15 revealed multiple blocking issues:*
-
-### **🔥 CRITICAL INFRASTRUCTURE FAILURES**
-
-#### **i18n System Completely Broken**
-- ❌ Missing file: `packages/i18n/src/paraglide/messages/_index.js`
-- ❌ Site completely crashes when trying to use translations
-- ❌ Error: "Failed to load url /@fs/K:/driplo-turbo-1/packages/i18n/src/paraglide/messages/_index.js"
-- **Impact**: Site non-functional, complete system failure
-
-#### **Development Environment Issues**
-- ❌ Web app forced to port 5182 instead of expected 5173 (port conflicts)
-- ❌ Multiple TypeScript type generation errors in UI package
-- ❌ File permission errors (EPERM) preventing proper builds
-- ❌ Missing TabGroup.svelte.d.ts and ReviewsSection.svelte.d.ts files
-
-#### **Database Connectivity Issues**
-- ❌ Supabase API calls failing with 400 errors
-- ❌ Categories endpoint returning 400: "Failed to fetch main categories"
-- ❌ Database connection timeouts during auth operations
-
-### **🚫 AUTHENTICATION SYSTEM ISSUES**
-
-#### **OAuth Integration Broken**
-- ❌ Google OAuth button disabled on login page
-- ❌ GitHub OAuth button disabled on login page
-- ❌ No error messages explaining why OAuth is disabled
-
-#### **Form Functionality**
-- ❌ Login form crashes site due to i18n system failure
-- ❌ Cannot test actual authentication flows due to system crashes
-
-### **🎨 UI/UX CRITICAL ISSUES**
-
-#### **Performance Problems**
-- ❌ Large Contentful Paint (LCP) values: 65060ms, 78424ms, 124792ms (should be <1500ms)
-- ❌ Multiple 404 errors for images: "Failed to load resource: 404"
-- ❌ Slow loading times affecting user experience
-
-#### **Mobile Responsiveness Issues**
-- ✅ Navigation menu opens/closes correctly
-- ⚠️ Layout appears functional but performance degraded
-- ❌ Touch interactions slow due to performance issues
-
-### **♿ ACCESSIBILITY VIOLATIONS (50+ Issues Found)**
-
-#### **Critical A11y Issues**
-- ❌ Click handlers on non-interactive elements without keyboard support
-- ❌ Missing ARIA labels on buttons: "Buttons should have aria-label or aria-labelledby"
-- ❌ Improper roles: "Non-interactive element cannot have interactive role"
-- ❌ Missing focus management: "Elements with 'dialog' role must have tabindex"
-- ❌ Static elements with click handlers: "div with click handler must have ARIA role"
-
-#### **Svelte 5 Migration Issues**
-- ❌ Non-reactive state updates: "updated but not declared with $state()"
-- ❌ Deprecated slot usage: "Using <slot> is deprecated. Use {@render ...} tags"
-- ❌ 50+ accessibility warnings in build output
-
-### **🐛 CODE QUALITY ISSUES**
-
-#### **Unused Code (100+ instances)**
-- ❌ Massive amounts of unused CSS selectors throughout codebase
-- ❌ Unused CSS in ProductInfo.svelte (20+ selectors)
-- ❌ Dead code in multiple components
-
-#### **Build System Issues**
-- ❌ Hot module replacement causing constant rebuilds
-- ❌ Build warnings and errors affecting development experience
-- ❌ TypeScript compilation issues in UI package
-
-### **📸 EVIDENCE CAPTURED**
-- `homepage-initial.png` - Initial homepage state
-- `homepage-mobile.png` - Mobile layout before crash
-- `login-page-mobile.png` - Login page with disabled OAuth buttons
-- Console logs showing 500 errors and system crashes
+**Exit Criteria**: Consistent lint and format config, lean script surface, docs updated, CI mirrors local pipelines.
 
 ---
 
-## 🚧 REQUIRED FIXES BEFORE PRODUCTION
+## Phase 8 - Observability, Security, and Compliance (Day 11-12)
+1. Logging and monitoring:
+   - Standardize server logging via `@repo/utils/logger` (create if missing) with structured output.
+   - Integrate Sentry (or chosen vendor) in `apps/web` and `apps/admin` for both server and client contexts.
+2. Security review:
+   - Run `pnpm audit --production` and triage vulnerabilities.
+   - Verify Supabase RLS policies align with application expectations; document in `docs/security/rls.md`.
+3. Privacy and data retention:
+   - Audit cookie usage via `@repo/core-cookies`; ensure consent logic documented.
+   - Confirm PII handling flows (profile images, addresses) satisfy compliance guidelines.
+4. Operational playbooks:
+   - Update `PRODUCTION.md` with incident response, rollback steps, and monitoring dashboards.
 
-### **Priority 1: Critical Blockers**
-1. **Fix i18n system** - Regenerate missing `_index.js` file
-2. **Repair Supabase connection** - Fix 400 errors on API calls
-3. **Enable OAuth providers** - Google and GitHub authentication
-4. **Fix build system** - Resolve TypeScript and file permission errors
-
-### **Priority 2: Performance & UX**
-5. **Optimize loading performance** - Target LCP <1500ms
-6. **Fix image loading** - Resolve 404 errors
-7. **Improve development workflow** - Fix port conflicts and HMR issues
-
-### **Priority 3: Accessibility Compliance**
-8. **Fix keyboard navigation** - Add proper focus management
-9. **Add ARIA labels** - Complete accessibility audit remediation
-10. **Update Svelte 5 patterns** - Fix deprecated slot usage and reactive state
-
-### **Priority 4: Code Quality**
-11. **Remove unused CSS** - Clean up 100+ unused selectors
-12. **Complete Svelte 5 migration** - Fix all reactive state warnings
-13. **Add proper error boundaries** - Handle system failures gracefully
+**Exit Criteria**: Logging consistent, error monitoring wired, security issues triaged, operational docs complete.
 
 ---
 
-## 📊 ACTUAL COMPONENT STATUS
+## Phase 9 - Release Readiness (Day 13)
+1. Final regression run: `pnpm -w turbo run lint check-types test build performance-audit`.
+2. Execute Lighthouse suite: `pnpm lighthouse:local` and ensure PWA metrics meet budget.
+3. Perform accessibility spot check with screen reader on key flows.
+4. Review change log and create release notes summarizing major refactors.
+5. Merge `final-hardening` branch via PR with:
+   - Evidence of before/after error counts
+   - Bundle diff
+   - Lighthouse and Playwright artifacts
+6. Tag release (`git tag v1.0.0-final-hardened`) and deploy to staging for burn-in.
 
-| Category | Components | Status | Critical Issues |
-|----------|------------|--------|-----------------|
-| Core UI | 17 | ⚠️ Partially Working | i18n crashes, performance issues |
-| Authentication | 2 | ❌ Broken | OAuth disabled, forms crash |
-| Product Display | 20 | ⚠️ Limited Function | API failures, slow loading |
-| Search & Filter | 18 | ❌ Non-functional | Database connection issues |
-| Navigation | 18 | ✅ Working | Mobile nav functional |
-| Notifications | 6 | ❌ Unknown | Cannot test due to crashes |
-| i18n System | 4 | ❌ Completely Broken | Missing core files |
-| **OVERALL** | **180+** | **❌ NOT PRODUCTION READY** | **Multiple blockers** |
+**Exit Criteria**: All gates green, documentation complete, approval from engineering, product, and QA.
 
 ---
 
-## 🚨 FINAL AUDIT VERDICT
+## Ongoing Governance After Release
+- Enforce monthly dependency upgrades (Supabase, SvelteKit, pnpm).
+- Schedule quarterly accessibility audits.
+- Add `ts-prune` and `depcheck` to CI to catch regressions in dead code.
+- Maintain `docs/architecture` diagram; refresh when major features land.
 
-**STATUS: ❌ CRITICAL ISSUES - DO NOT DEPLOY**
+---
 
-The application has severe infrastructure failures that prevent basic functionality. While the component architecture appears sound, critical systems are non-functional:
+## Appendix - Tracking Checklist Template
+For each phase create an issue checklist with:
+- Task description (with path reference)
+- Status (todo / in-progress / done)
+- Evidence link (PR, log, screenshot)
+- Validation command(s)
+- Owner
 
-**Immediate Actions Required:**
-1. **Emergency i18n system repair**
-2. **Database connectivity restoration**
-3. **Authentication system enablement**
-4. **Performance optimization**
-5. **Accessibility compliance**
-
-**Estimated Remediation Time: 2-3 weeks**
-
-**Do not proceed with production deployment until all Priority 1 and 2 issues are resolved.**
+Use this template in Linear, Jira, or Notion to keep execution transparent and auditable.

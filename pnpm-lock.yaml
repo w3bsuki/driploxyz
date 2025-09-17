@@ -81,7 +81,7 @@ importers:
         version: 5.8.2
       vite:
         specifier: ^7.0.4
-        version: 7.1.4(terser@5.44.0)
+        version: 7.1.4(@types/node@22.18.1)
 
   apps/docs:
     dependencies:
@@ -130,7 +130,7 @@ importers:
         version: 5.8.2
       vite:
         specifier: ^7.0.0
-        version: 7.1.4(terser@5.44.0)
+        version: 7.1.4(@types/node@22.18.1)
       vitest:
         specifier: ^3.2.0
         version: 3.2.4
@@ -176,6 +176,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.16
         version: 0.5.16(tailwindcss@4.1.13)
+      '@vercel/analytics':
+        specifier: ^1.5.0
+        version: 1.5.0(@sveltejs/kit@2.37.1)(svelte@5.38.7)
       browser-image-compression:
         specifier: ^2.0.2
         version: 2.0.2
@@ -2503,7 +2506,7 @@ packages:
     peerDependencies:
       '@sveltejs/kit': ^2.0.0
     dependencies:
-      '@sveltejs/kit': 2.37.1(@sveltejs/vite-plugin-svelte@6.1.4)(svelte@5.38.7)(vite@7.1.4)
+      '@sveltejs/kit': 2.37.1(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@6.1.4)(svelte@5.38.7)(vite@7.1.4)
       import-meta-resolve: 4.2.0
     dev: true
 
@@ -2512,7 +2515,7 @@ packages:
     peerDependencies:
       '@sveltejs/kit': ^2.4.0
     dependencies:
-      '@sveltejs/kit': 2.37.1(@sveltejs/vite-plugin-svelte@6.1.4)(svelte@5.38.7)(vite@7.1.4)
+      '@sveltejs/kit': 2.37.1(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@6.1.4)(svelte@5.38.7)(vite@7.1.4)
       '@vercel/nft': 0.30.1
       esbuild: 0.25.9
     transitivePeerDependencies:
@@ -2630,7 +2633,7 @@ packages:
       '@sveltejs/vite-plugin-svelte': 6.1.4(svelte@5.38.7)(vite@7.1.4)
       debug: 4.4.1
       svelte: 5.38.7
-      vite: 7.1.4(@types/node@22.18.1)
+      vite: 7.1.4(terser@5.44.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -2646,7 +2649,7 @@ packages:
       deepmerge: 4.3.1
       magic-string: 0.30.18
       svelte: 5.38.7
-      vite: 7.1.4(@types/node@22.18.1)
+      vite: 7.1.4(terser@5.44.0)
       vitefu: 1.1.1(vite@7.1.4)
     transitivePeerDependencies:
       - supports-color
@@ -2877,8 +2880,8 @@ packages:
     dependencies:
       '@testing-library/dom': 10.4.1
       svelte: 5.38.7
-      vite: 7.1.4(@types/node@22.18.1)
-      vitest: 3.2.4(@types/node@22.18.1)(@vitest/ui@3.2.4)(jsdom@24.1.3)
+      vite: 7.1.4(terser@5.44.0)
+      vitest: 3.2.4(@vitest/ui@3.2.4)(jsdom@24.1.3)(terser@5.44.0)
     dev: true
 
   /@testing-library/user-event@14.6.1(@testing-library/dom@10.4.1):
@@ -3117,6 +3120,36 @@ packages:
       eslint-visitor-keys: 4.2.1
     dev: true
 
+  /@vercel/analytics@1.5.0(@sveltejs/kit@2.37.1)(svelte@5.38.7):
+    resolution: {integrity: sha512-MYsBzfPki4gthY5HnYN7jgInhAZ7Ac1cYDoRWFomwGHWEX7odTEzbtg9kf/QSo7XEsEAqlQugA6gJ2WS2DEa3g==}
+    peerDependencies:
+      '@remix-run/react': ^2
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      react: ^18 || ^19 || ^19.0.0-rc
+      svelte: '>= 4'
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@remix-run/react':
+        optional: true
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
+    dependencies:
+      '@sveltejs/kit': 2.37.1(@opentelemetry/api@1.9.0)(@sveltejs/vite-plugin-svelte@6.1.4)(svelte@5.38.7)(vite@7.1.4)
+      svelte: 5.38.7
+    dev: false
+
   /@vercel/nft@0.30.1:
     resolution: {integrity: sha512-2mgJZv4AYBFkD/nJ4QmiX5Ymxi+AisPLPcS/KPXVqniyQNqKXX+wjieAbDXQP3HcogfEbpHoRMs49Cd4pfkk8g==}
     engines: {node: '>=18'}
@@ -3164,7 +3197,7 @@ packages:
       '@vitest/spy': 3.2.4
       estree-walker: 3.0.3
       magic-string: 0.30.18
-      vite: 7.1.4(@types/node@22.18.1)
+      vite: 7.1.4(terser@5.44.0)
     dev: true
 
   /@vitest/pretty-format@3.2.4:
@@ -3207,7 +3240,7 @@ packages:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 2.0.0
-      vitest: 3.2.4(@types/node@22.18.1)(@vitest/ui@3.2.4)(jsdom@24.1.3)
+      vitest: 3.2.4(@vitest/ui@3.2.4)(jsdom@24.1.3)(terser@5.44.0)
     dev: true
 
   /@vitest/utils@3.2.4:
@@ -7420,7 +7453,7 @@ packages:
       debug: 4.4.1
       es-module-lexer: 1.7.0
       pathe: 2.0.3
-      vite: 7.1.4(terser@5.44.0)
+      vite: 7.1.4(@types/node@22.18.1)
     transitivePeerDependencies:
       - '@types/node'
       - jiti
@@ -7535,6 +7568,7 @@ packages:
       tinyglobby: 0.2.15
     optionalDependencies:
       fsevents: 2.3.3
+    dev: true
 
   /vite@7.1.4(terser@5.44.0):
     resolution: {integrity: sha512-X5QFK4SGynAeeIt+A7ZWnApdUyHYm+pzv/8/A57LqSGcI88U6R6ipOs3uCesdc6yl7nl+zNO0t8LmqAdXcQihw==}
@@ -7594,7 +7628,7 @@ packages:
       vite:
         optional: true
     dependencies:
-      vite: 7.1.4(@types/node@22.18.1)
+      vite: 7.1.4(terser@5.44.0)
 
   /vitest@3.2.4:
     resolution: {integrity: sha512-LUCP5ev3GURDysTWiP47wRRUpLKMOfPh+yKTx3kVIEiu5KOMeqzpnYNsKyOoVrULivR8tLcks4+lga33Whn90A==}
@@ -7644,7 +7678,7 @@ packages:
       tinyglobby: 0.2.15
       tinypool: 1.1.1
       tinyrainbow: 2.0.0
-      vite: 7.1.4(terser@5.44.0)
+      vite: 7.1.4(@types/node@22.18.1)
       vite-node: 3.2.4
       why-is-node-running: 2.3.0
     transitivePeerDependencies:

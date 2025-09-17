@@ -1,4 +1,6 @@
 
+import type { Tables } from '@repo/database';
+
 export interface User {
   id: string;
   email: string;
@@ -6,42 +8,18 @@ export interface User {
   updated_at: string;
 }
 
-export interface Profile {
-  id: string;
-  user_id: string;
-  username: string;
-  display_name?: string;
-  avatar_url?: string;
-  bio?: string;
-  rating?: number;
-  reviews_count: number;
-  sales_count: number;
-  purchases_count: number;
-  followers_count: number;
-  following_count: number;
-  onboarding_completed: boolean;
-  created_at: string;
-  updated_at: string;
-  account_type?: string;
-  verification_status?: string;
-  subscription_tier?: string;
-  subscription_expires_at?: string;
-  role?: 'buyer' | 'seller' | 'admin';  // Database field for role-based checks
-}
+// Use Supabase types as single source of truth for persisted data
+export type Profile = Tables<'profiles'>;
 
 export interface Seller extends Profile {
-  verification_status?: 'unverified' | 'pending' | 'verified';
-  shop_name?: string;
-  shop_banner?: string;
+  // UI-specific fields not in database
   pro?: boolean;
   itemCount?: number;
   followers?: number;
   description?: string;
-  account_type?: 'new' | 'pro' | 'brand';
   is_verified?: boolean;
   total_products?: number;
   average_rating?: number;
-  full_name?: string;
   totalSales?: number;
   recentProducts?: Array<{
     id: string;
@@ -51,62 +29,16 @@ export interface Seller extends Profile {
   }>;
   // Computed display name fields (for component compatibility)
   name?: string;          // Computed from display_name || full_name || username
-  displayName?: string;   // Computed display name
+  displayName?: string;   // Computed display name (derived from database display_name)
   avatar?: string;        // Alias for avatar_url for component compatibility
 }
 
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  parent_id?: string;
-  icon?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Order {
-  id: string;
-  buyer_id: string;
-  seller_id: string;
-  product_id: string;
-  status: 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
-  total_amount: number;
-  currency: string;
-  shipping_address?: string;
-  tracking_number?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Message {
-  id: string;
-  sender_id: string;
-  receiver_id: string;
-  product_id?: string;
-  content: string;
-  read: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Review {
-  id: string;
-  reviewer_id: string;
-  reviewed_id: string;
-  product_id?: string;
-  rating: number;
-  comment?: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Favorite {
-  id: string;
-  user_id: string;
-  product_id: string;
-  created_at: string;
-}
+// Replace manual interfaces with Supabase types as single source of truth
+export type Category = Tables<'categories'>;
+export type Order = Tables<'orders'>;
+export type Message = Tables<'messages'>;
+export type Review = Tables<'reviews'>;
+export type Favorite = Tables<'favorites'>;
 
 // Component Design System Types
 

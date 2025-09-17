@@ -9,11 +9,11 @@
 
 import type { Tables } from '@repo/database';
 
-// Base product type from database (clean, no overrides)
-export type DatabaseProduct = Tables<'products'>;
+// Explicit split: Database row type
+export type ProductRow = Tables<'products'>;
 
-// UI-specific product interface that extends database product with UI-only computed fields
-export interface UIProduct extends DatabaseProduct {
+// UI-specific fields interface (only computed/display fields, never override database fields)
+export interface ProductUIFields {
   // UI-specific computed properties (NEVER override database fields)
   images: string[];
   slug?: string; // Generated from title for SEO-friendly URLs
@@ -47,12 +47,18 @@ export interface UIProduct extends DatabaseProduct {
   is_promoted?: boolean;
 }
 
-// Main Product type for UI components - use this instead of DatabaseProduct
-export type Product = UIProduct;
+// Main Product type for UI components - intersection of database row and UI fields
+export type Product = ProductRow & ProductUIFields;
+
+// Legacy alias for backwards compatibility
+/** @deprecated Use Product or ProductRow instead */
+export type UIProduct = Product;
+/** @deprecated Use ProductRow instead */
+export type DatabaseProduct = ProductRow;
 
 // Helper type for creating products from database data + UI data
 export interface ProductWithUIData {
-  product: DatabaseProduct;
+  product: ProductRow;
   seller: {
     username: string;
     rating: number;
@@ -102,53 +108,18 @@ export function transformToUIProduct(data: ProductWithUIData): Product {
     seller_subscription_tier: seller.subscription_tier as 'free' | 'basic' | 'pro' | 'brand',
     product_images: images,
 
-    // Legacy compatibility mappings
+    // Legacy compatibility mappings (handle nullable database fields)
     sellerId: product.seller_id,
-    createdAt: product.created_at,
+    createdAt: product.created_at || new Date().toISOString(),
     is_promoted: product.is_featured || false,
   };
 }
 
 // Re-export other types that components commonly use
-export type ProductCondition = DatabaseProduct['condition'];
-export type ProductStatus = DatabaseProduct['status'];
+export type ProductCondition = ProductRow['condition'];
+export type ProductStatus = ProductRow['status'];
 
-// User and Review types (keeping existing structure for now)
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  avatar?: string;
-  bio?: string;
-  rating: number;
-  reviewCount: number;
-  verified: boolean;
-  memberSince: string;
-  location?: string;
-}
-
-export interface Review {
-  id: string;
-  rating: number;
-  comment: string;
-  images?: string[];
-  reviewerId: string;
-  reviewerName: string;
-  productId?: string;
-  sellerId?: string;
-  createdAt: string;
-}
-
-export interface Message {
-  id: string;
-  content: string;
-  senderId: string;
-  receiverId: string;
-  productId?: string;
-  images?: string[];
-  timestamp: string;
-  read: boolean;
-}
+// User, Review, and Message types are now imported from index.ts to avoid duplication
 
 export interface SearchFilters {
   category?: string;

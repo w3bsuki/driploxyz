@@ -52,8 +52,8 @@ export { default as SearchFeedback } from './SearchFeedback.svelte';
 export { toasts } from './toast-store.js';
 
 // Types (commonly used)
-export type { Product, User, Review, Message, SearchFilters } from './types/product';
-export type { ButtonVariant, ButtonSize, BadgeVariant, BadgeSize } from './types';
+export type { Product, SearchFilters } from './types/product';
+export type { User, Review, Message, ButtonVariant, ButtonSize, BadgeVariant, BadgeSize } from './types';
 
 /**
  * Frequently Used Component Combinations

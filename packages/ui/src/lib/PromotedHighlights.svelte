@@ -123,7 +123,7 @@
     }
 
     const container = document.querySelector('[data-highlights-container]');
-    const items = container?.querySelectorAll('[data-highlight-item]');
+    const items = container?.querySelectorAll<HTMLElement>('[data-highlight-item]');
     items?.[currentFocusIndex]?.focus();
   }
 
@@ -307,9 +307,11 @@
                               alt="{seller.name}'s profile picture"
                               class="w-full h-full object-cover"
                               onerror={(e) => {
-                                e.target.style.display = 'none';
-                                if (e.target.nextElementSibling) {
-                                  e.target.nextElementSibling.style.display = 'flex';
+                                const target = e.currentTarget as HTMLImageElement | null;
+                                if (!target) return;
+                                target.style.display = 'none';
+                                if (target.nextElementSibling) {
+                                  (target.nextElementSibling as HTMLElement).style.display = 'flex';
                                 }
                               }}
                             />
