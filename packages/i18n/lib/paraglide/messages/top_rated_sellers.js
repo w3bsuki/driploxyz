@@ -2,11 +2,11 @@
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
 const bg_top_rated_sellers = /** @type {(inputs: {}) => string} */ () => {
-	return `Топ оценени и потвърдени продавачи`
+	return `Верифицирани продавачи`
 };
 
 const en_top_rated_sellers = /** @type {(inputs: {}) => string} */ () => {
-	return `Top-rated and verified sellers`
+	return `Verified sellers`
 };
 
 /**

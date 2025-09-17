@@ -45,7 +45,7 @@
       <button
         class="accordion-trigger"
         class:expanded={isExpanded(accordionItem.id)}
-        use:trigger={$trigger(accordionItem.id)}
+        use:trigger
         type="button"
       >
         <span class="accordion-title">{accordionItem.title}</span>
@@ -65,7 +65,7 @@
 
       <div
         class="accordion-content"
-        use:content={$content(accordionItem.id)}
+        use:content
       >
         <div class="accordion-content-inner">
           {#if accordionItem.contentSnippet}

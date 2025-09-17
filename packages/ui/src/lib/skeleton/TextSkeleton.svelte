@@ -59,10 +59,10 @@
   };
 </script>
 
-<div class="text-skeleton {className} {getSpacing()}">
+<div class="text-skeleton {className} {getSpacing()}" role="status" aria-label="Loading text...">
   {#each Array(lines) as _, index}
-    <div 
-      class="bg-gray-200 rounded {getLineHeight()} {getLineWidth(index, lines)}"
+    <div
+      class="bg-[color:var(--surface-emphasis)] rounded {getLineHeight()} {getLineWidth(index, lines)} shimmer"
       role="presentation"
       aria-hidden="true"
     ></div>
@@ -72,6 +72,42 @@
 <style>
   .text-skeleton {
     position: relative;
-    /* No animations - instant skeleton display */
+  }
+
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 150%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%
+    );
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      left: -150%;
+    }
+    100% {
+      left: 150%;
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .shimmer::before {
+      animation: none;
+    }
   }
 </style>

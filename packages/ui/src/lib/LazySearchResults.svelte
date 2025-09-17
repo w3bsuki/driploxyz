@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { VirtualProductGrid } from '@repo/ui';
-  import type { Product } from './types/index';
+  import type { Product } from './types/product';
   
   interface Props {
     searchQuery?: string;

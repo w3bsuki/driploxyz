@@ -210,7 +210,6 @@
 
 <header
   class="border-b border-[color:var(--border-subtle)] bg-[color:var(--surface-base)] supports-[backdrop-filter]:backdrop-blur"
-  role="banner"
   aria-label="Site header"
 >
   <div class="px-2 sm:px-4 lg:px-6 safe-area">

@@ -1,6 +1,6 @@
 <script lang="ts">
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
+import { useAnalytics } from './hooks/analytics.js';
 import SearchInput from './SearchInput.svelte';
 import MegaMenuCategories from './MegaMenuCategories.svelte';
 import CategoryPill from './CategoryPill.svelte';
@@ -31,8 +31,10 @@ interface Collection {
   product_count?: number;
 }
 
+type SearchBarMode = 'power' | 'compact' | 'full';
+
 interface Props {
-  supabase: SupabaseClient<Database>;
+  mode?: SearchBarMode;
   searchValue?: string;
   megaMenuData?: CategoryWithChildren[];
   mainCategories?: MainCategory[];
@@ -52,7 +54,7 @@ interface Props {
 }
 
 let {
-  supabase,
+  mode = 'full',
   searchValue = $bindable(''),
   megaMenuData = [],
   mainCategories = [],
@@ -70,6 +72,9 @@ let {
   onFilterRemove,
   onClearAllFilters
 }: Props = $props();
+
+// Analytics hooks
+const { trackSearch, trackModeSwitch, trackFilterUsage, trackMegaMenuNavigation } = useAnalytics();
 
 // Component state
 let showCategoryDropdown = $state(false);
@@ -150,12 +155,18 @@ function handleCategoryDropdownClose() {
 }
 
 function handleMegaMenuCategorySelect(categorySlug: string, level: number, path: string[]) {
+  // Track mega menu navigation
+  trackMegaMenuNavigation(level, categorySlug, path.join('/'));
+
   onCategorySelect(categorySlug);
   handleCategoryDropdownClose();
 }
 
 // Handle smart pill clicks
 function handleSmartPillClick(pillKey: string, level: number) {
+  // Track filter usage
+  trackFilterUsage(level === 1 ? 'category' : level === 2 ? 'subcategory' : 'specific', pillKey, searchValue || '');
+
   if (level === 1) {
     // Main category selection
     onFilterChange('category', pillKey);
@@ -178,6 +189,10 @@ function handleCategoryPillClick(categoryKey: string) {
 
 function handleConditionPillClick(conditionKey: string) {
   const currentCondition = appliedFilters?.condition;
+
+  // Track filter usage
+  trackFilterUsage('condition', conditionKey, searchValue || '');
+
   if (currentCondition === conditionKey) {
     onFilterRemove('condition');
   } else {
@@ -215,6 +230,9 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
 
 // Handle collection selection from dropdown
 function handleCollectionSelect(collection: Collection) {
+  // Track filter usage
+  trackFilterUsage('collection', collection.key, searchValue || '');
+
   if (collection.key.startsWith('category=')) {
     const categorySlug = collection.key.replace('category=', '');
     onCategorySelect(categorySlug);
@@ -246,24 +264,28 @@ function handleCollectionSelect(collection: Collection) {
 
 // Handle condition selection from dropdown
 function handleConditionSelect(condition: FilterPillData) {
+  trackFilterUsage('condition', condition.key, searchValue || '');
   onFilterChange('condition', condition.key);
   handleCategoryDropdownClose();
 }
 
 // Handle size selection from dropdown
 function handleSizeSelect(size: string) {
+  trackFilterUsage('size', size, searchValue || '');
   onFilterChange('size', size);
   handleCategoryDropdownClose();
 }
 
 // Handle color selection from dropdown
 function handleColorSelect(color: string) {
+  trackFilterUsage('color', color, searchValue || '');
   onFilterChange('color', color);
   handleCategoryDropdownClose();
 }
 
 // Handle brand selection from dropdown
 function handleBrandSelect(brand: string) {
+  trackFilterUsage('brand', brand, searchValue || '');
   onFilterChange('brand', brand);
   handleCategoryDropdownClose();
 }
@@ -465,6 +487,10 @@ function getSubcategoryIcon(name: string): string {
         onSearch={onSearch}
         searchId="search-page-input"
         showDropdown={false}
+        {mode}
+        aria-label="Search products"
+        aria-describedby="search-results-count"
+        role="searchbox"
       >
         {#snippet leftSection()}
           <button
@@ -475,9 +501,9 @@ function getSubcategoryIcon(name: string): string {
             aria-haspopup="listbox"
             aria-label="Select category"
           >
-            <span class="text-sm font-medium text-[color:var(--text-secondary)]">Browse</span>
+            <span class="text-[length:var(--text-sm)] font-medium text-[color:var(--text-secondary)]">Browse</span>
             {#if currentResultCount !== undefined}
-              <span class="px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-600 rounded-full">
+              <span class="px-2 py-1 text-[length:var(--text-xs)] font-semibold bg-[color:var(--surface-subtle)] text-[color:var(--text-primary)] rounded-full">
                 {currentResultCount.toLocaleString()}
               </span>
             {/if}
@@ -493,15 +519,17 @@ function getSubcategoryIcon(name: string): string {
         <div class="absolute top-full left-0 right-0 mt-1 z-50">
           <div class="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
             <div class="max-h-[50vh] overflow-y-auto">
-              <div class="p-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Categories</div>
+              <div class="p-2 text-[length:var(--text-xs)] font-semibold text-[color:var(--text-secondary)] uppercase tracking-wide">Categories</div>
               {#each categoryMatches as c}
                 <button
                   onclick={() => handleMegaMenuCategorySelect(c.slug, c.level, c.path)}
-                  class="w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50 text-left transition-colors"
+                  class="w-full flex items-center gap-2 px-3 h-9 min-h-9 hover:bg-gray-50 text-left transition-colors"
+                  role="option"
+                  aria-label="Select category: {c.name} (Level {c.level})"
                 >
-                  <span class="text-gray-400 text-xs w-8">{c.level === 1 ? 'L1' : c.level === 2 ? 'L2' : 'L3'}</span>
-                  <span class="flex-1 text-sm text-gray-900">{c.name}</span>
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <span class="text-[color:var(--text-tertiary)] text-[length:var(--text-xs)] w-8">{c.level === 1 ? 'L1' : c.level === 2 ? 'L2' : 'L3'}</span>
+                  <span class="flex-1 text-[length:var(--text-sm)] text-gray-900">{c.name}</span>
+                  <svg class="w-4 h-4 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
@@ -515,41 +543,65 @@ function getSubcategoryIcon(name: string): string {
       {#if showCategoryDropdown}
         <div class="absolute top-full left-0 right-0 mt-1 z-50">
           <div class="bg-white border border-gray-200 rounded-xl shadow-lg p-4 min-h-[350px] max-h-[80vh] overflow-hidden">
-            <!-- Tab Headers - Scrollable on mobile -->
-            <div class="flex items-center gap-1 mb-4 bg-gray-100 p-1 rounded-lg overflow-x-auto">
+            <!-- Tab Headers - Scrollable on mobile (40px preferred for secondary actions) -->
+            <div class="flex items-center gap-1 mb-4 bg-gray-100 p-1 rounded-lg overflow-x-auto" role="tablist" aria-label="Filter categories">
               <button
                 onclick={() => activeDropdownTab = 'categories'}
-                class="shrink-0 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'categories' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                class="shrink-0 px-3 h-10 min-h-10 text-[length:var(--text-sm)] font-medium rounded-md transition-all duration-200 flex items-center justify-center {activeDropdownTab === 'categories' ? 'bg-white text-[color:var(--brand-primary)] shadow-sm' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}"
+                role="tab"
+                aria-selected={activeDropdownTab === 'categories'}
+                aria-controls="categories-panel"
+                id="categories-tab"
               >
                 Categories
               </button>
               <button
                 onclick={() => activeDropdownTab = 'collections'}
-                class="shrink-0 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'collections' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                class="shrink-0 px-3 h-10 min-h-10 text-[length:var(--text-sm)] font-medium rounded-md transition-all duration-200 flex items-center justify-center {activeDropdownTab === 'collections' ? 'bg-white text-[color:var(--brand-primary)] shadow-sm' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}"
+                role="tab"
+                aria-selected={activeDropdownTab === 'collections'}
+                aria-controls="collections-panel"
+                id="collections-tab"
               >
                 Collections
               </button>
               <button
                 onclick={() => activeDropdownTab = 'size'}
-                class="shrink-0 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'size' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                class="shrink-0 px-3 h-10 min-h-10 text-[length:var(--text-sm)] font-medium rounded-md transition-all duration-200 flex items-center justify-center {activeDropdownTab === 'size' ? 'bg-white text-[color:var(--brand-primary)] shadow-sm' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}"
+                role="tab"
+                aria-selected={activeDropdownTab === 'size'}
+                aria-controls="size-panel"
+                id="size-tab"
               >
                 Size
               </button>
               <button
                 onclick={() => activeDropdownTab = 'color'}
-                class="shrink-0 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'color' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                class="shrink-0 px-3 h-10 min-h-10 text-[length:var(--text-sm)] font-medium rounded-md transition-all duration-200 flex items-center justify-center {activeDropdownTab === 'color' ? 'bg-white text-[color:var(--brand-primary)] shadow-sm' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}"
+                role="tab"
+                aria-selected={activeDropdownTab === 'color'}
+                aria-controls="color-panel"
+                id="color-tab"
               >
                 Color
               </button>
               <button
                 onclick={() => activeDropdownTab = 'brand'}
-                class="shrink-0 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'brand' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                class="shrink-0 px-3 h-10 min-h-10 text-[length:var(--text-sm)] font-medium rounded-md transition-all duration-200 flex items-center justify-center {activeDropdownTab === 'brand' ? 'bg-white text-[color:var(--brand-primary)] shadow-sm' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}"
+                role="tab"
+                aria-selected={activeDropdownTab === 'brand'}
+                aria-controls="brand-panel"
+                id="brand-tab"
               >
                 Brand
               </button>
               <button
                 onclick={() => activeDropdownTab = 'condition'}
-                class="shrink-0 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 {activeDropdownTab === 'condition' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'}"
+                class="shrink-0 px-3 h-10 min-h-10 text-[length:var(--text-sm)] font-medium rounded-md transition-all duration-200 flex items-center justify-center {activeDropdownTab === 'condition' ? 'bg-white text-[color:var(--brand-primary)] shadow-sm' : 'text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)]'}"
+                role="tab"
+                aria-selected={activeDropdownTab === 'condition'}
+                aria-controls="condition-panel"
+                id="condition-tab"
               >
                 Condition
               </button>
@@ -558,7 +610,7 @@ function getSubcategoryIcon(name: string): string {
             <!-- Search Input -->
             <div class="mb-4">
               <div class="relative">
-                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                 </svg>
                 <input
@@ -570,14 +622,16 @@ function getSubcategoryIcon(name: string): string {
                               activeDropdownTab === 'color' ? 'Search colors...' :
                               activeDropdownTab === 'brand' ? 'Search brands...' :
                               'Search conditions...'}
-                  class="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 hover:bg-white transition-colors"
+                  class="w-full pl-10 pr-4 h-10 min-h-10 text-[length:var(--text-sm)] border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 hover:bg-white transition-colors"
                 />
                 {#if dropdownSearchQuery.trim()}
                   <button
                     onclick={() => dropdownSearchQuery = ''}
-                    class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 hover:text-gray-600"
+                    class="absolute right-3 top-1/2 transform -translate-y-1/2 w-9 h-9 min-w-9 min-h-9 flex items-center justify-center text-[color:var(--text-tertiary)] hover:text-[color:var(--text-secondary)] hover:bg-[color:var(--surface-subtle)] rounded-full transition-colors"
+                    aria-label="Clear search query"
+                    type="button"
                   >
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                   </button>
@@ -586,74 +640,82 @@ function getSubcategoryIcon(name: string): string {
             </div>
 
             <!-- Tab Content -->
-            <div class="min-h-[200px] max-h-[300px] overflow-y-auto">
+            <div class="min-h-[200px] max-h-[300px] overflow-y-auto" role="tabpanel" aria-labelledby="{activeDropdownTab}-tab" id="{activeDropdownTab}-panel">
               {#if activeDropdownTab === 'categories'}
                 <MegaMenuCategories
                   categories={megaMenuData}
                   onCategoryClick={handleMegaMenuCategorySelect}
                   onClose={handleCategoryDropdownClose}
+                  aria-label="Category hierarchy navigation"
                 />
               {:else if activeDropdownTab === 'collections'}
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid grid-cols-2 gap-2" role="grid" aria-label="Collection filters">
                   {#each filteredCollections as collection}
                     <button
                       onclick={() => handleCollectionSelect(collection)}
-                      class="flex items-center gap-2 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+                      class="flex items-center gap-2 p-3 h-10 min-h-10 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+                      aria-label="Filter by collection: {collection.label}"
                     >
-                      <span class="text-lg">{collection.emoji}</span>
-                      <span class="font-medium text-gray-900 group-hover:text-blue-600 text-sm">{collection.label}</span>
+                      <span class="text-[length:var(--text-lg)]">{collection.emoji}</span>
+                      <span class="font-medium text-[color:var(--text-primary)] group-hover:text-[color:var(--brand-primary)] text-[length:var(--text-sm)]">{collection.label}</span>
                     </button>
                   {/each}
                   {#if filteredCollections.length === 0 && dropdownSearchQuery.trim()}
-                    <div class="col-span-2 text-center py-4 text-gray-500">
-                      <p class="text-sm">No collections found</p>
+                    <div class="col-span-2 text-center py-4 text-[color:var(--text-secondary)]">
+                      <p class="text-[length:var(--text-sm)]">No collections found</p>
                     </div>
                   {/if}
                 </div>
               {:else if activeDropdownTab === 'size'}
-                <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                <div class="grid grid-cols-3 sm:grid-cols-4 gap-2" role="group" aria-label="Size filters">
                   {#each filteredSizes as size}
                     <button
                       onclick={() => handleSizeSelect(size)}
-                      class="flex items-center justify-center p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group
+                      class="flex items-center justify-center p-3 h-10 min-h-10 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group
                         {appliedFilters?.size === size ? 'bg-blue-50 border-blue-300 text-blue-700' : ''}"
+                      aria-label="Filter by size: {size}"
+                      aria-pressed={appliedFilters?.size === size}
                     >
-                      <span class="font-medium text-sm">{size}</span>
+                      <span class="font-medium text-[length:var(--text-sm)]">{size}</span>
                     </button>
                   {/each}
                   {#if filteredSizes.length === 0}
-                    <div class="col-span-full text-center py-4 text-gray-500">
-                      <p class="text-sm">{dropdownSearchQuery.trim() ? 'No sizes found' : 'No sizes available'}</p>
+                    <div class="col-span-full text-center py-4 text-[color:var(--text-secondary)]">
+                      <p class="text-[length:var(--text-sm)]">{dropdownSearchQuery.trim() ? 'No sizes found' : 'No sizes available'}</p>
                     </div>
                   {/if}
                 </div>
               {:else if activeDropdownTab === 'color'}
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" role="group" aria-label="Color filters">
                   {#each filteredColors as color}
                     <button
                       onclick={() => handleColorSelect(color)}
-                      class="flex items-center gap-2 p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group
+                      class="flex items-center gap-2 p-3 h-10 min-h-10 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group
                         {appliedFilters?.color === color ? 'bg-blue-50 border-blue-300 text-blue-700' : ''}"
+                      aria-label="Filter by color: {color}"
+                      aria-pressed={appliedFilters?.color === color}
                     >
                       <div class="w-4 h-4 rounded-full border border-gray-300 flex-shrink-0" style="background-color: {color.toLowerCase()}"></div>
-                      <span class="font-medium text-sm">{color}</span>
+                      <span class="font-medium text-[length:var(--text-sm)]">{color}</span>
                     </button>
                   {/each}
                   {#if filteredColors.length === 0}
-                    <div class="col-span-full text-center py-4 text-gray-500">
-                      <p class="text-sm">{dropdownSearchQuery.trim() ? 'No colors found' : 'No colors available'}</p>
+                    <div class="col-span-full text-center py-4 text-[color:var(--text-secondary)]">
+                      <p class="text-[length:var(--text-sm)]">{dropdownSearchQuery.trim() ? 'No colors found' : 'No colors available'}</p>
                     </div>
                   {/if}
                 </div>
               {:else if activeDropdownTab === 'brand'}
-                <div class="grid grid-cols-1 gap-2">
+                <div class="grid grid-cols-1 gap-2" role="group" aria-label="Brand filters">
                   {#each filteredBrands as brand}
                     <button
                       onclick={() => handleBrandSelect(brand)}
-                      class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group
+                      class="flex items-center justify-between p-3 h-10 min-h-10 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group
                         {appliedFilters?.brand === brand ? 'bg-blue-50 border-blue-300 text-blue-700' : ''}"
+                      aria-label="Filter by brand: {brand}"
+                      aria-pressed={appliedFilters?.brand === brand}
                     >
-                      <span class="font-medium text-gray-900 group-hover:text-blue-600 text-sm">{brand}</span>
+                      <span class="font-medium text-[color:var(--text-primary)] group-hover:text-[color:var(--brand-primary)] text-[length:var(--text-sm)]">{brand}</span>
                       {#if appliedFilters?.brand === brand}
                         <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                           <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -662,29 +724,30 @@ function getSubcategoryIcon(name: string): string {
                     </button>
                   {/each}
                   {#if filteredBrands.length === 0}
-                    <div class="text-center py-4 text-gray-500">
-                      <p class="text-sm">{dropdownSearchQuery.trim() ? 'No brands found' : 'No brands available'}</p>
+                    <div class="text-center py-4 text-[color:var(--text-secondary)]">
+                      <p class="text-[length:var(--text-sm)]">{dropdownSearchQuery.trim() ? 'No brands found' : 'No brands available'}</p>
                     </div>
                   {/if}
                 </div>
               {:else if activeDropdownTab === 'condition'}
-                <div class="grid grid-cols-1 gap-2">
+                <div class="grid grid-cols-1 gap-2" role="group" aria-label="Condition filters">
                   {#each filteredConditions as condition}
                     <button
                       onclick={() => handleConditionSelect(condition)}
-                      class="flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+                      class="flex items-center justify-between p-3 h-10 min-h-10 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
+                      aria-label="Filter by condition: {condition.label}"
                     >
                       <div>
-                        <div class="font-medium text-gray-900 group-hover:text-blue-600 text-sm">{condition.label}</div>
+                        <div class="font-medium text-[color:var(--text-primary)] group-hover:text-[color:var(--brand-primary)] text-[length:var(--text-sm)]">{condition.label}</div>
                         {#if condition.shortLabel !== condition.label}
-                          <div class="text-xs text-gray-500">{condition.shortLabel}</div>
+                          <div class="text-[length:var(--text-xs)] text-[color:var(--text-secondary)]">{condition.shortLabel}</div>
                         {/if}
                       </div>
                     </button>
                   {/each}
                   {#if filteredConditions.length === 0 && dropdownSearchQuery.trim()}
-                    <div class="text-center py-4 text-gray-500">
-                      <p class="text-sm">No conditions found</p>
+                    <div class="text-center py-4 text-[color:var(--text-secondary)]">
+                      <p class="text-[length:var(--text-sm)]">No conditions found</p>
                     </div>
                   {/if}
                 </div>
@@ -697,22 +760,22 @@ function getSubcategoryIcon(name: string): string {
 
     <!-- Category Breadcrumbs -->
     {#if categoryBreadcrumbs.length > 0}
-      <div class="flex items-center justify-between px-1 py-2 text-sm">
+      <div class="flex items-center justify-between px-1 py-2 text-[length:var(--text-sm)]">
         <div class="flex items-center gap-1">
-          <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-4 h-4 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0l-4 4m4-4l-4-4" />
           </svg>
         {#each categoryBreadcrumbs as crumb, index}
           <button
             onclick={() => handleBreadcrumbClick(crumb.level)}
-            class="text-gray-600 hover:text-blue-600 transition-colors duration-200 font-medium
+            class="px-2 py-1 h-9 min-h-9 flex items-center text-[color:var(--text-secondary)] hover:text-[color:var(--brand-primary)] hover:bg-[color:var(--surface-subtle)] rounded-md transition-colors duration-200 font-medium
               {index === categoryBreadcrumbs.length - 1 ? 'text-blue-600' : 'hover:underline'}"
             aria-label={`Navigate to ${crumb.label} level`}
           >
             {crumb.label}
           </button>
           {#if index < categoryBreadcrumbs.length - 1}
-            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-3 h-3 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           {/if}
@@ -723,7 +786,7 @@ function getSubcategoryIcon(name: string): string {
             onFilterChange('subcategory', null);
             onFilterChange('specific', null);
           }}
-          class="ml-2 p-1 text-gray-400 hover:text-red-500 transition-colors duration-200"
+          class="ml-2 w-9 h-9 min-w-9 min-h-9 flex items-center justify-center text-[color:var(--text-tertiary)] hover:text-red-500 hover:bg-red-50 rounded-full transition-colors duration-200"
           aria-label="Clear category filter"
           title="Clear category selection"
         >
@@ -735,7 +798,7 @@ function getSubcategoryIcon(name: string): string {
 
         <!-- Result count for current selection -->
         {#if currentResultCount !== undefined}
-          <div class="text-xs text-gray-500 font-medium">
+          <div class="text-[length:var(--text-xs)] text-[color:var(--text-secondary)] font-medium" id="search-results-count" aria-live="polite">
             {currentResultCount.toLocaleString()} items
           </div>
         {/if}
@@ -743,22 +806,22 @@ function getSubcategoryIcon(name: string): string {
     {/if}
 
     <!-- Smart Filter Pills -->
-    <nav id="category-pills" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-[var(--gutter-xxs)] pt-[var(--gutter-xxs)]" aria-label="Smart category filters">
+    <nav id="category-pills" class="flex items-center gap-2 sm:gap-3 overflow-x-auto scrollbar-hide pb-[var(--gutter-xxs)] pt-[var(--gutter-xxs)]" aria-label="Smart category filters" role="navigation">
       <!-- Dynamic Category Pills -->
-      {#each smartPillData.pills as pill, index}
+      {#each smartPillData?.pills || [] as pill, index}
         <CategoryPill
           variant={pill.active ? 'primary' : 'outline'}
           label={pill.label}
           emoji={pill.icon}
-          onclick={() => handleSmartPillClick(pill.key, smartPillData.level)}
+          onclick={() => handleSmartPillClick(pill.key, smartPillData?.level || 1)}
           class="shrink-0 min-h-11"
           onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, index)}
         />
       {/each}
 
       <!-- Separator between category and condition pills -->
-      {#if smartPillData.pills.length > 0 && conditionFilters.length > 0}
-        <div class="w-px h-6 bg-gray-300 mx-1"></div>
+      {#if smartPillData?.pills?.length > 0 && conditionFilters?.length > 0}
+        <div class="w-px h-6 bg-[color:var(--border-default)] mx-1"></div>
       {/if}
 
       <!-- Condition Pills -->
@@ -766,7 +829,7 @@ function getSubcategoryIcon(name: string): string {
         <button
           type="button"
           onclick={() => handleConditionPillClick(condition.key)}
-          class="shrink-0 px-3 py-2 rounded-full text-xs font-semibold transition-all duration-200 min-h-11
+          class="shrink-0 px-3 py-2 rounded-full text-[length:var(--text-xs)] font-semibold transition-all duration-200 min-h-11
             {appliedFilters?.condition === condition.key
               ? 'bg-[color:var(--brand-primary)] text-[color:var(--text-inverse)] border border-[color:var(--brand-primary)]'
               : 'bg-[color:var(--surface-subtle)] text-[color:var(--text-secondary)] border border-[color:var(--border-default)] hover:border-[color:var(--border-emphasis)] hover:bg-[color:var(--surface-base)]'}"

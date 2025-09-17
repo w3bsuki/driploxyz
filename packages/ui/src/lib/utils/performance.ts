@@ -51,16 +51,16 @@ export function generateResponsiveImage(options: ResponsiveImageOptions) {
  * Transform image URL for different formats and sizes
  */
 function transformImageUrl(src: string, options: { width?: number; format?: string } = {}) {
-  // This would integrate with your image CDN (Supabase, Cloudinary, etc.)
+  // This would integrate with your image CDN (Cloudinary, ImageKit, etc.)
   // For now, return original URL - implement based on your CDN
   const { width, format } = options;
   
-  if (src.includes('supabase.co')) {
-    // Supabase transform example
+  // Example for CDNs that support query parameters
+  if (src.includes('supabase.co') || src.includes('cloudinary.com') || src.includes('imagekit.io')) {
     const params = new URLSearchParams();
     if (width) params.set('width', width.toString());
     if (format && format !== 'jpg') params.set('format', format);
-    
+
     const hasParams = params.toString();
     return hasParams ? `${src}?${params.toString()}` : src;
   }
@@ -116,7 +116,7 @@ export function addProductPageResourceHints() {
   preconnectDomains([
     'https://fonts.googleapis.com',
     'https://fonts.gstatic.com',
-    // Add your Supabase/image CDN domains here
+    // Add your image CDN domains here
   ]);
 
   // Preload critical CSS if not already loaded
@@ -241,7 +241,9 @@ class WebVitalsTracker {
             this.markImageAsLCP(lastEntry.element.src);
           }
           
-          this.reportMetric('lcp', this.metrics.lcp);
+          if (this.metrics.lcp !== undefined) {
+            this.reportMetric('lcp', this.metrics.lcp);
+          }
         }
       });
       
@@ -298,7 +300,7 @@ class WebVitalsTracker {
         entries.forEach((entry) => {
           const isImage = entry.name.match(/\.(jpg|jpeg|png|gif|webp|avif|svg)$/i) ||
                          entry.name.includes('image') ||
-                         entry.name.includes('supabase');
+                         entry.name.includes('cdn');
           
           if (isImage) {
             this.trackImageLoad({

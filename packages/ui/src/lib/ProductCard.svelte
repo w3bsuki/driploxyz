@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Product } from '../types';
+  import type { Product } from './types/product';
   import ProductImage from './ProductImage.svelte';
   import ConditionBadge from './ConditionBadge.svelte';
   import ProductPrice from './ProductPrice.svelte';

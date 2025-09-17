@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import type { Product } from './types';
+  import type { Product } from './types/product';
   import Button from './Button.svelte';
   import Dialog from './primitives/dialog/Dialog.svelte';
   import LoadingSpinner from './LoadingSpinner.svelte';
@@ -20,8 +20,7 @@
     onCancel: () => void;
     open?: boolean;
     onOpenChange?: (open: boolean) => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    supabaseClient: any;
+    onFetchSellerProducts?: (sellerId: string) => Promise<Product[]>;
     translations: {
       bundle_title: () => string;
       bundle_subtitle: () => string;
@@ -61,7 +60,7 @@
     onCancel,
     open = true,
     onOpenChange,
-    supabaseClient,
+    onFetchSellerProducts,
     translations 
   }: Props = $props();
   
@@ -102,40 +101,13 @@
     
     try {
       console.log('Fetching products for seller:', sellerId);
-      
-      // Fetch real products from Supabase with images
-      const { data, error: fetchError } = await supabaseClient
-        .from('products')
-        .select(`
-          id,
-          title,
-          price,
-          condition,
-          size,
-          brand,
-          seller_id,
-          is_sold,
-          created_at,
-          updated_at,
-          product_images (
-            image_url,
-            sort_order
-          )
-        `)
-        .eq('seller_id', sellerId)
-        .eq('is_sold', false)
-        .neq('id', initialItem.id)
-        .order('created_at', { ascending: false })
-        .limit(20);
-        
-      console.log('Supabase response:', { data, dataLength: data?.length, error: fetchError });
-      
-      if (fetchError) {
-        console.error('Supabase fetch error:', fetchError);
-        throw fetchError;
+
+      // Fetch products via callback prop
+      if (!onFetchSellerProducts) {
+        throw new Error('onFetchSellerProducts callback is required');
       }
-      
-      const rawProducts = data || [];
+
+      const rawProducts = await onFetchSellerProducts(sellerId);
       
       // Map real data to Product type
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

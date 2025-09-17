@@ -33,12 +33,12 @@
 	<div class="max-w-max mx-auto">
 		<main class="sm:flex">
 			<!-- Status Code -->
-			<p class="text-4xl font-extrabold text-[color:var(--text-link)] sm:text-5xl">{status}</p>
+			<p class="text-[length:var(--text-4xl)] font-extrabold text-[color:var(--text-link)] sm:text-[length:var(--text-5xl)]">{status}</p>
 			
 			<div class="sm:ml-6">
 				<div class="sm:border-l sm:border-gray-200 sm:pl-6">
 					<!-- Error Title -->
-					<h1 class="text-4xl font-extrabold text-[color:var(--text-primary)] tracking-tight sm:text-5xl">
+					<h1 class="text-[length:var(--text-4xl)] font-extrabold text-[color:var(--text-primary)] tracking-tight sm:text-[length:var(--text-5xl)]">
 						{errorTitle}
 					</h1>
 					

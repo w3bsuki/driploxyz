@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
+  import { isBrowser } from './utils/runtime.js';
   import ProductCard from './ProductCard.svelte';
   import { ProductCardSkeleton } from './skeleton/index';
+  import type { Product } from './types/product';
   // Simple throttle implementation
   function throttle<T extends unknown[]>(fn: (...args: T) => void, limit: number) {
     let inThrottle: boolean;
@@ -14,22 +15,6 @@
     };
   }
 
-  interface Product {
-    id: string;
-    title: string;
-    price: number;
-    images: string[];
-    brand?: string;
-    size?: string;
-    condition: 'new' | 'like-new' | 'good' | 'fair';
-    category: string;
-    sellerId: string;
-    sellerName: string;
-    sellerRating?: number;
-    sellerAvatar?: string;
-    createdAt: string;
-    location: string;
-  }
 
   interface Props {
     items: Product[];
@@ -86,7 +71,7 @@
   const responsiveItemsPerRow = $derived(() => {
     if (!mounted) return itemsPerRow;
     
-    const width = containerWidth || (browser ? window.innerWidth : 768);
+    const width = containerWidth || (isBrowser ? window.innerWidth : 768);
     if (width >= 1280) return 5; // xl
     if (width >= 1024) return 4; // lg
     if (width >= 768) return 3;  // md
@@ -177,14 +162,14 @@
     }
     
     // Capture viewport height before window resize effects
-    if (browser && scrollParent === 'window') {
+    if (isBrowser && scrollParent === 'window') {
       previousViewportHeight = window.innerHeight;
     }
   });
 
   // Use $effect for lifecycle management
   $effect(() => {
-    if (!browser || !containerElement) return;
+    if (!isBrowser || !containerElement) return;
     mounted = true;
     
     // Check if we need to preserve scroll position after layout changes
@@ -231,7 +216,7 @@
 
   // IntersectionObserver for end-reached detection
   $effect(() => {
-    if (!browser || !sentinelElement || !onEndReached || loading) return;
+    if (!isBrowser || !sentinelElement || !onEndReached || loading) return;
 
     const observer = new IntersectionObserver(
       (entries) => {

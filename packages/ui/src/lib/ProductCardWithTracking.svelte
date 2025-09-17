@@ -3,39 +3,48 @@
   Wraps the existing ProductCard with intersection observer
 -->
 <script lang="ts">
-  import { trackView } from '$lib/utils/viewTracking.js';
+  import { trackView, type ViewTrackingOptions, type ViewTrackingData } from './utils/viewTracking.js';
   import ProductCard from './ProductCard.svelte';
+  import type { Product } from './types/product';
 
   interface Props {
-    product: any;
-    supabase: any;
+    product: Product;
     userId?: string;
-    viewTrackingOptions?: {
-      threshold?: number;
-      rootMargin?: string;
-      debounceMs?: number;
-    };
+    onView?: (data: ViewTrackingData) => void;
+    viewTrackingOptions?: ViewTrackingOptions;
     // Pass through all ProductCard props
     [key: string]: any;
   }
 
   let {
     product,
-    supabase,
     userId,
+    onView,
     viewTrackingOptions,
     ...productCardProps
   }: Props = $props();
 
-  let cardElement: HTMLElement;
+  // Default view handler - logs to console in development
+  function handleView(data: ViewTrackingData) {
+    // Call user-provided handler
+    onView?.(data);
+
+    // Default behavior - log in development
+    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+      console.log('[ViewTracking] Product viewed:', {
+        productId: data.productId,
+        userId: data.userId,
+        timestamp: data.metadata?.timestamp
+      });
+    }
+  }
 </script>
 
 <div
-  bind:this={cardElement}
   use:trackView={{
     productId: product.id,
-    supabase,
     userId,
+    onView: handleView,
     options: viewTrackingOptions
   }}
   class="product-card-wrapper"

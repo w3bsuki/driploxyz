@@ -138,7 +138,7 @@ export function createSlug(text: string, config: SlugConfig = {}): string {
   }
   
   // Convert to slug format
-  let slug = text
+  const slug = text
     .toLowerCase()
     .trim()
     // Remove special characters but keep letters, numbers, spaces, and hyphens

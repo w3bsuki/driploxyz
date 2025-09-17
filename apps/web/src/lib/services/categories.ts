@@ -400,37 +400,41 @@ export class CategoryService {
    */
   async getDescendants(categoryId: string): Promise<{ data: Category[]; error: string | null }> {
     try {
-      const { data, error } = await this.supabase.rpc('get_category_descendants', {
-        category_uuid: categoryId
-      });
+      // Get direct children first
+      const { data: children, error: childrenError } = await this.supabase
+        .from('categories')
+        .select('*')
+        .eq('parent_id', categoryId)
+        .eq('is_active', true)
+        .order('sort_order');
 
-      if (error) {
-        console.error('Error fetching descendants:', error);
-        return { data: [], error: error.message };
+      if (childrenError) {
+        console.error('Error fetching children:', childrenError);
+        return { data: [], error: childrenError.message };
       }
 
-      // Get full category details for the descendant IDs
-      if (!data || data.length === 0) {
+      if (!children || children.length === 0) {
         return { data: [], error: null };
       }
 
-      const descendantIds = data.map(d => d.descendant_id);
-      
-      const { data: categories, error: categoriesError } = await this.supabase
+      // Get grandchildren
+      const childIds = children.map(c => c.id);
+      const { data: grandchildren, error: grandchildrenError } = await this.supabase
         .from('categories')
         .select('*')
-        .in('id', descendantIds)
+        .in('parent_id', childIds)
         .eq('is_active', true)
-        .order('level')
-        .order('sort_order')
-        .order('name');
+        .order('sort_order');
 
-      if (categoriesError) {
-        console.error('Error fetching category details:', categoriesError);
-        return { data: [], error: categoriesError.message };
+      if (grandchildrenError) {
+        console.error('Error fetching grandchildren:', grandchildrenError);
+        return { data: children, error: null }; // Return children even if grandchildren fail
       }
 
-      return { data: categories || [], error: null };
+      // Combine children and grandchildren
+      const allDescendants = [...children, ...(grandchildren || [])];
+
+      return { data: allDescendants, error: null };
     } catch (error) {
       console.error('Error in getDescendants:', error);
       return { data: [], error: 'Failed to fetch descendants' };
@@ -442,40 +446,46 @@ export class CategoryService {
    */
   async getAncestors(categoryId: string): Promise<{ data: CategoryBreadcrumb[]; error: string | null }> {
     try {
-      const { data, error } = await this.supabase.rpc('get_category_ancestors', {
-        category_uuid: categoryId
-      });
-
-      if (error) {
-        console.error('Error fetching ancestors:', error);
-        return { data: [], error: error.message };
-      }
-
-      // Get full category details for the ancestor IDs
-      if (!data || data.length === 0) {
-        return { data: [], error: null };
-      }
-
-      const ancestorIds = data.map(d => d.ancestor_id);
-      
-      const { data: categories, error: categoriesError } = await this.supabase
+      // Get category details first
+      const { data: currentCategory, error: currentError } = await this.supabase
         .from('categories')
-        .select('id, name, slug, level')
-        .in('id', ancestorIds)
+        .select('id, name, slug, level, parent_id')
+        .eq('id', categoryId)
         .eq('is_active', true)
-        .order('level'); // Level 1 first, then 2, then 3
+        .single();
 
-      if (categoriesError) {
-        console.error('Error fetching ancestor details:', categoriesError);
-        return { data: [], error: categoriesError.message };
+      if (currentError || !currentCategory) {
+        return { data: [], error: currentError?.message || 'Category not found' };
       }
 
-      return { data: (categories || []).map(c => ({
-        id: c.id,
-        name: c.name,
-        slug: c.slug,
-        level: c.level || 1
-      })), error: null };
+      const breadcrumbs: CategoryBreadcrumb[] = [];
+      let currentCat = currentCategory;
+
+      // Walk up the hierarchy
+      while (currentCat && currentCat.id) {
+        breadcrumbs.unshift({
+          id: currentCat.id,
+          name: currentCat.name,
+          slug: currentCat.slug,
+          level: currentCat.level || 1
+        });
+
+        if (currentCat.parent_id) {
+          const { data: parentCat } = await this.supabase
+            .from('categories')
+            .select('id, name, slug, level, parent_id')
+            .eq('id', currentCat.parent_id)
+            .eq('is_active', true)
+            .single();
+
+          currentCat = parentCat || null;
+        } else {
+          currentCat = null;
+        }
+      }
+
+
+      return { data: breadcrumbs, error: null };
     } catch (error) {
       console.error('Error in getAncestors:', error);
       return { data: [], error: 'Failed to fetch ancestors' };
@@ -488,7 +498,7 @@ export class CategoryService {
   async getHierarchicalProductCount(categoryId: string): Promise<{ count: number; error: string | null }> {
     try {
       const { data, error } = await this.supabase.rpc('get_products_in_category_tree', {
-        category_uuid: categoryId
+        category_id: categoryId
       });
 
       if (error) {

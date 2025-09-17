@@ -46,18 +46,18 @@
   };
 </script>
 
-<div 
-  class="image-skeleton bg-gray-100 overflow-hidden relative {className} {getRoundedClass()} {getAspectRatioClass()}"
+<div
+  class="image-skeleton bg-[color:var(--surface-emphasis)] overflow-hidden relative shimmer {className} {getRoundedClass()} {getAspectRatioClass()}"
   style={getContainerStyles()}
-  role="presentation"
-  aria-hidden="true"
+  role="status"
+  aria-label="Loading image..."
 >
   {#if showIcon}
     <div class="absolute inset-0 flex items-center justify-center">
-      <svg 
-        class="w-8 h-8 text-gray-300 opacity-50" 
-        fill="none" 
-        stroke="currentColor" 
+      <svg
+        class="w-8 h-8 text-[color:var(--text-tertiary)] opacity-50"
+        fill="none"
+        stroke="currentColor"
         viewBox="0 0 24 24"
         aria-hidden="true"
       >
@@ -76,6 +76,42 @@
   .image-skeleton {
     position: relative;
     min-height: 3rem; /* Ensure minimum height for icon visibility */
-    /* No animations - instant skeleton display */
+  }
+
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 150%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%
+    );
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      left: -150%;
+    }
+    100% {
+      left: 150%;
+    }
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .shimmer::before {
+      animation: none;
+    }
   }
 </style>

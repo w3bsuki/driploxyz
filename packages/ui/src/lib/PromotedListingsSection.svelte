@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Product as UIProduct } from '../types';
+  import type { Product as UIProduct } from './types/product';
   import { ProductCard } from './';
   import SectionBanner from './SectionBanner.svelte';
 

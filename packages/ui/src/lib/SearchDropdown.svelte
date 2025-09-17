@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Database } from '@repo/database';
   import { goto } from '$app/navigation';
-  import { browser } from '$app/environment';
+  import { isBrowser } from './utils/runtime.js';
 
   // Define ProductWithImages type locally since it might not be exported from database
   type Product = Database['public']['Tables']['products']['Row'];
@@ -201,7 +201,7 @@
 
   // Load recent searches from localStorage
   $effect(() => {
-    if (browser) {
+    if (isBrowser) {
       try {
         const saved = localStorage.getItem('driplo_recent_searches');
         if (saved) {
@@ -215,7 +215,7 @@
   });
 
   function saveRecentSearch(searchQuery: string) {
-    if (!browser || !searchQuery || !searchQuery.trim()) return;
+    if (!isBrowser || !searchQuery || !searchQuery.trim()) return;
     
     try {
       const trimmed = searchQuery.trim();
@@ -352,7 +352,7 @@
   }
 
   function formatPrice(price: number) {
-    if (browser) {
+    if (isBrowser) {
       return new Intl.NumberFormat('en-BG', {
         style: 'currency',
         currency: 'BGN',

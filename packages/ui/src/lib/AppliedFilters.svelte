@@ -33,8 +33,8 @@
     onClearAll,
     class: className = '',
     showClearAll = true,
-    clearAllLabel = i18n.filter_applied_clearAll(),
-    ariaLabel = i18n.filter_applied_ariaLabel(),
+    clearAllLabel = 'Clear All',
+    ariaLabel = 'Applied filters',
     filterItem,
     announceChanges = true,
     announcementTemplate
@@ -66,7 +66,7 @@
       if (announcementTemplate) {
         announcement = announcementTemplate(removedFilter);
       } else {
-        announcement = i18n.filter_applied_filterRemoved({ label: removedFilter.label });
+        announcement = `Filter removed: ${removedFilter.label}`;
       }
     }
   }
@@ -79,7 +79,7 @@
     
     // Announce clearing all
     if (announceChanges) {
-      announcement = i18n.filter_applied_allFiltersCleared({ count: activeCount });
+      announcement = `All ${activeCount} filters cleared`;
     }
   }
   
@@ -95,7 +95,7 @@
 
   // Generate accessible label for filter
   function getFilterAriaLabel(filter: AppliedFilter): string {
-    return i18n.filter_applied_removeFilter({ label: filter.label, value: filter.displayValue });
+    return `Remove filter: ${filter.label} - ${filter.displayValue}`;
   }
 </script>
 
@@ -103,7 +103,7 @@
   <div class="applied-filters {className}" role="region" aria-label={ariaLabel}>
     <!-- Summary for screen readers -->
     <div class="sr-only" aria-live="polite">
-      {i18n.filter_applied_activeFiltersCount({ count: activeFilters.length })}: {activeFilters.map(f => `${f.label}: ${f.displayValue}`).join(', ')}
+      {activeFilters.length} active filters: {activeFilters.map(f => `${f.label}: ${f.displayValue}`).join(', ')}
     </div>
     
     <div class="flex items-center gap-2 flex-wrap">
@@ -221,11 +221,11 @@
     
     <!-- Hidden help text -->
     <div id="filter-removal-help" class="sr-only">
-      {i18n.filter_ui_filterRemovalHelp()}
+      Click or press Enter to remove individual filters
     </div>
     
     <div id="clear-all-help" class="sr-only">
-      {i18n.filter_ui_clearAllHelp()}
+      Use Clear All button to remove all filters at once
     </div>
   </div>
 {/if}

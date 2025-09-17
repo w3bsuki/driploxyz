@@ -3,7 +3,7 @@
   import Button from './Button.svelte';
   import SectionBanner from './SectionBanner.svelte';
   import { ProductCardSkeleton } from './skeleton/index';
-  import type { Product } from './types/index';
+  import type { Product } from './types/product';
 
   interface Translations {
     empty_noProducts: string;

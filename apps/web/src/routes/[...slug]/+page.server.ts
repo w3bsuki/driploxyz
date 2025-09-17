@@ -36,7 +36,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
   }
 
   const parts = slug.split('/').filter(Boolean);
-  let product = null;
+  const product = null;
 
   // Normalize any /product/* path to canonical /product/:seller/:slug and redirect
   if (parts[0] === 'product' && parts.length >= 3) {
@@ -78,7 +78,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
     const categorySegment = parts.length === 4 ? parts[2] : null;
 
     // Look up seller by username
-    let { data: seller } = await supabase
+    const { data: seller } = await supabase
       .from('profiles')
       .select('id, username')
       .eq('username', sellerUsername)

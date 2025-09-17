@@ -229,7 +229,7 @@ export function createFormValidation<T extends Record<string, any>>(
     getFieldProps(field: keyof T) {
       const fieldState = fields[field];
       return {
-        invalid: !fieldState.isValid && fieldState.touched,
+        invalid: !fieldState.isValid && (fieldState.touched ?? false),
         errorMessage: fieldState.errorMessage
       };
     }

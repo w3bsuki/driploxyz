@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Product } from '../types';
+  import type { Product } from './types/product';
   import SoldNotificationToast from './SoldNotificationToast.svelte';
 
   interface Props {
@@ -14,9 +14,17 @@
     onViewOrder 
   }: Props = $props();
 
+  // Simplified product interface for notifications
+  interface NotificationProduct {
+    id: string;
+    title: string;
+    image: string;
+    price: number;
+  }
+
   let soldNotifications = $state<Array<{
     id: string;
-    product: Product;
+    product: NotificationProduct;
     buyer?: {
       id: string;
       username: string;

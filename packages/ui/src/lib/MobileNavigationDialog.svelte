@@ -4,7 +4,7 @@
   import Avatar from './Avatar.svelte';
   import LanguageSwitcher from './LanguageSwitcher.svelte';
   import ThemeToggle from './ThemeToggle.svelte';
-  import { browser } from '$app/environment';
+  import { isBrowser } from './utils/runtime.js';
   import { portal } from './actions/portal';
   import * as i18n from '@repo/i18n';
   import type { Database } from '@repo/database';
@@ -125,7 +125,7 @@
 
   // Simple escape key handling and body scroll lock
   $effect(() => {
-    if (!browser) return;
+    if (!isBrowser) return;
 
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape' && isOpen) {

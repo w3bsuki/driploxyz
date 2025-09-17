@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Product } from '../types';
+  import type { Product } from './types/product';
   import FavoriteButton from './FavoriteButton.svelte';
   
   interface Props {

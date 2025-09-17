@@ -1,6 +1,6 @@
 <script lang="ts">
   import { navigating } from '$app/stores';
-  import { browser } from '$app/environment';
+  import { isBrowser } from './utils/runtime.js';
 
   let isActive = $state(false);
   let progress = $state(0);
@@ -31,7 +31,7 @@
   }
 
   $effect(() => {
-    if (!browser) return;
+    if (!isBrowser) return;
     
     // Let Svelte 5 handle the store subscription automatically
     if ($navigating) {

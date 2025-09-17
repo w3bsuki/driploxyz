@@ -13,7 +13,7 @@ interface FollowNotification {
 
 export const activeFollowNotification = writable<FollowNotification | null>(null);
 
-let notificationQueue: FollowNotification[] = [];
+const notificationQueue: FollowNotification[] = [];
 let isShowingNotification = false;
 
 // Fallback UUID generator for older browsers

@@ -469,10 +469,32 @@ export class ProductService {
   ): Promise<{ data: ProductWithImages[]; error: string | null }> {
     try {
       // Use the search function from the database
-      const { data, error } = await this.supabase.rpc('search_products', {
-        search_query: query,
-        p_limit: options.limit || 20
-      });
+      const { data, error } = await this.supabase
+        .from('products')
+        .select(`
+          id,
+          title,
+          price,
+          condition,
+          size,
+          brand,
+          description,
+          created_at,
+          updated_at,
+          seller_id,
+          category_id,
+          is_active,
+          is_sold,
+          favorite_count,
+          product_images(image_url),
+          profiles!products_seller_id_fkey(username, avatar_url),
+          categories(name, slug)
+        `)
+        .ilike('title', `%${query}%`)
+        .eq('is_active', true)
+        .eq('is_sold', false)
+        .order('created_at', { ascending: false })
+        .limit(options.limit || 20);
 
       if (error) {
         return { data: [], error: error.message };
@@ -568,7 +590,7 @@ export class ProductService {
         if (filters.include_descendants !== false) { // Default to true
           // Get products in category tree (category + all descendants)
           const { data: productIds, error: productIdsError } = await this.supabase.rpc('get_products_in_category_tree', {
-            category_uuid: filters.category_id
+            category_id: filters.category_id
           });
 
           if (productIdsError) {
@@ -576,7 +598,7 @@ export class ProductService {
           }
 
           if (productIds && productIds.length > 0) {
-            const ids = productIds.map(p => p.product_id);
+            const ids = productIds.map(p => p.id);
             query = query.in('id', ids);
           } else {
             // No products in this category tree
@@ -694,7 +716,7 @@ export class ProductService {
   async getCategoryProductCount(categoryId: string): Promise<{ count: number; error: string | null }> {
     try {
       const { data, error } = await this.supabase.rpc('get_products_in_category_tree', {
-        category_uuid: categoryId
+        category_id: categoryId
       });
 
       if (error) {
@@ -707,7 +729,7 @@ export class ProductService {
           const { data: product } = await this.supabase
             .from('products')
             .select('is_active, is_sold')
-            .eq('id', item.product_id)
+            .eq('id', item.id)
             .single();
           
           return product?.is_active && !product?.is_sold;

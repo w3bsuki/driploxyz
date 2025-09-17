@@ -6,84 +6,94 @@ import { canonicalizeFilterUrl, buildCanonicalUrl, searchParamsToSegments } from
 
 type Category = Database['public']['Tables']['categories']['Row'];
 
-// Optimized cache for category hierarchy with longer TTL
-const categoryHierarchyCache = new Map<string, { data: Record<string, any>; timestamp: number }>();
-const CACHE_TTL = 10 * 60 * 1000; // 10 minutes - longer cache for better performance
-
 /**
- * Optimized category resolution using new database functions
- * Reduces queries from 15+ to 1-2 maximum
+ * Simple category resolution using basic queries
+ * Much faster and easier to maintain than complex RPC functions
  */
-async function resolveCategoryIds(supabase: any, category: string, subcategory?: string, specific?: string): Promise<string[]> {
+async function resolveCategoryIds(supabase: any, category?: string, subcategory?: string, specific?: string): Promise<string[]> {
   try {
-    // Use the optimized database function that resolves everything in a single query
-    const { data, error } = await supabase.rpc('resolve_category_path', {
-      level1_slug: category || null,
-      level2_slug: subcategory || null,
-      level3_slug: specific || null
-    });
+    let query = supabase
+      .from('categories')
+      .select('id')
+      .eq('is_active', true);
 
-    if (error) {
-      if (dev) console.warn('Category resolution RPC failed:', error);
+    if (specific) {
+      // Looking for specific Level 3 category
+      query = query.eq('slug', specific).eq('level', 3);
+    } else if (subcategory) {
+      // Looking for Level 2 category and its children
+      const { data: subcatData } = await supabase
+        .from('categories')
+        .select('id')
+        .eq('slug', subcategory)
+        .eq('level', 2)
+        .eq('is_active', true)
+        .single();
+
+      if (subcatData) {
+        const { data: childrenData } = await supabase
+          .from('categories')
+          .select('id')
+          .or(`id.eq.${subcatData.id},parent_id.eq.${subcatData.id}`)
+          .eq('is_active', true);
+
+        return (childrenData || []).map(cat => cat.id);
+      }
+      return [];
+    } else if (category) {
+      // Looking for Level 1 category and all its descendants
+      const { data: mainCatData } = await supabase
+        .from('categories')
+        .select('id')
+        .eq('slug', category)
+        .eq('level', 1)
+        .eq('is_active', true)
+        .single();
+
+      if (mainCatData) {
+        // Get all children and grandchildren
+        const { data: allDescendants } = await supabase
+          .from('categories')
+          .select('id')
+          .or(`id.eq.${mainCatData.id},parent_id.eq.${mainCatData.id}`)
+          .eq('is_active', true);
+
+        const allIds = (allDescendants || []).map(cat => cat.id);
+
+        // Also get grandchildren (Level 3)
+        if (allIds.length > 1) {
+          const level2Ids = allIds.filter(id => id !== mainCatData.id);
+          const { data: grandchildren } = await supabase
+            .from('categories')
+            .select('id')
+            .in('parent_id', level2Ids)
+            .eq('is_active', true);
+
+          allIds.push(...(grandchildren || []).map(cat => cat.id));
+        }
+
+        return allIds;
+      }
       return [];
     }
 
-    if (data && data.length > 0) {
-      const result = data[0];
-      if (result.is_valid && result.resolved_category_ids) {
-        return result.resolved_category_ids;
-      }
-    }
+    const { data } = await query;
+    return (data || []).map(cat => cat.id);
   } catch (err) {
     if (dev) console.warn('Category resolution failed:', err);
-  }
-
-  return [];
-}
-
-/**
- * Optimized cross-gender category lookup using new database function
- */
-async function getCrossGenderCategoryIds(supabase: any, categoryName: string, level: number = 2): Promise<string[]> {
-  try {
-    const { data, error } = await supabase.rpc('get_cross_gender_categories', {
-      category_name: categoryName.charAt(0).toUpperCase() + categoryName.slice(1),
-      category_level: level
-    });
-
-    if (error) {
-      if (dev) console.warn('Cross-gender category lookup failed:', error);
-      return [];
-    }
-
-    return (data || []).map((item: any) => item.category_id);
-  } catch (err) {
-    if (dev) console.warn('Cross-gender category lookup error:', err);
     return [];
   }
 }
 
 /**
- * Build optimized category hierarchy using materialized view data
+ * Build simple category hierarchy for UI
  */
-function buildOptimizedCategoryHierarchy(categories: Category[]) {
-  // Create cache key based on categories count and first/last timestamps
-  const firstCat = categories[0];
-  const lastCat = categories[categories.length - 1];
-  const cacheKey = `hierarchy_optimized_${categories.length}_${firstCat?.updated_at || firstCat?.created_at}_${lastCat?.updated_at || lastCat?.created_at}`;
-  const cached = categoryHierarchyCache.get(cacheKey);
-
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return cached.data;
-  }
-
+function buildCategoryHierarchy(categories: Category[]) {
   const hierarchy: Record<string, any> = {};
-
-  // Build hierarchy efficiently with single pass
   const level1Map = new Map<string, any>();
   const level2Map = new Map<string, any>();
 
-  // First pass: build level 1 categories
+  // Build level 1 categories
   categories.filter(c => c.level === 1 && c.is_active).forEach(l1 => {
     const l1Data = {
       id: l1.id,
@@ -95,7 +105,7 @@ function buildOptimizedCategoryHierarchy(categories: Category[]) {
     level1Map.set(l1.id, l1Data);
   });
 
-  // Second pass: build level 2 categories
+  // Build level 2 categories
   categories.filter(c => c.level === 2 && c.is_active).forEach(l2 => {
     const parent = level1Map.get(l2.parent_id!);
     if (parent) {
@@ -111,7 +121,7 @@ function buildOptimizedCategoryHierarchy(categories: Category[]) {
     }
   });
 
-  // Third pass: build level 3 categories
+  // Build level 3 categories
   categories.filter(c => c.level === 3 && c.is_active).forEach(l3 => {
     const parent = level2Map.get(l3.parent_id!);
     if (parent) {
@@ -122,12 +132,6 @@ function buildOptimizedCategoryHierarchy(categories: Category[]) {
         parentId: l3.parent_id
       });
     }
-  });
-
-  // Cache the result
-  categoryHierarchyCache.set(cacheKey, {
-    data: hierarchy,
-    timestamp: Date.now()
   });
 
   return hierarchy;
@@ -184,9 +188,9 @@ export const load = (async ({ url, locals, setHeaders }) => {
   const sortBy = url.searchParams.get('sort') || 'relevance';
 
   try {
-    // Optimized: Use PARALLEL queries to fetch data efficiently
-    const [categoriesResult, categoryIdsResult] = await Promise.all([
-      // Query 1: Fetch all categories for hierarchy (cached in materialized view)
+    // Simple parallel queries for categories and filtering
+    const [categoriesResult, categoryCountsResult] = await Promise.all([
+      // Query 1: Fetch all categories for hierarchy
       locals.supabase
         .from('categories')
         .select('*')
@@ -194,28 +198,22 @@ export const load = (async ({ url, locals, setHeaders }) => {
         .order('level')
         .order('sort_order'),
 
-      // Query 2: Resolve category IDs efficiently using new database functions
-      (() => {
-        if (category && category !== 'all') {
-          // Handle cross-gender searches for known Level 2 categories
-          if (!subcategory && (category === 'accessories' || category === 'clothing' || category === 'shoes' || category === 'bags')) {
-            return getCrossGenderCategoryIds(locals.supabase, category, 2);
-          }
-          // Standard hierarchical resolution
-          return resolveCategoryIds(locals.supabase, category, subcategory, specific);
-        } else if (subcategory && subcategory !== 'all') {
-          // Cross-gender Level 2 search
-          return getCrossGenderCategoryIds(locals.supabase, subcategory, 2);
-        } else if (specific && specific !== 'all') {
-          // Direct Level 3 search
-          return getCrossGenderCategoryIds(locals.supabase, specific, 3);
-        }
-        return Promise.resolve([]);
-      })()
+      // Query 2: Get real category product counts
+      locals.supabase.rpc('get_category_product_counts', {
+        p_country_code: country
+      })
     ]);
 
     const { data: allCategories } = categoriesResult;
-    let categoryIds = await categoryIdsResult;
+    const { data: categoryCountsData } = categoryCountsResult;
+
+    // Resolve category IDs for filtering (if any category filters are applied)
+    let categoryIds: string[] = [];
+    if ((category && category !== 'all') || (subcategory && subcategory !== 'all') || (specific && specific !== 'all')) {
+      categoryIds = await resolveCategoryIds(locals.supabase, category, subcategory, specific);
+    }
+
+    // Category IDs already resolved above
 
     // Build the products query with proper category hierarchy
     let productsQuery = locals.supabase
@@ -337,8 +335,8 @@ export const load = (async ({ url, locals, setHeaders }) => {
       };
     }
 
-    // Build optimized 3-level hierarchy for UI using efficient algorithm
-    const categoryHierarchy = allCategories ? buildOptimizedCategoryHierarchy(allCategories as Category[]) : {};
+    // Build simple 3-level hierarchy for UI
+    const categoryHierarchy = allCategories ? buildCategoryHierarchy(allCategories as Category[]) : {};
 
     // Category hierarchy built successfully
 
@@ -402,26 +400,13 @@ export const load = (async ({ url, locals, setHeaders }) => {
       };
     });
 
-    // Get real category product counts using RPC function
-    let categoryProductCounts: Record<string, number> = {};
-    try {
-      const { data: countData } = await locals.supabase.rpc('get_category_product_counts', {
-        p_country_code: country
-      });
-
-      if (countData) {
-        countData.forEach((row: any) => {
-          if (row.category_level === 1) { // Only top-level categories
-            categoryProductCounts[row.category_slug] = row.product_count || 0;
-          }
-        });
-      }
-    } catch (err) {
-      if (dev) console.warn('Category counts RPC failed:', err);
-      // Fallback to estimated counts
-      const totalEstimate = count || 0;
-      level1Categories.forEach(cat => {
-        categoryProductCounts[cat.slug] = Math.floor(totalEstimate / level1Categories.length);
+    // Build real category product counts from our new function
+    const categoryProductCounts: Record<string, number> = {};
+    if (categoryCountsData) {
+      categoryCountsData.forEach((row: any) => {
+        if (row.category_level === 1) { // Only top-level categories for main pills
+          categoryProductCounts[row.category_slug] = row.product_count || 0;
+        }
       });
     }
 

@@ -2,7 +2,8 @@
   import Avatar from './Avatar.svelte';
   import ProBadge from './ProBadge.svelte';
   import BrandBadge from './BrandBadge.svelte';
-  import type { Seller, Product } from './types/index';
+  import type { Seller } from './types/index';
+  import type { Product } from './types/product';
   import * as i18n from '@repo/i18n';
 
   interface Props {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
+  import { isBrowser } from './utils/runtime.js';
   import { onMount } from 'svelte';
 
   interface Translations {
@@ -34,7 +34,7 @@
 
   // Initialize view count and dismissal state once on mount
   $effect(() => {
-    if (!browser || isAuthenticated) return;
+    if (!isBrowser || isAuthenticated) return;
 
     // Get stored view count - only read, don't increment yet
     const stored = localStorage.getItem('driplo_view_count');

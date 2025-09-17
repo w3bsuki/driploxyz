@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { browser } from '$app/environment';
-  import { createLogger } from '$lib/utils/log';
+  import { isBrowser } from './utils/runtime.js';
+  import { createLogger } from './utils/log.js';
 
   const logger = createLogger('ErrorBoundary');
 
@@ -39,7 +39,7 @@
     });
 
     // Report to error tracking if available
-    if (browser && window.Sentry?.captureException) {
+    if (isBrowser && window.Sentry?.captureException) {
       window.Sentry.captureException(err, {
         tags: {
           component: name,
@@ -83,7 +83,7 @@
   }
 
   // Set up global error handling for this boundary
-  if (browser) {
+  if (isBrowser) {
     window.addEventListener('unhandledrejection', handleUnhandledRejection);
   }
 </script>

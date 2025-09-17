@@ -116,7 +116,7 @@
           {#if searchQuery}
             <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
               "{searchQuery}"
-              <button onclick={() => { searchQuery = ''; handleSearch(); }} class="hover:bg-blue-200 rounded-full p-0.5">
+              <button onclick={() => { searchQuery = ''; handleSearch(); }} class="hover:bg-blue-200 rounded-full p-0.5" aria-label="Clear search query">
                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                 </svg>

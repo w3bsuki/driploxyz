@@ -1,12 +1,5 @@
 <script lang="ts">
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
-import { CategoryService } from '$lib/services/categories';
-import { ProfileService } from '$lib/services/profiles';
-import { getCollectionsForContext } from '$lib/data/collections';
-import { goto, preloadCode, preloadData } from '$app/navigation';
-import { page } from '$app/stores';
-import { browser } from '$app/environment';
 import SearchInput from './SearchInput.svelte';
 import CategoryPill from './CategoryPill.svelte';
 
@@ -45,7 +38,6 @@ interface ConditionFilter {
 }
 
 interface Props {
-  supabase: SupabaseClient<Database>;
   searchQuery?: string;
   topBrands?: TopBrand[];
   topSellers?: TopSeller[];
@@ -63,10 +55,14 @@ interface Props {
   onNavigateToAll: () => void;
   onPillKeyNav?: (e: KeyboardEvent, index: number) => void;
   onPrefetchCategory?: (slug: string) => void;
+  onNavigateToBrand?: (brandName: string) => void;
+  onNavigateToSeller?: (sellerName: string) => void;
+  onNavigateToDrip?: () => void;
+  onNavigateToQuickShop?: (filter: string) => void;
+  currentPath?: string;
 }
 
 let {
-  supabase,
   searchQuery = $bindable(''),
   topBrands = [],
   topSellers = [],
@@ -83,7 +79,12 @@ let {
   onConditionFilter,
   onNavigateToAll,
   onPillKeyNav,
-  onPrefetchCategory
+  onPrefetchCategory,
+  onNavigateToBrand,
+  onNavigateToSeller,
+  onNavigateToDrip,
+  onNavigateToQuickShop,
+  currentPath = ''
 }: Props = $props();
 
 // Component state
@@ -103,9 +104,10 @@ const filteredTopBrands = $derived.by(() => {
 const filteredTopSellers = $derived.by(() => {
   if (!dropdownSearchQuery.trim()) return topSellers;
   const query = dropdownSearchQuery.toLowerCase();
-  return topSellers.filter(seller =>
-    seller.name.toLowerCase().includes(query)
-  );
+  return topSellers.filter(seller => {
+    const name = seller.name || seller.display_name || seller.username || '';
+    return name.toLowerCase().includes(query);
+  });
 });
 
 // Quick shop items
@@ -285,7 +287,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
                     {#each filteredTopBrands as brand}
                       <button
                         onclick={() => {
-                          goto(`/search?brand=${encodeURIComponent(brand.name)}`);
+                          onNavigateToBrand?.(brand.name);
                           showTrendingDropdown = false;
                         }}
                         class="w-full flex items-center gap-3 p-2 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
@@ -325,7 +327,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
                     {#each filteredTopSellers as seller}
                       <button
                         onclick={() => {
-                          goto(`/profile/${seller.name}`);
+                          onNavigateToSeller?.(seller.name);
                           showTrendingDropdown = false;
                         }}
                         class="w-full flex items-center gap-3 p-2 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
@@ -376,11 +378,9 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
                       <button
                         onclick={() => {
                           if (item.filter === 'collection=drip') {
-                            goto('/drip');
-                          } else if (item.filter === 'category=vintage') {
-                            goto('/search?category=vintage');
+                            onNavigateToDrip?.();
                           } else {
-                            goto(`/search?${item.filter}`);
+                            onNavigateToQuickShop?.(item.filter);
                           }
                           showTrendingDropdown = false;
                         }}
@@ -421,7 +421,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
           loading={loadingCategory === 'all'}
           disabled={loadingCategory === 'all'}
           ariaLabel={i18n.search_viewAll()}
-          ariaCurrent={$page.url.pathname === '/search' ? 'page' : undefined}
+          ariaCurrent={currentPath === '/search' ? 'page' : undefined}
           data-prefetch="hover"
           onmouseenter={() => preloadCode('/search')}
           ontouchstart={() => preloadCode('/search')}

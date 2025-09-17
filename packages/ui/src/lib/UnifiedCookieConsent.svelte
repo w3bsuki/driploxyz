@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { browser } from '$app/environment';
+  import { isBrowser } from './utils/runtime.js';
   import * as i18n from '@repo/i18n';
   
   interface Props {
@@ -31,7 +31,7 @@
     }
     
     getConsent(): ConsentState | null {
-      if (!browser) return null;
+      if (!isBrowser) return null;
       try {
         const consent = document.cookie
           .split(';')
@@ -44,7 +44,7 @@
     }
     
     updateConsent(consent: ConsentState): void {
-      if (!browser) return;
+      if (!isBrowser) return;
       const consentWithTimestamp = { ...consent, timestamp: Date.now() };
       try {
         const expires = new Date();
@@ -112,7 +112,7 @@
   };
   
   $effect(() => {
-    if (!browser) return;
+    if (!isBrowser) return;
     
     consentManager = SimpleCookieManager.getInstance();
     localeManager = SimpleLocaleManager.getInstance();
@@ -195,10 +195,10 @@
       // Set country cookie if detected (for UK/Bulgaria separation)
       if (detectedCountry === 'GB' || detectedCountry === 'UK') {
         // Set country cookie to GB for UK visitors
-        document.cookie = `country=GB; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+        document.cookie = `country=GB; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!isBrowser || location.protocol === 'https:' ? '; Secure' : ''}`;
       } else if (detectedCountry === 'BG') {
         // Set country cookie to BG for Bulgarian visitors
-        document.cookie = `country=BG; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+        document.cookie = `country=BG; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!isBrowser || location.protocol === 'https:' ? '; Secure' : ''}`;
       }
       
       // Also check for existing country cookie to sync region
@@ -211,10 +211,10 @@
         // Could handle country mismatch here
       }
     } catch (error) {
-      // Fallback to browser language
-      const browserLang = navigator.language.split('-')[0].toLowerCase();
-      if (languages.find(l => l.code === browserLang)) {
-        selectedLocale = browserLang;
+      // Fallback to isBrowser language
+      const isBrowserLang = navigator.language.split('-')[0].toLowerCase();
+      if (languages.find(l => l.code === isBrowserLang)) {
+        selectedLocale = isBrowserLang;
       }
     }
   }
@@ -287,7 +287,7 @@
   function saveLanguageAndRedirect(targetLang: string) {
     try {
       // Set cookie first
-      document.cookie = `PARAGLIDE_LOCALE=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+      document.cookie = `PARAGLIDE_LOCALE=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!isBrowser || location.protocol === 'https:' ? '; Secure' : ''}`;
       
       // Clear the pending language switch
       sessionStorage?.removeItem('pendingLanguageSwitch');
@@ -325,7 +325,7 @@
       
     } catch (e) {
       // Fallback: Set the locale cookie directly and refresh
-      document.cookie = `PARAGLIDE_LOCALE=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!browser || location.protocol === 'https:' ? '; Secure' : ''}`;
+      document.cookie = `PARAGLIDE_LOCALE=${targetLang}; path=/; max-age=${365 * 24 * 60 * 60}; SameSite=Lax${!isBrowser || location.protocol === 'https:' ? '; Secure' : ''}`;
       
       setTimeout(() => {
         window.location.reload();

@@ -34,7 +34,7 @@ export const unreadOrderCount = derived(
 
 export const activeOrderNotification = writable<OrderNotification | null>(null);
 
-let notificationQueue: OrderNotification[] = [];
+const notificationQueue: OrderNotification[] = [];
 let isShowingNotification = false;
 let realtimeChannel: RealtimeChannel | null = null;
 

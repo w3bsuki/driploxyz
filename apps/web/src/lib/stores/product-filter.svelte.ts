@@ -188,10 +188,10 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
   }
   
   // Derived filtered products (based on applied filters) - recalculates automatically when dependencies change
-  let filteredProducts = $derived.by(() => applyFiltersToProducts(allProducts, filters));
+  const filteredProducts = $derived.by(() => applyFiltersToProducts(allProducts, filters));
   
   // Preview filtered products (based on pending filters)
-  let previewFilteredProducts = $derived.by(() => applyFiltersToProducts(allProducts, pendingFilters));
+  const previewFilteredProducts = $derived.by(() => applyFiltersToProducts(allProducts, pendingFilters));
   
   // Methods to update applied filters (immediate effect)
   function updateFilter(key: keyof FilterState, value: string | null) {

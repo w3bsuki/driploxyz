@@ -1,320 +1,171 @@
 /**
- * Product Page (PDP) Type Definitions
- * 
- * Comprehensive type definitions for the Product Detail Page ecosystem.
- * These types extend the base Product and Review types with additional
- * properties specific to PDP functionality.
+ * Product Type Bridge
+ *
+ * This file provides a bridge between the database product types from @repo/database
+ * and the UI-specific product interface needed by components.
+ *
+ * It keeps database types clean while providing UI-specific extensions.
  */
 
-import type { Product, Review, Profile } from './index';
+import type { Tables } from '@repo/database';
 
-// Core Product Page Data Types
+// Base product type from database (clean, no overrides)
+export type DatabaseProduct = Tables<'products'>;
 
-export interface ProductData {
-  id: string;
-  title: string;
-  description: string | null;
-  price: number;
-  currency: string;
-  brand?: string | null;
-  condition: string;
-  size?: string | null;
-  color?: string | null;
-  material?: string | null;
+// UI-specific product interface that extends database product with UI-only computed fields
+export interface UIProduct extends DatabaseProduct {
+  // UI-specific computed properties (NEVER override database fields)
   images: string[];
-  is_sold: boolean | null;
-  favorite_count: number;
-  view_count?: number;
-  location?: string;
-  categories?: {
-    id?: string;
-    name?: string;
-    slug?: string;
-    parent_id?: string | null;
+  slug?: string; // Generated from title for SEO-friendly URLs
+  sellerName: string;
+  sellerRating: number;
+  sellerAvatar?: string;
+  sellerAccountType?: 'new_seller' | 'pro' | 'brand';
+  category_name?: string;
+  main_category_name?: string;
+  subcategory_name?: string;
+  specific_category_name?: string;
+  seller_badges?: {
+    is_pro: boolean;
+    is_brand: boolean;
+    is_verified: boolean;
   };
-  parent_category?: {
-    name?: string;
-    slug?: string;
-  } | null;
+  seller_subscription_tier?: 'free' | 'basic' | 'pro' | 'brand';
+  product_images?: Array<{
+    id: string;
+    image_url: string;
+    alt_text?: string;
+    sort_order?: number;
+  }>;
+
+  // Legacy compatibility properties (marked for future removal)
+  /** @deprecated Use seller_id instead */
+  sellerId: string;
+  /** @deprecated Use created_at instead */
+  createdAt: string;
+  /** @deprecated Use is_featured from database */
+  is_promoted?: boolean;
+}
+
+// Main Product type for UI components - use this instead of DatabaseProduct
+export type Product = UIProduct;
+
+// Helper type for creating products from database data + UI data
+export interface ProductWithUIData {
+  product: DatabaseProduct;
   seller: {
+    username: string;
+    rating: number;
+    avatar?: string;
+    account_type?: string;
+    badges?: {
+      is_pro: boolean;
+      is_brand: boolean;
+      is_verified: boolean;
+    };
+    subscription_tier?: string;
+  };
+  images: Array<{
     id: string;
-    username: string | null;
-    full_name?: string | null;
-    avatar_url?: string | null;
-    rating?: number | null;
-    bio?: string | null;
-    created_at: string | null;
-    sales_count?: number | null;
+    image_url: string;
+    alt_text?: string;
+    sort_order?: number;
+  }>;
+  category?: {
+    name: string;
+    main_category_name?: string;
+    subcategory_name?: string;
+    specific_category_name?: string;
   };
 }
 
-export interface ReviewData {
+// Utility function to transform database product + related data into UI product
+export function transformToUIProduct(data: ProductWithUIData): Product {
+  const { product, seller, images, category } = data;
+
+  return {
+    // All database fields inherited automatically via extends DatabaseProduct
+    ...product,
+
+    // UI-specific computed fields only
+    images: images.map(img => img.image_url),
+    slug: generateSlugFromTitle(product.title),
+    sellerName: seller.username,
+    sellerRating: seller.rating,
+    sellerAvatar: seller.avatar,
+    sellerAccountType: seller.account_type as 'new_seller' | 'pro' | 'brand',
+    category_name: category?.name,
+    main_category_name: category?.main_category_name,
+    subcategory_name: category?.subcategory_name,
+    specific_category_name: category?.specific_category_name,
+    seller_badges: seller.badges,
+    seller_subscription_tier: seller.subscription_tier as 'free' | 'basic' | 'pro' | 'brand',
+    product_images: images,
+
+    // Legacy compatibility mappings
+    sellerId: product.seller_id,
+    createdAt: product.created_at,
+    is_promoted: product.is_featured || false,
+  };
+}
+
+// Re-export other types that components commonly use
+export type ProductCondition = DatabaseProduct['condition'];
+export type ProductStatus = DatabaseProduct['status'];
+
+// User and Review types (keeping existing structure for now)
+export interface User {
   id: string;
+  username: string;
+  email: string;
+  avatar?: string;
+  bio?: string;
   rating: number;
-  comment: string | null;
-  created_at: string | null;
-  reviewer?: {
-    id: string;
-    username: string | null;
-    avatar_url?: string | null;
-  };
-  reviewer_name?: string;
-}
-
-export interface RatingSummary {
-  averageRating: number;
-  totalReviews: number;
-  ratingDistribution?: {
-    [key: number]: number; // rating -> count
-  };
-}
-
-// Derived Component Types
-
-export interface BuyBoxProduct {
-  id: string;
-  price: number;
-  originalPrice?: number;
-  currency: string;
-  title: string;
-  isSold: boolean;
-  viewCount?: number;
+  reviewCount: number;
+  verified: boolean;
+  memberSince: string;
   location?: string;
 }
 
-export interface GalleryImage {
-  url: string;
-  alt: string;
-  aspectRatio?: string;
-  loading?: 'eager' | 'lazy';
-  fetchPriority?: 'high' | 'low' | 'auto';
-}
-
-export interface SellerStats {
-  rating: number;
-  totalSales: number;
-  responseTime: number; // hours
-  joinedDate: string;
-  verificationLevel: 'basic' | 'verified' | 'pro';
-  lastActive: string;
-}
-
-export interface ProductQuickFacts {
-  brand?: string;
-  size?: string;
-  color?: string;
-  material?: string;
-  condition: string;
-  category?: string;
-}
-
-// Event Handler Types
-
-export interface ProductPageEventHandlers {
-  onFavorite?: () => Promise<{favoriteCount: number, favorited: boolean} | undefined> | void;
-  onMessage?: () => void;
-  onBuyNow?: () => void;
-  onMakeOffer?: () => void;
-  onNavigate?: (url: string) => void;
-  onShare?: () => void;
-  onReportItem?: () => void;
-  onViewSeller?: (sellerId: string) => void;
-}
-
-export interface GalleryEventHandlers {
-  onImageSelect?: (index: number) => void;
-  onImageLoad?: (index: number) => void;
-  onImageError?: (index: number) => void;
-  onZoomToggle?: (enabled: boolean) => void;
-}
-
-export interface ReviewEventHandlers {
-  onReviewLoad?: (page: number) => void;
-  onReviewSubmit?: (review: Omit<ReviewData, 'id' | 'created_at'>) => void;
-  onReviewReport?: (reviewId: string) => void;
-  onReviewHelpful?: (reviewId: string, helpful: boolean) => void;
-}
-
-// Component Props Interfaces
-
-export interface ProductPageProps {
-  product: ProductData;
-  reviews?: ReviewData[];
-  ratingSummary?: RatingSummary | null;
-  similarProducts?: ProductData[];
-  sellerProducts?: ProductData[];
-  isOwner?: boolean;
-  isAuthenticated?: boolean;
-  isFavorited?: boolean;
-  showQuickFacts?: boolean;
-  showStickyHeader?: boolean;
-  currentUrl?: string;
-  eventHandlers?: ProductPageEventHandlers;
-}
-
-export interface ProductGalleryProps {
-  images: GalleryImage[] | string[];
-  title: string;
-  isSold?: boolean;
-  condition?: string;
-  selectedIndex?: number;
-  showThumbnails?: boolean;
-  showZoom?: boolean;
-  aspectRatio?: string;
-  eventHandlers?: GalleryEventHandlers;
-}
-
-export interface ProductInfoProps {
-  title: string;
-  quickFacts: ProductQuickFacts;
-  description?: string;
-  showQuickFacts?: boolean;
-  showTrustBadges?: boolean;
-  expandedByDefault?: boolean;
-}
-
-export interface BuyBoxProps {
-  product: BuyBoxProduct;
-  isOwner?: boolean;
-  hasUser?: boolean;
-  className?: string;
-  eventHandlers?: Pick<ProductPageEventHandlers, 'onBuyNow' | 'onMessage' | 'onMakeOffer'>;
-}
-
-export interface SellerCardProps {
+export interface Review {
   id: string;
-  name: string;
-  avatar?: string;
-  stats: SellerStats;
-  translations: Record<string, string>;
-  eventHandlers?: Pick<ProductPageEventHandlers, 'onMessage' | 'onViewSeller'>;
+  rating: number;
+  comment: string;
+  images?: string[];
+  reviewerId: string;
+  reviewerName: string;
+  productId?: string;
+  sellerId?: string;
+  createdAt: string;
 }
 
-export interface ReviewsSectionProps {
-  reviews: ReviewData[];
-  ratingSummary?: RatingSummary;
-  showAll?: boolean;
-  maxInitialReviews?: number;
-  eventHandlers?: ReviewEventHandlers;
+export interface Message {
+  id: string;
+  content: string;
+  senderId: string;
+  receiverId: string;
+  productId?: string;
+  images?: string[];
+  timestamp: string;
+  read: boolean;
 }
 
-// Utility Types
-
-export type ProductCondition = 
-  | 'brand_new_with_tags'
-  | 'brand_new_without_tags' 
-  | 'like_new'
-  | 'good'
-  | 'worn'
-  | 'fair';
-
-export type ProductSize = 
-  | 'XXS' | 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL'
-  | 'UK4' | 'UK6' | 'UK8' | 'UK10' | 'UK12' | 'UK14' | 'UK16' | 'UK18'
-  | 'EU34' | 'EU36' | 'EU38' | 'EU40' | 'EU42' | 'EU44' | 'EU46' | 'EU48'
-  | string;
-
-export type CurrencyCode = 'EUR' | 'GBP' | 'USD' | 'BGN';
-
-export interface PriceFormatOptions {
-  currency: CurrencyCode;
-  locale?: string;
-  showSymbol?: boolean;
-  precision?: number;
+export interface SearchFilters {
+  category?: string;
+  brand?: string;
+  size?: string[];
+  condition?: string[];
+  priceMin?: number;
+  priceMax?: number;
+  location?: string;
+  sortBy?: 'newest' | 'price-low' | 'price-high' | 'relevance';
 }
 
-// Navigation and URL Types
-
-export interface ProductPageUrl {
-  seller: string;
-  slug: string;
-  id?: string; // for legacy support
+// Utility function to generate URL-friendly slug from product title
+function generateSlugFromTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
 }
-
-export interface BreadcrumbItem {
-  label: string;
-  href: string;
-  current?: boolean;
-}
-
-export interface ProductBreadcrumbs {
-  items: BreadcrumbItem[];
-  structuredData?: object; // JSON-LD schema
-}
-
-// Error and Loading States
-
-export type ProductPageLoadingState = 
-  | 'idle'
-  | 'loading' 
-  | 'success'
-  | 'error'
-  | 'not-found';
-
-export interface ProductPageError {
-  code: string;
-  message: string;
-  details?: unknown;
-}
-
-export interface ProductPageState {
-  loading: ProductPageLoadingState;
-  error?: ProductPageError;
-  data?: ProductData;
-}
-
-// Feature Flags and Configuration
-
-export interface ProductPageConfig {
-  enableStickyHeader: boolean;
-  enableQuickFacts: boolean;
-  enableReviews: boolean;
-  enableRecommendations: boolean;
-  enableSocialSharing: boolean;
-  maxSimilarProducts: number;
-  maxSellerProducts: number;
-  lazyLoadThreshold: number;
-  performanceMode: 'standard' | 'optimized';
-}
-
-// Analytics and Tracking
-
-export interface ProductPageAnalytics {
-  productView: (product: ProductData) => void;
-  galleryInteraction: (action: string, imageIndex?: number) => void;
-  ctaClick: (action: 'buy' | 'message' | 'offer' | 'favorite') => void;
-  sectionView: (section: string) => void;
-  shareProduct: (method: string) => void;
-  errorTracking: (error: ProductPageError) => void;
-}
-
-// Type Guards and Validators
-
-export function isProductData(obj: unknown): obj is ProductData {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    'id' in obj &&
-    'title' in obj &&
-    'price' in obj &&
-    'currency' in obj &&
-    'images' in obj &&
-    'seller' in obj
-  );
-}
-
-export function isReviewData(obj: unknown): obj is ReviewData {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    'id' in obj &&
-    'rating' in obj &&
-    typeof (obj as ReviewData).rating === 'number' &&
-    (obj as ReviewData).rating >= 1 &&
-    (obj as ReviewData).rating <= 5
-  );
-}
-
-// Compatibility with existing types
-export type LegacyProduct = Product;
-export type LegacyReview = Review;

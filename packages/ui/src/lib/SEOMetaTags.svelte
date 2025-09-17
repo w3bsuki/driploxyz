@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { Product, Profile } from '@repo/ui/types';
+	import type { Product } from '@repo/ui/types/product';
+	import type { Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	
 	interface Props {
@@ -65,8 +66,8 @@
 	function generateOptimizedImageUrl(imageUrl: string, width: number, quality: number = 85): string {
 		if (!enableImageOptimization) return imageUrl;
 		
-		// For Supabase storage, generate optimized variants
-		if (imageUrl.includes('supabase')) {
+		// For storage CDNs that support query params, generate optimized variants
+		if (imageUrl.includes('supabase') || imageUrl.includes('cloudinary') || imageUrl.includes('imagekit')) {
 			const baseUrl = imageUrl.split('?')[0];
 			return `${baseUrl}?width=${width}&quality=${quality}`;
 		}

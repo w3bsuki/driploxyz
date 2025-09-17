@@ -339,32 +339,39 @@
       selectL2Category(category);
     }
   }
+
+  function handleL2ShopAll(category: CategoryWithChildren) {
+    // Navigate to the L2 category to "shop all"
+    const fullPath = [...currentPath, category.slug];
+    onCategoryClick(category.slug, 2, fullPath);
+    onClose();
+  }
 </script>
 
 <div class="mega-menu-categories h-full flex flex-col bg-white">
-  <!-- Header with breadcrumb and back button -->
+  <!-- Enhanced Header with breadcrumb and back button -->
   {#if currentLevel > 1}
-    <div class="flex items-center px-4 py-4 border-b border-gray-200 bg-gray-50">
+    <div class="flex items-center px-4 py-4 border-b border-[color:var(--border-default)] bg-[color:var(--surface-subtle)]">
       <button
         onclick={goBack}
-        class="flex items-center text-gray-600 hover:text-gray-900 transition-colors rounded-lg p-2 -ml-2 touch-manipulation"
+        class="flex items-center text-[color:var(--text-secondary)] hover:text-[color:var(--text-primary)] transition-colors rounded-lg p-2 -ml-2 touch-manipulation h-11 min-h-11"
         aria-label="Go back"
       >
         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
-        <span class="text-sm font-medium">{translations.back}</span>
+        <span class="text-[length:var(--text-sm)] font-medium">{translations.back}</span>
       </button>
 
-      <!-- Breadcrumb -->
-      <div class="flex items-center ml-4 text-sm text-gray-500">
+      <!-- Enhanced Breadcrumb -->
+      <div class="flex items-center ml-4 text-[length:var(--text-sm)] text-[color:var(--text-secondary)]">
         {#if selectedL1}
-          <span>{selectedL1.name}</span>
+          <span class="font-medium">{selectedL1.name}</span>
           {#if selectedL2}
-            <svg class="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 mx-2 text-[color:var(--text-tertiary)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
-            <span>{selectedL2.name}</span>
+            <span class="font-medium">{selectedL2.name}</span>
           {/if}
         {/if}
       </div>
@@ -409,57 +416,80 @@
         </div>
       </div>
     {:else if currentLevel === 2 && selectedL1}
-      <!-- Level 2: Subcategories (Clothing, Shoes, Accessories, Bags) -->
+      <!-- Level 2: Subcategories with improved UX -->
       <div class="p-4">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4 px-2">{selectedL1.name}</h2>
+        <h2 class="text-[length:var(--text-lg)] font-semibold text-[color:var(--text-primary)] mb-4 px-2">{selectedL1.name}</h2>
         <div class="space-y-2">
           {#each selectedL1.children || [] as subcategory}
-            <button
-              onclick={() => handleL2Click(subcategory)}
-              class="w-full flex items-center justify-between px-4 py-4 text-gray-900 hover:bg-gray-50 active:bg-gray-100 rounded-xl transition-all duration-200 border border-transparent hover:border-gray-200 touch-manipulation min-h-[56px]"
-              aria-label="Browse {subcategory.name} - {formatItemCount(subcategory.product_count || 0)} items"
-            >
-              <div class="flex items-center gap-3">
-                <!-- Subcategory Icon -->
-                <div class="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <span class="text-lg">{getCategoryEmoji(subcategory.name)}</span>
-                </div>
-
-                <!-- Subcategory Info -->
-                <div class="text-left">
-                  <div class="font-medium text-base">{subcategory.name}</div>
-                  <div class="text-sm text-gray-500">
-                    {formatItemCount(subcategory.product_count || 0)} {translations.items}
+            <div class="border border-[color:var(--border-subtle)] rounded-xl overflow-hidden bg-[color:var(--surface-base)]">
+              <!-- Subcategory Header with "Shop All" option -->
+              <div class="flex items-center">
+                <button
+                  onclick={() => handleL2Click(subcategory)}
+                  class="flex-1 flex items-center justify-between px-4 py-4 text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] transition-all duration-200 touch-manipulation min-h-11"
+                  aria-label="Browse {subcategory.name} categories"
+                >
+                  <div class="flex items-center gap-3">
+                    <div class="flex-shrink-0 w-10 h-10 bg-[color:var(--surface-subtle)] rounded-lg flex items-center justify-center">
+                      <span class="text-lg">{getCategoryEmoji(subcategory.name)}</span>
+                    </div>
+                    <div class="text-left">
+                      <div class="text-[length:var(--text-base)] font-medium">{subcategory.name}</div>
+                      <div class="text-[length:var(--text-sm)] text-[color:var(--text-secondary)]">
+                        {formatItemCount(subcategory.product_count || 0)} {translations.items}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                  <div class="flex-shrink-0 text-[color:var(--text-tertiary)]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </button>
+                <!-- Shop All Button -->
+                <button
+                  onclick={() => handleL2ShopAll(subcategory)}
+                  class="px-4 py-2 m-2 text-[length:var(--text-sm)] font-medium text-[color:var(--brand-primary)] hover:bg-[color:var(--surface-brand-subtle)] rounded-lg transition-colors border border-[color:var(--brand-primary)] hover:border-[color:var(--brand-emphasis)]"
+                  aria-label="Shop all {subcategory.name}"
+                >
+                  Shop All
+                </button>
               </div>
-
-              <!-- Arrow indicator -->
-              <div class="flex-shrink-0 text-gray-400">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </div>
-            </button>
+            </div>
           {/each}
         </div>
       </div>
     {:else if currentLevel === 3 && selectedL2}
-      <!-- Level 3: Specific Items (T-Shirts, Dresses, Sneakers, etc.) -->
+      <!-- Level 3: Specific Items with improved layout -->
       <div class="p-4">
-        <h2 class="text-lg font-semibold text-gray-900 mb-4 px-2">{selectedL2.name}</h2>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-[length:var(--text-lg)] font-semibold text-[color:var(--text-primary)] px-2">{selectedL2.name}</h2>
+          <!-- Shop All Category Button -->
+          <button
+            onclick={() => handleL2ShopAll(selectedL2)}
+            class="px-3 py-1.5 text-[length:var(--text-sm)] font-medium text-[color:var(--brand-primary)] hover:bg-[color:var(--surface-brand-subtle)] rounded-md transition-colors"
+            aria-label="Shop all {selectedL2.name}"
+          >
+            Shop All {selectedL2.name}
+          </button>
+        </div>
         <div class="grid grid-cols-1 gap-2">
           {#each selectedL2.children || [] as item}
             <button
               onclick={() => selectL3Item(item)}
-              class="flex items-center justify-between px-4 py-4 text-gray-900 hover:bg-gray-50 active:bg-gray-100 rounded-xl transition-all duration-200 border border-gray-200 hover:border-gray-300 hover:shadow-sm touch-manipulation min-h-[52px]"
+              class="flex items-center justify-between px-4 py-4 text-[color:var(--text-primary)] hover:bg-[color:var(--surface-subtle)] active:bg-[color:var(--surface-emphasis)] rounded-xl transition-all duration-200 border border-[color:var(--border-subtle)] hover:border-[color:var(--border-default)] hover:shadow-sm touch-manipulation min-h-11"
               aria-label="Browse {item.name} - {formatItemCount(item.product_count || 0)} items"
             >
               <div class="text-left flex-1">
-                <div class="font-medium text-sm">{item.name}</div>
-                <div class="text-xs text-gray-500">
+                <div class="text-[length:var(--text-sm)] font-medium">{item.name}</div>
+                <div class="text-[length:var(--text-xs)] text-[color:var(--text-secondary)]">
                   {formatItemCount(item.product_count || 0)} {translations.items}
                 </div>
+              </div>
+              <div class="flex-shrink-0 text-[color:var(--text-tertiary)]">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
               </div>
             </button>
           {/each}

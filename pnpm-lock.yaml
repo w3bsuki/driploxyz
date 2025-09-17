@@ -358,6 +358,9 @@ importers:
       '@melt-ui/svelte':
         specifier: ^0.86.6
         version: 0.86.6(svelte@5.38.7)
+      '@repo/database':
+        specifier: workspace:*
+        version: link:../database
       '@repo/i18n':
         specifier: workspace:*
         version: link:../i18n

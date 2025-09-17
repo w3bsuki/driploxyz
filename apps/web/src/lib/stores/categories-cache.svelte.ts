@@ -37,7 +37,7 @@ interface CategoriesCache {
 }
 
 // Global cache state using Svelte 5 runes
-let cache = $state<CategoriesCache>({
+const cache = $state<CategoriesCache>({
   data: null,
   hierarchy: null,
   loading: false,

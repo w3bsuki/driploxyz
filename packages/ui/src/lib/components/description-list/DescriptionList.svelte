@@ -1,14 +1,14 @@
 <script lang="ts">
   interface Props {
     className?: string;
+    children?: import('svelte').Snippet;
   }
 
-  let { className = '' }: Props = $props();
+  let { className = '', children }: Props = $props();
 </script>
 
 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 sm:gap-x-6 {className}">
-  <slot />
-  
+  {#if children}{@render children()}{/if}
 </dl>
 
 <style>

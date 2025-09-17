@@ -144,8 +144,8 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
     const allProductsWithSellers = (consolidatedResult as any).data || [];
 
     // Process category counts using real data from RPC functions
-    let categoryProductCounts: Record<string, number> = {};
-    let virtualCategoryCounts: Record<string, number> = {};
+    const categoryProductCounts: Record<string, number> = {};
+    const virtualCategoryCounts: Record<string, number> = {};
 
     if (categoryCountsResult && Array.isArray(categoryCountsResult)) {
       const [mainCountsResult, virtualCountsResult] = categoryCountsResult;
@@ -206,7 +206,7 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
     const sellers = topSellers.slice(0, 20); // Reuse sorted data
 
     // OPTIMIZED: Seller previews already available from consolidated query
-    let sellerPreviews: Record<string, { id: string; title: string; price: number; seller_id: string; product_images: { image_url: string }[] }[]> = {};
+    const sellerPreviews: Record<string, { id: string; title: string; price: number; seller_id: string; product_images: { image_url: string }[] }[]> = {};
 
     // Extract previews from already-fetched data (no additional query needed)
     [...topSellers, ...topBrands].forEach((seller: any) => {

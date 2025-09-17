@@ -31,7 +31,7 @@ export const load = (async ({ locals, parent }) => {
   }
 
   // Get order and seller details separately to avoid join issues
-  let enrichedPayouts = [];
+  const enrichedPayouts = [];
   if (pendingPayouts && pendingPayouts.length > 0) {
     for (const payout of pendingPayouts) {
       // Get order details

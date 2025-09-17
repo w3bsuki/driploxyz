@@ -65,10 +65,11 @@
 <div class="space-y-3">
   <!-- Image Upload -->
   <div>
-    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+    <label for="photos-uploader" class="block text-sm font-medium text-gray-700 mb-1.5">
 {i18n.sell_photosSection()} <span class="text-red-500">*</span>
     </label>
     <ImageUploaderSupabase
+      id="photos-uploader"
       maxImages={10}
       bind:images={uploadedImages}
       onUpload={onImageUpload}

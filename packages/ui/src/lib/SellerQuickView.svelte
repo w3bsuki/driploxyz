@@ -1,7 +1,7 @@
 <script lang="ts">
   import { fade, fly } from 'svelte/transition';
   import { onMount } from 'svelte';
-  import { browser } from '$app/environment';
+  import { isBrowser } from './utils/runtime.js';
   
   interface SellerProduct {
     id: string;
@@ -61,7 +61,7 @@
 
   // Fetch seller products when dialog opens
   async function fetchSellerProducts() {
-    if (!browser || loadingProducts) return;
+    if (!isBrowser || loadingProducts) return;
     
     loadingProducts = true;
     fetchError = null;

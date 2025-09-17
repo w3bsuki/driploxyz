@@ -35,7 +35,7 @@ export const unreadMessageCount = derived(
 
 export const activeNotification = writable<MessageNotification | null>(null);
 
-let notificationQueue: MessageNotification[] = [];
+const notificationQueue: MessageNotification[] = [];
 let isShowingNotification = false;
 
 // Fallback UUID generator for older browsers

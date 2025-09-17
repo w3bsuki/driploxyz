@@ -1,5 +1,4 @@
 <script lang="ts">
-import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 import SearchInput from './SearchInput.svelte';
 import MegaMenuCategories from './MegaMenuCategories.svelte';
@@ -25,7 +24,6 @@ interface MainCategory {
 }
 
   interface Props {
-    supabase: SupabaseClient<Database>;
     searchValue?: string;
     megaMenuData?: CategoryWithChildren[];
     mainCategories?: MainCategory[];
@@ -43,7 +41,6 @@ interface MainCategory {
   }
 
   let {
-    supabase,
     searchValue = $bindable(''),
     megaMenuData = [],
     mainCategories = [],

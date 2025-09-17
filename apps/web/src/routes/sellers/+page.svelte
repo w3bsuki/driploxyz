@@ -335,8 +335,8 @@
 
       <!-- Verified toggle -->
       <div class="flex items-center justify-between">
-        <label class="text-sm text-gray-700">Verified only</label>
-        <input type="checkbox" checked={Boolean($page.url.searchParams.get('verified') === 'true')} onchange={(e) => { const u = new URL($page.url); const c = (e.target as HTMLInputElement).checked; if (c) u.searchParams.set('verified', 'true'); else u.searchParams.delete('verified'); goto(u.pathname + u.search, { invalidateAll: true }); }} />
+        <label for="verified-checkbox" class="text-sm text-gray-700">Verified only</label>
+        <input id="verified-checkbox" type="checkbox" checked={Boolean($page.url.searchParams.get('verified') === 'true')} onchange={(e) => { const u = new URL($page.url); const c = (e.target as HTMLInputElement).checked; if (c) u.searchParams.set('verified', 'true'); else u.searchParams.delete('verified'); goto(u.pathname + u.search, { invalidateAll: true }); }} />
       </div>
     </div>
 

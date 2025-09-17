@@ -1,33 +1,3 @@
-export interface Product {
-  id: string;
-  title: string;
-  price: number;
-  currency: string;
-  images: string[];
-  product_images?: Array<{ image_url: string; alt_text?: string; sort_order?: number }>;
-  condition: 'new' | 'like_new' | 'good' | 'fair' | 'poor';
-  seller_id: string;
-  category_id: string;
-  size?: string;
-  brand?: string;
-  description?: string;
-  created_at: string;
-  updated_at: string;
-  sold: boolean;
-  favorites_count: number;
-  views_count: number;
-  location?: string;
-  // Category information for display
-  category_name?: string;
-  main_category_name?: string;
-  subcategory_name?: string;
-  // Seller information for display purposes
-  seller_name?: string;
-  seller_avatar?: string;
-  seller_rating?: number;
-  // Promotion status
-  is_promoted?: boolean;
-}
 
 export interface User {
   id: string;
@@ -56,6 +26,7 @@ export interface Profile {
   verification_status?: string;
   subscription_tier?: string;
   subscription_expires_at?: string;
+  role?: 'buyer' | 'seller' | 'admin';  // Database field for role-based checks
 }
 
 export interface Seller extends Profile {
@@ -78,6 +49,10 @@ export interface Seller extends Profile {
     price: number;
     image: string;
   }>;
+  // Computed display name fields (for component compatibility)
+  name?: string;          // Computed from display_name || full_name || username
+  displayName?: string;   // Computed display name
+  avatar?: string;        // Alias for avatar_url for component compatibility
 }
 
 export interface Category {
@@ -198,3 +173,6 @@ export interface Translations {
 
 // Product Page (PDP) Types
 export * from './product';
+
+// Search Types
+export * from './search';

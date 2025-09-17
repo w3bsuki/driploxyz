@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { Database } from '@repo/database';
 import type { Snippet } from 'svelte';
+import { useAnalytics } from './hooks/analytics.js';
 import SearchDropdown from './SearchDropdown.svelte';
 
 // Define ProductWithImages type locally
@@ -27,6 +28,7 @@ interface Props {
   searchId?: string;
   showDropdown?: boolean;
   maxResults?: number;
+  mode?: 'power' | 'compact' | 'full';
 }
 
 let {
@@ -40,8 +42,12 @@ let {
   class: className = '',
   searchId = 'search-input',
   showDropdown = true,
-  maxResults = 5
+  maxResults = 5,
+  mode = 'full'
 }: Props = $props();
+
+// Analytics hooks
+const { trackSearch, trackSearchPerformance } = useAnalytics();
 
 let inputElement: HTMLInputElement;
 let focused = $state(false);
@@ -51,8 +57,19 @@ const listboxId = $derived(`${searchId}-listbox`);
 function handleSubmit(event: Event) {
   event.preventDefault();
   if (searchValue.trim()) {
+    const startTime = performance.now();
+
+    // Track search submission
+    trackSearch({
+      query: searchValue.trim(),
+      mode: mode as any,
+      session_id: '' // Will be set by analytics service
+    });
+
     onSearch?.(searchValue.trim());
     inputElement.blur();
+
+    // Note: Performance tracking would happen in parent component when results are received
   }
 }
 

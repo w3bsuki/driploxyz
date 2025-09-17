@@ -3,7 +3,8 @@
   import SellerQuickView from './SellerQuickView.svelte';
   import SectionBanner from './SectionBanner.svelte';
   import * as i18n from '@repo/i18n';
-  import type { Seller, Product } from './types/index';
+  import type { Seller } from './types/index';
+  import type { Product } from './types/product';
 
   interface Props {
     sellers: Seller[];

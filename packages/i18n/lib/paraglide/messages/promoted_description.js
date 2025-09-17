@@ -2,11 +2,11 @@
 import { getLocale, trackMessageCall, experimentalMiddlewareLocaleSplitting, isServer } from '../runtime.js';
 
 const bg_promoted_description = /** @type {(inputs: {}) => string} */ () => {
-	return `Избрани артикули от професионални продавачи`
+	return `Избрани артикули`
 };
 
 const en_promoted_description = /** @type {(inputs: {}) => string} */ () => {
-	return `Featured items from pro sellers`
+	return `Featured items`
 };
 
 /**

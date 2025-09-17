@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Product } from './types';
+  import type { Product } from './types/product';
   import { Button } from './';
 
   interface BoostStatus {
@@ -11,9 +11,8 @@
   }
 
   interface UserProduct extends Product {
-    is_boosted: boolean;
-    boosted_until?: string | null;
-    boost_priority?: number;
+    // Don't override database fields - they come from Product with exact types
+    // is_boosted, boosted_until, boost_priority are already in database/Product with correct types
   }
 
   interface Props {
@@ -75,8 +74,9 @@
   }
 
   function isBoostActive(product: UserProduct): boolean {
-    return product.is_boosted &&
-           product.boosted_until &&
+    return Boolean(product.is_boosted) &&
+           Boolean(product.boosted_until) &&
+           product.boosted_until !== null &&
            new Date(product.boosted_until) > new Date();
   }
 </script>

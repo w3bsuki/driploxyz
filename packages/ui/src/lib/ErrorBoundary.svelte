@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { browser } from '$app/environment';
+	import { isBrowser } from './utils/runtime.js';
 	
 	interface Props {
 		children: Snippet;
@@ -49,7 +49,7 @@
 		errorInfo = info;
 		
 		// Log to console in development
-		if (browser) {
+		if (isBrowser) {
 			console.error('Error Boundary caught:', err, info);
 		}
 		
@@ -71,7 +71,7 @@
 	
 	// Setup error handling
 	$effect(() => {
-		if (!browser) return;
+		if (!isBrowser) return;
 		
 		const handleError = (event: ErrorEvent) => {
 			// Only capture if we're isolating this boundary
@@ -130,7 +130,7 @@
 					</svg>
 					<h2 class="error-title">Something went wrong</h2>
 					<p class="error-message">{error.message || 'An unexpected error occurred'}</p>
-					{#if browser && window.location.hostname === 'localhost' && errorInfo}
+					{#if isBrowser && window.location.hostname === 'localhost' && errorInfo}
 						<details class="error-details">
 							<summary>Error details</summary>
 							<pre class="error-stack">{JSON.stringify(errorInfo, null, 2)}</pre>
