@@ -21,7 +21,7 @@
     shell: 'relative isolate w-full overflow-hidden rounded-lg border border-white/12 bg-emerald-600/95 px-4 py-5 text-white shadow-md shadow-emerald-950/10 sm:px-6 sm:py-6 lg:px-8 lg:py-7',
     layout: 'mx-auto flex w-full max-w-screen-xl flex-col gap-5 sm:gap-6 md:flex-row md:items-center md:justify-between md:gap-8',
     copyStack: 'mx-auto flex w-full max-w-sm flex-col items-center gap-2.5 text-center sm:max-w-md md:mx-0 md:items-start md:text-left',
-    meta: 'inline-flex items-center gap-1 rounded-full bg-white/16 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/85 backdrop-blur',
+    meta: 'inline-flex items-center gap-1 rounded-full bg-white/18 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.28em] text-white/85 backdrop-blur',
     heading: 'text-[clamp(1.5rem,4vw,2.2rem)] font-semibold leading-tight',
     description: 'text-sm text-white/75 sm:text-base',
     controls: 'grid w-full gap-3 justify-items-stretch sm:max-w-md md:max-w-lg md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-4',
