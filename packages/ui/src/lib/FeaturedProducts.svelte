@@ -79,7 +79,7 @@
   aria-label={sectionTitle}
 >
   <!-- Section Banner with proper container -->
-  <div class="px-2 sm:px-4 lg:px-6">
+  <div class="px-2 sm:px-4 lg:px-6 mb-4 sm:mb-6">
     <NewestListingsBanner
       heading={sectionTitle}
       copy={hasProducts ? `${products.length} ${translations.home_itemCount} • ${translations.home_updatedMomentsAgo}` : undefined}
@@ -197,3 +197,4 @@
     </div>
   {/if}
 </section>
+
