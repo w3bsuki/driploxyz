@@ -78,16 +78,18 @@
   class="pb-3 sm:pb-4 {className}"
   aria-label={sectionTitle}
 >
-  <!-- Section Banner -->
-  <NewestListingsBanner
-    heading={sectionTitle}
-    copy={hasProducts ? `${products.length} ${translations.home_itemCount} • ${translations.home_updatedMomentsAgo}` : undefined}
-    itemCount={hasProducts ? products.length : undefined}
-    cta={showViewAllButton && hasProducts && onViewAll ? { label: 'View All', action: onViewAll } : undefined}
-    showCategoryTabs={showCategoryTabs && hasProducts}
-    {activeCategory}
-    onCategoryChange={onCategoryChange}
-  />
+  <!-- Section Banner with proper container -->
+  <div class="px-2 sm:px-4 lg:px-6">
+    <NewestListingsBanner
+      heading={sectionTitle}
+      copy={hasProducts ? `${products.length} ${translations.home_itemCount} • ${translations.home_updatedMomentsAgo}` : undefined}
+      itemCount={hasProducts ? products.length : undefined}
+      cta={showViewAllButton && hasProducts && onViewAll ? { label: 'View All', action: onViewAll } : undefined}
+      showCategoryTabs={showCategoryTabs && hasProducts}
+      {activeCategory}
+      onCategoryChange={onCategoryChange}
+    />
+  </div>
   
   
   <!-- Loading State -->
@@ -100,7 +102,7 @@
       aria-label="Loading products"
     >
       {#each Array(10) as _, i}
-        <ProductCardSkeleton aria-label="Loading product {i + 1}" />
+        <ProductCardSkeleton />
       {/each}
       <span class="sr-only">Loading products, please wait...</span>
     </div>
@@ -129,8 +131,6 @@
             totalCount={products.length}
             translations={{
               size: translations.product_size,
-              newSeller: translations.trending_newSeller,
-              unknownSeller: translations.seller_unknown,
               currency: translations.common_currency,
               addToFavorites: translations.product_addToFavorites,
               brandNewWithTags: translations.condition_brandNewWithTags,
@@ -172,12 +172,11 @@
   <!-- Load More -->
   {#if hasProducts}
     <nav class="text-center mt-[var(--gutter-md)] sm:mt-[var(--gutter-lg)]" aria-label="Load more products">
-      <Button 
-        variant="ghost" 
-        size="lg" 
+      <Button
+        variant="ghost"
+        size="lg"
         class="text-[color:var(--text-secondary)]"
         onclick={onBrowseAll}
-        aria-label="Browse all products"
       >
         {translations.home_browseAll}
       </Button>
@@ -193,7 +192,7 @@
     >
       <p class="text-sm" style="color: var(--status-error-text)">
         <span class="sr-only">Error: </span>
-        {errors.products}
+        {errors?.products}
       </p>
     </div>
   {/if}

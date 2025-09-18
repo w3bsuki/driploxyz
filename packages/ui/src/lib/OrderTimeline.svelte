@@ -40,7 +40,7 @@
 		});
 	};
 
-	const getTimelineSteps = $derived((): TimelineStep[] => {
+	const getTimelineSteps = $derived.by((): TimelineStep[] => {
 		const baseSteps = [
 			{
 				key: 'pending',

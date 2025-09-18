@@ -77,7 +77,7 @@
 	};
 
 	// Determine available actions based on status and user role
-	const availableActions = $derived(() => {
+	const availableActions = $derived.by(() => {
 		const actions: string[] = [];
 
 		// Always available: contact the other party

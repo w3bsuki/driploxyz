@@ -287,7 +287,7 @@
   });
 
   // Check if any filters have pending changes
-  const hasPendingChanges = $derived(() => {
+  const hasPendingChanges = $derived.by(() => {
     return Object.keys(localFilters).some(key => {
       const applied = appliedFilters[key];
       const pending = localFilters[key];
@@ -296,7 +296,7 @@
   });
 
   // Check if any filters are active
-  const hasActiveFilters = $derived(() => {
+  const hasActiveFilters = $derived.by(() => {
     return Object.entries(localFilters).some(([key, value]) => {
       if (key.includes('_min') || key.includes('_max')) {
         return value !== '';
@@ -309,7 +309,7 @@
   });
 
   // Active filter count for display
-  const activeFilterCount = $derived(() => {
+  const activeFilterCount = $derived.by(() => {
     return Object.entries(appliedFilters).reduce((count, [key, value]) => {
       if (key.includes('_min') || key.includes('_max')) {
         return count; // Price range counts as 1 filter, handled elsewhere

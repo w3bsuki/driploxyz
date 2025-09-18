@@ -100,8 +100,13 @@ export function flattenCategoryHierarchy(
 ): FlatCategoryItem[] {
   const flat: FlatCategoryItem[] = [];
 
+  // Guard against non-array input
+  if (!categories || !Array.isArray(categories)) {
+    return flat;
+  }
+
   function walk(nodes: CategoryWithChildren[] | undefined, level: number, path: string[]) {
-    if (!nodes) return;
+    if (!nodes || !Array.isArray(nodes)) return;
     for (const node of nodes) {
       if (!node) continue;
       const slug = node.slug ?? node.key ?? node.name;

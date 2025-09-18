@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
   import { isBrowser } from './utils/runtime.js';
   import ProductCard from './ProductCard.svelte';
   import { ProductCardSkeleton } from './skeleton/index';
@@ -65,7 +65,12 @@
   let previousContainerWidth = $state(0);
   
   // Simple performance monitoring (optional)
-  const perf = null;
+  type PerformanceTimers = {
+    startTiming: (label: string) => void;
+    endTiming: (label: string) => void;
+  };
+
+  const perf: PerformanceTimers | null = null;
 
   // Calculate responsive items per row
   const responsiveItemsPerRow = $derived(() => {
@@ -128,14 +133,12 @@
 
   // Throttled scroll handler for better performance
   const handleScroll = throttle((event: Event) => {
-    perf?.startTiming('virtual-scroll');
     if (scrollParent === 'self') {
       const target = event.target as HTMLDivElement;
       scrollTop = target.scrollTop;
     } else {
       updateScrollTopFromWindow();
     }
-    perf?.endTiming('virtual-scroll');
   }, 16); // ~60fps
 
   function handleResize() {

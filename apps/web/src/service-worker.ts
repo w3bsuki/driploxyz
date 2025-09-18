@@ -32,7 +32,13 @@ sw.addEventListener('install', (event) => {
 	event.waitUntil(
 		Promise.all([
 			caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)),
-			caches.open(OFFLINE_CACHE).then((cache) => cache.add(OFFLINE_PAGE))
+			caches.open(OFFLINE_CACHE).then((cache) =>
+				cache.add(OFFLINE_PAGE).catch((error) => {
+					console.warn('Failed to cache offline page:', error);
+					// Continue installation even if offline page fails to cache
+					return Promise.resolve();
+				})
+			)
 		]).then(() => sw.skipWaiting())
 	);
 });

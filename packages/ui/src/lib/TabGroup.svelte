@@ -15,7 +15,7 @@
     elements: { root, list, trigger },
     states: { value }
   } = createTabs({
-    value: activeTab,
+    defaultValue: activeTab,
     onValueChange: ({ next }) => {
       onTabChange(next);
       return next;
@@ -41,7 +41,8 @@
   >
     {#each tabs as tab (tab.id)}
       <button
-        use:trigger={tab.id}
+        use:trigger
+        data-value={tab.id}
         class="flex items-center px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors scroll-snap-align-start min-h-[36px]
           {$value === tab.id 
             ? 'bg-black text-white' 

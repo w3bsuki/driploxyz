@@ -1,77 +1,87 @@
-<script lang="ts">
+﻿<script lang="ts">
+  type Category = 'fresh' | 'recent';
+
+  interface BannerCta {
+    label: string;
+    action: () => void;
+  }
+
   interface Props {
     heading: string;
     copy?: string;
-    cta?: {
-      label: string;
-      action: () => void;
-    };
+    cta?: BannerCta;
     itemCount?: number;
     showCategoryTabs?: boolean;
-    activeCategory?: 'fresh' | 'recent';
-    onCategoryChange?: (category: 'fresh' | 'recent') => void;
+    activeCategory?: Category;
+    onCategoryChange?: (category: Category) => void;
     class?: string;
   }
+
+  const styles = {
+    wrapper: 'bg-gradient-to-r from-orange-500 via-orange-400 to-orange-600 text-white',
+    meta: 'inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-white/80 backdrop-blur',
+    heading: 'text-2xl font-semibold tracking-tight sm:text-3xl',
+    description: 'text-sm text-white/80 sm:text-base',
+    toggleGroup: 'inline-flex items-center gap-1 rounded-full border border-white/20 bg-white/10 p-1 text-sm font-semibold text-white/80 backdrop-blur',
+    toggleButton: 'rounded-full px-3 py-2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
+    toggleButtonActive: 'bg-white text-orange-600 shadow-sm',
+    toggleButtonInactive: 'text-white/80 hover:bg-white/10',
+    primaryButton: 'inline-flex items-center justify-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-semibold text-orange-600 transition hover:bg-orange-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-500 sm:text-base'
+  } as const;
 
   let {
     heading,
     copy,
     cta,
     itemCount,
-    showCategoryTabs = false,
+    showCategoryTabs = true,
     activeCategory = 'fresh',
     onCategoryChange,
     class: className = ''
   }: Props = $props();
 
-  // Category options for newest listings
   const categoryTabs = [
-    { key: 'fresh' as const, label: 'Fresh Arrivals', subtitle: 'Last 24 hours' },
-    { key: 'recent' as const, label: 'Recently Added', subtitle: 'This week' }
-  ];
+    { id: 'fresh', label: 'Fresh arrivals' },
+    { id: 'recent', label: 'Recently added' }
+  ] as const;
+
+  const resolvedCopy = $derived(copy ?? 'Daily refresh of the newest products hitting the marketplace.');
+
+  function handleCategoryChange(category: Category) {
+    if (category !== activeCategory) {
+      onCategoryChange?.(category);
+    }
+  }
 </script>
 
-<div
-  class="newest-listings-banner {className}"
+<section
+  class={`relative overflow-hidden rounded-3xl border border-white/20 px-5 py-6 shadow-lg sm:px-8 sm:py-8 lg:px-12 lg:py-10 ${styles.wrapper} ${className}`}
+  aria-label={heading}
 >
-  <div class="banner-content">
-    <!-- Left side: Icon, Title, Subtitle -->
-    <div class="banner-info">
-      <div class="banner-icon">
-        <svg class="icon-glyph" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-      </div>
-      <div class="banner-text">
-        <h2 class="banner-heading">
-          {heading}
-          {#if itemCount}
-            <span class="item-count">
-              {itemCount}
-            </span>
-          {/if}
-        </h2>
-        {#if copy}
-          <p class="banner-copy">
-            {copy}
-          </p>
-        {/if}
-      </div>
+  <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+    <div class="space-y-3 md:max-w-xl">
+      {#if itemCount}
+        <p class={styles.meta}>{itemCount} new listings</p>
+      {/if}
+
+      <h2 class={styles.heading}>{heading}</h2>
+
+      {#if resolvedCopy}
+        <p class={styles.description}>{resolvedCopy}</p>
+      {/if}
     </div>
 
-    <!-- Right side: Category Tabs and CTA controls -->
-    <div class="banner-actions">
+    <div class="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
       {#if showCategoryTabs}
-        <div class="category-tabs">
+        <div class={styles.toggleGroup} role="group" aria-label="Newest listings filters">
           {#each categoryTabs as tab}
             <button
-              onclick={() => onCategoryChange?.(tab.key)}
-              class="category-tab {activeCategory === tab.key ? 'active' : ''}"
               type="button"
-              aria-pressed={activeCategory === tab.key}
+              class={`${styles.toggleButton} ${activeCategory === tab.id ? styles.toggleButtonActive : styles.toggleButtonInactive}`}
+              aria-pressed={activeCategory === tab.id}
+              onclick={() => handleCategoryChange(tab.id)}
             >
-              <span class="tab-label">{tab.label}</span>
-              <span class="tab-subtitle">{tab.subtitle}</span>
+              {tab.label}
             </button>
           {/each}
         </div>
@@ -79,246 +89,20 @@
 
       {#if cta}
         <button
-          onclick={cta.action}
-          class="banner-cta"
           type="button"
+          class={`${styles.primaryButton} w-full sm:w-auto`}
+          onclick={() => cta.action?.()}
         >
           <span>{cta.label}</span>
-          <svg class="cta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path
+              fill-rule="evenodd"
+              d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
+              clip-rule="evenodd"
+            />
           </svg>
         </button>
       {/if}
     </div>
   </div>
-</div>
-
-<style>
-  .newest-listings-banner {
-    background: var(--surface-base);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-xl);
-    padding: 1.5rem;
-    margin: 0 0.75rem 1rem;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
-  }
-
-  @media (min-width: 640px) {
-    .newest-listings-banner {
-      padding: 1.75rem 2rem;
-      margin: 0 1rem 1.25rem;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .newest-listings-banner {
-      padding: 2rem 2.5rem;
-      margin: 0 1.5rem 1.5rem;
-    }
-  }
-
-  .banner-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-  }
-
-  .banner-info {
-    display: flex;
-    align-items: center;
-    gap: 1.1rem;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .banner-icon {
-    width: 3rem;
-    height: 3rem;
-    background: var(--surface-subtle);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-strong);
-  }
-
-  .icon-glyph {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-
-  .banner-text {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .banner-heading {
-    font-size: var(--text-lg);
-    font-weight: var(--font-semibold);
-    line-height: var(--leading-snug);
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    color: var(--text-strong);
-    flex-wrap: wrap;
-  }
-
-  .item-count {
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    background: var(--surface-subtle);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-full);
-    color: var(--text-strong);
-    padding: 0.125rem 0.75rem;
-  }
-
-  .banner-copy {
-    font-size: var(--text-sm);
-    color: var(--text-subtle);
-    margin: 0.5rem 0 0;
-    line-height: var(--leading-snug);
-  }
-
-  .banner-actions {
-    display: flex;
-    align-items: center;
-    gap: 1.125rem;
-    flex-shrink: 0;
-  }
-
-  .category-tabs {
-    display: flex;
-    gap: 0.5rem;
-    padding: 0.25rem;
-    border-radius: var(--radius-full);
-    border: 1px solid var(--border-subtle);
-    background: var(--surface-subtle);
-  }
-
-  .category-tab {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.15rem;
-    padding: 0.5rem 0.85rem;
-    border: none;
-    border-radius: var(--radius-full);
-    background: transparent;
-    color: var(--text-subtle);
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease;
-    min-width: 96px;
-  }
-
-  .category-tab.active,
-  .category-tab:focus-visible {
-    background: var(--surface-base);
-    color: var(--text-strong);
-    box-shadow: inset 0 0 0 1px var(--border-strong);
-    outline: none;
-  }
-
-  .category-tab:hover {
-    background: var(--surface-hover);
-    color: var(--text-strong);
-  }
-
-  .tab-label {
-    font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
-    white-space: nowrap;
-  }
-
-  .tab-subtitle {
-    font-size: var(--text-xs);
-    font-weight: var(--font-normal);
-    color: var(--text-subtle);
-    white-space: nowrap;
-  }
-
-  .banner-cta {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.55rem 1rem;
-    background: var(--surface-base);
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-lg);
-    color: var(--text-strong);
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    cursor: pointer;
-    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-  }
-
-  .banner-cta:hover {
-    background: var(--surface-hover);
-  }
-
-  .banner-cta:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 2px;
-  }
-
-  .banner-cta:active {
-    background: var(--surface-subtle);
-  }
-
-  .cta-icon {
-    width: 1rem;
-    height: 1rem;
-  }
-
-  @media (max-width: 900px) {
-    .newest-listings-banner {
-      padding: 1.5rem;
-      margin: 0 1rem 1.25rem;
-    }
-
-    .banner-content {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1.25rem;
-    }
-
-    .banner-actions {
-      flex-direction: column;
-      align-items: stretch;
-      width: 100%;
-      gap: 0.75rem;
-    }
-
-    .category-tabs {
-      justify-content: flex-start;
-      width: 100%;
-      flex-wrap: wrap;
-    }
-
-    .banner-cta {
-      align-self: flex-start;
-    }
-  }
-
-  @media (max-width: 520px) {
-    .category-tabs {
-      flex-direction: column;
-      gap: 0.4rem;
-      padding: 0.35rem;
-    }
-
-    .category-tab {
-      width: 100%;
-      min-width: 0;
-      align-items: center;
-    }
-
-    .banner-cta {
-      width: 100%;
-      justify-content: center;
-    }
-  }
-</style>
+</section>

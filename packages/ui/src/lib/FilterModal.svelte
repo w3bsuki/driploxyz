@@ -237,7 +237,7 @@
   });
 
   // Check if any filters are active
-  const hasActiveFilters = $derived(() => {
+  const hasActiveFilters = $derived.by(() => {
     return Object.entries(localFilters).some(([key, value]) => {
       if (key.includes('_min') || key.includes('_max')) {
         return value !== '';
@@ -324,7 +324,7 @@
           {#if section.type === 'pills' && section.options}
             <div class="px-4">
               <FilterPillGroup
-                bind:value={localFilters[section.key]}
+                bind:value={localFilters[section.key] as string | null}
                 options={[{ value: 'all', label: `All ${section.label}` }, ...section.options]}
                 onValueChange={(value) => handleFilterChange(section.key, value)}
                 announceChanges={false}

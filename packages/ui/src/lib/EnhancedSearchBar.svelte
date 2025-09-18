@@ -2,7 +2,6 @@
   import type { Database } from '@repo/database';
   import type { Snippet } from 'svelte';
   import SearchDropdown from './SearchDropdown.svelte';
-  import { goto } from '$app/navigation';
 
   // Define ProductWithImages type locally  
   type Product = Database['public']['Tables']['products']['Row'];
@@ -55,27 +54,21 @@
 
   function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
-    if (searchValue?.trim()) {
+    if (searchValue?.trim() && onSearch) {
       const query = searchValue.trim();
-      if (onSearch) {
-        onSearch(query);
-      } else {
-        goto(`/search?q=${encodeURIComponent(query)}`);
-      }
+      onSearch(query);
       inputElement?.blur();
     }
+    // Note: UI package components should use callback props for navigation
   }
 
   function handleKeyDown(e: KeyboardEvent) {
-    if (e.key === 'Enter' && searchValue?.trim()) {
+    if (e.key === 'Enter' && searchValue?.trim() && onSearch) {
       const query = searchValue.trim();
-      if (onSearch) {
-        onSearch(query);
-      } else {
-        goto(`/search?q=${encodeURIComponent(query)}`);
-      }
+      onSearch(query);
       inputElement?.blur();
     }
+    // Note: UI package components should use callback props for navigation
   }
 
   function handleFocus() {
@@ -92,11 +85,10 @@
   function handleProductSelect(product: ProductWithImages) {
     if (onProductSelect) {
       onProductSelect(product);
-    } else {
-      goto(`/product/${product.id}`);
+      inputElement?.blur();
+      focused = false;
     }
-    inputElement?.blur();
-    focused = false;
+    // Note: UI package components should use callback props for navigation
   }
 </script>
 

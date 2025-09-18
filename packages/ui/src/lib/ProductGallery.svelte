@@ -268,118 +268,119 @@
 </script>
 
 <!-- Main Gallery Container -->
-<div 
-  class="gallery-container" 
-  role="region" 
+<div
+  class="gallery-container"
+  role="region"
   aria-label="Product images"
-  onkeydown={handleKeyDown}
-  tabindex="0"
 >
-  <!-- Main Image Display -->
-  <div 
-    class="main-image-container"
-    bind:this={mainImageRef}
-    ontouchstart={handleTouchStart}
-    ontouchmove={handleTouchMove}
-    ontouchend={handleTouchEnd}
-    ondblclick={handleDoubleTap}
-    role="button"
-    tabindex="0"
-    aria-label={m.pdp_a11y_productImage?.({ index: selectedImage + 1, total: images.length }) || `Product image ${selectedImage + 1} of ${images.length}`}
-  >
-    {#if images.length > 0}
-      <img 
-        src={images[selectedImage]}
-        alt={title || `Product image ${selectedImage + 1}`}
-        class="main-image"
-        loading={selectedImage === 0 ? "eager" : "lazy"}
-        decoding="async"
-        fetchpriority={selectedImage === 0 ? "high" : "low"}
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
-        style="transform: scale({scale}) translate({translateX}px, {translateY}px);"
-      />
-      
-      <!-- Overlay Elements -->
-      <div class="image-overlay">
-        <!-- Condition Badge -->
-        {#if condition}
-          <div class="condition-badge-container">
-            <Tooltip 
-              content={getConditionTooltip(condition)}
-              positioning={{ side: 'bottom', align: 'start' }}
-              openDelay={600}
-              closeDelay={200}
-            >
-              {#snippet trigger()}
-                <ConditionBadge {condition} {translations} />
-              {/snippet}
-            </Tooltip>
-          </div>
-        {/if}
-        
-        <!-- Sold Badge -->
-        {#if isSold}
-          <div class="sold-badge">
-            <span class="sold-text">{m.pdp_sold?.() || 'SOLD'}</span>
-          </div>
-        {/if}
-        
-        <!-- Image Counter -->
-        {#if images.length > 1}
-          <div class="image-counter">
-            <span>{selectedImage + 1} / {images.length}</span>
-          </div>
-        {/if}
-        
-        <!-- Zoom Indicator -->
-        {#if images.length > 0}
-          <div class="zoom-indicator">
-            <svg viewBox="0 0 24 24" class="zoom-icon">
-              <circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
-              <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              <line x1="11" y1="8" x2="11" y2="14" stroke="currentColor" stroke-width="2"/>
-              <line x1="8" y1="11" x2="14" y2="11" stroke="currentColor" stroke-width="2"/>
-            </svg>
-          </div>
-        {/if}
-      </div>
-      
-      <!-- Navigation Arrows (Desktop) -->
-      {#if images.length > 1}
-        <div class="nav-arrows">
-          <button 
-            class="nav-arrow nav-arrow-left"
-            onclick={() => selectImage(selectedImage - 1)}
-            disabled={selectedImage === 0}
-            aria-label="Previous image"
-          >
-            <svg viewBox="0 0 24 24" class="arrow-icon">
-              <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-          
-          <button 
-            class="nav-arrow nav-arrow-right"
-            onclick={() => selectImage(selectedImage + 1)}
-            disabled={selectedImage === images.length - 1}
-            aria-label="Next image"
-          >
-            <svg viewBox="0 0 24 24" class="arrow-icon">
-              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
+  <!-- Main Image Display Container -->
+  <div class="main-image-wrapper">
+    <button
+      class="main-image-container"
+      bind:this={mainImageRef}
+      ontouchstart={handleTouchStart}
+      ontouchmove={handleTouchMove}
+      ontouchend={handleTouchEnd}
+      ondblclick={handleDoubleTap}
+      onclick={enterFullscreen}
+      onkeydown={handleKeyDown}
+      type="button"
+      aria-label={m.pdp_a11y_productImage?.({ index: selectedImage + 1, total: images.length }) || `Product image ${selectedImage + 1} of ${images.length}. Click to view fullscreen`}
+    >
+      {#if images.length > 0}
+        <img
+          src={images[selectedImage]}
+          alt={title || `Product image ${selectedImage + 1}`}
+          class="main-image"
+          loading={selectedImage === 0 ? "eager" : "lazy"}
+          decoding="async"
+          fetchpriority={selectedImage === 0 ? "high" : "low"}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 600px"
+          style="transform: scale({scale}) translate({translateX}px, {translateY}px);"
+        />
+
+        <!-- Overlay Elements -->
+        <div class="image-overlay">
+          <!-- Condition Badge -->
+          {#if condition}
+            <div class="condition-badge-container">
+              <Tooltip
+                content={getConditionTooltip(condition)}
+                positioning={{ side: 'bottom', align: 'start' }}
+                openDelay={600}
+                closeDelay={200}
+              >
+                {#snippet trigger()}
+                  <ConditionBadge {condition} {translations} />
+                {/snippet}
+              </Tooltip>
+            </div>
+          {/if}
+
+          <!-- Sold Badge -->
+          {#if isSold}
+            <div class="sold-badge">
+              <span class="sold-text">{m.pdp_sold?.() || 'SOLD'}</span>
+            </div>
+          {/if}
+
+          <!-- Image Counter -->
+          {#if images.length > 1}
+            <div class="image-counter">
+              <span>{selectedImage + 1} / {images.length}</span>
+            </div>
+          {/if}
+
+          <!-- Zoom Indicator -->
+          {#if images.length > 0}
+            <div class="zoom-indicator">
+              <svg viewBox="0 0 24 24" class="zoom-icon">
+                <circle cx="11" cy="11" r="8" fill="none" stroke="currentColor" stroke-width="2"/>
+                <path d="m21 21-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="11" y1="8" x2="11" y2="14" stroke="currentColor" stroke-width="2"/>
+                <line x1="8" y1="11" x2="14" y2="11" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </div>
+          {/if}
+        </div>
+
+      {:else}
+        <!-- No Images State -->
+        <div class="no-images">
+          <svg class="no-images-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21,15 16,10 5,21"/>
+          </svg>
+          <p class="no-images-text">{m.orders_noImage?.() || 'No image available'}</p>
         </div>
       {/if}
-      
-    {:else}
-      <!-- No Images State -->
-      <div class="no-images">
-        <svg class="no-images-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <polyline points="21,15 16,10 5,21"/>
-        </svg>
-        <p class="no-images-text">{m.orders_noImage?.() || 'No image available'}</p>
+    </button>
+
+    <!-- Navigation Arrows (Desktop) - Outside the main button -->
+    {#if images.length > 1}
+      <div class="nav-arrows">
+        <button
+          class="nav-arrow nav-arrow-left"
+          onclick={() => selectImage(selectedImage - 1)}
+          disabled={selectedImage === 0}
+          aria-label="Previous image"
+        >
+          <svg viewBox="0 0 24 24" class="arrow-icon">
+            <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <button
+          class="nav-arrow nav-arrow-right"
+          onclick={() => selectImage(selectedImage + 1)}
+          disabled={selectedImage === images.length - 1}
+          aria-label="Next image"
+        >
+          <svg viewBox="0 0 24 24" class="arrow-icon">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
       </div>
     {/if}
   </div>
@@ -412,14 +413,12 @@
 <!-- Fullscreen Modal -->
 {#if isFullscreen}
   <!-- Backdrop -->
-  <div 
+  <button
     class="fullscreen-backdrop"
     onclick={exitFullscreen}
-    role="button"
-    tabindex="0"
-    onkeydown={(e) => e.key === 'Escape' && exitFullscreen()}
+    type="button"
     aria-label="Close fullscreen view"
-  ></div>
+  ></button>
   
   <!-- Fullscreen Content -->
   <div 
@@ -438,12 +437,14 @@
     </button>
     
     <!-- Fullscreen Image -->
-    <div 
+    <div
       class="fullscreen-image-container"
       ontouchstart={handleTouchStart}
       ontouchmove={handleTouchMove}
       ontouchend={handleTouchEnd}
       ondblclick={handleDoubleTap}
+      role="img"
+      aria-label="Fullscreen product image - double-tap to zoom"
     >
       <img 
         src={images[selectedImage]}
@@ -501,6 +502,11 @@
     outline: none;
   }
 
+  .main-image-wrapper {
+    position: relative;
+    width: 100%;
+  }
+
   .main-image-container {
     position: relative;
     aspect-ratio: 4/5;
@@ -511,6 +517,10 @@
     user-select: none;
     -webkit-user-select: none;
     touch-action: none;
+    border: none;
+    width: 100%;
+    padding: 0;
+    display: block;
   }
 
   .main-image {
@@ -724,6 +734,8 @@
     background: var(--gray-900);
     z-index: 100;
     cursor: pointer;
+    border: none;
+    padding: 0;
   }
 
   .fullscreen-content {
@@ -871,7 +883,7 @@
       display: block;
     }
 
-    .main-image-container:hover .nav-arrows {
+    .main-image-wrapper:hover .nav-arrows {
       opacity: 1;
     }
   }

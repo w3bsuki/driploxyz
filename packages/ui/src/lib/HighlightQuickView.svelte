@@ -19,7 +19,7 @@
   const TAB_KEY = 'Tab';
   
   // Derived states
-  const availableSizes = $derived(product.availableSizes ?? (product.size ? [product.size] : []));
+  const availableSizes = $derived(product.availableSizes ?? []);
   const hasMultipleSizes = $derived(availableSizes.length > 1);
   const requiresSizeSelection = $derived(availableSizes.length > 0);
   const canPurchase = $derived(!requiresSizeSelection || selectedSize);

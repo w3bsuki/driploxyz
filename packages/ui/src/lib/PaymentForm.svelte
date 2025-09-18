@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
-	import type { Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
+	import type {
+		Stripe,
+		StripeElements,
+		StripePaymentElement,
+		StripePaymentElementChangeEvent,
+		ConfirmPaymentData
+	} from '@stripe/stripe-js';
 	import Button from './Button.svelte';
 	import type { PaymentIntent } from '../types';
 
@@ -110,7 +116,7 @@
 	let paymentProcessing = $state(false);
 	let validationErrors = $state<Record<string, string>>({});
 	let elements: StripeElements | null = $state(null);
-	let cardElement: StripeCardElement | null = $state(null);
+	let paymentElement: StripePaymentElement | null = $state(null);
 	let formValid = $state(false);
 	let cardholderName = $state('');
 	let saveCard = $state(false);
@@ -129,7 +135,7 @@
 			elements = stripe.elements({
 				clientSecret,
 				appearance: {
-					theme: theme === 'auto' ? 'stripe' : theme,
+					theme: theme === 'auto' ? 'stripe' : theme === 'dark' ? 'night' : 'flat',
 					variables: {
 						colorPrimary: '#3b82f6',
 						colorBackground: theme === 'dark' ? '#1f2937' : '#ffffff',
@@ -143,8 +149,8 @@
 				locale: locale as any
 			});
 
-			// Create payment element (recommended) or card element
-			cardElement = elements.create('payment', {
+			// Create payment element (recommended)
+			paymentElement = elements.create('payment', {
 				layout: {
 					type: 'tabs',
 					defaultCollapsed: false
@@ -168,11 +174,11 @@
 			});
 
 			// Mount the element
-			cardElement.mount(cardContainer);
+			paymentElement.mount(cardContainer);
 
 			// Listen for changes
-			cardElement.on('change', handleElementChange);
-			cardElement.on('ready', handleElementReady);
+			paymentElement.on('change', handleElementChange);
+			paymentElement.on('ready', handleElementReady);
 
 			mounted = true;
 		} catch (error) {
@@ -182,11 +188,12 @@
 	}
 
 	// Handle element changes
-	function handleElementChange(event: any) {
-		formValid = event.complete && !event.error;
-		
-		if (event.error) {
-			validationErrors.card = event.error.message;
+	function handleElementChange(event: StripePaymentElementChangeEvent) {
+		formValid = event.complete;
+
+		// Clear any previous card errors when the element is complete
+		if (event.complete) {
+			validationErrors.card = '';
 		} else {
 			delete validationErrors.card;
 			validationErrors = { ...validationErrors };
@@ -203,7 +210,7 @@
 	async function handleSubmit(event: Event) {
 		event.preventDefault();
 		
-		if (!stripe || !elements || !cardElement) {
+		if (!stripe || !elements || !paymentElement) {
 			onPaymentError?.(translations.paymentSystemNotInitialized || 'Payment system not initialized');
 			return;
 		}
@@ -228,16 +235,11 @@
 				elements,
 				confirmParams: {
 					return_url: `${window.location.origin}/payment/success`,
-					payment_method_data: {
-						metadata: {
-							productId,
-							sellerId,
-							buyerId
-						}
-					},
 					...(showCardholderName && cardholderName ? {
-						billing_details: {
-							name: cardholderName
+						payment_method_data: {
+							billing_details: {
+								name: cardholderName
+							}
 						}
 					} : {})
 				},
@@ -247,9 +249,19 @@
 			if (result.error) {
 				// Payment failed
 				onPaymentError?.(formatStripeError(result.error));
-			} else if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
-				// Payment succeeded - now confirm with backend
-				await confirmPaymentWithBackend(result.paymentIntent);
+			} else if (result.paymentIntent) {
+				// Check payment status
+				const paymentIntent = result.paymentIntent;
+				if (paymentIntent.status === 'succeeded') {
+					// Payment succeeded - now confirm with backend
+					await confirmPaymentWithBackend(paymentIntent);
+				} else if (paymentIntent.status === 'processing') {
+					onPaymentError?.('Payment is being processed. You will receive a confirmation email once complete.');
+				} else if (paymentIntent.status === 'requires_action') {
+					onPaymentError?.('Additional authentication required. Please complete the verification.');
+				} else {
+					onPaymentError?.(`Payment ${paymentIntent.status}. Please try again.`);
+				}
 			}
 		} catch (error) {
 			console.error('Payment error:', error);
@@ -295,8 +307,8 @@
 	});
 
 	onDestroy(() => {
-		if (cardElement) {
-			cardElement.destroy();
+		if (paymentElement) {
+			paymentElement.destroy();
 		}
 	});
 

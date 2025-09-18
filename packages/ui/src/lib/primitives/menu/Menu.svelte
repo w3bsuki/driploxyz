@@ -23,7 +23,7 @@
     class?: string;
     triggerClass?: string;
     menuClass?: string;
-    portal?: string | HTMLElement;
+    portal?: string | HTMLElement | null;
     gutter?: number;
     ariaLabel?: string;
   }
@@ -68,9 +68,7 @@
     closeOnOutsideClick: true,
     portal: portalTarget,
     forceVisible: false,
-    openFocus: undefined,
     closeFocus: undefined,
-    disableTransition: true
   });
 
   // Sync bindable open state

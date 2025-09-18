@@ -1,330 +1,169 @@
-# DRIPLO Production Cleanup Report
+# Driplo Production Cleanup Playbook
 
-## Executive Summary
-Comprehensive codebase audit identified significant cleanup opportunities for production readiness. Total estimated impact: **1MB+ bundle reduction**, **50% component reduction**, and **zero duplicate functionality**.
-
-## Phase 1: shadcn/ui Component Bloat Removal ✅ IN PROGRESS
-
-### Current State Analysis
-- **Total shadcn/ui components**: 228 components across 45 directories
-- **Actually used**: 2 components only (`badge` and `sheet` primitives)
-- **Bundle impact**: ~1MB+ of unused code
-- **Maintenance overhead**: High complexity for minimal usage
-
-### Components Currently Using shadcn/ui:
-1. **Badge.svelte** → Uses `./components/ui/badge/badge.svelte`
-2. **CategoryNavigationSheet.svelte** → Uses `./components/ui/sheet/*`
-
-### Migration Strategy:
-1. **Badge Migration**: Create pure Tailwind CSS badge implementation to replace shadcn/ui wrapper
-2. **Sheet Migration**: Replace with existing `Dialog` primitive from `@repo/ui/primitives`
-3. **Complete Removal**: Delete entire `packages/ui/src/lib/components/ui/` directory (226 unused components)
+Comprehensive audit of the monorepo to remove technical debt, dead assets, and duplication prior to launch. This is the canonical checklist for Codex / Claude-code to execute whenever we prepare a release freeze.
 
 ---
 
-## Phase 2: Mobile Navigation Component Consolidation
+## 1. Repository Scope
+- **Monorepo packages**: `apps/*`, `packages/*`, `supabase/`, utility scripts.
+- **Infrastructure**: Supabase migrations, CI workflows, Turborepo pipelines.
+- **Documentation assets**: `.md`, audit reports, design notes.
 
-### Duplicate Components Identified:
-- `MobileNavigation.svelte` - Base mobile navigation (KEEP)
-- `MobileNavigationDialog.svelte` - Modal overlay variant (CONSOLIDATE INTO BASE)
-- `MobileNavigationDrawer.svelte` - Drawer variant (CONSOLIDATE INTO BASE)
-- `CategoryNavigationSheet.svelte` - Category-specific navigation (MIGRATE TO DIALOG)
-
-### Current Usage:
-- **Header.svelte** imports `MobileNavigationDialog` from `@repo/ui`
-- No other imports found for drawer/sheet variants
-
-### Consolidation Plan:
-1. Enhance `MobileNavigation.svelte` with variant support (`dialog` | `drawer`)
-2. Remove `MobileNavigationDrawer.svelte` (redundant)
-3. Replace `CategoryNavigationSheet.svelte` with Dialog primitive usage
-4. Update Header.svelte import to use consolidated component
+Deliverable: a lean repo with no unused code paths, consistent naming, deterministic builds, and clear handoff docs.
 
 ---
 
-## Phase 3: Category Dropdown Component Cleanup
-
-### Duplicate Components Found:
-- `CategoryDropdown.svelte` - Main category dropdown (KEEP)
-- `CategoryFilterDropdown.svelte` - Search filtering variant (KEEP - different use case)
-- `SearchCategoryDropdown.svelte` - Search-specific dropdown (NOT EXPORTED - needs export or removal)
-
-### Issues Identified:
-- `SearchCategoryDropdown.svelte` exists but not exported in index.ts
-- No imports found for SearchCategoryDropdown across codebase
-- Potential dead code
-
-### Action Plan:
-1. Investigate SearchCategoryDropdown usage
-2. Either export properly or remove if unused
-3. Keep CategoryDropdown and CategoryFilterDropdown (different use cases)
+## 2. Status Snapshot
+| Area | Current Status | Action |
+| --- | --- | --- |
+| UI bundle / components | 50% reduction already landed (see phases below) | Keep monitoring new components. |
+| Service layer naming | Normalised in previous pass | Enforce camelCase for future additions. |
+| Documentation bloat | Partial removal complete | Final sweep required (see �6). |
+| Duplicate assets (images, mocks) | Pending audit | Run `pnpm dedupe-assets` script. |
+| Dependency graph | Needs review | Execute �4 tasks. |
+| Supabase assets | Staged but not final | Execute �5 tasks. |
 
 ---
 
-## Phase 4: Missing UI Library Exports
+## Cleanup Execution Blocks
+| Block | Status | Scope | Expected Outputs |
+| --- | --- | --- | --- |
+| Block A - Dependency & Build Hygiene | pending | Run Section 4 tasks (pnpm validation, turbo pipeline trim, bundle analysis, ESLint/Prettier sweep) | `.logs/cleanup-blockA.txt`, updated `turbo.json`, new bundle report |
+| Block B - Supabase & Server Hardening | pending | Execute Section 5 (migrations merge, `supabase db lint`, regenerate types, env audit) | `.logs/cleanup-blockB.txt`, refreshed `packages/database/src/generated.ts`, env notes |
+| Block C - Documentation & Assets | pending | Complete Section 6 doc pruning + asset optimisation | `.logs/cleanup-blockC.txt`, updated `/docs`, optimised assets |
+| Block D - Codebase Consistency | pending | Section 7 lint fixes, import ordering, TODO cleanup, rune compliance spot-checks | `.logs/cleanup-blockD.txt`, lint report |
+| Block E - Testing & Observability | pending | Section 8 automated tests + telemetry audit | `.logs/cleanup-blockE.txt`, test summaries |
+| Block F - CI & Automation | pending | Section 9 workflow review, pipeline gating, secrets documentation | `.logs/cleanup-blockF.txt`, updated workflows |
+| Block G - Remaining Targets Sweep | pending | Work Section 10 table items (configs, scripts, routes, fixtures, backups) | `.logs/cleanup-blockG.txt`, table annotations |
+| Block H - Final Verification | pending | Run Section 11 checklist commands and record outcomes | `.logs/cleanup-blockH.txt`, updated checklist |
+## 3. Component & UI Cleanup (Completed)
+- Removed shadcn/ui payload (>1 MB).
+- Consolidated mobile navigation variations into a single component.
+- Pruned inactive dropdown and experimental components.
+- Standardised exports in `packages/ui/src/lib/index.ts`.
 
-### Components Missing from index.ts:
-- `CategoryNavigationSheet.svelte` - Exists but not exported
-- `MobileMenuSearch.svelte` - New component, not exported
-- `MobileNavigationDialog.svelte` - Exists but not exported
-- `SearchCategoryDropdown.svelte` - Exists but not exported
-
-### Export Standardization Needed:
-- Add missing component exports
-- Remove commented/unused exports
-- Ensure proper TypeScript type exports
-
----
-
-## Phase 5: Service Layer Cleanup
-
-### Naming Inconsistencies:
-- `brand-service.ts` (kebab-case) vs other services (camelCase)
-- Missing exports in `apps/web/src/lib/services/index.ts`
-
-### Services Missing from Index:
-- ConversationService.ts
-- admin-notifications.ts
-- error-reporting.ts
-- sold-notifications.ts
-- trending.ts
-- realtime-notifications.ts
+Impact: ~200 components removed, leaner UI bundle, simpler imports.
 
 ---
 
-## Phase 6: Dead Documentation & Orphaned Files
+## 4. Dependency & Build Hygiene (TO RUN WEEKLY)
+1. **pnpm validation**
+   ```powershell
+   pnpm install --lockfile-only
+   pnpm -w audit
+   pnpm dlx depcheck
+   ```
+   - Remove unused dependencies from each package.json.
+   - Lock versions (no `^` for critical runtime deps).
 
-### Already Staged for Deletion (11 files):
-- AUTH_COOKIES_I18N_AUDIT.md
-- CATEGORY_SEARCH_REFACTOR_PLAN.md
-- COMPREHENSIVE_PLAYWRIGHT_MCP_AUDIT_REPORT.md
-- MAIN_PAGE_COMPONENT_AUDIT.md
-- MESSAGES_REFACTOR_PLAN.md
-- V1_PRODUCTION_AUDIT_AND_REFACTOR_PLAN.md
-- (+ 5 more audit/plan files)
+2. **Turborepo pipelines**
+   - Review `turbo.json` to ensure only active pipelines run on CI.
+   - Delete obsolete tasks (`storybook`, `legacy-build`, etc.).
 
-### Additional Cleanup Targets:
-- `llms*.txt` files (2MB+ of temporary exports)
-- Empty packages: `packages/auth/`, `packages/core/`, `packages/stripe/`
-- Backup files: `apps/web/vite.config.ts.backup`
+3. **Bundle analysis**
+   - Run `pnpm --filter web build -- --analyze` and store report in `performance-test-results/`.
+   - Flag bundles >200 KB and refactor lazy-loading.
 
----
-
-## Expected Results After Cleanup
-
-### Bundle Size Impact:
-- **Remove 228 unused shadcn/ui components**: -1MB+
-- **Remove duplicate navigation components**: -200KB estimated
-- **Remove dead documentation**: -2MB+
-- **Total estimated reduction**: 3MB+ repository size, 1MB+ runtime bundle
-
-### Code Quality Improvements:
-- **Component count reduction**: ~400 → ~200 components (50% reduction)
-- **Zero duplicate functionality**
-- **Single source of truth** for navigation patterns
-- **Consistent naming conventions**
-- **Proper export management**
-
-### Maintenance Benefits:
-- Reduced complexity for new developers
-- Cleaner import statements
-- Faster build times
-- Easier component discovery
-- Production-ready codebase structure
+4. **ESLint / Prettier configuration**
+   - Flatten overrides: keep a single `@repo/eslint-config` entry point.
+   - Remove unused .prettierrc/.npmrc duplicates in sub-packages.
 
 ---
 
-## Implementation Priority:
+## 5. Supabase & Server
+1. **Migration hygiene**
+   - Merge staged SQL files into numbered migrations, delete scratch scripts.
+   - Run `supabase db lint` to detect divergence between local and remote schema.
 
-1. **HIGH PRIORITY**: Remove shadcn/ui bloat (immediate 1MB+ bundle reduction)
-2. **HIGH PRIORITY**: Consolidate mobile navigation (eliminate confusion)
-3. **MEDIUM PRIORITY**: Fix missing exports (enable proper component usage)
-4. **MEDIUM PRIORITY**: Remove dead files (reduce repository size)
-5. **LOW PRIORITY**: Standardize service naming (improve consistency)
+2. **Policies & RLS**
+   - Ensure every table has explicit RLS; no table should be `ENABLE ROW LEVEL SECURITY` without policy.
+   - Review functions and triggers for obsolete logic (archives, nomination flows).
 
----
+3. **Type generation**
+   - Regenerate `packages/database/src/generated.ts` with `supabase gen types typescript`.
+   - Ensure `@repo/database` exports only typed helpers (remove commented code).
 
-## Success Criteria:
-- [ ] TypeScript build passes with zero errors
-- [ ] All tests pass
-- [ ] Bundle size reduced by 1MB+
-- [ ] Component count reduced by 50%
-- [ ] Zero import errors after cleanup
-- [ ] Mobile navigation works with single component
-- [ ] All existing functionality preserved
+4. **Environment variables**
+   - Cross-check `.env.example` files with Supabase secrets; no unused keys.
 
 ---
 
-## COMPLETED CLEANUP RESULTS ✅
+## 6. Documentation, Markdown & Static Assets
+1. **Production docs**
+   - Retain: README, FINAL.md, PARAGLIDE.md, CLEANUP.md (this file), runbooks under `/docs`.
+   - Remove outdated audit plans, personal notes, `llms-*.txt`, `kit-lllms.txt`, etc.
+   - Combine overlapping guides into consolidated documents (Navigation UX, Supabase checklist).
 
-### Phase 1: shadcn/ui Component Bloat Removal ✅ COMPLETED
-**MASSIVE SUCCESS**: Removed 228 unused shadcn/ui components (~1MB bundle reduction)
+2. **Public assets**
+   - Delete unused marketing images, favicon variants, placeholder mockups.
+   - Optimise remaining SVG/PNG through `svgo`/`imagemin`.
 
-**Actions Taken:**
-- ✅ Migrated Badge.svelte from shadcn/ui to pure Tailwind implementation
-- ✅ Migrated CategoryNavigationSheet.svelte from shadcn/ui Sheet to Dialog primitive
-- ✅ Deleted entire `packages/ui/src/lib/components/ui/` directory (228 components removed)
-- ✅ Zero remaining shadcn/ui dependencies in codebase
-
-**Impact:**
-- Bundle size reduction: ~1MB+
-- Eliminated complex shadcn/ui dependency chain
-- Cleaner, maintainable components using project's design tokens
+3. **Storybook / design tokens**
+   - If Storybook not used, remove config entirely; otherwise ensure stories map to active components.
 
 ---
 
-### Phase 2: Mobile Navigation Component Consolidation ✅ COMPLETED
-**PERFECT CONSOLIDATION**: 3 → 1 unified component
-
-**Actions Taken:**
-- ✅ Kept MobileNavigationDialog.svelte as primary component (most feature-rich)
-- ✅ Removed MobileNavigation.svelte (redundant)
-- ✅ Removed MobileNavigationDrawer.svelte (redundant)
-- ✅ Updated exports to alias MobileNavigation → MobileNavigationDialog
-- ✅ Zero breaking changes - Header.svelte continues working seamlessly
-
-**Impact:**
-- Component count reduction: 3 → 1 (67% reduction in navigation components)
-- Single source of truth for mobile navigation
-- Eliminated duplicate functionality and maintenance overhead
+## 7. Codebase Consistency Pass
+- Run `pnpm lint --fix` across all packages; ensure zero autofix warnings.
+- Enforce import ordering (use lint rule `simple-import-sort`).
+- Replace default exports with named exports where possible.
+- Remove dead `console.log`/`TODO` comments; convert TODOs to tracked issues.
+- Verify all Svelte components use Runes guidelines (see errors.md checklist).
 
 ---
 
-### Phase 3: Category Dropdown Component Cleanup ✅ COMPLETED
-**CLEAN SWEEP**: Removed unused SearchCategoryDropdown
+## 8. Testing & Observability
+1. **Vitest/Playwright coverage**
+   - Ensure `pnpm --filter web test` and `pnpm --filter web test:e2e` run clean.
+   - Remove skipped tests or convert them into actionable tickets.
 
-**Actions Taken:**
-- ✅ Removed SearchCategoryDropdown.svelte (unused, not exported, no imports)
-- ✅ Kept CategoryDropdown.svelte (main navigation)
-- ✅ Kept CategoryFilterDropdown.svelte (different use case - filtering)
+2. **Telemetry**
+   - Audit Sentry/LogRocket initialisation; remove duplicate providers.
+   - Verify environment-based gating (disabled in dev, enabled in prod).
 
-**Impact:**
-- Eliminated dead code
-- Cleaner component structure
-- No functionality lost
-
----
-
-### Phase 4: UI Library Export Standardization ✅ COMPLETED
-**COMPREHENSIVE EXPORT CLEANUP**: Added missing exports, removed dead ones
-
-**Actions Taken:**
-- ✅ Added missing exports: MobileMenuSearch, CategoryNavigationSheet
-- ✅ Removed 7 unused experimental components and their commented exports:
-  - LiveActivity.svelte, CountrySwitcher.svelte, ImageOptimized.svelte
-  - MegaMenu.svelte, CategoryMegaMenu.svelte, CategorySidebar.svelte
-  - StepIndicator.svelte
-- ✅ Cleaned up commented export lines in index.ts
-
-**Impact:**
-- All components properly exported or removed
-- Clean export structure
-- Zero unused/dead components remaining
+3. **Performance baselines**
+   - Run `pnpm performance-audit` and store Lighthouse reports.
+   - Compare metrics to previous runs; set budgets in CI.
 
 ---
 
-### Phase 5: Dead Documentation & File Cleanup ✅ COMPLETED
-**REPOSITORY SIZE REDUCTION**: Removed bloated files and empty packages
-
-**Actions Taken:**
-- ✅ Removed empty packages: `packages/auth/`, `packages/core/`, `packages/stripe/`
-- ✅ Removed large LLM export files: `llms*.txt` (2MB+ total)
-- ✅ Removed backup file: `apps/web/vite.config.ts.backup`
-- ✅ Git-staged deletion files ready for commit
-
-**Impact:**
-- Repository size reduction: ~3MB+
-- Cleaner project structure
-- Eliminated maintenance overhead for empty packages
+## 9. CI / Automation
+- Ensure GitHub Actions workflows reference the correct pnpm version.
+- Remove deprecated workflows (legacy CI, dependabot auto-merge scripts).
+- Add final `pnpm -w lint`, `pnpm -w test`, `pnpm --filter web check-types` gates before deploy job.
+- Document required environment secrets per workflow.
 
 ---
 
-### Phase 6: Service Naming Standardization ✅ COMPLETED
-**CONSISTENT CONVENTIONS**: Unified service naming
-
-**Actions Taken:**
-- ✅ Renamed `realtime-notifications.ts` → `realtimeNotifications.ts` (used by Header.svelte)
-- ✅ Renamed `brand-service.ts` → `brandService.ts` (used by upgrade success page)
-- ✅ Removed unused kebab-case services: `admin-notifications.ts`, `error-reporting.ts`, `sold-notifications.ts`
-- ✅ Updated all imports to use new naming
-
-**Impact:**
-- Consistent camelCase naming convention
-- Removed 3 unused service files
-- Zero breaking changes - all active imports updated
+## 10. Remaining Cleanup Targets
+| Category | Task |
+| --- | --- |
+| Config | Delete unused `.npmrc`, `.prettierignore`, `.gitignore` entries; document required shortcuts. |
+| Scripts | Clear out obsolete scripts under `scripts/` (e.g. `start-phase1.*`, debug utilities). |
+| Apps/admin | Audit for unused routes / dead APIs; remove dormant analytics pages. |
+| Apps/docs | Ensure only production docs remain; remove marketing prototypes. |
+| Apps/web | Search for old feature flags (drip nominations, boost experiments) and delete scaffolding. |
+| Packages/utils | Deduplicate helper functions with `packages/ui/src/lib/utils`. |
+| Playwright fixtures | Remove unused fixtures/screenshots to keep git history lean. |
+| Backup files | Delete `.bak`, `.backup`, and `.old` files across repo. |
 
 ---
 
-### Phase 7: Build Validation ✅ COMPLETED
-**BUILD SUCCESS**: Core functionality validated
+## 11. Final Verification Checklist
+1. `pnpm -w lint` ??
+2. `pnpm -w test` ??
+3. `pnpm --filter web check-types` ??
+4. `pnpm --filter @repo/ui run build` ??
+5. `pnpm --filter web build` (Lighthouse audit) ??
+6. Supabase migrations applied & `db diff` clean ??
+7. All dead docs/assets removed ??
+8. Release notes prepared (FINAL.md updated) ??
 
-**Validation Results:**
-- ✅ UI package builds successfully (`pnpm --filter @repo/ui run build`)
-- ✅ All exports resolve correctly
-- ✅ Zero import errors after cleanup
-- ⚠️ Some pre-existing TypeScript errors in web app (unrelated to cleanup)
-- ✅ Header.svelte mobile navigation works with consolidated component
-
-**Impact:**
-- Production-ready UI library
-- All cleanup changes validated
-- Zero functionality regressions
+Once every box is checked, tag the release branch and proceed to deployment.
 
 ---
 
-## FINAL RESULTS SUMMARY 🎉
+*This playbook supersedes earlier cleanup reports. Keep it updated after each cleanup sprint to ensure Driplo stays launch-ready.*
 
-### Component & Bundle Impact
-- **Total components removed**: 238+ (shadcn/ui + duplicates + dead code)
-- **Component reduction**: ~400 → ~200 components (50% reduction achieved!)
-- **Bundle size reduction**: 1MB+ (shadcn/ui removal alone)
-- **Repository size reduction**: 3MB+ (docs + files + packages)
 
-### Code Quality Improvements
-- ✅ **Zero duplicate functionality**
-- ✅ **Single source of truth** for navigation patterns
-- ✅ **Consistent naming conventions** across services
-- ✅ **Clean export structure** in UI library
-- ✅ **Production-ready codebase** structure
 
-### Maintenance Benefits
-- **Reduced complexity** for new developers
-- **Faster build times** (fewer files to process)
-- **Easier component discovery** (cleaner index.ts)
-- **Eliminated maintenance overhead** for unused code
-- **Zero technical debt** from duplicate components
-
-### Breaking Changes
-**NONE!** 🎉 All cleanup was done with zero breaking changes:
-- Header.svelte continues working seamlessly
-- All used imports maintained
-- Service renaming updated all references
-- Component consolidation uses aliasing
-
----
-
-## SUCCESS CRITERIA VERIFICATION ✅
-
-- [x] TypeScript build passes with zero cleanup-related errors
-- [x] All tests pass (pre-existing issues not related to cleanup)
-- [x] Bundle size reduced by 1MB+
-- [x] Component count reduced by 50%
-- [x] Zero import errors after cleanup
-- [x] Mobile navigation works with single component
-- [x] All existing functionality preserved
-
----
-
-## NEXT STEPS FOR PRODUCTION
-
-1. **Commit Changes**: All cleanup completed, ready for commit
-2. **Performance Testing**: Validate 1MB+ bundle size reduction
-3. **E2E Testing**: Test mobile navigation and key user flows
-4. **Deploy**: Production-ready codebase with zero bloat
-
----
-
-**MISSION ACCOMPLISHED** 🚀
-*Zero-bloat, single-responsibility components achieved for V1 launch*
-
-*Generated during production cleanup audit - targeting zero-bloat, single-responsibility components for V1 launch.*

@@ -10,57 +10,42 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const enMessages = JSON.parse(fs.readFileSync(path.join(__dirname, 'messages/en.json'), 'utf8'));
 const keys = Object.keys(enMessages).sort();
 
-const tsContent = `// Optimized i18n TypeScript source - matches generated lib/index.js
-// This file is used for TypeScript compilation only
+// Generate TypeScript declarations for all message keys
+function generateMessageDeclarations(messages, keys) {
+  const declarations = [];
 
-// Re-export runtime functions
-export {
-  getLocale,
-  setLocale,
-  isLocale,
-  locales,
-  baseLocale,
-  loadMessages
-} from '../lib/runtime.js';
+  for (const key of keys) {
+    const value = messages[key];
 
-// Type definitions
-export type Locale = 'en' | 'bg';
-export type LanguageTag = Locale; // Compatibility alias
+    // Check if the message has placeholders (contains {})
+    const placeholderMatches = value.match(/\{(\w+)\}/g);
 
-// Compatibility aliases for existing API
-export const languageTag = getLocale;
-export const setLanguageTag = setLocale;
-export const availableLanguageTags = locales;
-export const isAvailableLanguageTag = isLocale;
+    if (placeholderMatches) {
+      // Extract placeholder names
+      const params = placeholderMatches.map(match => match.slice(1, -1));
+      const uniqueParams = [...new Set(params)];
 
-// Helper constants
-export const languageNames: Record<Locale, string> = {
-  en: 'English',
-  bg: 'Български'
-};
+      // Generate interface for parameters
+      const paramTypes = uniqueParams.map(param => `${param}: string`).join('; ');
+      declarations.push(`export declare function ${key}(inputs: { ${paramTypes} }): string;`);
+    } else {
+      // Simple message without parameters
+      declarations.push(`export declare function ${key}(): string;`);
+    }
+  }
 
-// Language detection utility
-export function detectLanguage(acceptLanguage?: string): Locale {
-  if (!acceptLanguage) return 'en';
-  const langs = acceptLanguage.toLowerCase();
-  if (langs.includes('bg')) return 'bg';
-  return 'en';
+  return declarations;
 }
 
-// Message function type
-export interface MessageFunction {
-  (inputs?: Record<string, string>, options?: { locale?: Locale }): Promise<string>;
-}
+const messageDeclarations = generateMessageDeclarations(enMessages, keys);
 
-// Dynamic message accessor for any key
-export function getMessage(key: string, fallback?: string): MessageFunction;
+const tsContent = `// Generated message function declarations
+// This file provides TypeScript definitions for Paraglide-generated functions
+// AUTO-GENERATED - DO NOT EDIT MANUALLY
 
-// For components that need all messages (admin, complex forms)
-export function getAllMessages(locale?: Locale): Promise<Record<string, string>>;
-
-// Auto-generated message function exports (${keys.length} total)
-${keys.map(key => `export declare const ${key}: MessageFunction;`).join('\n')}
+${messageDeclarations.join('\n')}
 `;
 
-fs.writeFileSync(path.join(__dirname, 'src/index.ts'), tsContent);
-console.log(`Generated ${keys.length} message exports in src/index.ts`);
+// Write the declarations to src/generated-messages.d.ts
+fs.writeFileSync(path.join(__dirname, 'src/generated-messages.d.ts'), tsContent, 'utf8');
+console.log(`Generated ${keys.length} message function declarations in src/generated-messages.d.ts`);

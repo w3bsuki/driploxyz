@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
   import { createSelect } from '@melt-ui/svelte';
   import type { Snippet } from 'svelte';
 
@@ -53,25 +53,35 @@
 
   const {
     elements: { trigger, menu, option },
-    states: { selectedLabel, open },
+    states: { open },
     helpers: { isSelected }
   } = createSelect({
     forceVisible: true,
     positioning: {
-      placement: positioning === 'top' ? 'top' : 
-                  positioning === 'left' ? 'left' : 
-                  positioning === 'right' ? 'right' : 'bottom',
+      placement:
+        positioning === 'top'
+          ? 'top'
+          : positioning === 'left'
+            ? 'left'
+            : positioning === 'right'
+              ? 'right'
+              : 'bottom',
       gutter: 4,
       sameWidth: true
     },
     portal,
     onSelectedChange: ({ next }) => {
-      const newValue = next ? next.value as string : null;
+      const newValue = next ? (next.value as string) : null;
       value = newValue;
       onValueChange?.(newValue);
       return next;
     }
   });
+
+  const optionAction = option as unknown as (
+    node: HTMLElement,
+    props: { value: string; label: string; disabled?: boolean }
+  ) => void;
 
   // Sync initial value with Melt UI
   $effect(() => {
@@ -151,7 +161,7 @@
     <!-- Options from props -->
     {#each options as opt (opt.value)}
       <button
-        use:option={{ value: opt.value, label: opt.label, disabled: opt.disabled }}
+        use:optionAction={{ value: opt.value, label: opt.label, disabled: opt.disabled }}
         class="{optionClasses} {$isSelected(opt.value) ? 'bg-[var(--state-active)] font-medium' : ''}"
         disabled={opt.disabled}
         role="option"

@@ -148,7 +148,10 @@
   function handleDragLeave(event: DragEvent) {
     event.preventDefault();
     // Only stop dragging if we're leaving the main container
-    if (!event.currentTarget?.contains(event.relatedTarget as Node)) {
+    const currentTarget = event.currentTarget as HTMLElement | null;
+    const relatedTarget = event.relatedTarget as Node | null;
+
+    if (!currentTarget || !relatedTarget || !currentTarget.contains(relatedTarget)) {
       isDragging = false;
     }
   }

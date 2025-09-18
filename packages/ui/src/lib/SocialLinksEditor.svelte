@@ -93,7 +93,10 @@
                 id={`url-${index}`}
                 bind:value={link.url}
                 placeholder={platformInfo.placeholder}
-                onchange={(e) => updateLink(index, 'url', e.currentTarget.value)}
+                onchange={(e) => {
+                  const target = e.currentTarget as HTMLInputElement;
+                  if (target) updateLink(index, 'url', target.value);
+                }}
                 class="bg-white/80"
               />
             </div>

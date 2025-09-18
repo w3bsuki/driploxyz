@@ -95,16 +95,18 @@
 
 <!-- Enhanced section with separator banner -->
 <section class="pb-3 sm:pb-4 {className}">
-  <!-- Section Banner -->
-  <FeaturedSellersBanner
-    heading={title}
-    copy={description || (displaySellers.length > 0 ? `${displaySellers.length} seller${displaySellers.length === 1 ? '' : 's'} • updated recently` : undefined)}
-    itemCount={displaySellers.length > 0 ? displaySellers.length : undefined}
-    {showToggle}
-    {activeTab}
-    {onToggle}
-    cta={onViewAll ? { label: 'View All', action: onViewAll } : undefined}
-  />
+  <!-- Section Banner with proper container -->
+  <div class="px-2 sm:px-4 lg:px-6">
+    <FeaturedSellersBanner
+      heading={title}
+      copy={description || (displaySellers.length > 0 ? `${displaySellers.length} seller${displaySellers.length === 1 ? '' : 's'} • updated recently` : undefined)}
+      itemCount={displaySellers.length > 0 ? displaySellers.length : undefined}
+      {showToggle}
+      {activeTab}
+      {onToggle}
+      cta={onViewAll ? { label: 'View All', action: onViewAll } : undefined}
+    />
+  </div>
 
   <!-- Sellers -->
   {#if loading}

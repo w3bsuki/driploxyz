@@ -164,10 +164,11 @@
   // Lightweight profile stats (tolerant to missing fields)
   const profileStats = $derived(() => {
     // Access profile fields directly since stats doesn't exist in Profile type
-    const ratingRaw = typeof profile?.avg_rating === 'number' ? profile.avg_rating : (typeof profile?.rating === 'number' ? profile.rating : 0);
+    const ratingRaw = typeof profile?.rating === 'number' ? profile.rating : 0;
     const rating = Number.isFinite(ratingRaw) ? ratingRaw : 0;
     const itemsSold = typeof profile?.total_sales === 'number' ? profile.total_sales : 0;
-    const listings = typeof profile?.active_listings_count === 'number' ? profile.active_listings_count : 0;
+    const productsCount = (profile as { products_count?: number } | undefined)?.products_count;
+    const listings = typeof productsCount === 'number' ? productsCount : 0;
     return { rating, itemsSold, listings };
   });
 
@@ -258,7 +259,7 @@
                   src={profile?.avatar_url || undefined}
                   size="md"
                   fallback={initials}
-                  style="width: 44px; height: 44px;"
+                  class="w-11 h-11"
                 />
 
                 <!-- User Info -->

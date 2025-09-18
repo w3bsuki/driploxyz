@@ -8,7 +8,7 @@
     filters?: Record<string, unknown>;
     onProductClick: (product: Product) => void;
     onFavorite: (product: Product) => void;
-    searchFunction: (params: { query?: string; page?: number; filters?: Record<string, unknown> }) => Promise<{ products: Product[]; totalCount: number; totalPages: number }>;
+    searchFunction: (params: { query?: string; page?: number; limit?: number; filters?: Record<string, unknown> }) => Promise<{ products: Product[]; totalCount: number; totalPages: number }>;
     translations?: Record<string, string>;
     loadComponent?: (importFn: () => Promise<{ default: unknown }>) => Promise<unknown>;
     createLazyLoader?: (callback: () => void, options?: IntersectionObserverInit) => (node: Element) => { destroy?: () => void };

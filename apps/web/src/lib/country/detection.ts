@@ -109,10 +109,18 @@ export function getCountryFromDomain(hostname: string): CountryCode | null {
 export async function detectCountryFromIP(event: RequestEvent): Promise<CountryCode | null> {
   try {
     // Get real IP from various headers (works with Vercel, Cloudflare, etc.)
-    const ip = event.request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-                event.request.headers.get('x-real-ip') ||
-                event.request.headers.get('cf-connecting-ip') ||
-                event.getClientAddress();
+    let ip: string | null = null;
+
+    try {
+      ip = event.request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+           event.request.headers.get('x-real-ip') ||
+           event.request.headers.get('cf-connecting-ip') ||
+           event.getClientAddress();
+    } catch (clientAddressError) {
+      // In development, getClientAddress might fail
+      console.debug('Could not get client address:', clientAddressError);
+      ip = null;
+    }
 
     if (!ip || ip === '127.0.0.1' || ip === '::1') {
       // Local development

@@ -426,7 +426,6 @@ function getSubcategoryIcon(name: string): string {
         searchId="search-page-input"
         showDropdown={false}
         {mode}
-        role="searchbox"
       >
         {#snippet leftSection()}
           <button
@@ -461,6 +460,7 @@ function getSubcategoryIcon(name: string): string {
                   onclick={() => handleMegaMenuCategorySelect(c.slug, c.level, c.path)}
                   class="w-full flex items-center gap-2 px-3 h-9 min-h-9 hover:bg-gray-50 text-left transition-colors"
                   role="option"
+                  aria-selected="false"
                   aria-label="Select category: {c.name} (Level {c.level})"
                 >
                   <span class="text-[color:var(--text-tertiary)] text-[length:var(--text-xs)] w-8">{c.level === 1 ? 'L1' : c.level === 2 ? 'L2' : 'L3'}</span>

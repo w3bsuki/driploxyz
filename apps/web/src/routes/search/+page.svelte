@@ -938,11 +938,5 @@
 />
 
 <style>
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
+  /* Styles removed - scrollbar-hide classes were unused */
 </style>

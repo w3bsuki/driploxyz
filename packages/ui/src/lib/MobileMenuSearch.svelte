@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { Database } from '@repo/database';
-  import { goto } from '$app/navigation';
 
   // Define ProductWithImages type locally
   type Product = Database['public']['Tables']['products']['Row'];
@@ -19,6 +18,8 @@
     onSearch?: (query: string) => void;
     onClose?: () => void;
     searchFunction?: (query: string) => Promise<{ data: ProductWithImages[]; error: string | null }>;
+    onNavigateToSearch?: (query: string) => void;
+    onNavigateToProduct?: (productId: string) => void;
     class?: string;
   }
 
@@ -27,6 +28,8 @@
     onSearch,
     onClose,
     searchFunction,
+    onNavigateToSearch,
+    onNavigateToProduct,
     class: className = ''
   }: Props = $props();
 
@@ -37,7 +40,7 @@
   let showResults = $derived(searchValue.trim().length > 0 && quickResults.length > 0);
 
   // Debounce search to avoid too many API calls
-  let searchTimeout: number;
+  let searchTimeout: ReturnType<typeof setTimeout>;
 
   $effect(() => {
     if (searchValue.trim().length > 1 && searchFunction) {
@@ -90,8 +93,8 @@
 
     if (onSearch) {
       onSearch(query);
-    } else {
-      goto(`/search?q=${encodeURIComponent(query)}`);
+    } else if (onNavigateToSearch) {
+      onNavigateToSearch(query);
     }
 
     // Close the mobile menu after search
@@ -101,7 +104,9 @@
   }
 
   function handleProductSelect(product: ProductWithImages) {
-    goto(`/product/${product.id}`);
+    if (onNavigateToProduct) {
+      onNavigateToProduct(product.id);
+    }
     if (onClose) {
       onClose();
     }
@@ -247,6 +252,7 @@
   @supports (-webkit-touch-callout: none) {
     .mobile-menu-search input[type="search"] {
       -webkit-appearance: none;
+      appearance: none;
     }
   }
 </style>

@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
   import type { Product as UIProduct } from './types/product';
   import { ProductCard } from './';
   import PromotedListingsBanner from './components/home/PromotedListingsBanner.svelte';
@@ -28,6 +28,7 @@
     showToggle?: boolean;
     activeTab?: 'sellers' | 'brands';
     onToggle?: (tab: 'sellers' | 'brands') => void;
+    onViewAll?: () => void;
     class?: string;
   }
 
@@ -42,6 +43,7 @@
     showToggle = false,
     activeTab = 'sellers',
     onToggle,
+    onViewAll,
     class: className = ''
   }: Props = $props();
 
@@ -70,18 +72,19 @@
 {#if activePromotedProducts.length > 0}
 	<!-- Enhanced section with separator banner -->
 	<section class="pb-3 sm:pb-4 {className}">
-		<!-- Section Banner -->
-		<PromotedListingsBanner
-			heading={translations.promoted_listings}
-			copy={translations.promoted_description}
-			itemCount={activePromotedProducts.length}
-			showNavigation={true}
-			{showToggle}
-			{activeTab}
-			{onToggle}
-			onScrollLeft={scrollLeft}
-			onScrollRight={scrollRight}
-		/>
+		<!-- Section Banner with proper container -->
+		<div class="px-2 sm:px-4 lg:px-6 mb-4 sm:mb-6">
+			<PromotedListingsBanner
+				heading={translations.promoted_listings}
+				copy="Stand out from the crowd. Get your listings seen by thousands of buyers daily."
+				itemCount={activePromotedProducts.length}
+				showNavigation={false}
+				{showToggle}
+				{activeTab}
+				{onToggle}
+				cta={onViewAll ? { label: "View All", action: onViewAll } : undefined}
+			/>
+		</div>
 
 		<!-- Horizontal Scrollable Cards matching grid card sizes -->
 		<div class="relative px-2 sm:px-4 lg:px-6">

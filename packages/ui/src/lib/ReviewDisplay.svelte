@@ -1,5 +1,5 @@
-<script lang="ts">
-	// Using Svelte enhanced images
+﻿<script lang="ts">
+	// Using Svelte images
 	
 	interface Review {
 		id: string;
@@ -126,7 +126,6 @@
 							alt="Review photo"
 							class="w-full h-full object-cover hover:scale-105 transition-transform duration-200 cursor-pointer"
 							loading="lazy"
-							enhanced
 						/>
 					</div>
 				{/each}

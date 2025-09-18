@@ -38,7 +38,7 @@
   );
   
   const sellerInitial = $derived(
-    ((product as any).sellerName || (product as any).seller_name || 'S').charAt(0).toUpperCase()
+    (product.sellerName || 'S').charAt(0).toUpperCase()
   );
   
   const formattedPrice = $derived(
@@ -158,8 +158,8 @@
   <div id="product-{product.id}-info" class="sr-only">
     <p>Product {index + 1} of {totalCount}</p>
     <p>Price: {formattedPrice}</p>
-    {#if (product as any).sellerName || (product as any).seller_name}
-      <p>Sold by {(product as any).sellerName || (product as any).seller_name}</p>
+    {#if product.sellerName}
+      <p>Sold by {product.sellerName}</p>
     {/if}
     {#if product.condition}
       <p>Condition: {product.condition}</p>

@@ -85,7 +85,8 @@
       "Bash(netstat:*)",
       "WebFetch(domain:ux.stackexchange.com)",
       "WebFetch(domain:dribbble.com)",
-      "mcp__playwright__browser_network_requests"
+      "mcp__playwright__browser_network_requests",
+      "Bash(node generate-ts-exports.js)"
     ]
   },
   "enableAllProjectMcpServers": true,

@@ -78,7 +78,7 @@
     { aspect: 'Hardware/details', rating: conditionData.score }
   ]);
 
-  const conditionDetails = $derived(details.length > 0 ? details : defaultDetails);
+  const conditionDetails: ConditionDetail[] = $derived(details.length > 0 ? details : defaultDetails);
 
   function getRatingStars(rating: number) {
     const fullStars = Math.floor(rating);

@@ -63,7 +63,7 @@
   let originalFocus: HTMLElement | null = null;
 
   // Computed display text
-  const selectedText = $derived(() => {
+  const selectedText = $derived.by(() => {
     if (selectedSpecific) {
       const specificKey = `${selectedCategory}-${selectedSubcategory}`;
       const specificItem = categoryHierarchy.specifics[specificKey]?.find(cat => cat.key === selectedSpecific);
@@ -81,7 +81,7 @@
   });
 
   // Get current category icon
-  const selectedIcon = $derived(() => {
+  const selectedIcon = $derived.by(() => {
     if (selectedCategory) {
       return categoryHierarchy.categories.find(cat => cat.key === selectedCategory)?.icon || '📁';
     }
@@ -148,8 +148,8 @@
       if (subcategory && subcategoryItem) {
         announcement = i18n.category_dropdown_selectedSubcategory({ name: subcategoryItem.name });
       } else {
-        const categoryName = selectedCategory 
-          ? categoryHierarchy.categories.find(cat => cat.key === selectedCategory)?.name 
+        const categoryName = selectedCategory
+          ? categoryHierarchy.categories.find(cat => cat.key === selectedCategory)?.name || 'category'
           : 'category';
         announcement = i18n.category_dropdown_allSubcategorySelected({ category: categoryName });
       }
@@ -177,7 +177,7 @@
         announcement = i18n.category_dropdown_selectedSpecific({ name: specificItem.name });
       } else {
         const subcategoryName = selectedSubcategory && selectedCategory
-          ? categoryHierarchy.subcategories[selectedCategory]?.find(cat => cat.key === selectedSubcategory)?.name
+          ? categoryHierarchy.subcategories[selectedCategory]?.find(cat => cat.key === selectedSubcategory)?.name || 'items'
           : 'items';
         announcement = i18n.category_dropdown_allSpecificSelected({ subcategory: subcategoryName });
       }

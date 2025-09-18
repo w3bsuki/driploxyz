@@ -251,8 +251,12 @@
       aria-label="Promoted products carousel"
       class="relative pb-2"
       onkeydown={handleKeyNavigation}
+      tabindex="0"
+      role="region"
+      aria-controls="highlights-container"
     >
       <div
+        id="highlights-container"
         class="flex gap-4 overflow-x-auto scrollbar-hide snap-x snap-mandatory"
         data-highlights-container
         role="list"

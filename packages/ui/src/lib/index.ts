@@ -1,4 +1,4 @@
-// Core UI components
+﻿// Core UI components
 export { default as Badge } from './Badge.svelte';
 export type { SvelteComponent as _BadgeComponent } from 'svelte';
 export { default as Banner } from './Banner.svelte';

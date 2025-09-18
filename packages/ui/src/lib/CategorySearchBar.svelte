@@ -298,7 +298,7 @@ const activeFilterCount = $derived.by(() => {
     </nav>
 
     <!-- Applied Filters with Enhanced Category Display -->
-    {#if activeFilterCount() > 0}
+    {#if activeFilterCount > 0}
       <div class="pb-2">
         <AppliedFilterPills
           filters={appliedFilters || {}}

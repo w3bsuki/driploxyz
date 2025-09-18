@@ -26,7 +26,7 @@
   }: Props = $props();
 
   let announcement = $state('');
-  let timeoutId: number | null = null;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
   
   // Create announcements when result count changes
   $effect(() => {

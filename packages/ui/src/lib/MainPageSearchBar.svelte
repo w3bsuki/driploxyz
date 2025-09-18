@@ -6,6 +6,11 @@ import CategoryPill from './CategoryPill.svelte';
 type Category = Database['public']['Tables']['categories']['Row'];
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
+// Extended category with UI-specific fields
+interface CategoryWithCount extends Category {
+  product_count?: number;
+}
+
 interface TopBrand {
   id: string;
   name: string;
@@ -17,11 +22,16 @@ interface TopBrand {
 
 interface TopSeller {
   id: string;
-  name: string;
-  avatar?: string | null;
+  username: string;
+  display_name?: string | null;
+  full_name?: string | null;
+  avatar_url?: string | null;
+  name?: string | null; // Computed from display_name || full_name || username
+  avatar?: string | null; // Alias for avatar_url
   verified?: boolean;
-  items: number;
-  rating: number;
+  items?: number;
+  product_count?: number;
+  rating?: number;
 }
 
 interface QuickShopItem {
@@ -41,8 +51,8 @@ interface Props {
   searchQuery?: string;
   topBrands?: TopBrand[];
   topSellers?: TopSeller[];
-  mainCategories?: Category[];
-  virtualCategories?: Category[];
+  mainCategories?: CategoryWithCount[];
+  virtualCategories?: CategoryWithCount[];
   conditionFilters?: ConditionFilter[];
   i18n: any;
   currentLang?: string;
@@ -55,6 +65,7 @@ interface Props {
   onNavigateToAll: () => void;
   onPillKeyNav?: (e: KeyboardEvent, index: number) => void;
   onPrefetchCategory?: (slug: string) => void;
+  onPrefetchSearch?: () => void;
   onNavigateToBrand?: (brandName: string) => void;
   onNavigateToSeller?: (sellerName: string) => void;
   onNavigateToDrip?: () => void;
@@ -80,6 +91,7 @@ let {
   onNavigateToAll,
   onPillKeyNav,
   onPrefetchCategory,
+  onPrefetchSearch,
   onNavigateToBrand,
   onNavigateToSeller,
   onNavigateToDrip,
@@ -154,17 +166,11 @@ function handleQuickCondition(conditionKey: string) {
   onConditionFilter(conditionKey);
 }
 
-async function prefetchCategoryPage(categorySlug: string) {
+function prefetchCategoryPage(categorySlug: string) {
   if (onPrefetchCategory) {
     onPrefetchCategory(categorySlug);
-  } else {
-    try {
-      await preloadCode(`/category/${categorySlug}`);
-      await preloadData(`/category/${categorySlug}`);
-    } catch (e) {
-      // Preload failed, but continue
-    }
   }
+  // Note: UI package components should use callback props for navigation/prefetching
 }
 
 function handlePillKeyNav(e: KeyboardEvent, index: number) {
@@ -296,7 +302,10 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
                           src={brand.avatar || '/avatars/1.png'}
                           alt={brand.name}
                           class="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                          onerror={() => (this.src = '/avatars/1.png')}
+                          onerror={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/avatars/1.png';
+                          }}
                         />
                         <div class="flex-1 min-w-0">
                           <div class="flex items-center gap-2">
@@ -327,7 +336,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
                     {#each filteredTopSellers as seller}
                       <button
                         onclick={() => {
-                          onNavigateToSeller?.(seller.name);
+                          onNavigateToSeller?.(seller.name ?? seller.username ?? "");
                           showTrendingDropdown = false;
                         }}
                         class="w-full flex items-center gap-3 p-2 bg-gray-50 hover:bg-gray-100 hover:shadow-sm rounded-lg border border-gray-200 hover:border-gray-300 transition-all duration-200 text-left group"
@@ -336,7 +345,10 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
                           src={seller.avatar || '/avatars/1.png'}
                           alt={seller.name}
                           class="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                          onerror={() => (this.src = '/avatars/1.png')}
+                          onerror={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/avatars/1.png';
+                          }}
                         />
                         <div class="flex-1 min-w-0">
                           <div class="flex items-center gap-2">
@@ -349,13 +361,13 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
                           </div>
                           <div class="flex items-center gap-2 text-xs text-gray-500">
                             <span>{seller.items} items</span>
-                            {#if seller.rating > 0}
+                            {#if seller.rating && seller.rating > 0}
                               <span>•</span>
                               <div class="flex items-center gap-1">
                                 <svg class="w-3 h-3 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                 </svg>
-                                <span>{seller.rating.toFixed(1)}</span>
+                                <span>{seller.rating?.toFixed(1)}</span>
                               </div>
                             {/if}
                           </div>
@@ -423,8 +435,8 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
           ariaLabel={i18n.search_viewAll()}
           ariaCurrent={currentPath === '/search' ? 'page' : undefined}
           data-prefetch="hover"
-          onmouseenter={() => preloadCode('/search')}
-          ontouchstart={() => preloadCode('/search')}
+          onmouseenter={() => onPrefetchSearch?.()}
+          ontouchstart={() => onPrefetchSearch?.()}
           onclick={onNavigateToAll}
           onkeydown={(e: KeyboardEvent) => handlePillKeyNav(e, 0)}
           class="min-h-11"
@@ -438,7 +450,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
             disabled={loadingCategory === category.slug}
             ariaLabel={`Browse ${category.name}`}
             itemCount={category.product_count || 0}
-            showItemCount={category.product_count > 0}
+            showItemCount={(category.product_count || 0) > 0}
             data-prefetch="hover"
             data-category={category.slug}
             onmouseenter={() => prefetchCategoryPage(category.slug)}
@@ -457,7 +469,7 @@ function handlePillKeyNav(e: KeyboardEvent, index: number) {
             loading={loadingCategory === virtualCategory.slug}
             disabled={loadingCategory === virtualCategory.slug}
             ariaLabel={`Browse ${virtualCategory.name}`}
-            itemCount={virtualCategory.product_count}
+            itemCount={virtualCategory.product_count || 0}
             showItemCount={true}
             data-prefetch="hover"
             data-category={virtualCategory.slug}

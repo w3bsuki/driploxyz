@@ -51,7 +51,7 @@
   let selectedL2 = $state<CategoryWithChildren | null>(null);
 
   // Enhanced category data with fallback mock data
-  const enhancedCategories = $derived<CategoryWithChildren[]>(() => {
+  const enhancedCategories = $derived.by<CategoryWithChildren[]>(() => {
     if (categories && categories.length > 0) {
       return categories.map(cat => ({
         ...cat,
@@ -466,7 +466,7 @@
           <h2 class="text-[length:var(--text-lg)] font-semibold text-[color:var(--text-primary)] px-2">{selectedL2.name}</h2>
           <!-- Shop All Category Button -->
           <button
-            onclick={() => handleL2ShopAll(selectedL2)}
+            onclick={() => selectedL2 && handleL2ShopAll(selectedL2)}
             class="px-3 py-1.5 text-[length:var(--text-sm)] font-medium text-[color:var(--brand-primary)] hover:bg-[color:var(--surface-brand-subtle)] rounded-md transition-colors"
             aria-label="Shop all {selectedL2.name}"
           >

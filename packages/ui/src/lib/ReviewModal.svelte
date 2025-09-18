@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
 	import Dialog from './primitives/dialog/Dialog.svelte';
 	import Button from './Button.svelte';
 	import ImageUploader from './ImageUploader.svelte';
@@ -201,7 +201,7 @@
 						Help others understand your experience
 					</span>
 					<span class="text-xs text-[color:var(--text-muted)]">
-						{title.length}/255
+						{title?.length || 0}/255
 					</span>
 				</div>
 			</div>
@@ -232,17 +232,15 @@
 			
 			<!-- Image Upload -->
 			<div>
-				<label for="review-image-uploader" class="block text-sm font-medium text-[color:var(--text-primary)] mb-2">
+				<div class="block text-sm font-medium text-[color:var(--text-primary)] mb-2">
 					Photos (optional)
-				</label>
+				</div>
 				<ImageUploader
-					id="review-image-uploader"
-					maxFiles={5}
-					onUpload={handleImageUpload}
+					maxImages={5}
+					onImagesChange={handleImageUpload}
 					onError={handleImageUploadError}
 					disabled={isSubmitting}
-					uploadPath="review-images"
-					class="w-full"
+										class="w-full"
 				/>
 				<p class="text-xs text-[color:var(--text-muted)] mt-2">
 					Add up to 5 photos to show the product condition or packaging
@@ -289,3 +287,4 @@
 		</div>
 	{/snippet}
 </Dialog>
+

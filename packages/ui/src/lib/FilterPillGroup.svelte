@@ -31,15 +31,16 @@
     elements: { root, item },
     helpers: { isPressed },
     states: { value: toggleValue }
-  } = createToggleGroup({
-    multiple,
-    defaultValue: value,
+  } = createToggleGroup(multiple ? {
+    type: 'multiple',
+    defaultValue: value ? [value] : undefined,
     onValueChange: ({ next }) => {
-      const newValue = next || null;
+      // Handle multiple selection mode
+      const newValue = Array.isArray(next) ? next[0] || null : next || null;
       const changedOption = options.find(opt => opt.value === newValue);
 
       onValueChange?.(newValue);
-      
+
       // Announce changes to screen readers
       if (announceChanges && changedOption) {
         const isActive = newValue !== null;
@@ -50,7 +51,31 @@
           announcement = `${changedOption.label} ${filter_modal_filter()} ${statusText}`;
         }
       }
-      
+
+      return next;
+    },
+    disabled
+  } : {
+    type: 'single',
+    defaultValue: value ?? undefined,
+    onValueChange: ({ next }) => {
+      // Handle single selection mode
+      const newValue = (typeof next === 'string' ? next : null) || null;
+      const changedOption = options.find(opt => opt.value === newValue);
+
+      onValueChange?.(newValue);
+
+      // Announce changes to screen readers
+      if (announceChanges && changedOption) {
+        const isActive = newValue !== null;
+        if (announcementTemplate) {
+          announcement = announcementTemplate(changedOption, isActive);
+        } else {
+          const statusText = isActive ? filter_ui_applied() : filter_ui_removed();
+          announcement = `${changedOption.label} ${filter_modal_filter()} ${statusText}`;
+        }
+      }
+
       return next;
     },
     disabled
@@ -60,7 +85,11 @@
   $effect(() => {
     // When value changes externally, update the toggle group's internal state
     if ($toggleValue !== value) {
-      toggleValue.set(value);
+      if (multiple) {
+        toggleValue.set(value ? [value] : undefined);
+      } else {
+        toggleValue.set(value ?? undefined);
+      }
     }
   });
 
@@ -104,7 +133,11 @@
           event.preventDefault();
           const option = options[currentIndex];
           const newValue = $isPressed(option.value) ? null : option.value;
-          toggleValue.set(newValue);
+          if (multiple) {
+            toggleValue.set(newValue ? [newValue] : undefined);
+          } else {
+            toggleValue.set(newValue ?? undefined);
+          }
           onValueChange?.(newValue);
           
           // Announce the change
@@ -191,7 +224,7 @@
       use:item
       data-value={option.value}
       class="{basePillClasses} {activeClasses}"
-      tabindex={focusedIndex === index ? '0' : '-1'}
+      tabindex={focusedIndex === index ? 0 : -1}
       aria-pressed={isActive}
       aria-label="{option.label} {filter_modal_filter()} {isActive ? filter_ui_applied() : filter_ui_removed()}"
       aria-describedby={`filter-help-${option.value}`}

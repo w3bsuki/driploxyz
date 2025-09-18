@@ -1,4 +1,4 @@
-<script lang="ts">
+﻿<script lang="ts">
   import { isBrowser } from './utils/runtime.js';
   import * as i18n from '@repo/i18n';
   
@@ -17,6 +17,12 @@
     functional: boolean;
     analytics: boolean;
     marketing: boolean;
+    timestamp?: number;
+  }
+
+  interface RequestConsentEventDetail {
+    reason?: string;
+    pendingLanguage?: string;
   }
   
   // Simple cookie manager for @repo/ui compatibility
@@ -130,8 +136,13 @@
       };
       
       // Check if consent needs renewal (365 days)
-      const age = Date.now() - existingConsent.timestamp;
-      if (age > 365 * 24 * 60 * 60 * 1000) {
+      if (existingConsent.timestamp) {
+        const age = Date.now() - existingConsent.timestamp;
+        if (age > 365 * 24 * 60 * 60 * 1000) {
+          showBanner = true;
+        }
+      } else {
+        // No timestamp means old consent format - show banner for renewal
         showBanner = true;
       }
     } else {
@@ -148,23 +159,28 @@
     selectedLocale = currentLocale;
     
     // Listen for requests to show cookie consent (e.g., for language switching)
-    const handleCookieConsentRequest = (event: CustomEvent) => {
-      // Check if there's a pending language switch
+    const handleCookieConsentRequest: EventListener = (event) => {
+      const customEvent = event as CustomEvent<RequestConsentEventDetail>;
+
       const pendingLang = sessionStorage?.getItem('pendingLanguageSwitch');
       if (pendingLang) {
         selectedLocale = pendingLang;
-        showLanguageSelector = true;
+        sessionStorage?.removeItem('pendingLanguageSwitch');
       }
-      
-      // Show the banner
+
+      if (customEvent.detail?.pendingLanguage && customEvent.detail.pendingLanguage !== selectedLocale) {
+        selectedLocale = customEvent.detail.pendingLanguage;
+      }
+
+      showLanguageSelector = !!(pendingLang || customEvent.detail?.pendingLanguage);
       showBanner = true;
-      showPreferences = true; // Open preferences so user can see functional cookies toggle
+      showPreferences = true;
     };
     
-    window.addEventListener('requestCookieConsent', handleCookieConsentRequest);
+    (window as EventTarget).addEventListener('requestCookieConsent', handleCookieConsentRequest);
     
     return () => {
-      window.removeEventListener('requestCookieConsent', handleCookieConsentRequest);
+      (window as EventTarget).removeEventListener('requestCookieConsent', handleCookieConsentRequest);
     };
   });
   
@@ -177,7 +193,7 @@
       detectedCountry = data.country_code;
       
       // Set the detected country name
-      detectedCountryName = countryNames[detectedCountry] || data.country_name || detectedCountry;
+      detectedCountryName = (detectedCountry && countryNames[detectedCountry]) || data.country_name || detectedCountry || 'Unknown';
       
       // Map country to language
       const countryToLang: Record<string, string> = {
@@ -188,7 +204,7 @@
         'IT': 'it', 'RU': 'ru', 'UA': 'ua'
       };
       
-      if (countryToLang[detectedCountry]) {
+      if (detectedCountry && countryToLang[detectedCountry]) {
         selectedLocale = countryToLang[detectedCountry];
       }
       

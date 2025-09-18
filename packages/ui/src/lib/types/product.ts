@@ -106,6 +106,7 @@ export function transformToUIProduct(data: ProductWithUIData): Product {
     images: images.map(img => img.image_url),
     slug: generateSlugFromTitle(product.title),
     currency: getCurrencyFromCountryCode(product.country_code),
+    availableSizes: product.size ? [product.size] : [],
     sellerName: seller.username,
     sellerRating: seller.rating,
     sellerAvatar: seller.avatar,

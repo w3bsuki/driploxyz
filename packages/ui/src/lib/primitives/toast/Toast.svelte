@@ -38,7 +38,11 @@
     onDismiss?.(toast.id);
   }
   
-  function handleAction(action: ToastAction) {
+  function handleAction(action?: ToastAction) {
+    if (!action) {
+      return;
+    }
+
     action.onclick();
     handleDismiss();
   }

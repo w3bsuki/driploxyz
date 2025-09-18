@@ -1,6 +1,5 @@
-<script lang="ts">
-	import type { Product } from '@repo/ui/types/product';
-	import type { Profile } from '@repo/ui/types';
+﻿<script lang="ts">
+	import type { Product, Profile } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
 	
 	interface Props {
@@ -56,7 +55,7 @@
 		}
 		return getLocaleUrl(currentLocale, '');
 	});
-	const fullImageUrl = $derived(
+	const fullImageUrl = $derived(() =>
 		image && typeof image === 'string' && image.startsWith('http') 
 			? image 
 			: `https://driplo.xyz${image || '/default-og-image.jpg'}`
@@ -82,9 +81,10 @@
 		
 		// Add main product image (optimized for mobile and desktop)
 		if (product?.images?.[0]) {
-			const mainImage = typeof product.images[0] === 'string' 
-				? product.images[0] 
-				: product.images[0].image_url || product.images[0];
+			const firstImage = product.images[0];
+			const mainImage = typeof firstImage === 'string'
+				? firstImage
+				: (firstImage as any)?.image_url || firstImage;
 					
 			if (typeof mainImage === 'string') {
 				// Mobile-first: preload smaller version
@@ -124,7 +124,7 @@
 		// Add product image domains
 		if (product?.images) {
 			product.images.forEach(img => {
-				const imageUrl = typeof img === 'string' ? img : img?.image_url;
+				const imageUrl = typeof img === 'string' ? img : (img as any)?.image_url;
 				if (imageUrl && typeof imageUrl === 'string') {
 					try {
 						const url = new URL(imageUrl);
@@ -151,7 +151,7 @@
 	
 	// Generate product-specific meta tags
 	const productPrice = $derived(product ? `${product.currency || '€'}${product.price}` : '');
-	const availability = $derived(product?.sold ? 'out of stock' : 'in stock');
+	const availability = $derived(product?.is_sold ? 'out of stock' : 'in stock');
 	
 	// Generate JSON-LD structured data for product
 	const jsonLd = $derived(() => {
@@ -164,17 +164,17 @@
 			description: product.description || description,
 			image: product.images?.map(img => 
 				typeof img === 'string' && img.startsWith('http') ? img : `https://driplo.xyz${img}`
-			) || [fullImageUrl],
+			) || [fullImageUrl()],
 			offers: {
 				'@type': 'Offer',
-				url: fullUrl,
+				url: fullUrl(),
 				priceCurrency: product.currency || 'EUR',
 				price: product.price,
 				availability: `https://schema.org/${availability === 'in stock' ? 'InStock' : 'OutOfStock'}`,
 				itemCondition: getConditionSchema(product.condition),
 				seller: seller ? {
 					'@type': 'Person',
-					name: seller.display_name || seller.username
+					name: seller.full_name || seller.username
 				} : undefined
 			},
 			brand: product.brand ? {
@@ -185,7 +185,7 @@
 			aggregateRating: seller?.rating ? {
 				'@type': 'AggregateRating',
 				ratingValue: seller.rating,
-				reviewCount: seller.reviews_count
+				reviewCount: seller.review_count
 			} : undefined
 		};
 	});
@@ -226,10 +226,10 @@
 
 		// Add category breadcrumb if available
 		if (product.category_name) {
-			const categoryUrl = product.parent_category?.slug && product.category_slug
-				? `https://driplo.xyz/category/${product.parent_category.slug}/${product.category_slug}`
-				: product.category_slug
-					? `https://driplo.xyz/category/${product.category_slug}`
+			const categoryUrl = product.main_category_name && product.subcategory_name
+				? `https://driplo.xyz/category/${product.main_category_name.toLowerCase()}/${product.subcategory_name.toLowerCase()}`
+				: product.main_category_name
+					? `https://driplo.xyz/category/${product.main_category_name.toLowerCase()}`
 					: `https://driplo.xyz/category/${product.category_name.toLowerCase()}`;
 			
 			items.push({
@@ -245,7 +245,7 @@
 			'@type': 'ListItem',
 			position: items.length + 1,
 			name: product.title,
-			item: fullUrl
+			item: fullUrl()
 		});
 		
 		return {
@@ -303,7 +303,7 @@
 	<meta property="og:url" content={fullUrl()} />
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
-	<meta property="og:image" content={fullImageUrl} />
+	<meta property="og:image" content={fullImageUrl()} />
 	<meta property="og:site_name" content="Driplo" />
 	<meta property="og:locale" content={currentLocale === 'bg' ? 'bg_BG' : 'en_GB'} />
 	<meta property="og:locale:alternate" content={currentLocale === 'bg' ? 'en_GB' : 'bg_BG'} />
@@ -327,7 +327,7 @@
 	<meta property="twitter:url" content={fullUrl()} />
 	<meta property="twitter:title" content={title} />
 	<meta property="twitter:description" content={description} />
-	<meta property="twitter:image" content={fullImageUrl} />
+	<meta property="twitter:image" content={fullImageUrl()} />
 	<meta property="twitter:site" content="@driplo" />
 	
 	<!-- Additional meta tags for e-commerce -->

@@ -98,7 +98,7 @@
         {/if}
       </div>
       
-      {#if hasDiscount}
+      {#if hasDiscount && product.originalPrice != null}
         <div class="price-original">
           <span class="original-amount">{currency}{formatPrice(product.originalPrice)}</span>
           <Badge variant="success" size="sm" class="discount-badge">

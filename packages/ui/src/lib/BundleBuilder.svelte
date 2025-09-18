@@ -109,26 +109,22 @@
 
       const rawProducts = await onFetchSellerProducts(sellerId);
       
-      // Map real data to Product type
+      // Map real data to Product type with necessary fields
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const products: Product[] = rawProducts.map((p: any) => ({
-        id: p.id,
-        title: p.title,
-        price: p.price,
+        // Spread all existing database fields from the raw product
+        ...p,
+
+        // Override/add specific UI fields
         currency: 'BGN',
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         images: p.product_images?.sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0)).map((img: any) => img.image_url) || ['/placeholder-product.svg'],
-        condition: p.condition || 'good',
         seller_id: sellerId,
-        category_id: '',
-        size: p.size || '',
-        brand: p.brand || '',
-        created_at: p.created_at,
-        updated_at: p.updated_at,
-        sold: p.is_sold || false,
-        favorites_count: 0,
-        views_count: 0
-      }));
+        sellerName: '',
+        sellerRating: 0,
+        sellerId: sellerId,
+        createdAt: p.created_at || new Date().toISOString()
+      } as Product));
       
       // Update cache
       sellerProductsCache.set(cacheKey, {
@@ -233,11 +229,10 @@
                  class:border-[oklch(60%_0.2_250)]={item.id === initialItem.id}
                  >
               <img
-                src={item.images?.[0] || item.first_image || '/placeholder-product.svg'}
+                src={item.images?.[0] || item.product_images?.[0]?.image_url || '/placeholder-product.svg'}
                 alt={item.title}
                 class="w-12 h-12 object-cover rounded-md flex-shrink-0"
                 loading="lazy"
-                enhanced
               />
               <div class="flex-1 min-w-0">
                 <h4 class="text-sm font-medium text-[oklch(10%_0.02_250)] truncate">{item.title}</h4>
@@ -295,11 +290,10 @@
                 {/if}
                 
                 <img
-                  src={product.images?.[0] || product.first_image || '/placeholder-product.svg'}
+                  src={product.images?.[0] || product.product_images?.[0]?.image_url || '/placeholder-product.svg'}
                   alt={product.title}
                   class="w-full aspect-square object-cover"
                   loading="lazy"
-                  enhanced
                 />
                 <div class="p-2">
                   <h4 class="text-xs font-medium text-[oklch(10%_0.02_250)] truncate">{product.title}</h4>
@@ -341,9 +335,8 @@
       <Button
         onclick={handleConfirm}
         variant="primary"
-        fullWidth
         size="lg"
-        class="min-h-[44px]"
+        class="w-full min-h-[44px]"
         disabled={selectedItems.length === 0}
       >
         {#if selectedItems.length === 1}

@@ -23,13 +23,7 @@
   interface ReviewSummary {
     averageRating: number;
     totalReviews: number;
-    breakdown: {
-      1: number;
-      2: number;
-      3: number;
-      4: number;
-      5: number;
-    };
+    breakdown: Record<number, number>;
   }
 
   interface Props {
@@ -240,10 +234,12 @@
 
           <div class="rating-breakdown">
             {#each [5, 4, 3, 2, 1] as rating}
-              <button 
+              <button
                 class="breakdown-row"
                 class:breakdown-row--active={filterRating === rating}
                 onclick={() => filterRating = filterRating === rating ? null : rating}
+                type="button"
+                aria-label={filterRating === rating ? `Clear ${rating} star filter` : `Filter by ${rating} star reviews`}
               >
                 <span class="rating-label">{rating} star{rating !== 1 ? 's' : ''}</span>
                 <div class="progress-bar">
@@ -442,42 +438,55 @@
 
 <!-- Image Modal -->
 {#if selectedImageModal}
-  <div class="image-modal-backdrop" onclick={closeImageModal}>
-    <div class="image-modal-content" onclick={(e) => e.stopPropagation()}>
-      <button class="modal-close" onclick={closeImageModal} aria-label="Close">
-        <svg viewBox="0 0 20 20">
+  <div
+    class="image-modal-backdrop"
+    onclick={closeImageModal}
+    role="presentation"
+  >
+    <div
+      class="image-modal-content"
+      onclick={(e) => e.stopPropagation()}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Review image viewer"
+      tabindex="-1"
+    >
+      <button class="modal-close" onclick={closeImageModal} aria-label="Close image modal">
+        <svg viewBox="0 0 20 20" aria-hidden="true">
           <path fill="currentColor" d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/>
         </svg>
       </button>
-      
-      <img 
+
+      <img
         src={selectedImageModal.images[selectedImageModal.index]}
         alt="Review image {selectedImageModal.index + 1}"
         class="modal-image"
       />
-      
+
       {#if selectedImageModal.images.length > 1}
         <div class="modal-nav">
-          <button 
+          <button
             class="modal-nav-btn modal-nav-btn--prev"
             onclick={() => selectedImageModal && selectedImageModal.index > 0 && (selectedImageModal = { ...selectedImageModal, index: selectedImageModal.index - 1 })}
             disabled={selectedImageModal.index === 0}
+            aria-label="Previous image"
           >
-            <svg viewBox="0 0 20 20">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
               <path fill="currentColor" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"/>
             </svg>
           </button>
-          
+
           <span class="modal-counter">
             {selectedImageModal.index + 1} of {selectedImageModal.images.length}
           </span>
-          
-          <button 
+
+          <button
             class="modal-nav-btn modal-nav-btn--next"
             onclick={() => selectedImageModal && selectedImageModal.index < selectedImageModal.images.length - 1 && (selectedImageModal = { ...selectedImageModal, index: selectedImageModal.index + 1 })}
             disabled={selectedImageModal.index === selectedImageModal.images.length - 1}
+            aria-label="Next image"
           >
-            <svg viewBox="0 0 20 20">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
               <path fill="currentColor" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"/>
             </svg>
           </button>
@@ -828,6 +837,7 @@
     color: var(--text-base);
     display: -webkit-box;
     -webkit-line-clamp: 4;
+    line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
@@ -835,6 +845,7 @@
   .review-text--expanded {
     display: block;
     -webkit-line-clamp: none;
+    line-clamp: none;
   }
 
   .expand-btn {
@@ -1025,6 +1036,8 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    border: none;
+    padding: 0;
   }
 
   .image-modal-content {

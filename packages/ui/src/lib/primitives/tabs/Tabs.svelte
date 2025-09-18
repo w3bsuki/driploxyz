@@ -83,7 +83,7 @@
   });
 
   // Get active tab data
-  const activeTab = $derived(() => tabs.find(tab => tab.id === value));
+  const activeTab = $derived.by(() => tabs.find(tab => tab.id === value));
 
   // Size variants for touch targets (mobile-first)
   const sizeClasses = {
@@ -167,7 +167,7 @@
     {#each tabs as tab (tab.id)}
       {@const isActive = value === tab.id}
       <button
-        use:trigger={tab.id}
+        use:trigger
         class={getTabClasses(tab, isActive)}
         data-value={tab.id}
         data-state={isActive ? 'active' : 'inactive'}
@@ -237,9 +237,6 @@
 
 <style>
   /* Base styles using semantic tokens */
-  .tabs-root {
-    /* Using semantic tokens from the design system */
-  }
 
 
   /* Auto scrolling by default, respecting user preferences */

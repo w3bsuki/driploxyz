@@ -6,6 +6,12 @@
   import { DescriptionList, DescriptionTerm, DescriptionDetails } from './index';
   import type { ProductInfoProps, ProductAttribute, TabConfiguration } from './types/panels';
 
+  type ConditionType = 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair';
+
+  function isValidCondition(condition: string): condition is ConditionType {
+    return ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'].includes(condition);
+  }
+
   let {
     title,
     brand,
@@ -135,7 +141,7 @@
         {#each attributes as attr}
           <DescriptionTerm>{attr.label}</DescriptionTerm>
           <DescriptionDetails>
-            {#if attr.key === 'condition'}
+            {#if attr.key === 'condition' && isValidCondition(attr.value)}
               <ConditionBadge condition={attr.value} />
             {:else}
               {attr.value}
@@ -218,7 +224,7 @@
                 {/each}
               </div>
               
-              {#if showSizeGuideButton()}
+              {#if showSizeGuideButton}
                 <button class="size-guide-button" onclick={handleSizeGuide}>
                   <svg viewBox="0 0 20 20" class="size-guide-icon">
                     <path fill="currentColor" d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1zM2 15a1 1 0 011-1h14a1 1 0 110 2H3a1 1 0 01-1-1z"/>
@@ -311,12 +317,22 @@
 
 <!-- Size Guide Modal (placeholder) -->
 {#if showSizeGuide}
-  <div class="modal-backdrop" onclick={() => showSizeGuide = false} role="button" tabindex="0" onkeydown={(e) => e.key === 'Escape' && (showSizeGuide = false)}>
-    <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+  <div
+    class="modal-backdrop"
+    onclick={(e) => e.target === e.currentTarget && (showSizeGuide = false)}
+    role="presentation"
+  >
+    <div
+      class="modal-content"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="size-guide-title"
+      tabindex="-1"
+    >
       <div class="modal-header">
-        <h2 class="modal-title">Size Guide</h2>
-        <button class="modal-close" onclick={() => showSizeGuide = false} aria-label="Close">
-          <svg viewBox="0 0 20 20">
+        <h2 id="size-guide-title" class="modal-title">Size Guide</h2>
+        <button class="modal-close" onclick={() => showSizeGuide = false} type="button" aria-label="Close size guide">
+          <svg viewBox="0 0 20 20" aria-hidden="true">
             <path fill="currentColor" d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/>
           </svg>
         </button>
@@ -336,19 +352,6 @@
     gap: var(--space-4);
   }
 
-  .product-info {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--space-4);
-  }
-
   .title {
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-semibold);
@@ -358,9 +361,6 @@
     flex: 1;
   }
 
-  .main-title {
-    margin-bottom: var(--space-3);
-  }
 
   /* Seller Row - Beautiful Styling */
   .seller-row {
@@ -439,12 +439,6 @@
     line-height: 1.3;
   }
 
-  .verified-icon {
-    width: 14px;
-    height: 14px;
-    color: var(--success);
-    flex-shrink: 0;
-  }
 
   .seller-joined {
     font-size: var(--font-size-xs);
@@ -452,34 +446,7 @@
     font-weight: var(--font-weight-normal);
   }
 
-  /* Product Details Section */
-  .product-details-section {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-    background: var(--surface-base);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-xl);
-    padding: var(--space-5);
-    box-shadow: 0 1px 3px color-mix(in oklch, var(--shadow) 6%, transparent);
-  }
 
-  .product-header-row {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    flex-wrap: wrap;
-  }
-
-  .product-title {
-    font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-semibold);
-    line-height: var(--line-height-tight);
-    color: var(--text-strong);
-    margin: 0;
-  }
-
-  .brand-badge { flex-shrink: 0; margin-top: var(--space-2); }
 
   .summary-actions { margin-top: var(--space-3); }
 
@@ -517,53 +484,9 @@
     white-space: nowrap;
   }
 
-  .product-description {
-    border-left: 3px solid var(--primary-subtle);
-    padding-left: var(--space-4);
-    background: var(--surface-subtle);
-    border-radius: 0 var(--radius-md) var(--radius-md) 0;
-    padding: var(--space-3) var(--space-4);
-  }
 
-  .description-text {
-    margin: 0;
-    font-size: var(--font-size-sm);
-    line-height: var(--line-height-relaxed);
-    color: var(--text-base);
-  }
 
-  .product-attributes {
-    /* Inherits from attributes-section styles below */
-  }
 
-  /* Fallback: No seller info */
-  .product-row-solo {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: var(--space-4);
-  }
-
-  .product-row-solo .title-section {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    flex-wrap: wrap;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .favorite-section {
-    flex-shrink: 0;
-  }
-
-  /* Summary card wraps title, brand, and quick facts */
-  .summary-card {
-    background: var(--surface-base);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-xl);
-    padding: var(--space-5);
-  }
 
   /* Removed separate desc-card: description now in summary-card */
 
@@ -575,47 +498,11 @@
   }
   /* facts use DescriptionList with Tailwind utilities */
 
-  /* Attributes Grid - Clean Layout */
-  .product-attributes {
-    /* No additional styling needed - contained within product-details-section */
-  }
 
-  .attributes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: var(--space-3);
-  }
 
-  .attribute-item {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-    align-items: flex-start;
-    padding: var(--space-3);
-    background: var(--surface-subtle);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-lg);
-    transition: all 0.2s ease;
-  }
 
-  .attribute-item:hover {
-    border-color: var(--primary-subtle);
-    background: var(--surface-base);
-  }
 
-  .attribute-label {
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-medium);
-    color: var(--text-subtle);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
 
-  .attribute-value {
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
-    color: var(--text-strong);
-  }
 
   /* Tabs Section */
   .tabs-section {
@@ -678,9 +565,6 @@
     font-size: var(--font-size-sm);
   }
 
-  .tab-count {
-    opacity: 0.7;
-  }
 
   .tab-content {
     padding: var(--space-4);
@@ -760,16 +644,7 @@
     height: 16px;
   }
 
-  /* Description Content */
-  .description-content {
-    line-height: var(--line-height-relaxed);
-  }
 
-  .description-text {
-    margin: 0;
-    color: var(--text-base);
-    white-space: pre-wrap;
-  }
 
   /* Shipping Content */
   .shipping-content {
@@ -878,6 +753,8 @@
     align-items: center;
     justify-content: center;
     padding: var(--space-4);
+    border: none;
+    cursor: pointer;
   }
 
   .modal-content {
@@ -938,9 +815,6 @@
 
   /* Responsive Design */
   @media (max-width: 768px) {
-    .product-header {
-      gap: var(--space-2);
-    }
 
     .seller-row {
       gap: var(--space-3);
@@ -959,16 +833,9 @@
       font-size: var(--font-size-xs);
     }
 
-    .product-title {
-      font-size: var(--font-size-lg);
-    }
 
     .summary-card { padding: var(--space-4); }
     
-    .attributes-grid {
-      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-      gap: var(--space-2);
-    }
     
     .tab-nav {
       padding: 0 var(--space-2);

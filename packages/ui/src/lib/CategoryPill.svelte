@@ -141,7 +141,7 @@
   {#if hasLeftIcon}
     <span class={`inline-flex ${currentSize.icon} justify-center items-center`} aria-hidden="true">
       {#if loading}
-        <LoadingSpinner size={size === 'sm' ? 'xs' : 'sm'} color={spinnerColor} />
+        <LoadingSpinner size={size === 'sm' ? 'sm' : 'md'} color={spinnerColor} />
       {:else if emoji}
         <span class="leading-none">{emoji}</span>
       {/if}
