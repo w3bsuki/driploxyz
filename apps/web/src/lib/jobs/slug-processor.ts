@@ -75,21 +75,25 @@ export async function getQueueStatus(): Promise<{
  * Backfill slugs for existing products
  * This can be used for migration or when introducing the slug system
  */
-export async function backfillSlugs(_batchSize = 50): Promise<{
+export async function backfillSlugs(batchSize = 50): Promise<{
   queued: number;
   error?: string;
 }> {
   // Temporarily disabled - slug processing functions not set up yet
+  // Note: batchSize parameter is for future implementation
+  void batchSize; // Acknowledge parameter is intentionally unused
   return { queued: 0 };
 }
 
 /**
  * Clean up completed queue items (housekeeping)
  */
-export async function cleanupQueue(_olderThanDays = 7): Promise<{
+export async function cleanupQueue(olderThanDays = 7): Promise<{
   deleted: number;
   error?: string;
 }> {
   // Temporarily disabled - slug processing queue not set up yet
+  // Note: olderThanDays parameter is for future implementation
+  void olderThanDays; // Acknowledge parameter is intentionally unused
   return { deleted: 0 };
 }

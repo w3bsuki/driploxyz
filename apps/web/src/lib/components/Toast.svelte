@@ -80,7 +80,7 @@
           <!-- Icon -->
           <div class="flex-shrink-0 {iconClasses[toastItem.type]}">
             <div class="w-5 h-5">
-              <!-- svelte-ignore svelte/no-at-html-tags -->
+              <!-- Icons are safe static SVG strings defined in this component -->
               {@html icons[toastItem.type]}
             </div>
           </div>

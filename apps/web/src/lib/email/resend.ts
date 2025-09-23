@@ -1,6 +1,31 @@
 import { Resend } from 'resend';
 import { env } from '$env/dynamic/private';
 
+// Type definitions for email templates
+interface OrderEmailData {
+  product: {
+    title: string;
+    price: number;
+  };
+  buyer: {
+    username: string;
+  };
+  amount: number;
+}
+
+interface SaleEmailData {
+  product: {
+    title: string;
+  };
+  amount: number;
+  commission: number;
+  net_amount: number;
+}
+
+interface UserEmailData {
+  username: string;
+}
+
 // Initialize Resend with your API key (lazy initialization to avoid build errors)
 let resendInstance: Resend | null = null;
 
@@ -19,7 +44,7 @@ function getResendInstance(): Resend | null {
 
 // Email templates
 export const emailTemplates = {
-	orderConfirmation: (order: any) => ({
+	orderConfirmation: (order: OrderEmailData) => ({
 		subject: `Order Confirmed - ${order.product.title}`,
 		html: `
 			<div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -51,7 +76,7 @@ export const emailTemplates = {
 		`
 	}),
 
-	productSold: (sale: any) => ({
+	productSold: (sale: SaleEmailData) => ({
 		subject: `Your item sold! - ${sale.product.title}`,
 		html: `
 			<div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -88,7 +113,7 @@ export const emailTemplates = {
 		`
 	}),
 
-	welcomeOnboarding: (user: any) => ({
+	welcomeOnboarding: (user: UserEmailData) => ({
 		subject: 'Welcome to Driplo! 🎉',
 		html: `
 			<div style="font-family: -apple-system, sans-serif; max-width: 600px; margin: 0 auto;">

@@ -20,8 +20,6 @@ interface ExtendedWindow extends Window {
   'ga-disable-GA_MEASUREMENT_ID'?: boolean;
 }
 
-// Type for cookie names from COOKIES object
-type CookieName = (typeof COOKIES)[keyof typeof COOKIES];
 
 // Cookie Names - Single source of truth
 export const COOKIES = {

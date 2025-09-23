@@ -273,11 +273,7 @@ export function asyncHandler<T extends unknown[], R>(
   fn: (...args: T) => Promise<R>
 ) {
   return async (...args: T): Promise<R> => {
-    try {
-      return await fn(...args);
-    } catch (error) {
-      throw error; // Re-throw to be handled by the main error handler
-    }
+    return await fn(...args);
   };
 }
 

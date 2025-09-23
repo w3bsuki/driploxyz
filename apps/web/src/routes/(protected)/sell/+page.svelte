@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { getPriceSuggestions } from '$lib/client/products';
-  import { SIZE_CATEGORIES } from '$lib/validation/product';
   import type { PageData, ActionData } from './$types';
   import { enhance } from '$app/forms';
   import { Button, toasts, ErrorBoundary } from '@repo/ui';
@@ -93,10 +92,6 @@
       : []
   );
   
-  // Size options
-  const selectedCategoryData = $derived(
-    formData.category_id ? data.categories?.find(c => c.id === formData.category_id) : null
-  );
   
   
   // Price suggestions
@@ -216,14 +211,14 @@
             categorySuggestions = mergeSuggestions(suggestions);
             showSuggestions = true;
           }
-        } catch (error) {
-          
+        } catch {
+          // Failed to analyze image - continue silently
         }
       }
       
       return uploaded;
     } catch (error) {
-      
+      isUploadingImages = false;
       throw error;
     } finally {
       isUploadingImages = false;
@@ -282,15 +277,6 @@
   }
 
   // Helper function to get step instructions
-  function getStepInstructions(stepNumber: number): string {
-    switch (stepNumber) {
-      case 1: return 'Add photos and describe your item to attract buyers';
-      case 2: return 'Select the category and condition that best matches your item';
-      case 3: return 'Set your price and boost options to maximize visibility';
-      case 4: return 'Review everything looks good, then publish your listing';
-      default: return '';
-    }
-  }
 
   // Simplified navigation - no scrolling needed with full viewport steps
   function navigateToStep() {
@@ -458,8 +444,7 @@
           <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 1 of 4: {i18n.sell_step1()}">
             <ErrorBoundary
               resetKeys={[currentStep]}
-              onError={(error) => {
-                
+              onError={() => {
                 toasts.error('An error occurred while loading photos step. Please try again.');
               }}
             >
@@ -469,7 +454,7 @@
                 bind:isUploadingImages
                 onImageUpload={handleImageUpload}
                 onImageDelete={handleImageDelete}
-                onFieldChange={(field, value) => {
+                onFieldChange={() => {
                   // Could add validation here if needed
                 }}
               />
@@ -482,8 +467,7 @@
           <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 2 of 4: {i18n.sell_step2()}">
             <ErrorBoundary
               resetKeys={[currentStep]}
-              onError={(error) => {
-                
+              onError={() => {
                 toasts.error('An error occurred while loading category step. Please try again.');
               }}
             >
@@ -494,10 +478,10 @@
                 showSuggestions={showSuggestions}
                 onFieldChange={(field, value) => {
                   // Update category fields
-                  if (field === 'gender') formData.gender_category_id = value;
-                  if (field === 'type') formData.type_category_id = value;
-                  if (field === 'specific') formData.category_id = value;
-                  if (field === 'condition') formData.condition = value;
+                  if (field === 'gender') formData.gender_category_id = value as string;
+                  if (field === 'type') formData.type_category_id = value as string;
+                  if (field === 'specific') formData.category_id = value as string;
+                  if (field === 'condition') formData.condition = value as typeof formData.condition;
                 }}
                 onDismissSuggestions={() => showSuggestions = false}
                 onApplySuggestions={() => {
@@ -536,8 +520,7 @@
           <div bind:this={stepContainer} tabindex="-1" role="region" aria-label="Step 3 of 4: Pricing" class="space-y-4 animate-in fade-in slide-in-from-right duration-300">
             <ErrorBoundary
               resetKeys={[currentStep]}
-              onError={(error) => {
-                
+              onError={() => {
                 toasts.error('An error occurred while loading pricing step. Please try again.');
               }}
             >
@@ -547,10 +530,10 @@
                 {priceSuggestion}
                 errors={{}}
                 touched={{}}
-                onFieldChange={(field, value) => {
+                onFieldChange={() => {
                   // Could trigger price suggestion update here
                 }}
-                onFieldBlur={(field) => {
+                onFieldBlur={() => {
                   // Mark field as touched
                 }}
               />
@@ -676,12 +659,10 @@
           <button
             type="button"
             onclick={() => {
-              isProgressing = true;
               publishError = null;
               setTimeout(() => {
                 currentStep--;
                 navigateToStep();
-                isProgressing = false;
               }, 150);
             }}
             disabled={submitting}
@@ -702,12 +683,10 @@
               if ((currentStep === 1 && canProceedStep1) ||
                   (currentStep === 2 && canProceedStep2) ||
                   (currentStep === 3 && canProceedStep3)) {
-                isProgressing = true;
                 publishError = null;
                 setTimeout(() => {
                   currentStep++;
                   navigateToStep();
-                  isProgressing = false;
                 }, 150);
               } else {
                 // Show specific validation message

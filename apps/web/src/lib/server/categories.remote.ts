@@ -31,7 +31,7 @@ export interface BreadcrumbItem {
 
 export interface BreadcrumbResult {
   items: BreadcrumbItem[];
-  jsonLd: any;
+  jsonLd: Record<string, unknown>;
 }
 
 // Cache for category tree to avoid repeated DB queries
@@ -155,7 +155,7 @@ async function getCategoryDescendantsFallback(supabase: SupabaseClient<Database>
       return [categoryId]; // Return at least the parent category
     }
 
-    const level1And2Ids = (level1And2 || []).map((d: any) => d.id);
+    const level1And2Ids = (level1And2 || []).map((d: { id: string }) => d.id);
     
     if (level1And2Ids.length === 0) {
       return [categoryId]; // Return at least the parent category

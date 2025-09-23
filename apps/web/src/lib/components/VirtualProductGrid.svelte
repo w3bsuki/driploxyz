@@ -105,7 +105,8 @@
     intersectionObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          _isVisible = entry.isIntersecting;
+          // Track visibility for future optimization
+          void entry.isIntersecting;
         });
       },
       { threshold: 0.1 }

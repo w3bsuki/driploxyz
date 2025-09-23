@@ -329,7 +329,7 @@ export async function applySecurityConfig(
 export function logSecurityEvent(
   event: string,
   request: Request,
-  details?: any
+  details?: Record<string, unknown>
 ) {
   const requestInfo = {
     method: request.method,

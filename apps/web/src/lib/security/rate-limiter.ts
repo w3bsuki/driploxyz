@@ -3,6 +3,8 @@
  * Uses in-memory storage (no Redis needed for V1)
  */
 
+import type { RequestEvent } from '@sveltejs/kit';
+
 interface RateLimitConfig {
   maxAttempts: number;
   windowMs: number;
@@ -233,12 +235,12 @@ export function rateLimitResponse(retryAfter: number, message?: string) {
 export function withRateLimit(
   endpoint: keyof typeof RATE_LIMIT_CONFIGS,
   options?: {
-    keyGenerator?: (request: Request, clientAddress: string, locals?: any) => string;
+    keyGenerator?: (request: Request, clientAddress: string, locals?: Record<string, unknown>) => string;
     customMessage?: string;
   }
 ) {
-  return function (handler: Function) {
-    return async function rateLimitedHandler(event: any) {
+  return function (handler: (event: RequestEvent) => Promise<Response>) {
+    return async function rateLimitedHandler(event: RequestEvent) {
       try {
         const { request, getClientAddress, locals } = event;
         
@@ -268,8 +270,7 @@ export function withRateLimit(
         // Call original handler
         return await handler(event);
         
-      } catch (error) {
-        
+      } catch {
         // If rate limiting fails, allow the request through (fail open)
         return await handler(event);
       }

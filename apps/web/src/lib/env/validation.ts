@@ -45,15 +45,9 @@ const serverEnvSchema = z.object({
 	VERCEL_ENV: z.enum(['development', 'preview', 'production']).optional(),
 });
 
-// Combined environment schema
-const envSchema = z.object({
-	...publicEnvSchema.shape,
-	...serverEnvSchema.shape,
-});
-
 export type PublicEnv = z.infer<typeof publicEnvSchema>;
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
-export type Env = z.infer<typeof envSchema>;
+export type Env = PublicEnv & ServerEnv;
 
 /**
  * Validates public environment variables

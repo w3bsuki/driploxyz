@@ -31,7 +31,7 @@ export interface ApiError {
 // Auth context passed to protected handlers
 export interface AuthContext {
   user: Database['public']['Tables']['profiles']['Row'];
-  session: any;
+  session: { user: { id: string; email?: string } };
   supabase: SupabaseClient<Database>;
 }
 

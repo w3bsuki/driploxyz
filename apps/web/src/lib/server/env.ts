@@ -1,5 +1,4 @@
 import { building, dev } from '$app/environment';
-import type { RequestEvent } from '@sveltejs/kit';
 
 // Environment variable validation - critical for production
 // Only require public Supabase vars for the web app runtime.
