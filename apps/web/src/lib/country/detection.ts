@@ -181,8 +181,7 @@ export async function detectCountryFromIP(event: RequestEvent): Promise<CountryC
     };
 
     return countryMappings[country] || 'BG'; // Default to Bulgaria
-  } catch (error) {
-    console.error('Failed to detect country from IP:', error);
+  } catch {
     return null;
   }
 }

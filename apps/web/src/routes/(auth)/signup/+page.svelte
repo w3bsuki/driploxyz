@@ -4,23 +4,34 @@
   import type { PageData, ActionData } from './$types';
   import * as i18n from '@repo/i18n';
   import { browser } from '$app/environment';
+  import { SignupSchema } from '$lib/validation/auth';
+  import { createFormValidator } from '$lib/utils/form-validation.svelte';
+  import { announceToScreenReader, focusFirstErrorField } from '$lib/utils/form-accessibility';
+  import FormField from '$lib/components/forms/FormField.svelte';
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
-  
+
   import { toasts } from '@repo/ui';
-  import { onMount } from 'svelte';
-  
+
   let submitting = $state(false);
-  let formData = $state({
+
+  // Initialize form validator with proper schema
+  const initialValues = {
     fullName: form?.values?.fullName || '',
     email: form?.values?.email || '',
     password: form?.values?.password || '',
     confirmPassword: form?.values?.confirmPassword || '',
     terms: false
+  };
+
+  const validator = createFormValidator(initialValues, SignupSchema, {
+    validateOnChange: true,
+    validateOnBlur: true,
+    debounceMs: 300
   });
 
   let lastSuccessEmail = $state('');
-  
+
   // Track previous form state to prevent duplicate notifications
   let prevFormKey = $state('');
 
@@ -39,7 +50,7 @@
         terms: form.errors.terms
       } : null
     });
-    
+
     // Only process if form state actually changed
     if (currentFormKey !== prevFormKey) {
       if (form?.success && form?.message) {
@@ -47,53 +58,43 @@
           duration: 8000, // Show for 8 seconds
           important: true
         });
+        announceToScreenReader(`Success: ${form.message}`, 'assertive');
         // Store email before clearing form
-        lastSuccessEmail = form.email || formData.email || '';
-        // Clear form on success - do this outside the effect to avoid loops
-        setTimeout(() => {
-          formData = {
-            fullName: '',
-            email: '',
-            password: '',
-            confirmPassword: '',
-            terms: false
-          };
-        }, 100);
+        lastSuccessEmail = form.email || validator.formState.values.email || '';
+        // Reset validator state on success
+        validator.resetForm();
       } else if (form?.errors) {
+        // Sync server errors with client validator
+        Object.entries(form.errors).forEach(([field, error]) => {
+          if (field !== '_form' && error) {
+            validator.formState.errors[field as keyof typeof validator.formState.errors] = error;
+            validator.formState.touched[field as keyof typeof validator.formState.touched] = true;
+          }
+        });
+
         // Show error toasts for form-level errors
         if (form.errors._form) {
           toasts.error(form.errors._form, {
             duration: 6000
           });
+          announceToScreenReader(`Form error: ${form.errors._form}`, 'assertive');
         }
-        // Show toast for email errors (like "user already exists")
-        if (form.errors.email) {
-          toasts.error(form.errors.email, {
-            duration: 6000
-          });
-        }
-        // Show toast for other field errors
-        if (form.errors.password) {
-          toasts.error(`Password: ${form.errors.password}`, {
-            duration: 6000
-          });
-        }
-        if (form.errors.fullName) {
-          toasts.error(`Name: ${form.errors.fullName}`, {
-            duration: 6000
-          });
-        }
-        if (form.errors.terms) {
-          toasts.error(form.errors.terms, {
-            duration: 6000
-          });
-        }
+
+        // Focus first field with error
+        focusFirstErrorField(form.errors);
       }
-      
+
       // Update the previous key after processing
       prevFormKey = currentFormKey;
     }
   });
+
+  // Get field props for form binding
+  const fullNameField = $derived(validator.getFieldProps('fullName'));
+  const emailField = $derived(validator.getFieldProps('email'));
+  const passwordField = $derived(validator.getFieldProps('password'));
+  const confirmPasswordField = $derived(validator.getFieldProps('confirmPassword'));
+  const termsField = $derived(validator.getFieldProps('terms'));
 </script>
 
 <svelte:head>
@@ -126,11 +127,22 @@
   <!-- Form errors now handled by toast system only -->
 
   <!-- Signup Form -->
-  <form 
-    method="POST" 
-    action="?/signup" 
+  <form
+    method="POST"
+    action="?/signup"
+    novalidate
     use:enhance={() => {
       submitting = true;
+
+      // Validate form before submission if client-side validation is available
+      if (browser) {
+        validator.formState.hasBeenSubmitted = true;
+        // Mark all fields as touched for validation display
+        Object.keys(validator.formState.touched).forEach(key => {
+          validator.formState.touched[key as keyof typeof validator.formState.touched] = true;
+        });
+      }
+
       return async ({ update }) => {
         await update();
         submitting = false;
@@ -139,87 +151,70 @@
   >
     <div class="space-y-1">
       <!-- Full Name -->
-      <div>
-        <label for="fullName" class="block text-sm font-semibold text-[color:var(--text-primary)] mb-1 pl-1">
-          {i18n.auth_firstName()} {i18n.auth_lastName()}
-        </label>
-        <div class="p-1">
-          <input
-          id="fullName"
-          name="fullName"
+      <div class="p-1">
+        <FormField
+          label="{i18n.auth_firstName()} {i18n.auth_lastName()}"
+          fieldName="fullName"
+          fieldState={fullNameField}
           type="text"
           required
-          bind:value={formData.fullName}
-          class="appearance-none block w-full px-3 py-2 border border-[color:var(--border-default)] rounded-lg placeholder:text-[color:var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[color:var(--state-focus)] focus:border-[color:var(--state-focus)] transition-colors text-base sm:text-sm"
           placeholder="John Doe"
-          />
-        </div>
+          autocomplete="name"
+        />
       </div>
 
       <!-- Email -->
-      <div>
-        <label for="email" class="block text-sm font-semibold text-[color:var(--text-primary)] mb-1 pl-1">
-          {i18n.auth_email()}
-        </label>
-        <div class="p-1">
-          <input
-          id="email"
-          name="email"
+      <div class="p-1">
+        <FormField
+          label={i18n.auth_email()}
+          fieldName="email"
+          fieldState={emailField}
           type="email"
-          autocomplete="email"
           required
-          bind:value={formData.email}
-          class="appearance-none block w-full px-3 py-2 border border-[color:var(--border-default)] rounded-lg placeholder:text-[color:var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[color:var(--state-focus)] focus:border-[color:var(--state-focus)] transition-colors text-base sm:text-sm"
           placeholder="john@example.com"
-          />
-        </div>
+          autocomplete="email"
+        />
       </div>
 
       <!-- Password Fields -->
-      <div>
-        <label for="password" class="block text-sm font-semibold text-[color:var(--text-primary)] mb-1 pl-1">
-          {i18n.auth_password()}
-        </label>
-        <div class="p-1">
-          <input
-          id="password"
-          name="password"
+      <div class="p-1">
+        <FormField
+          label={i18n.auth_password()}
+          fieldName="password"
+          fieldState={passwordField}
           type="password"
-          autocomplete="new-password"
           required
-          bind:value={formData.password}
-          class="appearance-none block w-full px-3 py-2 border border-[color:var(--border-default)] rounded-lg placeholder:text-[color:var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[color:var(--state-focus)] focus:border-[color:var(--state-focus)] transition-colors text-base sm:text-sm"
           placeholder="Minimum 8 characters"
-          />
-        </div>
+          autocomplete="new-password"
+          hint="Password must be at least 8 characters long"
+        />
       </div>
 
-      <div>
-        <label for="confirmPassword" class="block text-sm font-semibold text-[color:var(--text-primary)] mb-1 pl-1">
-          {i18n.auth_confirmPassword()}
-        </label>
-        <div class="p-1">
-          <input
-          id="confirmPassword"
-          name="confirmPassword"
+      <div class="p-1">
+        <FormField
+          label={i18n.auth_confirmPassword()}
+          fieldName="confirmPassword"
+          fieldState={confirmPasswordField}
           type="password"
-          autocomplete="new-password"
           required
-          bind:value={formData.confirmPassword}
-          class="appearance-none block w-full px-3 py-2 border border-[color:var(--border-default)] rounded-lg placeholder:text-[color:var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[color:var(--state-focus)] focus:border-[color:var(--state-focus)] transition-colors text-base sm:text-sm"
           placeholder="Re-enter your password"
-          />
-        </div>
+          autocomplete="new-password"
+        />
       </div>
 
       <!-- Terms Checkbox -->
-      <div class="flex items-start">
+      <div class="flex items-start p-1">
         <input
           id="terms"
           name="terms"
           type="checkbox"
-          bind:checked={formData.terms}
+          value="true"
+          checked={termsField.value}
+          onchange={(e) => termsField.setValue((e.target as HTMLInputElement).checked)}
+          onblur={() => termsField.onBlur()}
           class="h-4 w-4 text-[color:var(--primary)] focus:ring-[color:var(--state-focus)] border-[color:var(--border-default)] rounded-sm"
+          aria-invalid={termsField.error !== null}
+          aria-describedby={termsField.error ? 'terms-error' : undefined}
         />
         <label for="terms" class="ml-2 block text-sm text-[color:var(--text-primary)]">
           {i18n.auth_termsAgreement()}
@@ -227,14 +222,20 @@
           {i18n.auth_and()}
           <a href="/privacy" class="link">{i18n.auth_privacyPolicy()}</a>
         </label>
+        {#if termsField.error && termsField.touched}
+          <div id="terms-error" class="mt-1 text-sm text-[color:var(--status-error-text)]" role="alert" aria-live="polite">
+            {termsField.error}
+          </div>
+        {/if}
       </div>
 
       <!-- Submit Button -->
       <div>
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || (browser && validator.hasErrors)}
           class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-black hover:bg-gray-800 text-white focus-visible:ring-black px-4 py-2.5 text-sm transition-colors duration-200"
+          aria-describedby="submit-status"
         >
           {#if submitting}
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -246,6 +247,11 @@
             {i18n.auth_signUp()}
           {/if}
         </button>
+        {#if browser && validator.hasErrors && validator.formState.hasBeenSubmitted}
+          <div id="submit-status" class="mt-2 text-sm text-[color:var(--status-error-text)]" role="alert" aria-live="polite">
+            Please correct the errors above before submitting.
+          </div>
+        {/if}
       </div>
     </div>
   </form>

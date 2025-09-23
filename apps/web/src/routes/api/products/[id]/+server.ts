@@ -34,7 +34,7 @@ export const GET: RequestHandler = async ({ params, locals: { supabase } }) => {
 
 		return json({ product: productData });
 	} catch (err) {
-		console.error('Error loading product:', err);
+		
 		return json({ error: 'Failed to load product' }, { status: 500 });
 	}
 };

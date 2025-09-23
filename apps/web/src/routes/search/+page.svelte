@@ -1,21 +1,36 @@
 <script lang="ts">
-  import { ProductCard, Button, SearchPageSearchBar, SearchDropdown, ProductCardSkeleton, BottomNav, StickyFilterModal, AppliedFilterPills, CategoryDropdown, MegaMenuCategories, CategoryPill, type Product } from '@repo/ui';
-  import { unreadMessageCount } from '$lib/stores/messageNotifications';
+  import { ProductCard, Button, SearchPageSearchBar, BottomNav, StickyFilterModal, AppliedFilterPills, type Product } from '@repo/ui';
+
+  // Type definitions for category hierarchy
+  interface CategoryData {
+    id: string;
+    name: string;
+    level2?: Record<string, SubcategoryData>;
+  }
+
+  interface SubcategoryData {
+    id: string;
+    name: string;
+    level3?: SpecificCategoryData[];
+  }
+
+  interface SpecificCategoryData {
+    id: string;
+    name: string;
+    slug: string;
+  }
+
+  import { unreadCount } from '$lib/stores/notifications';
   import { goto } from '$app/navigation';
-  import { page, navigating } from '$app/stores';
+  import { page, navigating } from '$app/state';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   import { formatPrice } from '$lib/utils/price';
   import { translateCategory, getCategoryIcon } from '$lib/categories/mapping';
-  import type { Database } from '@repo/database';
   import { createProductFilter, syncFiltersToUrl } from '$lib/stores/product-filter.svelte';
   import { browser } from '$app/environment';
   import { debounce } from '$lib/utils/debounce';
-  import { untrack } from 'svelte';
   import { getProductUrl } from '$lib/utils/seo-urls';
-  import { CategoryService } from '$lib/services/categories';
-  import { ProfileService } from '$lib/services/profiles';
-  import { getCollectionsForContext } from '$lib/data/collections';
   
   // Infinite scroll sentinel - properly managed with reactive cleanup
   let loadMoreTrigger = $state<HTMLDivElement | null>(null);
@@ -53,8 +68,6 @@
   // Core UI state
   let showStickyFilterModal = $state(false);
   let showCategoryDropdown = $state(false);
-  let isSearching = $state(false);
-  let isFilterLoading = $state(false);
   let searchQuery = $state('');
   let ariaLiveMessage = $state('');
 
@@ -67,7 +80,7 @@
   // Client-side script initialized
 
   // Category hierarchy from server data
-  let categoryHierarchy = $derived(() => {
+  let categoryHierarchy = $derived.by(() => {
     if (!data.categoryHierarchy || Object.keys(data.categoryHierarchy).length === 0) {
       return {
         categories: [],
@@ -82,7 +95,7 @@
       specifics: {} as Record<string, Array<{key: string, name: string, icon: string, id: string}>>
     };
     
-    Object.entries(data.categoryHierarchy).forEach(([slug, catData]: [string, any]) => {
+    Object.entries(data.categoryHierarchy).forEach(([slug, catData]: [string, CategoryData]) => {
       hierarchy.categories.push({
         key: slug,
         name: translateCategory(catData.name),
@@ -92,7 +105,7 @@
       
       if (catData.level2) {
         hierarchy.subcategories[slug] = [];
-        Object.entries(catData.level2).forEach(([l2Slug, l2Data]: [string, any]) => {
+        Object.entries(catData.level2).forEach(([l2Slug, l2Data]: [string, SubcategoryData]) => {
           const cleanSlug = l2Slug.replace(`${slug}-`, '').replace('-new', '');
           hierarchy.subcategories[slug].push({
             key: cleanSlug,
@@ -103,7 +116,7 @@
           
           if (l2Data.level3 && Array.isArray(l2Data.level3)) {
             const level3Key = `${slug}-${cleanSlug}`;
-            hierarchy.specifics[level3Key] = l2Data.level3.map((l3: any) => ({
+            hierarchy.specifics[level3Key] = l2Data.level3.map((l3: SpecificCategoryData) => ({
               key: l3.slug.replace(`${slug}-`, ''),
               name: translateCategory(l3.name),
               icon: getCategoryIcon(l3.name),
@@ -128,7 +141,7 @@
   });
 
   // Transform categoryHierarchy to MegaMenuCategories format
-  let megaMenuData = $derived(() => {
+  let megaMenuData = $derived.by(() => {
     if (!categoryHierarchy.categories || categoryHierarchy.categories.length === 0) {
       return [];
     }
@@ -147,7 +160,7 @@
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         product_count: 0,
-        children: [] as any[]
+        children: []
       };
 
       // Get subcategories (level 2) for this main category
@@ -166,7 +179,7 @@
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
             product_count: 0,
-            children: [] as any[]
+            children: []
           };
 
           // Get specific items (level 3) for this subcategory
@@ -206,13 +219,6 @@
     { key: 'unisex', label: i18n.category_unisex(), icon: '🌍', product_count: data.categoryProductCounts?.['unisex'] || 0 }
   ]);
   
-  // Quick condition filters (most used)
-  const quickConditionFilters = [
-    { key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: i18n.sell_condition_brandNewWithTags() },
-    { key: 'new_without_tags', label: i18n.sell_condition_newWithoutTags(), shortLabel: i18n.condition_new() },
-    { key: 'like_new', label: i18n.condition_likeNew(), shortLabel: i18n.condition_likeNew() },
-    { key: 'good', label: i18n.condition_good(), shortLabel: i18n.condition_good() }
-  ];
   
   // Common sizes based on category
   const commonSizes = {
@@ -221,7 +227,7 @@
     kids: ['2T', '3T', '4T', '5-6', '7-8', '10-12'],
     default: ['XS', 'S', 'M', 'L', 'XL', 'XXL']
   };
-  
+
   // Popular brands
   const popularBrands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Uniqlo', 'Gap', 'Levi\'s', 'North Face'];
 
@@ -230,7 +236,7 @@
     'Black', 'White', 'Gray', 'Brown', 'Beige', 'Navy', 'Blue', 'Red',
     'Pink', 'Purple', 'Green', 'Yellow', 'Orange', 'Gold', 'Silver', 'Multicolor'
   ];
-  
+
   // Conditions
   const conditions = [
     { key: 'new', label: i18n.condition_new(), emoji: '✨' },
@@ -241,11 +247,13 @@
   
   // Initialize filters from server data - only needs to run once on mount
   let filtersInitialized = $state(false);
-  if (!filtersInitialized && data.products) {
-    filterStore.setProducts(data.products);
-    filterStore.loadPersistedFilters();
 
-    if (data.filters) {
+  $effect(() => {
+    if (!filtersInitialized && data.products) {
+      filterStore.setProducts(data.products);
+      filterStore.loadPersistedFilters();
+
+      if (data.filters) {
       const serverFilters = {
         query: data.searchQuery || '',
         category: data.filters.category || null,
@@ -271,9 +279,10 @@
       }
 
       searchQuery = data.searchQuery || '';
+      }
+      filtersInitialized = true;
     }
-    filtersInitialized = true;
-  }
+  });
   
   // URL syncing - use $effect only for browser side effects
   $effect(() => {
@@ -373,7 +382,9 @@
         hasMore = !!json.hasMore;
         nextPage = (json.currentPage || nextPage) + 1;
       }
-    } catch {}
+    } catch (error) {
+      console.error('Failed to load more products:', error);
+    }
     finally {
       loadingMore = false;
     }
@@ -388,20 +399,11 @@
   // Debounced search handler - moved to input event handler
   function handleSearchInput(value: string) {
     searchQuery = value;
-    isSearching = true;
     handleSearchDebounced(value);
-    setTimeout(() => { isSearching = false; }, 350);
   }
   
-  // Current category path for bottom sheet
-  let currentCategoryPath = $derived({
-    category: filters.category,
-    subcategory: filters.subcategory,
-    specific: filters.specific
-  });
 
   function handleCategorySelect(category: string | null) {
-    isFilterLoading = true;
     ariaLiveMessage = category ? `Selected category: ${category}` : 'Cleared category filter';
     if (filters.category === category) {
       // Deselect if same
@@ -419,15 +421,13 @@
       });
     }
     // Reset loading state after a brief delay
-    setTimeout(() => { 
-      isFilterLoading = false;
+    setTimeout(() => {
       ariaLiveMessage = '';
     }, 300);
   }
 
   // Handle 3-level category selection from MegaMenuCategories
   function handleMegaMenuCategorySelect(categorySlug: string, level: number, path: string[]) {
-    isFilterLoading = true;
     showCategoryDropdown = false;
 
     // Update filters based on the selected level and path
@@ -462,20 +462,10 @@
 
     // Reset loading state after a brief delay
     setTimeout(() => {
-      isFilterLoading = false;
       ariaLiveMessage = '';
     }, 300);
   }
 
-  // Handle closing the CategoryDropdown
-  function handleCategoryDropdownClose() {
-    showCategoryDropdown = false;
-  }
-
-  // Simplified dropdown handling
-  function handleCategoryDropdownToggle() {
-    showCategoryDropdown = !showCategoryDropdown;
-  }
 
   // Click outside handler - proper DOM side effect management
   $effect(() => {
@@ -497,15 +487,12 @@
   });
   
   function handleQuickCondition(conditionKey: string) {
-    isFilterLoading = true;
     // Toggle off if already selected
     if (filters.condition === conditionKey) {
       filterStore.updateFilter('condition', 'all');
     } else {
       filterStore.updateFilter('condition', conditionKey);
     }
-    // Reset loading state after a brief delay
-    setTimeout(() => { isFilterLoading = false; }, 300);
   }
   
   function clearAllFilters() {
@@ -519,11 +506,11 @@
   }
 
   // Sticky filter modal handlers
-  function handlePendingFilterChange(key: string, value: any) {
+  function handlePendingFilterChange(key: string, value: string | null) {
     filterStore.updatePendingFilter(key, value);
   }
 
-  function handleApplyFilters(appliedFilters: Record<string, any>) {
+  function handleApplyFilters() {
     filterStore.applyPendingFilters();
     showStickyFilterModal = false;
   }
@@ -559,13 +546,12 @@
     } else if (key === 'sortBy') {
       filterStore.updateFilter('sortBy', 'relevance');
     } else {
-      filterStore.updateFilter(key as any, 'all');
+      filterStore.updateFilter(key as keyof typeof filters, 'all');
     }
   }
 
   // Handler for SearchPageSearchBar category selection
   function handleSearchPageCategorySelect(categorySlug: string) {
-    isFilterLoading = true;
     ariaLiveMessage = categorySlug ? `Selected category: ${categorySlug}` : 'Cleared category filter';
 
     // Use existing MegaMenu category selection logic
@@ -600,13 +586,13 @@
   }
 
   // Handler for SearchPageSearchBar filter changes
-  function handleSearchPageFilterChange(key: string, value: any) {
+  function handleSearchPageFilterChange(key: string, value: string | null) {
     if (key === 'category') {
       handleCategorySelect(value);
     } else if (key === 'condition') {
       handleQuickCondition(value);
     } else {
-      filterStore.updateFilter(key as any, value);
+      filterStore.updateFilter(key as keyof typeof filters, value);
     }
   }
 
@@ -867,40 +853,6 @@
         <div bind:this={loadMoreTrigger} class="h-1"></div>
       {/if}
       
-      <!-- Simple Pagination (disabled when infinite scroll is active) -->
-      {#if false && (data.hasMore || data.currentPage > 1)}
-        <div class="flex justify-center items-center gap-4 mt-8 mb-4">
-          {#if data.currentPage > 1}
-            <button
-              onclick={() => {
-                const url = new URL(window.location.href);
-                url.searchParams.set('page', String(data.currentPage - 1));
-                goto(url.pathname + url.search);
-              }}
-              class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 min-h-9"
-            >
-              ← Previous
-            </button>
-          {/if}
-          
-          <span class="text-sm text-gray-600">
-            Page {data.currentPage}
-          </span>
-          
-          {#if data.hasMore}
-            <button
-              onclick={() => {
-                const url = new URL(window.location.href);
-                url.searchParams.set('page', String(data.currentPage + 1));
-                goto(url.pathname + url.search);
-              }}
-              class="px-4 py-2 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 min-h-9"
-            >
-              Next →
-            </button>
-          {/if}
-        </div>
-      {/if}
     {:else}
       <div class="text-center py-16">
         <div class="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
@@ -922,10 +874,10 @@
 
 
 <BottomNav 
-  currentPath={$page.url.pathname}
-  isNavigating={!!$navigating}
-  navigatingTo={$navigating?.to?.url.pathname}
-  unreadMessageCount={$unreadMessageCount}
+  currentPath={page.url.pathname}
+  isNavigating={!!navigating}
+  navigatingTo={navigating?.to?.url.pathname}
+  unreadMessageCount={unreadCount()}
   profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
   isAuthenticated={!!data.user}
   labels={{

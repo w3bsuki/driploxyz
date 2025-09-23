@@ -14,19 +14,14 @@
 		"check-types": "tsc --noEmit",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "eslint .",
-		"lighthouse": "lhci autorun",
-		"lighthouse:ci": "lhci autorun --config=../../.lighthouserc.ci.json",
-		"test:performance": "playwright test ../../performance-tests/ --config=../../playwright.config.performance.ts"
+		"lint": "eslint ."
 	},
 	"dependencies": {
 		"@lucide/svelte": "^0.542.0",
-		"@repo/core-auth": "workspace:*",
-		"@repo/core-cookies": "workspace:*",
+		"@repo/core": "workspace:*",
 		"@repo/database": "workspace:*",
 		"@repo/i18n": "workspace:*",
 		"@repo/ui": "workspace:*",
-		"@repo/utils": "workspace:*",
 		"@sentry/sveltekit": "^10.5.0",
 		"@stripe/stripe-js": "^7.8.0",
 		"@supabase/ssr": "^0.7.0",
@@ -72,6 +67,6 @@
 		"vitest": "^3.2.4"
 	},
 	"engines": {
-		"node": ">=20.19.0 <21 || >=22.12.0"
+		"node": ">=22.12.0 <23"
 	}
 }

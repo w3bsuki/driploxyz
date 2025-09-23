@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { getStripe } from '$lib/stripe/client';
 	import { CheckoutSummary, Button } from '@repo/ui';
@@ -14,9 +13,10 @@
 	let bundleItems = $state<any[]>([]);
 	let bundleDetails = $state<any>(null);
 
-	onMount(async () => {
+	// Initialize bundle checkout when component mounts
+	$effect(async () => {
 		// Parse bundle items from URL
-		const itemsParam = $page.url.searchParams.get('items');
+		const itemsParam = page.url.searchParams.get('items');
 		if (!itemsParam) {
 			error = 'No items specified';
 			return;
@@ -31,7 +31,7 @@
 
 			await initializePayment();
 		} catch (err) {
-			console.error('Error parsing bundle data:', err);
+
 			error = 'Invalid bundle data';
 		}
 	});

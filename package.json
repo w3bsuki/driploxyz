@@ -1,39 +1,25 @@
 {
   "name": "driplo-turbo",
   "private": true,
+  "packageManager": "pnpm@8.15.6",
+  "engines": {
+    "node": ">=22.12.0 <23"
+  },
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
+    "build": "turbo build",
+    "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "turbo test",
-    "test:performance": "turbo test:performance",
-    "lighthouse": "turbo lighthouse",
-    "lighthouse:local": "./scripts/lighthouse-ci.sh local",
-    "lighthouse:staging": "./scripts/lighthouse-ci.sh staging",
-    "lighthouse:production": "./scripts/lighthouse-ci.sh production",
-    "bundle-analysis": "node performance-tests/bundle-analysis.js",
-    "performance-audit": "turbo performance-audit",
-    "check-types": "turbo run check-types"
+    "check-types": "turbo check-types"
   },
   "devDependencies": {
     "@lhci/cli": "^0.12.0",
-    "@playwright/test": "^1.40.0",
-    "prettier": "^3.0.0",
+    "@playwright/test": "^1.55.0",
+    "prettier": "^3.6.0",
     "turbo": "2.5.4",
-    "typescript": "^5.0.0",
-    "web-vitals": "^3.5.0"
-  },
-  "packageManager": "pnpm@8.15.6",
-  "engines": {
-    "node": ">=20.19.0 <21 || >=22.12.0"
-  },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "dependencies": {
-    "@repo/core-auth": "workspace:^",
-    "@repo/core-cookies": "workspace:^"
+    "typescript": "^5.8.2",
+    "web-vitals": "^3.5.0",
+    "uuid": "^9.0.1"
   }
 }

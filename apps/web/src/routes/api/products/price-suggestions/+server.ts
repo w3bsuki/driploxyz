@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     
     return json(suggestions);
   } catch (error) {
-    console.error('Price suggestion error:', error);
+    
     return json(
       { error: 'Failed to get price suggestions' },
       { status: 500 }

@@ -33,7 +33,7 @@
   }
 
   // Size groups
-  const sizeGroups = $derived(() => {
+  const sizeGroups = $derived.by(() => {
     const groups: Record<string, SizeOption[]> = {
       'XS-XL': [],
       'Numbers': [],
@@ -43,13 +43,13 @@
     
     sizeOptions.forEach(size => {
       if (['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'].includes(size.value)) {
-        groups['XS-XL'].push(size);
+        groups['XS-XL'] = [...groups['XS-XL'], size];
       } else if (/^\d+$/.test(size.value)) {
-        groups['Numbers'].push(size);
+        groups['Numbers'] = [...groups['Numbers'], size];
       } else if (size.value.includes('UK') || size.value.includes('EU')) {
-        groups['UK/EU'].push(size);
+        groups['UK/EU'] = [...groups['UK/EU'], size];
       } else {
-        groups['Other'].push(size);
+        groups['Other'] = [...groups['Other'], size];
       }
     });
     

@@ -19,6 +19,9 @@ export interface ApiResponse<T = unknown> {
   message?: string;
 }
 
+// API Handler type for middleware composition
+export type ApiHandler = (event: RequestEvent) => Promise<Response> | Response;
+
 export interface ApiError {
   code: string;
   message: string;
@@ -65,8 +68,7 @@ export function withAuth(
       };
 
       return await handler(event, authContext);
-    } catch (err) {
-      console.error('Auth middleware error:', err);
+    } catch {
       return json({ success: false, error: 'Internal server error' }, { status: 500 });
     }
   };
@@ -116,8 +118,7 @@ export function withValidation<T extends z.ZodSchema>(schema: T) {
         }
 
         return await handler(event, result.data);
-      } catch (err) {
-        console.error('Validation middleware error:', err);
+      } catch {
         return json({ success: false, error: 'Invalid request data' }, { status: 400 });
       }
     };
@@ -140,8 +141,7 @@ export function withCsrf(
       }
 
       return await handler(event);
-    } catch (err) {
-      console.error('CSRF middleware error:', err);
+    } catch {
       return json({ success: false, error: 'Security check failed' }, { status: 403 });
     }
   };
@@ -171,8 +171,7 @@ export function withRateLimit(identifier: string, maxRequests: number = 100, win
         }
 
         return await handler(event);
-      } catch (err) {
-        console.error('Rate limit middleware error:', err);
+      } catch {
         // Don't block requests on rate limiter errors
         return await handler(event);
       }
@@ -235,8 +234,8 @@ export function respondError(
  * Combines multiple middleware functions into one
  * Usage: combine(withAuth, withValidation(schema), withCsrf, withRateLimit('api'))
  */
-export function combine(...middlewares: Array<(handler: any) => any>) {
-  return function(handler: any) {
+export function combine(...middlewares: Array<(handler: ApiHandler) => ApiHandler>) {
+  return function(handler: ApiHandler): ApiHandler {
     return middlewares.reduceRight((acc, middleware) => middleware(acc), handler);
   };
 }

@@ -253,7 +253,7 @@ export async function getProductsNeedingSlugs(supabase: any, limit = 100) {
     .limit(limit);
     
   if (error) {
-    console.error('Error fetching products needing slugs:', error);
+    
     return [];
   }
   

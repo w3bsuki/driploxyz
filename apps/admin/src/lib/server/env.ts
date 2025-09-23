@@ -17,15 +17,15 @@ export function validateEnvironment(): void {
   if (!building && !dev) {
     requiredEnvVars.forEach(envVar => {
       if (!process.env[envVar]) {
-        console.error(`❌ Missing required environment variable: ${envVar}`);
+        
         throw new Error(`Missing required environment variable: ${envVar}`);
       }
     });
     // Optional server-only variables (warn if missing in production)
     if (!process.env['SUPABASE_SERVICE_ROLE_KEY']) {
-      console.warn('ℹ️ SUPABASE_SERVICE_ROLE_KEY is not set for web app (OK unless needed server-side).');
+      
     }
-    console.log('✅ All required environment variables are present');
+    
   }
 }
 

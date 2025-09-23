@@ -47,7 +47,7 @@ export const load = (async ({ params, url }) => {
     // If no valid segments found, this might be an invalid category
     throw error(404, `Category '${slug}' not found`);
   } catch (err) {
-    console.error('Category slug redirect error:', err);
+    
     
     // Re-throw redirect and error responses
     if (err && typeof err === 'object' && 'status' in err) {

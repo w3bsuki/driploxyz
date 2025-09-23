@@ -55,10 +55,10 @@ async function syncUserCountryFromSubdomain(event: RequestEvent, detectedCountry
         .eq('id', user.id);
       
       // Log the country update for admin visibility
-      console.log(`User ${user.id} country updated to ${dbCountryCode} via subdomain ${event.url.hostname}`);
+      
     }
   } catch (error) {
     // Don't throw errors for country sync - it's not critical
-    console.warn('Failed to sync user country from subdomain:', error);
+    
   }
 }

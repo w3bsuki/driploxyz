@@ -1,94 +1,49 @@
-import { writable } from 'svelte/store';
-import { goto } from '$app/navigation';
+/**
+ * Auth Popup Store - Clean Svelte 5 Implementation
+ */
 
-interface AuthPopupState {
+import { authPopupStoreInstance } from './auth-popup.svelte';
+
+// Direct exports from the Svelte 5 store
+export const {
+  isOpen,
+  action,
+  redirectAfterAuth,
+  show,
+  close,
+  signIn,
+  signUp,
+  showForFavorite,
+  showForPurchase,
+  showForSelling,
+  showForMessaging
+} = authPopupStoreInstance;
+
+interface LegacyAuthPopupState {
   isOpen: boolean;
-  action: string; // "favorite this product", "purchase", "add to wishlist", etc.
+  action: string;
   redirectAfterAuth?: string;
 }
 
-const initialState: AuthPopupState = {
-  isOpen: false,
-  action: '',
-  redirectAfterAuth: undefined
+// Maintain legacy API compatibility
+export const authPopupStore = {
+  subscribe: (fn: (state: LegacyAuthPopupState) => void) => {
+    // Legacy subscribe compatibility - not recommended for new code
+    return fn({
+      isOpen: authPopupStoreInstance.isOpen,
+      action: authPopupStoreInstance.action,
+      redirectAfterAuth: authPopupStoreInstance.redirectAfterAuth
+    });
+  }
 };
 
-export const authPopupStore = writable<AuthPopupState>(initialState);
-
 export const authPopupActions = {
-  /**
-   * Show auth popup with specific action message
-   */
-  show(action: string, redirectAfterAuth?: string): void {
-    authPopupStore.set({
-      isOpen: true,
-      action,
-      redirectAfterAuth
-    });
-  },
-
-  /**
-   * Close the auth popup
-   */
-  close(): void {
-    authPopupStore.update(state => ({
-      ...state,
-      isOpen: false
-    }));
-  },
-
-  /**
-   * Handle sign in action
-   */
-  signIn(): void {
-    authPopupStore.update(state => {
-      // Prepare redirect URL if needed
-      const redirectUrl = state.redirectAfterAuth 
-        ? `/login?next=${encodeURIComponent(state.redirectAfterAuth)}`
-        : '/login';
-      
-      goto(redirectUrl);
-      
-      return {
-        ...initialState // Reset state
-      };
-    });
-  },
-
-  /**
-   * Handle sign up action
-   */
-  signUp(): void {
-    authPopupStore.update(state => {
-      // Prepare redirect URL if needed
-      const redirectUrl = state.redirectAfterAuth 
-        ? `/signup?next=${encodeURIComponent(state.redirectAfterAuth)}`
-        : '/signup';
-      
-      goto(redirectUrl);
-      
-      return {
-        ...initialState // Reset state
-      };
-    });
-  },
-
-  /**
-   * Quick helpers for common actions
-   */
-  showForFavorite(): void {
-    this.show('add this item to your wishlist');
-  },
-
-  showForPurchase(): void {
-    this.show('purchase this item');
-  },
-
-  showForSelling(): void {
-    this.show('start selling');
-  },
-
-  showForMessaging(): void {
-    this.show('message sellers');
-  }
+  show,
+  close,
+  signIn,
+  signUp,
+  showForFavorite,
+  showForPurchase,
+  showForSelling,
+  showForMessaging
 };

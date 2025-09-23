@@ -5,7 +5,7 @@
   import * as i18n from '@repo/i18n';
   import { onMount } from 'svelte';
   import { page } from '$app/stores';
-  import { subscribeToOrderUpdates, orderUpdates, clearOrderUpdates } from '$lib/stores/orderSubscription';
+  import { subscribeToOrderUpdates, orderSubscriptionStore, clearOrderUpdates } from '$lib/stores/orderSubscription.svelte.ts';
   import { getProductUrl } from '$lib/utils/seo-urls';
   
   interface Props {
@@ -241,15 +241,15 @@
       unsubscribe = subscribeToOrderUpdates(supabase, data.user.id);
       
       // Listen for order updates and refresh data
-      const unsubscribeStore = orderUpdates.subscribe(updates => {
+      $effect(() => {
+        const updates = orderSubscriptionStore.updates;
         if (updates.length > 0) {
           // Refresh orders when updates come in
           location.reload();
         }
       });
-      
+
       return () => {
-        unsubscribeStore();
         if (unsubscribe) unsubscribe();
         clearOrderUpdates();
       };

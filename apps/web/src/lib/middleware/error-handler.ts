@@ -112,7 +112,7 @@ class Logger {
           console.warn(logMessage);
           break;
         default:
-          console.log(logMessage);
+          console.info(logMessage);
       }
     }
 
@@ -210,7 +210,7 @@ function createErrorResponse(
 
   // Include stack trace in development
   if (includeStack && process.env.NODE_ENV === 'development') {
-    (errorResponse as any).stack = error.stack;
+    (errorResponse as unknown as Record<string, unknown>).stack = error.stack;
   }
 
   // Don't expose internal errors in production
@@ -269,7 +269,7 @@ export function handleError(
 /**
  * Async error wrapper for API route handlers
  */
-export function asyncHandler<T extends any[], R>(
+export function asyncHandler<T extends unknown[], R>(
   fn: (...args: T) => Promise<R>
 ) {
   return async (...args: T): Promise<R> => {
@@ -367,3 +367,5 @@ export function createMethodNotAllowedResponse(allowedMethods: string[]): Respon
     }
   );
 }
+
+

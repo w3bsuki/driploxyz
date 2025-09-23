@@ -2,13 +2,16 @@
   "name": "@repo/i18n",
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0 <23"
+  },
   "scripts": {
-    "build": "pnpm run clean && pnpm run compile && pnpm run copy-runtime && pnpm run types",
-    "compile": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide",
+    "build": "pnpm run clean && pnpm run compile && pnpm run types",
+    "compile": "paraglide-js compile --project ./project.inlang --outdir ./lib/paraglide",
+    "precompile": "pnpm run clean",
     "types": "tsc",
-    "copy-runtime": "mkdir -p lib/paraglide && cp -r src/paraglide/* lib/paraglide/ 2>/dev/null || true",
     "dev": "pnpm run compile",
-    "clean": "rm -rf lib dist src/paraglide"
+    "clean": "rimraf lib dist"
   },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
@@ -28,6 +31,7 @@
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
+    "rimraf": "^6.0.1",
     "typescript": "^5.8.2"
   }
 }

@@ -25,7 +25,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
   // Require both token_hash and type
   if (!token_hash || !type) {
     if (dev) {
-      console.error('[AUTH CONFIRM] Missing required parameters:', { token_hash: !!token_hash, type });
+      // Development logging for invalid verification link
     }
     throw redirect(303, '/login?error=invalid_verification_link');
   }
@@ -48,7 +48,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     if (verificationError || !data.user) {
       // Check if this is because the token was already used
       if (dev) {
-        console.error('[AUTH CONFIRM] Verification failed:', verificationError);
+        // Development logging for verification error
       }
       
       // Common case: token already used, user already verified
@@ -57,7 +57,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
           verificationError?.message?.includes('used') ||
           verificationError?.message?.includes('invalid')) {
         if (dev) {
-          console.log('[AUTH CONFIRM] Token already used or expired, redirecting to onboarding');
+          // Development logging for expired/used token
         }
         throw redirect(303, '/onboarding?email_verified=true&message=Your+email+is+already+verified');
       }
@@ -66,13 +66,13 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     }
 
     if (dev) {
-      console.log('[AUTH CONFIRM] Email verified successfully for user:', data.user.email);
+      // Development logging for successful verification
     }
 
     // After successful verification, always redirect to onboarding
     // The onboarding page will handle showing the success message
     if (dev) {
-      console.log('[AUTH CONFIRM] Email verified, redirecting to onboarding');
+      // Development logging for redirect to onboarding
     }
     throw redirect(303, '/onboarding?email_verified=true&welcome=true');
     
@@ -83,7 +83,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     }
     
     if (dev) {
-      console.error('[AUTH CONFIRM] Unexpected error:', error);
+      // Development logging for catch block error
     }
     throw redirect(303, '/login?error=confirmation_failed');
   }

@@ -63,7 +63,8 @@ class SimpleLogger implements Logger {
     if (!this.shouldLog('warn')) return;
 
     if (typeof console !== 'undefined' && console.warn) {
-      console.warn(this.formatMessage('warn', message, context));
+      const formattedMessage = this.formatMessage('warn', message);
+      console.warn(formattedMessage, context || '');
     }
   }
 
@@ -71,7 +72,8 @@ class SimpleLogger implements Logger {
     if (!this.shouldLog('error')) return;
 
     if (typeof console !== 'undefined' && console.error) {
-      console.error(this.formatMessage('error', message, context));
+      const formattedMessage = this.formatMessage('error', message);
+      console.error(formattedMessage, context || '');
     }
   }
 }

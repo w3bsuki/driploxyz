@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { createBrowserSupabaseClient } from '$lib/supabase/client';
 
-export const load: PageLoad = async ({ parent }) => {
+export const load = (async ({ parent }) => {
   const { user } = await parent();
   
   if (!user) {
@@ -20,4 +20,4 @@ export const load: PageLoad = async ({ parent }) => {
     user,
     profile
   };
-};
+}) satisfies PageLoad;

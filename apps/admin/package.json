@@ -3,6 +3,9 @@
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
+	"engines": {
+		"node": ">=22.12.0 <23"
+	},
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -23,8 +26,7 @@
 		"vite": "^7.0.4"
 	},
 	"dependencies": {
-		"@repo/core-auth": "workspace:*",
-		"@repo/core-cookies": "workspace:*",
+		"@repo/core": "workspace:*",
 		"@repo/database": "workspace:*",
 		"@repo/ui": "workspace:*",
 		"@supabase/ssr": "^0.7.0",

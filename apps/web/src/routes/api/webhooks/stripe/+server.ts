@@ -1,11 +1,12 @@
 import { json } from '@sveltejs/kit';
+import type { Stripe } from 'stripe';
 import { stripe } from '$lib/stripe/server';
 import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
 import { createServerClient } from '@supabase/ssr';
 import { TransactionService } from '$lib/services/transactions';
 import { OrderService } from '$lib/services/OrderService';
-import { ConversationService } from '$lib/services/ConversationService';
+// import { ConversationService } from '$lib/services/ConversationService';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { paymentLogger } from '$lib/utils/log';
 
@@ -59,7 +60,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 };
 
-async function handlePaymentSuccess(paymentIntent: any) {
+async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
 	paymentLogger.info('Payment succeeded', {
 		paymentIntentId: paymentIntent.id,
 		metadata: paymentIntent.metadata
@@ -192,15 +193,8 @@ async function handlePaymentSuccess(paymentIntent: any) {
 
 			await supabase.from('notifications').insert(notifications);
 
-			// Create order conversation for buyer-seller communication
-			const conversationService = new ConversationService(supabase, sellerId);
-			const conversationCreated = await conversationService.createOrderConversation({
-				orderId,
-				buyerId,
-				sellerId,
-				productId,
-				initialMessage: `Order #${orderId.slice(-8)} has been created! Please coordinate shipping and delivery details here. 📦`
-			});
+			// TODO: Create order conversation for buyer-seller communication
+			// ConversationService doesn't have createOrderConversation method yet
 
 			paymentLogger.info('Payment processing completed successfully', {
 				transactionId: transaction?.id,
@@ -210,7 +204,7 @@ async function handlePaymentSuccess(paymentIntent: any) {
 				productId,
 				productTitle: product?.title,
 				notificationsSent: 'true',
-				conversationCreated: conversationCreated ? 'true' : 'false'
+				conversationCreated: 'false' // TODO: implement when ConversationService.createOrderConversation is available
 			});
 			
 		} catch (error) {
@@ -224,7 +218,7 @@ async function handlePaymentSuccess(paymentIntent: any) {
 	}
 }
 
-async function handlePaymentFailed(paymentIntent: any) {
+async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
 	paymentLogger.warn('Payment failed', {
 		paymentIntentId: paymentIntent.id,
 		metadata: paymentIntent.metadata
@@ -344,7 +338,7 @@ async function handlePaymentFailed(paymentIntent: any) {
 	}
 }
 
-async function handlePaymentCanceled(paymentIntent: any) {
+async function handlePaymentCanceled(paymentIntent: Stripe.PaymentIntent) {
 	paymentLogger.info('Payment canceled', {
 		paymentIntentId: paymentIntent.id,
 		metadata: paymentIntent.metadata

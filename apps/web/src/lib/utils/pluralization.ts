@@ -125,7 +125,7 @@ export function pluralize(key: PluralKey, count: number, locale?: string): strin
   const pluralForms = translations[key];
   
   if (!pluralForms) {
-    console.warn(`Missing plural translations for key: ${key}`);
+    
     return key;
   }
   

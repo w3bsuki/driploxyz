@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { getStripe } from '$lib/stripe/client';
 	import { CheckoutSummary, PaymentForm, Button } from '@repo/ui';
@@ -27,8 +26,9 @@
 	const buyerProtectionFee = Math.round(product.price * 0.05) + 70; // 5% + €0.70 fixed fee
 	const totalAmount = product.price + shippingCost + buyerProtectionFee;
 
-	onMount(async () => {
-		await initializePayment();
+	// Initialize payment when component mounts
+	$effect(() => {
+		initializePayment();
 	});
 
 	async function initializePayment() {
@@ -111,7 +111,7 @@
 				error = result.message || i18n.checkout_paymentFailed();
 			}
 		} catch (err) {
-			console.error('Error confirming payment:', err);
+			
 			error = i18n.checkout_paymentFailed();
 		}
 	}

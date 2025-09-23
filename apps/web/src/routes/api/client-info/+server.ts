@@ -17,7 +17,7 @@ export const GET: RequestHandler = async ({ request, getClientAddress }) => {
       timestamp: new Date().toISOString()
     });
   } catch (error) {
-    console.error('Error getting client info:', error);
+    
     return json({
       ip: null,
       userAgent: '',

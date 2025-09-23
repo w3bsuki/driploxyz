@@ -7,6 +7,22 @@ import { browser, dev } from '$app/environment';
 import type { Cookies } from '@sveltejs/kit';
 import * as i18n from '@repo/i18n';
 
+// Extended window interface for analytics
+interface ExtendedWindow extends Window {
+  gtag?: (command: string, action: string, params?: Record<string, unknown>) => void;
+  fbq?: {
+    (...args: unknown[]): void;
+    callMethod?: (...args: unknown[]) => void;
+    queue?: unknown[];
+    push?: unknown;
+  };
+  dataLayer?: unknown[];
+  'ga-disable-GA_MEASUREMENT_ID'?: boolean;
+}
+
+// Type for cookie names from COOKIES object
+type CookieName = (typeof COOKIES)[keyof typeof COOKIES];
+
 // Cookie Names - Single source of truth
 export const COOKIES = {
   // Supabase Auth (Essential)
@@ -58,7 +74,7 @@ export const COOKIE_CATEGORIES = {
     name: 'Functional Cookies',
     description: 'Remember preferences like language, theme, and currency',
     required: false,
-    cookies: [COOKIES.LOCALE, COOKIES.THEME, COOKIES.CURRENCY]
+    cookies: [COOKIES.LOCALE, COOKIES.COUNTRY, COOKIES.THEME, COOKIES.CURRENCY]
   },
   analytics: {
     id: 'analytics',
@@ -308,7 +324,7 @@ export class ProductionCookieManager {
       let shouldKeep = false;
       
       // Always keep essential
-      if (COOKIE_CATEGORIES.essential.cookies.includes(name as any)) {
+      if (COOKIE_CATEGORIES.essential.cookies.includes(name as typeof COOKIE_CATEGORIES.essential.cookies[number])) {
         shouldKeep = true;
       }
       // Check Supabase auth cookies
@@ -316,15 +332,15 @@ export class ProductionCookieManager {
         shouldKeep = true;
       }
       // Check functional consent
-      else if (COOKIE_CATEGORIES.functional.cookies.includes(name as any)) {
+      else if (COOKIE_CATEGORIES.functional.cookies.includes(name as typeof COOKIE_CATEGORIES.functional.cookies[number])) {
         shouldKeep = this.hasConsent('functional');
       }
       // Check analytics consent
-      else if (COOKIE_CATEGORIES.analytics.cookies.includes(name as any)) {
+      else if (COOKIE_CATEGORIES.analytics.cookies.includes(name as typeof COOKIE_CATEGORIES.analytics.cookies[number])) {
         shouldKeep = this.hasConsent('analytics');
       }
       // Check marketing consent
-      else if (COOKIE_CATEGORIES.marketing.cookies.includes(name as any)) {
+      else if (COOKIE_CATEGORIES.marketing.cookies.includes(name as typeof COOKIE_CATEGORIES.marketing.cookies[number])) {
         shouldKeep = this.hasConsent('marketing');
       }
       
@@ -341,16 +357,16 @@ export class ProductionCookieManager {
     if (!browser) return;
     
     // Google Analytics
-    (window as any)['ga-disable-GA_MEASUREMENT_ID'] = true;
-    
+    (window as ExtendedWindow)['ga-disable-GA_MEASUREMENT_ID'] = true;
+
     // Google Tag Manager
-    (window as any).gtag = function() {
-      console.log('[Cookie Manager] GTM blocked - no consent');
+    (window as ExtendedWindow).gtag = function() {
+      // Blocked GTAG function
     };
-    
+
     // Facebook Pixel
-    (window as any).fbq = function() {
-      console.log('[Cookie Manager] Facebook Pixel blocked - no consent');
+    (window as ExtendedWindow).fbq = function() {
+      // Blocked Facebook Pixel function
     };
     
     // Removed DOM monkey-patching per security plan; use consent-aware loaders instead
@@ -363,11 +379,11 @@ export class ProductionCookieManager {
     if (!browser) return;
     
     // Enable GA
-    delete (window as any)['ga-disable-GA_MEASUREMENT_ID'];
-    
+    delete (window as ExtendedWindow)['ga-disable-GA_MEASUREMENT_ID'];
+
     // Update consent mode
-    if (typeof (window as any).gtag === 'function') {
-      (window as any).gtag('consent', 'update', {
+    if (typeof (window as ExtendedWindow).gtag === 'function') {
+      (window as ExtendedWindow).gtag!('consent', 'update', {
         'analytics_storage': 'granted'
       });
     }
@@ -381,10 +397,10 @@ export class ProductionCookieManager {
   private blockAnalytics(): void {
     if (!browser) return;
     
-    (window as any)['ga-disable-GA_MEASUREMENT_ID'] = true;
-    
-    if (typeof (window as any).gtag === 'function') {
-      (window as any).gtag('consent', 'update', {
+    (window as ExtendedWindow)['ga-disable-GA_MEASUREMENT_ID'] = true;
+
+    if (typeof (window as ExtendedWindow).gtag === 'function') {
+      (window as ExtendedWindow).gtag!('consent', 'update', {
         'analytics_storage': 'denied'
       });
     }
@@ -396,8 +412,8 @@ export class ProductionCookieManager {
   private enableMarketing(): void {
     if (!browser) return;
     
-    if (typeof (window as any).gtag === 'function') {
-      (window as any).gtag('consent', 'update', {
+    if (typeof (window as ExtendedWindow).gtag === 'function') {
+      (window as ExtendedWindow).gtag!('consent', 'update', {
         'ad_storage': 'granted',
         'ad_user_data': 'granted',
         'ad_personalization': 'granted'
@@ -413,8 +429,8 @@ export class ProductionCookieManager {
   private blockMarketing(): void {
     if (!browser) return;
     
-    if (typeof (window as any).gtag === 'function') {
-      (window as any).gtag('consent', 'update', {
+    if (typeof (window as ExtendedWindow).gtag === 'function') {
+      (window as ExtendedWindow).gtag!('consent', 'update', {
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
         'ad_personalization': 'denied'
@@ -433,8 +449,8 @@ export class ProductionCookieManager {
     if (this.hasConsent(category)) {
       try {
         loader();
-      } catch (error) {
-        console.error(`Failed to load ${category} script:`, error);
+      } catch {
+        // Ignore script loading errors
       }
       return;
     }
@@ -472,8 +488,8 @@ export class ProductionCookieManager {
     scripts.forEach(loader => {
       try {
         loader();
-      } catch (error) {
-        console.error(`Failed to load ${category} script:`, error);
+      } catch {
+        // Intentionally empty - script loading errors are non-critical
       }
     });
     
@@ -519,13 +535,14 @@ export class ProductionCookieManager {
     
     // Initialize gtag
     script.onload = () => {
-      if (typeof (window as any).gtag === 'undefined') {
-        (window as any).dataLayer = (window as any).dataLayer || [];
-        (window as any).gtag = function() {
-          (window as any).dataLayer.push(arguments);
+      const extWindow = window as ExtendedWindow;
+      if (typeof extWindow.gtag === 'undefined') {
+        extWindow.dataLayer = extWindow.dataLayer || [];
+        extWindow.gtag = function(...args: unknown[]) {
+          extWindow.dataLayer?.push(args);
         };
-        (window as any).gtag('js', new Date());
-        (window as any).gtag('config', 'GA_MEASUREMENT_ID', {
+        extWindow.gtag('js', new Date().toISOString());
+        extWindow.gtag('config', 'GA_MEASUREMENT_ID', {
           anonymize_ip: true,
           cookie_flags: 'SameSite=Strict;Secure'
         });
@@ -544,18 +561,21 @@ export class ProductionCookieManager {
     document.head.appendChild(script);
     
     script.onload = () => {
-      if (typeof (window as any).fbq === 'undefined') {
-        (window as any).fbq = function() {
-          if ((window as any).fbq.callMethod) {
-            (window as any).fbq.callMethod.apply((window as any).fbq, arguments);
+      const extWindow = window as ExtendedWindow;
+      if (typeof extWindow.fbq === 'undefined') {
+        extWindow.fbq = function(...args: unknown[]) {
+          if (extWindow.fbq?.callMethod) {
+            extWindow.fbq.callMethod(...args);
           } else {
-            (window as any).fbq.queue.push(arguments);
+            extWindow.fbq?.queue?.push(args);
           }
         };
-        (window as any).fbq.push = (window as any).fbq;
-        (window as any).fbq.queue = [];
+        if (extWindow.fbq) {
+          extWindow.fbq.push = extWindow.fbq;
+          extWindow.fbq.queue = [];
+        }
         // Initialize with your Facebook Pixel ID
-        // (window as any).fbq('init', 'YOUR_PIXEL_ID');
+        // extWindow.fbq('init', 'YOUR_PIXEL_ID');
       }
     };
   }

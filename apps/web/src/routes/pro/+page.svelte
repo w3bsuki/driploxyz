@@ -1,7 +1,7 @@
 <script lang="ts">
   import { ProductCard, LoadingSpinner, Button } from '@repo/ui';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import * as i18n from '@repo/i18n';
   import { favoritesActions, favoritesStore } from '$lib/stores/favorites-store';
   import { authPopupActions } from '$lib/stores/auth-popup-store';
@@ -75,7 +75,7 @@
 
   async function applyFilters() {
     loading = true;
-    const url = new URL($page.url);
+    const url = new URL(page.url);
     
     // Update search params
     if (selectedCondition) {
@@ -126,7 +126,7 @@
   async function loadMore() {
     if (data.hasMore && !loading) {
       loading = true;
-      const url = new URL($page.url);
+      const url = new URL(page.url);
       url.searchParams.set('page', String(data.currentPage + 1));
       await goto(url.pathname + url.search, { invalidateAll: true });
       loading = false;
@@ -205,7 +205,7 @@
           {#if selectedCondition}
             <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
               {translateCondition(selectedCondition)}
-              <button onclick={() => { selectedCondition = ''; applyFilters(); }} class="hover:bg-blue-200 rounded-full p-0.5">
+              <button onclick={() => { selectedCondition = ''; applyFilters(); }} class="hover:bg-blue-200 rounded-full p-0.5" aria-label="Remove condition filter">
                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                 </svg>
@@ -215,7 +215,7 @@
           {#if selectedCategory}
             <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
               {translateCategory(selectedCategory)}
-              <button onclick={() => { selectedCategory = ''; applyFilters(); }} class="hover:bg-green-200 rounded-full p-0.5">
+              <button onclick={() => { selectedCategory = ''; applyFilters(); }} class="hover:bg-green-200 rounded-full p-0.5" aria-label="Remove category filter">
                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
                 </svg>

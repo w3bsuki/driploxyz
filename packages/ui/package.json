@@ -2,6 +2,9 @@
   "name": "@repo/ui",
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22.12.0 <23"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -45,7 +48,9 @@
   ],
   "peerDependencies": {
     "@sveltejs/kit": "^2.0.0",
-    "svelte": "^5.0.0"
+    "svelte": "^5.0.0",
+    "@stripe/stripe-js": "^7.8.0",
+    "@supabase/supabase-js": "^2.56.0"
   },
   "devDependencies": {
     "@melt-ui/pp": "^0.3.2",
@@ -72,8 +77,6 @@
     "@melt-ui/svelte": "^0.86.6",
     "@repo/database": "workspace:*",
     "@repo/i18n": "workspace:*",
-    "@stripe/stripe-js": "^7.8.0",
-    "@supabase/supabase-js": "^2.56.0",
     "bits-ui": "^2.9.6",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.3.1",

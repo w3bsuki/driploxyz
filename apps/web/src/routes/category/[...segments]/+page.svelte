@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { page, navigating } from '$app/stores';
+  import { page, navigating } from '$app/state';
   import { goto } from '$app/navigation';
   import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, SearchDropdown, BottomNav, FilterPill, type Product, type BreadcrumbItem } from '@repo/ui';
   import * as i18n from '@repo/i18n';
-  import { unreadMessageCount } from '$lib/stores/messageNotifications';
+  import { unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
   import { formatPrice } from '$lib/utils/price';
   import type { PageData } from './$types';
   import { invalidateAll } from '$app/navigation';
@@ -20,11 +20,11 @@
   let { data }: Props = $props();
   
   // Track current segments to detect changes
-  let currentSegments = $state($page.params.segments || '');
+  let currentSegments = $state(page.params.segments || '');
   
   // React to URL parameter changes to refresh data
   $effect(() => {
-    const newSegments = $page.params.segments || '';
+    const newSegments = page.params.segments || '';
     if (newSegments !== currentSegments) {
       currentSegments = newSegments;
       // Trigger data reload when segments change
@@ -63,7 +63,7 @@
       // Load collections for category context
       searchDropdownCollections = getCollectionsForContext('category', categoryContext);
     } catch (error) {
-      console.error('Failed to load search dropdown data:', error);
+      
     }
   }
   
@@ -370,7 +370,7 @@
 
 <div class="min-h-screen bg-gray-50">
   <!-- Loading overlay when navigating -->
-  {#if $navigating}
+  {#if navigating}
     <div class="fixed inset-0 bg-white/80 backdrop-blur-sm z-50 flex items-center justify-center">
       <div class="text-center">
         <div class="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-black mx-auto mb-2"></div>
@@ -777,7 +777,7 @@
     {#if data.pagination.totalPages > 1}
       <div class="flex justify-center mt-8 space-x-2">
         {#if data.pagination.hasPrevPage}
-          <Button variant="outline" onclick={() => goto(`${$page.url.pathname}?page=${data.pagination.page - 1}`)}>
+          <Button variant="outline" onclick={() => goto(`${page.url.pathname}?page=${data.pagination.page - 1}`)}>
             Previous
           </Button>
         {/if}
@@ -787,7 +787,7 @@
         </span>
         
         {#if data.pagination.hasNextPage}
-          <Button variant="outline" onclick={() => goto(`${$page.url.pathname}?page=${data.pagination.page + 1}`)}>
+          <Button variant="outline" onclick={() => goto(`${page.url.pathname}?page=${data.pagination.page + 1}`)}>
             Next
           </Button>
         {/if}
@@ -898,10 +898,10 @@
 
 <!-- Bottom Navigation -->
 <BottomNav 
-  currentPath={$page.url.pathname}
-  isNavigating={!!$navigating}
-  navigatingTo={$navigating?.to?.url.pathname}
-  unreadMessageCount={$unreadMessageCount}
+  currentPath={page.url.pathname}
+  isNavigating={!!navigating}
+  navigatingTo={navigating?.to?.url.pathname}
+  unreadMessageCount={unreadMessageCount()}
   profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
   labels={{
     home: i18n.nav_home(),

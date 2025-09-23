@@ -59,7 +59,7 @@ export const load = (async ({ locals }) => {
     .order('created_at', { ascending: false });
   
   if (ordersError) {
-    console.error('Error fetching orders:', ordersError);
+    // Orders fetch error - return empty array
   }
   
   return {

@@ -303,7 +303,7 @@ export function validateSchema(
     for (const rule of rules) {
       const validator = validators[rule.validator as keyof typeof validators] as (...args: unknown[]) => string | null;
       if (!validator) {
-        console.warn(`Unknown validator: ${rule.validator}`);
+        
         continue;
       }
       

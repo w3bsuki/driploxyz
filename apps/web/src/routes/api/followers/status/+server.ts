@@ -21,28 +21,35 @@ export const GET: RequestHandler = async ({ url, locals, request, getClientAddre
   }
 
   // Get follower count for the user being followed
-  const { data: profile } = await locals.supabase
+  const { data: profile, error: profileError } = await locals.supabase
     .from('profiles')
-    .select('follower_count')
+    .select('followers_count')
     .eq('id', followingId)
     .single();
+
+  if (profileError) {
+    return json({ error: 'User not found' }, { status: 404 });
+  }
 
   let isFollowing = false;
 
   // Check if current user is following (if logged in)
   if (session?.user) {
-    const { data: follow } = await locals.supabase
+    const { data: follow, error: followError } = await locals.supabase
       .from('followers')
       .select('id')
       .eq('follower_id', session.user.id)
       .eq('following_id', followingId)
       .single();
 
-    isFollowing = !!follow;
+    // Note: followError is expected when no follow relationship exists
+    if (!followError) {
+      isFollowing = !!follow;
+    }
   }
 
   return json({
     isFollowing,
-    followerCount: profile?.follower_count || 0
+    followerCount: profile.followers_count || 0
   });
 };

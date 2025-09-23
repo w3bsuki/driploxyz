@@ -86,7 +86,7 @@ export async function handleCountryRedirect(event: RequestEvent): Promise<void> 
     }
     
     // Don't break the app for redirect errors
-    console.warn('Country redirect failed:', error);
+    
   }
 }
 

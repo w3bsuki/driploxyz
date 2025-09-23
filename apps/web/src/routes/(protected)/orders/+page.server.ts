@@ -52,11 +52,11 @@ export const load = (async ({ locals: { safeGetSession, supabase } }) => {
       .order('created_at', { ascending: false });
 
     if (buyerError) {
-      console.error('Error fetching buyer orders:', buyerError);
+      
     }
     
     if (sellerError) {
-      console.error('Error fetching seller orders:', sellerError);
+      
     }
 
     // Get product details for all orders
@@ -145,7 +145,7 @@ export const load = (async ({ locals: { safeGetSession, supabase } }) => {
     };
 
   } catch (err) {
-    console.error('Error in orders page load:', err);
+    
     throw error(500, 'Failed to load orders');
   }
 }) satisfies PageServerLoad;

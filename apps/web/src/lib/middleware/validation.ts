@@ -96,7 +96,7 @@ export const validationSchemas = {
 /**
  * Sanitize input to prevent XSS and other attacks
  */
-export function sanitizeInput(input: any): any {
+export function sanitizeInput(input: unknown): unknown {
   if (typeof input === 'string') {
     return input
       .replace(/[<>]/g, '') // Remove potential HTML tags
@@ -110,7 +110,7 @@ export function sanitizeInput(input: any): any {
   }
   
   if (typeof input === 'object' && input !== null) {
-    const sanitized: any = {};
+    const sanitized: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(input)) {
       sanitized[key] = sanitizeInput(value);
     }
@@ -159,7 +159,7 @@ export function validateQueryParams<T>(
   schema: z.ZodSchema<T>
 ): { success: true; data: T } | { success: false; error: string; status: number } {
   try {
-    const params: any = {};
+    const params: Record<string, string | number | boolean> = {};
     
     // Convert URLSearchParams to object
     for (const [key, value] of url.searchParams.entries()) {

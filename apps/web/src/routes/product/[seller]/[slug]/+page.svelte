@@ -2,7 +2,6 @@
   import { goto } from '$app/navigation';
   import { ProductBreadcrumb, SEOMetaTags, ProductGallery, ProductCard, ConditionBadge, ProductActions, SellerCard } from '@repo/ui';
   import { Heart, Clock } from '@lucide/svelte';
-  import { onMount } from 'svelte';
   import { buildProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
   import * as m from '@repo/i18n';
@@ -27,13 +26,27 @@
   let showSimilar = $state(false);
   let showSeller = $state(false);
   let sentinel: HTMLElement | null = $state(null);
-  onMount(() => {
+
+  // Lazy load similar/seller sections when sentinel is visible
+  $effect(() => {
     if (!hasSimilar && !hasSeller) return;
-    if (typeof IntersectionObserver === 'undefined') { showSimilar = hasSimilar; showSeller = hasSeller; return; }
+    if (typeof IntersectionObserver === 'undefined') {
+      showSimilar = hasSimilar;
+      showSeller = hasSeller;
+      return;
+    }
+    if (!sentinel) return;
+
     const io = new IntersectionObserver((entries) => {
-      if (entries.some(e => e.isIntersecting)) { showSimilar = hasSimilar; showSeller = hasSeller; io.disconnect(); }
+      if (entries.some(e => e.isIntersecting)) {
+        showSimilar = hasSimilar;
+        showSeller = hasSeller;
+        io.disconnect();
+      }
     }, { rootMargin: '200px' });
-    if (sentinel) io.observe(sentinel);
+
+    io.observe(sentinel);
+
     return () => io.disconnect();
   });
 
@@ -62,7 +75,7 @@
       else favoriteCount = Math.max(0, favoriteCount + (isLiked ? 1 : -1));
       return { favoriteCount, favorited: isLiked };
     } catch (e) {
-      console.error('favorite failed', e);
+      
       return { favoriteCount, favorited: isLiked };
     }
   }

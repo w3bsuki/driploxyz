@@ -159,9 +159,9 @@ export class NotificationService {
 		try {
 			// Here you would integrate with your email service, Slack API, etc.
 			// For now, we'll just log it
-			console.log(`External notification: ${type} to ${recipient}`);
-			console.log(`Subject: ${subject}`);
-			console.log(`Message: ${message}`);
+			
+			
+			
 
 			return { success: true };
 		} catch (error) {

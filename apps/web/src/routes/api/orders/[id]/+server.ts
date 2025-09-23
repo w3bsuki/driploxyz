@@ -149,7 +149,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
     .single();
     
   if (updateError) {
-    console.error('Error updating order:', updateError);
+    
     return json({ error: 'Failed to update order' }, { status: 500 });
   }
   

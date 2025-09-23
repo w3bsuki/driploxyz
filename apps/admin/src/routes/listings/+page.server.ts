@@ -17,7 +17,7 @@ export const load = (async ({ locals }) => {
 		.limit(100);
 
 	if (error) {
-		console.error('Error fetching products:', error);
+		
 	}
 
 	// Get stats

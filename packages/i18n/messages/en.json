@@ -216,6 +216,7 @@
   "pdp_productNotFound": "Product not found",
   "pdp_productUnavailable": "This product is no longer available",
   "pdp_loginRequired": "Please log in to continue",
+  "pdp_loginrequired1": "Please log in to continue",
   "pdp_loginToBuy": "Log in to buy",
   "pdp_loginToFavorite": "Log in to save favorites",
   "pdp_a11y_productImage": "Product image {index} of {total}",
@@ -1560,5 +1561,12 @@
   "orders_statusShipped": "Shipped",
   "orders_statusPaid": "Paid",
   "orders_statusPending": "Pending",
-  "orders_statusCancelled": "Cancelled"
+  "orders_statusCancelled": "Cancelled",
+
+  "common_quickActions": "Quick Actions",
+  "common_support": "Support",
+  "trending_now": "Trending Now",
+  "nav_newArrivals": "New Arrivals",
+  "category_vintage": "Vintage",
+  "category_designer": "Designer"
 }

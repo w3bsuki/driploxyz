@@ -13,15 +13,13 @@
     categories: Category[];
     onSearch: (query: string) => void;
     onFilter: () => void;
-    isDropdownOpen?: boolean;
   }
 
-  let { 
-    searchQuery = $bindable(), 
-    categories, 
-    onSearch, 
-    onFilter,
-    isDropdownOpen = false
+  let {
+    searchQuery = $bindable(),
+    categories,
+    onSearch,
+    onFilter
   }: Props = $props();
   
   let selectedCategoryIndex = $state(-1);
@@ -36,7 +34,7 @@
       await preloadCode(path);
       // Start data preload on interaction; it will be cached if user navigates
       preloadData(path).catch(() => {});
-    } catch (e) {
+    } catch {
       // ignore
     }
   }

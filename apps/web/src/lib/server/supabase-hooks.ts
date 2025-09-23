@@ -1,8 +1,7 @@
 import { env as publicEnv } from '$env/dynamic/public';
 import { building } from '$app/environment';
-import type { Database } from '@repo/database';
 import type { RequestEvent } from '@sveltejs/kit';
-import { createAuthHelpers } from '@repo/core-auth';
+import { createAuthHelpers } from '@repo/core/auth';
 
 /**
  * Setup Supabase client with auth handling for hooks
@@ -24,7 +23,7 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
   }
 
   // Create Supabase client via shared helper
-  const { createSupabaseServerClient, safeGetSession } = createAuthHelpers<Database>({
+  const { createSupabaseServerClient, safeGetSession } = createAuthHelpers({
     url: PUBLIC_SUPABASE_URL,
     anonKey: PUBLIC_SUPABASE_ANON_KEY,
     cookieDefaults: { sameSite: 'lax' }
@@ -37,3 +36,4 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
    */
   event.locals.safeGetSession = () => safeGetSession(event);
 }
+

@@ -96,12 +96,12 @@ export function createViewTracker(
 
       if (!error && data) {
         trackedViews.add(productId);
-        console.log(`View tracked for product: ${productId}`);
+        // View tracking successful - no action needed
       } else if (error) {
-        console.warn('Failed to track view:', error.message);
+        // Intentionally empty - view tracking errors are non-critical
       }
     } catch (error) {
-      console.error('View tracking error:', error);
+      // Intentionally empty - view tracking errors are non-critical
     }
   }
 

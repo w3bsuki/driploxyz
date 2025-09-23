@@ -1,6 +1,5 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { supabase } from '$lib/server/supabase.server';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
   if (!locals.session?.user?.id) {
@@ -22,13 +21,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       });
 
     if (error) {
-      console.error('Error adding favorite:', error);
+      
       return json({ error: 'Failed to add favorite' }, { status: 500 });
     }
 
     return json({ success: true });
   } catch (error) {
-    console.error('Error in POST /api/favorites:', error);
+    
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 };
@@ -52,13 +51,13 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
       .eq('product_id', productId);
 
     if (error) {
-      console.error('Error removing favorite:', error);
+      
       return json({ error: 'Failed to remove favorite' }, { status: 500 });
     }
 
     return json({ success: true });
   } catch (error) {
-    console.error('Error in DELETE /api/favorites:', error);
+    
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 };

@@ -1,12 +1,8 @@
 import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { createServices } from '$lib/services';
-import { resolveCategoryPath, getCategoryBreadcrumbs } from '$lib/server/categories.remote';
-import * as i18n from '@repo/i18n';
 
-export const load = (async ({ params, url, locals: { supabase, country }, setHeaders }) => {
+export const load = (async ({ params, url, locals: { country }, setHeaders }) => {
   const currentCountry = country || 'BG';
-  const services = createServices(supabase, null);
   
   // Set cache headers for better performance
   setHeaders({
@@ -26,7 +22,6 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
       throw redirect(301, '/search');
     }
 
-    // TEMPORARY: Mock category resolution to test pills without database
     const resolution = {
       level: segments.length as 1 | 2 | 3,
       l1: segments.length >= 1 ? { id: '1', name: segments[0], slug: segments[0] } : undefined,
@@ -56,12 +51,11 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
       // This prevents redirect loops
       if (resolution.canonicalPath !== '/' && resolution.canonicalPath !== '/category') {
         const redirectUrl = resolution.canonicalPath + (url.search ? `?${url.search}` : '');
-        console.log('Redirecting from', currentPath, 'to', redirectUrl);
+        
         throw redirect(301, redirectUrl);
       }
     }
 
-    // TEMPORARY: Mock breadcrumbs 
     const breadcrumbsResult = {
       items: [
         { name: 'Home', href: '/', level: 0 },
@@ -78,10 +72,19 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
     const searchParams = url.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
     const limit = 24;
-    const offset = (page - 1) * limit;
 
     // Build hierarchical filters from the resolved categories
-    const hierarchicalFilters: any = {
+    const hierarchicalFilters: {
+      country_code: string;
+      category_ids?: string[];
+      showEmptyFallback?: boolean;
+      min_price?: number;
+      max_price?: number;
+      conditions?: string[];
+      sizes?: string[];
+      brands?: string[];
+      subcategory_slug?: string;
+    } = {
       country_code: currentCountry
     };
 
@@ -90,7 +93,6 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
       hierarchicalFilters.category_ids = resolution.categoryIds;
     } else {
       // Guard against empty categoryIds - show newest products as fallback
-      console.warn(`Empty categoryIds for path: /category/${segments.join('/')}. Showing newest products in ${currentCountry}.`);
       hierarchicalFilters.showEmptyFallback = true;
     }
 
@@ -118,18 +120,15 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
     }
 
     // Get sort options
-    const sortBy = (searchParams.get('sort') || 'created_at') as any;
-    const sortDirection = (searchParams.get('order') || 'desc') as 'asc' | 'desc';
-    const sort = { by: sortBy, direction: sortDirection };
+    const sortBy = (searchParams.get('sort') || 'created_at') as 'created_at' | 'price' | 'price-low' | 'price-high' | 'newest';
+    const sortDirection = sortBy === 'price-low' ? 'asc' : sortBy === 'price-high' ? 'desc' : 'desc';
 
     // Use parallel promises for better performance - level-aware pills and dropdown
-    let pillCategoriesPromise: Promise<any[]>;
-    let dropdownCategoriesPromise: Promise<any[]>;
+    let pillCategoriesPromise: Promise<Array<{id: string; name: string; slug: string; productCount: number}>>;
+    let dropdownCategoriesPromise: Promise<Array<{id: string; name: string; slug: string; productCount: number}>>;
     
     if (resolution.isVirtual) {
       // Virtual categories (e.g., /category/clothing) → Show gender categories (L1)
-      console.log('Virtual category detected, returning gender pills');
-      // TEMPORARY: Return static gender data to test pills display
       pillCategoriesPromise = Promise.resolve([
         { id: 'men', name: 'Men', slug: 'men', productCount: 500 },
         { id: 'women', name: 'Women', slug: 'women', productCount: 750 },
@@ -144,16 +143,12 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
       ]);
     } else {
       // Regular categories - show appropriate level based on current depth
-      const currentCategory = resolution.l3 || resolution.l2 || resolution.l1;
-      
-      if (!currentCategory) {
+      if (!resolution.l1) {
         throw error(500, 'Failed to determine current category');
       }
       
       if (resolution.level === 1) {
         // L1 page (/category/men) → Show L2 categories (Clothing, Shoes, Accessories, Bags)
-        console.log(`L1 category page: ${currentCategory.name} (${currentCategory.id})`);
-        // TEMPORARY: Return static data to test pills display
         pillCategoriesPromise = Promise.resolve([
           { id: '1', name: 'Clothing', slug: 'clothing', productCount: 150 },
           { id: '2', name: 'Shoes', slug: 'shoes', productCount: 89 },
@@ -168,8 +163,6 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
         ]);
       } else if (resolution.level === 2) {
         // L2 page (/category/men/clothing) → Show L3 categories (T-Shirts, Jeans, etc.)
-        console.log(`L2 category page: ${currentCategory.name} (${currentCategory.id})`);
-        // TEMPORARY: Return static data
         pillCategoriesPromise = Promise.resolve([
           { id: '11', name: 'T-Shirts', slug: 't-shirts', productCount: 45 },
           { id: '12', name: 'Jeans', slug: 'jeans', productCount: 32 },
@@ -183,8 +176,6 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
           { id: '14', name: 'Hoodies', slug: 'hoodies', productCount: 19 }
         ]);
       } else {
-        // L3 page (/category/men/clothing/t-shirts) → No subcategories needed
-        console.log(`L3 category page: ${currentCategory.name} (${currentCategory.id}) - No pills needed`);
         pillCategoriesPromise = Promise.resolve([]);
         dropdownCategoriesPromise = Promise.resolve([]);
       }
@@ -196,16 +187,14 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
       dropdownCategoriesResult,
       sellersResult
     ] = await Promise.allSettled([
-      // TEMPORARY: Mock empty products
       Promise.resolve({ data: [], total: 0 }),
-      
+
       // Get level-appropriate categories for pills
       pillCategoriesPromise,
-      
+
       // Get level-appropriate categories for dropdown (same as pills for consistency)
       dropdownCategoriesPromise,
-      
-      // TEMPORARY: Mock empty sellers  
+
       Promise.resolve([])
     ]);
 
@@ -222,24 +211,9 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
     const hasPrevPage = page > 1;
 
     // Generate meta information
-    const metaTitle = generateMetaTitle(resolution, i18n);
-    const metaDescription = generateMetaDescription(resolution, total, i18n);
+    const metaTitle = generateMetaTitle(resolution);
+    const metaDescription = generateMetaDescription(resolution, total);
     const canonicalUrl = `https://driplo.com${resolution.canonicalPath}`;
-
-    // Debug logging for category navigation fixes
-    if (segments.join('/') === 'men/clothing' || segments.join('/') === 'men' || segments.join('/') === 'clothing') {
-      console.log(`DEBUG /category/${segments.join('/')}:`, {
-        'resolution.isVirtual': resolution.isVirtual,
-        'resolution.level': resolution.level,
-        'resolution.l1': resolution.l1?.name,
-        'resolution.l2': resolution.l2?.name,
-        'pillCategories.length': pillCategories.length,
-        'pillCategories.names': pillCategories.map(s => s.name).slice(0, 5),
-        'dropdownCategories.length': dropdownCategories.length,
-        'dropdownCategories.names': dropdownCategories.map(s => s.name).slice(0, 5),
-        'categoryIds': resolution.categoryIds.slice(0, 5)
-      });
-    }
 
     return {
       // Category information
@@ -290,432 +264,29 @@ export const load = (async ({ params, url, locals: { supabase, country }, setHea
       }
     };
   } catch (err) {
-    console.error('Category page load error:', err);
-    
     // Re-throw redirect and error responses
     if (err && typeof err === 'object' && 'status' in err) {
       throw err;
     }
-    
+
     throw error(500, 'Failed to load category');
   }
 }) satisfies PageServerLoad;
 
 /**
- * Get gender categories (L1) for virtual category pills
- * Virtual categories like /category/clothing should show Men, Women, Kids, Unisex pills
- */
-async function getVirtualCategoryGenderPills(supabase: any, countryCode: string) {
-  try {
-    // Get all L1 gender categories with product counts
-    const { data: genderCategories, error } = await supabase
-      .from('categories')
-      .select('id, name, slug, level')
-      .eq('level', 1)
-      .eq('is_active', true)
-      .order('sort_order')
-      .order('name');
-
-    if (error || !genderCategories?.length) {
-      console.error('Error fetching gender categories:', error);
-      return [];
-    }
-
-    // Get product counts for each gender category using simpler approach
-    const categoriesWithCounts = await Promise.all(
-      genderCategories.map(async (genderCat: any) => {
-        try {
-          // Get descendant category IDs
-          const descendantIds = await getCategoryDescendants(supabase, genderCat.id);
-          
-          // Count products in these categories
-          const { count } = await supabase
-            .from('products')
-            .select('id', { count: 'exact' })
-            .in('category_id', descendantIds)
-            .eq('is_active', true)
-            .eq('is_sold', false)
-            .eq('country_code', countryCode);
-
-          return {
-            ...genderCat,
-            productCount: count || 0
-          };
-        } catch (error) {
-          console.error(`Error counting products for ${genderCat.name}:`, error);
-          return {
-            ...genderCat,
-            productCount: 0
-          };
-        }
-      })
-    );
-
-    console.log('Virtual category gender pills:', categoriesWithCounts.map(c => `${c.name}: ${c.productCount}`));
-
-    return categoriesWithCounts
-      .filter((cat: any) => cat.productCount > 0)
-      .sort((a: any, b: any) => b.productCount - a.productCount);
-  } catch (error) {
-    console.error('Error in getVirtualCategoryGenderPills:', error);
-    return [];
-  }
-}
-
-/**
- * Get aggregated subcategories for virtual categories
- */
-async function getVirtualCategorySubcategories(services: any, targetCategories: any[], _countryCode: string) {
-  const allSubcategories: any[] = [];
-  
-  // Get subcategories from all target L2 categories
-  for (const targetCategory of targetCategories) {
-    const { data: subcategories, error } = await services.categories.getSubcategories(targetCategory.id);
-    
-    if (!error && subcategories?.length) {
-      // Get product counts for each subcategory
-      const subcategoriesWithCounts = await Promise.all(
-        subcategories.map(async (subcat: any) => {
-          const { count } = await services.categories.getHierarchicalProductCount(subcat.id);
-          return {
-            ...subcat,
-            productCount: count,
-            parentCategory: targetCategory.name // Add parent info for better organization
-          };
-        })
-      );
-      
-      allSubcategories.push(...subcategoriesWithCounts);
-    }
-  }
-
-  // Filter, deduplicate by name, and sort by product count
-  const uniqueSubcategories = allSubcategories
-    .filter((cat: any) => cat.productCount > 0)
-    .reduce((acc: any[], current: any) => {
-      // Avoid duplicates with same name (e.g., "Sneakers" from different genders)
-      const existing = acc.find(item => item.name === current.name);
-      if (!existing) {
-        acc.push(current);
-      } else {
-        // Combine product counts if duplicate names
-        existing.productCount += current.productCount;
-      }
-      return acc;
-    }, [])
-    .sort((a: any, b: any) => b.productCount - a.productCount);
-
-  return uniqueSubcategories;
-}
-
-/**
- * Get level 3 categories for virtual category pills
- */
-async function getVirtualCategoryLevel3Pills(services: any, supabase: any, targetCategories: any[], countryCode: string) {
-  const allLevel3Categories: any[] = [];
-  
-  // Get L3 categories from all target L2 categories
-  for (const targetCategory of targetCategories) {
-    const { data: level3Data } = await services.categories.getSubcategories(targetCategory.id);
-    if (level3Data?.length) {
-      allLevel3Categories.push(...level3Data);
-    }
-  }
-
-  // Get product counts using hierarchical count (includes all descendant products)
-  if (allLevel3Categories.length > 0) {
-    const categoriesWithCounts = await Promise.all(
-      allLevel3Categories.map(async (l3cat: any) => {
-        // Use hierarchical count for more accurate product counts
-        const { count } = await services.categories.getHierarchicalProductCount(l3cat.id);
-        return {
-          ...l3cat,
-          productCount: count || 0
-        };
-      })
-    );
-
-    // Deduplicate by name, combine counts, and sort
-    const uniqueLevel3Categories = categoriesWithCounts
-      .filter((cat: any) => cat.productCount > 0)
-      .reduce((acc: any[], current: any) => {
-        const existing = acc.find(item => item.name === current.name);
-        if (!existing) {
-          acc.push(current);
-        } else {
-          // Combine product counts for same category names across genders
-          existing.productCount += current.productCount;
-          // Keep the first slug for navigation
-        }
-        return acc;
-      }, [])
-      .sort((a: any, b: any) => b.productCount - a.productCount)
-      .slice(0, 20); // Limit to 20 pills
-
-    return uniqueLevel3Categories;
-  }
-
-  return [];
-}
-
-/**
- * Get products for multiple category IDs with hierarchical filtering
- */
-async function getProductsForCategories(
-  supabase: any, 
-  categoryIds: string[], 
-  filters: any, 
-  sort: any, 
-  limit: number, 
-  offset: number
-) {
-  let query = supabase
-    .from('products')
-    .select(`
-      id,
-      title,
-      description,
-      price,
-      brand,
-      size,
-      condition,
-      location,
-      created_at,
-      seller_id,
-      category_id,
-      country_code,
-      slug,
-      product_images (
-        image_url,
-        display_order
-      ),
-      profiles!products_seller_id_fkey (
-        username,
-        avatar_url,
-        account_type
-      ),
-      categories!inner (
-        id,
-        name,
-        slug,
-        parent_id,
-        level
-      )
-    `, { count: 'exact' })
-    .eq('is_sold', false)
-    .eq('is_active', true)
-    .eq('country_code', filters.country_code);
-
-  // Apply category filter or fallback for empty categories
-  if (categoryIds.length > 0) {
-    query = query.in('category_id', categoryIds);
-  } else if (filters.showEmptyFallback) {
-    // No category filtering - show newest products across all categories in this country
-    // This is the fallback for when category resolution fails
-  }
-
-  // Apply additional filters
-  if (filters.min_price) {
-    query = query.gte('price', filters.min_price);
-  }
-  if (filters.max_price) {
-    query = query.lte('price', filters.max_price);
-  }
-  if (filters.conditions?.length) {
-    query = query.in('condition', filters.conditions);
-  }
-  if (filters.sizes?.length) {
-    query = query.in('size', filters.sizes);
-  }
-  if (filters.brands?.length) {
-    // Use ilike for brand filtering to handle partial matches
-    const brandConditions = filters.brands.map((brand: string) => `brand.ilike.%${brand}%`).join(',');
-    query = query.or(brandConditions);
-  }
-  
-  // Apply subcategory filter for virtual categories (filter by L3 category slug)
-  if (filters.subcategory_slug) {
-    query = query.eq('categories.slug', filters.subcategory_slug);
-  }
-
-  // Apply sorting
-  switch (sort.by) {
-    case 'price-low':
-      query = query.order('price', { ascending: true });
-      break;
-    case 'price-high':
-      query = query.order('price', { ascending: false });
-      break;
-    case 'newest':
-    default:
-      query = query.order('created_at', { ascending: false });
-      break;
-  }
-
-  // Apply pagination
-  query = query.range(offset, offset + limit - 1);
-
-  const { data, error, count } = await query;
-
-  if (error) {
-    console.error('Products query error:', error);
-    return { data: [], total: 0 };
-  }
-
-  return { data: data || [], total: count || 0 };
-}
-
-/**
- * Get subcategories with hierarchical product counts
- */
-async function getSubcategoriesWithCounts(services: any, categoryId: string, countryCode: string) {
-  console.log(`Getting subcategories for category ${categoryId} in ${countryCode}`);
-  
-  const { data: subcategories, error } = await services.categories.getSubcategories(categoryId);
-  
-  if (error) {
-    console.error('Error fetching subcategories:', error);
-    return [];
-  }
-
-  if (!subcategories?.length) {
-    console.log(`No subcategories found for category ${categoryId}`);
-    return [];
-  }
-
-  console.log(`Found ${subcategories.length} subcategories:`, subcategories.map((s: any) => s.name));
-
-  // TEMPORARY: Skip product counting to get pills working first
-  // TODO: Re-enable product counting once pills display is confirmed
-  const subcategoriesWithCounts = subcategories.map((subcat: any) => ({
-    ...subcat,
-    productCount: 1 // Fake count to ensure pills show
-  }));
-
-  console.log(`Returning ${subcategoriesWithCounts.length} subcategories with fake counts:`, 
-    subcategoriesWithCounts.map((s: any) => s.name));
-
-  return subcategoriesWithCounts;
-}
-
-/**
- * Get level 3 categories for dynamic pills based on current category level
- */
-async function getLevel3CategoriesForPills(services: any, _supabase: any, category: any, _countryCode: string, currentLevel: number) {
-  let level3Categories: any[] = [];
-
-  if (currentLevel === 2) {
-    // Level 2 page: Get direct children (level 3)
-    const { data: level3Data } = await services.categories.getSubcategories(category.id);
-    level3Categories = level3Data || [];
-  } else if (currentLevel === 1) {
-    // Level 1 page: Get ALL level 3 categories under all level 2 children
-    const { data: level2Categories } = await services.categories.getSubcategories(category.id);
-    
-    if (level2Categories?.length) {
-      const level3Promises = level2Categories.map(async (l2cat: any) => {
-        const { data: level3Data } = await services.categories.getSubcategories(l2cat.id);
-        return level3Data || [];
-      });
-      
-      const allLevel3Arrays = await Promise.all(level3Promises);
-      level3Categories = allLevel3Arrays.flat();
-    }
-  }
-
-  // Get product counts for level 3 categories
-  if (level3Categories.length > 0) {
-    const categoriesWithCounts = await Promise.all(
-      level3Categories.map(async (l3cat: any) => {
-        const { count } = await services.categories.getHierarchicalProductCount(l3cat.id);
-        return {
-          ...l3cat,
-          productCount: count || 0
-        };
-      })
-    );
-
-    return categoriesWithCounts
-      .filter((cat: any) => cat.productCount > 0)
-      .sort((a: any, b: any) => b.productCount - a.productCount)
-      .slice(0, 20); // Limit to 20 pills
-  }
-
-  return [];
-}
-
-/**
- * Get sellers who have products in these categories (hierarchical)
- */
-async function getSellersInCategory(supabase: any, categoryIds: string[], countryCode: string) {
-  try {
-    if (categoryIds.length === 0) {
-      return [];
-    }
-
-    // Get sellers for products in these categories
-    const { data: categorySellers, error: sellersError } = await supabase
-      .from('products')
-      .select(`
-        seller_id,
-        seller:profiles!seller_id (
-          id,
-          username,
-          avatar_url,
-          created_at
-        )
-      `)
-      .in('category_id', categoryIds)
-      .eq('is_active', true)
-      .eq('is_sold', false)
-      .eq('country_code', countryCode)
-      .not('seller_id', 'is', null);
-
-    if (sellersError || !categorySellers) {
-      return [];
-    }
-
-    // Process sellers to get unique list with item counts
-    const sellersMap = new Map();
-    categorySellers.forEach((item: any) => {
-      if (item.seller_id && item.seller) {
-        if (!sellersMap.has(item.seller_id)) {
-          sellersMap.set(item.seller_id, {
-            id: item.seller_id,
-            username: item.seller.username || 'Unknown',
-            avatar_url: item.seller.avatar_url || '/default-avatar.png',
-            created_at: item.seller.created_at,
-            itemCount: 0
-          });
-        }
-        sellersMap.get(item.seller_id).itemCount++;
-      }
-    });
-
-    return Array.from(sellersMap.values())
-      .sort((a: any, b: any) => {
-        // Prioritize new sellers (1 item) first
-        if (a.itemCount === 1 && b.itemCount > 1) return -1;
-        if (b.itemCount === 1 && a.itemCount > 1) return 1;
-        // Then sort by most recent activity
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      })
-      .slice(0, 15); // Limit to 15 sellers
-  } catch (error) {
-    console.error('Error getting sellers in category:', error);
-    return [];
-  }
-}
-
-/**
  * Generate meta title based on category resolution
  */
-function generateMetaTitle(resolution: any, _i18n: any): string {
+function generateMetaTitle(resolution: {
+  isVirtual: boolean;
+  l1?: {name: string};
+  l2?: {name: string};
+  l3?: {name: string};
+}): string {
   const titles: string[] = [];
   
   // Handle virtual categories
-  if (resolution.isVirtual && resolution.virtualCategory) {
-    titles.push(resolution.virtualCategory.name);
+  if (resolution.isVirtual && resolution.l1) {
+    titles.push(resolution.l1.name);
   } else {
     // Handle regular categories
     if (resolution.l3) {
@@ -739,12 +310,17 @@ function generateMetaTitle(resolution: any, _i18n: any): string {
 /**
  * Generate meta description based on category resolution and product count
  */
-function generateMetaDescription(resolution: any, productCount: number, _i18n: any): string {
+function generateMetaDescription(resolution: {
+  isVirtual: boolean;
+  l1?: {name: string};
+  l2?: {name: string};
+  l3?: {name: string};
+}, productCount: number): string {
   let description = '';
   
   // Handle virtual categories
-  if (resolution.isVirtual && resolution.virtualCategory) {
-    description = `Shop ${productCount} ${resolution.virtualCategory.name.toLowerCase()} from men's, women's, kids' and unisex collections`;
+  if (resolution.isVirtual && resolution.l1) {
+    description = `Shop ${productCount} ${resolution.l1.name.toLowerCase()} from men's, women's, kids' and unisex collections`;
   } else {
     // Handle regular categories
     if (resolution.l3) {

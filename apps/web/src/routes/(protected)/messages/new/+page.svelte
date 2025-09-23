@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Avatar, Button } from '@repo/ui';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   
@@ -16,7 +16,7 @@
   let messageText = $state('');
   let sending = $state(false);
   
-  const searchParams = $derived(() => $page.url.searchParams);
+  const searchParams = $derived(() => page.url.searchParams);
   const recipientId = $derived(() => searchParams.get('to'));
   const productId = $derived(() => searchParams.get('product'));
   
@@ -44,7 +44,7 @@
       const conversationParam = productId ? `${recipientId}__${productId}` : `${recipientId}__general`;
       goto(`/messages?conversation=${conversationParam}`);
     } catch (err) {
-      console.error('Error sending message:', err);
+      
       sending = false;
     }
   }

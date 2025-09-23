@@ -46,7 +46,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, cou
     const { data: products, error } = await query;
 
     if (error) {
-      console.error('Error fetching seller products:', error);
+      
       return json({ error: 'Failed to fetch products' }, { status: 500 });
     }
 
@@ -74,7 +74,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, cou
     });
 
   } catch (error) {
-    console.error('Error in seller products API:', error);
+    
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 };

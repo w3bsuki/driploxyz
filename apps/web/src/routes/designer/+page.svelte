@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page, navigating } from '$app/stores';
+  import { page, navigating } from '$app/state';
   import * as i18n from '@repo/i18n';
-  import { unreadMessageCount } from '$lib/stores/messageNotifications';
+  import { unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
   import { BottomNav } from '@repo/ui';
   import type { PageData } from './$types';
 
@@ -154,10 +154,10 @@
 </style>
 
 <BottomNav
-  currentPath={$page.url.pathname}
-  isNavigating={!!$navigating}
-  navigatingTo={$navigating?.to?.url.pathname}
-  unreadMessageCount={$unreadMessageCount}
+  currentPath={page.url.pathname}
+  isNavigating={!!navigating}
+  navigatingTo={navigating?.to?.url.pathname}
+  unreadMessageCount={unreadMessageCount()}
   profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
   isAuthenticated={!!data.user}
   labels={{

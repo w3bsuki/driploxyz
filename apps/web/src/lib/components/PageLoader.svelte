@@ -14,7 +14,7 @@
   }: Props = $props();
   
   let showLoader = $state(false);
-  let timer: NodeJS.Timeout | undefined;
+  let timer: number | undefined;
   
   // Show loader after delay to avoid flash on fast operations
   $effect(() => {

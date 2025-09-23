@@ -40,11 +40,11 @@ export const load = (async ({ locals: { safeGetSession, supabase } }) => {
       .order('created_at', { ascending: false });
 
     if (soldError) {
-      console.error('Error fetching sold products:', soldError);
+      // Sold items fetch error - return empty array
     }
     
     if (ordersError) {
-      console.error('Error fetching orders:', ordersError);
+      // Orders fetch error - return empty array
     }
 
     // Get product details for orders
@@ -90,7 +90,7 @@ export const load = (async ({ locals: { safeGetSession, supabase } }) => {
     };
 
   } catch (err) {
-    console.error('Error in sales page load:', err);
+    
     throw error(500, 'Failed to load sales data');
   }
 }) satisfies PageServerLoad;

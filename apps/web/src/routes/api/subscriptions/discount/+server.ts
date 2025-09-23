@@ -20,11 +20,13 @@ export const GET: RequestHandler = async (event) => {
       .gt('discount_percent', 0);
     
     if (error) {
-      if (DEBUG) console.error('[Discount] Database error:', error);
-      return json({ 
-        eligible: false, 
+      if (DEBUG) {
+        console.error('Discount eligibility check error:', error);
+      }
+      return json({
+        eligible: false,
         discountPercent: 0,
-        error: 'Unable to check discount eligibility' 
+        error: 'Unable to check discount eligibility'
       }, { status: 500 });
     }
     
@@ -37,11 +39,13 @@ export const GET: RequestHandler = async (event) => {
     return json(discountInfo);
 
   } catch (error) {
-    if (DEBUG) console.error('[Discount] Internal error:', error);
-    return json({ 
-      eligible: false, 
+    if (DEBUG) {
+      console.error('Discount endpoint error:', error);
+    }
+    return json({
+      eligible: false,
       discountPercent: 0,
-      error: 'Internal server error' 
+      error: 'Internal server error'
     }, { status: 500 });
   }
 };

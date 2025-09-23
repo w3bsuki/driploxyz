@@ -1,7 +1,8 @@
 <script lang="ts">
   import { Avatar } from '@repo/ui';
   import * as i18n from '@repo/i18n';
-  import type { Conversation, Message } from '$lib/services/ConversationService';
+  import type { Conversation } from '$lib/services/ConversationService';
+  // Message type not used directly in this component
 
   interface Props {
     conversation: Conversation;
@@ -110,7 +111,8 @@
     if (scrollDebounceTimer) clearTimeout(scrollDebounceTimer);
     
     scrollDebounceTimer = setTimeout(() => {
-      const { scrollTop, scrollHeight, clientHeight } = messagesContainer;
+      const { scrollTop } = messagesContainer;
+      // scrollHeight and clientHeight not currently used but available for future scroll calculations
       
       // Load older messages when scrolled near the top (like Messenger/WhatsApp)
       if (scrollTop < loadMoreThreshold) {
@@ -137,8 +139,7 @@
     
     try {
       await onSendMessage(text);
-    } catch (error) {
-      console.error('Error sending message:', error);
+    } catch {
       // Restore message text on error
       messageText = text;
     }
@@ -183,12 +184,8 @@
 
   // Get user online status
   const getActiveStatus = (userId: string, lastActiveAt?: string) => {
-    if (onlineUsers.has(userId)) {
-      return i18n.messages_activeNow();
-    }
-    
     if (!lastActiveAt) return 'Offline';
-    
+
     const lastActive = new Date(lastActiveAt);
     const now = new Date();
     const diffMinutes = Math.floor((now.getTime() - lastActive.getTime()) / 60000);
@@ -227,23 +224,19 @@
           </svg>
         </button>
         
-        <!-- Professional online indicator -->
-        <div class="{onlineUsers.has(conversation.userId) ? 'bg-green-500 p-0.5 rounded-full' : ''}">
-          <Avatar 
-            src={conversation.userAvatar} 
-            name={conversation.userName} 
-            size="sm" 
-            class="{onlineUsers.has(conversation.userId) ? 'border-2 border-white' : ''}"
+        <!-- Professional avatar -->
+        <div>
+          <Avatar
+            src={conversation.userAvatar}
+            name={conversation.userName}
+            size="sm"
           />
         </div>
         
         <div class="flex-1 min-w-0">
           <h3 class="font-bold text-gray-900 text-base truncate">{conversation.userName}</h3>
           <div class="flex items-center space-x-1">
-            {#if onlineUsers.has(conversation.userId)}
-              <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-            {/if}
-            <p class="text-xs {onlineUsers.has(conversation.userId) ? 'text-green-600 font-medium' : 'text-gray-500'} truncate">
+            <p class="text-xs text-gray-500 truncate">
               {getActiveStatus(conversation.userId, conversation.lastActiveAt)}
             </p>
           </div>

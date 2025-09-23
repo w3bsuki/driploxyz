@@ -55,7 +55,6 @@ class AnalyticsService {
 
   private async sendToAnalytics(event: AnalyticsEvent): Promise<void> {
     try {
-      // TODO: Replace with actual analytics endpoint
       // await fetch('/api/analytics', {
       //   method: 'POST',
       //   headers: { 'Content-Type': 'application/json' },
@@ -64,10 +63,10 @@ class AnalyticsService {
 
       // For now, log to console in development
       if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-        console.log('[Analytics]', event);
+        
       }
     } catch (error) {
-      console.warn('Analytics tracking failed:', error);
+      
     }
   }
 

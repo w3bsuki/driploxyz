@@ -86,8 +86,8 @@
   <div>
     <Input
       type="text"
-      label="{i18n.sell_titleFieldLabel()}"
-      placeholder="{i18n.sell_whatAreYouSelling()}"
+      label={i18n.sell_titleFieldLabel()}
+      placeholder={i18n.sell_whatAreYouSelling()}
       bind:value={formData.title}
       error={showError('title') ? errors.title : ''}
       required
@@ -100,7 +100,7 @@
   <!-- Gender/Age Category -->
   <div>
     <Select
-      label="{i18n.sell_whoIsThisFor()}"
+      label={i18n.sell_whoIsThisFor()}
       bind:value={formData.gender_category_id}
       error={showError('gender_category_id') ? errors.gender_category_id : ''}
       required
@@ -122,7 +122,7 @@
   {#if typeCategories.length > 0}
     <div>
       <Select
-        label="{i18n.sell_whatTypeOfProduct()}"
+        label={i18n.sell_whatTypeOfProduct()}
         bind:value={formData.type_category_id}
         error={showError('type_category_id') ? errors.type_category_id : ''}
         required
@@ -144,7 +144,7 @@
   {#if specificCategories.length > 0}
     <div>
       <Select
-        label="{i18n.sell_specificCategoryLabel()}"
+        label={i18n.sell_specificCategoryLabel()}
         bind:value={formData.category_id}
         error={showError('category_id') ? errors.category_id : ''}
         required
@@ -168,11 +168,11 @@
       id="description"
       name="description"
       bind:value={formData.description}
-      placeholder="{i18n.sell_addDetailsPlaceholder()}"
+      placeholder={i18n.sell_addDetailsPlaceholder()}
       rows="3"
       maxlength="500"
       class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[color:var(--state-focus)] focus:border-[color:var(--state-focus)] resize-none"
-    />
+    ></textarea>
     <p class="text-xs text-gray-500 mt-1">{formData.description.length}/500</p>
   </div>
 </div>

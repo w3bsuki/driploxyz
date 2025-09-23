@@ -358,7 +358,7 @@ class WebVitalsTracker {
     // Development logging
     if (process.env.NODE_ENV === 'development') {
       const status = this.getMetricStatus(name, value);
-      console.log(`[Performance] ${name}: ${Math.round(value)}${name === 'cls' ? '' : 'ms'} (${status})`);
+      console.debug(`[WebVitals] ${name}: ${Math.round(value)} (${status})`);
     }
   }
 
@@ -443,7 +443,7 @@ export function measureWebVitals() {
 }
 
 // Utility functions for manual image tracking
-export function trackImageLoadStart(imageUrl: string): number {
+export function trackImageLoadStart(_imageUrl: string): number {
   return performance.now();
 }
 
@@ -530,7 +530,7 @@ export async function loadComponent<T>(
   try {
     return await importFn();
   } catch (error) {
-    console.warn('Component failed to load:', error);
+    
     fallback?.();
     return null;
   }

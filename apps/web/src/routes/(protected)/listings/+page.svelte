@@ -13,7 +13,7 @@
   
   let activeTab = $state('all');
   
-  const filteredListings = $derived(() => {
+  const filteredListings = $derived.by(() => {
     if (activeTab === 'all') return data.listings;
     if (activeTab === 'active') return data.listings.filter(l => l.status === 'active' && !l.is_sold);
     if (activeTab === 'sold') return data.listings.filter(l => l.is_sold);

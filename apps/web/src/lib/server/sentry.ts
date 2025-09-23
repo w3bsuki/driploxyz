@@ -50,7 +50,7 @@ export async function initializeSentry(): Promise<void> {
  * Setup Sentry for the request event
  * This is a no-op function since Sentry initialization happens at module load
  */
-export async function setupSentry(_event?: RequestEvent): Promise<void> {
+export async function setupSentry(): Promise<void> {
   await initializeSentry();
 }
 

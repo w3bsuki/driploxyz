@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { onMount, onDestroy } from 'svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { BottomNav } from '@repo/ui';
   import * as i18n from '@repo/i18n';
-  import { messageNotificationActions, unreadMessageCount } from '$lib/stores/messageNotifications';
+  import { messageNotificationActions, unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
   import { ConversationService, type Conversation } from '$lib/services/ConversationService';
   import ConversationSidebar from '$lib/components/modular/ConversationSidebar.svelte';
   import ChatWindow from '$lib/components/modular/ChatWindow.svelte';
@@ -19,11 +18,11 @@
 
   let { data }: Props = $props();
 
-  // Simplified state management - server-driven approach
+  // Optimized state management with $state.raw for performance on large arrays
   let conversationService: ConversationService;
-  let conversations = $state<Conversation[]>([]);
+  let conversations = $state.raw<Conversation[]>([]); // Use $state.raw for better performance on arrays
   let activeConversation = $state<Conversation | null>(null);
-  let activeConversationMessages = $state<Message[]>([]);
+  let activeConversationMessages = $state.raw<Message[]>([]); // Use $state.raw for message arrays
   let activeTab = $state<'all' | 'buying' | 'selling' | 'offers' | 'unread'>('all');
   let showSidebarOnMobile = $state(true);
   let isLoadingOlder = $state(false);
@@ -38,35 +37,35 @@
   const supabase = createBrowserSupabaseClient();
 
   // Initialize simplified conversation service
-  onMount(async () => {
+  $effect(async () => {
     if (!data.user) {
       isInitializing = false;
       return;
     }
-    
+
     try {
       conversationService = new ConversationService(supabase, data.user.id);
-      
+
       // Set up event listeners for the simplified service
       conversationService.on('connection_status', (status: any) => {
         connectionStatus = status.status;
         connectionMessage = status.message;
         canRetryConnection = status.canRetry;
       });
-      
+
       // Handle new message notifications - just refresh the conversation
       conversationService.on('new_message', async (data: any) => {
         messagingLogger.info('New message notification received', data);
-        
+
         // If it's for the active conversation, reload messages
         if (activeConversation && data.conversationId === activeConversation.id) {
           await loadConversationMessages(activeConversation.id);
         }
-        
+
         // Always reload conversations to update unread counts and last messages
         await loadConversations();
       });
-      
+
       // Handle polling refresh
       conversationService.on('poll_refresh', async () => {
         if (activeConversation) {
@@ -77,22 +76,27 @@
 
       // Load initial data from server
       await loadConversations();
-      
+
       // Fallback: if no conversations loaded but we have server data, use it
       if (conversations.length === 0 && data.conversations && data.conversations.length > 0) {
         messagingLogger.info('Using server data as fallback for conversations');
         conversations = data.conversations;
       }
-      
+
       // If we have a specific conversation from URL, load its messages
       if (data.messages && data.messages.length > 0) {
         activeConversationMessages = data.messages;
       }
-      
+
       // Setup real-time subscriptions
       conversationService.setupRealtimeSubscriptions();
-      
+
       isInitializing = false;
+
+      // Return cleanup function
+      return () => {
+        conversationService?.cleanup();
+      };
     } catch (error) {
       messagingLogger.error('Error initializing conversations', error, {
         userId: data.user?.id
@@ -134,7 +138,7 @@
 
   // Handle URL conversation parameter with simplified loading
   $effect(async () => {
-    const conversationParam = $page.url.searchParams.get('conversation');
+    const conversationParam = page.url.searchParams.get('conversation');
     
     if (conversationParam && !isInitializing) {
       // Find conversation in current list
@@ -275,10 +279,6 @@
     }
   }
   
-  // Cleanup
-  onDestroy(() => {
-    conversationService?.cleanup();
-  });
 </script>
 
 <svelte:head>
@@ -362,8 +362,8 @@
   {#if !activeConversation}
     <div class="shrink-0 sm:hidden">
       <BottomNav 
-        currentPath={$page.url.pathname}
-        unreadMessageCount={$unreadMessageCount}
+        currentPath={page.url.pathname}
+        unreadMessageCount={unreadMessageCount()}
         profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
         labels={{
           home: i18n.nav_home(),

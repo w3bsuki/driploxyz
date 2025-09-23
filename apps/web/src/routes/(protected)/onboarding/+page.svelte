@@ -10,11 +10,10 @@
   } from '@repo/ui';
   import { goto, invalidateAll } from '$app/navigation';
   import { enhance } from '$app/forms';
-  import { onMount } from 'svelte';
   import { browser } from '$app/environment';
   import * as m from '@repo/i18n';
   import { initializeLanguage } from '$lib/utils/language-switcher';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { toasts } from '@repo/ui';
   import { uploadImage } from '$lib/supabase/storage';
   import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
@@ -39,8 +38,8 @@
   let brandPaid = $state(false);
   
   // Dynamically imported modal components
-  let OnboardingSuccessModal: any = $state(null);
-  let BrandPaymentModal: any = $state(null);
+  let OnboardingSuccessModal: typeof import('$lib/components/OnboardingSuccessModal.svelte').default | null = $state(null);
+  let BrandPaymentModal: typeof import('$lib/components/BrandPaymentModal.svelte').default | null = $state(null);
   let successModalLoaded = $state(false);
   let brandPaymentModalLoaded = $state(false);
   let accountType = $state<'personal' | 'pro' | 'brand'>('personal');
@@ -85,22 +84,24 @@
   }
 
   // Show welcome modal on mount
-  onMount(() => {
+  $effect(() => {
+    if (!browser) return;
+
     log.debug('Component mounted');
-    
+
     // FORCE CHECK: Make absolutely sure the welcome modal shows
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('email_verified') === 'true' || urlParams.get('welcome') === 'true') {
       log.debug('Email verified detected, forcing modal');
       showEmailVerifiedWelcome = true;
     }
-    
+
     // Additional welcome messages for other flows
     if (!showEmailVerifiedWelcome && urlParams.get('verified') === 'true') {
       // Legacy verified parameter
       toasts.success('Email verified successfully! Welcome to Driplo!');
     }
-    
+
     // Check if user paid for brand account
     if (urlParams.get('brand_paid') === 'true') {
       brandPaid = true;
@@ -111,7 +112,7 @@
   // Dynamic import functions for modals
   async function loadSuccessModal() {
     if (!successModalLoaded && !OnboardingSuccessModal) {
-      const module = await import('@repo/ui/lib/OnboardingSuccessModal.svelte');
+      const module = await import('@repo/ui/lib/components/modals/OnboardingSuccessModal.svelte');
       OnboardingSuccessModal = module.default;
       successModalLoaded = true;
     }
@@ -119,8 +120,8 @@
   
   async function loadBrandPaymentModal() {
     if (!brandPaymentModalLoaded && !BrandPaymentModal) {
-      const module = await import('@repo/ui/lib/BrandPaymentModal.svelte');
-      BrandPaymentModal = module.default;
+      const module = await import('@repo/ui');
+      BrandPaymentModal = module.BrandPaymentModal;
       brandPaymentModalLoaded = true;
     }
   }
@@ -314,7 +315,7 @@
     }
   }
 
-  const canProceed = $derived(() => {
+  const canProceed = $derived.by(() => {
     // GLOBAL CHECK: Brand/Premium must have paid to proceed at ANY step
     if ((accountType === 'brand' || accountType === 'pro') && !brandPaid) {
       return false;

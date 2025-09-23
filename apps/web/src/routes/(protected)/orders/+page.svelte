@@ -34,7 +34,7 @@
   }
 
   // Combine and filter orders based on active tab
-  const filteredOrders = $derived(() => {
+  const filteredOrders = $derived.by(() => {
     const allOrders = [...(data.buyerOrders || []), ...(data.sellerOrders || [])];
     
     switch (activeTab) {

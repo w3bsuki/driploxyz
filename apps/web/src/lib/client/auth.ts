@@ -30,8 +30,8 @@ export async function clientLogin(email: string, password: string) {
     } else {
       return { success: false, error: data.error || 'Invalid email or password' };
     }
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Network error' };
+  } catch (error: unknown) {
+    return { success: false, error: (error as Error).message || 'Network error' };
   }
 }
 
@@ -57,7 +57,7 @@ export async function clientSignup(email: string, password: string, fullName: st
     } else {
       return { success: false, error: data.error || 'Signup failed' };
     }
-  } catch (error: any) {
-    return { success: false, error: error.message || 'Network error' };
+  } catch (error: unknown) {
+    return { success: false, error: (error as Error).message || 'Network error' };
   }
 }

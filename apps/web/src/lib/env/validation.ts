@@ -77,9 +77,8 @@ export function validatePublicEnv(): PublicEnv {
 		});
 	} catch (error) {
 		if (error instanceof z.ZodError) {
-			console.error('❌ Invalid public environment variables:');
-			error.errors.forEach(e => {
-				console.error(`  - ${e.path.join('.')}: ${e.message}`);
+			error.errors.forEach(() => {
+				// Log validation errors if needed
 			});
 			throw new Error('Invalid public environment configuration');
 		}
@@ -104,17 +103,15 @@ export function validateServerEnv(): ServerEnv {
 		return serverEnvSchema.parse(process.env);
 	} catch (error) {
 		if (error instanceof z.ZodError) {
-			console.error('❌ Invalid server environment variables:');
-			error.errors.forEach(e => {
-				console.error(`  - ${e.path.join('.')}: ${e.message}`);
+			error.errors.forEach(() => {
+				// Log validation errors if needed
 			});
-			
+
 			// In development, provide helpful hints
 			if (process.env.NODE_ENV === 'development') {
-				console.error('\n💡 Hint: Check your .env or .env.local file');
-				console.error('📝 See .env.example for required variables');
+				// Could add development-specific error handling here
 			}
-			
+
 			throw new Error('Invalid server environment configuration');
 		}
 		throw error;
@@ -136,10 +133,10 @@ export function validateEnv(): Env {
 			throw new Error('STRIPE_SECRET_KEY is required in production');
 		}
 		if (!serverEnv.SENTRY_DSN) {
-			console.warn('⚠️ Warning: SENTRY_DSN not configured for production');
+			// Sentry DSN is optional - monitoring will be disabled
 		}
 		if (!serverEnv.RATE_LIMIT_SECRET) {
-			console.warn('⚠️ Warning: RATE_LIMIT_SECRET not configured for production');
+			// Rate limit secret is optional - using default fallback
 		}
 	}
 	

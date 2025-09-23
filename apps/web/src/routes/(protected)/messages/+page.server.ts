@@ -88,7 +88,7 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
   }
   
   if (messagesError) {
-    console.error('Error fetching data:', messagesError);
+    
   }
 
   // Fetch conversation context info if viewing specific conversation

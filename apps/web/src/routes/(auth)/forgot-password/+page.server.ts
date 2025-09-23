@@ -43,7 +43,7 @@ export const actions = {
     });
 
     if (error) {
-      console.error('Password reset error:', error);
+      
       return fail(400, {
         error: error.message,
         email

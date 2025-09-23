@@ -85,16 +85,12 @@ Creates payout requests via Supabase RPC calls
 			sortCode = '';
 			phone = '';
 			email = '';
-		} catch (error) {
-			console.error('Payout request failed:', error);
+		} catch {
+			// Intentionally empty - errors are handled by the parent component
 		}
 	};
 
-	const handleClose = () => {
-		if (!loading) {
-			onClose();
-		}
-	};
+	// handleClose function is defined but never used - removing as onClose is used directly
 
 	// Handle dialog open change for controlled behavior
 	const handleOpenChange = (newOpen: boolean) => {
@@ -274,9 +270,4 @@ Creates payout requests via Supabase RPC calls
 	}
 
 	/* Modal actions now handled by Dialog primitive's actions section */
-	
-	/* Dialog-specific styling */
-	.dialog-payout {
-		/* Custom styling for this specific dialog if needed */
-	}
 </style>

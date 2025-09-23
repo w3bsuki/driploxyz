@@ -22,7 +22,7 @@
   }
 
   // Analytics data
-  const analytics = $derived(() => {
+  const analytics = $derived.by(() => {
     const now = new Date();
     const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);

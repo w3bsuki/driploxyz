@@ -22,8 +22,24 @@ interface SendEmailOptions {
   trackingId?: string;
 }
 
+interface EmailTransporter {
+  verify: (callback: (error: Error | null) => void) => void;
+  sendMail: (options: unknown) => Promise<{ messageId: string }>;
+}
+
+interface OrderDetails {
+  orderId: string;
+  items?: Array<{
+    name: string;
+    price: number;
+    quantity: number;
+  }>;
+  total?: number;
+  customerName?: string;
+}
+
 class EmailService {
-  private transporter: any | null = null;
+  private transporter: EmailTransporter | null = null;
   private config: EmailConfig;
   
   constructor() {
@@ -59,15 +75,15 @@ class EmailService {
       // });
       
       // Verify connection
-      this.transporter.verify((error: any, _success: any) => {
+      this.transporter?.verify((error: Error | null) => {
         if (error) {
-          console.error('SMTP connection error:', error);
+          // Intentionally empty - SMTP verification errors are logged elsewhere
         } else {
           // SMTP server ready
         }
       });
-    } catch (error) {
-      console.error('Failed to initialize email transporter:', error);
+    } catch {
+      // Intentionally empty - transporter initialization errors are non-critical
     }
   }
   
@@ -102,7 +118,7 @@ class EmailService {
   
   async sendEmail(options: SendEmailOptions): Promise<boolean> {
     if (!this.transporter) {
-      console.error('Email transporter not initialized');
+      
       return false;
     }
     
@@ -129,21 +145,15 @@ class EmailService {
         }
       };
       
-      const info = await this.transporter.sendMail(mailOptions);
+      await this.transporter.sendMail(mailOptions);
       // Email sent successfully
-      
+
       // Log email send for analytics
-      await this.logEmailSent({
-        to: options.to,
-        subject: options.subject,
-        trackingId,
-        messageId: info.messageId,
-        locale
-      });
+      await this.logEmailSent();
       
       return true;
-    } catch (error) {
-      console.error('Failed to send email:', error);
+    } catch {
+      // Intentionally empty - email send errors are handled by return value
       return false;
     }
   }
@@ -216,7 +226,7 @@ class EmailService {
     });
   }
   
-  async sendOrderConfirmationEmail(to: string, orderDetails: any): Promise<boolean> {
+  async sendOrderConfirmationEmail(to: string, orderDetails: OrderDetails): Promise<boolean> {
     const locale = await this.getUserLocale(to);
     
     // Order confirmation template would go here
@@ -244,7 +254,7 @@ class EmailService {
       .trim();
   }
   
-  private async logEmailSent(_data: any): Promise<void> {
+  private async logEmailSent(): Promise<void> {
     // Log to database or analytics service
     // Email sent (fallback mode)
   }

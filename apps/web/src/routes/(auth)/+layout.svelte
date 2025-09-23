@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import type { LayoutData } from './$types';
   import type { Snippet } from 'svelte';
 
   let { data, children }: { data: LayoutData; children?: Snippet } = $props();
   
-  const isSignup = $derived($page.route.id?.includes('signup'));
-  const isLogin = $derived($page.route.id?.includes('login'));
+  const isSignup = $derived(page.route.id?.includes('signup'));
+  const isLogin = $derived(page.route.id?.includes('login'));
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex flex-col justify-center px-4 py-6">

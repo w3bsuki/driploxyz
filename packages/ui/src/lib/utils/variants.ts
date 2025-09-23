@@ -3,7 +3,7 @@
  * Provides type-safe variant composition utilities for Svelte 5 components
  */
 
-import type { ButtonVariant, ButtonSize, BadgeVariant, BadgeSize, AvatarSize, AvatarVariant } from '../../types';
+import type { ButtonVariant, ButtonSize, BadgeVariant, BadgeSize, AvatarSize, AvatarVariant } from '../types';
 
 // Generic variant builder type
 type VariantConfig<TVariants extends Record<string, Record<string, string>>> = {

@@ -16,7 +16,7 @@ export const load = (async ({ locals }) => {
 		.order('requested_at', { ascending: true });
 
 	if (payoutsError) {
-		console.error('Error fetching payouts:', payoutsError);
+		
 		throw error(500, 'Failed to fetch payouts');
 	}
 
@@ -49,7 +49,7 @@ export const actions = {
 		});
 
 		if (approveError) {
-			console.error('Error approving payout:', approveError);
+			
 			return fail(500, { error: 'Failed to approve payout' });
 		}
 
@@ -79,7 +79,7 @@ export const actions = {
 		});
 
 		if (completeError) {
-			console.error('Error completing payout:', completeError);
+			
 			return fail(500, { error: 'Failed to complete payout' });
 		}
 
@@ -113,7 +113,7 @@ export const actions = {
 			.eq('id', payoutId);
 
 		if (rejectError) {
-			console.error('Error rejecting payout:', rejectError);
+			
 			return fail(500, { error: 'Failed to reject payout' });
 		}
 
@@ -123,7 +123,7 @@ export const actions = {
 		});
 
 		if (balanceError) {
-			console.error('Error returning balance:', balanceError);
+			
 		}
 
 		return {

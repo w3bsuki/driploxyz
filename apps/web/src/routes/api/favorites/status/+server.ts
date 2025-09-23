@@ -19,7 +19,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
       .in('id', productIds);
 
     if (countError) {
-      console.error('Error getting favorite counts:', countError);
+      
       return json({ error: 'Database error' }, { status: 500 });
     }
 
@@ -45,7 +45,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         .in('product_id', productIds);
 
       if (userFavoriteError) {
-        console.error('Error getting user favorites:', userFavoriteError);
+        // User favorites fetch error - return all as false
       } else {
         productIds.forEach(id => {
           userFavorites[id] = false;
@@ -66,7 +66,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
       userFavorites
     });
   } catch (error) {
-    console.error('Favorites status API error:', error);
+    
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 };

@@ -5,11 +5,11 @@ import { preprocessMeltUI } from '@melt-ui/pp';
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: [vitePreprocess(), preprocessMeltUI()],
-	
+
 	compilerOptions: {
 		runes: true
 	},
-	
+
 	kit: {
 		adapter: adapter({
 			runtime: 'nodejs22.x'

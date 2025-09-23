@@ -7,11 +7,11 @@ import { createBrowserSupabaseClient } from '$lib/supabase/client';
  * This is the primary landing page after onboarding completion.
  * Uses profile from parent layout to avoid re-fetching.
  */
-export const load: PageLoad = async ({ parent }) => {
+export const load = (async ({ parent }) => {
   const { user, profile } = await parent();
   const supabase = createBrowserSupabaseClient();
 
-  console.log('[DASHBOARD] Loading dashboard for user:', user?.email);
+  
   console.log('[DASHBOARD] Profile status:', {
     hasProfile: !!profile,
     onboardingCompleted: profile?.onboarding_completed,
@@ -20,7 +20,7 @@ export const load: PageLoad = async ({ parent }) => {
   });
 
   if (!user) {
-    console.log('[DASHBOARD] No user found in parent data');
+    
     return {
       products: [],
       orders: [],
@@ -35,11 +35,11 @@ export const load: PageLoad = async ({ parent }) => {
   // Only redirect if profile explicitly shows onboarding not completed
   // Allow dashboard access if onboarding_completed is null (for backward compatibility)
   if (profile && profile.onboarding_completed === false) {
-    console.log('[DASHBOARD] Onboarding not completed, user should complete it');
+    
     // Don't redirect here, let the UI show a message instead
   }
 
-  console.log('[DASHBOARD] Loading dashboard data');
+  
 
   // Fetch user's products with images and categories
   const { data: products, error: productsError } = await supabase
@@ -79,11 +79,11 @@ export const load: PageLoad = async ({ parent }) => {
     .limit(50); // Reasonable limit for dashboard view
 
   if (productsError) {
-    console.error('[DASHBOARD] Error fetching products:', productsError);
+    // Product fetch errors are handled by returning empty array
   }
 
   if (ordersError) {
-    console.error('[DASHBOARD] Error fetching orders:', ordersError);
+    // Order fetch errors are handled by returning empty array
   }
 
   return {
@@ -92,4 +92,4 @@ export const load: PageLoad = async ({ parent }) => {
     profile: profile || null,
     user
   };
-};
+}) satisfies PageLoad;

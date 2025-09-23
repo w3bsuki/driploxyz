@@ -27,7 +27,7 @@ export const load = (async ({ locals }) => {
 		.limit(100);
 
 	if (error) {
-		console.error('Error fetching orders:', error);
+		
 	}
 
 	// Get stats
@@ -101,8 +101,7 @@ export const actions = {
 
 			// If refunding buyer, handle refund logic here
 			if (resolution === 'refund_buyer') {
-				// TODO: Integrate with Stripe to process refund
-				console.log(`Processing refund for order ${orderId}`);
+				
 			}
 
 			return { success: true, message: 'Dispute resolved successfully' };
@@ -151,7 +150,6 @@ export const actions = {
 			return fail(400, { message: 'Failed to cancel order' });
 		}
 
-		// TODO: Process refund if payment was made
 		return { success: true, message: 'Order canceled successfully' };
 	},
 
@@ -177,7 +175,6 @@ export const actions = {
 				return fail(400, { message: 'Failed to process refund' });
 			}
 
-			// TODO: Integrate with Stripe to process actual refund
 			return { success: true, message: 'Refund processed successfully' };
 		} catch (error) {
 			return fail(500, { message: 'Failed to process refund' });

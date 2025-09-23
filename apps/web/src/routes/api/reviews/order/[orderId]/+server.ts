@@ -77,7 +77,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 		});
 
 	} catch (error) {
-		console.error('Error checking review status:', error);
+		
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };

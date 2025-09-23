@@ -1,7 +1,74 @@
 import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
-import { withTimeout } from '@repo/utils';
+import { withTimeout } from '@repo/core/utils';
+
+// Database types imported for reference
+
+// Category count RPC function result types (match actual database schema)
+type CategoryCountResult = {
+  category_id: string;
+  category_level: number;
+  category_name: string;
+  category_slug: string;
+  product_count: number;
+};
+
+type VirtualCategoryCountResult = {
+  product_count: number;
+  virtual_type: string;
+};
+
+// Seller/Brand types with products
+type Profile = {
+  id: string;
+  username: string | null;
+  full_name: string | null;
+  avatar_url: string | null;
+  account_type: string | null;
+  subscription_tier: string | null;
+  sales_count: number | null;
+  followers_count: number | null;
+  rating: number | null;
+  bio: string | null;
+  verified: boolean;
+  monthly_views: number | null;
+  weekly_sales_count: number | null;
+};
+
+type ProductImage = {
+  image_url: string;
+};
+
+type Product = {
+  id: string;
+  title: string;
+  price: number;
+  condition: string;
+  size: string | null;
+  brand: string | null;
+  location: string | null;
+  created_at: string | null;
+  seller_id: string;
+  country_code: string;
+  favorite_count: number | null;
+  slug: string | null;
+  category_id: string | null;
+  is_boosted: boolean;
+  boosted_until: string | null;
+  boost_priority: number | null;
+  product_images: ProductImage[];
+  profiles: Profile | null;
+  categories: { slug: string | null } | null;
+};
+
+type SellerWithProducts = Profile & {
+  products: Product[];
+};
+
+type BrandWithProducts = Profile & {
+  products: Product[];
+};
 
 // MANUAL PROMOTION SYSTEM
 // Add product IDs here to promote them with crown badges 👑
@@ -57,10 +124,9 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         .select('id, name, slug, sort_order')
         .is('parent_id', null)
         .order('sort_order')
-        .limit(6)
-        .then(),
+        .limit(6),
       2500,
-      { data: [] } as any
+      { data: [], error: null, count: null, status: 200, statusText: 'OK' }
     );
 
     // Query 2: CONSOLIDATED - Featured products with seller info in single query
@@ -113,10 +179,9 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         .eq('country_code', country || 'BG')
         .order('boost_priority', { ascending: false })
         .order('created_at', { ascending: false })
-        .limit(50)
-        .then(),
+        .limit(50),
       3000,
-      { data: [] } as any
+      { data: [], error: null, count: null, status: 200, statusText: 'OK' }
     );
 
 
@@ -129,7 +194,10 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         supabase.rpc('get_virtual_category_counts', { p_country_code: country || 'BG' })
       ]),
       2500,
-      [{ data: [] }, { data: [] }] as any
+      [
+        { data: [], error: null, count: null, status: 200, statusText: 'OK' },
+        { data: [], error: null, count: null, status: 200, statusText: 'OK' }
+      ]
     );
 
     // OPTIMIZED: Now 3 queries for complete data
@@ -140,8 +208,8 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
     ]);
 
     // Process consolidated results
-    const categories = (categoriesResult as any).data || [];
-    const allProductsWithSellers = (consolidatedResult as any).data || [];
+    const categories = categoriesResult.data || [];
+    const allProductsWithSellers = consolidatedResult.data || [];
 
     // Process category counts using real data from RPC functions
     const categoryProductCounts: Record<string, number> = {};
@@ -152,7 +220,7 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
 
       // Process main category counts from RPC function
       if (mainCountsResult?.data) {
-        mainCountsResult.data.forEach((row: any) => {
+        mainCountsResult.data.forEach((row: CategoryCountResult) => {
           if (row.category_level === 1) { // Only top-level categories
             categoryProductCounts[row.category_slug] = row.product_count || 0;
           }
@@ -161,17 +229,17 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
 
       // Process virtual category counts from RPC function
       if (virtualCountsResult?.data) {
-        virtualCountsResult.data.forEach((row: any) => {
-          virtualCategoryCounts[row.category_type] = row.product_count || 0;
+        virtualCountsResult.data.forEach((row: VirtualCategoryCountResult) => {
+          virtualCategoryCounts[row.virtual_type] = row.product_count || 0;
         });
       }
     }
 
     // Extract and deduplicate sellers/brands from product data
-    const sellersMap = new Map();
-    const brandsMap = new Map();
+    const sellersMap = new Map<string, SellerWithProducts>();
+    const brandsMap = new Map<string, BrandWithProducts>();
 
-    allProductsWithSellers.forEach((product: any) => {
+    allProductsWithSellers.forEach((product: Product) => {
       if (product.profiles) {
         const seller = product.profiles;
         if (seller.account_type === 'brand' && seller.verified) {
@@ -181,22 +249,22 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
               products: []
             });
           }
-          brandsMap.get(seller.id).products.push(product);
-        } else if (seller.sales_count > 0 || seller.account_type === 'admin') {
+          brandsMap.get(seller.id)!.products.push(product);
+        } else if ((seller.sales_count || 0) > 0 || seller.account_type === 'admin') {
           if (!sellersMap.has(seller.id)) {
             sellersMap.set(seller.id, {
               ...seller,
               products: []
             });
           }
-          sellersMap.get(seller.id).products.push(product);
+          sellersMap.get(seller.id)!.products.push(product);
         }
       }
     });
 
     // Sort and limit extracted data
     const topSellers = Array.from(sellersMap.values())
-      .sort((a, b) => b.sales_count - a.sales_count)
+      .sort((a, b) => (b.sales_count || 0) - (a.sales_count || 0))
       .slice(0, 8);
 
     const topBrands = Array.from(brandsMap.values())
@@ -209,9 +277,9 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
     const sellerPreviews: Record<string, { id: string; title: string; price: number; seller_id: string; product_images: { image_url: string }[] }[]> = {};
 
     // Extract previews from already-fetched data (no additional query needed)
-    [...topSellers, ...topBrands].forEach((seller: any) => {
+    [...topSellers, ...topBrands].forEach((seller: SellerWithProducts | BrandWithProducts) => {
       if (seller.products && seller.products.length > 0) {
-        sellerPreviews[seller.id] = seller.products.slice(0, 3).map((product: any) => ({
+        sellerPreviews[seller.id] = seller.products.slice(0, 3).map((product: Product) => ({
           id: product.id,
           title: product.title,
           price: product.price,
@@ -256,14 +324,13 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
             .select('*')
             .eq('is_active', true)
             .order('level')
-            .order('sort_order')
-            .then(),
+            .order('sort_order'),
           2000,
-          { data: null }
+          { data: [], error: null, count: null, status: 200, statusText: 'OK' }
         );
 
         // Transform products for frontend with proper category hierarchy
-        featuredProducts = await Promise.all(rawProducts.map(async (item, index) => {
+        featuredProducts = await Promise.all(rawProducts.map(async (item: Product) => {
           // BOOST SYSTEM: Check if product is boosted and still active
           const isBoosted = item.is_boosted && item.boosted_until && new Date(item.boosted_until) > new Date();
           
@@ -363,10 +430,9 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
           .from('favorites')
           .select('product_id')
           .eq('user_id', userId)
-          .in('product_id', productIds)
-          .then(),
+          .in('product_id', productIds),
         1500,
-        { data: null }
+        { data: [], error: { message: 'Timeout', details: '', hint: '', code: 'TIMEOUT', name: 'TimeoutError' }, count: null, status: 408, statusText: 'Timeout' }
       );
       
       if (favorites) {
@@ -405,10 +471,10 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
       sellerPreviews: Promise.resolve(sellerPreviews),
 
       errors: {
-        products: consolidatedResult.status === 'rejected' ? 'Failed to load' : null,
-        categories: categoriesResult.status === 'rejected' ? 'Failed to load' : null,
-        sellers: consolidatedResult.status === 'rejected' ? 'Failed to load' : null,
-        brands: consolidatedResult.status === 'rejected' ? 'Failed to load' : null
+        products: consolidatedResult.error ? 'Failed to load' : null,
+        categories: categoriesResult.error ? 'Failed to load' : null,
+        sellers: consolidatedResult.error ? 'Failed to load' : null,
+        brands: consolidatedResult.error ? 'Failed to load' : null
       }
     };
     

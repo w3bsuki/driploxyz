@@ -54,7 +54,7 @@ export const load = (async ({ locals, url }) => {
 	const { data: users, error: fetchError } = await query.order('created_at', { ascending: false });
 
 	if (fetchError) {
-		console.error('Error fetching users:', fetchError);
+		
 		throw error(500, 'Failed to fetch users');
 	}
 
@@ -123,7 +123,7 @@ export const load = (async ({ locals, url }) => {
 		}
 	};
 	} catch (err) {
-		console.error('Error in users load function:', err);
+		
 		throw error(500, {
 			message: 'Failed to load users data',
 			details: err instanceof Error ? err.message : 'Unknown error'

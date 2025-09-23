@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Avatar, Button, LoadingSpinner } from '@repo/ui';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -9,7 +9,7 @@
   let searchQuery = $state(data.searchQuery || '');
   let selectedCategory = $state(data.category || '');
   let loading = $state(false);
-  let verifiedOnly = $state(Boolean($page.url.searchParams.get('verified') === 'true'));
+  let verifiedOnly = $state(Boolean(page.url.searchParams.get('verified') === 'true'));
 
   function handleBrandClick(brand: any) {
     goto(`/profile/${brand.username || brand.id}`);
@@ -19,7 +19,7 @@
 
   async function handleSearch() {
     loading = true;
-    const url = new URL($page.url);
+    const url = new URL(page.url);
     
     if (searchQuery.trim()) {
       url.searchParams.set('q', searchQuery.trim());
@@ -55,7 +55,7 @@
   async function loadMore() {
     if (data.hasMore && !loading) {
       loading = true;
-      const url = new URL($page.url);
+      const url = new URL(page.url);
       url.searchParams.set('page', String(data.currentPage + 1));
       await goto(url.pathname + url.search, { invalidateAll: true });
       loading = false;

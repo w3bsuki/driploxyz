@@ -23,7 +23,7 @@ export function formatDate(date: Date | string | number, options?: Intl.DateTime
   try {
     return new Intl.DateTimeFormat(intlLocale, { ...defaultOptions, ...options }).format(dateObj);
   } catch (error) {
-    console.warn('Date formatting failed, using fallback:', error);
+    
     return dateObj.toLocaleDateString(intlLocale);
   }
 }
@@ -87,7 +87,7 @@ export function formatRelativeTime(date: Date | string | number, locale?: string
       return rtf.format(-diffSec, 'second');
     }
   } catch (error) {
-    console.warn('Relative time formatting failed, using fallback:', error);
+    
     return formatRelativeTimeFallback(diffMs, currentLocale);
   }
 }

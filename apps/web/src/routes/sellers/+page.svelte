@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Avatar, Button, LoadingSpinner } from '@repo/ui';
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -17,7 +17,7 @@
 
   async function applySorting() {
     loading = true;
-    const url = new URL($page.url);
+    const url = new URL(page.url);
     url.searchParams.set('sort', selectedSort);
     if (searchQuery.trim()) {
       url.searchParams.set('q', searchQuery.trim());
@@ -76,7 +76,7 @@
   async function loadMore() {
     if (data.hasMore && !loading) {
       loading = true;
-      const url = new URL($page.url);
+      const url = new URL(page.url);
       url.searchParams.set('page', String(data.currentPage + 1));
       await goto(url.pathname + url.search, { invalidateAll: true });
       loading = false;
@@ -318,16 +318,16 @@
       <fieldset class="space-y-2">
         <legend class="text-xs font-semibold text-gray-500 uppercase">Account Type</legend>
         <div class="grid grid-cols-2 gap-2">
-          <button type="button" class="px-3 py-2 rounded-lg border border-gray-200 text-sm" onclick={() => { const u = new URL($page.url); u.searchParams.delete('type'); goto(u.pathname + u.search, { invalidateAll: true }); }}>
+          <button type="button" class="px-3 py-2 rounded-lg border border-gray-200 text-sm" onclick={() => { const u = new URL(page.url); u.searchParams.delete('type'); goto(u.pathname + u.search, { invalidateAll: true }); }}>
             All
           </button>
-          <button type="button" class="px-3 py-2 rounded-lg border border-gray-200 text-sm" onclick={() => { const u = new URL($page.url); u.searchParams.set('type', 'personal'); goto(u.pathname + u.search, { invalidateAll: true }); }}>
+          <button type="button" class="px-3 py-2 rounded-lg border border-gray-200 text-sm" onclick={() => { const u = new URL(page.url); u.searchParams.set('type', 'personal'); goto(u.pathname + u.search, { invalidateAll: true }); }}>
             Personal
           </button>
-          <button type="button" class="px-3 py-2 rounded-lg border border-gray-200 text-sm" onclick={() => { const u = new URL($page.url); u.searchParams.set('type', 'pro'); goto(u.pathname + u.search, { invalidateAll: true }); }}>
+          <button type="button" class="px-3 py-2 rounded-lg border border-gray-200 text-sm" onclick={() => { const u = new URL(page.url); u.searchParams.set('type', 'pro'); goto(u.pathname + u.search, { invalidateAll: true }); }}>
             Pro
           </button>
-          <button type="button" class="px-3 py-2 rounded-lg border border-gray-200 text-sm" onclick={() => { const u = new URL($page.url); u.searchParams.set('type', 'brand'); goto(u.pathname + u.search, { invalidateAll: true }); }}>
+          <button type="button" class="px-3 py-2 rounded-lg border border-gray-200 text-sm" onclick={() => { const u = new URL(page.url); u.searchParams.set('type', 'brand'); goto(u.pathname + u.search, { invalidateAll: true }); }}>
             Brand
           </button>
         </div>
@@ -336,7 +336,7 @@
       <!-- Verified toggle -->
       <div class="flex items-center justify-between">
         <label for="verified-checkbox" class="text-sm text-gray-700">Verified only</label>
-        <input id="verified-checkbox" type="checkbox" checked={Boolean($page.url.searchParams.get('verified') === 'true')} onchange={(e) => { const u = new URL($page.url); const c = (e.target as HTMLInputElement).checked; if (c) u.searchParams.set('verified', 'true'); else u.searchParams.delete('verified'); goto(u.pathname + u.search, { invalidateAll: true }); }} />
+        <input id="verified-checkbox" type="checkbox" checked={Boolean(page.url.searchParams.get('verified') === 'true')} onchange={(e) => { const u = new URL(page.url); const c = (e.target as HTMLInputElement).checked; if (c) u.searchParams.set('verified', 'true'); else u.searchParams.delete('verified'); goto(u.pathname + u.search, { invalidateAll: true }); }} />
       </div>
     </div>
 

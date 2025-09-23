@@ -126,10 +126,13 @@ class Logger {
 			// Production: structured JSON for log aggregation
 			switch (level) {
 				case 'warn':
-					console.warn(JSON.stringify(logEntry));
+					console.warn(logEntry);
 					break;
 				case 'error':
-					console.error(JSON.stringify(logEntry));
+					console.error(logEntry);
+					break;
+				default:
+					console.info(logEntry);
 					break;
 			}
 		}

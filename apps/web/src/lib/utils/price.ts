@@ -37,7 +37,7 @@ export function formatPrice(price: number, locale?: string): string {
     }).format(price);
   } catch (error) {
     // Fallback to simple formatting if Intl fails
-    console.warn('Currency formatting failed, using fallback:', error);
+    
     return formatPriceFallback(price, currentLocale);
   }
 }

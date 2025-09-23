@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Button } from '@repo/ui';
 	
 	let resending = $state(false);
 	let resendSuccess = $state(false);
 	let resendError = $state('');
 	
-	const email = $derived($page.url.searchParams.get('email') || '');
+	const email = $derived(page.url.searchParams.get('email') || '');
 	
 	async function handleResend() {
 		if (!email || resending) return;

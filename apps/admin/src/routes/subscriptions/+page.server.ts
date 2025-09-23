@@ -20,7 +20,7 @@ export const load = (async ({ locals }) => {
 		.order('created_at', { ascending: false });
 
 	if (error) {
-		console.error('Error fetching subscriptions:', error);
+		
 	}
 
 	// Get stats

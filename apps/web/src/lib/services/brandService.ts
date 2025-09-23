@@ -38,7 +38,7 @@ export async function activateBrandStatus(
 
     return { success: true };
   } catch (error) {
-    console.error('Brand activation error:', error);
+    
     return { success: false, error };
   }
 }
@@ -75,7 +75,7 @@ export async function deactivateBrandStatus(
 
     return { success: true };
   } catch (error) {
-    console.error('Brand deactivation error:', error);
+    
     return { success: false, error };
   }
 }

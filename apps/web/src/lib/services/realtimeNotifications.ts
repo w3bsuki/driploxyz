@@ -35,9 +35,9 @@ export class RealtimeNotificationService {
 					table: 'messages',
 					filter: `receiver_id=eq.${this.userId}`
 				},
-				async (payload) => {
+				async (_payload) => {
 					// Handle new messages
-					console.log('New message:', payload);
+					
 				}
 			)
 			.on(

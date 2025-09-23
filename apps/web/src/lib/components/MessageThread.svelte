@@ -31,7 +31,7 @@
     isOrderConversation?: boolean;
     isOffer?: boolean;
     offerPrice?: number;
-    bundleItems?: any[];
+    bundleItems?: unknown[];
     offerStatus?: string;
     lastActiveAt?: string;
   }
@@ -41,7 +41,7 @@
     conversation: Conversation | null;
     currentUserId: string;
     onlineUsers: Set<string>;
-    typingUsers: Map<string, any>;
+    typingUsers: Map<string, unknown>;
     onBackToList: () => void;
     messagesContainer?: HTMLDivElement | null;
     isLoadingOlder?: boolean;
@@ -62,7 +62,7 @@
     onScroll 
   }: Props = $props();
   
-  const timeAgo = (date: string) => {
+  const timeAgo = () => {
     return i18n.messages_now();
   };
   
@@ -153,11 +153,11 @@
     
     <!-- Order/Product/Offer Info -->
     {#if conversation.isOrderConversation && conversation.orderId}
+      {@const statusInfo = getOrderStatusInfo(conversation.orderStatus)}
       <!-- Order Context Display -->
       <div class="mt-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-3 border border-green-200">
         <div class="flex items-center space-x-2 mb-3">
           <span class="text-xs font-semibold text-green-900 uppercase tracking-wide">Order Conversation</span>
-          {@const statusInfo = getOrderStatusInfo(conversation.orderStatus)}
           <span class="text-xs px-2 py-0.5 rounded-sm font-medium bg-{statusInfo.color}-100 text-{statusInfo.color}-700">
             {statusInfo.icon} {statusInfo.text}
           </span>

@@ -15,12 +15,15 @@
   import { browser, dev } from '$app/environment';
   import { injectAnalytics } from '@vercel/analytics/sveltekit';
   // Auth stores removed - we use server data directly
-  import { activeNotification, handleNotificationClick } from '$lib/stores/messageNotifications';
-  import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications';
-  import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications';
-  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, ToastContainer, ToastProvider, Footer, ErrorBoundary, OrderNotificationToast, TopProgress, CategorySearchBar, MainPageSearchBar } from '@repo/ui';
+  import { getActiveNotification, messageNotifications, handleNotificationClick } from '$lib/stores/messageNotifications.svelte';
+  import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications.svelte';
+  import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications.svelte';
+  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, Footer, OrderNotificationToast, TopProgress, CategorySearchBar, MainPageSearchBar } from '@repo/ui';
+  import Toast from '$lib/components/Toast.svelte';
+  import ErrorBoundary from '$lib/components/ErrorBoundary.svelte';
+  import RealtimeErrorBoundary from '$lib/components/RealtimeErrorBoundary.svelte';
   import RegionSwitchModal from '$lib/components/RegionSwitchModal.svelte';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { initializeLanguage, switchLanguage } from '$lib/utils/language-switcher';
   import * as i18n from '@repo/i18n';
   import type { LayoutData } from './$types';
@@ -87,14 +90,14 @@
 
   // Get Supabase client from load function (following official pattern)
   const { supabase, session, user } = $derived(data);
-  const isAuthPage = $derived($page.route.id?.includes('(auth)'));
-  const isSellPage = $derived($page.route.id?.includes('/sell'));
-  const isOnboardingPage = $derived($page.route.id?.includes('/onboarding'));
-  const isMessagesConversation = $derived($page.route.id?.includes('/messages') && $page.url.searchParams.has('conversation'));
-  const isSearchPage = $derived($page.route.id?.includes('/search'));
-  const isCategoryPage = $derived($page.route.id?.includes('/category'));
-  const isProductPage = $derived($page.route.id?.includes('/product'));
-  const isHomePage = $derived($page.url.pathname === '/');
+  const isAuthPage = $derived(page.route.id?.includes('(auth)'));
+  const isSellPage = $derived(page.route.id?.includes('/sell'));
+  const isOnboardingPage = $derived(page.route.id?.includes('/onboarding'));
+  const isMessagesConversation = $derived(page.route.id?.includes('/messages') && page.url.searchParams.has('conversation'));
+  const isSearchPage = $derived(page.route.id?.includes('/search'));
+  const isCategoryPage = $derived(page.route.id?.includes('/category'));
+  const isProductPage = $derived(page.route.id?.includes('/product'));
+  const isHomePage = $derived(page.url.pathname === '/');
   
   // Show search in header on pages where users expect to search
   const shouldShowHeaderSearch = $derived(
@@ -114,7 +117,7 @@
   let stickySearchQuery = $state('');
 
   // Use real categories from database, with fallback to basic structure
-  const mainCategoriesWithCounts = $derived(() => {
+  const mainCategoriesWithCounts = $derived.by(() => {
     if (data?.mainCategories && data.mainCategories.length > 0) {
       return data.mainCategories.map(cat => ({
         key: cat.slug,
@@ -157,7 +160,7 @@
   ];
 
   // Dropdown data for search components
-  const dropdownCategories = $derived(() => {
+  const dropdownCategories = $derived.by(() => {
     return mainCategoriesWithCounts.map(cat => ({
       id: cat.key,
       name: cat.label,
@@ -489,7 +492,10 @@
   });
 </script>
 
-<ToastProvider>
+<!-- Global Toast Notifications -->
+<Toast />
+
+<ErrorBoundary name="AppLayout">
   {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
     <div class="sticky top-0 z-50" bind:this={headerContainer}>
       <Header user={data?.user} profile={data?.profile} showSearch={shouldShowHeaderSearch} />
@@ -517,14 +523,17 @@
       dropdownCollections={dropdownCollections}
     />
   {/if}
+
   <!-- Route progress just below header -->
   <TopProgress />
-  <ErrorBoundary>
-    <div>
+
+  <!-- Wrap main content with realtime error boundary -->
+  <RealtimeErrorBoundary>
+    <main>
       {@render children?.()}
-    </div>
-  </ErrorBoundary>
-</ToastProvider>
+    </main>
+  </RealtimeErrorBoundary>
+</ErrorBoundary>
 
 <!-- Footer -->
 {#if !isAuthPage && !isOnboardingPage && !isSellPage && !isMessagesConversation}
@@ -564,22 +573,22 @@
 <UnifiedCookieConsent onConsentChange={handleConsentChange} />
 
 <!-- Global Message Notification Toast -->
-{#if $activeNotification}
+{#if getActiveNotification()}
   <MessageNotificationToast
     show={true}
     sender={{
-      id: $activeNotification.senderId,
-      username: $activeNotification.senderName,
-      avatar_url: $activeNotification.senderAvatar
+      id: getActiveNotification().senderId,
+      username: getActiveNotification().senderName,
+      avatar_url: getActiveNotification().senderAvatar
     }}
-    message={$activeNotification.message}
-    product={$activeNotification.isProductMessage ? {
-      id: $activeNotification.productId || '',
-      title: $activeNotification.productTitle || '',
-      image: $activeNotification.productImage || ''
+    message={getActiveNotification().message}
+    product={getActiveNotification().isProductMessage ? {
+      id: getActiveNotification().productId || '',
+      title: getActiveNotification().productTitle || '',
+      image: getActiveNotification().productImage || ''
     } : undefined}
-    onReply={() => handleNotificationClick($activeNotification)}
-    onDismiss={() => activeNotification.set(null)}
+    onReply={() => handleNotificationClick(getActiveNotification())}
+    onDismiss={() => messageNotifications.setActiveNotification(null)}
   />
 {/if}
 

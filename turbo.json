@@ -57,21 +57,6 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", "src/**/*.{test,spec}.{js,ts}"],
       "outputs": ["coverage/**"]
-    },
-    "test:performance": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "performance-tests/**", "playwright.config.performance.ts", ".lighthouserc.*"],
-      "outputs": ["performance-test-results/**", "performance-test-data/**"]
-    },
-    "lighthouse": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".lighthouserc.*"],
-      "outputs": [".lighthouseci/**"]
-    },
-    "performance-audit": {
-      "dependsOn": ["^build", "lighthouse", "test:performance"],
-      "inputs": ["$TURBO_DEFAULT$", "performance-tests/**", ".lighthouserc.*"],
-      "outputs": ["performance-test-results/**", "performance-test-data/**", ".lighthouseci/**"]
     }
   }
 }

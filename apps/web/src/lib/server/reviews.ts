@@ -3,7 +3,13 @@ import type { Database } from '@repo/database';
 
 type ReviewInsert = Database['public']['Tables']['reviews']['Insert'];
 type ReviewRow = Database['public']['Tables']['reviews']['Row'];
-// Review update type reserved for future functionality
+type OrderRow = Database['public']['Tables']['orders']['Row'];
+
+// Order with joined user data for notifications
+interface OrderWithUsers extends OrderRow {
+  buyer?: { username?: string | null };
+  seller?: { username?: string | null };
+}
 
 export interface CreateReviewData {
   orderId: string;
@@ -174,10 +180,14 @@ export class ReviewsService {
       }
 
       // Update profile ratings asynchronously (don't block response)
-      this.updateProfileRatings(revieweeId).catch(console.warn);
-      
+      this.updateProfileRatings(revieweeId).catch(() => {
+        // Profile rating update failed, continue silently
+      });
+
       // Send notification asynchronously
-      this.sendReviewNotification(review, order, reviewerRole).catch(console.warn);
+      this.sendReviewNotification(review, order, reviewerRole).catch(() => {
+        // Notification failed, continue silently
+      });
 
       return {
         success: true,
@@ -217,8 +227,8 @@ export class ReviewsService {
    * Send notification to reviewee
    */
   private async sendReviewNotification(
-    review: ReviewRow, 
-    order: any, 
+    review: ReviewRow,
+    order: OrderWithUsers,
     reviewerRole: 'buyer' | 'seller'
   ): Promise<void> {
     const reviewerUsername = reviewerRole === 'buyer' 

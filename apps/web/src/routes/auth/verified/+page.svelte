@@ -1,12 +1,11 @@
 <script lang="ts">
   import { Button } from '@repo/ui';
   import { goto } from '$app/navigation';
-  import { onMount } from 'svelte';
-  
+
   let countdown = $state(3);
-  
-  onMount(() => {
-    // Auto-redirect after 3 seconds
+
+  // Auto-redirect after 3 seconds
+  $effect(() => {
     const timer = setInterval(() => {
       countdown--;
       if (countdown <= 0) {
@@ -14,7 +13,7 @@
         goto('/onboarding');
       }
     }, 1000);
-    
+
     return () => clearInterval(timer);
   });
 </script>

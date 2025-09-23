@@ -18,12 +18,12 @@ export const load = (async ({
   const limit = 24; // Brands per page
   const offset = (page - 1) * limit;
 
-  log.debug('Loading brands showcase', { 
-    searchQuery, 
-    category, 
-    verifiedOnly,
+  log.debug('Loading brands showcase', {
+    searchQuery,
+    category,
+    verifiedOnly: verifiedOnly.toString(),
     page,
-    userEmail: user?.email 
+    userEmail: user?.email
   });
 
   try {
@@ -66,7 +66,7 @@ export const load = (async ({
     const { data: brands, error: brandsError } = await brandsQuery;
 
     if (brandsError) {
-      log.error('Error loading brands', brandsError);
+      log.error('Error loading brands', { error: brandsError.message });
       throw error(500, 'Failed to load brands');
     }
 
@@ -77,7 +77,7 @@ export const load = (async ({
       .order('name');
 
     if (categoriesError) {
-      log.warn('Error loading categories', categoriesError);
+      log.warn('Error loading categories', { error: categoriesError.message });
     }
 
     // Get total count for pagination
@@ -99,7 +99,7 @@ export const load = (async ({
     const { count, error: countError } = await countQuery;
 
     if (countError) {
-      log.warn('Error getting brands count', countError);
+      log.warn('Error getting brands count', { error: countError.message });
     }
 
     // Transform brands data
@@ -115,8 +115,18 @@ export const load = (async ({
         verified: brand.verified || false,
         created_at: brand.created_at,
         location: brand.location,
-        instagram: brand?.social_links?.instagram,
-        website: brand?.social_links?.website,
+        instagram: (() => {
+          const socialLinks = brand?.social_links && typeof brand.social_links === 'object' && !Array.isArray(brand.social_links)
+            ? (brand.social_links as Record<string, any>)
+            : undefined;
+          return typeof socialLinks?.instagram === 'string' ? socialLinks.instagram : null;
+        })(),
+        website: (() => {
+          const socialLinks = brand?.social_links && typeof brand.social_links === 'object' && !Array.isArray(brand.social_links)
+            ? (brand.social_links as Record<string, any>)
+            : undefined;
+          return typeof socialLinks?.website === 'string' ? socialLinks.website : null;
+        })(),
         
         // Stats
         followers_count: brand.followers_count || 0,
@@ -154,14 +164,14 @@ export const load = (async ({
       .limit(6);
 
     if (featuredError) {
-      log.warn('Error loading featured brands', featuredError);
+      log.warn('Error loading featured brands', { error: featuredError.message });
     }
 
     log.debug('Successfully loaded brands showcase', {
       brandsCount: transformedBrands.length,
-      totalCount: count,
+      totalCount: count || 0,
       searchQuery,
-      verifiedOnly
+      verifiedOnly: verifiedOnly.toString()
     });
 
     return {

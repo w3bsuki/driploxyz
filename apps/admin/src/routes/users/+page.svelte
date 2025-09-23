@@ -5,8 +5,6 @@ Uses the comprehensive AdminUserBrowser component
 <script lang="ts">
 	import type { PageData, ActionData } from './$types';
 	import { enhance } from '$app/forms';
-	// TODO: Create AdminUserBrowser component in @repo/ui or move to local components
-	// import { AdminUserBrowser } from '@repo/ui';
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
@@ -154,20 +152,6 @@ Uses the comprehensive AdminUserBrowser component
 		</div>
 	{/if}
 
-	<!-- TODO: Replace with proper AdminUserBrowser component -->
-	<div class="container mx-auto px-4">
-		<div class="bg-white rounded-lg shadow p-6">
-			<h3 class="text-lg font-semibold mb-4">User Browser (Placeholder)</h3>
-			<p class="text-gray-600">
-				AdminUserBrowser component needs to be created in @repo/ui
-			</p>
-			<p class="text-sm text-gray-500 mt-2">
-				Found {transformedUsers.length} users to display
-			</p>
-		</div>
-	</div>
-	
-	<!-- Hidden forms for actions -->
 	<form id="ban-form" method="POST" action="?/banUser" use:enhance class="hidden">
 		<input type="hidden" name="userId" />
 		<input type="hidden" name="reason" value="Suspended by admin" />

@@ -45,7 +45,9 @@ export const POST: RequestHandler = async (event) => {
     return json({ success: true });
 
   } catch (error) {
-    if (DEBUG) console.error('[Cancel] Internal error:', error);
+    if (DEBUG) {
+      console.error('Subscription cancellation error:', error);
+    }
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 };

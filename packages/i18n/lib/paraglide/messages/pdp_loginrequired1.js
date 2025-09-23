@@ -22,7 +22,7 @@ const en_pdp_loginrequired1 = /** @type {(inputs: {}) => string} */ () => {
 * @returns {string}
 */
 /* @__NO_SIDE_EFFECTS__ */
-const pdp_loginrequired1 = (inputs = {}, options = {}) => {
+export const pdp_loginrequired1 = (inputs = {}, options = {}) => {
 	if (experimentalMiddlewareLocaleSplitting && isServer === false) {
 		return /** @type {any} */ (globalThis).__paraglide_ssr.pdp_loginrequired1(inputs) 
 	}
@@ -31,4 +31,3 @@ const pdp_loginrequired1 = (inputs = {}, options = {}) => {
 	if (locale === "bg") return bg_pdp_loginrequired1(inputs)
 	return en_pdp_loginrequired1(inputs)
 };
-export { pdp_loginrequired1 as "pdp_loginRequired" }

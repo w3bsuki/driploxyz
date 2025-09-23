@@ -7,7 +7,7 @@ export const getStripe = (): Promise<Stripe | null> => {
 	if (!stripePromise) {
 		const publishableKey = env.PUBLIC_STRIPE_PUBLISHABLE_KEY;
 		if (!publishableKey) {
-			console.error('PUBLIC_STRIPE_PUBLISHABLE_KEY environment variable is required');
+			
 			stripePromise = Promise.resolve(null);
 		} else {
 			stripePromise = loadStripe(publishableKey);

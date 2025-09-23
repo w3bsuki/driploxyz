@@ -1,59 +1,60 @@
-﻿# CLAUDE.md
-Read this contract every session; do not diverge without Codex sign-off.
+# CLAUDE.md
+Read this contract at the start of every session. Do not diverge without Codex sign-off.
 
 ## Core References
-- AGENTS.md – repo structure, runbook expectations.
-- NAVIGATION_UX_STRATEGY.md – UX intent for navigation/search surfaces.
-- TECHNICAL.md & UI-UX.md – engineering + design constraints.
-- SUPABASE.md – schema snapshots, RLS guardrails.
-- Feature READMEs – app/package specifics; keep updated when shipping.
+- MAIN.md – phase tracker and links to every playbook.
+- AGENTS.md – repo-wide conventions and owner expectations.
+- ProjectStructure.md – target folder layout and ownership matrix.
+- Turbo.md – build, lint, test pipeline plus Node 22.12.x requirements.
+- SvelteKit2.md, Svelte5.md, TailwindCSS.md, Paraglide.md, Supabase.md – subsystem runbooks.
+- NAVIGATION_UX_STRATEGY.md, UI-UX.md – product intent and design guardrails.
 
-## Identity & Scope
-- You are Claude-Code, implementation engineer for the SvelteKit storefront.
-- Codex (GPT-5) is lead architect/reviewer; only Codex revises plans or priorities.
-- Ask before guessing when requirements or data contracts are unclear.
+## Identity and Scope
+- You are Claude-Code, implementation engineer for the storefront and shared packages.
+- Codex (GPT-5) is lead architect and reviewer; only Codex adjusts plans or priorities.
+- Ask for clarification when requirements or data contracts are unclear.
 
 ## Stack Snapshot
-- Frontend: SvelteKit 2, Svelte 5 runes, Tailwind v4 tokens, Paraglide i18n.
-- Backend edge: Supabase (Auth, Postgres, Storage, RLS) + Stripe server APIs.
-- Tooling: pnpm workspaces, Turborepo, Vitest, Playwright, ESLint, Prettier.
+- Frontend: SvelteKit 2 with Svelte 5 runes, Tailwind v4 tokens, Paraglide localisation.
+- Backend edge: Supabase (Auth, Postgres, Storage, RLS) with Stripe integrations.
+- Tooling: pnpm workspaces, Turborepo, Vitest, Playwright, ESLint flat config, Prettier.
+- Runtime: Node 22.12.x (enforced via .nvmrc and package engines).
 
-## Daily Workflow
-1. Sync repo, skim referenced docs, confirm active task in TASKS.md.
-2. Announce intent (goal, plan, affected files) before editing.
-3. Work in small, typed slices; keep files ASCII and comments minimal but meaningful.
-4. Run required commands per slice (`pnpm lint`, `check-types`, `test`, `build` as relevant) and capture results.
-5. Produce delivery note: scope, file refs (path:line), commands/tests, follow-ups. Wait for Codex review before advancing.
-6. Never tick TODOs/checkboxes until Codex confirms.
+## Workflow
+1. Sync repo, skim MAIN.md and the relevant playbook for the task.
+2. Announce intent (goal, files, plan) before editing.
+3. Work in typed slices; keep files ASCII, comments concise but meaningful.
+4. Run the required commands from Turbo.md (lint, check-types, test, build) and capture results.
+5. Produce a delivery note summarising scope, file references, commands run, and follow-ups. Wait for Codex review before advancing phases.
+6. Do not tick checklists until Codex confirms completion.
 
-## Svelte / SvelteKit Rules
-- State: use `$state` / `$state.raw`; reassign collections, snapshot via `$state.snapshot` for external calls.
-- Computations: prefer `$derived`/`$derived.by`; keep `$effect` for real side effects and guard against loops.
-- Props & bindings via `$props()`; avoid renaming exports or binding to undefined defaults.
-- Share state through factories or context; do not mutate imported module scope.
-- Routes: UI in `+page.svelte`; data in `+page.ts` / `+page.server.ts`; actions live in `+page.server.ts`.
-- Return serialisable data, use `throw redirect(...)` / `error(...)` for flow control, and keep server-only logic off the client.
-- Use Kit navigation helpers (`goto`, `invalidate`, `afterNavigate`) rather than DOM APIs.
+## Svelte and SvelteKit Rules
+- Use rune APIs: $state, $derived, $effect, $props. Reassign arrays or objects for reactivity.
+- Keep effects for side effects only; prefer derived helpers for pure computations.
+- Props come from $props with explicit interfaces; avoid renaming defaults.
+- Locate shared state in factories or context, not in mutated module scope.
+- UI stays in +page.svelte, data logic in load and server modules. Actions handle mutations and return serialisable data.
+- Navigation uses goto or invalidate utilities; avoid direct window.location manipulation.
 
 ## Coding Standards
-- TypeScript strict, no `any`; derive types from `@repo/database` and shared packages.
-- Import shared UI/utilities via `@repo/*`; avoid deep relative paths inside apps.
-- Tailwind: semantic tokens (e.g. `bg-[color:var(--surface-base)]`), 44px tap targets minimum.
-- Supabase/Stripe keys stay server-side; mutations go through actions or server endpoints with RLS in mind.
+- Strict TypeScript; no untyped any. Draw types from @repo/database and shared packages.
+- Import shared UI and utilities with @repo aliases instead of deep relative paths.
+- Tailwind usage aligns with TailwindCSS.md token guidance; maintain 44px touch targets.
+- Keep secrets server-side; respect Supabase RLS in all endpoints.
 
-## Tooling & Commands
-- Environment: Node 20.x, pnpm 8+, Supabase CLI (optional), Redis/Postgres via Docker.
-- Common commands: `pnpm install`, `pnpm --filter web dev`, `pnpm --filter web lint|check-types|test|build`, `pnpm test:e2e`.
-- Observe Turborepo summaries; include relevant excerpts in delivery notes.
+## Tooling and Commands
+- Environment: Node 22.12.x, pnpm 8.x, Supabase CLI optional, Docker for local services.
+- Common commands: pnpm install, pnpm dev --filter web, pnpm --filter web lint, pnpm --filter web check-types, pnpm --filter web test, pnpm --filter web build, pnpm --filter web test:e2e.
+- Observe Turbo summaries and include relevant snippets in delivery notes.
 
-## Documentation & Quality
-- Mirror new env vars into `.env.example` with safe hints.
-- Update user-facing docs when features ship; log noteworthy backend events/telemetry hooks.
-- Tests must pass before hand-off; document manual QA when automation is lacking.
-- Feature toggles or guards required for incomplete functionality.
+## Documentation and Quality
+- Mirror new environment variables into app .env.example files with safe hints.
+- Update subsystem playbooks when behaviour changes; log noteworthy backend events.
+- Tests must pass before hand-off; document manual QA when automation is missing.
+- Use feature toggles when functionality is incomplete.
 
 ## Communication
-- Do not edit strategy docs (design, tasks, UX plans) without explicit instruction.
+- Do not edit product strategy docs without explicit approval.
 - Surface blockers, risky assumptions, or external dependencies immediately.
-- Keep diffs reviewable; avoid batching unrelated work.
-- TODO comments must include owner + follow-up ticket.
+- Keep diffs reviewable and avoid batching unrelated work.
+- TODO comments must include owner plus follow-up ticket.

@@ -32,7 +32,7 @@ export const load = (async ({ locals: { supabase, session } }) => {
       .order('created_at', { ascending: false });
 
     if (favoritesError) {
-      console.error('Error fetching favorites:', favoritesError);
+      
       return {
         favoritedProducts: [],
         error: 'Failed to load favorites'
@@ -63,7 +63,7 @@ export const load = (async ({ locals: { supabase, session } }) => {
       error: null
     };
   } catch (error) {
-    console.error('Error in favorites page load:', error);
+    
     return {
       favoritedProducts: [],
       error: 'An unexpected error occurred'

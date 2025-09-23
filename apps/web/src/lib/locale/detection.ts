@@ -30,8 +30,8 @@ export function detectBrowserLanguage(): LanguageTag {
                    (navigator.languages && navigator.languages[0]) || 
                    'en';
     }
-  } catch (e) {
-    console.warn('Failed to detect browser language:', e);
+  } catch {
+    // Intentionally empty - browser detection errors fallback to default
   }
   
   const langCode = browserLang.toLowerCase();
@@ -67,7 +67,7 @@ export async function detectCountryFromIP(): Promise<string | null> {
   } catch (error) {
     // Don't log on abort (timeout) as it's expected on slow mobile networks
     if (error instanceof Error && error.name !== 'AbortError') {
-      console.error('Failed to detect country from IP:', error);
+      // Intentionally empty - geolocation errors are non-critical
     }
     return null;
   }
@@ -126,17 +126,16 @@ export function storeLocalePreference(locale: LanguageTag) {
       localStorage.removeItem(testKey);
       
       localStorage.setItem('preferredLocale', locale);
-    } catch (error) {
+    } catch {
       // localStorage not available, use cookie only
-      console.warn('localStorage not available, using cookie fallback');
     }
     
     // Always set cookie as fallback for SSR and iOS Safari
     try {
       const isSecure = window.location.protocol === 'https:';
       document.cookie = `PARAGLIDE_LOCALE=${locale};path=/;max-age=31536000;samesite=lax${isSecure ? ';secure' : ''}`;
-    } catch (error) {
-      console.error('Failed to set cookie:', error);
+    } catch {
+      // Intentionally empty - cookie setting errors are non-critical
     }
   }
 }
@@ -150,9 +149,9 @@ export function getStoredLocalePreference(): LanguageTag | null {
     if (stored && ['en', 'bg'].includes(stored)) {
       return stored as LanguageTag;
     }
-  } catch (error) {
+  } catch {
     // localStorage might be blocked on some mobile browsers
-    console.error('Failed to get stored locale preference:', error);
+    // Intentionally empty - fallback to default behavior
   }
   
   return null;
@@ -163,13 +162,13 @@ export function dismissLocaleBanner() {
   if (typeof window !== 'undefined') {
     try {
       localStorage.setItem('localeDetectionDismissed', 'true');
-    } catch (error) {
+    } catch {
       // Use cookie as fallback
       try {
         const isSecure = window.location.protocol === 'https:';
         document.cookie = `localeDetectionDismissed=true;path=/;max-age=31536000;samesite=lax${isSecure ? ';secure' : ''}`;
-      } catch (e) {
-        console.error('Failed to set dismissal cookie:', e);
+      } catch {
+        // Intentionally empty - cookie fallback failed, graceful degradation
       }
     }
   }
@@ -183,7 +182,7 @@ export function wasLocaleBannerDismissed(): boolean {
     if (localStorage.getItem('localeDetectionDismissed') === 'true') {
       return true;
     }
-  } catch (error) {
+  } catch {
     // localStorage not available, check cookie
   }
   
@@ -196,8 +195,8 @@ export function wasLocaleBannerDismissed(): boolean {
         return true;
       }
     }
-  } catch (error) {
-    console.error('Failed to read cookies:', error);
+  } catch {
+    // Intentionally empty - cookie read errors fall back to default behavior
   }
   
   return false;

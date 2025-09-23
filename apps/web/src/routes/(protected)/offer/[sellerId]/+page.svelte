@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { Button, Avatar, type Product } from '@repo/ui';
   import type { PageData } from './$types';
   
@@ -9,7 +9,7 @@
   
   let { data }: Props = $props();
   
-  const sellerId = $page.params.sellerId;
+  const sellerId = page.params.sellerId;
   const seller = data.seller;
   
   // Transform products for display
@@ -45,15 +45,13 @@
     selectedProducts.reduce((sum, p) => sum + p.price, 0)
   );
   
-  let savings = $derived(() => {
-    const offer = parseFloat(offerAmount) || 0;
-    return originalTotal - offer;
-  });
+  let savings = $derived(
+    (parseFloat(offerAmount) || 0) > 0 ? originalTotal - (parseFloat(offerAmount) || 0) : 0
+  );
   
-  let savingsPercent = $derived(() => {
-    if (originalTotal === 0) return 0;
-    return Math.round((savings() / originalTotal) * 100);
-  });
+  let savingsPercent = $derived(
+    originalTotal === 0 ? 0 : Math.round((savings / originalTotal) * 100)
+  );
   
   function toggleItem(productId: string) {
     const newSet = new Set(selectedItems);

@@ -221,9 +221,9 @@ export function captureSentryError(
       Sentry.captureException(errorObj);
     });
   } catch (sentryError) {
-    console.error('Sentry: Failed to capture error:', sentryError);
+    
     // Fallback to console logging
-    console.error('Original error:', error);
+    
   }
 }
 

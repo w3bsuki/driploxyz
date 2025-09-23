@@ -60,7 +60,7 @@ export const PATCH: RequestHandler = async ({ request, params, cookies }) => {
 		});
 
 	} catch (err) {
-		console.error('Order status update error:', err);
+		
 		if (err instanceof Response) throw err;
 		throw error(500, 'Internal server error');
 	}

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button } from '@repo/ui';
-  import { goto } from '$app/navigation';
+  // import { goto } from '$app/navigation'; // Not used, region switching handled via window.location
   
   interface Props {
     show: boolean;
@@ -71,7 +71,7 @@
   };
   
   const detected = regionInfo[detectedRegion];
-  const current = regionInfo[currentRegion];
+  // const current = regionInfo[currentRegion]; // Defined but not used
 </script>
 
 {#if show}

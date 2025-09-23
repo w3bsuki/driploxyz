@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { LocaleDetectionBanner } from '@repo/ui';
   import { getLocale, setLocale } from '@repo/i18n';
@@ -20,7 +20,7 @@
   // Detect and handle locale on component mount
   $effect(async () => {
     // Skip if user is authenticated and has a stored preference in their profile
-    const session = $page.data.session;
+    const session = page.data.session;
     if (session?.user) {
       // User locale is handled by the profile
       return;
@@ -31,7 +31,7 @@
     if (storedPreference && storedPreference !== currentLocale) {
       // Apply stored preference
       setLocale(storedPreference);
-      await goto($page.url.pathname, { replaceState: true });
+      await goto(page.url.pathname, { replaceState: true });
       return;
     }
     
@@ -62,7 +62,7 @@
     showBanner = false;
     
     // Reload page with new locale
-    goto($page.url.pathname, { replaceState: true });
+    goto(page.url.pathname, { replaceState: true });
   }
   
   function handleDismissLocale() {

@@ -18,7 +18,7 @@ export const load = (async ({ locals: { supabase, safeGetSession } }) => {
       .order('price_monthly', { ascending: true });
 
     if (plansError) {
-      console.error('Error loading subscription plans:', plansError);
+      
     }
     
     // Map proper plan names and descriptions based on plan_type
@@ -67,7 +67,7 @@ export const load = (async ({ locals: { supabase, safeGetSession } }) => {
         .eq('status', 'active');
 
       if (subscriptionsError) {
-        console.error('Error loading user subscriptions:', subscriptionsError);
+        
       } else {
         userSubscriptions = subs || [];
       }
@@ -80,7 +80,7 @@ export const load = (async ({ locals: { supabase, safeGetSession } }) => {
         .single();
 
       if (profileError) {
-        console.error('Error loading user profile:', profileError);
+        
       } else {
         profile = prof;
       }
@@ -93,7 +93,7 @@ export const load = (async ({ locals: { supabase, safeGetSession } }) => {
       .gt('discount_percent', 0);
 
     if (countError) {
-      console.error('Error checking discount eligibility:', countError);
+      
     }
 
     const discountInfo = {
@@ -110,7 +110,7 @@ export const load = (async ({ locals: { supabase, safeGetSession } }) => {
     };
 
   } catch (error) {
-    console.error('Error in upgrade page load:', error);
+    
     
     // If it's a redirect, re-throw it
     if (error instanceof Response && error.status === 303) {

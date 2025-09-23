@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { Button, Card } from '@repo/ui';
 	import { goto } from '$app/navigation';
 	import * as i18n from '@repo/i18n';
-	import { onMount } from 'svelte';
 	import { createBrowserSupabaseClient } from '$lib/supabase/client';
 
-	const orderId = $derived($page.url.searchParams.get('orderId'));
-	const paymentIntentId = $derived($page.url.searchParams.get('payment_intent'));
+	const orderId = $derived(page.url.searchParams.get('orderId'));
+	const paymentIntentId = $derived(page.url.searchParams.get('payment_intent'));
 	
 	let orderDetails: any = $state(null);
 	let loading = $state(true);
 	const supabase = createBrowserSupabaseClient();
 
-	onMount(async () => {
+	// Fetch order details when component mounts
+	$effect(async () => {
 		if (orderId) {
 			// Fetch complete order details with product and seller info
 			const { data: order, error } = await supabase
@@ -42,7 +42,7 @@
 				`)
 				.eq('id', orderId)
 				.single();
-			
+
 			if (!error && order) {
 				orderDetails = order;
 			}

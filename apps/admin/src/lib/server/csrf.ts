@@ -25,6 +25,13 @@ export class CSRFProtection {
 	}
 
 	/**
+	 * Safely format sessionId for logging
+	 */
+	private static formatSessionId(sessionId: string | undefined): string {
+		return sessionId ? this.formatSessionId(sessionId) : 'undefined';
+	}
+
+	/**
 	 * Generate a cryptographically secure CSRF token
 	 * Token format: timestamp.nonce.signature
 	 * Signature = HMAC-SHA256(secret, timestamp:sessionId:nonce)
@@ -54,15 +61,15 @@ export class CSRFProtection {
 			// Return token in format: timestamp.nonce.signature
 			const token = `${timestamp}.${nonce}.${signatureHex}`;
 			
-			authLogger.debug('Generated CSRF token', { 
-				sessionId: sessionId.slice(0, 8) + '...', // Log partial for debugging 
+			authLogger.debug('Generated CSRF token', {
+				sessionId: this.formatSessionId(sessionId), // Log partial for debugging
 				timestamp,
 				tokenLength: token.length
 			});
 			
 			return token;
 		} catch (error) {
-			authLogger.error('Failed to generate CSRF token', error, { sessionId: sessionId.slice(0, 8) + '...' });
+			authLogger.error('Failed to generate CSRF token', error, { sessionId: this.formatSessionId(sessionId) });
 			throw new Error('CSRF token generation failed');
 		}
 	}
@@ -95,7 +102,7 @@ export class CSRFProtection {
 				authLogger.warn('CSRF token expired', { 
 					age: Date.now() - timestamp, 
 					maxAge,
-					sessionId: sessionId.slice(0, 8) + '...'
+					sessionId: this.formatSessionId(sessionId)
 				});
 				return false;
 			}
@@ -123,19 +130,19 @@ export class CSRFProtection {
 			
 			if (isValid) {
 				authLogger.debug('CSRF token validated successfully', { 
-					sessionId: sessionId.slice(0, 8) + '...',
+					sessionId: this.formatSessionId(sessionId),
 					tokenAge: Date.now() - timestamp
 				});
 			} else {
 				authLogger.warn('CSRF token signature mismatch', { 
-					sessionId: sessionId.slice(0, 8) + '...'
+					sessionId: this.formatSessionId(sessionId)
 				});
 			}
 
 			return isValid;
 		} catch (error) {
 			authLogger.error('CSRF token validation failed', error, { 
-				sessionId: sessionId.slice(0, 8) + '...'
+				sessionId: this.formatSessionId(sessionId)
 			});
 			return false;
 		}
@@ -162,7 +169,7 @@ export class CSRFProtection {
 	 */
 	static async getToken(event: any): Promise<string> {
 		const session = await event.locals.safeGetSession();
-		const sessionId = session?.session?.access_token || event.clientAddress;
+		const sessionId = session?.session?.access_token || event.clientAddress || 'anonymous-session';
 		
 		// Check if token exists in cookies
 		let token = event.cookies.get('csrf_token');
@@ -189,7 +196,7 @@ export class CSRFProtection {
 		});
 		
 		authLogger.debug('Set new CSRF token cookie', { 
-			sessionId: sessionId.slice(0, 8) + '...',
+			sessionId: this.formatSessionId(sessionId),
 			secure: dev ? 0 : 1,
 			domain: event.url.hostname
 		});
@@ -238,7 +245,7 @@ export class CSRFProtection {
 			authLogger.warn('CSRF token missing', { 
 				method, 
 				pathname,
-				sessionId: sessionId.slice(0, 8) + '...',
+				sessionId: this.formatSessionId(sessionId),
 				hasProvidedToken: providedToken ? 1 : 0,
 				hasHeaderToken: event.request.headers.get('x-csrf-token') ? 1 : 0,
 				hasCookieToken: event.cookies.get('csrf_token') ? 1 : 0
@@ -252,7 +259,7 @@ export class CSRFProtection {
 			authLogger.warn('CSRF token validation failed', { 
 				method, 
 				pathname,
-				sessionId: sessionId.slice(0, 8) + '...'
+				sessionId: this.formatSessionId(sessionId)
 			});
 		}
 		

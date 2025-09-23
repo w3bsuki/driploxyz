@@ -38,13 +38,13 @@ export class CategoryService {
         .order('name');
 
       if (error) {
-        console.error('Error fetching categories:', error);
+        
         return { data: [], error: error.message };
       }
 
       return { data: data || [], error: null };
     } catch (error) {
-      console.error('Error in getCategories:', error);
+      
       return { data: [], error: 'Failed to fetch categories' };
     }
   }
@@ -62,13 +62,13 @@ export class CategoryService {
         .single();
 
       if (error) {
-        console.error('Error fetching category:', error);
+        
         return { data: null, error: error.message };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Error in getCategory:', error);
+      
       return { data: null, error: 'Failed to fetch category' };
     }
   }
@@ -86,13 +86,13 @@ export class CategoryService {
         .single();
 
       if (error) {
-        console.error('Error fetching category by slug:', error);
+        
         return { data: null, error: error.message };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Error in getCategoryBySlug:', error);
+      
       return { data: null, error: 'Failed to fetch category' };
     }
   }
@@ -149,7 +149,7 @@ export class CategoryService {
 
       return { data: tree, error: null };
     } catch (error) {
-      console.error('Error in getCategoryTree:', error);
+      
       return { data: [], error: 'Failed to build category tree' };
     }
   }
@@ -168,13 +168,13 @@ export class CategoryService {
         .order('name');
 
       if (error) {
-        console.error('Error fetching main categories:', error);
+        
         return { data: [], error: error.message };
       }
 
       return { data: data || [], error: null };
     } catch (error) {
-      console.error('Error in getMainCategories:', error);
+      
       return { data: [], error: 'Failed to fetch main categories' };
     }
   }
@@ -193,13 +193,13 @@ export class CategoryService {
         .order('name');
 
       if (error) {
-        console.error('Error fetching subcategories:', error);
+        
         return { data: [], error: error.message };
       }
 
       return { data: data || [], error: null };
     } catch (error) {
-      console.error('Error in getSubcategories:', error);
+      
       return { data: [], error: 'Failed to fetch subcategories' };
     }
   }
@@ -225,7 +225,7 @@ export class CategoryService {
 
       return { data: breadcrumb, error: null };
     } catch (error) {
-      console.error('Error in getCategoryBreadcrumb:', error);
+      
       return { data: [], error: 'Failed to build breadcrumb' };
     }
   }
@@ -244,13 +244,13 @@ export class CategoryService {
         .limit(20);
 
       if (error) {
-        console.error('Error searching categories:', error);
+        
         return { data: [], error: error.message };
       }
 
       return { data: data || [], error: null };
     } catch (error) {
-      console.error('Error in searchCategories:', error);
+      
       return { data: [], error: 'Failed to search categories' };
     }
   }
@@ -270,13 +270,13 @@ export class CategoryService {
         .single();
 
       if (error) {
-        console.error('Error creating category:', error);
+        
         return { data: null, error: error.message };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Error in createCategory:', error);
+      
       return { data: null, error: 'Failed to create category' };
     }
   }
@@ -297,13 +297,13 @@ export class CategoryService {
         .single();
 
       if (error) {
-        console.error('Error updating category:', error);
+        
         return { data: null, error: error.message };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Error in updateCategory:', error);
+      
       return { data: null, error: 'Failed to update category' };
     }
   }
@@ -342,13 +342,13 @@ export class CategoryService {
         .eq('id', id);
 
       if (error) {
-        console.error('Error deleting category:', error);
+        
         return { error: error.message };
       }
 
       return { error: null };
     } catch (error) {
-      console.error('Error in deleteCategory:', error);
+      
       return { error: 'Failed to delete category' };
     }
   }
@@ -388,7 +388,7 @@ export class CategoryService {
 
       return { data: popular, error: null };
     } catch (error) {
-      console.error('Error in getPopularCategories:', error);
+      
       return { data: [], error: 'Failed to fetch popular categories' };
     }
   }
@@ -409,7 +409,7 @@ export class CategoryService {
         .order('sort_order');
 
       if (childrenError) {
-        console.error('Error fetching children:', childrenError);
+        
         return { data: [], error: childrenError.message };
       }
 
@@ -427,7 +427,7 @@ export class CategoryService {
         .order('sort_order');
 
       if (grandchildrenError) {
-        console.error('Error fetching grandchildren:', grandchildrenError);
+        
         return { data: children, error: null }; // Return children even if grandchildren fail
       }
 
@@ -436,7 +436,7 @@ export class CategoryService {
 
       return { data: allDescendants, error: null };
     } catch (error) {
-      console.error('Error in getDescendants:', error);
+      
       return { data: [], error: 'Failed to fetch descendants' };
     }
   }
@@ -459,7 +459,7 @@ export class CategoryService {
       }
 
       const breadcrumbs: CategoryBreadcrumb[] = [];
-      let currentCat = currentCategory;
+      let currentCat: typeof currentCategory | null = currentCategory;
 
       // Walk up the hierarchy
       while (currentCat && currentCat.id) {
@@ -471,7 +471,7 @@ export class CategoryService {
         });
 
         if (currentCat.parent_id) {
-          const { data: parentCat } = await this.supabase
+          const { data: parentCat }: { data: Category | null } = await this.supabase
             .from('categories')
             .select('id, name, slug, level, parent_id')
             .eq('id', currentCat.parent_id)
@@ -487,7 +487,7 @@ export class CategoryService {
 
       return { data: breadcrumbs, error: null };
     } catch (error) {
-      console.error('Error in getAncestors:', error);
+      
       return { data: [], error: 'Failed to fetch ancestors' };
     }
   }
@@ -502,13 +502,13 @@ export class CategoryService {
       });
 
       if (error) {
-        console.error('Error fetching hierarchical product count:', error);
+        
         return { count: 0, error: error.message };
       }
 
       return { count: data?.length || 0, error: null };
     } catch (error) {
-      console.error('Error in getHierarchicalProductCount:', error);
+      
       return { count: 0, error: 'Failed to get product count' };
     }
   }
@@ -527,7 +527,7 @@ export class CategoryService {
         .order('name');
 
       if (error) {
-        console.error('Error fetching categories by level:', error);
+        
         return { data: [], error: error.message };
       }
 
@@ -549,7 +549,7 @@ export class CategoryService {
 
       return { data: categoriesWithCounts, error: null };
     } catch (error) {
-      console.error('Error in getCategoriesByLevelWithCounts:', error);
+      
       return { data: [], error: 'Failed to fetch categories with counts' };
     }
   }
@@ -611,7 +611,7 @@ export class CategoryService {
 
       return { data: breadcrumb, error: null };
     } catch (error) {
-      console.error('Error in getCompleteBreadcrumb:', error);
+      
       return { data: [], error: 'Failed to build complete breadcrumb' };
     }
   }

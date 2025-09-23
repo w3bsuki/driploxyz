@@ -41,11 +41,11 @@ export interface ProductUIFields {
   }>;
 
   // Legacy compatibility properties (marked for future removal)
-  /** @deprecated Use seller_id instead - TODO: Remove after all consumers migrated */
+  /** @deprecated Use seller_id instead */
   sellerId: string;
-  /** @deprecated Use created_at instead - TODO: Remove after all consumers migrated */
+  /** @deprecated Use created_at instead */
   createdAt: string;
-  /** @deprecated Use is_featured from database - TODO: Remove after all consumers migrated */
+  /** @deprecated Use is_featured from database */
   is_promoted?: boolean;
 }
 

@@ -109,7 +109,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		});
 
 	} catch (error) {
-		console.error('Error fetching reviews:', error);
+		
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };

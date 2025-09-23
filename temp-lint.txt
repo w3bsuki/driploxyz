@@ -1,0 +1,948 @@
+
+K:\driplo-turbo-1\apps\web\src\lib\components\Toast.svelte
+  83:34  error  svelte-ignore comment is used, but not warned  svelte/no-unused-svelte-ignore
+  84:15  error  `{@html}` can lead to XSS attack               svelte/no-at-html-tags
+
+K:\driplo-turbo-1\apps\web\src\lib\components\VirtualProductGrid.svelte
+  108:11  error  '_isVisible' is not defined  no-undef
+
+K:\driplo-turbo-1\apps\web\src\lib\cookies\production-cookie-system.ts
+  24:6  error  'CookieName' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\email\resend.ts
+  22:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  54:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  91:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\env\validation.ts
+  49:7  error  'envSchema' is assigned a value but only used as a type  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\examples\PerformanceOptimizationExample.svelte
+   7:12  error  'page' is defined but never used                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   9:3   error  '$lib/components/VirtualProductGrid.svelte' import is restricted from being used by a pattern. Import from @repo/ui instead when equivalent component exists. Check packages/ui/src/lib/index.ts for available components  no-restricted-imports
+  10:3   error  '$lib/components/OptimizedImage.svelte' import is restricted from being used by a pattern. Import from @repo/ui instead when equivalent component exists. Check packages/ui/src/lib/index.ts for available components      no-restricted-imports
+  22:7   error  'cacheStats' is assigned a value but never used                                                                                                                                                                            @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\jobs\slug-processor.ts
+  78:37  error  '_batchSize' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  89:36  error  '_olderThanDays' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\middleware\error-handler.ts
+  276:5  error  Unnecessary try/catch wrapper  no-useless-catch
+
+K:\driplo-turbo-1\apps\web\src\lib\middleware\security.ts
+  332:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\monitoring\performance.ts
+   84:16  error  'e' is defined but never used             @typescript-eslint/no-unused-vars
+   99:16  error  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  118:16  error  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  658:91  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  674:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  695:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  698:68  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\security\rate-limiter.ts
+  236:71  error  Unexpected any. Specify a different type                                                                                 @typescript-eslint/no-explicit-any
+  240:29  error  The `Function` type accepts any function-like value.
+Prefer explicitly defining any function parameters and return type  @typescript-eslint/no-unsafe-function-type
+  241:53  error  Unexpected any. Specify a different type                                                                                 @typescript-eslint/no-explicit-any
+  271:16  error  'error' is defined but never used                                                                                        @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\server\api.ts
+  34:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\server\categories.remote.ts
+   34:11  error  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+  158:54  error  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+  171:46  error  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+  179:12  error  'fallbackError' is defined but never used  @typescript-eslint/no-unused-vars
+  239:50  error  Empty block statement                      no-empty
+  375:12  error  'error' is defined but never used          @typescript-eslint/no-unused-vars
+  448:12  error  'error' is defined but never used          @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\server\country.ts
+  13:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  60:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\server\csrf.ts
+  163:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  203:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\server\env.ts
+  2:15  error  'RequestEvent' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\server\error-handler.ts
+  225:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\server\hooks.ts
+  69:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\server\i18n.ts
+  31:65  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  66:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  74:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  75:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\server\products.ts
+  118:19  error  '_uploadData' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\server\reviews.ts
+   29:11  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  112:14  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  196:14  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\server\sentry-config.ts
+   33:25  error  '_hint' is defined but never used         @typescript-eslint/no-unused-vars
+  107:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  142:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  158:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  170:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  180:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  192:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  223:12  error  'sentryError' is defined but never used   @typescript-eslint/no-unused-vars
+  243:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\server\sentry.ts
+  2:15  error  'RequestEvent' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\server\slug-validation.ts
+  172:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  172:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  263:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\server\utils.ts
+  44:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\server\validation.ts
+  50:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\server\virtual-categories.ts
+   80:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   97:69  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  111:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\services\ConversationService.ts
+   15:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   16:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   17:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   18:11  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   52:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  143:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  206:69  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  254:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  306:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  395:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  399:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\services\OrderService.ts
+   17:19  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  178:38  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  226:53  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  227:24  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  289:5   error  Unexpected lexical declaration in case block  no-case-declarations
+  290:5   error  Unexpected lexical declaration in case block  no-case-declarations
+  305:5   error  Unexpected lexical declaration in case block  no-case-declarations
+  306:5   error  Unexpected lexical declaration in case block  no-case-declarations
+
+K:\driplo-turbo-1\apps\web\src\lib\services\ReviewService.ts
+  130:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  447:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\services\boost.ts
+  153:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  189:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  307:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\services\categories.ts
+   46:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+   70:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+   94:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  151:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  176:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  201:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  227:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  252:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  278:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  305:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  350:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  390:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  438:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  489:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  510:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  551:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  613:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\services\favorites.ts
+  215:14  error  'error' is defined but never used           @typescript-eslint/no-unused-vars
+  231:21  error  '_data' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\services\index.ts
+  258:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\services\notifications.ts
+  122:3   error  '_priority' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  124:3   error  '_relatedTable' is defined but never used       @typescript-eslint/no-unused-vars
+  145:3   error  '_metadata' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  145:29  error  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  148:17  error  '_log' is assigned a value but never used       @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\services\products.ts
+  166:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  315:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  344:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  371:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  439:26  error  Empty block statement              no-empty
+  465:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  486:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  511:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  532:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  543:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  543:21  error  Empty block statement              no-empty
+  667:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  839:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  895:14  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\services\profiles.ts
+   48:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+   74:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  129:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  156:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  179:21  error  '_data' is assigned a value but never used             @typescript-eslint/no-unused-vars
+  193:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  202:46  error  '_daysBack' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  208:14  error  '_productsResult' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  208:31  error  '_salesResult' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  208:45  error  '_favoritesResult' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  243:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  281:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  304:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  337:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  388:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  410:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  431:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  454:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  481:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  513:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  545:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+  564:14  error  'error' is defined but never used                      @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\services\realtimeNotifications.ts
+  38:12  error  '_payload' is defined but never used      @typescript-eslint/no-unused-vars
+  53:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\services\stripe.ts
+  491:42  error  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  492:47  error  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  585:21  error  '_metadata' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  590:36  error  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  591:53  error  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  592:51  error  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  624:38  error  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\services\subscriptions.ts
+   63:3   error  '_discountCode' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  197:31  error  '_userId' is defined but never used                 @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\services\trending.ts
+   74:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  102:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\stores\auth.svelte.ts
+  157:16  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  166:16  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  175:16  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\stores\categories-cache.svelte.ts
+  26:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  27:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\stores\favorites.svelte.ts
+   95:16  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  111:16  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  119:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  136:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  194:60  error  '_viewCount' is defined but never used    @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\stores\follow.svelte.ts
+  103:16  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  119:16  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\stores\notifications.svelte.ts
+   21:14  error  'e' is defined but never used  @typescript-eslint/no-unused-vars
+   94:14  error  'e' is defined but never used  @typescript-eslint/no-unused-vars
+  199:16  error  'e' is defined but never used  @typescript-eslint/no-unused-vars
+  225:16  error  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\stores\orderSubscription.svelte.ts
+  45:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  64:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  84:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\stores\product-filter.svelte.ts
+   36:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   45:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   48:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   64:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   65:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   75:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  104:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  199:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  201:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  215:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  216:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  231:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  236:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  277:14  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  277:21  error  Empty block statement                     no-empty
+  289:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  291:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  301:14  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  301:21  error  Empty block statement                     no-empty
+  312:14  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  312:21  error  Empty block statement                     no-empty
+  317:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  321:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  323:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\stripe\types.ts
+  249:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  267:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  274:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  279:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  382:20  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  383:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  392:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\supabase\country-queries.ts
+  122:56  error  Unexpected any. Specify a different type                                                                                 @typescript-eslint/no-explicit-any
+  181:16  error  Unexpected any. Specify a different type                                                                                 @typescript-eslint/no-explicit-any
+  239:51  error  The `Function` type accepts any function-like value.
+Prefer explicitly defining any function parameters and return type  @typescript-eslint/no-unsafe-function-type
+
+K:\driplo-turbo-1\apps\web\src\lib\supabase\storage.ts
+   17:12  error  'error' is defined but never used            @typescript-eslint/no-unused-vars
+   35:3   error  Unnecessary try/catch wrapper                no-useless-catch
+   54:14  error  'conversionError' is defined but never used  @typescript-eslint/no-unused-vars
+  116:28  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  158:11  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  211:14  error  'error' is defined but never used            @typescript-eslint/no-unused-vars
+  272:3   error  Unnecessary try/catch wrapper                no-useless-catch
+
+K:\driplo-turbo-1\apps\web\src\lib\tutorial\manager.ts
+  79:12  error  'e' is defined but never used  @typescript-eslint/no-unused-vars
+  96:12  error  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\utils\date.ts
+  25:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  89:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\utils\debounce.ts
+   6:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   6:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\utils\error-handling.ts
+  274:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  285:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  293:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\utils\form-accessibility.ts
+  10:15  error  '_' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\utils\form-validation.svelte.ts
+  115:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  156:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  323:86  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  339:86  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  351:86  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\utils\imageAnalysis.ts
+  195:3  error  '_imageUrl' is defined but never used  @typescript-eslint/no-unused-vars
+  196:3  error  '_apiKey' is defined but never used    @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\utils\language-switcher.ts
+  48:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  88:12  error  'e' is defined but never used      @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\utils\messages-error-handler.ts
+   6:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  11:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  11:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  41:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  76:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\utils\payments.ts
+  251:4   error  Unexpected lexical declaration in case block  no-case-declarations
+  320:56  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  363:55  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  411:4   error  Unexpected lexical declaration in case block  no-case-declarations
+  412:4   error  Unexpected lexical declaration in case block  no-case-declarations
+  422:22  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\utils\price.ts
+  38:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\lib\utils\seo-urls.ts
+   71:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  247:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\lib\utils\validation.ts
+  245:27  error  Unnecessary escape character: \+  no-useless-escape
+  246:55  error  Unnecessary escape character: \(  no-useless-escape
+  246:57  error  Unnecessary escape character: \)  no-useless-escape
+
+K:\driplo-turbo-1\apps\web\src\lib\utils\viewTracking.ts
+   25:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  103:14  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  133:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\(admin)\admin\+page.server.ts
+  45:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(admin)\admin\+page.svelte
+  2:12  error  'Button' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(admin)\admin\payouts\+page.server.ts
+  87:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(admin)\admin\payouts\+page.svelte
+    4:12  error  'page' is defined but never used          @typescript-eslint/no-unused-vars
+   83:14  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+   94:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  135:14  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(auth)\+layout.svelte
+  6:9  error  'data' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(auth)\forgot-password\+page.svelte
+  56:23  error  'result' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(auth)\login\+page.svelte
+   10:3   error  '$lib/components/forms/FormField.svelte' import is restricted from being used by a pattern. Import from @repo/ui instead when equivalent component exists. Check packages/ui/src/lib/index.ts for available components  no-restricted-imports
+   42:9   error  'formData' is not defined                                                                                                                                                                                               no-undef
+  145:23  error  'result' is defined but never used                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(auth)\signup\+page.svelte
+   2:12  error  'goto' is defined but never used                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  10:3   error  '$lib/components/forms/FormField.svelte' import is restricted from being used by a pattern. Import from @repo/ui instead when equivalent component exists. Check packages/ui/src/lib/index.ts for available components  no-restricted-imports
+  12:9   error  'data' is assigned a value but never used                                                                                                                                                                               @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(auth)\verify-email\+page.svelte
+  32:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\account\+page.svelte
+  2:28  error  'ProductCard' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\become-seller\+page.svelte
+  3:15  error  'i18n' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\checkout\[productId]\+page.svelte
+    2:11  error  'page' is defined but never used                  @typescript-eslint/no-unused-vars
+    5:28  error  'PaymentForm' is defined but never used           @typescript-eslint/no-unused-vars
+   18:14  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+   19:16  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+   27:8   error  'totalAmount' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  113:12  error  'err' is defined but never used                   @typescript-eslint/no-unused-vars
+  119:11  error  'handlePaymentError' is defined but never used    @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\checkout\[productId]\+page.ts
+  18:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\checkout\bundle\+page.svelte
+   5:11  error  'CheckoutSummary' is defined but never used  @typescript-eslint/no-unused-vars
+   6:14  error  'i18n' is defined but never used             @typescript-eslint/no-unused-vars
+   8:14  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+   9:16  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  13:27  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  14:29  error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  33:12  error  'err' is defined but never used              @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\dashboard\+page.svelte
+    2:20  error  'Avatar' is defined but never used            @typescript-eslint/no-unused-vars
+    2:28  error  'ProductCard' is defined but never used       @typescript-eslint/no-unused-vars
+    2:62  error  'ListItemSkeleton' is defined but never used  @typescript-eslint/no-unused-vars
+    2:99  error  'Product' is defined but never used           @typescript-eslint/no-unused-vars
+    4:12  error  'page' is defined but never used              @typescript-eslint/no-unused-vars
+   20:36  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  122:41  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  263:28  error  '_' is defined but never used                 @typescript-eslint/no-unused-vars
+  289:32  error  '_' is defined but never used                 @typescript-eslint/no-unused-vars
+  342:30  error  '_' is defined but never used                 @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\dashboard\earnings\+page.svelte
+   94:14  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  101:39  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\dashboard\order-management\+page.svelte
+    7:12  error  'page' is defined but never used                                                                            @typescript-eslint/no-unused-vars
+   20:30  error  Unexpected any. Specify a different type                                                                    @typescript-eslint/no-explicit-any
+   24:28  error  Unexpected any. Specify a different type                                                                    @typescript-eslint/no-explicit-any
+   86:25  error  Unexpected any. Specify a different type                                                                    @typescript-eslint/no-explicit-any
+  117:14  error  'error' is defined but never used                                                                           @typescript-eslint/no-unused-vars
+  124:37  error  Unexpected any. Specify a different type                                                                    @typescript-eslint/no-explicit-any
+  139:41  error  Unexpected any. Specify a different type                                                                    @typescript-eslint/no-explicit-any
+  148:35  error  Unexpected any. Specify a different type                                                                    @typescript-eslint/no-explicit-any
+  211:12  error  'formatDate' is defined but never used                                                                      @typescript-eslint/no-unused-vars
+  614:51  error  Optional chain expressions can return undefined by design - using a non-null assertion is unsafe and wrong  @typescript-eslint/no-non-null-asserted-optional-chain
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\dashboard\sales\+page.server.ts
+  52:24  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  92:12  error  'err' is defined but never used           @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\dashboard\sales\+page.svelte
+  2:20  error  'Avatar' is defined but never used       @typescript-eslint/no-unused-vars
+  2:28  error  'ProductCard' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\dashboard\upgrade\+page.server.ts
+  20:21  error  Empty block statement                     no-empty
+  56:28  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  69:31  error  Empty block statement                     no-empty
+  82:25  error  Empty block statement                     no-empty
+  95:21  error  Empty block statement                     no-empty
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\dashboard\upgrade\+page.svelte
+    2:20  error  'PricingCard' is defined but never used       @typescript-eslint/no-unused-vars
+   16:15  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+   19:9   error  'plans' is assigned a value but never used    @typescript-eslint/no-unused-vars
+   21:9   error  'profile' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   22:9   error  'user' is assigned a value but never used     @typescript-eslint/no-unused-vars
+   32:12  error  'hasActivePlan' is defined but never used     @typescript-eslint/no-unused-vars
+   90:14  error  'error' is defined but never used             @typescript-eslint/no-unused-vars
+  126:14  error  'error' is defined but never used             @typescript-eslint/no-unused-vars
+  139:12  error  'getPlanFeatures' is defined but never used   @typescript-eslint/no-unused-vars
+  163:12  error  'getPlanIcon' is defined but never used       @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\favorites\+page.server.ts
+  47:68  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  65:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\favorites\+page.svelte
+   2:33  error  'Avatar' is defined but never used        @typescript-eslint/no-unused-vars
+   2:54  error  'Product' is defined but never used       @typescript-eslint/no-unused-vars
+  17:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  69:14  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  69:21  error  Empty block statement                     no-empty
+  74:26  error  'productId' is defined but never used     @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\listings\+page.svelte
+   2:20  error  'ProductCard' is defined but never used   @typescript-eslint/no-unused-vars
+  31:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  38:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\messages\+page.server.ts
+   18:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   19:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   31:81  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   39:73  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   61:76  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   67:67  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   90:22  error  Empty block statement                     no-empty
+  148:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\messages\ModularMessages.svelte
+   8:3   error  '$lib/components/modular/ConversationSidebar.svelte' import is restricted from being used by a pattern. Import from @repo/ui instead when equivalent component exists. Check packages/ui/src/lib/index.ts for available components  no-restricted-imports
+   9:3   error  '$lib/components/modular/ChatWindow.svelte' import is restricted from being used by a pattern. Import from @repo/ui instead when equivalent component exists. Check packages/ui/src/lib/index.ts for available components           no-restricted-imports
+  10:3   error  '$lib/components/modular/ConnectionStatus.svelte' import is restricted from being used by a pattern. Import from @repo/ui instead when equivalent component exists. Check packages/ui/src/lib/index.ts for available components     no-restricted-imports
+  25:47  error  'Message' is not defined                                                                                                                                                                                                            no-undef
+  27:7   error  'showSidebarOnMobile' is assigned a value but never used                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  31:7   error  'isLoadingConversation' is assigned a value but never used                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  50:60  error  Unexpected any. Specify a different type                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+  57:58  error  Unexpected any. Specify a different type                                                                                                                                                                                            @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\messages\new\+page.svelte
+  46:14  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\onboarding\+page.server.ts
+  164:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\onboarding\+page.svelte
+   11:12  error  'goto' is defined but never used                           @typescript-eslint/no-unused-vars
+   11:18  error  'invalidateAll' is defined but never used                  @typescript-eslint/no-unused-vars
+   16:12  error  'page' is defined but never used                           @typescript-eslint/no-unused-vars
+   24:12  error  'scrollIntoView' is defined but never used                 @typescript-eslint/no-unused-vars
+   56:7   error  'languageInitialized' is assigned a value but never used   @typescript-eslint/no-unused-vars
+   57:7   error  'completionInProgress' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   58:7   error  'showValidationError' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  250:18  error  'handleAvatarUpload' is defined but never used             @typescript-eslint/no-unused-vars
+  265:14  error  'error' is defined but never used                          @typescript-eslint/no-unused-vars
+  279:12  error  'handlePayoutMethodChange' is defined but never used       @typescript-eslint/no-unused-vars
+  283:12  error  'handlePayoutDetailsChange' is defined but never used      @typescript-eslint/no-unused-vars
+  287:12  error  'handlePayoutNameChange' is defined but never used         @typescript-eslint/no-unused-vars
+  382:37  error  '_' is defined but never used                              @typescript-eslint/no-unused-vars
+  454:37  error  '_' is defined but never used                              @typescript-eslint/no-unused-vars
+  535:37  error  '_' is defined but never used                              @typescript-eslint/no-unused-vars
+  579:37  error  '_' is defined but never used                              @typescript-eslint/no-unused-vars
+  593:35  error  'update' is defined but never used                         @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\orders\+page.server.ts
+   54:21  error  Empty block statement                     no-empty
+   58:22  error  Empty block statement                     no-empty
+   68:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   89:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  147:12  error  'err' is defined but never used           @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\orders\+page.svelte
+   2:20  error  'Avatar' is defined but never used        @typescript-eslint/no-unused-vars
+  63:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  68:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\payment\success\+page.svelte
+   9:8   error  'paymentIntentId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  11:20  error  Unexpected any. Specify a different type              @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\product\[id]\edit\+page.svelte
+  15:7  error  'currentTag' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\sell\+page.server.ts
+   50:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  250:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\sell\+page.svelte
+   12:12  error  'scrollIntoView' is defined but never used          @typescript-eslint/no-unused-vars
+   33:7   error  'isProgressing' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  102:9   error  'sizeOptions' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  129:16  error  'error' is defined but never used                   @typescript-eslint/no-unused-vars
+  160:14  error  'error' is defined but never used                   @typescript-eslint/no-unused-vars
+  160:21  error  Empty block statement                               no-empty
+  183:14  error  'error' is defined but never used                   @typescript-eslint/no-unused-vars
+  183:21  error  Empty block statement                               no-empty
+  229:18  error  'error' is defined but never used                   @typescript-eslint/no-unused-vars
+  229:25  error  Empty block statement                               no-empty
+  235:7   error  Unnecessary catch clause                            no-useless-catch
+  295:12  error  'getStepInstructions' is defined but never used     @typescript-eslint/no-unused-vars
+  471:25  error  'error' is defined but never used                   @typescript-eslint/no-unused-vars
+  482:33  error  'field' is defined but never used                   @typescript-eslint/no-unused-vars
+  482:40  error  'value' is defined but never used                   @typescript-eslint/no-unused-vars
+  495:25  error  'error' is defined but never used                   @typescript-eslint/no-unused-vars
+  549:25  error  'error' is defined but never used                   @typescript-eslint/no-unused-vars
+  560:33  error  'field' is defined but never used                   @typescript-eslint/no-unused-vars
+  560:40  error  'value' is defined but never used                   @typescript-eslint/no-unused-vars
+  563:31  error  'field' is defined but never used                   @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\sell\components\StepCategory.svelte
+   19:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   23:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  228:34  error  '_' is defined but never used             @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\sell\components\StepCollection.svelte
+   3:15  error  'i18n' is defined but never used              @typescript-eslint/no-unused-vars
+  18:22  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  30:5   error  'touched' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\sell\components\StepPhotosAndBasicInfo.svelte
+    2:35  error  'Input' is defined but never used                        @typescript-eslint/no-unused-vars
+    2:42  error  'CollapsibleCategorySelector' is defined but never used  @typescript-eslint/no-unused-vars
+   18:22  error  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   25:43  error  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   31:5   error  'categories' is assigned a value but never used          @typescript-eslint/no-unused-vars
+  188:20  error  Unexpected function in text mustache interpolation       svelte/no-object-in-text-mustaches
+  194:18  error  Unexpected function in text mustache interpolation       svelte/no-object-in-text-mustaches
+  199:22  error  Unexpected function in text mustache interpolation       svelte/no-object-in-text-mustaches
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\sell\components\StepPhotosDetails.svelte
+  26:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\sell\components\StepPhotosOnly.svelte
+   6:15  error  Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+  11:43  error  Unexpected any. Specify a different type            @typescript-eslint/no-explicit-any
+  20:5   error  'onFieldChange' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\sell\components\StepPricing.svelte
+  22:22  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+  28:43  error  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+  39:5   error  'onFieldBlur' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\sell\components\StepProductInfo.svelte
+   2:12  error  'Input' is defined but never used         @typescript-eslint/no-unused-vars
+  13:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:44  error  '_' is defined but never used             @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\settings\+page.svelte
+    2:12  error  'goto' is defined but never used          @typescript-eslint/no-unused-vars
+    5:15  error  'i18n' is defined but never used          @typescript-eslint/no-unused-vars
+  169:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\(protected)\welcome\+page.server.ts
+  37:12  error  Empty block statement  no-empty
+
+K:\driplo-turbo-1\apps\web\src\routes\+error.svelte
+    6:28  error  'ErrorDetails' is defined but never used  @typescript-eslint/no-unused-vars
+   10:39  error  'App' is not defined                      no-undef
+  109:12  error  'retryError' is defined but never used    @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\+layout.server.ts
+  28:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  38:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  45:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\+layout.svelte
+    9:12   error  'ProductionCookieManager' is defined but never used                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   11:3    error  '$lib/components/Header.svelte' import is restricted from being used by a pattern. Import from @repo/ui instead when equivalent component exists. Check packages/ui/src/lib/index.ts for available components                 no-restricted-imports
+   21:63   error  'LanguageSwitcher' is defined but never used                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   21:145  error  'MainPageSearchBar' is defined but never used                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   22:3    error  '$lib/components/Toast.svelte' import is restricted from being used by a pattern. Import from @repo/ui instead when equivalent component exists. Check packages/ui/src/lib/index.ts for available components                  no-restricted-imports
+   23:3    error  '$lib/components/ErrorBoundary.svelte' import is restricted from being used by a pattern. Import from @repo/ui instead when equivalent component exists. Check packages/ui/src/lib/index.ts for available components          no-restricted-imports
+   24:3    error  '$lib/components/RealtimeErrorBoundary.svelte' import is restricted from being used by a pattern. Import from @repo/ui instead when equivalent component exists. Check packages/ui/src/lib/index.ts for available components  no-restricted-imports
+   25:3    error  '$lib/components/RegionSwitchModal.svelte' import is restricted from being used by a pattern. Import from @repo/ui instead when equivalent component exists. Check packages/ui/src/lib/index.ts for available components      no-restricted-imports
+   39:32   error  'consent' is defined but never used                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   39:41   error  Unexpected any. Specify a different type                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+   69:20   error  'e' is defined but never used                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  112:9    error  'shouldShowMainPageSearch' is assigned a value but never used                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  235:9    error  'virtualCategories' is assigned a value but never used                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  261:43   error  Unexpected any. Specify a different type                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  267:14   error  'error' is defined but never used                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  268:54   error  Unexpected any. Specify a different type                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  279:53   error  '_level' is assigned a value but never used                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+  279:73   error  '_path' is assigned a value but never used                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+  284:57   error  Unexpected any. Specify a different type                                                                                                                                                                                      @typescript-eslint/no-explicit-any
+  326:12   error  'handleStickyConditionFilter' is defined but never used                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  334:12   error  'handleStickyNavigateAll' is defined but never used                                                                                                                                                                           @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\+layout.ts
+  55:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  58:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  60:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  60:19  error  Empty block statement                     no-empty
+  72:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  73:12  error  'e' is defined but never used             @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\+page.server.ts
+   23:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   24:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  195:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  233:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  235:79  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  286:75  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\+page.svelte
+   351:19  error  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   373:8   error  'topSellers' is assigned a value but never used                @typescript-eslint/no-unused-vars
+   406:11  error  'handleSearch' is defined but never used                       @typescript-eslint/no-unused-vars
+   423:11  error  'handleMainPageFilterChange' is defined but never used         @typescript-eslint/no-unused-vars
+   423:58  error  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   484:12  error  'e' is defined but never used                                  @typescript-eslint/no-unused-vars
+   490:17  error  'handleQuickSearch' is defined but never used                  @typescript-eslint/no-unused-vars
+   499:12  error  'error' is defined but never used                              @typescript-eslint/no-unused-vars
+   513:11  error  'handleSearchResultClick' is defined but never used            @typescript-eslint/no-unused-vars
+   513:43  error  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   523:11  error  'handleDropdownCategorySelect' is defined but never used       @typescript-eslint/no-unused-vars
+   523:50  error  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   527:11  error  'handleDropdownSellerSelect' is defined but never used         @typescript-eslint/no-unused-vars
+   527:46  error  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   531:11  error  'handleDropdownCollectionSelect' is defined but never used     @typescript-eslint/no-unused-vars
+   531:54  error  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   573:12  error  'error' is defined but never used                              @typescript-eslint/no-unused-vars
+   649:4   error  Duplicate key 'Accessories'                                    no-dupe-keys
+   650:4   error  Duplicate key 'Bags'                                           no-dupe-keys
+   689:11  error  'handlePartnerClick' is defined but never used                 @typescript-eslint/no-unused-vars
+   689:39  error  Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   744:11  error  'handleFilter' is defined but never used                       @typescript-eslint/no-unused-vars
+   749:17  error  'prefetchCategoryPage' is defined but never used               @typescript-eslint/no-unused-vars
+   755:12  error  'e' is defined but never used                                  @typescript-eslint/no-unused-vars
+   761:11  error  'handlePillKeyNav' is defined but never used                   @typescript-eslint/no-unused-vars
+   789:17  error  'navigateToCategory' is defined but never used                 @typescript-eslint/no-unused-vars
+   800:17  error  'navigateToAllSearch' is defined but never used                @typescript-eslint/no-unused-vars
+   869:11  error  'handleQuickCondition' is defined but never used               @typescript-eslint/no-unused-vars
+   883:8   error  'heroQuickFilters' is assigned a value but never used          @typescript-eslint/no-unused-vars
+   893:11  error  'handleHeroFilterClick' is defined but never used              @typescript-eslint/no-unused-vars
+   950:8   error  'promotedCategoryFilters' is assigned a value but never used   @typescript-eslint/no-unused-vars
+   957:8   error  'promotedConditionFilters' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   963:11  error  'handlePromotedFilterChange' is defined but never used         @typescript-eslint/no-unused-vars
+   989:12  error  'err' is defined but never used                                @typescript-eslint/no-unused-vars
+   995:8   error  'filteredPromotedProducts' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  1149:25  error  '_' is defined but never used                                  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\[...slug]\+page.server.ts
+   87:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  196:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\api\admin\archive-orders\+server.ts
+   63:12  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+  105:12  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\auth\resend-verification\+server.ts
+  124:12  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\checkout\confirm\+server.ts
+  59:12  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\client-info\+server.ts
+  19:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\cron\archive-orders\+server.ts
+  48:12  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\favorites\+server.ts
+  29:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  59:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\favorites\[productId]\+server.ts
+    6:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  114:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  170:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\favorites\cleanup\+server.ts
+  27:12  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\favorites\status\+server.ts
+  68:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\followers\toggle\+server.ts
+  77:12  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\health\+server.ts
+   29:12  error  'e' is defined but never used    @typescript-eslint/no-unused-vars
+   39:12  error  'e' is defined but never used    @typescript-eslint/no-unused-vars
+   51:12  error  'e' is defined but never used    @typescript-eslint/no-unused-vars
+  114:11  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\jobs\process-slugs\+server.ts
+  21:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  30:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  39:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  40:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  49:9  error  Unexpected lexical declaration in case block  no-case-declarations
+  50:9  error  Unexpected lexical declaration in case block  no-case-declarations
+
+K:\driplo-turbo-1\apps\web\src\routes\api\onboarding\complete\+server.ts
+  43:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\orders\[id]\+server.ts
+  121:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\api\orders\[id]\status\+server.ts
+  7:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\api\payments\create-intent\+server.ts
+  38:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\api\products\[id]\+server.ts
+  36:11  error  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\products\price-suggestions\+server.ts
+  22:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\profile\update-account-type\+server.ts
+  83:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\reviews\+server.ts
+  161:11  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\reviews\[sellerId]\+server.ts
+  111:11  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\reviews\order\[orderId]\+server.ts
+  43:40  error  '_reviewError' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  79:11  error  'error' is defined but never used                  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\search\+server.ts
+  128:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  172:12  error  'e' is defined but never used             @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\sellers\[sellerId]\products\+server.ts
+  76:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\stripe-debug\+server.ts
+  30:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  50:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\api\subscription-plans\+server.ts
+  21:12  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\subscriptions\create\+server.ts
+  90:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\api\subscriptions\validate-discount\+server.ts
+  64:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  83:12  error  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\validate-slug\+server.ts
+  66:16  error  'dbError' is defined but never used          @typescript-eslint/no-unused-vars
+  84:12  error  'validationError' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\api\webhooks\stripe\subscriptions\+server.ts
+  23:14  error  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  73:9   error  Unexpected lexical declaration in case block  no-case-declarations
+
+K:\driplo-turbo-1\apps\web\src\routes\auth\confirm\+server.ts
+  37:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\brands\+page.server.ts
+  120:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  126:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\brands\+page.svelte
+  14:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\category\[...segments]\+page.svelte
+  367:47  error  Parsing error: Unexpected keyword or identifier
+
+K:\driplo-turbo-1\apps\web\src\routes\category\slug_disabled\+page.server.ts
+  6:27  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\category\slug_disabled\+page.svelte
+    4:142  error  'BreadcrumbItem' is defined but never used   @typescript-eslint/no-unused-vars
+  103:33   error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  131:31   error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  134:36   error  Unexpected any. Specify a different type     @typescript-eslint/no-explicit-any
+  151:9    error  'brands' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  182:12   error  'clearAllFilters' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\collection\[slug]\+page.server.ts
+  2:17  error  'redirect' is defined but never used         @typescript-eslint/no-unused-vars
+  4:15  error  'BrandCollection' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\collection\[slug]\+page.svelte
+   2:12  error  'page' is defined but never used                    @typescript-eslint/no-unused-vars
+   4:12  error  'FeaturedProducts' is defined but never used        @typescript-eslint/no-unused-vars
+   4:43  error  'LoadingSpinner' is defined but never used          @typescript-eslint/no-unused-vars
+   4:59  error  'CategoryPill' is defined but never used            @typescript-eslint/no-unused-vars
+  12:34  error  'CollectionWithProducts' is defined but never used  @typescript-eslint/no-unused-vars
+  93:14  error  'error' is defined but never used                   @typescript-eslint/no-unused-vars
+  98:18  error  'handlePurchase' is defined but never used          @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\designer\+page.svelte
+  11:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\drip\+page.svelte
+  11:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\pro\+page.svelte
+  8:12  error  'getProductUrl' is defined but never used  @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\product\[seller]\[slug]\+page.svelte
+   77:14  error  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  187:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  231:70  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\profile\[id]\+page.server.ts
+  32:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\profile\[id]\+page.svelte
+   2:28  error  'ProductCard' is defined but never used   @typescript-eslint/no-unused-vars
+  20:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+K:\driplo-turbo-1\apps\web\src\routes\search\+page.server.ts
+   14:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   83:12  error  'err' is defined but never used           @typescript-eslint/no-unused-vars
+   93:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   94:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   95:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  304:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  424:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  442:40  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  503:12  error  'err' is defined but never used           @typescript-eslint/no-unused-vars
+
+K:\driplo-turbo-1\apps\web\src\routes\sellers\+page.svelte
+  32:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+✖ 619 problems (619 errors, 0 warnings)
+

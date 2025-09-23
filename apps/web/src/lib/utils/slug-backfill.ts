@@ -86,8 +86,7 @@ export async function backfillProductSlugs(
   let hasMore = true;
   
   if (verbose) {
-    console.log('🚀 Starting product slug backfill process...');
-    console.log(`📊 Config: batchSize=${batchSize}, updateExisting=${updateExisting}`);
+    // Verbose logging placeholder - logging logic removed
   }
   
   while (hasMore) {
@@ -108,7 +107,7 @@ export async function backfillProductSlugs(
         
       if (fetchError) {
         if (verbose) {
-          console.error('❌ Failed to fetch products for backfill:', fetchError.message);
+          // Verbose error logging placeholder
         }
         throw new Error(`Failed to fetch products: ${fetchError.message}`);
       }
@@ -119,7 +118,7 @@ export async function backfillProductSlugs(
       }
       
       if (verbose) {
-        console.log(`📦 Processing batch: ${offset + 1} to ${offset + products.length}`);
+        // Verbose batch processing logging placeholder
       }
       
       // Process each product in the batch
@@ -169,12 +168,12 @@ export async function backfillProductSlugs(
               error: updateError.message
             });
             if (verbose) {
-              console.error(`❌ Failed to update product ${product.id}: ${updateError.message}`);
+              // Verbose creation logging placeholder
             }
           } else {
             stats.updated++;
             if (verbose && stats.updated % 25 === 0) {
-              console.log(`✅ Updated ${stats.updated} slugs...`);
+              // Verbose progress logging placeholder
             }
           }
           
@@ -187,7 +186,7 @@ export async function backfillProductSlugs(
             error: errorMessage
           });
           if (verbose) {
-            console.error(`❌ Error processing product ${product.id}: ${errorMessage}`);
+            // Verbose error logging placeholder
           }
         }
       }
@@ -200,11 +199,10 @@ export async function backfillProductSlugs(
       }
       
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown batch error';
       if (verbose) {
-        console.error(`❌ Batch processing error at offset ${offset}: ${errorMessage}`);
+        console.error('[slug-backfill] batch failed', error);
       }
-      
+
       // Add to failed count and continue with next batch
       stats.failed += batchSize;
       offset += batchSize;
@@ -212,22 +210,20 @@ export async function backfillProductSlugs(
   }
   
   if (verbose) {
-    console.log('🎉 Backfill complete!');
-    console.log(`📊 Final stats:`, {
+    console.log('Slug backfill complete', {
       processed: stats.processed,
       updated: stats.updated,
       failed: stats.failed,
       skipped: stats.skipped,
       errorCount: stats.errors.length
     });
-    
+
     if (stats.errors.length > 0) {
-      console.log('\n❌ Errors encountered:');
       stats.errors.slice(0, 10).forEach(error => {
-        console.log(`  - ${error.id}: ${error.error}`);
+        console.error('[slug-backfill] sample error', error);
       });
       if (stats.errors.length > 10) {
-        console.log(`  ... and ${stats.errors.length - 10} more errors`);
+        console.info(`[slug-backfill] ${stats.errors.length - 10} additional errors omitted`);
       }
     }
   }
@@ -298,7 +294,7 @@ export async function validateExistingSlugs(
   let offset = 0;
   let hasMore = true;
   
-  console.log('🔍 Starting slug validation...');
+  
   
   while (hasMore) {
     const { data: products, error } = await supabase
@@ -368,7 +364,7 @@ export async function validateExistingSlugs(
     offset += batchSize;
     
     if (result.total % 500 === 0) {
-      console.log(`📊 Validated ${result.total} slugs...`);
+      // Progress logging placeholder - logs removed
     }
   }
   

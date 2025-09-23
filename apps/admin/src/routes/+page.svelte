@@ -1,8 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import { onMount } from 'svelte';
-	// TODO: Create AdminDashboard component in @repo/ui or move to local components
-	// import { AdminDashboard } from '@repo/ui';
 	import { goto } from '$app/navigation';
 
 	interface Props {
@@ -50,16 +48,6 @@
 	};
 </script>
 
-<!-- TODO: Replace with proper AdminDashboard component -->
-{#if activeView === 'overview'}
-	<div class="min-h-screen bg-gray-50">
-		<div class="container mx-auto px-4 py-8">
-			<div class="mb-8">
-				<h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-				<p class="text-gray-600 mt-2">Welcome back, {data.user?.email}</p>
-			</div>
-
-		<!-- Quick Stats -->
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 			<div class="bg-white rounded-lg shadow p-6">
 				<div class="flex items-center justify-between">
@@ -175,7 +163,4 @@
 					</div>
 				</div>
 			</div>
-			</div>
 		</div>
-	</div>
-{/if}

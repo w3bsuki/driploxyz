@@ -275,7 +275,7 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
         hasPersistentFilters = true;
       }
     } catch (error) {
-      console.warn('Failed to load persisted filters:', error);
+      
     }
   }
   
@@ -299,7 +299,7 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
         clearPersistedFilters();
       }
     } catch (error) {
-      console.warn('Failed to persist filters:', error);
+      
     }
   }
   
@@ -310,7 +310,7 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
       localStorage.removeItem('driplo_applied_filters');
       hasPersistentFilters = false;
     } catch (error) {
-      console.warn('Failed to clear persisted filters:', error);
+      
     }
   }
   

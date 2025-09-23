@@ -2,37 +2,49 @@
   import { enhance } from '$app/forms';
   import type { PageData, ActionData } from './$types';
   import * as i18n from '@repo/i18n';
-  import { page } from '$app/stores';
-  import { onMount } from 'svelte';
+  import { page } from '$app/state';
+  import { browser } from '$app/environment';
+  import { LoginSchema } from '$lib/validation/auth';
+  import { createFormValidator } from '$lib/utils/form-validation.svelte';
+  import { announceToScreenReader, focusFirstErrorField } from '$lib/utils/form-accessibility';
+  import FormField from '$lib/components/forms/FormField.svelte';
   import { toasts } from '@repo/ui';
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
-  
+
   let submitting = $state(false);
-  let formData = $state({
+
+  // Initialize form validator
+  const initialValues = {
     email: form?.values?.email || '',
     password: form?.values?.password || ''
+  };
+
+  const validator = createFormValidator(initialValues, LoginSchema, {
+    validateOnChange: true,
+    validateOnBlur: true,
+    debounceMs: 300
   });
 
-  onMount(() => {
+  $effect(() => {
     // Check for email verification success - handle both parameters for compatibility
-    if ($page.url.searchParams.get('email_verified') === 'true' || $page.url.searchParams.get('verified') === 'true') {
-      const message = $page.url.searchParams.get('message');
+    if (page.url.searchParams.get('email_verified') === 'true' || page.url.searchParams.get('verified') === 'true') {
+      const message = page.url.searchParams.get('message');
       if (message) {
         toasts.success(decodeURIComponent(message));
       } else {
         toasts.success('Email verified successfully! Please sign in to continue.');
       }
-      
+
       // Pre-fill email if provided
-      const email = $page.url.searchParams.get('email');
+      const email = page.url.searchParams.get('email');
       if (email) {
         formData.email = decodeURIComponent(email);
       }
     }
-    
+
     // Check for error messages
-    const error = $page.url.searchParams.get('error');
+    const error = page.url.searchParams.get('error');
     if (error) {
       // Don't show verification_failed or authentication_failed errors as they're confusing after successful email verification
       if (error !== 'verification_failed' && error !== 'authentication_failed') {
@@ -43,40 +55,48 @@
 
   // Track previous form state to prevent duplicate notifications
   let prevFormErrorsKey = $state('');
-  
+
   // Handle form errors with toast - prevent infinite loops
   $effect(() => {
     // Create a unique key from current form errors to detect actual changes
-    const currentFormErrorsKey = form?.errors 
+    const currentFormErrorsKey = form?.errors
       ? JSON.stringify({
           _form: form.errors._form,
-          email: form.errors.email, 
+          email: form.errors.email,
           password: form.errors.password
         })
       : '';
-    
+
     // Only show toasts if form errors actually changed (not just form object reference)
     if (currentFormErrorsKey && currentFormErrorsKey !== prevFormErrorsKey) {
-      if (form?.errors?._form) {
-        toasts.error(form.errors._form, {
-          duration: 6000
+      // Sync server errors with client validator
+      if (form?.errors) {
+        Object.entries(form.errors).forEach(([field, error]) => {
+          if (field !== '_form' && error) {
+            validator.formState.errors[field as keyof typeof validator.formState.errors] = error;
+            validator.formState.touched[field as keyof typeof validator.formState.touched] = true;
+          }
         });
-      }
-      if (form?.errors?.email) {
-        toasts.error(form.errors.email, {
-          duration: 6000
-        });
-      }
-      if (form?.errors?.password) {
-        toasts.error(`Password: ${form.errors.password}`, {
-          duration: 6000
-        });
+
+        if (form.errors._form) {
+          toasts.error(form.errors._form, {
+            duration: 6000
+          });
+          announceToScreenReader(`Login error: ${form.errors._form}`, 'assertive');
+        }
+
+        // Focus first field with error
+        focusFirstErrorField(form.errors);
       }
     }
-    
+
     // Update the previous key after processing
     prevFormErrorsKey = currentFormErrorsKey;
   });
+
+  // Get field props for form binding
+  const emailField = $derived(validator.getFieldProps('email'));
+  const passwordField = $derived(validator.getFieldProps('password'));
 </script>
 
 <svelte:head>
@@ -106,15 +126,26 @@
   <!-- Form errors now handled by toast system only -->
 
   <!-- Email/Password Form -->
-  <form 
-    method="POST" 
-    action="?/signin" 
+  <form
+    method="POST"
+    action="?/signin"
+    novalidate
     use:enhance={() => {
       submitting = true;
+
+      // Validate form before submission if client-side validation is available
+      if (browser) {
+        validator.formState.hasBeenSubmitted = true;
+        // Mark all fields as touched for validation display
+        Object.keys(validator.formState.touched).forEach(key => {
+          validator.formState.touched[key as keyof typeof validator.formState.touched] = true;
+        });
+      }
+
       return async ({ result, update }) => {
         // Always reset submitting state
         submitting = false;
-        
+
         // Let SvelteKit handle all results naturally
         await update({ reset: false });
       };
@@ -122,40 +153,28 @@
   >
     
     <div class="space-y-1">
-      <div>
-        <label for="email" class="block text-sm font-semibold text-[color:var(--text-primary)] mb-1 pl-1">
-          {i18n.auth_email()}
-        </label>
-        <div class="p-1">
-          <input
-          id="email"
-          name="email"
+      <div class="p-1">
+        <FormField
+          label={i18n.auth_email()}
+          fieldName="email"
+          fieldState={emailField}
           type="email"
-          autocomplete="email"
           required
-          bind:value={formData.email}
-          class="appearance-none block w-full px-3 py-2 border border-[color:var(--border-default)] rounded-lg placeholder:text-[color:var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[color:var(--state-focus)] focus:border-[color:var(--state-focus)] transition-colors text-base sm:text-sm"
           placeholder="Enter your email"
-          />
-        </div>
+          autocomplete="email"
+        />
       </div>
 
-      <div>
-        <label for="password" class="block text-sm font-semibold text-[color:var(--text-primary)] mb-1 pl-1">
-          {i18n.auth_password()}
-        </label>
-        <div class="p-1">
-          <input
-          id="password"
-          name="password"
+      <div class="p-1">
+        <FormField
+          label={i18n.auth_password()}
+          fieldName="password"
+          fieldState={passwordField}
           type="password"
-          autocomplete="current-password"
           required
-          bind:value={formData.password}
-          class="appearance-none block w-full px-3 py-2 border border-[color:var(--border-default)] rounded-lg placeholder:text-[color:var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[color:var(--state-focus)] focus:border-[color:var(--state-focus)] transition-colors text-base sm:text-sm"
           placeholder="Enter your password"
-          />
-        </div>
+          autocomplete="current-password"
+        />
       </div>
 
       <div class="flex items-center justify-between">
@@ -169,8 +188,9 @@
       <div>
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || (browser && validator.hasErrors)}
           class="w-full inline-flex items-center justify-center font-semibold rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-75 bg-[color:var(--primary)] hover:bg-[color:var(--primary-600)] text-[color:var(--primary-fg)] focus-visible:ring-[color:var(--state-focus)] px-4 py-2.5 text-sm transition-colors duration-200"
+          aria-describedby="submit-status"
         >
           {#if submitting}
             <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -182,6 +202,11 @@
             {i18n.auth_signIn()}
           {/if}
         </button>
+        {#if browser && validator.hasErrors && validator.formState.hasBeenSubmitted}
+          <div id="submit-status" class="mt-2 text-sm text-[color:var(--status-error-text)]" role="alert" aria-live="polite">
+            Please correct the errors above before submitting.
+          </div>
+        {/if}
       </div>
     </div>
   </form>

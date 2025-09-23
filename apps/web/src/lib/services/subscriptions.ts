@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
+import type { Stripe } from 'stripe';
 import { createStripeService } from './stripe';
 import type { SubscriptionCreateParams } from '$lib/stripe/types';
 
@@ -57,7 +58,7 @@ export class SubscriptionService {
 	async createStripeSubscription(
 		userId: string,
 		planId: string,
-		stripeInstance: any,
+		stripeInstance: Stripe,
 		discountAmount: number = 0,
 		_discountCode: string = '' // Future discount code validation
 	): Promise<{ subscriptionId?: string; clientSecret?: string; error?: Error }> {
@@ -100,7 +101,7 @@ export class SubscriptionService {
 				clientSecret: result.clientSecret
 			};
 		} catch (error) {
-			console.error('Error creating Stripe subscription:', error);
+			
 			return { error: error as Error };
 		}
 	}
@@ -108,7 +109,7 @@ export class SubscriptionService {
 	/**
 	 * Cancel user subscription
 	 */
-	async cancelSubscription(userId: string, subscriptionId: string, stripeInstance: any) {
+	async cancelSubscription(userId: string, subscriptionId: string, stripeInstance: Stripe) {
 		try {
 			if (!stripeInstance) {
 				return { error: new Error('Stripe instance required'), success: false };
@@ -117,7 +118,7 @@ export class SubscriptionService {
 			const stripeService = createStripeService(this.supabase, stripeInstance);
 			return await stripeService.cancelSubscription(userId, subscriptionId);
 		} catch (error) {
-			console.error('Error canceling subscription:', error);
+			
 			return { error: error as Error, success: false };
 		}
 	}
@@ -125,7 +126,7 @@ export class SubscriptionService {
 	/**
 	 * Handle Stripe webhook for subscription updates
 	 */
-	async handleStripeWebhook(event: any, stripeInstance: any) {
+	async handleStripeWebhook(event: Stripe.Event, stripeInstance: Stripe) {
 		try {
 			if (!stripeInstance) {
 				return { success: false, error: new Error('Stripe instance required') };
@@ -134,7 +135,7 @@ export class SubscriptionService {
 			const stripeService = createStripeService(this.supabase, stripeInstance);
 			return await stripeService.processWebhook(event);
 		} catch (error) {
-			console.error('Error handling subscription webhook:', error);
+			
 			return { success: false, error: error as Error };
 		}
 	}

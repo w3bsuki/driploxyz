@@ -23,9 +23,9 @@ export const load = (async ({ locals: { safeGetSession }, parent }) => {
   const parentData = await parent();
   
   log.debug('Profile status check', {
-    hasProfile: !!parentData.profile,
-    onboardingCompleted: parentData.profile?.onboarding_completed,
-    accountType: parentData.profile?.account_type
+    hasProfile: (!!parentData.profile).toString(),
+    onboardingCompleted: parentData.profile?.onboarding_completed?.toString(),
+    accountType: parentData.profile?.account_type || undefined
   });
   
   // Check if onboarding is already completed
@@ -63,13 +63,13 @@ export const actions = {
     const socialLinks = formData.get('socialLinks') as string;
     const brandPaid = formData.get('brandPaid') === 'true';
     
-    log.debug('Starting onboarding completion', { userEmail: user.email, accountType, brandPaid });
+    log.debug('Starting onboarding completion', { userEmail: user.email, accountType, brandPaid: brandPaid.toString() });
     
     // SERVER-SIDE VALIDATION: Verify payment for brand/pro accounts
     if (accountType === 'brand' || accountType === 'pro') {
       // First check the client flag
       if (!brandPaid) {
-        log.error('Payment required but not completed', undefined, { accountType, brandPaid });
+        log.error('Payment required but not completed', undefined, { accountType, brandPaid: brandPaid.toString() });
         return fail(403, { error: 'Payment is required for ' + accountType + ' accounts. Please complete payment before continuing.' });
       }
       
@@ -98,10 +98,10 @@ export const actions = {
         });
       }
       
-      log.debug('Payment verified', { 
-        paymentId: recentPayment.id, 
-        planType: recentPayment.plan_type,
-        amount: recentPayment.amount 
+      log.debug('Payment verified', {
+        paymentId: recentPayment.id,
+        planType: recentPayment.plan_type || undefined,
+        amount: recentPayment.amount?.toString()
       });
     }
 
@@ -137,7 +137,7 @@ export const actions = {
       try {
         parsedSocialLinks = socialLinks ? JSON.parse(socialLinks) : [];
       } catch (e) {
-        log.warn('Failed to parse social links', { error: e });
+        log.warn('Failed to parse social links', { error: String(e) });
         parsedSocialLinks = [];
       }
 
@@ -169,7 +169,11 @@ export const actions = {
         updated_at: new Date().toISOString()
       };
 
-      log.debug('Updating profile', profileUpdate);
+      log.debug('Updating profile', {
+        accountType: profileUpdate.account_type,
+        username: profileUpdate.username,
+        location: profileUpdate.location || undefined
+      });
 
       // UPSERT profile - this handles both update and insert cases
       const { data: updatedProfile, error: profileError } = await supabase
@@ -186,7 +190,10 @@ export const actions = {
         return fail(500, { error: 'Failed to update profile: ' + profileError.message });
       }
 
-      log.debug('Profile updated successfully', { profileId: updatedProfile?.id, username: updatedProfile?.username });
+      log.debug('Profile updated successfully', {
+        profileId: updatedProfile?.id || undefined,
+        username: updatedProfile?.username || undefined
+      });
 
       // VERIFY the update actually succeeded by reading it back
       const { data: verifiedProfile, error: verifyError } = await supabase
@@ -207,9 +214,9 @@ export const actions = {
 
       log.debug('Verified profile data', {
         profileId: verifiedProfile.id,
-        username: verifiedProfile.username,
-        accountType: verifiedProfile.account_type,
-        onboardingCompleted: verifiedProfile.onboarding_completed
+        username: verifiedProfile.username || undefined,
+        accountType: verifiedProfile.account_type || undefined,
+        onboardingCompleted: verifiedProfile.onboarding_completed ? 'true' : 'false'
       });
 
       // If brand account, create brand entry (with error handling)
@@ -222,7 +229,11 @@ export const actions = {
           subscription_active: brandPaid
         };
 
-        log.debug('Creating brand entry', brandData);
+        log.debug('Creating brand entry', {
+          profileId: brandData.profile_id,
+          brandName: brandData.brand_name,
+          verified: brandData.verified_brand ? 'true' : 'false'
+        });
 
         const { error: brandError } = await supabase
           .from('brands')

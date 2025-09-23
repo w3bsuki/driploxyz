@@ -33,8 +33,7 @@ sw.addEventListener('install', (event) => {
 		Promise.all([
 			caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)),
 			caches.open(OFFLINE_CACHE).then((cache) =>
-				cache.add(OFFLINE_PAGE).catch((error) => {
-					console.warn('Failed to cache offline page:', error);
+				cache.add(OFFLINE_PAGE).catch(() => {
 					// Continue installation even if offline page fails to cache
 					return Promise.resolve();
 				})
@@ -96,7 +95,7 @@ async function handleRequest(request: Request): Promise<Response> {
 		}
 
 		return response;
-	} catch (error) {
+	} catch {
 		// Network failed, try cache
 		const cached = await caches.match(request);
 		if (cached) return cached;
@@ -107,8 +106,8 @@ async function handleRequest(request: Request): Promise<Response> {
 			if (offlineResponse) return offlineResponse;
 		}
 
-		// Final fallback
-		throw error;
+		// Final fallback - return a basic offline response
+		return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
 	}
 }
 
@@ -122,5 +121,5 @@ sw.addEventListener('sync', (event) => {
 async function syncFavorites() {
 	// This would sync offline favorite changes when back online
 	// Implementation depends on your favorites storage strategy
-	console.log('Syncing favorites in background...');
+	
 }

@@ -29,7 +29,7 @@ export const detectMobile = (userAgent: string): boolean => {
  * Falls back to provided fallback value on timeout
  */
 export const withTimeout = async <T>(
-  promise: Promise<T>, 
+  promise: PromiseLike<T>,
   timeoutMs = 3000,
   fallback: T
 ): Promise<T> => {
@@ -40,9 +40,9 @@ export const withTimeout = async <T>(
   });
 
   try {
-    return await Promise.race([promise, timeoutPromise]);
+    return await Promise.race([Promise.resolve(promise), timeoutPromise]);
   } catch (error) {
-    console.warn(`withTimeout: Operation failed or timed out, using fallback:`, error);
+    
     return fallback;
   }
 };

@@ -1,5 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
+import { parseError, withRetry, ErrorType } from '$lib/utils/error-handling';
+import { createLogger } from '$lib/utils/log';
 
 type Product = Database['public']['Tables']['products']['Row'];
 type ProductInsert = Database['public']['Tables']['products']['Insert'];
@@ -58,30 +60,89 @@ export interface ProductListOptions {
   sort?: ProductSort;
   limit?: number;
   offset?: number;
+  cursor?: string; // For cursor-based pagination
+}
+
+export interface PaginatedProductResult {
+  data: ProductWithImages[];
+  error: string | null;
+  total?: number;
+  nextCursor?: string;
+  hasMore: boolean;
 }
 
 export class ProductService {
+  private log = createLogger('ProductService');
+
   constructor(private supabase: SupabaseClient<Database>) {}
+
+  /**
+   * Handle service errors with consistent formatting
+   */
+  private handleError(error: unknown, context?: string): { data: null; error: string } {
+    const errorDetails = parseError(error, {
+      service: 'ProductService',
+      context
+    });
+
+    this.log.error(`ProductService error: ${context || 'Unknown operation'}`, errorDetails);
+
+    return {
+      data: null,
+      error: errorDetails.userMessage
+    };
+  }
+
+  /**
+   * Execute database operations with retry logic
+   */
+  private async executeWithRetry<T>(
+    operation: () => Promise<T>,
+    context: string,
+    retries: number = 2
+  ): Promise<T> {
+    try {
+      return await withRetry(operation, { maxAttempts: retries }, ErrorType.SERVER);
+    } catch (error) {
+      const message = `Retry failed: ${context}`;
+      const details = error instanceof Error ? { error: error.message } : undefined;
+      this.log.warn(message, details);
+      throw error;
+    }
+  }
 
   /**
    * Get a single product by ID with images and related data
    */
   async getProduct(id: string): Promise<{ data: ProductWithImages | null; error: string | null }> {
+    if (!id?.trim()) {
+      return { data: null, error: 'Product ID is required' };
+    }
+
     try {
-      const { data, error } = await this.supabase
-        .from('products')
-        .select(`
-          *,
-          product_images!product_id (id, image_url, alt_text, display_order, created_at, product_id, sort_order),
-          categories!category_id (name),
-          profiles!seller_id (username, rating, avatar_url)
-        `)
-        .eq('id', id)
-        .eq('is_active', true)
-        .single();
+      const result = await this.executeWithRetry(async () => {
+        return await this.supabase
+          .from('products')
+          .select(`
+            *,
+            product_images!product_id (id, image_url, alt_text, display_order, created_at, product_id, sort_order),
+            categories!category_id (name),
+            profiles!seller_id (username, rating, avatar_url)
+          `)
+          .eq('id', id)
+          .eq('is_active', true)
+          .single();
+      }, `getProduct(${id})`);
+
+      const { data, error } = result;
 
       if (error) {
-        return { data: null, error: error.message };
+        // Handle specific error types
+        if (error.code === 'PGRST116' || error.message.includes('not found')) {
+          return { data: null, error: 'Product not found' };
+        }
+
+        return this.handleError(error, `getProduct(${id})`);
       }
 
       if (!data) {
@@ -108,13 +169,9 @@ export class ProductService {
   }
 
   /**
-   * Get products with filtering, sorting and pagination
+   * Get products with filtering, sorting and enhanced pagination (cursor-based)
    */
-  async getProducts(options: ProductListOptions = {}): Promise<{ 
-    data: ProductWithImages[]; 
-    error: string | null;
-    total?: number;
-  }> {
+  async getProducts(options: ProductListOptions = {}): Promise<PaginatedProductResult> {
     try {
       let query = this.supabase
         .from('products')
@@ -188,18 +245,41 @@ export class ProductService {
         query = query.order('created_at', { ascending: false });
       }
 
-      // Apply pagination
-      if (options.limit) {
-        query = query.limit(options.limit);
-      }
-      if (options.offset) {
-        query = query.range(options.offset, options.offset + (options.limit || 10) - 1);
+      // Apply pagination - prefer cursor-based for better performance
+      if (options.cursor) {
+        try {
+          // Decode cursor to get timestamp and ID
+          const [timestamp, id] = Buffer.from(options.cursor, 'base64').toString().split(':');
+
+          // For cursor-based pagination, we need to use appropriate ordering
+          if (options.sort?.by === 'created_at' || !options.sort) {
+            query = query
+              .or(`created_at.lt.${timestamp},and(created_at.eq.${timestamp},id.lt.${id})`)
+              .limit(options.limit || 20);
+          } else {
+            // Fallback to offset-based for complex sorting
+            const offset = options.offset || 0;
+            query = query.range(offset, offset + (options.limit || 20) - 1);
+          }
+        } catch {
+          // Invalid cursor, fallback to offset-based
+          const offset = options.offset || 0;
+          query = query.range(offset, offset + (options.limit || 20) - 1);
+        }
+      } else {
+        // Offset-based pagination (first page or fallback)
+        if (options.limit) {
+          query = query.limit(options.limit);
+        }
+        if (options.offset) {
+          query = query.range(options.offset, options.offset + (options.limit || 10) - 1);
+        }
       }
 
       const { data, error, count } = await query;
 
       if (error) {
-        return { data: [], error: error.message };
+        return { data: [], error: error.message, hasMore: false };
       }
 
       // Transform the data - handle potential SelectQueryError
@@ -211,9 +291,29 @@ export class ProductService {
         seller_rating: (item.profiles && typeof item.profiles === 'object' && 'rating' in item.profiles) ? (item.profiles.rating || undefined) : undefined
       }));
 
-      return { data: products, error: null, total: count || 0 };
+      // Generate next cursor for pagination
+      const requestedLimit = options.limit || 20;
+      const hasMore = products.length === requestedLimit;
+      let nextCursor: string | undefined;
+
+      if (hasMore && products.length > 0) {
+        const lastProduct = products[products.length - 1];
+        if (lastProduct && lastProduct.created_at && lastProduct.id) {
+          nextCursor = Buffer.from(
+            `${lastProduct.created_at}:${lastProduct.id}`
+          ).toString('base64');
+        }
+      }
+
+      return {
+        data: products,
+        error: null,
+        total: count || 0,
+        nextCursor,
+        hasMore
+      };
     } catch (error) {
-      return { data: [], error: 'Failed to fetch products' };
+      return { data: [], error: 'Failed to fetch products', hasMore: false };
     }
   }
 
@@ -501,14 +601,14 @@ export class ProductService {
       }
 
       // Transform the data to match our interface
-      const products: ProductWithImages[] = (data || []).map((item: any) => {
+      const products: ProductWithImages[] = (data || []).map((item: ProductWithJoinedData) => {
         // Extract the properties that should become images and transform the product
         return {
           id: item.id,
           title: item.title,
           description: item.description,
           price: item.price,
-          condition: item.condition as any,
+          condition: item.condition,
           size: item.size,
           brand: item.brand,
           color: item.color,
@@ -524,22 +624,37 @@ export class ProductService {
           category_id: item.category_id,
           country_code: item.country_code,
           // Required fields from database schema with defaults
-          archived_at: null,
-          auto_archive_after_days: null,
-          boost_type: null,
-          boosted_until: null,
-          commission_rate: null,
+          archived_at: item.archived_at || null,
+          auto_archive_after_days: item.auto_archive_after_days || null,
+          boost_history_id: item.boost_history_id || null,
+          boost_priority: item.boost_priority || null,
+          boost_type: item.boost_type || null,
+          boosted_until: item.boosted_until || null,
+          brand_collection_id: item.brand_collection_id || null,
+          commission_rate: item.commission_rate || null,
+          custom_subcategory: item.custom_subcategory || null,
+          drip_admin_notes: item.drip_admin_notes || null,
+          drip_approved_at: item.drip_approved_at || null,
+          drip_nominated_at: item.drip_nominated_at || null,
+          drip_nominated_by: item.drip_nominated_by || null,
+          drip_quality_score: item.drip_quality_score || null,
+          drip_rejected_at: item.drip_rejected_at || null,
+          drip_rejection_reason: item.drip_rejection_reason || null,
+          drip_reviewed_by: item.drip_reviewed_by || null,
+          drip_status: item.drip_status || null,
           favorite_count: item.favorite_count || 0,
-          is_boosted: false,
-          net_earnings: null,
-          platform_fee: null,
-          region: null,
-          search_vector: null,
-          shipping_cost: null,
-          slug: null,
-          sold_at: null,
-          status: null,
-          tags: null,
+          is_boosted: item.is_boosted || false,
+          is_drip_candidate: item.is_drip_candidate || null,
+          net_earnings: item.net_earnings || null,
+          platform_fee: item.platform_fee || null,
+          region: item.region || null,
+          search_vector: item.search_vector || null,
+          shipping_cost: item.shipping_cost || null,
+          slug: item.slug || null,
+          slug_locked: item.slug_locked || null,
+          sold_at: item.sold_at || null,
+          status: item.status || null,
+          tags: item.tags || null,
           images: item.product_images || [],
           category_name: item.categories?.name || undefined,
           seller_username: item.profiles?.username || undefined,
@@ -557,19 +672,16 @@ export class ProductService {
   // ===== NEW HIERARCHICAL METHODS =====
 
   /**
-   * Get products using hierarchical category filtering
+   * Get products using hierarchical category filtering with cursor-based pagination
    * Supports filtering by category and its descendants automatically
    */
   async getHierarchicalProducts(
     filters: HierarchicalProductFilters = {},
     sort?: ProductSort,
     limit?: number,
-    offset?: number
-  ): Promise<{ 
-    data: ProductWithImages[]; 
-    error: string | null;
-    total?: number;
-  }> {
+    offset?: number,
+    cursor?: string
+  ): Promise<PaginatedProductResult> {
     try {
       let query = this.supabase
         .from('products')
@@ -594,7 +706,7 @@ export class ProductService {
           });
 
           if (productIdsError) {
-            return { data: [], error: productIdsError.message };
+            return { data: [], error: productIdsError.message, hasMore: false };
           }
 
           if (productIds && productIds.length > 0) {
@@ -602,7 +714,7 @@ export class ProductService {
             query = query.in('id', ids);
           } else {
             // No products in this category tree
-            return { data: [], error: null, total: 0 };
+            return { data: [], error: null, total: 0, hasMore: false };
           }
         } else {
           // Exact category match only
@@ -659,18 +771,39 @@ export class ProductService {
         query = query.order('created_at', { ascending: false });
       }
 
-      // Apply pagination
-      if (limit) {
-        query = query.limit(limit);
-      }
-      if (offset) {
-        query = query.range(offset, offset + (limit || 10) - 1);
+      // Apply cursor-based pagination
+      if (cursor) {
+        try {
+          const [timestamp, id] = Buffer.from(cursor, 'base64').toString().split(':');
+
+          if (sort?.by === 'created_at' || !sort) {
+            query = query
+              .or(`created_at.lt.${timestamp},and(created_at.eq.${timestamp},id.lt.${id})`)
+              .limit(limit || 20);
+          } else {
+            // Fallback for complex sorting
+            const actualOffset = offset || 0;
+            query = query.range(actualOffset, actualOffset + (limit || 20) - 1);
+          }
+        } catch {
+          // Invalid cursor fallback
+          const actualOffset = offset || 0;
+          query = query.range(actualOffset, actualOffset + (limit || 20) - 1);
+        }
+      } else {
+        // Standard pagination
+        if (limit) {
+          query = query.limit(limit);
+        }
+        if (offset) {
+          query = query.range(offset, offset + (limit || 10) - 1);
+        }
       }
 
       const { data, error, count } = await query;
 
       if (error) {
-        return { data: [], error: error.message };
+        return { data: [], error: error.message, hasMore: false };
       }
 
       // Transform the data
@@ -682,9 +815,29 @@ export class ProductService {
         seller_rating: (item.profiles && typeof item.profiles === 'object' && 'rating' in item.profiles) ? item.profiles.rating ?? undefined : undefined
       }));
 
-      return { data: products, error: null, total: count || 0 };
+      // Generate cursor for pagination
+      const requestedLimit = limit || 20;
+      const hasMore = products.length === requestedLimit;
+      let nextCursor: string | undefined;
+
+      if (hasMore && products.length > 0) {
+        const lastProduct = products[products.length - 1];
+        if (lastProduct && lastProduct.created_at && lastProduct.id) {
+          nextCursor = Buffer.from(
+            `${lastProduct.created_at}:${lastProduct.id}`
+          ).toString('base64');
+        }
+      }
+
+      return {
+        data: products,
+        error: null,
+        total: count || 0,
+        nextCursor,
+        hasMore
+      };
     } catch (error) {
-      return { data: [], error: 'Failed to fetch hierarchical products' };
+      return { data: [], error: 'Failed to fetch hierarchical products', hasMore: false };
     }
   }
 
@@ -692,13 +845,14 @@ export class ProductService {
    * Get products for a specific category level (1, 2, or 3) with proper hierarchy
    */
   async getProductsForCategoryLevel(
-    categoryId: string, 
+    categoryId: string,
     level: number,
     additionalFilters: Omit<HierarchicalProductFilters, 'category_id'> = {},
     sort?: ProductSort,
     limit?: number,
-    offset?: number
-  ): Promise<{ data: ProductWithImages[]; error: string | null; total?: number }> {
+    offset?: number,
+    cursor?: string
+  ): Promise<PaginatedProductResult> {
     
     const filters: HierarchicalProductFilters = {
       ...additionalFilters,
@@ -707,7 +861,7 @@ export class ProductService {
       include_descendants: level < 3
     };
 
-    return this.getHierarchicalProducts(filters, sort, limit, offset);
+    return this.getHierarchicalProducts(filters, sort, limit, offset, cursor);
   }
 
   /**

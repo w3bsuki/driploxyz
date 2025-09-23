@@ -44,7 +44,7 @@
       try {
         items = JSON.parse(cached);
         return;
-      } catch (e) {
+      } catch {
         // Invalid cache, fetch fresh
       }
     }
@@ -75,7 +75,7 @@
           sessionStorage.setItem('banner-listings-time', String(Date.now()));
         }
       }
-    } catch (err) {
+    } catch {
       // Recent listings fetch failed - banner will remain hidden
     }
   }

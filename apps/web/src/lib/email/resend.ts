@@ -6,7 +6,7 @@ let resendInstance: Resend | null = null;
 
 function getResendInstance(): Resend | null {
 	if (!env.RESEND_API_KEY) {
-		console.warn('RESEND_API_KEY not configured - email sending disabled');
+		
 		return null;
 	}
 	
@@ -129,7 +129,7 @@ export async function sendEmail(to: string, template: { subject: string; html: s
 	try {
 		const resend = getResendInstance();
 		if (!resend) {
-			console.warn('Email sending skipped - RESEND_API_KEY not configured');
+			
 			return { success: false, error: 'Email service not configured' };
 		}
 		
@@ -142,7 +142,7 @@ export async function sendEmail(to: string, template: { subject: string; html: s
 		
 		return { success: true, data };
 	} catch (error) {
-		console.error('Failed to send email:', error);
+		
 		return { success: false, error };
 	}
 }

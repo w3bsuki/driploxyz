@@ -151,7 +151,7 @@ export class BoostService {
 
       return { success: true, boostId: boostHistory.id };
     } catch (error) {
-      console.error('Boost error:', error);
+      
       return { success: false, error: 'Failed to boost product' };
     }
   }
@@ -187,7 +187,7 @@ export class BoostService {
 
       return { success: true };
     } catch (error) {
-      console.error('Remove boost error:', error);
+      
       return { success: false, error: 'Failed to remove boost' };
     }
   }
@@ -219,7 +219,7 @@ export class BoostService {
       .limit(limit);
 
     if (error) {
-      console.error('Failed to fetch boost history:', error);
+      
       return [];
     }
 
@@ -267,7 +267,7 @@ export class BoostService {
       .limit(limit);
 
     if (error) {
-      console.error('Failed to fetch boosted products:', error);
+      
       return [];
     }
 
@@ -305,7 +305,7 @@ export class BoostService {
 
       return { cleaned: productCount || 0 };
     } catch (error) {
-      console.error('Cleanup expired boosts error:', error);
+      
       return { cleaned: 0 };
     }
   }

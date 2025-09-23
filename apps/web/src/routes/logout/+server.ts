@@ -22,14 +22,14 @@ export const POST: RequestHandler = async ({ request, url, cookies, locals: { su
     const { error: signOutError } = await supabase.auth.signOut();
     
     if (signOutError && dev) {
-      console.warn('Logout error:', signOutError.message);
+      // Development logging for sign out error
     }
     
-  } catch (err) {
+  } catch {
     // Unexpected logout error handled
     // Continue with cleanup even if there's an error
     if (dev) {
-      console.warn('Unexpected logout error:', err);
+      // Development logging for catch block error
     }
   }
   
@@ -68,7 +68,7 @@ export const POST: RequestHandler = async ({ request, url, cookies, locals: { su
   });
   
   if (dev) {
-    console.log('Logout completed - auth cookies cleared, user preferences preserved');
+    // Development logging for logout completion
   }
   
   // Always redirect to home after logout

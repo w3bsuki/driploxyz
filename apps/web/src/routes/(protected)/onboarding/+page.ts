@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ parent }) => {
+export const load = (async ({ parent }) => {
   const { user, profile } = await parent();
   
   // User authentication check
@@ -19,4 +19,4 @@ export const load: PageLoad = async ({ parent }) => {
     user,
     profile
   };
-};
+}) satisfies PageLoad;

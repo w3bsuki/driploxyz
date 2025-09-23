@@ -25,7 +25,7 @@ export const POST: RequestHandler = async (event) => {
       .eq('id', session.user.id);
       
     if (error) {
-      console.error('Failed to update user region:', error);
+      // Region update errors are non-critical - default region will be used
     }
   }
   

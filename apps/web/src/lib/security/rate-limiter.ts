@@ -269,7 +269,7 @@ export function withRateLimit(
         return await handler(event);
         
       } catch (error) {
-        console.error('Rate limiting middleware error:', error);
+        
         // If rate limiting fails, allow the request through (fail open)
         return await handler(event);
       }

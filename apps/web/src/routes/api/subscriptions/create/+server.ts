@@ -35,7 +35,9 @@ export const POST: RequestHandler = async (event) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
-      if (DEBUG) console.error('[Subscription] Auth error:', authError);
+      if (DEBUG) {
+        console.error('Authentication error:', authError);
+      }
       return json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -78,7 +80,9 @@ export const POST: RequestHandler = async (event) => {
           .single();
 
         if (validationError) {
-          if (DEBUG) console.error('[Subscription] Discount validation error:', validationError);
+          if (DEBUG) {
+            console.error('Discount validation error:', validationError);
+          }
           return json({ error: 'Invalid discount code' }, { status: 400 });
         }
 
@@ -105,7 +109,9 @@ export const POST: RequestHandler = async (event) => {
     );
 
     if (result.error) {
-      if (DEBUG) console.error('[Subscription] Service error:', result.error);
+      if (DEBUG) {
+        console.error('Subscription creation error:', result.error);
+      }
       return json({ error: result.error.message }, { status: 400 });
     }
 
@@ -119,7 +125,9 @@ export const POST: RequestHandler = async (event) => {
     });
 
   } catch (error) {
-    if (DEBUG) console.error('[Subscription] Internal error:', error);
+    if (DEBUG) {
+      console.error('Subscription create error:', error);
+    }
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 };

@@ -1,7 +1,7 @@
 import type { PageLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 
-export const load: PageLoad = async ({ parent }) => {
+export const load = (async ({ parent }) => {
   const { session, profile } = await parent();
   
   if (!session) {
@@ -12,4 +12,4 @@ export const load: PageLoad = async ({ parent }) => {
     user: session.user,
     profile
   };
-};
+}) satisfies PageLoad;

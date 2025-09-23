@@ -16,13 +16,12 @@ import type { PageServerLoad } from './$types';
  * 3. Legacy single-segment slug → look up product by slug, 301 to canonical
  * 4. Slug/username history → 301 to current canonical
  */
-export const load = (async ({ params, locals: { supabase, safeGetSession, country } }) => {
-  const { session } = await safeGetSession();
+export const load = (async ({ params, locals: { supabase, country } }) => {
   const slug = params.slug;
 
   // Skip processing for known static paths and API routes
-  if (!slug || 
-      slug.startsWith('api/') || 
+  if (!slug ||
+      slug.startsWith('api/') ||
       slug.startsWith('_app/') ||
       slug.startsWith('profile/') ||
       slug.startsWith('favicon') ||
@@ -36,7 +35,6 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
   }
 
   const parts = slug.split('/').filter(Boolean);
-  const product = null;
 
   // Normalize any /product/* path to canonical /product/:seller/:slug and redirect
   if (parts[0] === 'product' && parts.length >= 3) {
@@ -146,7 +144,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
   }
 
   // Case 3: Handle direct UUID
-  if (!product && parts.length === 1 && parts[0] && isUUID(parts[0])) {
+  if (parts.length === 1 && parts[0] && isUUID(parts[0])) {
     const uuid = parts[0];
     
     if (!uuid) {
@@ -170,7 +168,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
   }
 
   // Case 4: Handle legacy single slug (backwards compatibility)
-  if (!product && parts.length === 1 && parts[0] && !isUUID(parts[0])) {
+  if (parts.length === 1 && parts[0] && !isUUID(parts[0])) {
     const legacySlug = parts[0];
     
     if (!legacySlug) {
@@ -225,61 +223,3 @@ function isUUID(str: string): boolean {
   return uuidRegex.test(str);
 }
 
-/**
- * Get complete product data with all related information
- */
-async function getProductData(supabase: any, productId: string, _session: any, country?: string) {
-  // Get main product with optimized query including full seller info
-  const { data: product, error: productError } = await supabase
-    .from('products')
-    .select(`
-      id,
-      title,
-      description,
-      price,
-      condition,
-      size,
-      brand,
-      color,
-      material,
-      location,
-      is_active,
-      is_sold,
-      created_at,
-      view_count,
-      seller_id,
-      category_id,
-      slug,
-      product_images (
-        id,
-        image_url,
-        sort_order
-      ),
-      categories!left (
-        id,
-        name,
-        slug,
-        parent_id
-      ),
-      profiles!products_seller_id_fkey (
-        id,
-        username,
-        full_name,
-        avatar_url,
-        rating,
-        sales_count,
-        account_type,
-        created_at
-      )
-    `)
-    .eq('id', productId)
-    .eq('is_active', true)
-    .eq('country_code', country || 'BG')
-    .single();
-
-  if (productError || !product) {
-    return null;
-  }
-
-  return product;
-}

@@ -4,16 +4,18 @@
 -->
 <script lang="ts">
   import { FavoriteButton } from '@repo/ui';
+  import type { Database } from '@repo/database';
   import {
     realtimeService,
     realtimeStore,
     favoritesStore,
     favoritesActions
   } from '$lib/utils/realtimeSetup';
-  import { derived } from 'svelte/store';
+
+  type Product = Database['public']['Tables']['products']['Row'];
 
   interface Props {
-    product: any;
+    product: Product;
     favorited?: boolean;
     onFavorite?: () => void;
     addToFavoritesText?: string;
@@ -34,22 +36,25 @@
     customPosition
   }: Props = $props();
 
-  // Create a derived store that combines favorites store with real-time counts
-  const favoritesState = derived(
-    [favoritesStore, realtimeStore],
-    ([$favorites, $realtime]) => ({
-      favorites: $favorites.favorites,
+  // Use Svelte 5 $derived for reactive state combination
+  // This eliminates the need for derived stores and improves performance
+  const favoritesState = $derived.by(() => {
+    const favorites = favoritesStore;
+    const realtime = realtimeStore;
+
+    return {
+      favorites: favorites.favorites,
       favoriteCounts: {
-        ...$favorites.favoriteCounts,
+        ...favorites.favoriteCounts,
         // Merge real-time product metrics
         ...Object.fromEntries(
-          Object.entries($realtime.metrics.productMetrics).map(
+          Object.entries(realtime.metrics.productMetrics).map(
             ([productId, metrics]) => [productId, metrics.favorite_count]
           )
         )
       }
-    })
-  );
+    };
+  });
 
   // Subscribe to real-time updates for this product
   $effect(() => {
@@ -69,8 +74,8 @@
 
     try {
       await favoritesActions.toggleFavorite(product.id);
-    } catch (error) {
-      console.error('Failed to toggle favorite:', error);
+    } catch {
+      // Handle favorite toggle error silently
     }
   }
 </script>
@@ -82,7 +87,7 @@
   {addToFavoritesText}
   {removeFromFavoritesText}
   {showCount}
-  favoritesState={$favoritesState}
+  favoritesState={favoritesState}
   {absolute}
   {customPosition}
 />

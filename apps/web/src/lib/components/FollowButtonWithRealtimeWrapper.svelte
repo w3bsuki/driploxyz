@@ -37,7 +37,7 @@
   }: Props = $props();
 
   // Get follower count from real-time store or follow store
-  const followerCount = $derived(() => {
+  const followerCount = $derived.by(() => {
     const realtimeMetrics = $realtimeStore.metrics.userMetrics[userId];
     const followMetrics = $followStore.followerCounts[userId];
     return realtimeMetrics?.follower_count ?? followMetrics ?? 0;
@@ -61,8 +61,8 @@
 
     try {
       await followActions.toggleFollow(userId);
-    } catch (error) {
-      console.error('Failed to toggle follow:', error);
+    } catch {
+      // Intentionally empty - errors are handled by followActions internally
     }
   }
 </script>

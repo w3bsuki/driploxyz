@@ -112,7 +112,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.single();
 
 		if (reviewError) {
-			console.error('Failed to create review:', reviewError);
+			
 			return json({ error: 'Failed to create review' }, { status: 500 });
 		}
 
@@ -126,7 +126,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			.eq('id', order_id);
 
 		if (orderUpdateError) {
-			console.error('Failed to update order buyer_rated flag:', orderUpdateError);
+			
 			// Don't fail the request since review was created successfully
 		}
 
@@ -159,7 +159,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 	} catch (error) {
-		console.error('Error creating review:', error);
+		
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}
 };

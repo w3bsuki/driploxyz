@@ -7,10 +7,9 @@
   import { Button, toasts, ErrorBoundary } from '@repo/ui';
   import { uploadImages, deleteImage } from '$lib/supabase/storage';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
-  import { onMount } from 'svelte';
   import * as i18n from '@repo/i18n';
   import { analyzeImageForCategories, mergeSuggestions, type CategorySuggestion } from '$lib/utils/imageAnalysis';
-  import { scrollIntoView, focusWithAnnouncement } from '$lib/utils/navigation';
+  import { focusWithAnnouncement } from '$lib/utils/navigation';
   // Static imports - no more dynamic loading
   import StepPhotosOnly from './components/StepPhotosOnly.svelte';
   import StepCategory from './components/StepCategory.svelte';
@@ -31,7 +30,6 @@
   let publishError = $state<string | null>(null);
   let validationMessage = $state<string | null>(null);
   let showValidationPopup = $state(false);
-  let isProgressing = $state(false);
   let stepContainer = $state<HTMLElement>();
   
   // Show validation message with auto-hide
@@ -100,15 +98,6 @@
     formData.category_id ? data.categories?.find(c => c.id === formData.category_id) : null
   );
   
-  const sizeOptions = $derived(
-    !selectedCategoryData ? SIZE_CATEGORIES.clothing :
-    selectedCategoryData.name.toLowerCase().includes('shoe') || 
-    selectedCategoryData.name.toLowerCase().includes('sneaker') || 
-    selectedCategoryData.name.toLowerCase().includes('boot') ? SIZE_CATEGORIES.shoes :
-    selectedCategoryData.name.toLowerCase().includes('kid') || 
-    selectedCategoryData.name.toLowerCase().includes('baby') ? SIZE_CATEGORIES.kids :
-    SIZE_CATEGORIES.clothing
-  );
   
   // Price suggestions
   let priceSuggestion = $state<{
@@ -127,7 +116,7 @@
           size: formData.size
         });
         priceSuggestion = suggestions;
-      } catch (error) {
+      } catch {
         priceSuggestion = null;
       }
     }
@@ -158,8 +147,8 @@
       localStorage.setItem('sell-form-draft', JSON.stringify(draftData));
       isDraftSaved = true;
       setTimeout(() => isDraftSaved = false, 3000);
-    } catch (error) {
-      console.warn('Could not save draft:', error);
+    } catch {
+      // Failed to save draft - continue silently
     }
   }
 
@@ -181,12 +170,13 @@
           currentStep = draftData.currentStep || 1;
         }
       }
-    } catch (error) {
-      console.warn('Could not load draft:', error);
+    } catch {
+      // Failed to load draft - continue silently
     }
   }
 
-  onMount(() => {
+  // Initialize draft handling and cleanup
+  $effect(() => {
     // Clear any old draft with wrong values
     const saved = localStorage.getItem('sell-form-draft');
     if (saved) {
@@ -201,6 +191,7 @@
         localStorage.removeItem('sell-form-draft');
       }
     }
+
     return () => clearTimeout(saveTimeout);
   });
   
@@ -226,13 +217,13 @@
             showSuggestions = true;
           }
         } catch (error) {
-          console.error('Image analysis failed:', error);
+          
         }
       }
       
       return uploaded;
     } catch (error) {
-      console.error('[handleImageUpload] Error occurred:', error);
+      
       throw error;
     } finally {
       isUploadingImages = false;
@@ -277,8 +268,6 @@
     formData.condition &&
     formData.price > 0 &&
     formData.shipping_cost >= 0
-    // Note: brand and size temporarily removed for sub-step flow testing
-    // TODO: Add brand/size fields to Step 2 or create Step 2.5 for product details
   );
 
   // Helper function to get step titles for accessibility announcements
@@ -470,7 +459,7 @@
             <ErrorBoundary
               resetKeys={[currentStep]}
               onError={(error) => {
-                console.error('Error in Step 1 (Photos):', error);
+                
                 toasts.error('An error occurred while loading photos step. Please try again.');
               }}
             >
@@ -494,7 +483,7 @@
             <ErrorBoundary
               resetKeys={[currentStep]}
               onError={(error) => {
-                console.error('Error in Step 2 (Category):', error);
+                
                 toasts.error('An error occurred while loading category step. Please try again.');
               }}
             >
@@ -548,7 +537,7 @@
             <ErrorBoundary
               resetKeys={[currentStep]}
               onError={(error) => {
-                console.error('Error in Step 3 (Pricing):', error);
+                
                 toasts.error('An error occurred while loading pricing step. Please try again.');
               }}
             >

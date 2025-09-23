@@ -40,7 +40,7 @@ export const POST: RequestHandler = async (event) => {
       .eq('id', user.id);
 
     if (updateError) {
-      console.error('Profile update error:', updateError);
+      
       return json({ error: 'Failed to update profile' }, { status: 500 });
     }
 
@@ -68,7 +68,7 @@ export const POST: RequestHandler = async (event) => {
           });
 
         if (brandError) {
-          console.error('Brand upsert error:', brandError);
+          // Brand creation errors are non-critical - profile update continues
         }
       }
     }
@@ -81,7 +81,7 @@ export const POST: RequestHandler = async (event) => {
     });
     
   } catch (error) {
-    console.error('Internal error:', error);
+    
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 };

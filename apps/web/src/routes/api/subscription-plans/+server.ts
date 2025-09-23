@@ -13,13 +13,13 @@ export const GET: RequestHandler = async (event) => {
       .order('price_monthly', { ascending: true });
 
     if (error) {
-      console.error('Error fetching subscription plans:', error);
+      
       return json({ error: 'Failed to fetch subscription plans' }, { status: 500 });
     }
 
     return json(plans || []);
   } catch (error) {
-    console.error('Internal error:', error);
+    
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 };

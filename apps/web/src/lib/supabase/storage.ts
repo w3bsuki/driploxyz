@@ -15,7 +15,7 @@ async function convertToWebP(file: File): Promise<Blob> {
     const webpBlob = await processImage(file, IMAGE_SIZES.medium);
     return webpBlob;
   } catch (error) {
-    console.error('[convertToWebP] Failed, using original:', error);
+    
     return file;
   }
 }
@@ -30,10 +30,10 @@ export async function uploadImage(
   userId: string,
   accessToken?: string
 ): Promise<UploadedImage> {
-  console.log('[uploadImage] Starting upload for:', file.name, 'Size:', file.size, 'bytes');
+  
   
   try {
-    console.log('[uploadImage] Starting conversion and upload process...');
+    
     
     // Convert to WebP with detailed logging
     let fileToUpload: Blob | File;
@@ -41,7 +41,7 @@ export async function uploadImage(
     let contentType: string;
     
     try {
-      console.log('[uploadImage] Converting to WebP...');
+      
       const webpBlob = await convertToWebP(file);
       fileToUpload = webpBlob;
       contentType = 'image/webp';
@@ -50,9 +50,9 @@ export async function uploadImage(
       const randomId = Math.random().toString(36).substring(2, 9);
       fileName = `${userId}/${timestamp}-${randomId}.webp`;
       
-      console.log('[uploadImage] WebP conversion successful, size:', webpBlob.size);
+      
     } catch (conversionError) {
-      console.warn('[uploadImage] WebP conversion failed, using original:', conversionError);
+      
       fileToUpload = file;
       contentType = file.type;
       
@@ -62,23 +62,23 @@ export async function uploadImage(
       fileName = `${userId}/${timestamp}-${randomId}.${extension}`;
     }
     
-    console.log('[uploadImage] Uploading to:', fileName, 'Size:', fileToUpload.size, 'Type:', contentType);
+    
     
     // Try direct fetch to storage API if we have access token
     if (accessToken) {
-      console.log('[uploadImage] Using direct fetch with access token');
+      
       
       const formData = new FormData();
       formData.append('', fileToUpload, fileName);
       
       const uploadUrl = `${PUBLIC_SUPABASE_URL}/storage/v1/object/${bucket}/${fileName}`;
       
-      console.log('[uploadImage] Direct upload to:', uploadUrl);
+      
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => {
         controller.abort();
-        console.error('[uploadImage] Direct upload timeout after 30 seconds');
+        
       }, 30000);
       
       try {
@@ -94,21 +94,20 @@ export async function uploadImage(
         
         clearTimeout(timeoutId);
         
-        console.log('[uploadImage] Direct upload response status:', response.status);
+        
         
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('[uploadImage] Direct upload error:', errorText);
+          
           throw new Error(`Upload failed: ${response.status} ${errorText}`);
         }
         
-        const responseData = await response.json();
-        console.log('[uploadImage] Direct upload response:', responseData);
+        
         
         // Get public URL
         const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${fileName}`;
         
-        console.log('[uploadImage] Upload successful:', url);
+        
         
         return {
           url,
@@ -124,7 +123,7 @@ export async function uploadImage(
     }
     
     // Fallback to using Supabase client (though this seems to hang)
-    console.log('[uploadImage] Using Supabase client (no access token)');
+    
     
     const uploadPromise = supabase.storage
       .from(bucket)
@@ -134,20 +133,20 @@ export async function uploadImage(
         upsert: false
       })
       .then(result => {
-        console.log('[uploadImage] Supabase upload result:', result);
+        
         return result;
       })
       .catch(err => {
-        console.error('[uploadImage] Supabase upload error:', err);
+        
         throw err;
       });
     
-    console.log('[uploadImage] Upload promise created:', uploadPromise);
+    
     
     // Create timeout promise (30 seconds)
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => {
-        console.error('[uploadImage] Upload timeout after 30 seconds');
+        
         reject(new Error('Upload timeout - storage request hanging'));
       }, 30000);
     });
@@ -158,29 +157,29 @@ export async function uploadImage(
       timeoutPromise
     ]) as any;
     
-    console.log('[uploadImage] Supabase upload response:', { data, error });
+    
     
     if (error) {
-      console.error('[uploadImage] Upload error:', error);
+      
       throw new Error(`Failed to upload image: ${error.message}`);
     }
     
     if (!data?.path) {
-      console.error('[uploadImage] No path in upload response');
+      
       throw new Error('No path returned from upload');
     }
     
     // Get public URL
     const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/${bucket}/${data.path}`;
     
-    console.log('[uploadImage] Upload successful:', url);
+    
     
     return {
       url,
       path: data.path
     };
   } catch (error) {
-    console.error('[uploadImage] Upload failed:', error);
+    
     throw error;
   }
 }
@@ -201,7 +200,7 @@ export async function uploadImages(
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     if (!file) {
-      console.warn(`File at index ${i} is undefined, skipping`);
+      
       continue;
     }
     
@@ -210,7 +209,7 @@ export async function uploadImages(
       uploadedImages.push(uploaded);
       onProgress?.(i + 1, files.length);
     } catch (error) {
-      console.error(`Failed to upload image ${i + 1}:`, error);
+      
       // Continue with other uploads even if one fails
     }
   }
@@ -235,7 +234,7 @@ export async function deleteImage(
     .remove([path]);
   
   if (error) {
-    console.error('Delete error:', error);
+    
     return false;
   }
   
@@ -255,7 +254,7 @@ export async function deleteImages(
     .remove(paths);
   
   if (error) {
-    console.error('Delete error:', error);
+    
     return false;
   }
   
@@ -288,7 +287,7 @@ export async function uploadAvatar(
       });
     
     if (error) {
-      console.error('Avatar upload error:', error);
+      
       throw new Error(`Failed to upload avatar: ${error.message}`);
     }
     
@@ -297,7 +296,7 @@ export async function uploadAvatar(
     
     return url;
   } catch (error) {
-    console.error('Avatar upload failed:', error);
+    
     throw error;
   }
 }

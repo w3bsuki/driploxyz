@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import { createBrowserSupabaseClient } from '$lib/supabase/client';
 
-export const load: PageLoad = async ({ parent, url }) => {
+export const load = (async ({ parent, url }) => {
   const { user } = await parent();
   const supabase = createBrowserSupabaseClient();
 
@@ -48,7 +48,7 @@ export const load: PageLoad = async ({ parent, url }) => {
   }
 
   if (recipientError) {
-    console.error('Error fetching recipient:', recipientError);
+    
     throw redirect(303, '/messages');
   }
 
@@ -56,4 +56,4 @@ export const load: PageLoad = async ({ parent, url }) => {
     recipient,
     product
   };
-};
+}) satisfies PageLoad;

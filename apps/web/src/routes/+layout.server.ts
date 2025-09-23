@@ -3,7 +3,7 @@ import { dev } from '$app/environment';
 import type { LayoutServerLoad } from './$types';
 import { COUNTRY_CONFIGS, shouldSuggestCountrySwitch } from '$lib/country/detection';
 import { getCanonicalAndHreflang } from '$lib/seo';
-import { withTimeout } from '@repo/utils';
+import { withTimeout } from '@repo/core/utils';
 
 const REDIRECT_PATHS_TO_SKIP = [
   '/onboarding',
@@ -40,8 +40,7 @@ export const load = (async (event) => {
         .from('profiles')
         .select('id, username, full_name, avatar_url, onboarding_completed, account_type, subscription_tier, region')
         .eq('id', user.id)
-        .single()
-        .then(),
+        .single(),
       2500,
       { data: null, error: null } as any
     );

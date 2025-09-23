@@ -28,7 +28,7 @@
   
   let { conversations, allConversations, activeTab, selectedConversationId, onTabChange, onConversationSelect }: Props = $props();
   
-  const timeAgo = (date: string) => {
+  const timeAgo = () => {
     return i18n.messages_now();
   };
   

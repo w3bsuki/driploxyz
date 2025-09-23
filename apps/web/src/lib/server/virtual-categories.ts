@@ -90,7 +90,7 @@ export async function validateVirtualCategoryTargets(
       .eq('is_active', true);
 
     if (error) {
-      console.error(`Error validating virtual category '${virtualSlug}' targets:`, error);
+      
       return { validSlugs: targetSlugs, missingCount: 0 }; // Fail gracefully
     }
 
@@ -109,7 +109,7 @@ export async function validateVirtualCategoryTargets(
     return { validSlugs, missingCount };
     
   } catch (error) {
-    console.error(`Failed to validate virtual category '${virtualSlug}' targets:`, error);
+    
     return { validSlugs: targetSlugs, missingCount: 0 }; // Fail gracefully
   }
 }

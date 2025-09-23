@@ -58,7 +58,7 @@ async function getCachedCategories(supabase: SupabaseClient<Database>): Promise<
     .order('name');
 
   if (error) {
-    console.error('Error fetching categories:', error);
+    
     return [];
   }
 
@@ -130,29 +130,16 @@ function findCategoryBySlug(categories: Category[], slug: string, level?: number
 }
 
 /**
- * Get all descendants of a category using RPC with robust fallback
+ * Get all descendants of a category using direct queries (simplified approach)
+ * Replaces the removed RPC function with direct database queries
  */
 async function getCategoryDescendants(supabase: SupabaseClient<Database>, categoryId: string): Promise<string[]> {
-  try {
-    const { data, error } = await supabase.rpc('get_category_descendants', {
-      category_uuid: categoryId
-    });
-
-    if (!error && Array.isArray(data) && data.length > 0) {
-      const descendantIds = data.map((d: any) => d.id);
-      return descendantIds; // RPC success - includes self + descendants
-    }
-  } catch (rpcError) {
-    console.warn('RPC get_category_descendants failed, using fallback:', rpcError);
-  }
-  
-  // Fallback: Manual 3-level taxonomy resolution
   return await getCategoryDescendantsFallback(supabase, categoryId);
 }
 
 /**
- * Robust fallback for getting category descendants when RPC fails
- * Manually computes L1→L2→L3 descendants using direct queries
+ * Get category descendants using direct queries
+ * Manually computes L1→L2→L3 descendants using direct database queries
  */
 async function getCategoryDescendantsFallback(supabase: SupabaseClient<Database>, categoryId: string): Promise<string[]> {
   try {
@@ -164,7 +151,7 @@ async function getCategoryDescendantsFallback(supabase: SupabaseClient<Database>
       .eq('is_active', true);
 
     if (l1Error) {
-      console.error('Error fetching L1/L2 categories in fallback:', l1Error);
+      
       return [categoryId]; // Return at least the parent category
     }
 
@@ -186,11 +173,11 @@ async function getCategoryDescendantsFallback(supabase: SupabaseClient<Database>
     // Return union of all levels, removing duplicates
     const allIds = Array.from(new Set([...level1And2Ids, ...level3Ids]));
     
-    console.log(`Fallback resolved ${allIds.length} descendants for category ${categoryId}`);
+    
     return allIds;
     
   } catch (fallbackError) {
-    console.error('Fallback category descendant resolution failed:', fallbackError);
+    
     return [categoryId]; // Last resort: return parent category only
   }
 }
@@ -250,7 +237,7 @@ export async function resolveCategoryPath(
       
       if (targetCategories.length === 0) {
         if (missingCount === targetSlugs.length) {
-          console.warn(`Virtual category '${l1Slug}' has no valid target slugs in database`);
+          
         }
         return {
           level: 1,
@@ -386,7 +373,7 @@ export async function resolveCategoryPath(
     };
 
   } catch (error) {
-    console.error('Error in resolveCategoryPath:', error);
+    
     return {
       level: 1,
       categoryIds: [],
@@ -459,7 +446,7 @@ export async function getCategoryBreadcrumbs(
 
     return { items, jsonLd };
   } catch (error) {
-    console.error('Error in getCategoryBreadcrumbs:', error);
+    
     return {
       items: [{ name: 'Home', href: '/', level: 0 }],
       jsonLd: {

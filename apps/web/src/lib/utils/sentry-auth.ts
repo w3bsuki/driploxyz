@@ -32,8 +32,8 @@ export function trackUserLogin(user: User): void {
         provider: user.app_metadata?.provider || 'unknown'
       }
     );
-  } catch (error) {
-    console.warn('Failed to track user login in Sentry:', error);
+  } catch {
+    // Intentionally empty - Sentry errors are non-critical
   }
 }
 
@@ -49,8 +49,8 @@ export function trackUserLogout(): void {
     
     // Clear user context
     setSentryUser(null);
-  } catch (error) {
-    console.warn('Failed to track user logout in Sentry:', error);
+  } catch {
+    // Intentionally empty - Sentry errors are non-critical
   }
 }
 
@@ -73,7 +73,7 @@ export function trackAuthError(
     if (sensitiveKeywords.some(keyword => 
       errorMessage.toLowerCase().includes(keyword)
     )) {
-      console.warn('Skipping sensitive auth error from Sentry tracking');
+      
       return;
     }
     
@@ -102,8 +102,8 @@ export function trackAuthError(
         errorType: error instanceof Error ? error.constructor.name : 'string'
       }
     );
-  } catch (sentryError) {
-    console.warn('Failed to track auth error in Sentry:', sentryError);
+  } catch {
+    // Intentionally empty - Sentry errors are non-critical
   }
 }
 
@@ -136,8 +136,8 @@ export function trackSessionChange(
         userId: session?.user?.id
       }
     );
-  } catch (error) {
-    console.warn('Failed to track session change in Sentry:', error);
+  } catch {
+    // Intentionally empty - Sentry errors are non-critical
   }
 }
 
@@ -164,8 +164,8 @@ export function trackProfileError(
       level: 'error',
       fingerprint: ['profile-error', context?.action || 'unknown']
     });
-  } catch (sentryError) {
-    console.warn('Failed to track profile error in Sentry:', sentryError);
+  } catch {
+    // Intentionally empty - Sentry errors are non-critical
   }
 }
 
@@ -194,7 +194,7 @@ export function trackPermissionError(
       level: 'warning',
       fingerprint: ['permission-error', context?.resource || 'unknown']
     });
-  } catch (sentryError) {
-    console.warn('Failed to track permission error in Sentry:', sentryError);
+  } catch {
+    // Intentionally empty - Sentry errors are non-critical
   }
 }

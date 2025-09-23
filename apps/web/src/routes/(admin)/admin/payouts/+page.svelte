@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from '@repo/ui';
-  import { onMount } from 'svelte';
-  import { page } from '$app/stores';
+  // No lifecycle imports needed - using $effect
+  import { page } from '$app/state';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
@@ -19,18 +19,19 @@
   let processing = $state<string | null>(null);
   let activeTab = $state<'pending' | 'processing' | 'completed'>('pending');
 
-  onMount(async () => {
+  $effect(() => {
     if (!supabase) return;
-    
+
     // Subscribe to real-time transaction updates
     const subscription = supabase
       .channel('transactions')
-      .on('postgres_changes', 
-        { event: '*', schema: 'public', table: 'transactions' }, 
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'transactions' },
         () => { loadTransactions(); }
       )
       .subscribe();
 
+    // Return cleanup function
     return () => {
       subscription.unsubscribe();
     };
@@ -139,7 +140,7 @@
     }
   }
 
-  const filteredTransactions = $derived(() => {
+  const filteredTransactions = $derived.by(() => {
     return transactions.filter(t => t.payout_status === activeTab);
   });
 

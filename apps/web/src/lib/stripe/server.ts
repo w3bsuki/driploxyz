@@ -5,7 +5,7 @@ import { env } from '$env/dynamic/private';
 const STRIPE_SECRET_KEY = env.STRIPE_SECRET_KEY;
 
 if (!STRIPE_SECRET_KEY) {
-	console.warn('STRIPE_SECRET_KEY not available - Stripe functionality disabled');
+	// Stripe will be disabled if no secret key is provided
 }
 
 // Use a stable, valid Stripe API version. If omitted, Stripe defaults to the

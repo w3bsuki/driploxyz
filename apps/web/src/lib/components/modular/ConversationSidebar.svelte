@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Avatar } from '@repo/ui';
-  import { Tabs } from '@repo/ui';
+  // import { Tabs } from '@repo/ui'; // Not used in current implementation
   import * as i18n from '@repo/i18n';
   import type { Conversation } from '$lib/services/ConversationService';
 

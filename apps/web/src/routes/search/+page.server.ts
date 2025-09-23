@@ -3,6 +3,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { Database } from '@repo/database';
 import { canonicalizeFilterUrl, buildCanonicalUrl, searchParamsToSegments } from '$lib/utils/filter-url';
+import { withTimeout } from '$lib/server/utils';
 
 type Category = Database['public']['Tables']['categories']['Row'];
 
@@ -80,7 +81,7 @@ async function resolveCategoryIds(supabase: any, category?: string, subcategory?
     const { data } = await query;
     return (data || []).map(cat => cat.id);
   } catch (err) {
-    if (dev) console.warn('Category resolution failed:', err);
+    if (dev) 
     return [];
   }
 }
@@ -137,8 +138,13 @@ function buildCategoryHierarchy(categories: Category[]) {
   return hierarchy;
 }
 
-export const load = (async ({ url, locals, setHeaders }) => {
+export const load = (async ({ url, locals, setHeaders, depends }) => {
   const country = locals.country || 'BG';
+
+  // Mark dependencies for intelligent invalidation
+  depends('app:search');
+  depends('app:products');
+  depends('app:categories');
   
   // Check if this is a legacy category hierarchy pattern in search
   const searchParams = url.searchParams;
@@ -160,16 +166,24 @@ export const load = (async ({ url, locals, setHeaders }) => {
     throw redirect(301, canonicalUrl);
   }
   
-  // Set optimized cache headers for better performance
-  setHeaders({
-    'cache-control': 'public, max-age=120, s-maxage=300', // Cache for 2 min client, 5 min CDN
-    'vary': 'Accept-Encoding' // Enable compression
-  });
+  // Optimize cache headers based on query type
+  const hasUserSpecificData = url.searchParams.has('user_filters');
+  if (!hasUserSpecificData) {
+    setHeaders({
+      'cache-control': 'public, max-age=120, s-maxage=300, stale-while-revalidate=600',
+      'vary': 'Accept-Encoding',
+      'x-search-type': query ? 'search' : 'browse'
+    });
+  }
   
-  // Parse all URL parameters
+  // Parse all URL parameters with performance optimizations
   const query = url.searchParams.get('q') || '';
   const page = parseInt(url.searchParams.get('page') || '1', 10);
+  const cursor = url.searchParams.get('cursor'); // For cursor-based pagination
   const pageSize = 50; // Reasonable page size
+
+  // Performance tracking
+  const startTime = Date.now();
   
   // Category hierarchy parameters - canonical names only
   // Level 1: Gender (women/men/kids/unisex)
@@ -191,17 +205,25 @@ export const load = (async ({ url, locals, setHeaders }) => {
     // Simple parallel queries for categories and filtering
     const [categoriesResult, categoryCountsResult] = await Promise.all([
       // Query 1: Fetch all categories for hierarchy
-      locals.supabase
-        .from('categories')
-        .select('*')
-        .eq('is_active', true)
-        .order('level')
-        .order('sort_order'),
+      withTimeout(
+        locals.supabase
+          .from('categories')
+          .select('*')
+          .eq('is_active', true)
+          .order('level')
+          .order('sort_order'),
+        2000,
+        { data: [] }
+      ),
 
       // Query 2: Get real category product counts
-      locals.supabase.rpc('get_category_product_counts', {
-        p_country_code: country
-      })
+      withTimeout(
+        locals.supabase.rpc('get_category_product_counts', {
+          p_country_code: country
+        }),
+        2000,
+        { data: [] }
+      )
     ]);
 
     const { data: allCategories } = categoriesResult;
@@ -306,14 +328,28 @@ export const load = (async ({ url, locals, setHeaders }) => {
         break;
     }
 
-    // Execute query with pagination and count
-    const offset = (page - 1) * pageSize;
-    productsQuery = productsQuery
-      .range(offset, offset + pageSize - 1);
+    // Cursor-based pagination for better performance on large datasets
+    if (cursor) {
+      try {
+        const [timestamp, id] = Buffer.from(cursor, 'base64').toString().split(':');
+        productsQuery = productsQuery
+          .or(`created_at.lt.${timestamp},and(created_at.eq.${timestamp},id.lt.${id})`)
+          .limit(pageSize);
+      } catch {
+        // Fallback to offset-based pagination if cursor is invalid
+        const offset = (page - 1) * pageSize;
+        productsQuery = productsQuery.range(offset, offset + pageSize - 1);
+      }
+    } else {
+      // First page or fallback to offset-based pagination
+      const offset = (page - 1) * pageSize;
+      productsQuery = productsQuery.range(offset, offset + pageSize - 1);
+    }
+
     const { data: products, error: productsError, count } = await productsQuery;
 
     if (productsError) {
-      if (dev) console.error('Products query error:', productsError);
+      if (dev) 
       return {
         products: [],
         categories: [],
@@ -410,16 +446,39 @@ export const load = (async ({ url, locals, setHeaders }) => {
       });
     }
 
+    // Generate next cursor for pagination (using last product's created_at + id)
+    const nextCursor = transformedProducts.length === pageSize && transformedProducts.length > 0
+      ? Buffer.from(`${transformedProducts[transformedProducts.length - 1].created_at}:${transformedProducts[transformedProducts.length - 1].id}`).toString('base64')
+      : null;
+
+    // SvelteKit 2 streaming: Return critical data immediately, stream heavy data
     return {
-      products: transformedProducts,
-      categories: sortedCategories,
-      categoryHierarchy,
-      categoryProductCounts,
+      // Critical data for immediate render
       searchQuery: query,
-      total: count || 0,
-      hasMore: transformedProducts.length === pageSize, // Simple check for more results
       currentPage: page,
       pageSize,
+      hasMore: transformedProducts.length === pageSize,
+      nextCursor,
+
+      // Essential search results - load immediately but allow streaming
+      products: Promise.resolve(transformedProducts),
+
+      // UI structure data - needed for layout
+      categories: sortedCategories,
+
+      // Stream heavy computed data
+      categoryHierarchy: Promise.resolve().then(async () => {
+        await new Promise(resolve => setTimeout(resolve, 0));
+        return categoryHierarchy;
+      }),
+
+      categoryProductCounts: Promise.resolve().then(async () => {
+        await new Promise(resolve => setTimeout(resolve, 0));
+        return categoryProductCounts;
+      }),
+
+      // Performance and metadata
+      total: count || 0,
       filters: {
         category: category,
         subcategory: subcategory,
@@ -430,11 +489,19 @@ export const load = (async ({ url, locals, setHeaders }) => {
         brand,
         size,
         sortBy
-      }
+      },
+
+      // Performance metrics
+      _performance: Promise.resolve().then(() => ({
+        loadTime: Date.now() - startTime,
+        queryType: query ? 'search' : 'browse',
+        resultCount: transformedProducts.length,
+        cacheStatus: 'fresh' // Will be updated by cache layer
+      }))
     };
 
   } catch (err) {
-    if (dev) console.error('Search error:', err);
+    if (dev) 
     throw error(500, 'Failed to load search results');
   }
 }) satisfies PageServerLoad;

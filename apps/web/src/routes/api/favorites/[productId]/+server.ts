@@ -82,7 +82,7 @@ export const POST: RequestHandler = async ({ params, locals, request, getClientA
 				.single();
 			
 			if (productError || !product) {
-				console.error('Product not found or error:', productError);
+				
 				return json({ error: 'Product not found' }, { status: 404 });
 			}
 			
@@ -114,7 +114,7 @@ export const POST: RequestHandler = async ({ params, locals, request, getClientA
 					if ((deleteError as any).code === '42501') {
 						return json({ error: 'Not allowed', message: 'You are not allowed to modify this favorite' }, { status: 403 });
 					}
-					console.error('Failed to remove favorite:', deleteError);
+					
 					return json({ error: 'Failed to remove favorite', details: deleteError.message }, { status: 500 });
 				}
 				
@@ -148,7 +148,7 @@ export const POST: RequestHandler = async ({ params, locals, request, getClientA
 						// RLS not allowed
 						return json({ error: 'Not allowed', message: 'You are not allowed to favorite this item' }, { status: 403 });
 					} else {
-						console.error('Failed to add favorite:', insertError);
+						
 						return json({ error: 'Failed to add favorite', details: insertError.message }, { status: 500 });
 					}
 				}
@@ -168,7 +168,7 @@ export const POST: RequestHandler = async ({ params, locals, request, getClientA
 				});
 			}
 		} catch (error) {
-			console.error('Favorites API error:', error);
+			
 			return json({ 
 				error: 'Internal server error', 
 				message: 'An error occurred while processing your request' 

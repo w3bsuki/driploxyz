@@ -1,6 +1,6 @@
 <script lang="ts">
   import { BottomNav } from '@repo/ui';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import * as i18n from '@repo/i18n';
   import type { LayoutServerData } from './$types';
   import type { Snippet } from 'svelte';
@@ -9,11 +9,10 @@
 
   // Determine if we should show bottom nav (exclude certain pages)
   const shouldShowBottomNav = $derived(
-    !$page.route.id?.includes('/onboarding') &&
-    !($page.route.id?.includes('/messages') && $page.url.searchParams.has('conversation'))
+    !page.route.id?.includes('/onboarding') &&
+    !(page.route.id?.includes('/messages') && page.url.searchParams.has('conversation'))
   );
 
-  // TODO: Add proper unread message count from data
   const unreadMessageCount = $derived(0);
 </script>
 
@@ -27,7 +26,7 @@
   <!-- Bottom Navigation - Mobile Only -->
   {#if shouldShowBottomNav}
     <BottomNav
-      currentPath={$page.url.pathname}
+      currentPath={page.url.pathname}
       {unreadMessageCount}
       profileHref={data?.user?.id ? `/profile/${data.user.id}` : '/account'}
       isAuthenticated={!!data?.user}

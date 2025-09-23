@@ -14,7 +14,9 @@ export const POST: RequestHandler = async ({ request }) => {
   const signature = request.headers.get('stripe-signature');
 
   if (!signature || !STRIPE_WEBHOOK_SECRET) {
-    if (isDebug) console.error('[Webhook] Missing Stripe signature or webhook secret');
+    if (isDebug) {
+      console.error('Missing webhook signature or secret');
+    }
     return json({ error: 'Webhook signature verification failed' }, { status: 400 });
   }
 
@@ -22,12 +24,14 @@ export const POST: RequestHandler = async ({ request }) => {
 
   try {
     if (!stripe) {
-      console.error('Stripe not initialized');
+      
       return json({ error: 'Stripe not available' }, { status: 500 });
     }
     event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SECRET);
-  } catch (err: any) {
-    if (isDebug) console.error('[Webhook] Signature verification failed:', err.message);
+  } catch (err: unknown) {
+    if (isDebug) {
+      console.error('Webhook signature verification error:', err);
+    }
     return json({ error: 'Webhook signature verification failed' }, { status: 400 });
   }
 
@@ -40,13 +44,17 @@ export const POST: RequestHandler = async ({ request }) => {
       case 'customer.subscription.created':
       case 'customer.subscription.updated':
       case 'customer.subscription.deleted':
-        if (isDebug) console.log(`[Webhook] Processing: ${event.type}`);
+        if (isDebug) {
+          console.log('Processing subscription event:', event.type);
+        }
         await subscriptionService.handleStripeWebhook(event, stripe);
         break;
 
       case 'invoice.payment_succeeded':
         if (event.data.object.billing_reason === 'subscription_cycle') {
-          if (isDebug) console.log('[Webhook] Recurring payment succeeded');
+          if (isDebug) {
+            console.log('Processing subscription cycle payment');
+          }
           await subscriptionService.handleStripeWebhook({
             type: 'customer.subscription.updated',
             data: { object: event.data.object.subscription }
@@ -55,9 +63,11 @@ export const POST: RequestHandler = async ({ request }) => {
         break;
 
       case 'invoice.payment_failed':
-        if (isDebug) console.log('[Webhook] Payment failed');
+        if (isDebug) {
+          console.log('Processing payment failed event');
+        }
         if (!stripe) {
-          console.error('Stripe not initialized');
+          console.error('Stripe not available for payment failed handling');
           break;
         }
         const subscription = await stripe.subscriptions.retrieve(event.data.object.subscription);
@@ -68,13 +78,17 @@ export const POST: RequestHandler = async ({ request }) => {
         break;
 
       default:
-        if (isDebug) console.log(`[Webhook] Unhandled event type: ${event.type}`);
+        if (isDebug) {
+          console.log('Unhandled subscription event:', event.type);
+        }
     }
 
     return json({ received: true });
     
   } catch (error) {
-    if (isDebug) console.error('[Webhook] Processing error:', error);
+    if (isDebug) {
+      console.error('Webhook error:', error);
+    }
     return json({ error: 'Webhook processing failed' }, { status: 500 });
   }
 };

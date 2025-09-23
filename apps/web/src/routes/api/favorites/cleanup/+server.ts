@@ -14,7 +14,7 @@ export const POST: RequestHandler = async ({ locals: { supabase } }) => {
     const { removedCount, error: cleanupError } = await services.favorites.cleanupSoldFavorites();
 
     if (cleanupError) {
-      console.error('Favorites cleanup error:', cleanupError);
+      
       return error(500, { message: 'Cleanup failed' });
     }
 
@@ -25,7 +25,7 @@ export const POST: RequestHandler = async ({ locals: { supabase } }) => {
     });
 
   } catch (err) {
-    console.error('Favorites cleanup API error:', err);
+    
     return error(500, { message: 'Internal server error' });
   }
 };

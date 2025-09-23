@@ -31,7 +31,7 @@ export class PayoutService {
 				error: null
 			};
 		} catch (error) {
-			console.error('Error processing payouts:', error);
+			
 			return { transactions: null, error: error as Error };
 		}
 	}

@@ -48,7 +48,7 @@ export async function processSlugQueue(): Promise<{
 /**
  * Generate slug for a specific product (manual trigger)
  */
-export async function generateProductSlug(_productId: string): Promise<{
+export async function generateProductSlug(): Promise<{
   success: boolean;
   slug?: string;
   error?: string;

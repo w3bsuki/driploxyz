@@ -1,14 +1,34 @@
 /**
- * Performance Monitoring for Driplo
- * Tracks API performance, database queries, and user experience metrics
+ * Enhanced Performance Monitoring for Driplo with SvelteKit 2 Support
+ * Tracks API performance, database queries, streaming data, Core Web Vitals, and cache effectiveness
  */
+
+import { browser } from '$app/environment';
+import { cacheMonitoring } from '$lib/cache';
 
 interface PerformanceMetric {
   name: string;
   value: number;
   unit: string;
   timestamp: string;
+  route?: string;
   tags?: Record<string, string>;
+}
+
+interface CoreWebVitals {
+  lcp?: number; // Largest Contentful Paint
+  fid?: number; // First Input Delay
+  cls?: number; // Cumulative Layout Shift
+  fcp?: number; // First Contentful Paint
+  ttfb?: number; // Time to First Byte
+}
+
+interface StreamingMetric {
+  dataType: string;
+  loadTime: number;
+  chunkCount: number;
+  route: string;
+  timestamp: string;
 }
 
 interface DatabaseQueryMetric {
@@ -33,10 +53,96 @@ class PerformanceMonitor {
   private metrics: PerformanceMetric[] = [];
   private dbQueries: DatabaseQueryMetric[] = [];
   private apiMetrics: APIMetric[] = [];
+  private streamingMetrics: StreamingMetric[] = [];
+  private webVitals: CoreWebVitals = {};
+  private observers: PerformanceObserver[] = [];
   private maxMetrics = 10000; // Keep last 10k metrics in memory
 
+  constructor() {
+    if (browser) {
+      this.initializeBrowserMonitoring();
+    }
+  }
+
+  private initializeBrowserMonitoring() {
+    this.setupWebVitalsObservers();
+    this.setupNavigationTiming();
+  }
+
+  private setupWebVitalsObservers() {
+    if ('PerformanceObserver' in window) {
+      // LCP Observer
+      try {
+        const lcpObserver = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          const lastEntry = entries[entries.length - 1] as PerformanceEntry;
+          this.webVitals.lcp = lastEntry.startTime;
+          this.recordMetric('lcp', lastEntry.startTime, 'ms', { route: window.location.pathname });
+        });
+        lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+        this.observers.push(lcpObserver);
+      } catch {
+        console.debug('LCP observer not supported');
+      }
+
+      // FID Observer
+      try {
+        const fidObserver = new PerformanceObserver((list) => {
+          const entries = list.getEntries();
+          entries.forEach((entry) => {
+            const fidEntry = entry as PerformanceEntry & { processingStart?: number };
+            if (fidEntry.processingStart) {
+              this.webVitals.fid = fidEntry.processingStart - fidEntry.startTime;
+              this.recordMetric('fid', this.webVitals.fid, 'ms', { route: window.location.pathname });
+            }
+          });
+        });
+        fidObserver.observe({ entryTypes: ['first-input'] });
+        this.observers.push(fidObserver);
+      } catch {
+        console.debug('FID observer not supported');
+      }
+
+      // CLS Observer
+      try {
+        const clsObserver = new PerformanceObserver((list) => {
+          let clsValue = 0;
+          const entries = list.getEntries();
+          entries.forEach((entry: PerformanceEntry & { hadRecentInput?: boolean; value?: number }) => {
+            if (!entry.hadRecentInput) {
+              clsValue += entry.value || 0;
+            }
+          });
+          this.webVitals.cls = clsValue;
+          this.recordMetric('cls', clsValue, 'score', { route: window.location.pathname });
+        });
+        clsObserver.observe({ entryTypes: ['layout-shift'] });
+        this.observers.push(clsObserver);
+      } catch {
+        console.debug('CLS observer not supported');
+      }
+    }
+  }
+
+  private setupNavigationTiming() {
+    if ('performance' in window && 'getEntriesByType' in performance) {
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+          if (navigation) {
+            this.webVitals.ttfb = navigation.responseStart - navigation.fetchStart;
+            this.webVitals.fcp = navigation.loadEventEnd - navigation.fetchStart;
+
+            this.recordMetric('ttfb', this.webVitals.ttfb, 'ms', { route: window.location.pathname });
+            this.recordMetric('fcp', this.webVitals.fcp, 'ms', { route: window.location.pathname });
+          }
+        }, 0);
+      });
+    }
+  }
+
   /**
-   * Record a performance metric
+   * Record a performance metric with enhanced context
    */
   recordMetric(name: string, value: number, unit: string = 'ms', tags?: Record<string, string>) {
     const metric: PerformanceMetric = {
@@ -44,19 +150,38 @@ class PerformanceMonitor {
       value,
       unit,
       timestamp: new Date().toISOString(),
+      route: browser ? window.location.pathname : undefined,
       tags
     };
 
     this.metrics.push(metric);
-    
+
     // Clean up old metrics
     if (this.metrics.length > this.maxMetrics) {
       this.metrics.shift();
     }
 
-    // Log slow operations
-    if (value > 1000) { // > 1 second
-      console.warn(`Slow operation detected: ${name} took ${value}${unit}`);
+    // Log performance issues based on type
+    this.checkPerformanceThresholds(metric);
+  }
+
+  private checkPerformanceThresholds(metric: PerformanceMetric) {
+    const thresholds = {
+      lcp: 2500,
+      fid: 100,
+      cls: 0.1,
+      ttfb: 600,
+      dataLoad: 3000,
+      streamingData: 1000,
+      cacheLoad: 50
+    };
+
+    const threshold = thresholds[metric.name as keyof typeof thresholds];
+    if (threshold && metric.value > threshold) {
+      console.warn(`Performance threshold exceeded: ${metric.name} = ${metric.value}${metric.unit} (threshold: ${threshold}${metric.unit})`, {
+        route: metric.route,
+        tags: metric.tags
+      });
     }
   }
 
@@ -80,7 +205,7 @@ class PerformanceMonitor {
 
     // Log slow queries
     if (duration > 500) { // > 500ms
-      console.warn(`Slow database query detected: ${duration}ms - ${table || 'unknown table'}`);
+      
     }
   }
 
@@ -106,12 +231,57 @@ class PerformanceMonitor {
 
     // Log slow API calls
     if (duration > 2000) { // > 2 seconds
-      console.warn(`Slow API call detected: ${method} ${endpoint} took ${duration}ms`);
+      
     }
   }
 
   /**
-   * Get performance summary
+   * Record streaming data performance
+   */
+  recordStreamingData(dataType: string, loadTime: number, chunkCount: number = 1, route?: string) {
+    const metric: StreamingMetric = {
+      dataType,
+      loadTime,
+      chunkCount,
+      route: route || (browser ? window.location.pathname : 'server'),
+      timestamp: new Date().toISOString()
+    };
+
+    this.streamingMetrics.push(metric);
+
+    if (this.streamingMetrics.length > this.maxMetrics) {
+      this.streamingMetrics.shift();
+    }
+
+    // Also record as general metric
+    this.recordMetric('streamingData', loadTime, 'ms', {
+      dataType,
+      chunkCount: chunkCount.toString(),
+      avgChunkTime: (loadTime / chunkCount).toString()
+    });
+  }
+
+  /**
+   * Track SvelteKit data loading with streaming support
+   */
+  trackDataLoading(route: string, startTime: number, metadata?: Record<string, string | number | boolean | undefined>) {
+    const loadTime = Date.now() - startTime;
+    this.recordMetric('dataLoad', loadTime, 'ms', {
+      route,
+      queryCount: metadata?.queryCount?.toString() || '1',
+      cacheHits: metadata?.cacheHits?.toString() || '0',
+      ...metadata
+    });
+
+    return {
+      loadTime,
+      route,
+      timestamp: Date.now()
+    };
+  }
+
+  /**
+   * Get comprehensive performance summary with Web Vitals and streaming metrics
    */
   getPerformanceSummary() {
     const now = Date.now();
@@ -128,21 +298,38 @@ class PerformanceMonitor {
       new Date(a.timestamp).getTime() > lastHour
     );
 
+    const recentStreamingMetrics = this.streamingMetrics.filter(s =>
+      new Date(s.timestamp).getTime() > lastHour
+    );
+
+    const cacheStats = browser ? cacheMonitoring.getMetrics() : { hitRate: 0, hits: 0, misses: 0 };
+
     return {
       timestamp: new Date().toISOString(),
       period: 'last_hour',
+      webVitals: this.webVitals,
       metrics: {
         total: this.metrics.length,
         recent: recentMetrics.length,
         averageResponseTime: this.calculateAverage(recentAPIs, 'duration'),
         averageDBQueryTime: this.calculateAverage(recentDBQueries, 'duration'),
+        averageStreamingTime: this.calculateAverage(recentStreamingMetrics, 'loadTime'),
         slowQueries: recentDBQueries.filter(q => q.duration > 500).length,
         slowAPIs: recentAPIs.filter(a => a.duration > 2000).length,
+        slowStreamingData: recentStreamingMetrics.filter(s => s.loadTime > 1000).length,
         errorRate: this.calculateErrorRate(recentAPIs)
+      },
+      cache: cacheStats,
+      streaming: {
+        totalChunks: recentStreamingMetrics.reduce((sum, s) => sum + s.chunkCount, 0),
+        averageChunkTime: this.calculateAverageChunkTime(recentStreamingMetrics),
+        dataTypeBreakdown: this.getStreamingDataTypeBreakdown(recentStreamingMetrics)
       },
       topSlowQueries: this.getTopSlowQueries(recentDBQueries, 5),
       topSlowAPIs: this.getTopSlowAPIs(recentAPIs, 5),
-      errorBreakdown: this.getErrorBreakdown(recentAPIs)
+      topSlowStreaming: this.getTopSlowStreaming(recentStreamingMetrics, 5),
+      errorBreakdown: this.getErrorBreakdown(recentAPIs),
+      performanceGrade: this.calculatePerformanceGrade()
     };
   }
 
@@ -232,9 +419,9 @@ class PerformanceMonitor {
   /**
    * Helper methods
    */
-  private calculateAverage(items: any[], field: string): number {
+  private calculateAverage<T extends Record<string, unknown>>(items: T[], field: keyof T): number {
     if (items.length === 0) return 0;
-    const sum = items.reduce((acc, item) => acc + item[field], 0);
+    const sum = items.reduce((acc, item) => acc + (item[field] as number), 0);
     return Math.round(sum / items.length);
   }
 
@@ -279,7 +466,7 @@ class PerformanceMonitor {
     return breakdown;
   }
 
-  private generateDBRecommendations(tableStats: Record<string, any>) {
+  private generateDBRecommendations(tableStats: Record<string, { avgDuration: number; maxDuration: number }>) {
     const recommendations: string[] = [];
     
     Object.entries(tableStats).forEach(([table, stats]) => {
@@ -294,14 +481,14 @@ class PerformanceMonitor {
     return recommendations;
   }
 
-  private generateAPIRecommendations(endpointStats: Record<string, any>) {
+  private generateAPIRecommendations(endpointStats: Record<string, { avgDuration: number; errorRate: number } | undefined>) {
     const recommendations: string[] = [];
     
     Object.entries(endpointStats).forEach(([endpoint, stats]) => {
-      if (stats.avgDuration > 1000) {
+      if (stats && stats.avgDuration > 1000) {
         recommendations.push(`Optimize ${endpoint} endpoint (avg: ${Math.round(stats.avgDuration)}ms)`);
       }
-      if (stats.errorRate > 5) {
+      if (stats && stats.errorRate > 5) {
         recommendations.push(`Fix errors in ${endpoint} endpoint (error rate: ${Math.round(stats.errorRate)}%)`);
       }
     });
@@ -309,29 +496,119 @@ class PerformanceMonitor {
     return recommendations;
   }
 
+  private calculateAverageChunkTime(metrics: StreamingMetric[]): number {
+    if (metrics.length === 0) return 0;
+    const totalTime = metrics.reduce((sum, m) => sum + m.loadTime, 0);
+    const totalChunks = metrics.reduce((sum, m) => sum + m.chunkCount, 0);
+    return totalChunks > 0 ? Math.round(totalTime / totalChunks) : 0;
+  }
+
+  private getStreamingDataTypeBreakdown(metrics: StreamingMetric[]) {
+    const breakdown: Record<string, { count: number; avgTime: number }> = {};
+
+    metrics.forEach(metric => {
+      if (!breakdown[metric.dataType]) {
+        breakdown[metric.dataType] = { count: 0, avgTime: 0 };
+      }
+      breakdown[metric.dataType]!.count++;
+      breakdown[metric.dataType]!.avgTime += metric.loadTime;
+    });
+
+    Object.keys(breakdown).forEach(dataType => {
+      const stats = breakdown[dataType];
+      if (stats) {
+        stats.avgTime = Math.round(stats.avgTime / stats.count);
+      }
+    });
+
+    return breakdown;
+  }
+
+  private getTopSlowStreaming(metrics: StreamingMetric[], limit: number) {
+    return metrics
+      .sort((a, b) => b.loadTime - a.loadTime)
+      .slice(0, limit)
+      .map(s => ({
+        dataType: s.dataType,
+        loadTime: s.loadTime,
+        chunkCount: s.chunkCount,
+        route: s.route,
+        timestamp: s.timestamp
+      }));
+  }
+
+  private calculatePerformanceGrade(): 'A' | 'B' | 'C' | 'D' | 'F' {
+    const { lcp, fid, cls } = this.webVitals;
+    let score = 0;
+    let totalChecks = 0;
+
+    if (lcp !== undefined) {
+      totalChecks++;
+      if (lcp <= 2500) score++;
+      else if (lcp <= 4000) score += 0.5;
+    }
+
+    if (fid !== undefined) {
+      totalChecks++;
+      if (fid <= 100) score++;
+      else if (fid <= 300) score += 0.5;
+    }
+
+    if (cls !== undefined) {
+      totalChecks++;
+      if (cls <= 0.1) score++;
+      else if (cls <= 0.25) score += 0.5;
+    }
+
+    if (totalChecks === 0) return 'C';
+
+    const percentage = score / totalChecks;
+    if (percentage >= 0.9) return 'A';
+    if (percentage >= 0.75) return 'B';
+    if (percentage >= 0.5) return 'C';
+    if (percentage >= 0.25) return 'D';
+    return 'F';
+  }
+
   /**
-   * Clear old metrics (call periodically)
+   * Clean up old metrics and observers
    */
   clearOldMetrics() {
     const cutoff = Date.now() - (24 * 60 * 60 * 1000); // 24 hours ago
-    
+
     this.metrics = this.metrics.filter(m => new Date(m.timestamp).getTime() > cutoff);
     this.dbQueries = this.dbQueries.filter(q => new Date(q.timestamp).getTime() > cutoff);
     this.apiMetrics = this.apiMetrics.filter(a => new Date(a.timestamp).getTime() > cutoff);
+    this.streamingMetrics = this.streamingMetrics.filter(s => new Date(s.timestamp).getTime() > cutoff);
+  }
+
+  /**
+   * Cleanup observers when component unmounts
+   */
+  destroy() {
+    this.observers.forEach(observer => observer.disconnect());
+    this.observers = [];
   }
 }
 
 // Export singleton instance
 export const performanceMonitor = new PerformanceMonitor();
 
+// Cleanup function for SvelteKit
+if (browser) {
+  window.addEventListener('beforeunload', () => {
+    performanceMonitor.destroy();
+  });
+}
+
 /**
  * Performance decorator for API routes
  */
 export function trackPerformance(name: string) {
-  return function (_target: any, _propertyName: string, descriptor: PropertyDescriptor) {
+  return function (_target: object, _propertyName: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
 
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (...args: unknown[]) {
       const start = Date.now();
       try {
         const result = await method.apply(this, args);
@@ -351,10 +628,10 @@ export function trackPerformance(name: string) {
  * Database query performance tracker
  */
 export function trackDatabaseQuery(table?: string, operation?: string) {
-  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
+  return function (target: object, propertyName: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
 
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (...args: unknown[]) {
       const start = Date.now();
       try {
         const result = await method.apply(this, args);
@@ -379,3 +656,53 @@ export function trackDatabaseQuery(table?: string, operation?: string) {
     };
   };
 }
+
+// Helper functions for SvelteKit integration
+export const trackDataLoad = (route: string, startTime: number, metadata?: Record<string, unknown>) => {
+  return performanceMonitor.trackDataLoading(route, startTime, metadata);
+};
+
+export const trackStreaming = (dataType: string, loadTime: number, chunkCount: number = 1, route?: string) => {
+  return performanceMonitor.recordStreamingData(dataType, loadTime, chunkCount, route);
+};
+
+export const getPerformanceSummary = () => {
+  return performanceMonitor.getPerformanceSummary();
+};
+
+// Helper for measuring async operations
+export const measureAsync = async <T>(
+  operation: () => Promise<T>,
+  metricName: string,
+  metadata?: Record<string, unknown>
+): Promise<T> => {
+  const startTime = Date.now();
+  try {
+    const result = await operation();
+    performanceMonitor.recordMetric(metricName, Date.now() - startTime, 'ms', metadata);
+    return result;
+  } catch (error) {
+    performanceMonitor.recordMetric(`${metricName}_error`, Date.now() - startTime, 'ms', {
+      ...metadata,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+    throw error;
+  }
+};
+
+// SvelteKit load function performance tracker
+export const createLoadTracker = (route: string) => {
+  const startTime = Date.now();
+
+  return {
+    finish: (metadata?: Record<string, unknown>) => {
+      return trackDataLoad(route, startTime, metadata);
+    },
+    track: (name: string, value: number, metadata?: Record<string, unknown>) => {
+      performanceMonitor.recordMetric(name, value, 'ms', { route, ...metadata });
+    },
+    trackStreaming: (dataType: string, chunkCount: number = 1) => {
+      return trackStreaming(dataType, Date.now() - startTime, chunkCount, route);
+    }
+  };
+};

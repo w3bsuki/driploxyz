@@ -3,10 +3,10 @@ import * as i18n from '@repo/i18n';
 import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
 
 export async function switchLanguage(lang: string) {
-  console.log('Switching language to:', lang);
+  
   
   if (!i18n.locales.includes(lang as i18n.Locale)) {
-    console.error('Invalid language tag:', lang);
+    
     return;
   }
   
@@ -26,7 +26,7 @@ export async function switchLanguage(lang: string) {
     sessionStorage.setItem('selectedLocale', lang);
 
     // Update runtime locale immediately
-    i18n.setLocale(lang);
+    i18n.setLocale(lang as i18n.Locale);
     document.documentElement.lang = lang;
 
     // Normalize path (strip any existing locale prefix)
@@ -46,7 +46,7 @@ export async function switchLanguage(lang: string) {
     await goto(target, { invalidateAll: true });
 
   } catch (error) {
-    console.error('Language switch failed:', error);
+    
     
     // Fallback: Invalidate auth to trigger reload
     await invalidate('supabase:auth');

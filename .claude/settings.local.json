@@ -86,11 +86,44 @@
       "WebFetch(domain:ux.stackexchange.com)",
       "WebFetch(domain:dribbble.com)",
       "mcp__playwright__browser_network_requests",
-      "Bash(node generate-ts-exports.js)"
+      "Bash(node generate-ts-exports.js)",
+      "Bash(for dir in actions components hooks primitives search services skeleton types utils)",
+      "Bash(do echo \"=== $dir ===\")",
+      "Bash(done)",
+      "Bash(mkdir:*)",
+      "WebFetch(domain:svelte-llm.stanislav.garden)",
+      "mcp__svelte-llm__list_sections",
+      "Bash(rg:*)",
+      "mcp__svelte-llm__get_documentation",
+      "Bash(npx tsc:*)",
+      "Bash(npx typescript tsc:*)",
+      "Bash(node:*)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(awk:*)",
+      "Bash(test:*)",
+      "Bash(for workspace in apps/web apps/admin apps/docs packages/ui packages/core packages/database packages/i18n packages/eslint-config packages/typescript-config)",
+      "Bash(do test:*)",
+      "Bash(echo:*)",
+      "Bash(while read file)",
+      "Bash(do echo \"$file:\")",
+      "Bash(for pkg in apps/admin/package.json apps/docs/package.json packages/*/package.json)",
+      "Bash(do if [ -f \"$pkg\" ])",
+      "Bash(then grep -q '\"\"node\"\":' \"$pkg\")",
+      "Bash(fi)",
+      "Bash(touch:*)",
+      "Bash(npx eslint:*)",
+      "Bash(dir:*)",
+      "Bash(tasklist)",
+      "Bash(findstr:*)",
+      "Bash(wmic process:*)",
+      "Bash(cmd //c:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "supabase"
+    "supabase",
+    "playwright",
+    "svelte-docs",
+    "21st-dev"
   ]
 }

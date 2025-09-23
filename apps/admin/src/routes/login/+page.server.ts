@@ -49,7 +49,7 @@ export const actions = {
 		});
 
 		if (error) {
-			console.error(`Failed login attempt for ${email} from IP ${locals.ipAddress}`);
+			
 			return fail(400, {
 				error: 'Invalid email or password',
 				ip: locals.ipAddress

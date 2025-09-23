@@ -88,7 +88,7 @@
         alert(i18n.upgrade_paymentFailed() + ' ' + confirmError.message);
       }
     } catch (error) {
-      console.error('Subscription error:', error);
+      
       alert(i18n.upgrade_subscriptionFailed());
     } finally {
       loading = '';
@@ -124,7 +124,7 @@
         goto('/dashboard/upgrade', { invalidateAll: true });
       }
     } catch (error) {
-      console.error('Cancel error:', error);
+      
       alert(i18n.upgrade_subscriptionFailed());
     } finally {
       loading = '';

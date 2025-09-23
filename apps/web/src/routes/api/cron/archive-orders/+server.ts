@@ -46,7 +46,7 @@ export const GET: RequestHandler = async ({ request }) => {
     });
 
   } catch (err) {
-    console.error('Cron archive orders error:', err);
+    
     return json({ 
       success: false, 
       error: 'Internal server error',

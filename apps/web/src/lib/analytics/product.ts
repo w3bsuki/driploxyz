@@ -4,6 +4,7 @@
  */
 
 interface ProductViewEvent {
+  event_type?: string;
   productId: string;
   productTitle: string;
   productPrice: number;
@@ -12,6 +13,7 @@ interface ProductViewEvent {
 }
 
 interface FavoriteToggleEvent {
+  event_type?: string;
   productId: string;
   favorited: boolean;
   userId?: string;
@@ -19,15 +21,27 @@ interface FavoriteToggleEvent {
 }
 
 interface ProductActionEvent {
+  event_type?: string;
   productId: string;
   action: 'buy_now' | 'make_offer' | 'share' | 'message_seller';
   userId?: string;
   timestamp: number;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
+}
+
+interface ShippingSelectedEvent {
+  event_type: 'shipping_selected';
+  productId: string;
+  userId?: string;
+  timestamp: number;
+  metadata: {
+    shippingMethod: string;
+    shippingCost: number;
+  };
 }
 
 // Event queue for offline support
-let eventQueue: Array<ProductViewEvent | FavoriteToggleEvent | ProductActionEvent> = [];
+let eventQueue: Array<ProductViewEvent | FavoriteToggleEvent | ProductActionEvent | ShippingSelectedEvent> = [];
 let isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
 
 // Track online status
@@ -45,7 +59,7 @@ if (typeof window !== 'undefined') {
 /**
  * Send analytics event to backend
  */
-async function sendEvent(event: any): Promise<void> {
+async function sendEvent(event: ProductViewEvent | FavoriteToggleEvent | ProductActionEvent | ShippingSelectedEvent): Promise<void> {
   if (!isOnline) {
     eventQueue.push(event);
     return;
@@ -59,8 +73,7 @@ async function sendEvent(event: any): Promise<void> {
       },
       body: JSON.stringify(event),
     });
-  } catch (error) {
-    console.warn('Analytics event failed to send:', error);
+  } catch {
     // Queue for retry when online
     eventQueue.push(event);
   }
@@ -83,8 +96,7 @@ async function flushEventQueue(): Promise<void> {
       },
       body: JSON.stringify({ events }),
     });
-  } catch (error) {
-    console.warn('Failed to flush analytics queue:', error);
+  } catch {
     // Re-queue events
     eventQueue = [...events, ...eventQueue];
   }
@@ -234,20 +246,24 @@ export function trackShippingOptionSelected(
   shippingCost: number,
   userId?: string
 ): void {
-  sendEvent({
+  const event: ShippingSelectedEvent = {
     event_type: 'shipping_selected',
     productId,
-    shippingMethod,
-    shippingCost,
     userId,
     timestamp: Date.now(),
-  });
+    metadata: {
+      shippingMethod,
+      shippingCost,
+    },
+  };
+
+  sendEvent(event);
 }
 
 /**
  * Batch track multiple events (for performance)
  */
-export function trackBatch(events: Array<any>): void {
+export function trackBatch(events: Array<ProductViewEvent | FavoriteToggleEvent | ProductActionEvent | ShippingSelectedEvent>): void {
   if (!isOnline) {
     eventQueue.push(...events);
     return;
@@ -259,8 +275,8 @@ export function trackBatch(events: Array<any>): void {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ events }),
-  }).catch(error => {
-    console.warn('Batch analytics failed:', error);
+  }).catch(() => {
+
     eventQueue.push(...events);
   });
 }

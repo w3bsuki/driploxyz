@@ -1,52 +1,74 @@
 import type { PageLoad } from './$types.js';
 import type { Product } from '@repo/ui';
 
-export const load: PageLoad = async ({ params, fetch }) => {
-	try {
-		// Product ID passed from route parameters
-		
-		// Validate product ID
-		if (!params.productId || params.productId === '[object Object]') {
-			throw new Error('Invalid product ID');
-		}
-		
-		// Get real product data from the API
-		const response = await fetch(`/api/products/${params.productId}`);
-		
-		if (response.ok) {
-			const productData = await response.json();
-			return {
-				product: productData.product
-			};
-		}
-	} catch (error) {
-		console.error('Failed to load product:', error);
-	}
+export const load = (async ({ params, fetch }) => {
+  try {
+    if (!params.productId || params.productId === '[object Object]') {
+      throw new Error('Invalid product ID');
+    }
 
-	// Fallback to test product with $0.01 price for testing
-	const testProduct: Product = {
-		id: params.productId,
-		title: 'TEST PRODUCT - $0.01',
-		description: 'Test product for payment testing - will charge $0.01',
-		price: 1, // $0.01 in cents for testing
-		currency: 'eur',
-		images: ['/placeholder-product.jpg'],
-		brand: 'Test Brand',
-		size: 'M',
-		condition: 'new',
-		seller_id: 'test-seller',
-		category_id: 'test-category',
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString(),
-		sold: false,
-		favorites_count: 0,
-		views_count: 0,
-		location: 'Test Location',
-		seller_name: 'test_user',
-		seller_rating: 5.0
-	};
+    const response = await fetch(`/api/products/${params.productId}`);
 
-	return {
-		product: testProduct
-	};
-};
+    if (response.ok) {
+      const productData = await response.json();
+      return {
+        product: productData.product as Product
+      };
+    }
+  } catch (error) {
+    // TODO: integrate logging once server logger is wired up
+  }
+
+  const testProduct: Product = {
+    id: params.productId,
+    title: 'TEST PRODUCT - $0.01',
+    description: 'Test product for payment testing - will charge $0.01',
+    price: 1,
+    currency: 'eur',
+    images: ['/placeholder-product.jpg'],
+    brand: 'Test Brand',
+    size: 'M',
+    condition: 'new_without_tags' as const,
+    seller_id: 'test-seller',
+    category_id: 'test-category',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    is_sold: false,
+    favorite_count: 0,
+    view_count: 0,
+    location: 'Test Location',
+    sellerName: 'test_user',
+    sellerRating: 5.0,
+    // Required ProductUIFields
+    sellerId: 'test-seller', // Legacy compatibility
+    createdAt: new Date().toISOString(), // Legacy compatibility
+    slug: 'test-product-001',
+    availableSizes: ['M'],
+    // Database fields that might be required
+    country_code: 'BG',
+    status: 'active' as const,
+    tags: null,
+    is_featured: false,
+    is_boosted: false,
+    boosted_until: null,
+    weight: null,
+    dimensions: null,
+    material: null,
+    color: null,
+    style: null,
+    occasion: null,
+    season: null,
+    first_image: '/placeholder-product.jpg',
+    category: null,
+    subcategory: null,
+    specific_category: null,
+    visibility: 'public' as const,
+    slug_history: null,
+    boost_score: 0,
+    quality_score: 0
+  };
+
+  return {
+    product: testProduct
+  };
+}) satisfies PageLoad;

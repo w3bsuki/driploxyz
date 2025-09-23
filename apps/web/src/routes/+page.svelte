@@ -1,36 +1,27 @@
 <script lang="ts">
 	// Core components loaded immediately
-	import { MainPageSearchBar, EnhancedSearchBar, SearchDropdown, CategoryDropdown, BottomNav, AuthPopup, FeaturedProducts, LoadingSpinner, SellerQuickView, FeaturedSellers, FilterPill, CategoryPill, PromotedHighlights, PromotedListingsSection } from '@repo/ui';
-	import type { Product, User, Profile } from '@repo/ui/types';
+	import { MainPageSearchBar, BottomNav, AuthPopup, FeaturedProducts, SellerQuickView, FeaturedSellers, PromotedListingsSection } from '@repo/ui';
+	import type { Product } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
-	import { unreadMessageCount } from '$lib/stores/messageNotifications';
+	import { unreadCount } from '$lib/stores/notifications';
 	import { goto, preloadCode, preloadData } from '$app/navigation';
-	import { page, navigating } from '$app/stores';
+	import { page, navigating } from '$app/state';
 	import { browser } from '$app/environment';
-	import { serviceUtils } from '$lib/services';
-	import { purchaseActions, purchaseStore } from '$lib/stores/purchase-store';
+	import { purchaseActions } from '$lib/stores/purchase-store';
 	import { favoritesActions, favoritesStore } from '$lib/stores/favorites-store';
 	import { authPopupActions, authPopupStore } from '$lib/stores/auth-popup-store';
 	import type { PageData } from './$types';
 	import type { ProductWithImages } from '$lib/services';
-	import type { Seller, ProductDisplay, PromotedProduct } from '$lib/types';
+	import type { Seller } from '$lib/types';
 	import { CATEGORY_ICONS, DEFAULT_CATEGORY_ICON } from '$lib/types';
 	import { getProductUrl } from '$lib/utils/seo-urls';
-	import { createLogger } from '$lib/utils/log';
-	import { CategoryService } from '$lib/services/categories';
-	import { ProfileService } from '$lib/services/profiles';
-	import { getCollectionsForContext } from '$lib/data/collections';
 
-	const log = createLogger('homepage');
 
 	let { data }: { data: PageData } = $props();
 
 	let searchQuery = $state('');
-	let dropdownSearchQuery = $state('');
-	let activeDropdownTab = $state('trending');
-	let showTrendingDropdown = $state(false);
 	let selectedSeller = $state<Seller | null>(null);
-	let selectedPartner = $state<any>(null);
+	let selectedPartner = $state<{id: string; name: string; avatar?: string} | null>(null);
 	let showSellerModal = $state(false);
 	let showPartnerModal = $state(false);
 	let showCategoryDropdown = $state(false);
@@ -39,10 +30,9 @@
 	let activeTab = $state<'sellers' | 'brands'>('sellers');
 
 	// Handle streamed data
-	let featuredProductsData = $state<any[]>([]);
-	let topBrandsData = $state<any[]>([]);
-	let topSellersData = $state<any[]>([]);
-	let sellersData = $state<any[]>([]);
+	let featuredProductsData = $state<Product[]>([]);
+	let topBrandsData = $state<Array<{id: string; full_name?: string; username: string; avatar_url?: string; verified?: boolean; products?: Product[]; weekly_sales_count?: number; sales_count?: number; monthly_views?: number}>>([]);
+	let topSellersData = $state<Array<{id: string; username?: string; full_name?: string; avatar_url?: string; verified?: boolean; products?: Product[]; rating?: number; sales_count?: number; account_type?: string}>>([]);
 	let userFavoritesData = $state<Record<string, boolean>>({});
 	let dataLoaded = $state(false);
 
@@ -96,26 +86,14 @@
 		}))
 	);
 
-	// Quick shop items - keeping these as shortcuts
-	const quickShopItems = [
-		{ label: 'Under $25', description: 'Budget finds', filter: 'max_price=25', icon: '💰' },
-		{ label: 'Drip Collection', description: 'Staff picks', filter: 'collection=drip', icon: '💧' },
-		{ label: 'Designer $100+', description: 'Premium pieces', filter: 'min_price=100', icon: '💎' },
-		{ label: 'New with Tags', description: 'Brand new condition', filter: 'condition=brand_new_with_tags', icon: '🏷️' },
-		{ label: 'Like New', description: 'Excellent condition', filter: 'condition=like_new', icon: '✨' }
-	];
-
-	// Component state
-	let sellersInView = $state(false);
 
 	// Language state - already initialized in +layout.svelte
 	let currentLang = $state(i18n.getLocale());
-	let updateKey = $state(0);
 
 	// Sync searchQuery with URL parameters on page load/navigation
 	$effect(() => {
 		if (browser) {
-			const urlSearchQuery = $page.url.searchParams.get('q') || '';
+			const urlSearchQuery = page.url.searchParams.get('q') || '';
 			if (urlSearchQuery !== searchQuery) {
 				searchQuery = urlSearchQuery;
 			}
@@ -127,7 +105,6 @@
 		const newLang = i18n.getLocale();
 		if (newLang !== currentLang) {
 			currentLang = newLang;
-			updateKey++;
 		}
 	});
 
@@ -207,11 +184,6 @@
 			topSellersData = data.topSellers || [];
 		}
 
-		if (data.sellers instanceof Promise) {
-			data.sellers.then(sellers => sellersData = sellers || []);
-		} else {
-			sellersData = data.sellers || [];
-		}
 
 		if (data.userFavorites instanceof Promise) {
 			data.userFavorites.then(favorites => userFavoritesData = favorites || {});
@@ -1020,7 +992,7 @@
 	}
 
 	// Filter promoted products based on selected filter
-	const filteredPromotedProducts = $derived(() => {
+	const filteredPromotedProducts = $derived.by(() => {
 		if (promotedFilter === 'all') {
 			return promotedProducts;
 		}
@@ -1251,7 +1223,7 @@
 	currentPath={$page.url.pathname}
 	isNavigating={!!$navigating}
 	navigatingTo={$navigating?.to?.url.pathname}
-	unreadMessageCount={$unreadMessageCount}
+	unreadMessageCount={unreadCount()}
 	profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
 	isAuthenticated={!!data.user}
 	labels={{

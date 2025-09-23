@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { FeaturedProducts, ProductCard, LoadingSpinner, CategoryPill } from '@repo/ui';
   import type { Product } from '@repo/ui/types';

@@ -6,7 +6,7 @@ import { createLogger } from '$lib/utils/log';
 
 const log = createLogger('collection-page-server');
 
-export const load: PageServerLoad = async ({ params, locals, url }) => {
+export const load = (async ({ params, locals, url }) => {
   const { slug } = params;
 
   if (!slug) {
@@ -106,4 +106,4 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
     log.error('Error loading collection:', err);
     throw error(500, 'Failed to load collection');
   }
-};
+}) satisfies PageServerLoad;

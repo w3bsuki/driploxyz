@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Button, Input } from '@repo/ui';
-  import { onMount } from 'svelte';
   import { PayoutService } from '$lib/services/payouts';
   import { TransactionService } from '$lib/services/transactions';
   import type { PageData } from './$types';
@@ -30,7 +29,8 @@
   const payoutService = new PayoutService(supabase);
   const transactionService = new TransactionService(supabase);
 
-  onMount(async () => {
+  // Load earnings data when component mounts
+  $effect(async () => {
     await Promise.all([
       loadEarnings(),
       loadTransactions(),

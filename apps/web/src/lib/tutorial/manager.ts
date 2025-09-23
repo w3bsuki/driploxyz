@@ -77,7 +77,7 @@ function getStoredState(): TutorialState {
       return JSON.parse(stored);
     }
   } catch (e) {
-    console.error('Failed to load tutorial state:', e);
+    // Intentionally empty - localStorage errors fall back to default state
   }
   
   return {
@@ -94,7 +94,7 @@ function saveState(state: TutorialState) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   } catch (e) {
-    console.error('Failed to save tutorial state:', e);
+    // Intentionally empty - localStorage save errors are non-critical
   }
 }
 

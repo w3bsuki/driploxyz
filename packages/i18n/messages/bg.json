@@ -140,6 +140,7 @@
   "pdp_productNotFound": "Продуктът не е намерен",
   "pdp_productUnavailable": "Този продукт вече не е наличен",
   "pdp_loginRequired": "Моля, влезте в профила си, за да продължите",
+  "pdp_loginrequired1": "Моля, влезте в профила си, за да продължите",
   "pdp_loginToBuy": "Влезте в профила си за покупка",
   "pdp_loginToFavorite": "Влезте в профила си за запазване в любими",
   "pdp_a11y_productImage": "Снимка на продукт {index} от {total}",
@@ -1566,5 +1567,12 @@
   "orders_statusShipped": "Изпратено",
   "orders_statusPaid": "Платено",
   "orders_statusPending": "В очакване",
-  "orders_statusCancelled": "Отменено"
+  "orders_statusCancelled": "Отменено",
+
+  "common_quickActions": "Бързи действия",
+  "common_support": "Поддръжка",
+  "trending_now": "Популярно сега",
+  "nav_newArrivals": "Нови постъпления",
+  "category_vintage": "Винтидж",
+  "category_designer": "Дизайнерски"
 }

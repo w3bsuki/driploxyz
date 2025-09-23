@@ -1,15 +1,14 @@
-import { page } from '$app/stores';
-import { derived } from 'svelte/store';
+import { page } from '$app/state';
 import { COUNTRY_CONFIGS, type CountryCode } from '$lib/country/detection';
 
 /**
  * Client-side hook to access current country configuration
  * Gets country from page data (set by server-side country detection)
  */
-export const useCountry = derived(page, ($page) => {
-  const countryCode = ($page.data?.country || 'BG') as CountryCode;
+export function useCountry() {
+  const countryCode = (page.data?.country || 'BG') as CountryCode;
   const config = COUNTRY_CONFIGS[countryCode];
-  
+
   return {
     code: countryCode,
     config,
@@ -28,4 +27,4 @@ export const useCountry = derived(page, ($page) => {
       return formatter.format(price);
     }
   };
-});
+}

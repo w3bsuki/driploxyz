@@ -1,9 +1,9 @@
 <script lang="ts">
   import { Button, Avatar, ProductCard, ProductCardSkeleton, ListItemSkeleton, WelcomeModal, type Product, toasts } from '@repo/ui';
   import type { PageData } from './$types';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { replaceState } from '$app/navigation';
-  import { onMount } from 'svelte';
+  // No lifecycle imports needed - using $effect
   import * as i18n from '@repo/i18n';
   import { tutorial } from '$lib/tutorial/manager';
   import { TutorialToast } from '@repo/ui';
@@ -20,15 +20,15 @@
   let currentTutorialStep = $state<any>(null);
   
   // Check for success message from listing creation and first time users
-  onMount(() => {
+  $effect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    
+
     // Check if user just completed onboarding (first time)
     const isFirstTime = localStorage.getItem('driplo_welcome_shown') !== 'true';
     if (isFirstTime && data.profile?.onboarding_completed) {
       showWelcomeModal = true;
       localStorage.setItem('driplo_welcome_shown', 'true');
-      
+
       // Start tutorial after welcome modal
       setTimeout(() => {
         if (tutorial.shouldShowTutorial()) {
@@ -39,7 +39,7 @@
       // Show tutorial for returning users who haven't completed it
       currentTutorialStep = tutorial.getCurrentStep('/dashboard');
     }
-    
+
     if (urlParams.get('success') === 'listing') {
       toasts.success('Your listing has been published successfully! 🎉');
       // Remove the success param from URL
@@ -68,7 +68,7 @@
   }
   
   // Calculate stats from real data
-  const stats = $derived(() => {
+  const stats = $derived.by(() => {
     const now = new Date();
     const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     
@@ -92,7 +92,7 @@
   });
   
   // Recent orders from real data
-  const recentOrders = $derived(() => {
+  const recentOrders = $derived.by(() => {
     return (data.orders || [])
       .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
       .slice(0, 5)
@@ -107,7 +107,7 @@
   });
   
   // Active listings from real data
-  const activeListings = $derived(() => {
+  const activeListings = $derived.by(() => {
     return (data.products || [])
       .filter(p => p.status === 'active' && !p.is_sold)
       .slice(0, 6)

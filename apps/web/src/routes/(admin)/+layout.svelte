@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { goto } from '$app/navigation';
   import { Button } from '@repo/ui';
   import type { LayoutData } from './$types';
@@ -85,7 +85,7 @@
             href={item.href}
             onclick={() => mobileMenuOpen = false}
             class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
-                   {$page.url.pathname === item.href 
+                   {page.url.pathname === item.href 
                      ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md' 
                      : 'text-[color:var(--text-secondary)] hover:bg-gray-100/50'}"
           >
@@ -107,7 +107,7 @@
               <a
                 href={item.href}
                 class="flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors
-                       {$page.url.pathname === item.href 
+                       {page.url.pathname === item.href 
                          ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md transform scale-105' 
                          : 'text-[color:var(--text-secondary)] hover:bg-gray-100/50 hover:scale-102'}"
               >

@@ -71,7 +71,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase }, getC
     });
 
     if (resendError) {
-      console.error('Resend verification error:', resendError);
+      
       
       // Handle specific Supabase errors
       if (resendError.message?.includes('rate limit') || resendError.message?.includes('Rate limit')) {
@@ -122,7 +122,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase }, getC
     });
     
   } catch (err) {
-    console.error('Unexpected error in resend verification:', err);
+    
     
     return json(
       { 

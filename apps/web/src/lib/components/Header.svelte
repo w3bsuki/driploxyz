@@ -24,7 +24,7 @@
     notificationActions,
     messageToastActions
   } from '$lib/stores/notifications';
-  import { unreadMessageCount as unreadMessageCountStore } from '$lib/stores/messageNotifications';
+  import { unreadMessageCount as unreadMessageCountStore } from '$lib/stores/messageNotifications.svelte';
   import { RealtimeNotificationService } from '$lib/services/realtimeNotifications';
   import { switchLanguage, languages } from '$lib/utils/language-switcher';
   import { browser } from '$app/environment';
@@ -34,17 +34,15 @@
   
   interface Props {
     showSearch?: boolean;
-    minimal?: boolean;
     initialLanguage?: string;
     user?: User;
     profile?: Profile;
   }
   
-  let { 
-    showSearch = false, 
-    minimal = false, 
-    initialLanguage, 
-    user: propsUser, 
+  let {
+    showSearch = false,
+    initialLanguage,
+    user: propsUser,
     profile: propsProfile
   }: Props = $props();
   
@@ -57,7 +55,7 @@
   let mobileMenuOpen = $state(false);
   let signingOut = $state(false);
   let notificationService: RealtimeNotificationService | null = null;
-  let NotificationPanel: any = $state(null);
+  let NotificationPanel: unknown = $state(null);
   let notificationPanelLoaded = $state(false);
   
   // Use props data directly
@@ -102,7 +100,7 @@
         await signOut(supabase);
       }
       // The signOut function handles the redirect
-    } catch (error) {
+    } catch {
       // Sign out error - reset loading state
       signingOut = false;
     }
@@ -202,7 +200,7 @@
     
     try {
       return await productService.searchProducts(query, { limit: 6 });
-    } catch (error) {
+    } catch {
       return { data: [], error: 'Search failed' };
     }
   }
@@ -261,8 +259,8 @@
               count={$unreadCount}
               onclick={async () => {
                 if (!notificationPanelLoaded && !NotificationPanel) {
-                  const module = await import('@repo/ui/lib/NotificationPanel.svelte');
-                  NotificationPanel = module.default;
+                  const module = await import('@repo/ui');
+                  NotificationPanel = module.NotificationPanel;
                   notificationPanelLoaded = true;
                 }
                 notificationActions.togglePanel();
@@ -331,7 +329,7 @@
       {userDisplayName}
       {initials}
       canSell={userCanSell}
-      unreadMessages={$unreadMessageCountStore}
+      unreadMessages={unreadMessageCountStore()}
       unreadNotifications={$unreadCount}
       currentLanguage={currentLang}
       {languages}

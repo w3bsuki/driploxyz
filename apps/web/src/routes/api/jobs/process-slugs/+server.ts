@@ -61,7 +61,7 @@ export const POST: RequestHandler = async ({ url }) => {
         }, { status: 400 });
     }
   } catch (error) {
-    console.error('Error in slug processing job:', error);
+    
     return json({
       success: false,
       action,
@@ -80,7 +80,7 @@ export const GET: RequestHandler = async () => {
       ...status
     });
   } catch (error) {
-    console.error('Error getting queue status:', error);
+    
     return json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'

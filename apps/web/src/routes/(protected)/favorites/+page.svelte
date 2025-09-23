@@ -27,7 +27,7 @@
   let isSelecting = $state(false);
   
   // Filtered and sorted products
-  let displayProducts = $derived(() => {
+  let displayProducts = $derived.by(() => {
     let products = [...favoritedProducts];
     
     // Filter by collection if selected
@@ -67,17 +67,17 @@
         window.location.reload();
       }
     } catch (error) {
-      console.error('Error toggling favorite:', error);
+      
     }
   }
   
   function setPriceAlert(productId: string) {
-    console.log('Set price alert for:', productId);
+    
   }
   
   function createCollection() {
     if (newCollectionName.trim()) {
-      console.log('Create collection:', newCollectionName);
+      
       collections.push({
         id: `col-${collections.length + 1}`,
         name: newCollectionName,
@@ -100,7 +100,7 @@
   }
   
   function addToCollection() {
-    console.log('Add items to collection:', Array.from(selectedItems));
+    
     selectedItems = new Set();
     isSelecting = false;
   }

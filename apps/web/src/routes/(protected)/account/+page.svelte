@@ -3,9 +3,9 @@
   import { getProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import { page, navigating } from '$app/stores';
+  import { page, navigating } from '$app/state';
   import * as i18n from '@repo/i18n';
-  import { unreadMessageCount } from '$lib/stores/messageNotifications';
+  import { unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
 
   interface Props {
     data: PageData;
@@ -318,10 +318,10 @@
 </div>
 
 <BottomNav 
-  currentPath={$page.url.pathname}
-  isNavigating={!!$navigating}
-  navigatingTo={$navigating?.to?.url.pathname}
-  unreadMessageCount={$unreadMessageCount}
+  currentPath={page.url.pathname}
+  isNavigating={!!navigating}
+  navigatingTo={navigating?.to?.url.pathname}
+  unreadMessageCount={unreadMessageCount()}
   labels={{
     home: i18n.nav_home(),
     search: i18n.nav_search(),

@@ -1,4 +1,4 @@
-import { createAuthHelpers } from '@repo/core-auth';
+import { createAuthHelpers } from '@repo/core/auth';
 import { error, redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
@@ -32,13 +32,13 @@ const ipCheckHandler: Handle = async ({ event, resolve }) => {
 
 	// Skip IP check in development
 	if (process.env.NODE_ENV === 'development') {
-		console.log('⚠️ Admin: Skipping IP check in development');
+		
 		return resolve(event);
 	}
 
 	// Enforce IP whitelist in production
 	if (ALLOWED_IPS.length > 0 && !ALLOWED_IPS.includes(clientIp)) {
-		console.error(`🚫 Admin access denied from IP: ${clientIp}`);
+		
 		throw error(403, {
 			message: 'Access denied from this location'
 		});
@@ -83,7 +83,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 
 	// Triple verification: must have admin role, be in email whitelist, and have valid session
 	if (!isAdmin || !emailIsAllowed) {
-		console.error(`🚫 Non-admin user attempted access: ${user.email}`);
+		
 		await event.locals.supabase.auth.signOut();
 		throw error(403, {
 			message: 'You do not have admin privileges'
@@ -100,7 +100,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	};
 
 	// Log admin access for audit trail
-	console.log(`✅ Admin access granted: ${user.email} from IP: ${event.locals.ipAddress}`);
+	
 
 	// Optional: Record admin access in database (commented out until table exists)
 	// try {
@@ -115,7 +115,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	// 		});
 	// } catch (err) {
 	// 	// Don't fail request if audit log fails
-	// 	console.error('Failed to log admin access:', err);
+	// 	
 	// }
 
 	return resolve(event, {

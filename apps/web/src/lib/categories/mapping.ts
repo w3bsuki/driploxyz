@@ -2,7 +2,7 @@
  * Central category mapping utility with robust fallback system
  * Maps database category names to translation functions
  * Single source of truth for all category translations with comprehensive fallback hierarchy
- * 
+ *
  * Fallback hierarchy:
  * 1. i18n message key (category_<slugified_name>)
  * 2. Direct mapping translation
@@ -11,6 +11,7 @@
  */
 
 import * as i18n from '@repo/i18n';
+import type { Database } from '@repo/database';
 
 // Development mode flag for logging missing translations
 const isDevelopment = typeof process !== 'undefined' && process.env?.NODE_ENV === 'development';
@@ -177,12 +178,12 @@ export function translateCategory(
   try {
     const messageKey = getCategoryMessageKey(categoryName);
     if (messageKey in i18n) {
-      const translationFunction = (i18n as any)[messageKey];
+      const translationFunction = (i18n as Record<string, unknown>)[messageKey];
       if (typeof translationFunction === 'function') {
         return translationFunction();
       }
     }
-  } catch (error) {
+  } catch {
     // i18n key doesn't exist or function call failed
   }
   
@@ -191,7 +192,7 @@ export function translateCategory(
   if (translator) {
     try {
       return translator();
-    } catch (error) {
+    } catch {
       // Translation function failed
     }
   }
@@ -317,7 +318,9 @@ export interface CategoryHierarchyItem {
   children?: CategoryHierarchyItem[];
 }
 
-export function buildCategoryHierarchy(categories: any[]): Record<string, CategoryHierarchyItem> {
+type Category = Database['public']['Tables']['categories']['Row'];
+
+export function buildCategoryHierarchy(categories: Category[]): Record<string, CategoryHierarchyItem> {
   const hierarchy: Record<string, CategoryHierarchyItem> = {};
   
   // First, get all level 1 categories

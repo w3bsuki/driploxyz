@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { page, navigating } from '$app/stores';
+  import { page, navigating } from '$app/state';
   import { goto } from '$app/navigation';
   import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, PartnerBanner, CategoryPill, type Product, type BreadcrumbItem } from '@repo/ui';
   import * as i18n from '@repo/i18n';
-  import { unreadMessageCount } from '$lib/stores/messageNotifications';
+  import { unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
   import { formatPrice } from '$lib/utils/price';
   import type { PageData } from './$types';
   
@@ -631,10 +631,10 @@
 
 <!-- Bottom Navigation -->
 <BottomNav 
-  currentPath={$page.url.pathname}
-  isNavigating={!!$navigating}
-  navigatingTo={$navigating?.to?.url.pathname}
-  unreadMessageCount={$unreadMessageCount}
+  currentPath={page.url.pathname}
+  isNavigating={!!navigating}
+  navigatingTo={navigating?.to?.url.pathname}
+  unreadMessageCount={unreadMessageCount()}
   profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
   labels={{
     home: i18n.nav_home(),

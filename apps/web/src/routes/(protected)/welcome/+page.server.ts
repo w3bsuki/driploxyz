@@ -16,7 +16,7 @@ export const load = (async ({ locals: { safeGetSession }, parent }) => {
   const parentData = await parent();
   
   if (dev) {
-    console.log('[WELCOME] Checking profile for user:', user.email);
+    
     console.log('[WELCOME] Profile data:', {
       hasProfile: !!parentData.profile,
       onboardingCompleted: parentData.profile?.onboarding_completed,
@@ -28,14 +28,14 @@ export const load = (async ({ locals: { safeGetSession }, parent }) => {
   // If onboarding not completed, send back to onboarding
   if (!parentData.profile || !parentData.profile.onboarding_completed) {
     if (dev) {
-      console.log('[WELCOME] Profile not complete, redirecting to onboarding');
+      // Development logging for onboarding redirect
     }
     throw redirect(303, '/onboarding');
   }
 
   // Profile is complete, proceed to dashboard
   if (dev) {
-    console.log('[WELCOME] Profile complete, redirecting to dashboard');
+    
   }
   throw redirect(303, '/dashboard');
 }) satisfies PageServerLoad;

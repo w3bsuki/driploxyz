@@ -41,13 +41,11 @@ export class ProfileService {
         .single();
 
       if (error) {
-        console.error('Error fetching profile:', error);
         return { data: null, error: error.message };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Error in getProfile:', error);
       return { data: null, error: 'Failed to fetch profile' };
     }
   }
@@ -65,7 +63,6 @@ export class ProfileService {
         .limit(1);
 
       if (error) {
-        console.error('Error fetching profile by username:', error);
         return { data: null, error: error.message };
       }
 
@@ -75,7 +72,6 @@ export class ProfileService {
 
       return { data: data[0] || null, error: null };
     } catch (error) {
-      console.error('Error in getProfileByUsername:', error);
       return { data: null, error: 'Failed to fetch profile' };
     }
   }
@@ -131,7 +127,7 @@ export class ProfileService {
 
       return { data: profileWithStats, error: null };
     } catch (error) {
-      console.error('Error in getProfileWithStats:', error);
+      
       return { data: null, error: 'Failed to fetch profile with stats' };
     }
   }
@@ -152,13 +148,13 @@ export class ProfileService {
         .single();
 
       if (error) {
-        console.error('Error updating profile:', error);
+        
         return { data: null, error: error.message };
       }
 
       return { data, error: null };
     } catch (error) {
-      console.error('Error in updateProfile:', error);
+      
       return { data: null, error: 'Failed to update profile' };
     }
   }
@@ -188,14 +184,14 @@ export class ProfileService {
       }
 
       if (error) {
-        console.error('Error checking username availability:', error);
+        
         return { available: false, error: error.message };
       }
 
       // Username exists
       return { available: false, error: null };
     } catch (error) {
-      console.error('Error in isUsernameAvailable:', error);
+      
       return { available: false, error: 'Failed to check username availability' };
     }
   }
@@ -245,7 +241,7 @@ export class ProfileService {
 
       return { data: stats, error: null };
     } catch (error) {
-      console.error('Error in getSellerAnalytics:', error);
+      
       return { data: null, error: 'Failed to fetch seller analytics' };
     }
   }
@@ -264,7 +260,7 @@ export class ProfileService {
         .upload(fileName, file, { upsert: true });
 
       if (uploadError) {
-        console.error('Error uploading avatar:', uploadError);
+        
         return { url: null, error: uploadError.message };
       }
 
@@ -283,7 +279,7 @@ export class ProfileService {
 
       return { url: publicUrl.publicUrl, error: null };
     } catch (error) {
-      console.error('Error in uploadAvatar:', error);
+      
       return { url: null, error: 'Failed to upload avatar' };
     }
   }
@@ -300,13 +296,13 @@ export class ProfileService {
         .limit(limit);
 
       if (error) {
-        console.error('Error searching profiles:', error);
+        
         return { data: [], error: error.message };
       }
 
       return { data: data || [], error: null };
     } catch (error) {
-      console.error('Error in searchProfiles:', error);
+      
       return { data: [], error: 'Failed to search profiles' };
     }
   }
@@ -325,7 +321,7 @@ export class ProfileService {
         .limit(limit);
           
       if (error) {
-        console.error('Error fetching top sellers:', error);
+        
         return { data: [], error: error.message };
       }
       
@@ -339,7 +335,7 @@ export class ProfileService {
 
       return { data: sellersWithRatings, error: null };
     } catch (error) {
-      console.error('Error in getTopSellers:', error);
+      
       return { data: [], error: 'Failed to fetch top sellers' };
     }
   }
@@ -370,7 +366,7 @@ export class ProfileService {
         .limit(limit);
 
       if (ordersError) {
-        console.error('Error fetching activity feed:', ordersError);
+        
         return { data: [], error: ordersError.message };
       }
 
@@ -390,7 +386,7 @@ export class ProfileService {
 
       return { data: activityItems, error: null };
     } catch (error) {
-      console.error('Error in getActivityFeed:', error);
+      
       return { data: [], error: 'Failed to fetch activity feed' };
     }
   }
@@ -406,13 +402,13 @@ export class ProfileService {
         .eq('id', userId);
 
       if (error) {
-        console.error('Error updating last active:', error);
+        
         return { error: error.message };
       }
 
       return { error: null };
     } catch (error) {
-      console.error('Error in updateLastActive:', error);
+      
       return { error: 'Failed to update last active timestamp' };
     }
   }
@@ -427,13 +423,13 @@ export class ProfileService {
         .insert({ follower_id: followerId, following_id: followingId });
 
       if (error) {
-        console.error('Error following user:', error);
+        
         return { error: error.message };
       }
 
       return { error: null };
     } catch (error) {
-      console.error('Error in followUser:', error);
+      
       return { error: 'Failed to follow user' };
     }
   }
@@ -450,13 +446,13 @@ export class ProfileService {
         .eq('following_id', followingId);
 
       if (error) {
-        console.error('Error unfollowing user:', error);
+        
         return { error: error.message };
       }
 
       return { error: null };
     } catch (error) {
-      console.error('Error in unfollowUser:', error);
+      
       return { error: 'Failed to unfollow user' };
     }
   }
@@ -477,13 +473,13 @@ export class ProfileService {
         .single();
 
       if (error && error.code !== 'PGRST116') {
-        console.error('Error checking follow status:', error);
+        
         return { isFollowing: false, error: error.message };
       }
 
       return { isFollowing: !!data, error: null };
     } catch (error) {
-      console.error('Error in isFollowing:', error);
+      
       return { isFollowing: false, error: 'Failed to check follow status' };
     }
   }
@@ -508,14 +504,14 @@ export class ProfileService {
         .limit(limit);
 
       if (error) {
-        console.error('Error fetching followers:', error);
+        
         return { data: [], error: error.message };
       }
 
       const followers = (data || []).map(item => item.follower).filter(Boolean) as Profile[];
       return { data: followers, error: null };
     } catch (error) {
-      console.error('Error in getFollowers:', error);
+      
       return { data: [], error: 'Failed to fetch followers' };
     }
   }
@@ -540,14 +536,14 @@ export class ProfileService {
         .limit(limit);
 
       if (error) {
-        console.error('Error fetching following:', error);
+        
         return { data: [], error: error.message };
       }
 
       const following = (data || []).map(item => item.following).filter(Boolean) as Profile[];
       return { data: following, error: null };
     } catch (error) {
-      console.error('Error in getFollowing:', error);
+      
       return { data: [], error: 'Failed to fetch following' };
     }
   }
@@ -566,7 +562,7 @@ export class ProfileService {
 
       return { data: topSellers, error: null };
     } catch (error) {
-      console.error('Error in getTopSellersForDropdown:', error);
+      
       return { data: [], error: 'Failed to fetch top sellers for dropdown' };
     }
   }

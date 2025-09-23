@@ -3,7 +3,7 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/publi
 import type { Database } from '@repo/database';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async ({ data, depends, fetch }) => {
+export const load = (async ({ data, depends, fetch }) => {
   /**
    * Declare dependency so layout can be invalidated on auth changes
    */
@@ -52,13 +52,13 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
     ]);
     
     if (sessionResult.status === 'fulfilled') {
-      session = sessionResult.value.data.session;
+      session = (sessionResult.value as any)?.data?.session || null;
     }
     if (userResult.status === 'fulfilled') {
-      user = userResult.value.data.user;
+      user = (userResult.value as any)?.data?.user || null;
     }
   } catch (error) {
-    console.error('Auth timeout in layout:', error);
+    
   }
 
   // Try to load top-level categories for sticky search/pills
@@ -87,4 +87,4 @@ export const load: LayoutLoad = async ({ data, depends, fetch }) => {
     currency: data?.currency,
     mainCategories
   };
-};
+}) satisfies LayoutLoad;

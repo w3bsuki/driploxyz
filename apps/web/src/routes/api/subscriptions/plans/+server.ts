@@ -17,7 +17,9 @@ export const GET: RequestHandler = async (event) => {
       .order('price_monthly', { ascending: true });
 
     if (error) {
-      if (DEBUG) console.error('[Plans] Database error:', error);
+      if (DEBUG) {
+        console.error('Subscription plans fetch error:', error);
+      }
       return json({ error: 'Failed to fetch subscription plans' }, { status: 500 });
     }
 
@@ -34,7 +36,9 @@ export const GET: RequestHandler = async (event) => {
     return json({ plans: transformedPlans });
     
   } catch (error) {
-    if (DEBUG) console.error('[Plans] Internal error:', error);
+    if (DEBUG) {
+      console.error('Subscription plans endpoint error:', error);
+    }
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 };

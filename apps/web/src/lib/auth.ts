@@ -10,6 +10,28 @@ export interface AuthState {
   loading: boolean;
 }
 
+interface PayoutMethod {
+  type: string;
+  details: string;
+  name: string;
+}
+
+/**
+ * Type guard to check if a value is a valid PayoutMethod
+ */
+function isPayoutMethod(value: unknown): value is PayoutMethod {
+  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+    return false;
+  }
+
+  const obj = value as Record<string, unknown>;
+  return (
+    typeof obj.type === 'string' &&
+    typeof obj.details === 'string' &&
+    typeof obj.name === 'string'
+  );
+}
+
 /**
  * Redirects to login page if user is not authenticated
  */
@@ -64,11 +86,7 @@ export function canSell(profile: Database['public']['Tables']['profiles']['Row']
     profile.username &&
     profile.full_name &&
     profile.payout_method &&
-    typeof profile.payout_method === 'object' &&
-    !Array.isArray(profile.payout_method) &&
-    (profile.payout_method as Record<string, any>).type &&
-    (profile.payout_method as Record<string, any>).details &&
-    (profile.payout_method as Record<string, any>).name
+    isPayoutMethod(profile.payout_method)
   );
   
   return hasRequiredFields;
@@ -90,13 +108,8 @@ export function getCannotSellReason(profile: Database['public']['Tables']['profi
   if (!profile.full_name) missingFields.push('full name');
   
   // Check payout method
-  if (!profile.payout_method || typeof profile.payout_method !== 'object' || Array.isArray(profile.payout_method)) {
+  if (!profile.payout_method || !isPayoutMethod(profile.payout_method)) {
     missingFields.push('payout method');
-  } else {
-    const payout = profile.payout_method as Record<string, any>;
-    if (!payout.type || !payout.details || !payout.name) {
-      missingFields.push('complete payout information');
-    }
   }
   
   if (missingFields.length > 0) {
@@ -159,7 +172,7 @@ export async function updateUserProfile(
 /**
  * Signs out user and redirects
  */
-export async function signOut(_supabase: SupabaseClient<Database>) {
+export async function signOut() {
   // Call POST /logout to clear Supabase auth cookies on the server
   if (typeof window !== 'undefined') {
     try {

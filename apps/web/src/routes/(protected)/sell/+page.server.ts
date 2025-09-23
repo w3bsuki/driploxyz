@@ -247,8 +247,8 @@ export const actions = {
         });
         
         // If boost failed, log but don't fail the entire product creation
-        if (boostResult && !boostResult.success) {
-          console.warn('Failed to boost product:', boostResult.error);
+        if (boostResult && !(boostResult as any)?.success) {
+
           // Could store this in a log table or send notification
         }
       }

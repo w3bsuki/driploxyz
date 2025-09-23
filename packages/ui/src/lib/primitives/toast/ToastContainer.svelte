@@ -4,7 +4,7 @@
   Integrates ToastProvider with the toast store
 -->
 <script lang="ts">
-  import { onMount } from 'svelte';
+  // No lifecycle imports needed - using $effect
   import { setToastProvider } from './store';
   import ToastProvider from './ToastProvider.svelte';
   import type { ToastProviderProps } from './types';
@@ -25,7 +25,7 @@
   let provider: any = $state(null);
   
   // Connect the provider to the toast store on mount
-  onMount(() => {
+  $effect(() => {
     if (provider) {
       setToastProvider(provider);
     }

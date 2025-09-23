@@ -1,12 +1,11 @@
-export * from './paraglide/messages.js';
-export * from '../src/generated-messages.js';
+export * from '../lib/paraglide/messages.js';
 export type Locale = 'en' | 'bg';
 export type LanguageTag = Locale;
-export { setLocale, getLocale, isLocale, locales, baseLocale } from './paraglide/runtime.js';
-export { getLocale as languageTag } from './paraglide/runtime.js';
-export { setLocale as setLanguageTag } from './paraglide/runtime.js';
-export { locales as availableLanguageTags } from './paraglide/runtime.js';
-export { isLocale as isAvailableLanguageTag } from './paraglide/runtime.js';
+export { setLocale, getLocale, isLocale, locales, baseLocale } from '../lib/paraglide/runtime.js';
+export { getLocale as languageTag } from '../lib/paraglide/runtime.js';
+export { setLocale as setLanguageTag } from '../lib/paraglide/runtime.js';
+export { locales as availableLanguageTags } from '../lib/paraglide/runtime.js';
+export { isLocale as isAvailableLanguageTag } from '../lib/paraglide/runtime.js';
 export declare const languageNames: Record<Locale, string>;
 export declare function detectLanguage(acceptLanguage?: string): Locale;
 export declare const LOCALE_ALIASES: Record<string, Locale>;

@@ -116,20 +116,20 @@ class Logger {
 					console.info(`${prefix} ${message}${contextStr}`);
 					break;
 				case 'warn':
-					console.warn(`${prefix} ${message}${contextStr}`);
+					
 					break;
 				case 'error':
-					console.error(`${prefix} ${message}${contextStr}`);
+					
 					break;
 			}
 		} else {
 			// Production: structured JSON for log aggregation
 			switch (level) {
 				case 'warn':
-					console.warn(JSON.stringify(logEntry));
+					
 					break;
 				case 'error':
-					console.error(JSON.stringify(logEntry));
+					
 					break;
 			}
 		}
