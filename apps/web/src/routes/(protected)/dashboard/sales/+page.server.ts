@@ -49,7 +49,7 @@ export const load = (async ({ locals: { safeGetSession, supabase } }) => {
 
     // Get product details for orders
     const productIds = orders?.map(o => o.product_id).filter(Boolean) || [];
-    let orderProducts: any[] = [];
+    let orderProducts: { id: string; title: string; product_images: { image_url: string }[] }[] = [];
     if (productIds.length > 0) {
       const { data: products } = await supabase
         .from('products')
@@ -89,8 +89,7 @@ export const load = (async ({ locals: { safeGetSession, supabase } }) => {
       }
     };
 
-  } catch (err) {
-    
+  } catch {
     throw error(500, 'Failed to load sales data');
   }
 }) satisfies PageServerLoad;

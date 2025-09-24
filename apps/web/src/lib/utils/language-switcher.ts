@@ -45,9 +45,7 @@ export async function switchLanguage(lang: string) {
 
     await goto(target, { invalidateAll: true });
 
-  } catch (error) {
-    
-    
+  } catch {
     // Fallback: Invalidate auth to trigger reload
     await invalidate('supabase:auth');
   }
@@ -85,7 +83,7 @@ export function initializeLanguage(serverLanguage?: string) {
         break;
       }
     }
-  } catch (e) {
+  } catch {
     // Cookie reading failed
   }
   if (storedLang && i18n.locales.includes(storedLang as i18n.Locale)) {

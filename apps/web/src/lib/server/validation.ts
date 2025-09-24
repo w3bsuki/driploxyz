@@ -45,14 +45,15 @@ export async function validateRequest<T>(
   const data = Object.fromEntries(formData.entries());
 
   // Convert numeric strings to numbers
+  const processedData: Record<string, FormDataEntryValue | number> = { ...data };
   for (const [key, value] of Object.entries(data)) {
     if (typeof value === 'string' && /^\d+(\.\d+)?$/.test(value)) {
-      (data as any)[key] = parseFloat(value);
+      processedData[key] = parseFloat(value);
     }
   }
 
   try {
-    return schema.parse(data);
+    return schema.parse(processedData);
   } catch (error) {
     if (error instanceof z.ZodError) {
       throw new Response(JSON.stringify({

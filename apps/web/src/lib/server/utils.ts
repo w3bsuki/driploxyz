@@ -41,8 +41,7 @@ export const withTimeout = async <T>(
 
   try {
     return await Promise.race([Promise.resolve(promise), timeoutPromise]);
-  } catch (error) {
-    
+  } catch {
     return fallback;
   }
 };

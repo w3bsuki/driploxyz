@@ -57,7 +57,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 				// Get product details for emails
 				const { data: product } = await locals.supabase
 					.from('products')
-					.select('title')
+					.select('title, price')
 					.eq('id', result.order.product_id)
 					.single();
 
@@ -75,9 +75,11 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 					// Send order confirmation to buyer
 					await sendEmail(buyer.user.email, emailTemplates.orderConfirmation({
 						id: result.order.id,
-						product: { title: product.title },
-						total_amount: result.order.total_amount,
-						seller: { username: seller?.username || 'Seller' }
+						product: { title: product.title, price: product.price ?? 0 },
+						buyer: { username: buyer.user?.user_metadata?.username || 'Buyer' },
+						seller: { username: seller?.username || 'Seller' },
+						amount: result.order.total_amount,
+						total_amount: result.order.total_amount
 					}));
 				}
 				

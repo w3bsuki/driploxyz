@@ -1,0 +1,20 @@
+  147:12  error  'err' is defined but never used           @typescript-eslint/no-unused-vars
+   50:12  error  '_error' is defined but never used        @typescript-eslint/no-unused-vars
+  228:34  error  '_step' is defined but never used  @typescript-eslint/no-unused-vars
+  56:44  error  '_group' is defined but never used  @typescript-eslint/no-unused-vars
+  109:12  error  '_retryError' is defined but never used  @typescript-eslint/no-unused-vars
+   44:32  error  '_consent' is defined but never used          @typescript-eslint/no-unused-vars
+   74:20  error  '_e' is defined but never used                @typescript-eslint/no-unused-vars
+  272:14  error  '_error' is defined but never used            @typescript-eslint/no-unused-vars
+  284:53  error  '__level' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  284:74  error  '__path' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  73:12  error  '_e' is defined but never used            @typescript-eslint/no-unused-vars
+   484:12  error  '_e' is defined but never used      @typescript-eslint/no-unused-vars
+   573:12  error  '_error' is defined but never used  @typescript-eslint/no-unused-vars
+   987:12  error  '_err' is defined but never used    @typescript-eslint/no-unused-vars
+  1147:25  error  '_' is defined but never used       @typescript-eslint/no-unused-vars
+  59:12  error  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+  19:12  error  '_error' is defined but never used  @typescript-eslint/no-unused-vars
+  48:12  error  '_err' is defined but never used  @typescript-eslint/no-unused-vars
+  29:12  error  '_error' is defined but never used  @typescript-eslint/no-unused-vars
+  59:12  error  '_error' is defined but never used  @typescript-eslint/no-unused-vars

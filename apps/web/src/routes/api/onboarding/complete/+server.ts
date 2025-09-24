@@ -40,7 +40,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
     }
 
     return json({ success: true });
-  } catch (error) {
+  } catch {
     return json({ error: 'Internal server error' }, { status: 500 });
   }
 };

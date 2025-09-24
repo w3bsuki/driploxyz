@@ -20,7 +20,7 @@ export const POST: RequestHandler = async ({ request }) => {
     return json({ error: 'Webhook signature verification failed' }, { status: 400 });
   }
 
-  let event: any;
+  let event: import('stripe').Stripe.Event;
 
   try {
     if (!stripe) {
@@ -55,14 +55,24 @@ export const POST: RequestHandler = async ({ request }) => {
           if (isDebug) {
             console.log('Processing subscription cycle payment');
           }
-          await subscriptionService.handleStripeWebhook({
-            type: 'customer.subscription.updated',
-            data: { object: event.data.object.subscription }
-          }, stripe);
+          const invoiceObject = event.data.object as any;
+          if (invoiceObject.subscription) {
+            await subscriptionService.handleStripeWebhook({
+              type: 'customer.subscription.updated',
+              data: { object: invoiceObject.subscription },
+              id: 'mock_event_' + Date.now(),
+              object: 'event',
+              api_version: null,
+              created: Date.now(),
+              livemode: false,
+              pending_webhooks: 0,
+              request: { id: null, idempotency_key: null }
+            } as any, stripe);
+          }
         }
         break;
 
-      case 'invoice.payment_failed':
+      case 'invoice.payment_failed': {
         if (isDebug) {
           console.log('Processing payment failed event');
         }
@@ -70,12 +80,23 @@ export const POST: RequestHandler = async ({ request }) => {
           console.error('Stripe not available for payment failed handling');
           break;
         }
-        const subscription = await stripe.subscriptions.retrieve(event.data.object.subscription);
-        await subscriptionService.handleStripeWebhook({
-          type: 'customer.subscription.updated',
-          data: { object: subscription }
-        }, stripe);
+        const invoiceObject = event.data.object as any;
+        if (invoiceObject.subscription) {
+          const subscription = await stripe.subscriptions.retrieve(invoiceObject.subscription);
+          await subscriptionService.handleStripeWebhook({
+            type: 'customer.subscription.updated',
+            data: { object: subscription },
+            id: 'webhook_event_' + Date.now(),
+            object: 'event',
+            api_version: null,
+            created: Date.now(),
+            livemode: false,
+            pending_webhooks: 0,
+            request: { id: null, idempotency_key: null }
+          } as any, stripe);
+        }
         break;
+      }
 
       default:
         if (isDebug) {

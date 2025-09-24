@@ -33,7 +33,7 @@ export const GET: RequestHandler = async ({ params, locals: { supabase } }) => {
 		};
 
 		return json({ product: productData });
-	} catch (err) {
+	} catch {
 		
 		return json({ error: 'Failed to load product' }, { status: 500 });
 	}

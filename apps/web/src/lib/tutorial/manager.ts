@@ -76,7 +76,7 @@ function getStoredState(): TutorialState {
     if (stored) {
       return JSON.parse(stored);
     }
-  } catch (e) {
+  } catch {
     // Intentionally empty - localStorage errors fall back to default state
   }
   
@@ -93,7 +93,7 @@ function saveState(state: TutorialState) {
   
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch (e) {
+  } catch {
     // Intentionally empty - localStorage save errors are non-critical
   }
 }

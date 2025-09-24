@@ -4,11 +4,12 @@
 	import { goto } from '$app/navigation';
 	import * as i18n from '@repo/i18n';
 	import { createBrowserSupabaseClient } from '$lib/supabase/client';
+	import type { Database } from '@repo/database';
 
 	const orderId = $derived(page.url.searchParams.get('orderId'));
-	const paymentIntentId = $derived(page.url.searchParams.get('payment_intent'));
-	
-	let orderDetails: any = $state(null);
+	// const paymentIntentId = $derived(page.url.searchParams.get('payment_intent'));
+
+	let orderDetails: Database['public']['Tables']['orders']['Row'] & { product?: { title: string; images: { image_url: string }[] } } | null = $state(null);
 	let loading = $state(true);
 	const supabase = createBrowserSupabaseClient();
 

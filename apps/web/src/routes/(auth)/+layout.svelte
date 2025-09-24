@@ -3,7 +3,7 @@
   import type { LayoutData } from './$types';
   import type { Snippet } from 'svelte';
 
-  let { data, children }: { data: LayoutData; children?: Snippet } = $props();
+  let { children }: { data: LayoutData; children?: Snippet } = $props();
   
   const isSignup = $derived(page.route.id?.includes('signup'));
   const isLogin = $derived(page.route.id?.includes('login'));

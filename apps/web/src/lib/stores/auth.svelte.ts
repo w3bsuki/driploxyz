@@ -154,7 +154,7 @@ export function createAuthStore(): {
         } else {
           localStorage.removeItem('driplo_remember_me');
         }
-      } catch (error) {
+      } catch {
         // Storage failed, continue silently
       }
     },
@@ -163,7 +163,7 @@ export function createAuthStore(): {
       if (!browser) return false;
       try {
         return localStorage.getItem('driplo_remember_me') === 'true';
-      } catch (error) {
+      } catch {
         return false;
       }
     },
@@ -172,7 +172,7 @@ export function createAuthStore(): {
       if (!browser) return;
       try {
         localStorage.removeItem('driplo_remember_me');
-      } catch (error) {
+      } catch {
         // Storage failed, continue silently
       }
     }

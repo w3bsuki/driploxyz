@@ -1,5 +1,6 @@
 import type { PageServerLoad } from './$types';
 
+
 export const load = (async ({ locals: { supabase, session } }) => {
   if (!session?.user) {
     return {
@@ -44,7 +45,7 @@ export const load = (async ({ locals: { supabase, session } }) => {
       .filter(favorite => favorite.products) // Filter out any null products
       .map(favorite => ({
         ...favorite.products,
-        images: (favorite.products.product_images || []).map((img: any) => img.image_url),
+        images: (favorite.products.product_images || []).map((img: { image_url: string }) => img.image_url),
         product_images: favorite.products.product_images || [],
         category_name: favorite.products.categories?.name,
         seller_name: favorite.products.profiles?.username,
@@ -62,8 +63,7 @@ export const load = (async ({ locals: { supabase, session } }) => {
       favoritedProducts,
       error: null
     };
-  } catch (error) {
-    
+  } catch {
     return {
       favoritedProducts: [],
       error: 'An unexpected error occurred'

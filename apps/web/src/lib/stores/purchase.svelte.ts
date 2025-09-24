@@ -154,3 +154,6 @@ export function createPurchaseStore() {
 
 // Create global instance
 export const purchaseStoreInstance = createPurchaseStore();
+// Export the store and actions for convenience
+export const purchaseStore = purchaseStoreInstance;
+export const purchaseActions = purchaseStoreInstance;

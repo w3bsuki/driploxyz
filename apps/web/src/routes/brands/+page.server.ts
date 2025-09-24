@@ -117,13 +117,13 @@ export const load = (async ({
         location: brand.location,
         instagram: (() => {
           const socialLinks = brand?.social_links && typeof brand.social_links === 'object' && !Array.isArray(brand.social_links)
-            ? (brand.social_links as Record<string, any>)
+            ? (brand.social_links as Record<string, unknown>)
             : undefined;
           return typeof socialLinks?.instagram === 'string' ? socialLinks.instagram : null;
         })(),
         website: (() => {
           const socialLinks = brand?.social_links && typeof brand.social_links === 'object' && !Array.isArray(brand.social_links)
-            ? (brand.social_links as Record<string, any>)
+            ? (brand.social_links as Record<string, unknown>)
             : undefined;
           return typeof socialLinks?.website === 'string' ? socialLinks.website : null;
         })(),

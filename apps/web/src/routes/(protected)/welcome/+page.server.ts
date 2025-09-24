@@ -35,7 +35,7 @@ export const load = (async ({ locals: { safeGetSession }, parent }) => {
 
   // Profile is complete, proceed to dashboard
   if (dev) {
-    
+    console.log('Development mode - redirecting to dashboard');
   }
   throw redirect(303, '/dashboard');
 }) satisfies PageServerLoad;

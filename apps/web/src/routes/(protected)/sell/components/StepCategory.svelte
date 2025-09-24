@@ -16,11 +16,11 @@
       type_category_id?: string;
       category_id?: string;
       condition?: 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair';
-      [key: string]: any;
+      [key: string]: string | boolean | number | null | undefined;
     };
     suggestions?: CategorySuggestion | null;
     showSuggestions?: boolean;
-    onFieldChange: (field: string, value: any) => void;
+    onFieldChange: (field: string, value: string | boolean | number | null | undefined) => void;
     onDismissSuggestions?: () => void;
     onApplySuggestions?: () => void;
   }
@@ -225,8 +225,8 @@
 
 <!-- Sub-step Progress Indicator -->
 <div class="flex justify-center items-center gap-1 mb-4">
-  {#each Array(totalSubSteps) as _, i}
-    {@const step = i + 1}
+  {#each Array.from({ length: totalSubSteps }, (_, i) => i) as stepIndex}
+    {@const step = stepIndex + 1}
     {@const isAccessible = subStepAccessible[step]}
     {@const isActive = currentSubStep === step}
     {@const isCompleted =

@@ -1,6 +1,6 @@
 import type { ZodSchema } from 'zod';
 import { ZodError } from 'zod';
-import { getValidationMessage } from './validation';
+// import { getValidationMessage } from './validation'; // Removed - not used
 
 /**
  * Form validation state using Svelte 5 runes
@@ -41,8 +41,8 @@ export function createFormValidator<T extends Record<string, unknown>>(
   const {
     validateOnChange = true,
     validateOnBlur = true,
-    debounceMs = 300,
-    locale
+    debounceMs = 300
+    // locale - removed as not used
   } = options;
 
   // Core form state using $state
@@ -112,7 +112,8 @@ export function createFormValidator<T extends Record<string, unknown>>(
               err.path.includes(fieldName as string)
             );
             const errorMessage = fieldError ?
-              getValidationMessage(fieldError.code as any, {}, locale) || fieldError.message
+              // Only use getValidationMessage for known validation codes, otherwise use the original message
+              fieldError.message
               : null;
             formState.errors[fieldName] = errorMessage;
             resolve(errorMessage);
@@ -152,8 +153,7 @@ export function createFormValidator<T extends Record<string, unknown>>(
         error.errors.forEach(err => {
           const fieldName = err.path[0] as keyof T;
           if (fieldName) {
-            formState.errors[fieldName] =
-              getValidationMessage(err.code as any, {}, locale) || err.message;
+            formState.errors[fieldName] = err.message;
           }
         });
       }
@@ -320,7 +320,7 @@ export interface FormInputProps {
  */
 export function getInputProps(
   fieldName: string,
-  fieldState: ReturnType<typeof createFormValidator>['getFieldProps'] extends (name: any) => infer R ? R : never,
+  fieldState: ReturnType<typeof createFormValidator>['getFieldProps'] extends (name: string) => infer R ? R : never,
   baseProps: Partial<FormInputProps> = {}
 ): FormInputProps {
   return {
@@ -336,7 +336,7 @@ export function getInputProps(
  * Form field validation status for UI feedback
  */
 export function getFieldStatus(
-  fieldState: ReturnType<typeof createFormValidator>['getFieldProps'] extends (name: any) => infer R ? R : never
+  fieldState: ReturnType<typeof createFormValidator>['getFieldProps'] extends (name: string) => infer R ? R : never
 ) {
   if (fieldState.validating) return 'validating';
   if (fieldState.error && fieldState.touched) return 'error';
@@ -348,7 +348,7 @@ export function getFieldStatus(
  * Get form field CSS classes based on state
  */
 export function getFieldClasses(
-  fieldState: ReturnType<typeof createFormValidator>['getFieldProps'] extends (name: any) => infer R ? R : never,
+  fieldState: ReturnType<typeof createFormValidator>['getFieldProps'] extends (name: string) => infer R ? R : never,
   baseClasses = ''
 ): string {
   const status = getFieldStatus(fieldState);

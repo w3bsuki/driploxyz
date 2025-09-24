@@ -1,5 +1,6 @@
 // import { redirect } from '@sveltejs/kit'; // For future auth redirect
 import type { PageServerLoad } from './$types';
+import type { Json } from '@repo/database';
 
 export const load = (async ({ locals: { supabase, safeGetSession } }) => {
   try {
@@ -18,7 +19,7 @@ export const load = (async ({ locals: { supabase, safeGetSession } }) => {
       .order('price_monthly', { ascending: true });
 
     if (plansError) {
-      
+      console.error('Failed to fetch subscription plans:', plansError);
     }
     
     // Map proper plan names and descriptions based on plan_type
@@ -53,7 +54,7 @@ export const load = (async ({ locals: { supabase, safeGetSession } }) => {
     });
 
     // Get user's current subscriptions (only if user exists)
-    let userSubscriptions: any[] = [];
+    let userSubscriptions: { id: string; user_id: string; status: string; subscription_plans: { name: string; price_monthly: number; features: Json | null } }[] = [];
     let profile = null;
     
     if (user) {
@@ -67,7 +68,7 @@ export const load = (async ({ locals: { supabase, safeGetSession } }) => {
         .eq('status', 'active');
 
       if (subscriptionsError) {
-        
+        console.error('Failed to fetch user subscriptions:', subscriptionsError);
       } else {
         userSubscriptions = subs || [];
       }
@@ -80,7 +81,7 @@ export const load = (async ({ locals: { supabase, safeGetSession } }) => {
         .single();
 
       if (profileError) {
-        
+        console.error('Failed to fetch user profile:', profileError);
       } else {
         profile = prof;
       }
@@ -93,7 +94,7 @@ export const load = (async ({ locals: { supabase, safeGetSession } }) => {
       .gt('discount_percent', 0);
 
     if (countError) {
-      
+      console.error('Failed to fetch subscription count:', countError);
     }
 
     const discountInfo = {

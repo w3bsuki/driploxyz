@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ProductCard, Button, Avatar, Banner, type Product } from '@repo/ui';
+  import { ProductCard, Button, Banner } from '@repo/ui';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';
   import { getProductUrl } from '$lib/utils/seo-urls';
@@ -14,10 +14,10 @@
   const favoritedProducts = $derived(data.favoritedProducts || []);
   
   // Price alerts will come from Supabase (future feature)
-  const priceAlerts: any[] = [];
+  const priceAlerts: { productId: string; targetPrice: number }[] = [];
   
-  // Collections will come from Supabase (future feature) 
-  const collections: any[] = [];
+  // Collections will come from Supabase (future feature)
+  let collections = $state<{ id: string; name: string; count: number; image: string }[]>([]);
   
   let selectedCollection = $state<string | null>(null);
   let sortBy = $state('recently-added');
@@ -29,30 +29,30 @@
   // Filtered and sorted products
   let displayProducts = $derived.by(() => {
     let products = [...favoritedProducts];
-    
+
     // Filter by collection if selected
     if (selectedCollection) {
       // Mock filtering - in real app would filter by collection membership
       products = products.slice(0, 8);
     }
-    
+
     // Sort
     switch(sortBy) {
       case 'price-low':
-        products.sort((a, b) => a.price - b.price);
+        products = [...products].sort((a, b) => a.price - b.price);
         break;
       case 'price-high':
-        products.sort((a, b) => b.price - a.price);
+        products = [...products].sort((a, b) => b.price - a.price);
         break;
       case 'recently-added':
-        products.sort((a, b) => {
+        products = [...products].sort((a, b) => {
           const aDate = new Date(a.favoritedAt || a.createdAt || a.created_at).getTime();
           const bDate = new Date(b.favoritedAt || b.createdAt || b.created_at).getTime();
           return bDate - aDate;
         });
         break;
     }
-    
+
     return products;
   });
   
@@ -66,24 +66,25 @@
         // Refresh the page to show updated favorites
         window.location.reload();
       }
-    } catch (error) {
-      
+    } catch {
+      // Error handling for favorite toggle
     }
   }
   
   function setPriceAlert(productId: string) {
-    
+    // TODO: Implement price alert functionality
+    console.log('Setting price alert for product:', productId);
   }
   
   function createCollection() {
     if (newCollectionName.trim()) {
-      
-      collections.push({
+
+      collections = [...collections, {
         id: `col-${collections.length + 1}`,
         name: newCollectionName,
         count: 0,
         image: '/placeholder-product.svg'
-      });
+      }];
       newCollectionName = '';
       showCreateCollection = false;
     }

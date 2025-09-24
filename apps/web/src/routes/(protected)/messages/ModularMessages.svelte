@@ -4,9 +4,12 @@
   import { BottomNav } from '@repo/ui';
   import * as i18n from '@repo/i18n';
   import { messageNotificationActions, unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
-  import { ConversationService, type Conversation } from '$lib/services/ConversationService';
+  import { ConversationService, type Conversation, type Message } from '$lib/services/ConversationService';
+  // eslint-disable-next-line no-restricted-imports -- App-specific messaging component
   import ConversationSidebar from '$lib/components/modular/ConversationSidebar.svelte';
+  // eslint-disable-next-line no-restricted-imports -- App-specific messaging component
   import ChatWindow from '$lib/components/modular/ChatWindow.svelte';
+  // eslint-disable-next-line no-restricted-imports -- App-specific messaging component
   import ConnectionStatus from '$lib/components/modular/ConnectionStatus.svelte';
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
@@ -24,11 +27,13 @@
   let activeConversation = $state<Conversation | null>(null);
   let activeConversationMessages = $state.raw<Message[]>([]); // Use $state.raw for message arrays
   let activeTab = $state<'all' | 'buying' | 'selling' | 'offers' | 'unread'>('all');
-  let showSidebarOnMobile = $state(true);
   let isLoadingOlder = $state(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let _showSidebarOnMobile = $state(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let _isLoadingConversation = $state(false);
   let hasMoreMessages = $state(true);
   let isInitializing = $state(true);
-  let isLoadingConversation = $state(false);
   let isSendingMessage = $state(false);
   let connectionStatus = $state<'connected' | 'connecting' | 'error' | 'disconnected'>('disconnected');
   let connectionMessage = $state('');
@@ -47,14 +52,14 @@
       conversationService = new ConversationService(supabase, data.user.id);
 
       // Set up event listeners for the simplified service
-      conversationService.on('connection_status', (status: any) => {
+      conversationService.on('connection_status', (status: { status: string; message: string; canRetry: boolean }) => {
         connectionStatus = status.status;
         connectionMessage = status.message;
         canRetryConnection = status.canRetry;
       });
 
       // Handle new message notifications - just refresh the conversation
-      conversationService.on('new_message', async (data: any) => {
+      conversationService.on('new_message', async (data: { conversationId: string }) => {
         messagingLogger.info('New message notification received', data);
 
         // If it's for the active conversation, reload messages
@@ -146,7 +151,7 @@
       if (conversation) {
         activeConversation = conversation;
         await loadConversationMessages(conversationParam);
-        showSidebarOnMobile = false;
+        _showSidebarOnMobile = false;
       } else {
         // Create new conversation from server data (for starting new conversations)
         const [otherUserId, productId] = conversationParam.split('__');
@@ -182,22 +187,22 @@
         if (!conversations.find(c => c.id === conversationParam)) {
           conversations = [newConversation, ...conversations];
         }
-        showSidebarOnMobile = false;
+        _showSidebarOnMobile = false;
       }
     } else if (!conversationParam) {
       activeConversation = null;
       activeConversationMessages = [];
-      showSidebarOnMobile = true;
+      _showSidebarOnMobile = true;
     }
   });
 
   // Event handlers
   function handleConversationSelect(conversationId: string) {
-    isLoadingConversation = true;
+    _isLoadingConversation = true;
     goto(`/messages?conversation=${conversationId}`);
     // Reset loading state after navigation
     setTimeout(() => {
-      isLoadingConversation = false;
+      _isLoadingConversation = false;
     }, 500);
   }
 

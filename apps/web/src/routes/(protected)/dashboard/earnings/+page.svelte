@@ -91,14 +91,14 @@
         payoutAmount = '';
         await Promise.all([loadEarnings(), loadPayouts()]);
       }
-    } catch (error) {
+    } catch {
       alert('Failed to request payout');
     } finally {
       requesting = false;
     }
   }
 
-  function formatPayoutMethod(method: any) {
+  function formatPayoutMethod(method: { type: string; details: string; name?: string } | null) {
     if (!method) return 'Not set';
     const { type, details, name } = method;
     const displayName = name ? ` (${name})` : '';

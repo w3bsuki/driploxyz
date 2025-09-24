@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  // import { goto } from '$app/navigation';
   import { Button, toasts } from '@repo/ui';
   import type { PageData } from './$types';
-  import * as i18n from '@repo/i18n';
+  // import * as i18n from '@repo/i18n';
 
   interface Props {
     data: PageData;
@@ -166,7 +166,19 @@
     }
   ];
 
-  function handleToggle(item: any) {
+  type SettingsItem = {
+    title: string;
+    description: string;
+    href: string;
+    icon: string;
+    toggle?: boolean;
+    enabled?: boolean;
+    badge?: string | null;
+    external?: boolean;
+    value?: string;
+  };
+
+  function handleToggle(item: SettingsItem) {
     if (item.title === 'Vacation Mode') {
       toasts.info('Vacation mode feature coming soon!');
     }

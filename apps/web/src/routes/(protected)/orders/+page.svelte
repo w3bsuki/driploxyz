@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { Button, Avatar, OrderStatus, OrderTimeline, OrderActions, ReviewModal } from '@repo/ui';
+  import { Button, OrderStatus, OrderTimeline, OrderActions, ReviewModal } from '@repo/ui';
   import type { PageData } from './$types';
+  import type { Database } from '@repo/database';
   import * as i18n from '@repo/i18n';
   import { getProductUrl } from '$lib/utils/seo-urls';
   
@@ -60,12 +61,12 @@
     });
   };
 
-  const openReviewModal = (order: any) => {
+  const openReviewModal = (order: Database['public']['Tables']['orders']['Row'] & { product?: { title: string; images: { image_url: string }[] }; seller?: { username: string } }) => {
     selectedOrderForReview = order;
     reviewModalOpen = true;
   };
 
-  const submitReview = async (reviewData: any) => {
+  const submitReview = async (reviewData: { rating: number; comment: string; communication_rating?: number; product_quality_rating?: number; shipping_rating?: number }) => {
     if (!selectedOrderForReview) return;
     
     await fetch('/api/reviews', {

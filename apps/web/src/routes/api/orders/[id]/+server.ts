@@ -118,7 +118,7 @@ export const PATCH: RequestHandler = async ({ params, request, locals }) => {
   }
   
   // Build update object
-  const updateData: any = {};
+  const updateData: Record<string, string | null> = {};
   
   if (status) {
     updateData.status = status;

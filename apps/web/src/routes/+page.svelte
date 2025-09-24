@@ -3,13 +3,13 @@
 	import { MainPageSearchBar, BottomNav, AuthPopup, FeaturedProducts, SellerQuickView, FeaturedSellers, PromotedListingsSection } from '@repo/ui';
 	import type { Product } from '@repo/ui/types';
 	import * as i18n from '@repo/i18n';
-	import { unreadCount } from '$lib/stores/notifications';
+	import { notificationStore } from '$lib/stores/notifications.svelte';
 	import { goto, preloadCode, preloadData } from '$app/navigation';
 	import { page, navigating } from '$app/state';
 	import { browser } from '$app/environment';
-	import { purchaseActions } from '$lib/stores/purchase-store';
-	import { favoritesActions, favoritesStore } from '$lib/stores/favorites-store';
-	import { authPopupActions, authPopupStore } from '$lib/stores/auth-popup-store';
+	import { purchaseActions } from '$lib/stores/purchase.svelte';
+	import { favoritesActions, favoritesStore } from '$lib/stores/favorites.svelte';
+	import { authPopupActions, authPopupStore } from '$lib/stores/auth-popup.svelte';
 	import type { PageData } from './$types';
 	import type { ProductWithImages } from '$lib/services';
 	import type { Seller } from '$lib/types';
@@ -24,7 +24,7 @@
 	let selectedPartner = $state<{id: string; name: string; avatar?: string} | null>(null);
 	let showSellerModal = $state(false);
 	let showPartnerModal = $state(false);
-	let showCategoryDropdown = $state(false);
+	// let showCategoryDropdown = $state(false);
 	let loadingCategory = $state<string | null>(null);
 	let selectedPillIndex = $state(-1);
 	let activeTab = $state<'sellers' | 'brands'>('sellers');
@@ -196,30 +196,30 @@
 		dataLoaded = true;
 	});
 
-	// Optimized promoted products computation using $derived.by() for better performance
-	const promotedProducts = $derived.by(() => {
-		const rawProducts = featuredProductsData || [];
-		if (rawProducts.length === 0) return [];
+	// Optimized promoted products computation using $derived.by() for better performance - unused
+	// const promotedProducts = $derived.by(() => {
+	// 	const rawProducts = featuredProductsData || [];
+	// 	if (rawProducts.length === 0) return [];
 
-		return rawProducts
-			.filter(product =>
-				// Only include products from pro/premium/brand sellers or boosted products
-				product.seller_subscription_tier === 'pro' ||
-				product.seller_subscription_tier === 'premium' ||
-				product.seller_subscription_tier === 'brand' ||
-				product.seller_badges?.is_pro ||
-				product.seller_badges?.is_brand ||
-				product.is_boosted
-			)
-			.map(product => {
-				const transformed = transformProduct(product);
-				return {
-					...transformed,
-					category_name: transformed.category_name || transformed.main_category_name || 'Uncategorized',
-					main_category_name: transformed.main_category_name || transformed.category_name || 'Uncategorized'
-				};
-			});
-	});
+	// 	return rawProducts
+	// 		.filter(product =>
+	// 			// Only include products from pro/premium/brand sellers or boosted products
+	// 			product.seller_subscription_tier === 'pro' ||
+	// 			product.seller_subscription_tier === 'premium' ||
+	// 			product.seller_subscription_tier === 'brand' ||
+	// 			product.seller_badges?.is_pro ||
+	// 			product.seller_badges?.is_brand ||
+	// 			product.is_boosted
+	// 		)
+	// 		.map(product => {
+	// 			const transformed = transformProduct(product);
+	// 			return {
+	// 				...transformed,
+	// 				category_name: transformed.category_name || transformed.main_category_name || 'Uncategorized',
+	// 				main_category_name: transformed.main_category_name || transformed.category_name || 'Uncategorized'
+	// 			};
+	// 		});
+	// });
 
 	// Optimized products transformation using $derived.by()
 	const products = $derived.by(() => {
@@ -348,7 +348,7 @@
 			});
 
 			// Initialize favorites state from server if user is logged in
-			const updates: any = {
+			const updates: { favoriteCounts: Record<string, number>; favoriteProductIds: string[] } = {
 				favoriteCounts: {
 					...counts
 				}
@@ -369,62 +369,62 @@
 
 	// Production cleanup - debug logs removed for better performance
 
-	// Transform top sellers for TrendingDropdown (filtered to approved users only)
-	const topSellers = $derived<Seller[]>(
-		(topSellersData || [])
-			.filter(seller => {
-				const username = seller.username;
-				// Include verified users with active listings or admin accounts
-				return seller.verified && (seller.sales_count > 0 || seller.account_type === 'admin') && (
-					username === 'kush3' ||
-					username === 'indecisive_wear' ||
-					username === 'Tintin' ||
-					seller.account_type === 'brand'
-				);
-			})
-			.map(seller => ({
-				id: seller.id,
-				name: seller.username || seller.full_name,
-				username: seller.username,
-				premium: seller.sales_count > 0,
-				account_type: seller.account_type, // Use backend account type
-				avatar: seller.avatar_url,
-				avatar_url: seller.avatar_url,
-				rating: seller.rating || 0,
-				average_rating: seller.rating || 0,
-				total_products: seller.product_count || 0,
-				itemCount: seller.product_count || 0,
-				followers: seller.followers_count || 0,
-				description: seller.bio,
-				is_verified: seller.is_verified || false
-			}))
-	);
+	// Transform top sellers for TrendingDropdown (filtered to approved users only) - unused but kept for future use
+	// const topSellers = $derived<Seller[]>(
+	// 	(topSellersData || [])
+	// 		.filter(seller => {
+	// 			const username = seller.username;
+	// 			// Include verified users with active listings or admin accounts
+	// 			return seller.verified && (seller.sales_count > 0 || seller.account_type === 'admin') && (
+	// 				username === 'kush3' ||
+	// 				username === 'indecisive_wear' ||
+	// 				username === 'Tintin' ||
+	// 				seller.account_type === 'brand'
+	// 			);
+	// 		})
+	// 		.map(seller => ({
+	// 			id: seller.id,
+	// 			name: seller.username || seller.full_name,
+	// 			username: seller.username,
+	// 			premium: seller.sales_count > 0,
+	// 			account_type: seller.account_type, // Use backend account type
+	// 			avatar: seller.avatar_url,
+	// 			avatar_url: seller.avatar_url,
+	// 			rating: seller.rating || 0,
+	// 			average_rating: seller.rating || 0,
+	// 			total_products: seller.product_count || 0,
+	// 			itemCount: seller.product_count || 0,
+	// 			followers: seller.followers_count || 0,
+	// 			description: seller.bio,
+	// 			is_verified: seller.is_verified || false
+	// 		}))
+	// );
 
 	// Partners data - production ready, no test data
 	const partners = $derived([]);
 
-	function handleSearch(query: string) {
-		if (query.trim()) {
-			goto(`/search?q=${encodeURIComponent(query)}`);
-		} else if (!query.trim() && $page.url.searchParams.has('q')) {
-			// Clear search param if query is empty
-			const url = new URL($page.url);
-			url.searchParams.delete('q');
-			goto(url.pathname + url.search, { replaceState: true });
-		}
-	}
+	// function handleSearch(query: string) {
+	// 	if (query.trim()) {
+	// 		goto(`/search?q=${encodeURIComponent(query)}`);
+	// 	} else if (!query.trim() && $page.url.searchParams.has('q')) {
+	// 		// Clear search param if query is empty
+	// 		const url = new URL($page.url);
+	// 		url.searchParams.delete('q');
+	// 		goto(url.pathname + url.search, { replaceState: true });
+	// 	}
+	// }
 
 	// Handle category selection from MainPageSearchBar
 	function handleMainPageCategorySelect(categorySlug: string) {
 		goto(`/category/${categorySlug}`);
 	}
 
-	// Handle filter changes from MainPageSearchBar
-	function handleMainPageFilterChange(key: string, value: any) {
-		const url = new URL('/search', window.location.origin);
-		url.searchParams.set(key, value);
-		goto(url.pathname + url.search);
-	}
+	// Handle filter changes from MainPageSearchBar - unused
+	// function handleMainPageFilterChange(key: string, value: string | number | boolean) {
+	// 	const url = new URL('/search', window.location.origin);
+	// 	url.searchParams.set(key, value);
+	// 	goto(url.pathname + url.search);
+	// }
 
 	// Handle condition filter from MainPageSearchBar
 	function handleMainPageConditionFilter(condition: string) {
@@ -481,25 +481,25 @@
 		try {
 			await preloadCode(`/category/${categorySlug}`);
 			await preloadData(`/category/${categorySlug}`);
-		} catch (e) {
+		} catch {
 			// Continue without preload if failed
 		}
 	}
 
-	// Quick search for dropdown results
-	async function handleQuickSearch(query: string) {
-		if (!query.trim() || !data.supabase) {
-			return { data: [], error: null };
-		}
-		
-		try {
-			const { ProductService } = await import('$lib/services/products');
-			const productService = new ProductService(data.supabase);
-			return await productService.searchProducts(query, { limit: 6 });
-		} catch (error) {
-			return { data: [], error: 'Search failed' };
-		}
-	}
+	// Quick search for dropdown results - unused
+	// async function handleQuickSearch(query: string) {
+	// 	if (!query.trim() || !data.supabase) {
+	// 		return { data: [], error: null };
+	// 	}
+	//
+	// 	try {
+	// 		const { ProductService } = await import('$lib/services/products');
+	// 		const productService = new ProductService(data.supabase);
+	// 		return await productService.searchProducts(query, { limit: 6 });
+	// 	} catch (_error) {
+	// 		return { data: [], error: 'Search failed' };
+	// 	}
+	// }
 
 	function handleProductClick(product: Product) {
 		// Safety check: if product doesn't have required fields, fallback to legacy URL
@@ -510,57 +510,57 @@
 		goto(getProductUrl(product));
 	}
 	
-	function handleSearchResultClick(result: any) {
-		// Safety check: if result doesn't have required fields, fallback to legacy URL
-		if (!result.slug || (!result.seller_username && !result.profiles?.username)) {
-			goto(`/product/${result.id}`);
-			return;
-		}
-		goto(getProductUrl(result));
-	}
+	// function handleSearchResultClick(result: { id: string; slug?: string; seller_username?: string; profiles?: { username?: string } }) {
+	// 	// Safety check: if result doesn't have required fields, fallback to legacy URL
+	// 	if (!result.slug || (!result.seller_username && !result.profiles?.username)) {
+	// 		goto(`/product/${result.id}`);
+	// 		return;
+	// 	}
+	// 	goto(getProductUrl(result));
+	// }
 
 	// SearchDropdown event handlers (unused with new MainPageSearchBar)
-	function handleDropdownCategorySelect(category: any) {
-		goto(`/category/${category.slug}`);
-	}
+	// function handleDropdownCategorySelect(category: { slug: string }) {
+	// 	goto(`/category/${category.slug}`);
+	// }
 
-	function handleDropdownSellerSelect(seller: any) {
-		goto(`/profile/${seller.username}`);
-	}
+	// function handleDropdownSellerSelect(seller: { username: string }) {
+	// 	goto(`/profile/${seller.username}`);
+	// }
 
-	function handleDropdownCollectionSelect(collection: any) {
-		if (collection.key.startsWith('category=')) {
-			const categorySlug = collection.key.replace('category=', '');
-			goto(`/category/${categorySlug}`);
-		} else if (collection.key.startsWith('condition=')) {
-			const condition = collection.key.replace('condition=', '');
-			goto(`/search?condition=${condition}`);
-		} else {
-			// Handle other collection types (newest, under25, etc.)
-			switch (collection.key) {
-				case 'newest':
-					goto('/search?sort=newest');
-					break;
-				case 'under25':
-					goto('/search?max_price=25');
-					break;
-				case 'trending':
-					goto('/search?sort=trending');
-					break;
-				case 'popular':
-					goto('/search?sort=popular');
-					break;
-				case 'premium':
-					goto('/search?sort=premium');
-					break;
-				case 'favorites':
-					goto('/search?favorites=true');
-					break;
-				default:
-					goto(`/collection/${collection.key}`);
-			}
-		}
-	}
+	// function handleDropdownCollectionSelect(collection: { key: string; slug?: string }) {
+	// 	if (collection.key.startsWith('category=')) {
+	// 		const categorySlug = collection.key.replace('category=', '');
+	// 		goto(`/category/${categorySlug}`);
+	// 	} else if (collection.key.startsWith('condition=')) {
+	// 		const condition = collection.key.replace('condition=', '');
+	// 		goto(`/search?condition=${condition}`);
+	// 	} else {
+	// 		// Handle other collection types (newest, under25, etc.)
+	// 		switch (collection.key) {
+	// 			case 'newest':
+	// 				goto('/search?sort=newest');
+	// 				break;
+	// 			case 'under25':
+	// 				goto('/search?max_price=25');
+	// 				break;
+	// 			case 'trending':
+	// 				goto('/search?sort=trending');
+	// 				break;
+	// 			case 'popular':
+	// 				goto('/search?sort=popular');
+	// 				break;
+	// 			case 'premium':
+	// 				goto('/search?sort=premium');
+	// 				break;
+	// 			case 'favorites':
+	// 				goto('/search?favorites=true');
+	// 				break;
+	// 			default:
+	// 				goto(`/collection/${collection.key}`);
+	// 		}
+	// 	}
+	// }
 
 	async function handleFavorite(productId: string) {
 		if (!data.user) {
@@ -570,7 +570,7 @@
 
 		try {
 			await favoritesActions.toggleFavorite(productId);
-		} catch (error) {
+		} catch {
 			// Failed to toggle favorite
 		}
 	}
@@ -646,8 +646,6 @@
 			// Level 2 - Product Types
 			'Clothing': i18n.category_clothing(),
 			'Shoes': i18n.category_shoesType(),
-			'Accessories': i18n.category_accessoriesType(),
-			'Bags': i18n.category_bagsType(),
 			
 			// Level 3 - Accessory subcategories
 			'Hats & Caps': i18n.category_hatsAndCaps(),
@@ -686,49 +684,49 @@
 		}
 	}
 
-	function handlePartnerClick(partner: any) {
-		// Transform partner to seller format for the SellerQuickView component
-		selectedPartner = {
-			id: partner.id,
-			username: partner.name,
-			avatar_url: partner.logo,
-			itemCount: 12, // Mock item count - will be real when they have a profile
-			created_at: '2023-01-01', // Mock creation date
-			bio: partner.description,
-			location: 'Sofia, Bulgaria',
-			totalSales: 28,
-			rating: 4.8,
-			recentProducts: [
-				{
-					id: 'p1',
-					title: 'Minimalist Oversized Hoodie',
-					price: 89,
-					image: 'https://via.placeholder.com/200x200/2C2C2C/FFFFFF?text=HOODIE'
-				},
-				{
-					id: 'p2',
-					title: 'Cropped Wide Leg Jeans',
-					price: 67,
-					image: 'https://via.placeholder.com/200x200/6B73FF/FFFFFF?text=JEANS'
-				},
-				{
-					id: 'p3',
-					title: 'Statement Chain Necklace',
-					price: 34,
-					image: 'https://via.placeholder.com/200x200/FFD700/000000?text=CHAIN'
-				},
-				{
-					id: 'p4',
-					title: 'Vintage Band T-Shirt',
-					price: 45,
-					image: 'https://via.placeholder.com/200x200/8B4513/FFFFFF?text=VINTAGE'
-				}
-			],
-			// Store partner-specific data for enhanced actions
-			_partnerData: partner
-		};
-		showPartnerModal = true;
-	}
+	// function handlePartnerClick(partner: { id: string; name: string; logo?: string; description?: string; website?: string }) {
+	// 	// Transform partner to seller format for the SellerQuickView component
+	// 	selectedPartner = {
+	// 		id: partner.id,
+	// 		username: partner.name,
+	// 		avatar_url: partner.logo,
+	// 		itemCount: 12, // Mock item count - will be real when they have a profile
+	// 		created_at: '2023-01-01', // Mock creation date
+	// 		bio: partner.description,
+	// 		location: 'Sofia, Bulgaria',
+	// 		totalSales: 28,
+	// 		rating: 4.8,
+	// 		recentProducts: [
+	// 			{
+	// 				id: 'p1',
+	// 				title: 'Minimalist Oversized Hoodie',
+	// 				price: 89,
+	// 				image: 'https://via.placeholder.com/200x200/2C2C2C/FFFFFF?text=HOODIE'
+	// 			},
+	// 			{
+	// 				id: 'p2',
+	// 				title: 'Cropped Wide Leg Jeans',
+	// 				price: 67,
+	// 				image: 'https://via.placeholder.com/200x200/6B73FF/FFFFFF?text=JEANS'
+	// 			},
+	// 			{
+	// 				id: 'p3',
+	// 				title: 'Statement Chain Necklace',
+	// 				price: 34,
+	// 				image: 'https://via.placeholder.com/200x200/FFD700/000000?text=CHAIN'
+	// 			},
+	// 			{
+	// 				id: 'p4',
+	// 				title: 'Vintage Band T-Shirt',
+	// 				price: 45,
+	// 				image: 'https://via.placeholder.com/200x200/8B4513/FFFFFF?text=VINTAGE'
+	// 			}
+	// 		],
+	// 		// Store partner-specific data for enhanced actions
+	// 		_partnerData: partner
+	// 	};
+	// 	showPartnerModal = true;
+	// }
 
 	function closePartnerModal() {
 		showPartnerModal = false;
@@ -741,72 +739,72 @@
 		selectedSeller = null;
 	}
 
-	function handleFilter() {
-		// Toggle category dropdown instead of navigating
-		showCategoryDropdown = !showCategoryDropdown;
-	}
+	// function handleFilter() {
+	// 	// Toggle category dropdown instead of navigating
+	// 	showCategoryDropdown = !showCategoryDropdown;
+	// }
 
-	async function prefetchCategoryPage(categorySlug: string) {
-		try {
-			// Preload the category page
-			await preloadCode(`/category/${categorySlug}`);
-			// Preload category page data
-			await preloadData(`/category/${categorySlug}`);
-		} catch (e) {
-			// Preload failed, but continue navigation
-			// Preload failed - continuing without preload
-		}
-	}
+	// async function prefetchCategoryPage(categorySlug: string) {
+	// 	try {
+	// 		// Preload the category page
+	// 		await preloadCode(`/category/${categorySlug}`);
+	// 		// Preload category page data
+	// 		await preloadData(`/category/${categorySlug}`);
+	// 	} catch (_e) {
+	// 		// Preload failed, but continue navigation
+	// 		// Preload failed - continuing without preload
+	// 	}
+	// }
 	
-	function handlePillKeyNav(e: KeyboardEvent, index: number) {
-		const pills = document.querySelectorAll('#category-pills button');
-		const totalPills = mainCategories.length + 1 + virtualCategories.length; // All + mainCategories + virtualCategories
-		
-		switch(e.key) {
-			case 'ArrowRight':
-				e.preventDefault();
-				selectedPillIndex = Math.min(index + 1, totalPills - 1);
-				(pills[selectedPillIndex] as HTMLElement)?.focus();
-				break;
-			case 'ArrowLeft':
-				e.preventDefault();
-				selectedPillIndex = Math.max(index - 1, 0);
-				(pills[selectedPillIndex] as HTMLElement)?.focus();
-				break;
-			case 'Home':
-				e.preventDefault();
-				selectedPillIndex = 0;
-				(pills[0] as HTMLElement)?.focus();
-				break;
-			case 'End':
-				e.preventDefault();
-				selectedPillIndex = totalPills - 1;
-				(pills[totalPills - 1] as HTMLElement)?.focus();
-				break;
-		}
-	}
+	// function handlePillKeyNav(e: KeyboardEvent, index: number) {
+	// 	const pills = document.querySelectorAll('#category-pills button');
+	// 	const totalPills = mainCategories.length + 1 + virtualCategories.length; // All + mainCategories + virtualCategories
+	//
+	// 	switch(e.key) {
+	// 		case 'ArrowRight':
+	// 			e.preventDefault();
+	// 			selectedPillIndex = Math.min(index + 1, totalPills - 1);
+	// 			(pills[selectedPillIndex] as HTMLElement)?.focus();
+	// 			break;
+	// 		case 'ArrowLeft':
+	// 			e.preventDefault();
+	// 			selectedPillIndex = Math.max(index - 1, 0);
+	// 			(pills[selectedPillIndex] as HTMLElement)?.focus();
+	// 			break;
+	// 		case 'Home':
+	// 			e.preventDefault();
+	// 			selectedPillIndex = 0;
+	// 			(pills[0] as HTMLElement)?.focus();
+	// 			break;
+	// 		case 'End':
+	// 			e.preventDefault();
+	// 			selectedPillIndex = totalPills - 1;
+	// 			(pills[totalPills - 1] as HTMLElement)?.focus();
+	// 			break;
+	// 	}
+	// }
 
-	async function navigateToCategory(categorySlug: string) {
-		loadingCategory = categorySlug;
-		
-		try {
-			// Navigate to dedicated category page
-			await goto(`/category/${categorySlug}`);
-		} finally {
-			loadingCategory = null;
-		}
-	}
+	// async function navigateToCategory(categorySlug: string) {
+	// 	loadingCategory = categorySlug;
+	//
+	// 	try {
+	// 		// Navigate to dedicated category page
+	// 		await goto(`/category/${categorySlug}`);
+	// 	} finally {
+	// 		loadingCategory = null;
+	// 	}
+	// }
 	
-	async function navigateToAllSearch() {
-		loadingCategory = 'all';
-		
-		
-		try {
-			await goto('/search');
-		} finally {
-			loadingCategory = null;
-		}
-	}
+	// async function navigateToAllSearch() {
+	// 	loadingCategory = 'all';
+	//
+	//
+	// 	try {
+	// 		await goto('/search');
+	// 	} finally {
+	// 		loadingCategory = null;
+	// 	}
+	// }
 
 	// Get only top-level categories for navigation pills with real product counts
 	const mainCategories = $derived(
@@ -866,103 +864,103 @@
 	// Selected condition state for main page
 	let selectedCondition = $state<string | null>(null);
 
-	function handleQuickCondition(conditionKey: string) {
-		// Toggle off if already selected, otherwise set new condition
-		if (selectedCondition === conditionKey) {
-			selectedCondition = null;
-			// Navigate to search without condition
-			goto('/search');
-		} else {
-			selectedCondition = conditionKey;
-			// Navigate to search with selected condition
-			goto(`/search?condition=${conditionKey}`);
-		}
-	}
+	// function handleQuickCondition(conditionKey: string) {
+	// 	// Toggle off if already selected, otherwise set new condition
+	// 	if (selectedCondition === conditionKey) {
+	// 		selectedCondition = null;
+	// 		// Navigate to search without condition
+	// 		goto('/search');
+	// 	} else {
+	// 		selectedCondition = conditionKey;
+	// 		// Navigate to search with selected condition
+	// 		goto(`/search?condition=${conditionKey}`);
+	// 	}
+	// }
 
-	// Prepare quick filters for hero search
-	const heroQuickFilters = [
-		{ label: i18n.filter_under20(), value: 'price_under_20', style: 'price' },
-		{ label: i18n.filter_newToday(), value: 'new_today', style: 'new' },
-		{ label: i18n.condition_newWithTags(), value: 'condition_new', style: 'condition' },
-		{ label: 'Nike', value: 'brand_Nike', style: 'brand' },
-		{ label: 'Adidas', value: 'brand_Adidas', style: 'brand' },
-		{ label: `${i18n.product_size()} M`, value: 'size_M', style: 'size' },
-		{ label: `${i18n.product_size()} L`, value: 'size_L', style: 'size' }
-	];
+	// Prepare quick filters for hero search - unused
+	// const heroQuickFilters = [
+	// 	{ label: i18n.filter_under20(), value: 'price_under_20', style: 'price' },
+	// 	{ label: i18n.filter_newToday(), value: 'new_today', style: 'new' },
+	// 	{ label: i18n.condition_newWithTags(), value: 'condition_new', style: 'condition' },
+	// 	{ label: 'Nike', value: 'brand_Nike', style: 'brand' },
+	// 	{ label: 'Adidas', value: 'brand_Adidas', style: 'brand' },
+	// 	{ label: `${i18n.product_size()} M`, value: 'size_M', style: 'size' },
+	// 	{ label: `${i18n.product_size()} L`, value: 'size_L', style: 'size' }
+	// ];
 
-	function handleHeroFilterClick(filterValue: string) {
-		const url = new URL('/search', window.location.origin);
+	// function handleHeroFilterClick(filterValue: string) {
+	// 	const url = new URL('/search', window.location.origin);
 
-		// Handle new category navigation
-		if (filterValue.startsWith('category=')) {
-			const category = filterValue.replace('category=', '');
-			goto(`/category/${category}`);
-			return;
-		} else if (filterValue.startsWith('collection=')) {
-			const collection = filterValue.replace('collection=', '');
-			goto(`/collection/${collection}`);
-			return;
-		}
-		// Handle new V1 filters
-		else if (filterValue === 'newest') {
-			url.searchParams.set('sort', 'newest');
-		} else if (filterValue === 'under25') {
-			url.searchParams.set('max_price', '25');
-		} else if (filterValue === 'price-low') {
-			url.searchParams.set('sort', 'price-low');
-		} else if (filterValue === 'price-high') {
-			url.searchParams.set('sort', 'price-high');
-		} else if (filterValue === 'search') {
-			goto('/search');
-			return;
-		} else if (filterValue.startsWith('condition=')) {
-			const condition = filterValue.replace('condition=', '');
-			url.searchParams.set('condition', condition);
-		}
-		// Legacy filters
-		else if (filterValue.startsWith('price_under_')) {
-			const price = filterValue.replace('price_under_', '');
-			url.searchParams.set('max_price', price);
-		} else if (filterValue.startsWith('brand_')) {
-			const brand = filterValue.replace('brand_', '');
-			url.searchParams.set('brand', brand);
-		} else if (filterValue.startsWith('size_')) {
-			const size = filterValue.replace('size_', '');
-			url.searchParams.set('size', size);
-		} else if (filterValue.startsWith('condition_')) {
-			const condition = filterValue.replace('condition_', '');
-			url.searchParams.set('condition', condition);
-		} else if (filterValue === 'new_today') {
-			url.searchParams.set('sort', 'newest');
-		}
+	// 	// Handle new category navigation
+	// 	if (filterValue.startsWith('category=')) {
+	// 		const category = filterValue.replace('category=', '');
+	// 		goto(`/category/${category}`);
+	// 		return;
+	// 	} else if (filterValue.startsWith('collection=')) {
+	// 		const collection = filterValue.replace('collection=', '');
+	// 		goto(`/collection/${collection}`);
+	// 		return;
+	// 	}
+	// 	// Handle new V1 filters
+	// 	else if (filterValue === 'newest') {
+	// 		url.searchParams.set('sort', 'newest');
+	// 	} else if (filterValue === 'under25') {
+	// 		url.searchParams.set('max_price', '25');
+	// 	} else if (filterValue === 'price-low') {
+	// 		url.searchParams.set('sort', 'price-low');
+	// 	} else if (filterValue === 'price-high') {
+	// 		url.searchParams.set('sort', 'price-high');
+	// 	} else if (filterValue === 'search') {
+	// 		goto('/search');
+	// 		return;
+	// 	} else if (filterValue.startsWith('condition=')) {
+	// 		const condition = filterValue.replace('condition=', '');
+	// 		url.searchParams.set('condition', condition);
+	// 	}
+	// 	// Legacy filters
+	// 	else if (filterValue.startsWith('price_under_')) {
+	// 		const price = filterValue.replace('price_under_', '');
+	// 		url.searchParams.set('max_price', price);
+	// 	} else if (filterValue.startsWith('brand_')) {
+	// 		const brand = filterValue.replace('brand_', '');
+	// 		url.searchParams.set('brand', brand);
+	// 	} else if (filterValue.startsWith('size_')) {
+	// 		const size = filterValue.replace('size_', '');
+	// 		url.searchParams.set('size', size);
+	// 	} else if (filterValue.startsWith('condition_')) {
+	// 		const condition = filterValue.replace('condition_', '');
+	// 		url.searchParams.set('condition', condition);
+	// 	} else if (filterValue === 'new_today') {
+	// 		url.searchParams.set('sort', 'newest');
+	// 	}
 
-		goto(url.pathname + url.search);
-	}
+	// 	goto(url.pathname + url.search);
+	// }
 
 	// Removed duplicate favorites initialization - keeping only the first one
 
 	// Scroll detection removed for cleaner UX
 
-	// Promoted content filtering
-	let promotedFilter = $state<string>('all');
+	// Promoted content filtering - unused
+	// let promotedFilter = $state<string>('all');
 
-	// Promoted content filter options
-	const promotedCategoryFilters = [
-		{ key: 'all', label: i18n.search_all(), icon: '🌟' },
-		{ key: 'men', label: i18n.category_men(), icon: '👔' },
-		{ key: 'women', label: i18n.category_women(), icon: '👗' },
-		{ key: 'kids', label: i18n.category_kids(), icon: '👶' }
-	];
+	// Promoted content filter options - unused
+	// const promotedCategoryFilters = [
+	// 	{ key: 'all', label: i18n.search_all(), icon: '🌟' },
+	// 	{ key: 'men', label: i18n.category_men(), icon: '👔' },
+	// 	{ key: 'women', label: i18n.category_women(), icon: '👗' },
+	// 	{ key: 'kids', label: i18n.category_kids(), icon: '👶' }
+	// ];
 
-	const promotedConditionFilters = [
-		{ key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: 'нови с етикет' },
-		{ key: 'like_new', label: i18n.condition_likeNew(), shortLabel: 'като ново' },
-		{ key: 'newest', label: 'най-нови', shortLabel: 'най-нови' }
-	];
+	// const promotedConditionFilters = [
+	// 	{ key: 'brand_new_with_tags', label: i18n.sell_condition_brandNewWithTags(), shortLabel: 'нови с етикет' },
+	// 	{ key: 'like_new', label: i18n.condition_likeNew(), shortLabel: 'като ново' },
+	// 	{ key: 'newest', label: 'най-нови', shortLabel: 'най-нови' }
+	// ];
 
-	function handlePromotedFilterChange(filterKey: string) {
-		promotedFilter = promotedFilter === filterKey ? 'all' : filterKey;
-	}
+	// function handlePromotedFilterChange(filterKey: string) {
+	// 	promotedFilter = promotedFilter === filterKey ? 'all' : filterKey;
+	// }
 
 	// MainPageSearchBar handlers
 	function handleMainPageSearch(query: string) {
@@ -986,39 +984,39 @@
 
 			if (error) return { data: [], error: error.message };
 			return { data: products || [], error: null };
-		} catch (err) {
+		} catch {
 			return { data: [], error: 'Search failed' };
 		}
 	}
 
-	// Filter promoted products based on selected filter
-	const filteredPromotedProducts = $derived.by(() => {
-		if (promotedFilter === 'all') {
-			return promotedProducts;
-		}
+	// Filter promoted products based on selected filter - unused
+	// const filteredPromotedProducts = $derived.by(() => {
+	// 	if (promotedFilter === 'all') {
+	// 		return promotedProducts;
+	// 	}
 
-		return promotedProducts.filter(product => {
-			// Category filters
-			if (promotedFilter === 'men' || promotedFilter === 'women' || promotedFilter === 'kids') {
-				const productCategory = product.main_category_name?.toLowerCase();
-				return productCategory === promotedFilter || productCategory === promotedFilter + 's'; // handle plurals
-			}
+	// 	return promotedProducts.filter(product => {
+	// 		// Category filters
+	// 		if (promotedFilter === 'men' || promotedFilter === 'women' || promotedFilter === 'kids') {
+	// 			const productCategory = product.main_category_name?.toLowerCase();
+	// 			return productCategory === promotedFilter || productCategory === promotedFilter + 's'; // handle plurals
+	// 		}
 
-			// Condition filters
-			if (promotedFilter === 'brand_new_with_tags') {
-				return product.condition === 'brand_new_with_tags';
-			}
-			if (promotedFilter === 'like_new') {
-				return product.condition === 'like_new';
-			}
-			if (promotedFilter === 'newest') {
-				// Sort by creation date and return newest ones
-				return true; // All products, but we'll sort them in the component
-			}
+	// 		// Condition filters
+	// 		if (promotedFilter === 'brand_new_with_tags') {
+	// 			return product.condition === 'brand_new_with_tags';
+	// 		}
+	// 		if (promotedFilter === 'like_new') {
+	// 			return product.condition === 'like_new';
+	// 		}
+	// 		if (promotedFilter === 'newest') {
+	// 			// Sort by creation date and return newest ones
+	// 			return true; // All products, but we'll sort them in the component
+	// 		}
 
-			return true;
-		});
-	});
+	// 		return true;
+	// 	});
+	// });
 
 </script>
 
@@ -1057,7 +1055,7 @@
 			onProductClick={handleProductClick}
 			onFavorite={handleFavorite}
 			onBuy={handlePurchase}
-			favoritesState={$favoritesStore}
+			favoritesState={favoritesStore}
 			{formatPrice}
 			translations={{
 				promoted_listings: i18n.promoted_listings(),
@@ -1111,7 +1109,7 @@
 				onBrowseAll={handleBrowseAll}
 				onSellClick={handleSellClick}
 				{formatPrice}
-				favoritesState={$favoritesStore}
+				favoritesState={favoritesStore}
 				showViewAllButton={true}
 				onViewAll={handleViewProProducts}
 				class="pt-3 sm:pt-4"
@@ -1146,8 +1144,8 @@
 					<div class="w-32 h-4 bg-gray-100 rounded animate-pulse"></div>
 				</div>
 				<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-					{#each Array(8) as _}
-						<div class="bg-white rounded-lg border border-gray-200 p-4">
+					{#each [0,1,2,3,4,5,6,7] as skeletonIndex}
+						<div class="bg-white rounded-lg border border-gray-200 p-4" data-index={skeletonIndex}>
 							<div class="aspect-square bg-gray-100 rounded-lg mb-3 animate-pulse"></div>
 							<div class="w-full h-4 bg-gray-100 rounded animate-pulse mb-2"></div>
 							<div class="w-20 h-6 bg-gray-200 rounded animate-pulse"></div>
@@ -1219,11 +1217,11 @@
 </style>
 
 
-<BottomNav 
-	currentPath={$page.url.pathname}
-	isNavigating={!!$navigating}
-	navigatingTo={$navigating?.to?.url.pathname}
-	unreadMessageCount={unreadCount()}
+<BottomNav
+	currentPath={page.url.pathname}
+	isNavigating={!!navigating}
+	navigatingTo={navigating?.to?.url.pathname}
+	unreadMessageCount={notificationStore.unreadCount}
 	profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
 	isAuthenticated={!!data.user}
 	labels={{
@@ -1267,9 +1265,9 @@
 {/if}
 
 <!-- Auth Popup -->
-<AuthPopup 
-	isOpen={$authPopupStore.isOpen}
-	action={$authPopupStore.action}
+<AuthPopup
+	isOpen={authPopupStore?.isOpen || false}
+	action={authPopupStore?.action || ''}
 	onClose={authPopupActions.close}
 	onSignIn={authPopupActions.signIn}
 	onSignUp={authPopupActions.signUp}

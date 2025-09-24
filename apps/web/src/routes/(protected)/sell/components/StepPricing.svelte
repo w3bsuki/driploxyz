@@ -19,13 +19,13 @@
       shipping_cost: number;
       tags: string[];
       use_premium_boost: boolean;
-      [key: string]: any;
+      [key: string]: string | boolean | number | null | undefined;
     };
     profile?: Profile | null;
     priceSuggestion: PriceSuggestion | null;
     errors: Record<string, string>;
     touched: Record<string, boolean>;
-    onFieldChange: (field: string, value: any) => void;
+    onFieldChange: (field: string, value: string | boolean | number | null | undefined) => void;
     onFieldBlur: (field: string) => void;
   }
   
@@ -36,7 +36,7 @@
     errors,
     touched,
     onFieldChange,
-    onFieldBlur
+    // onFieldBlur
   }: Props = $props();
   
   // Convert prices to numbers and provide safe defaults

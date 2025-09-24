@@ -1,6 +1,6 @@
 <script lang="ts">
   import { CollectionSelector } from '@repo/ui';
-  import * as i18n from '@repo/i18n';
+  // import * as i18n from '@repo/i18n';
 
   interface Collection {
     id: string;
@@ -15,7 +15,7 @@
     collections: Collection[];
     formData: {
       collection_id?: string;
-      [key: string]: any;
+      [key: string]: string | boolean | number | null | undefined;
     };
     onFieldChange: (field: string, value: string | null) => void;
     errors?: Record<string, string>;
@@ -27,7 +27,7 @@
     formData,
     onFieldChange,
     errors = {},
-    touched = {}
+    // touched = {}
   }: Props = $props();
 </script>
 

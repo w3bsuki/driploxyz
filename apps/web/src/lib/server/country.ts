@@ -10,7 +10,7 @@ export async function setupCountry(event: RequestEvent): Promise<void> {
   const country = await getUserCountry(event);
   
   // Store country in locals for easy access
-  (event.locals as any).country = country;
+  (event.locals as { country?: CountryCode }).country = country;
   
   // If user is authenticated and accessed via subdomain, sync their profile
   await syncUserCountryFromSubdomain(event, country);
@@ -57,8 +57,7 @@ async function syncUserCountryFromSubdomain(event: RequestEvent, detectedCountry
       // Log the country update for admin visibility
       
     }
-  } catch (error) {
+  } catch {
     // Don't throw errors for country sync - it's not critical
-    
   }
 }

@@ -16,11 +16,10 @@ const initialState: AuthPopupState = {
   redirectAfterAuth: undefined
 };
 
-export function createAuthPopupStore() {
+function createAuthPopupStore() {
   let state = $state<AuthPopupState>({ ...initialState });
 
-
-  // Actions
+  // Actions object
   const actions = {
     /**
      * Show auth popup with specific action message
@@ -91,15 +90,12 @@ export function createAuthPopupStore() {
     }
   };
 
-  return {
-    // State getters that access reactive state
-    get isOpen() { return state.isOpen; },
-    get action() { return state.action; },
-    get redirectAfterAuth() { return state.redirectAfterAuth; },
-    // Actions
-    ...actions
-  };
+  return { state, actions };
 }
 
 // Create global instance
-export const authPopupStoreInstance = createAuthPopupStore();
+const { state, actions } = createAuthPopupStore();
+
+// Export the state for direct access and actions separately
+export const authPopupStore = state;
+export const authPopupActions = actions;

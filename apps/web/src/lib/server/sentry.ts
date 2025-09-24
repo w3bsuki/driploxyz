@@ -1,5 +1,4 @@
 import { dev } from '$app/environment';
-import type { RequestEvent } from '@sveltejs/kit';
 
 // Try to get Sentry DSN - optional in some environments
 let SENTRY_DSN: string | undefined;

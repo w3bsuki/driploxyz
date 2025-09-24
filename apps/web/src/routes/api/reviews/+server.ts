@@ -158,7 +158,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			}
 		});
 
-	} catch (error) {
+	} catch {
 		
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}

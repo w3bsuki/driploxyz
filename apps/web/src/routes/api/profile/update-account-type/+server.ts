@@ -80,7 +80,7 @@ export const POST: RequestHandler = async (event) => {
       email: user.email
     });
     
-  } catch (error) {
+  } catch {
     
     return json({ error: 'Internal server error' }, { status: 500 });
   }

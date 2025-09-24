@@ -26,7 +26,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     }
 
     return json({ success: true });
-  } catch (error) {
+  } catch {
     
     return json({ error: 'Internal server error' }, { status: 500 });
   }
@@ -56,7 +56,7 @@ export const DELETE: RequestHandler = async ({ request, locals }) => {
     }
 
     return json({ success: true });
-  } catch (error) {
+  } catch {
     
     return json({ error: 'Internal server error' }, { status: 500 });
   }

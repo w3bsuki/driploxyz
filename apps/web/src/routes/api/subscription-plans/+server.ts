@@ -18,7 +18,7 @@ export const GET: RequestHandler = async (event) => {
     }
 
     return json(plans || []);
-  } catch (error) {
+  } catch {
     
     return json({ error: 'Internal server error' }, { status: 500 });
   }

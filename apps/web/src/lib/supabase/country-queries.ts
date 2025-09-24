@@ -119,7 +119,7 @@ export async function searchProductsByCountry(
     query = query.lte('price', filters.max_price);
   }
   if (filters?.condition) {
-    query = query.eq('condition', filters.condition as any);
+    query = query.eq('condition', filters.condition as Database['public']['Tables']['products']['Row']['condition']);
   }
   if (filters?.brand) {
     query = query.eq('brand', filters.brand);
@@ -178,7 +178,7 @@ export async function getOrdersByCountry(
 export async function createProductInCountry(
   supabase: SupabaseClient<Database>,
   country: CountryCode,
-  productData: any
+  productData: Database['public']['Tables']['products']['Insert']
 ) {
   return supabase
     .from('products')
@@ -236,7 +236,7 @@ export async function getCountryStats(
 }
 
 // Helper to add country filter to any query
-export function withCountryFilter<T extends { eq: Function }>(
+export function withCountryFilter<T extends { eq: (column: string, value: string) => T }>(
   query: T,
   country: CountryCode
 ): T {

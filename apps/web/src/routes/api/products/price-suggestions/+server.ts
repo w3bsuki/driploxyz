@@ -19,7 +19,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     const suggestions = await getPriceSuggestions(locals.supabase, params);
     
     return json(suggestions);
-  } catch (error) {
+  } catch {
     
     return json(
       { error: 'Failed to get price suggestions' },

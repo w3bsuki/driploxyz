@@ -246,7 +246,7 @@ export interface Order {
 	payment_intent_id?: string;
 	transaction_id?: string;
 	tracking_number?: string;
-	shipping_address?: any;
+	shipping_address?: Stripe.Address;
 	notes?: string;
 	created_at: string;
 	updated_at: string;
@@ -264,19 +264,19 @@ export interface NotificationData {
 	message: string;
 	relatedId?: string;
 	relatedTable?: string;
-	metadata?: Record<string, any>;
+	metadata?: Record<string, unknown>;
 }
 
 // =====================================
 // API RESPONSES
 // =====================================
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
 	success: boolean;
 	data?: T;
 	error?: string;
 	message?: string;
-	metadata?: Record<string, any>;
+	metadata?: Record<string, unknown>;
 }
 
 export interface PaymentResponse {
@@ -379,8 +379,8 @@ export interface PaymentFormData {
 	currency: Currency;
 	productId: string;
 	sellerId: string;
-	shippingAddress?: any;
-	billingAddress?: any;
+	shippingAddress?: Stripe.Address;
+	billingAddress?: Stripe.Address;
 	paymentMethodId?: string;
 	savePaymentMethod?: boolean;
 }
@@ -389,7 +389,7 @@ export interface SubscriptionFormData {
 	planId: string;
 	paymentMethodId?: string;
 	discountCode?: string;
-	billingAddress?: any;
+	billingAddress?: Stripe.Address;
 }
 
 export interface PayoutFormData {

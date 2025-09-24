@@ -121,7 +121,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase }, getC
       email: normalizedEmail
     });
     
-  } catch (err) {
+  } catch {
     
     
     return json(

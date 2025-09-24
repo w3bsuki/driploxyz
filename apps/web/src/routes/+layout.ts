@@ -3,7 +3,7 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/publi
 import type { Database } from '@repo/database';
 import type { LayoutLoad } from './$types';
 
-export const load = (async ({ data, depends, fetch }) => {
+export const load: LayoutLoad = async ({ data, depends, fetch }) => {
   /**
    * Declare dependency so layout can be invalidated on auth changes
    */
@@ -34,8 +34,8 @@ export const load = (async ({ data, depends, fetch }) => {
    * and on the server, it reads session from LayoutData which was safely checked
    * using safeGetSession() in +layout.server.ts
    */
-  let session = null;
-  let user = null;
+  let session: import('@supabase/supabase-js').Session | null = null;
+  let user: import('@supabase/supabase-js').User | null = null;
   
   try {
     const sessionPromise = supabase.auth.getSession();
@@ -52,13 +52,15 @@ export const load = (async ({ data, depends, fetch }) => {
     ]);
     
     if (sessionResult.status === 'fulfilled') {
-      session = (sessionResult.value as any)?.data?.session || null;
+      const sessionData = (sessionResult.value as { data: { session: import('@supabase/supabase-js').Session | null } })?.data?.session;
+      session = sessionData && typeof sessionData === 'object' && 'access_token' in sessionData ? sessionData : null;
     }
     if (userResult.status === 'fulfilled') {
-      user = (userResult.value as any)?.data?.user || null;
+      const userData = (userResult.value as { data: { user: import('@supabase/supabase-js').User | null } })?.data?.user;
+      user = userData && typeof userData === 'object' && 'id' in userData ? userData : null;
     }
   } catch (error) {
-    
+    console.error('Error loading user session:', error);
   }
 
   // Try to load top-level categories for sticky search/pills
@@ -69,8 +71,8 @@ export const load = (async ({ data, depends, fetch }) => {
       .select('id,name,slug,level,parent_id,sort_order')
       .eq('level', 1)
       .order('sort_order', { ascending: true });
-    if (catData) mainCategories = catData as any;
-  } catch (e) {
+    if (catData) mainCategories = catData as Array<{ id: string; name: string; slug: string; level?: number; parent_id?: string | null; sort_order?: number }>;
+  } catch {
     // Non-fatal: keep empty mainCategories
   }
 
@@ -87,4 +89,4 @@ export const load = (async ({ data, depends, fetch }) => {
     currency: data?.currency,
     mainCategories
   };
-}) satisfies LayoutLoad;
+};

@@ -1,6 +1,9 @@
 // Virtual category definitions for unisex category pages
 // Maps virtual category slugs to actual L2 category slugs across all genders
 
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@repo/database';
+
 export interface VirtualCategoryConfig {
   name: string;
   slug: string;
@@ -77,8 +80,8 @@ export function getVirtualCategoryTargets(slug: string): string[] {
  * Returns only the slugs that exist, with warnings for missing ones
  */
 export async function validateVirtualCategoryTargets(
-  supabase: any, 
-  virtualSlug: string, 
+  supabase: SupabaseClient<Database>,
+  virtualSlug: string,
   targetSlugs: string[]
 ): Promise<{ validSlugs: string[]; missingCount: number }> {
   try {
@@ -94,7 +97,7 @@ export async function validateVirtualCategoryTargets(
       return { validSlugs: targetSlugs, missingCount: 0 }; // Fail gracefully
     }
 
-    const existingSlugSet = new Set((existingSlugs || []).map((row: any) => row.slug));
+    const existingSlugSet = new Set((existingSlugs || []).map((row: { slug: string }) => row.slug));
     const validSlugs = targetSlugs.filter(slug => existingSlugSet.has(slug));
     const missingCount = targetSlugs.length - validSlugs.length;
 
@@ -108,8 +111,7 @@ export async function validateVirtualCategoryTargets(
 
     return { validSlugs, missingCount };
     
-  } catch (error) {
-    
+  } catch {
     return { validSlugs: targetSlugs, missingCount: 0 }; // Fail gracefully
   }
 }

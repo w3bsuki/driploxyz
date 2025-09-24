@@ -1,5 +1,28 @@
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { messagingLogger } from '$lib/utils/log';
+
+export interface UserInfo {
+  id: string;
+  username?: string;
+  avatar_url?: string;
+  first_name?: string;
+  last_name?: string;
+}
+
+export interface ProductInfo {
+  id: string;
+  title: string;
+  price: number;
+  images?: string[];
+}
+
+export interface OrderInfo {
+  id: string;
+  status: string;
+  total: number;
+  created_at: string;
+}
 
 export interface Message {
   id: string;
@@ -12,10 +35,10 @@ export interface Message {
   is_read?: boolean;
   delivered_at?: string;
   status?: 'sending' | 'sent' | 'delivered' | 'read';
-  sender?: any;
-  receiver?: any;
-  product?: any;
-  order?: any;
+  sender?: UserInfo;
+  receiver?: UserInfo;
+  product?: ProductInfo;
+  order?: OrderInfo;
   message_type?: 'user' | 'system' | 'order_update';
 }
 
@@ -49,7 +72,7 @@ export interface Conversation {
  */
 export class ConversationService {
   private messageChannel: RealtimeChannel | null = null;
-  private callbacks = new Map<string, (data: any) => void>();
+  private callbacks = new Map<string, (data: unknown) => void>();
   private reconnectAttempts = 0;
   private readonly MAX_RECONNECT_ATTEMPTS = 3;
   private pollingInterval: NodeJS.Timeout | null = null;
@@ -140,7 +163,7 @@ export class ConversationService {
         return false;
       }
 
-      const response = await fetch(`${(this.supabase as any).supabaseUrl}/functions/v1/send-message`, {
+      const response = await fetch(`${PUBLIC_SUPABASE_URL}/functions/v1/send-message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -187,9 +210,8 @@ export class ConversationService {
       }
       this.lastFetch = now;
 
-      const { data, error } = await this.supabase.rpc('get_user_conversations', {
-        p_user_id: this.userId,
-        p_limit: 50
+      const { data, error } = await this.supabase.rpc('get_user_conversations_secure', {
+        conv_limit: 50
       });
 
       if (error) {
@@ -202,27 +224,31 @@ export class ConversationService {
         userId: this.userId 
       });
 
-      // Transform to expected format
-      const conversations: Conversation[] = (data || []).map((conv: any) => ({
-        id: conv.conversation_id,
-        userId: conv.other_user_id,
-        userName: conv.other_user_name,
-        userAvatar: conv.other_user_avatar,
-        lastActiveAt: conv.other_user_last_active,
-        productId: conv.product_id,
-        productTitle: conv.product_title,
-        productPrice: conv.product_price,
-        productImage: conv.product_image,
-        orderId: conv.order_id,
-        orderStatus: conv.order_status,
-        orderTotal: conv.order_total,
-        lastMessage: conv.last_message,
-        lastMessageTime: conv.last_message_time,
-        unread: (conv.unread_count || 0) > 0,
-        isProductConversation: conv.is_product_conversation,
-        isOrderConversation: !!conv.order_id,
-        messages: [] // Will be loaded on demand
-      }));
+      // Transform to expected format using new RPC response structure
+      const conversations: Conversation[] = (data || []).map((conv: Record<string, unknown>) => {
+        const otherParticipant = conv.other_participant as Record<string, unknown> | null;
+        const isFirstParticipant = conv.participant_one_id === this.userId;
+        return {
+          id: conv.id as string,
+          userId: isFirstParticipant ? conv.participant_two_id as string : conv.participant_one_id as string,
+          userName: otherParticipant?.username as string || 'Unknown',
+          userAvatar: otherParticipant?.avatar_url as string || undefined,
+          lastActiveAt: otherParticipant?.last_active_at as string || undefined,
+          productId: undefined, // Not available in secure RPC
+          productTitle: undefined,
+          productPrice: undefined,
+          productImage: undefined,
+          orderId: undefined,
+          orderStatus: undefined,
+          orderTotal: undefined,
+          lastMessage: conv.last_message_content as string || '',
+          lastMessageTime: conv.last_message_at as string || conv.updated_at as string,
+          unread: isFirstParticipant ? (conv.unread_count_p1 as number || 0) > 0 : (conv.unread_count_p2 as number || 0) > 0,
+          isProductConversation: false, // Not available in secure RPC
+          isOrderConversation: false,
+          messages: [] // Will be loaded on demand
+        };
+      });
 
       return conversations;
     } catch (error) {
@@ -236,13 +262,11 @@ export class ConversationService {
    */
   async loadMessages(conversationId: string, limit = 30): Promise<Message[]> {
     try {
-      const [otherUserId, productId] = conversationId.split('__');
+      const [otherUserId] = conversationId.split('__');
       
-      const { data, error } = await this.supabase.rpc('get_conversation_messages', {
-        p_user_id: this.userId,
-        p_other_user_id: otherUserId,
-        p_product_id: productId === 'general' ? null : productId,
-        p_limit: limit
+      const { data, error } = await this.supabase.rpc('get_conversation_messages_secure', {
+        other_user_id: otherUserId,
+        limit_count: limit
       });
 
       if (error) {
@@ -250,23 +274,23 @@ export class ConversationService {
         return [];
       }
 
-      // Transform messages to expected format
-      const messages = (data || []).reverse().map((msg: any) => ({
-        id: msg.id,
-        sender_id: msg.sender_id,
-        receiver_id: msg.receiver_id,
-        product_id: msg.product_id,
-        order_id: msg.order_id,
-        content: msg.content,
-        created_at: msg.created_at,
-        is_read: msg.is_read,
-        status: msg.status,
-        delivered_at: msg.delivered_at,
-        read_at: msg.read_at,
-        message_type: msg.message_type,
-        sender: msg.sender_info,
-        receiver: msg.receiver_info,
-        order: msg.order_info
+      // Transform messages to expected format using new RPC response structure
+      const messages = (data || []).reverse().map((msg: Record<string, unknown>) => ({
+        id: msg.id as string,
+        sender_id: msg.sender_id as string,
+        receiver_id: msg.receiver_id as string,
+        product_id: undefined, // Not available in secure RPC
+        order_id: undefined,
+        content: msg.content as string,
+        created_at: msg.created_at as string,
+        is_read: msg.read as boolean,
+        status: 'sent' as const, // Default since not available in secure RPC
+        delivered_at: undefined,
+        read_at: undefined,
+        message_type: 'user' as const,
+        sender: msg.sender_profile ? { ...msg.sender_profile } as UserInfo : undefined,
+        receiver: undefined, // Not available in secure RPC
+        order: undefined
       }));
 
       // Mark messages as read (fire and forget)
@@ -287,38 +311,35 @@ export class ConversationService {
   /**
    * Load older messages for pagination
    */
-  async loadOlderMessages(conversationId: string, beforeTime: string, limit = 20): Promise<Message[]> {
+  async loadOlderMessages(conversationId: string, _beforeTime: string, limit = 20): Promise<Message[]> {
     try {
-      const [otherUserId, productId] = conversationId.split('__');
+      const [otherUserId] = conversationId.split('__');
       
-      const { data, error } = await this.supabase.rpc('get_conversation_messages', {
-        p_user_id: this.userId,
-        p_other_user_id: otherUserId,
-        p_product_id: productId === 'general' ? null : productId,
-        p_before_time: beforeTime,
-        p_limit: limit
+      const { data, error } = await this.supabase.rpc('get_conversation_messages_secure', {
+        other_user_id: otherUserId,
+        limit_count: limit
       });
 
       if (error || !data?.length) {
         return [];
       }
 
-      return data.reverse().map((msg: any) => ({
-        id: msg.id,
-        sender_id: msg.sender_id,
-        receiver_id: msg.receiver_id,
-        product_id: msg.product_id,
-        order_id: msg.order_id,
-        content: msg.content,
-        created_at: msg.created_at,
-        is_read: msg.is_read,
-        status: msg.status,
-        delivered_at: msg.delivered_at,
-        read_at: msg.read_at,
-        message_type: msg.message_type,
-        sender: msg.sender_info,
-        receiver: msg.receiver_info,
-        order: msg.order_info
+      return data.reverse().map((msg: Record<string, unknown>) => ({
+        id: msg.id as string,
+        sender_id: msg.sender_id as string,
+        receiver_id: msg.receiver_id as string,
+        product_id: undefined,
+        order_id: undefined,
+        content: msg.content as string,
+        created_at: msg.created_at as string,
+        is_read: msg.read as boolean,
+        status: 'sent' as const,
+        delivered_at: undefined,
+        read_at: undefined,
+        message_type: 'user' as const,
+        sender: msg.sender_profile ? { ...msg.sender_profile } as UserInfo : undefined,
+        receiver: undefined,
+        order: undefined
       }));
     } catch (error) {
       messagingLogger.error('Error loading older messages', error);
@@ -331,12 +352,10 @@ export class ConversationService {
    */
   private async markConversationRead(conversationId: string): Promise<void> {
     try {
-      const [otherUserId, productId] = conversationId.split('__');
+      const [otherUserId] = conversationId.split('__');
       
-      await this.supabase.rpc('mark_conversation_read', {
-        p_user_id: this.userId,
-        p_other_user_id: otherUserId,
-        p_product_id: productId === 'general' ? null : productId
+      await this.supabase.rpc('mark_conversation_read_secure', {
+        other_user_id: otherUserId
       });
     } catch (error) {
       messagingLogger.error('Failed to mark conversation as read', error, { conversationId });
@@ -392,11 +411,11 @@ export class ConversationService {
   /**
    * Event system for UI updates
    */
-  on(event: string, callback: (data: any) => void): void {
+  on(event: string, callback: (data: unknown) => void): void {
     this.callbacks.set(event, callback);
   }
 
-  private notify(event: string, data: any): void {
+  private notify(event: string, data: unknown): void {
     const callback = this.callbacks.get(event);
     if (callback) {
       callback(data);

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { page } from '$app/state';
+	// import { page } from '$app/state'; // Currently unused
 	import { goto } from '$app/navigation';
 	import { getStripe } from '$lib/stripe/client';
-	import { CheckoutSummary, PaymentForm, Button } from '@repo/ui';
+	import { CheckoutSummary, Button } from '@repo/ui';
 	import type { Product, PaymentIntent } from '@repo/ui';
 	import * as i18n from '@repo/i18n';
 
@@ -15,8 +15,8 @@
 	let { data }: Props = $props();
 	let { product } = data;
 
-	let stripe: any = $state(null);
-	let elements: any = $state(null);
+	let stripe: import('stripe').Stripe | null = $state(null);
+	let elements: import('stripe').StripeElements | null = $state(null);
 	let clientSecret = $state('');
 	let loading = $state(false);
 	let error = $state('');
@@ -24,7 +24,7 @@
 	// Shipping and buyer protection fees (in cents)
 	const shippingCost = 500; // €5.00
 	const buyerProtectionFee = Math.round(product.price * 0.05) + 70; // 5% + €0.70 fixed fee
-	const totalAmount = product.price + shippingCost + buyerProtectionFee;
+	// const totalAmount = product.price + shippingCost + buyerProtectionFee; // Currently unused
 
 	// Initialize payment when component mounts
 	$effect(() => {
@@ -110,15 +110,15 @@
 			} else {
 				error = result.message || i18n.checkout_paymentFailed();
 			}
-		} catch (err) {
-			
+		} catch {
+			// Payment initialization failed
 			error = i18n.checkout_paymentFailed();
 		}
 	}
 
-	function handlePaymentError(errorMessage: string) {
-		error = errorMessage;
-	}
+	// function handlePaymentError(errorMessage: string) {
+	// 	error = errorMessage;
+	// } // Currently unused
 
 	async function handleSubmit(event: Event) {
 		event.preventDefault();

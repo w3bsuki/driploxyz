@@ -45,7 +45,7 @@ export class ProfileService {
       }
 
       return { data, error: null };
-    } catch (error) {
+    } catch {
       return { data: null, error: 'Failed to fetch profile' };
     }
   }
@@ -71,7 +71,7 @@ export class ProfileService {
       }
 
       return { data: data[0] || null, error: null };
-    } catch (error) {
+    } catch {
       return { data: null, error: 'Failed to fetch profile' };
     }
   }
@@ -126,8 +126,7 @@ export class ProfileService {
       };
 
       return { data: profileWithStats, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: null, error: 'Failed to fetch profile with stats' };
     }
   }
@@ -153,8 +152,7 @@ export class ProfileService {
       }
 
       return { data, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: null, error: 'Failed to update profile' };
     }
   }
@@ -176,7 +174,7 @@ export class ProfileService {
         query = query.neq('id', excludeUserId);
       }
 
-      const { data: _data, error } = await query.single();
+      const { error } = await query.single();
 
       if (error && error.code === 'PGRST116') {
         // No rows returned, username is available
@@ -190,8 +188,7 @@ export class ProfileService {
 
       // Username exists
       return { available: false, error: null };
-    } catch (error) {
-      
+    } catch {
       return { available: false, error: 'Failed to check username availability' };
     }
   }
@@ -199,13 +196,13 @@ export class ProfileService {
   /**
    * Get seller analytics
    */
-  async getSellerAnalytics(sellerId: string, _daysBack = 30): Promise<{ 
+  async getSellerAnalytics(sellerId: string): Promise<{ 
     data: SellerStats | null; 
     error: string | null 
   }> {
     try {
       // Since get_seller_analytics RPC doesn't exist, build stats manually
-      const [_productsResult, _salesResult, _favoritesResult] = await Promise.allSettled([
+      await Promise.allSettled([
         // Get product stats
         this.supabase
           .from('products')
@@ -240,8 +237,7 @@ export class ProfileService {
       };
 
       return { data: stats, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: null, error: 'Failed to fetch seller analytics' };
     }
   }
@@ -278,8 +274,7 @@ export class ProfileService {
       }
 
       return { url: publicUrl.publicUrl, error: null };
-    } catch (error) {
-      
+    } catch {
       return { url: null, error: 'Failed to upload avatar' };
     }
   }
@@ -301,8 +296,7 @@ export class ProfileService {
       }
 
       return { data: data || [], error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to search profiles' };
     }
   }
@@ -334,8 +328,7 @@ export class ProfileService {
       }));
 
       return { data: sellersWithRatings, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to fetch top sellers' };
     }
   }
@@ -385,8 +378,7 @@ export class ProfileService {
       }));
 
       return { data: activityItems, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to fetch activity feed' };
     }
   }
@@ -407,8 +399,7 @@ export class ProfileService {
       }
 
       return { error: null };
-    } catch (error) {
-      
+    } catch {
       return { error: 'Failed to update last active timestamp' };
     }
   }
@@ -428,8 +419,7 @@ export class ProfileService {
       }
 
       return { error: null };
-    } catch (error) {
-      
+    } catch {
       return { error: 'Failed to follow user' };
     }
   }
@@ -451,8 +441,7 @@ export class ProfileService {
       }
 
       return { error: null };
-    } catch (error) {
-      
+    } catch {
       return { error: 'Failed to unfollow user' };
     }
   }
@@ -478,8 +467,7 @@ export class ProfileService {
       }
 
       return { isFollowing: !!data, error: null };
-    } catch (error) {
-      
+    } catch {
       return { isFollowing: false, error: 'Failed to check follow status' };
     }
   }
@@ -510,8 +498,7 @@ export class ProfileService {
 
       const followers = (data || []).map(item => item.follower).filter(Boolean) as Profile[];
       return { data: followers, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to fetch followers' };
     }
   }
@@ -542,8 +529,7 @@ export class ProfileService {
 
       const following = (data || []).map(item => item.following).filter(Boolean) as Profile[];
       return { data: following, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to fetch following' };
     }
   }
@@ -561,8 +547,7 @@ export class ProfileService {
       }
 
       return { data: topSellers, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to fetch top sellers for dropdown' };
     }
   }

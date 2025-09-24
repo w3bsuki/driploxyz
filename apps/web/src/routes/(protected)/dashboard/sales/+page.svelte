@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Avatar, ProductCard, OrderStatus, Tabs } from '@repo/ui';
+  import { Button, OrderStatus, Tabs } from '@repo/ui';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   

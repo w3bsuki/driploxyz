@@ -35,9 +35,8 @@ export function formatPrice(price: number, locale?: string): string {
       minimumFractionDigits: price % 1 === 0 ? 0 : 2,
       maximumFractionDigits: 2
     }).format(price);
-  } catch (error) {
+  } catch {
     // Fallback to simple formatting if Intl fails
-    
     return formatPriceFallback(price, currentLocale);
   }
 }

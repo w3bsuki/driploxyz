@@ -87,15 +87,16 @@ export const POST: RequestHandler = async (event) => {
         }
 
         // Handle nested response structure
-        const result = (validationResult as any)?.validate_discount_code || validationResult;
-        
-        if (!result?.valid) {
-          return json({ error: result?.error || 'Invalid discount code' }, { status: 400 });
+        const result = (validationResult as { validate_discount_code?: unknown })?.validate_discount_code || validationResult;
+
+        const typedResult = result as { valid?: boolean; error?: string; discount_amount?: number; final_amount?: number; code?: string };
+        if (!typedResult?.valid) {
+          return json({ error: typedResult?.error || 'Invalid discount code' }, { status: 400 });
         }
 
-        discountAmount = result.discount_amount;
-        finalAmount = result.final_amount;
-        validatedDiscountCode = result.code;
+        discountAmount = typedResult.discount_amount || 0;
+        finalAmount = typedResult.final_amount || finalAmount;
+        validatedDiscountCode = typedResult.code || '';
       }
     }
 
@@ -104,8 +105,7 @@ export const POST: RequestHandler = async (event) => {
       user.id,
       planId,
       stripe,
-      discountAmount,
-      validatedDiscountCode
+      discountAmount
     );
 
     if (result.error) {

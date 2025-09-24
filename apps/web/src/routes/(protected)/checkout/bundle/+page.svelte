@@ -2,16 +2,15 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { getStripe } from '$lib/stripe/client';
-	import { CheckoutSummary, Button } from '@repo/ui';
-	import * as i18n from '@repo/i18n';
+	import { Button } from '@repo/ui';
 
-	let stripe: any = $state(null);
-	let elements: any = $state(null);
+	let stripe: typeof import('@stripe/stripe-js').Stripe | null = $state(null);
+	let elements: typeof import('@stripe/stripe-js').StripeElements | null = $state(null);
 	let clientSecret = $state('');
 	let loading = $state(false);
 	let error = $state('');
-	let bundleItems = $state<any[]>([]);
-	let bundleDetails = $state<any>(null);
+	let bundleItems = $state<{ id: string; title: string; price: number; images?: string[]; brand?: string; size?: string }[]>([]);
+	let bundleDetails = $state<{ itemsTotal: number; shippingCost: number; serviceFee: number; totalAmount: number } | null>(null);
 
 	// Initialize bundle checkout when component mounts
 	$effect(async () => {
@@ -30,8 +29,7 @@
 			}
 
 			await initializePayment();
-		} catch (err) {
-
+		} catch {
 			error = 'Invalid bundle data';
 		}
 	});

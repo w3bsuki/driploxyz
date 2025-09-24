@@ -45,7 +45,7 @@ export const GET: RequestHandler = async ({ request }) => {
       timestamp: new Date().toISOString()
     });
 
-  } catch (err) {
+  } catch {
     
     return json({ 
       success: false, 

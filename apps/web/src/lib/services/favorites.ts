@@ -212,7 +212,7 @@ export class FavoriteService {
         .from('products')
         .update({ favorite_count: count })
         .eq('id', productId);
-    } catch (error) {
+    } catch {
       // Error updating product favorite count
     }
   }
@@ -228,7 +228,7 @@ export class FavoriteService {
       // Remove favorites for products sold more than 1 hour ago
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 
-      const { data: _data, error } = await this.supabase
+      const { error } = await this.supabase
         .from('favorites')
         .delete()
         .eq('products.is_sold', true)

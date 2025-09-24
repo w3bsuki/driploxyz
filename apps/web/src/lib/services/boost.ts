@@ -150,8 +150,7 @@ export class BoostService {
       if (profileError) throw profileError;
 
       return { success: true, boostId: boostHistory.id };
-    } catch (error) {
-      
+    } catch {
       return { success: false, error: 'Failed to boost product' };
     }
   }
@@ -186,8 +185,7 @@ export class BoostService {
       if (historyError) throw historyError;
 
       return { success: true };
-    } catch (error) {
-      
+    } catch {
       return { success: false, error: 'Failed to remove boost' };
     }
   }
@@ -304,8 +302,7 @@ export class BoostService {
       if (historyError) throw historyError;
 
       return { cleaned: productCount || 0 };
-    } catch (error) {
-      
+    } catch {
       return { cleaned: 0 };
     }
   }

@@ -134,7 +134,7 @@ export function withCsrf(
 ) {
   return async (event: RequestEvent): Promise<Response> => {
     try {
-      const isProtected = CSRFProtection.check(event.request, event.url.toString());
+      const isProtected = await CSRFProtection.check(event);
       
       if (!isProtected) {
         return json({ success: false, error: 'Invalid request origin' }, { status: 403 });

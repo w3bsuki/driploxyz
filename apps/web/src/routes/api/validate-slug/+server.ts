@@ -63,7 +63,7 @@ export const POST: RequestHandler = async (event) => {
       try {
         result.exists = await checkSlugExists(supabase, slug, productId);
         result.available = !result.exists;
-      } catch (dbError) {
+      } catch {
         // Don't fail the entire request if database check fails
         
         result.errors.push('Unable to check slug availability');
@@ -81,7 +81,7 @@ export const POST: RequestHandler = async (event) => {
 
     return json(result);
 
-  } catch (validationError) {
+  } catch {
     
     throw error(500, 'Validation failed');
   }

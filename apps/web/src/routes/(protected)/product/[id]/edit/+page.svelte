@@ -12,7 +12,7 @@
   let { data, form }: Props = $props();
   
   let deleteModalOpen = $state(false);
-  let currentTag = $state('');
+  // let currentTag = $state('');
   let tags = $state(data.product.tags?.join(', ') || '');
   
   const mainCategories = $derived(data.categories.filter(c => !c.parent_id));

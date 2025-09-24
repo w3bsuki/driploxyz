@@ -84,7 +84,7 @@ export const load = (async ({ params, locals: { supabase, country } }) => {
 
     // If seller not found by current username, check username history
     if (!seller) {
-      const { data: usernameHistory } = await (supabase as any)
+      const { data: usernameHistory } = await supabase
         .from('username_history')
         .select(`
           user_id,
@@ -193,7 +193,7 @@ export const load = (async ({ params, locals: { supabase, country } }) => {
 
     // If not found, check slug history for redirects
     if (!productData) {
-      const { data: slugHistory } = await (supabase as any)
+      const { data: slugHistory } = await supabase
         .from('product_slug_history')
         .select(`
           product_id,

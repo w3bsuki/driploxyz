@@ -1,5 +1,8 @@
 import type { RequestHandler } from '@sveltejs/kit';
 import { json } from '@sveltejs/kit';
+import type { Database } from '@repo/database';
+
+type Category = Database['public']['Tables']['categories']['Row'];
 
 export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
   const country = locals.country || 'BG';
@@ -125,7 +128,7 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
     productsQuery = productsQuery.range(offset, offset + pageSize - 1);
     const { data: products } = await productsQuery;
 
-    const transformed = (products || []).map((product: any) => {
+    const transformed = (products || []).map((product) => {
       let mainCategoryName = '';
       let subcategoryName = '';
       let specificCategoryName = '';
@@ -135,14 +138,14 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
           mainCategoryName = product.categories.name;
         } else if (product.categories.level === 2) {
           subcategoryName = product.categories.name;
-          const parentCat = cats.find((cat) => cat.id === product.categories.parent_id);
+          const parentCat = cats.find((cat: Category) => cat.id === product.categories.parent_id);
           if (parentCat) mainCategoryName = parentCat.name;
         } else if (product.categories.level === 3) {
           specificCategoryName = product.categories.name;
-          const parentCat = cats.find((cat: any) => cat.id === product.categories.parent_id);
+          const parentCat = cats.find((cat: Category) => cat.id === product.categories.parent_id);
           if (parentCat) {
             subcategoryName = parentCat.name;
-            const grandparentCat = cats.find((cat) => cat.id === parentCat.parent_id);
+            const grandparentCat = cats.find((cat: Category) => cat.id === parentCat.parent_id);
             if (grandparentCat) mainCategoryName = grandparentCat.name;
           }
         }
@@ -169,7 +172,7 @@ export const GET: RequestHandler = async ({ url, locals, setHeaders }) => {
       hasMore: transformed.length === pageSize,
       currentPage: page
     });
-  } catch (e) {
+  } catch {
     return json({ products: [], hasMore: false, currentPage: page }, { status: 200 });
   }
 };

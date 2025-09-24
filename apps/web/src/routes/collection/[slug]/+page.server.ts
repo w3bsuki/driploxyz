@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { CollectionService } from '$lib/services/collections';
-import type { BrandCollection, CollectionWithProducts } from '$lib/services/collections';
+import type { CollectionWithProducts } from '$lib/services/collections';
 import { createLogger } from '$lib/utils/log';
 
 const log = createLogger('collection-page-server');
@@ -56,7 +56,7 @@ export const load = (async ({ params, locals, url }) => {
           }, {} as Record<string, boolean>);
         }
       } catch (favoriteError) {
-        log.warn('Failed to fetch user favorites:', favoriteError);
+        log.warn('Failed to fetch user favorites:', { error: String(favoriteError) });
         // Continue without favorites - non-critical
       }
     }
@@ -80,7 +80,7 @@ export const load = (async ({ params, locals, url }) => {
       collectionId: collection.id,
       productCount: collection.products.length,
       page,
-      hasMore
+      hasMore: hasMore ? 'true' : 'false'
     });
 
     return {

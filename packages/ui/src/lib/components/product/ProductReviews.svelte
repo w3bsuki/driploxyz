@@ -446,6 +446,7 @@
     <div
       class="image-modal-content"
       onclick={(e) => e.stopPropagation()}
+      onkeydown={(e) => e.stopPropagation()}
       role="dialog"
       aria-modal="true"
       aria-label="Review image viewer"

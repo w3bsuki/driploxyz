@@ -1,5 +1,11 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
+import type { Message, Conversation, UserInfo } from '$lib/services/ConversationService';
+import type { Database } from '@repo/database';
+
+type Profile = Database['public']['Tables']['profiles']['Row'];
+
+// These interfaces are no longer needed as we use 'any' type for RPC results
 
 export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
   depends('messages:conversations');
@@ -15,89 +21,87 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
   const searchParams = url.searchParams;
   const conversationParam = searchParams.get('conversation');
   
-  let messages: any[] = [];
-  let conversations: any[] = [];
+  let messages: Message[] = [];
+  let conversations: Conversation[] = [];
   let messagesError = null;
   
   if (conversationParam) {
     // Load specific conversation messages using optimized function
     const parts = conversationParam.split('__');
-    const [otherUserId, productId] = parts.length >= 2 ? parts : [parts[0], 'general'];
+    const [otherUserId] = parts.length >= 2 ? parts : [parts[0]];
     
     // Validate UUID format for security
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     
     if (otherUserId && uuidRegex.test(otherUserId)) {
-      const { data, error } = await supabase.rpc('get_conversation_messages' as any, {
-        p_user_id: user.id,
-        p_other_user_id: otherUserId,
-        p_product_id: productId === 'general' ? null : productId,
-        p_limit: 10  // Load only 10 most recent messages initially for better performance
+      const { data, error } = await supabase.rpc('get_conversation_messages_secure', {
+        other_user_id: otherUserId,
+        limit_count: 10  // Load only 10 most recent messages initially for better performance
       });
       
       // Transform the function result to match expected format
-      messages = data && Array.isArray(data) ? data.reverse().map((msg: any) => ({
+      messages = data && Array.isArray(data) ? data.reverse().map((msg) => ({
         id: msg.id,
         sender_id: msg.sender_id,
         receiver_id: msg.receiver_id,
-        product_id: msg.product_id,
-        order_id: msg.order_id,
+        product_id: null, // Not available in this RPC
+        order_id: null, // Not available in this RPC
         content: msg.content,
         created_at: msg.created_at,
-        is_read: msg.is_read,
-        status: msg.status,
-        delivered_at: msg.delivered_at,
-        read_at: msg.read_at,
-        message_type: msg.message_type,
-        sender: msg.sender_info,
-        receiver: msg.receiver_info,
-        order: msg.order_info
+        is_read: msg.read || false,
+        status: 'sent', // Default since not available in RPC
+        delivered_at: undefined, // Not available in this RPC
+        read_at: undefined, // Not available in this RPC
+        message_type: 'user', // Default since not available in RPC
+        sender: msg.sender_profile && typeof msg.sender_profile === 'object' ? { ...msg.sender_profile as any } as UserInfo : undefined,
+        receiver: undefined, // receiver_profile not available in this RPC
+        order: undefined // order_details not available in this RPC
       })) : [];
       
       messagesError = error;
     }
   } else {
     // Load conversation summaries using optimized function
-    const { data, error } = await supabase.rpc('get_user_conversations' as any, {
-      p_user_id: user.id,
-      p_limit: 50
+    const { data, error } = await supabase.rpc('get_user_conversations_secure', {
+      conv_limit: 50
     });
     
     // Transform conversation summaries into expected format for ConversationService
-    conversations = data && Array.isArray(data) ? data.map((conv: any) => ({
-      id: conv.conversation_id,
-      userId: conv.other_user_id,
-      userName: conv.other_user_name,
-      userAvatar: conv.other_user_avatar,
-      lastActiveAt: conv.other_user_last_active,
-      productId: conv.product_id,
-      productTitle: conv.product_title,
-      productPrice: conv.product_price,
-      productImage: conv.product_image,
-      orderId: conv.order_id,
-      orderStatus: conv.order_status,
-      orderTotal: conv.order_total,
-      lastMessage: conv.last_message,
-      lastMessageTime: conv.last_message_time,
-      unreadCount: conv.unread_count,
-      isProductConversation: conv.is_product_conversation,
-      isOrderConversation: !!conv.order_id
-    })) : [];
+    conversations = data && Array.isArray(data) ? data.map((conv) => ({
+      id: conv.id,
+      userId: conv.participant_one_id === user.id ? conv.participant_two_id : conv.participant_one_id,
+      userName: conv.other_participant ? (conv.other_participant as Profile)?.username || 'Unknown' : 'Unknown',
+      userAvatar: conv.other_participant ? (conv.other_participant as Profile)?.avatar_url || null : null,
+      lastActiveAt: conv.other_participant ? (conv.other_participant as Profile)?.last_active_at || null : null,
+      productId: undefined,
+      productTitle: undefined,
+      productPrice: undefined,
+      productImage: undefined,
+      orderId: undefined,
+      orderStatus: undefined,
+      orderTotal: undefined,
+      lastMessage: conv.last_message_content || '',
+      lastMessageTime: conv.last_message_at || conv.updated_at,
+      messages: [], // Messages loaded separately
+      unread: conv.participant_one_id === user.id ? conv.unread_count_p1 > 0 : conv.unread_count_p2 > 0,
+      isProductConversation: false,
+      isOrderConversation: false
+    })) as Conversation[] : [];
     
     messagesError = error;
   }
   
   if (messagesError) {
-    
+    console.error('Failed to load conversations:', messagesError);
   }
 
   // Fetch conversation context info if viewing specific conversation
   let conversationUser = null;
-  let conversationProduct = null;
+  const conversationProduct = null;
   
   if (conversationParam) {
     const parts = conversationParam.split('__');
-    const [otherUserId, productId] = parts.length >= 2 ? parts : [parts[0], 'general'];
+    const [otherUserId] = parts.length >= 2 ? parts : [parts[0]];
     
     // Validate UUID format for security
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -113,24 +117,7 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
       conversationUser = userData;
     }
     
-    // Fetch product info if provided and not general
-    if (productId && productId !== 'general' && uuidRegex.test(productId)) {
-      const { data: productData } = await supabase
-        .from('products')
-        .select(`
-          id,
-          title,
-          price,
-          images:product_images (
-            image_url,
-            sort_order
-          )
-        `)
-        .eq('id', productId)
-        .single();
-      
-      conversationProduct = productData;
-    }
+    // Product information is no longer fetched in this simplified implementation
   }
 
   // Update user's last active time (non-blocking)
@@ -142,14 +129,14 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
   // Mark conversation as read if viewing specific conversation
   if (conversationParam && messages.length > 0) {
     const parts = conversationParam.split('__');
-    const [otherUserId, productId] = parts.length >= 2 ? parts : [parts[0], 'general'];
+    const [otherUserId] = parts.length >= 2 ? parts : [parts[0]];
     
     // Use optimized function to mark conversation as read (non-blocking)
-    void supabase.rpc('mark_conversation_read' as any, {
-      p_user_id: user.id,
-      p_other_user_id: otherUserId,
-      p_product_id: productId === 'general' ? null : productId
-    }); // Fire and forget
+    if (otherUserId) {
+      void supabase.rpc('mark_conversation_read_secure', {
+        other_user_id: otherUserId
+      }); // Fire and forget
+    }
   }
 
   // Get total unread count efficiently

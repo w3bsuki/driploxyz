@@ -3,12 +3,12 @@ import { messagingLogger } from '$lib/utils/log';
 export interface MessageError {
   code: string;
   message: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   retryable: boolean;
 }
 
 export class MessagesErrorHandler {
-  static handle(error: any, context: Record<string, any> = {}): MessageError {
+  static handle(error: unknown, context: Record<string, unknown> = {}): MessageError {
     const errorCode = this.getErrorCode(error);
     const errorMessage = this.getErrorMessage(error);
     const isRetryable = this.isRetryableError(error);
@@ -28,17 +28,18 @@ export class MessagesErrorHandler {
     };
   }
 
-  private static getErrorCode(error: any): string {
-    if (error?.code) return error.code;
-    if (error?.message?.includes('network')) return 'NETWORK_ERROR';
-    if (error?.message?.includes('timeout')) return 'TIMEOUT_ERROR';
-    if (error?.message?.includes('unauthorized')) return 'AUTH_ERROR';
-    if (error?.message?.includes('rate limit')) return 'RATE_LIMIT_ERROR';
-    if (error?.message?.includes('connection')) return 'CONNECTION_ERROR';
+  private static getErrorCode(error: unknown): string {
+    const err = error as { code?: string; message?: string };
+    if (err?.code) return err.code;
+    if (err?.message?.includes('network')) return 'NETWORK_ERROR';
+    if (err?.message?.includes('timeout')) return 'TIMEOUT_ERROR';
+    if (err?.message?.includes('unauthorized')) return 'AUTH_ERROR';
+    if (err?.message?.includes('rate limit')) return 'RATE_LIMIT_ERROR';
+    if (err?.message?.includes('connection')) return 'CONNECTION_ERROR';
     return 'UNKNOWN_ERROR';
   }
 
-  private static getErrorMessage(error: any): string {
+  private static getErrorMessage(error: unknown): string {
     const userFriendlyMessages = {
       NETWORK_ERROR: 'Connection problem. Please check your internet.',
       TIMEOUT_ERROR: 'Request timed out. Please try again.',
@@ -53,7 +54,7 @@ export class MessagesErrorHandler {
            'An error occurred. Please try again.';
   }
 
-  private static isRetryableError(error: any): boolean {
+  private static isRetryableError(error: unknown): boolean {
     const retryableCodes = [
       'NETWORK_ERROR',
       'TIMEOUT_ERROR', 
@@ -73,7 +74,7 @@ export class MessageRetryManager {
   async executeWithRetry<T>(
     operation: () => Promise<T>,
     operationId: string,
-    context: Record<string, any> = {}
+    context: Record<string, unknown> = {}
   ): Promise<T> {
     const attempts = this.retryAttempts.get(operationId) || 0;
 

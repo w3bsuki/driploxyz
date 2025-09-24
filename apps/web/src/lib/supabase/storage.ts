@@ -14,8 +14,7 @@ async function convertToWebP(file: File): Promise<Blob> {
   try {
     const webpBlob = await processImage(file, IMAGE_SIZES.medium);
     return webpBlob;
-  } catch (error) {
-    
+  } catch {
     return file;
   }
 }
@@ -30,12 +29,9 @@ export async function uploadImage(
   userId: string,
   accessToken?: string
 ): Promise<UploadedImage> {
-  
-  
-  try {
-    
-    
-    // Convert to WebP with detailed logging
+
+
+  // Convert to WebP with detailed logging
     let fileToUpload: Blob | File;
     let fileName: string;
     let contentType: string;
@@ -51,8 +47,7 @@ export async function uploadImage(
       fileName = `${userId}/${timestamp}-${randomId}.webp`;
       
       
-    } catch (conversionError) {
-      
+    } catch {
       fileToUpload = file;
       contentType = file.type;
       
@@ -113,9 +108,9 @@ export async function uploadImage(
           url,
           path: fileName
         };
-      } catch (fetchError: any) {
+      } catch (fetchError: unknown) {
         clearTimeout(timeoutId);
-        if (fetchError.name === 'AbortError') {
+        if ((fetchError as Error).name === 'AbortError') {
           throw new Error('Upload timeout - request aborted after 30 seconds');
         }
         throw fetchError;
@@ -155,7 +150,7 @@ export async function uploadImage(
     const { data, error } = await Promise.race([
       uploadPromise,
       timeoutPromise
-    ]) as any;
+    ]) as { data?: { path: string }, error?: { message: string } };
     
     
     
@@ -178,10 +173,6 @@ export async function uploadImage(
       url,
       path: data.path
     };
-  } catch (error) {
-    
-    throw error;
-  }
 }
 
 /**
@@ -208,8 +199,7 @@ export async function uploadImages(
       const uploaded = await uploadImage(supabase, file, bucket, userId, accessToken);
       uploadedImages.push(uploaded);
       onProgress?.(i + 1, files.length);
-    } catch (error) {
-      
+    } catch {
       // Continue with other uploads even if one fails
     }
   }
@@ -269,34 +259,29 @@ export async function uploadAvatar(
   file: File,
   userId: string
 ): Promise<string> {
-  try {
-    // Convert to WebP for better performance
-    const webpBlob = await convertToWebP(file);
-    
-    // Generate unique filename for avatar
-    const timestamp = Date.now();
-    const fileName = `${userId}/${timestamp}.webp`;
-    
-    // Upload to Supabase
-    const { data, error } = await supabase.storage
-      .from('avatars')
-      .upload(fileName, webpBlob, {
-        contentType: 'image/webp',
-        cacheControl: '3600',
-        upsert: true // Allow overwriting existing avatars
-      });
-    
-    if (error) {
-      
-      throw new Error(`Failed to upload avatar: ${error.message}`);
-    }
-    
-    // Get public URL
-    const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${data.path}`;
-    
-    return url;
-  } catch (error) {
-    
-    throw error;
+  // Convert to WebP for better performance
+  const webpBlob = await convertToWebP(file);
+
+  // Generate unique filename for avatar
+  const timestamp = Date.now();
+  const fileName = `${userId}/${timestamp}.webp`;
+
+  // Upload to Supabase
+  const { data, error } = await supabase.storage
+    .from('avatars')
+    .upload(fileName, webpBlob, {
+      contentType: 'image/webp',
+      cacheControl: '3600',
+      upsert: true // Allow overwriting existing avatars
+    });
+
+  if (error) {
+
+    throw new Error(`Failed to upload avatar: ${error.message}`);
   }
+
+  // Get public URL
+  const url = `${PUBLIC_SUPABASE_URL}/storage/v1/object/public/avatars/${data.path}`;
+
+  return url;
 }

@@ -24,7 +24,7 @@ export const POST: RequestHandler = async ({ locals: { supabase } }) => {
       message: `Cleaned up ${removedCount} sold items from favorites`
     });
 
-  } catch (err) {
+  } catch {
     
     return error(500, { message: 'Internal server error' });
   }

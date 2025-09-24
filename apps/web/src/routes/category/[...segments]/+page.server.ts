@@ -278,24 +278,24 @@ export const load = (async ({ params, url, locals: { country }, setHeaders }) =>
  */
 function generateMetaTitle(resolution: {
   isVirtual: boolean;
-  l1?: {name: string};
-  l2?: {name: string};
-  l3?: {name: string};
+  l1?: {name: string | undefined};
+  l2?: {name: string | undefined};
+  l3?: {name: string | undefined};
 }): string {
   const titles: string[] = [];
   
   // Handle virtual categories
-  if (resolution.isVirtual && resolution.l1) {
+  if (resolution.isVirtual && resolution.l1?.name) {
     titles.push(resolution.l1.name);
   } else {
     // Handle regular categories
-    if (resolution.l3) {
+    if (resolution.l3?.name) {
       titles.push(resolution.l3.name);
     }
-    if (resolution.l2) {
+    if (resolution.l2?.name) {
       titles.push(resolution.l2.name);
     }
-    if (resolution.l1) {
+    if (resolution.l1?.name) {
       titles.push(resolution.l1.name);
     }
   }
@@ -312,31 +312,31 @@ function generateMetaTitle(resolution: {
  */
 function generateMetaDescription(resolution: {
   isVirtual: boolean;
-  l1?: {name: string};
-  l2?: {name: string};
-  l3?: {name: string};
+  l1?: {name: string | undefined};
+  l2?: {name: string | undefined};
+  l3?: {name: string | undefined};
 }, productCount: number): string {
   let description = '';
   
   // Handle virtual categories
-  if (resolution.isVirtual && resolution.l1) {
+  if (resolution.isVirtual && resolution.l1?.name) {
     description = `Shop ${productCount} ${resolution.l1.name.toLowerCase()} from men's, women's, kids' and unisex collections`;
   } else {
     // Handle regular categories
-    if (resolution.l3) {
+    if (resolution.l3?.name) {
       description = `Shop ${productCount} ${resolution.l3.name.toLowerCase()} items`;
-      if (resolution.l2) {
+      if (resolution.l2?.name) {
         description += ` in ${resolution.l2.name.toLowerCase()}`;
       }
-      if (resolution.l1) {
+      if (resolution.l1?.name) {
         description += ` for ${resolution.l1.name.toLowerCase()}`;
       }
-    } else if (resolution.l2) {
+    } else if (resolution.l2?.name) {
       description = `Discover ${productCount} ${resolution.l2.name.toLowerCase()} items`;
-      if (resolution.l1) {
+      if (resolution.l1?.name) {
         description += ` for ${resolution.l1.name.toLowerCase()}`;
       }
-    } else if (resolution.l1) {
+    } else if (resolution.l1?.name) {
       description = `Browse ${productCount} items in ${resolution.l1.name.toLowerCase()}'s fashion`;
     }
   }

@@ -168,7 +168,7 @@ async function getCategoryDescendantsFallback(supabase: SupabaseClient<Database>
       .in('parent_id', level1And2Ids)
       .eq('is_active', true);
 
-    const level3Ids = (level3 || []).map((d: any) => d.id);
+    const level3Ids = (level3 || []).map((d: { id: string }) => d.id);
     
     // Return union of all levels, removing duplicates
     const allIds = Array.from(new Set([...level1And2Ids, ...level3Ids]));
@@ -176,8 +176,7 @@ async function getCategoryDescendantsFallback(supabase: SupabaseClient<Database>
     
     return allIds;
     
-  } catch (fallbackError) {
-    
+  } catch {
     return [categoryId]; // Last resort: return parent category only
   }
 }
@@ -237,7 +236,7 @@ export async function resolveCategoryPath(
       
       if (targetCategories.length === 0) {
         if (missingCount === targetSlugs.length) {
-          
+          // All categories are missing - return empty result
         }
         return {
           level: 1,
@@ -372,8 +371,7 @@ export async function resolveCategoryPath(
       isValid: true
     };
 
-  } catch (error) {
-    
+  } catch {
     return {
       level: 1,
       categoryIds: [],
@@ -445,8 +443,7 @@ export async function getCategoryBreadcrumbs(
     };
 
     return { items, jsonLd };
-  } catch (error) {
-    
+  } catch {
     return {
       items: [{ name: 'Home', href: '/', level: 0 }],
       jsonLd: {

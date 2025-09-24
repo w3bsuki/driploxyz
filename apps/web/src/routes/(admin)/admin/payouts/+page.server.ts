@@ -84,7 +84,7 @@ export const load = (async ({ locals, parent }) => {
     pendingPayouts: enrichedPayouts,
     stats
   };
-  } catch (error) {
+  } catch {
     // Admin payouts page error - return safe defaults
     return {
       pendingPayouts: [],

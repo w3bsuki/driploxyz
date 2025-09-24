@@ -22,8 +22,7 @@ export function formatDate(date: Date | string | number, options?: Intl.DateTime
   
   try {
     return new Intl.DateTimeFormat(intlLocale, { ...defaultOptions, ...options }).format(dateObj);
-  } catch (error) {
-    
+  } catch {
     return dateObj.toLocaleDateString(intlLocale);
   }
 }
@@ -86,7 +85,7 @@ export function formatRelativeTime(date: Date | string | number, locale?: string
     } else {
       return rtf.format(-diffSec, 'second');
     }
-  } catch (error) {
+  } catch {
     
     return formatRelativeTimeFallback(diffMs, currentLocale);
   }

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button } from '@repo/ui';
-  import * as i18n from '@repo/i18n';
+  // import * as i18n from '@repo/i18n'; // Currently unused
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();

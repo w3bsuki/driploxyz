@@ -13,12 +13,12 @@
 
 // import type { Product } from '@repo/ui'; // Removed as not used directly in this file
 
-export interface FilterState {
+export interface FilterState extends Record<string, string | null> {
   // Category filters (3-level hierarchy)
   category: string | null; // Gender: women/men/kids/unisex
-  subcategory: string | null; // Type: clothing/shoes/bags/accessories  
+  subcategory: string | null; // Type: clothing/shoes/bags/accessories
   specific: string | null; // Specific: t-shirts/dresses/sneakers
-  
+
   // Product attributes
   size: string;
   brand: string;
@@ -31,21 +31,36 @@ export interface FilterState {
   sortBy: string;
 }
 
+// Define Product interface to replace any types
+interface Product {
+  id: string;
+  title?: string;
+  description?: string;
+  brand?: string;
+  price?: number;
+  size?: string;
+  condition?: string;
+  createdAt?: string;
+  main_category_name?: string;
+  subcategory_name?: string;
+  specific_category_name?: string;
+}
+
 export interface ProductFilterStore {
   // Raw products from server
-  allProducts: any[];
-  
+  allProducts: Product[];
+
   // Current filter state (applied to results)
   filters: FilterState;
-  
+
   // Pending filter state (being edited in modal)
   pendingFilters: FilterState;
-  
+
   // Derived filtered products (based on applied filters)
-  filteredProducts: any[];
-  
+  filteredProducts: Product[];
+
   // Preview filtered products (based on pending filters)
-  previewFilteredProducts: any[];
+  previewFilteredProducts: Product[];
   
   // Loading state
   isFiltering: boolean;
@@ -61,8 +76,8 @@ export interface ProductFilterStore {
   applyPendingFilters: () => void;
   resetPendingFilters: () => void;
   resetFilters: () => void;
-  setProducts: (products: any[]) => void;
-  appendProducts: (products: any[]) => void;
+  setProducts: (products: Product[]) => void;
+  appendProducts: (products: Product[]) => void;
   loadPersistedFilters: () => void;
   persistFilters: () => void;
   clearPersistedFilters: () => void;
@@ -72,7 +87,7 @@ export interface ProductFilterStore {
  * Create a product filter store with Svelte 5 runes
  * Enhanced with pending/applied state separation and persistence
  */
-export function createProductFilter(initialProducts: any[] = []): ProductFilterStore {
+export function createProductFilter(initialProducts: Product[] = []): ProductFilterStore {
   // Core state with $state rune
   // Use $state.raw() for performance optimization on large product arrays
   // This prevents reactivity on array mutations, only triggers on reassignment
@@ -101,7 +116,7 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
   let pendingFilters = $state<FilterState>({ ...defaultFilters });
   
   // Helper function to apply filters to products
-  function applyFiltersToProducts(products: any[], filterState: FilterState) {
+  function applyFiltersToProducts(products: Product[], filterState: FilterState): Product[] {
     let result = [...products];
     
     // Apply search query
@@ -152,14 +167,14 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
     if (filterState.minPrice) {
       const min = parseFloat(filterState.minPrice);
       if (!isNaN(min)) {
-        result = result.filter(product => product.price >= min);
+        result = result.filter(product => product.price != null && product.price >= min);
       }
     }
     
     if (filterState.maxPrice) {
       const max = parseFloat(filterState.maxPrice);
       if (!isNaN(max)) {
-        result = result.filter(product => product.price <= max);
+        result = result.filter(product => product.price != null && product.price <= max);
       }
     }
     
@@ -195,10 +210,10 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
   
   // Methods to update applied filters (immediate effect)
   function updateFilter(key: keyof FilterState, value: string | null) {
-    // Use type assertion since we know the structure
-    (filters as any)[key] = value;
+    // Update filters directly now that FilterState extends Record
+    filters[key] = value;
     // Also update pending filters to keep in sync
-    (pendingFilters as any)[key] = value;
+    pendingFilters[key] = value;
     
     // Briefly show filtering state for UX feedback
     isFiltering = true;
@@ -212,8 +227,9 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
   
   function updateMultipleFilters(updates: Partial<FilterState>) {
     Object.entries(updates).forEach(([key, value]) => {
-      (filters as any)[key] = value;
-      (pendingFilters as any)[key] = value;
+      const filterValue = value ?? null;
+      filters[key as keyof FilterState] = filterValue;
+      pendingFilters[key as keyof FilterState] = filterValue;
     });
     
     // Briefly show filtering state
@@ -228,12 +244,12 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
   
   // Methods to update pending filters (for modal editing)
   function updatePendingFilter(key: keyof FilterState, value: string | null) {
-    (pendingFilters as any)[key] = value;
+    pendingFilters[key] = value;
   }
   
   function updateMultiplePendingFilters(updates: Partial<FilterState>) {
     Object.entries(updates).forEach(([key, value]) => {
-      (pendingFilters as any)[key] = value;
+      pendingFilters[key as keyof FilterState] = value ?? null;
     });
   }
   
@@ -274,8 +290,8 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
         pendingFilters = { ...filters };
         hasPersistentFilters = true;
       }
-    } catch (error) {
-      
+    } catch {
+      // Ignore localStorage errors - filter persistence is not critical
     }
   }
   
@@ -286,9 +302,9 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
       // Only persist non-default filter values
       const toPersist: Partial<FilterState> = {};
       Object.entries(filters).forEach(([key, value]) => {
-        const defaultValue = (defaultFilters as any)[key];
+        const defaultValue = defaultFilters[key as keyof FilterState];
         if (value !== defaultValue && value !== '' && value !== null) {
-          (toPersist as any)[key] = value;
+          toPersist[key as keyof FilterState] = value;
         }
       });
       
@@ -298,8 +314,8 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
       } else {
         clearPersistedFilters();
       }
-    } catch (error) {
-      
+    } catch {
+      // Ignore localStorage errors - filter persistence is not critical
     }
   }
   
@@ -309,18 +325,18 @@ export function createProductFilter(initialProducts: any[] = []): ProductFilterS
     try {
       localStorage.removeItem('driplo_applied_filters');
       hasPersistentFilters = false;
-    } catch (error) {
-      
+    } catch {
+      // Ignore localStorage errors - filter persistence is not critical
     }
   }
   
-  function setProducts(products: any[]) {
+  function setProducts(products: Product[]) {
     allProducts = products;
   }
   
-  function appendProducts(products: any[]) {
+  function appendProducts(products: Product[]) {
     if (!Array.isArray(products) || products.length === 0) return;
-    const byId = new Map<string, any>();
+    const byId = new Map<string, Product>();
     // keep order: existing first, then new unique
     for (const p of allProducts) {
       if (p && p.id) byId.set(p.id, p);

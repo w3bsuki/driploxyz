@@ -317,6 +317,7 @@
     onclick={(e) => e.stopPropagation()}
     onkeydown={(e) => { if (e.key === 'Escape') handleClickOutside(); }}
     role="dialog"
+    tabindex="-1"
     aria-label="Search results and browse options"
   >
     {#if query && query.trim()}

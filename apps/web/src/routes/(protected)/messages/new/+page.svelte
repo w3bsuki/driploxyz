@@ -43,8 +43,7 @@
       // Navigate to messages page with conversation context
       const conversationParam = productId ? `${recipientId}__${productId}` : `${recipientId}__general`;
       goto(`/messages?conversation=${conversationParam}`);
-    } catch (err) {
-      
+    } catch {
       sending = false;
     }
   }

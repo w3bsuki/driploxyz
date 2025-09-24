@@ -8,7 +8,7 @@
 
   let { data }: { data: PageData } = $props();
 
-  function handleCollectionClick(collection: any) {
+  function handleCollectionClick(collection: { slug: string }) {
     goto(`/collection/${collection.slug}`);
   }
 </script>

@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import { parseCombinedCategorySlug, searchParamsToSegments } from '$lib/utils/filter-url';
 
 export const load = (async ({ params, url }) => {
-  const slug = (params as any).slug;
+  const slug = (params as any).slug as string;
 
   try {
     // Check if this is a legacy search parameter pattern in URL

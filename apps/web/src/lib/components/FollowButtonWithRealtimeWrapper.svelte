@@ -38,8 +38,8 @@
 
   // Get follower count from real-time store or follow store
   const followerCount = $derived.by(() => {
-    const realtimeMetrics = $realtimeStore.metrics.userMetrics[userId];
-    const followMetrics = $followStore.followerCounts[userId];
+    const realtimeMetrics = realtimeStore.metrics.userMetrics[userId];
+    const followMetrics = followStore.followerCounts[userId];
     return realtimeMetrics?.follower_count ?? followMetrics ?? 0;
   });
 
@@ -79,6 +79,6 @@
   {disabled}
   {followActions}
   {realtimeService}
-  realtimeStore={$realtimeStore}
+  realtimeStore={realtimeStore}
   followerCount={followerCount()}
 />

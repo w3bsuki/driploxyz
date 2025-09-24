@@ -7,7 +7,7 @@
  */
 export function announceFormErrors(errors: Record<string, string | null>) {
   const errorMessages = Object.entries(errors)
-    .filter(([_, error]) => error !== null)
+    .filter(([, error]) => error !== null)
     .map(([field, error]) => `${field}: ${error}`)
     .join('. ');
 

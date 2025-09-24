@@ -40,7 +40,7 @@
   
   // Enhanced error handling
   import { createLogger } from '$lib/utils/log';
-  import { parseError, createNetworkMonitor } from '$lib/utils/error-handling';
+  import { parseError, createNetworkMonitor } from '$lib/utils/error-handling.svelte';
   import { toast } from '$lib/stores/toast.svelte';
 
   const log = createLogger('realtime-manager');
@@ -348,30 +348,30 @@
     
     // Cleaning up subscriptions
     
-    const cleanupPromises = [];
-    
+    let cleanupPromises: Promise<void>[] = [];
+
     if (messageChannel) {
       const channelToCleanup = messageChannel;
       messageChannel = null; // Clear reference before cleanup
-      
-      cleanupPromises.push(
+
+      cleanupPromises = [...cleanupPromises,
         supabase.removeChannel(channelToCleanup).catch((error) => {
           logError('Message channel cleanup error:', error);
         })
-      );
+      ];
     }
-    
+
     if (presenceChannel) {
       const channelToCleanup = presenceChannel;
       presenceChannel = null; // Clear reference before cleanup
-      
-      cleanupPromises.push(
-        channelToCleanup.untrack().then(() => 
+
+      cleanupPromises = [...cleanupPromises,
+        channelToCleanup.untrack().then(() =>
           supabase.removeChannel(channelToCleanup)
         ).catch((error) => {
           logError('Presence channel cleanup error:', error);
         })
-      );
+      ];
     }
     
     try {

@@ -100,8 +100,8 @@ export function createFollowStore() {
           };
           return data.isFollowing;
         }
-      } catch (error) {
-        // Silent error handling
+      } catch {
+        // Silent error handling - follow status is not critical
       }
 
       return false;
@@ -116,8 +116,8 @@ export function createFollowStore() {
       try {
         const promises = userIds.map(id => actions.checkFollowStatus(id));
         await Promise.all(promises);
-      } catch (error) {
-        // Silent error handling
+      } catch {
+        // Silent error handling - follow status is not critical
       }
     },
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page, navigating } from '$app/state';
   import { goto } from '$app/navigation';
-  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, PartnerBanner, CategoryPill, type Product, type BreadcrumbItem } from '@repo/ui';
+  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, PartnerBanner, CategoryPill, type Product } from '@repo/ui';
   import * as i18n from '@repo/i18n';
   import { unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
   import { formatPrice } from '$lib/utils/price';
@@ -100,7 +100,7 @@
     title: p.title,
     description: p.description || '',
     price: p.price,
-    images: p.images?.map((img: any) => img.image_url || img) || [],
+    images: p.images?.map((img: { image_url?: string } | string) => (typeof img === 'string' ? img : img.image_url || '')) || [],
     brand: p.brand,
     size: p.size,
     condition: p.condition,
@@ -128,10 +128,10 @@
 
   
   // Seller quick view modal state
-  let selectedSeller = $state<any>(null);
+  let selectedSeller = $state<unknown>(null);
   let showSellerModal = $state(false);
   
-  function openSellerModal(seller: any) {
+  function openSellerModal(seller: unknown) {
     selectedSeller = seller;
     showSellerModal = true;
   }
@@ -148,7 +148,7 @@
   let priceRange = $state({ min: 0, max: 500 });
   
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-  const brands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Gucci', 'Louis Vuitton'];
+  // const brands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Gucci', 'Louis Vuitton'];
   const conditions = [
     { value: 'new', label: i18n.condition_newWithTags() },
     { value: 'like-new', label: i18n.condition_likeNew() },
@@ -179,12 +179,14 @@
   );
   
   // Simple filter functions for additional filters (not category navigation)
+  /*
   function clearAllFilters() {
     selectedSizes = [];
     selectedBrands = [];
     selectedConditions = [];
     priceRange = { min: 0, max: 500 };
   }
+  */
 
   function toggleSize(size: string) {
     if (selectedSizes.includes(size)) {

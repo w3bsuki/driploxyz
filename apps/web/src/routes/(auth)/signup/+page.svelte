@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  // import { goto } from '$app/navigation'; // Currently unused
   import { enhance } from '$app/forms';
   import type { PageData, ActionData } from './$types';
   import * as i18n from '@repo/i18n';
@@ -7,9 +7,8 @@
   import { SignupSchema } from '$lib/validation/auth';
   import { createFormValidator } from '$lib/utils/form-validation.svelte';
   import { announceToScreenReader, focusFirstErrorField } from '$lib/utils/form-accessibility';
-  import FormField from '$lib/components/forms/FormField.svelte';
-
-  let { data, form }: { data: PageData; form: ActionData } = $props();
+  import { Input } from '@repo/ui';
+  let { form }: { data: PageData; form: ActionData } = $props();
 
   import { toasts } from '@repo/ui';
 
@@ -152,53 +151,71 @@
     <div class="space-y-1">
       <!-- Full Name -->
       <div class="p-1">
-        <FormField
+        <Input
           label="{i18n.auth_firstName()} {i18n.auth_lastName()}"
-          fieldName="fullName"
-          fieldState={fullNameField}
+          name="fullName"
+          id="fullName"
+          bind:value={fullNameField.value}
           type="text"
           required
           placeholder="John Doe"
           autocomplete="name"
+          error={fullNameField.error && fullNameField.touched ? fullNameField.error : undefined}
+          oninput={(e) => fullNameField.setValue((e.target as HTMLInputElement).value)}
+          onblur={() => fullNameField.onBlur()}
         />
       </div>
 
       <!-- Email -->
       <div class="p-1">
-        <FormField
+        <Input
           label={i18n.auth_email()}
-          fieldName="email"
-          fieldState={emailField}
+          name="email"
+          id="email"
+          bind:value={emailField.value}
           type="email"
           required
           placeholder="john@example.com"
           autocomplete="email"
+          error={emailField.error && emailField.touched ? emailField.error : undefined}
+          oninput={(e) => emailField.setValue((e.target as HTMLInputElement).value)}
+          onblur={() => emailField.onBlur()}
         />
       </div>
 
       <!-- Password Fields -->
       <div class="p-1">
-        <FormField
+        <Input
           label={i18n.auth_password()}
-          fieldName="password"
-          fieldState={passwordField}
+          name="password"
+          id="password"
+          bind:value={passwordField.value}
           type="password"
           required
           placeholder="Minimum 8 characters"
           autocomplete="new-password"
-          hint="Password must be at least 8 characters long"
+          error={passwordField.error && passwordField.touched ? passwordField.error : undefined}
+          oninput={(e) => passwordField.setValue((e.target as HTMLInputElement).value)}
+          onblur={() => passwordField.onBlur()}
         />
+        {#if passwordField.value && passwordField.value.length > 0 && passwordField.value.length < 8}
+          <p class="text-sm text-gray-600 mt-1">Password must be at least 8 characters long</p>
+        {/if}
       </div>
 
       <div class="p-1">
-        <FormField
+        <Input
           label={i18n.auth_confirmPassword()}
-          fieldName="confirmPassword"
-          fieldState={confirmPasswordField}
+          name="confirmPassword"
+          id="confirmPassword"
+          bind:value={confirmPasswordField.value}
           type="password"
           required
           placeholder="Re-enter your password"
           autocomplete="new-password"
+          error={confirmPasswordField.error && confirmPasswordField.touched ? confirmPasswordField.error : undefined}
+          oninput={(e) => confirmPasswordField.setValue((e.target as HTMLInputElement).value)}
+          onblur={() => confirmPasswordField.onBlur()}
         />
       </div>
 

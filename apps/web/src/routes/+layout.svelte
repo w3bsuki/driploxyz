@@ -6,8 +6,9 @@
 </svelte:head>
 
 <script lang="ts">
-  import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
+  // import { ProductionCookieManager } from '$lib/cookies/production-cookie-system';
   import { UnifiedCookieConsent } from '@repo/ui';
+  // eslint-disable-next-line no-restricted-imports -- App-specific composite component
   import Header from '$lib/components/Header.svelte';
   import '../app.css';
   // Deploy to driplo.xyz - force redeploy
@@ -18,16 +19,20 @@
   import { getActiveNotification, messageNotifications, handleNotificationClick } from '$lib/stores/messageNotifications.svelte';
   import { activeFollowNotification, handleFollowNotificationClick } from '$lib/stores/followNotifications.svelte';
   import { activeOrderNotification, handleOrderNotificationClick, orderNotificationActions } from '$lib/stores/orderNotifications.svelte';
-  import { MessageNotificationToast, FollowNotificationToast, LanguageSwitcher, Footer, OrderNotificationToast, TopProgress, CategorySearchBar, MainPageSearchBar } from '@repo/ui';
+  import { MessageNotificationToast, FollowNotificationToast, Footer, OrderNotificationToast, TopProgress, CategorySearchBar } from '@repo/ui';
+  // eslint-disable-next-line no-restricted-imports -- App-specific toast implementation
   import Toast from '$lib/components/Toast.svelte';
-  import ErrorBoundary from '$lib/components/ErrorBoundary.svelte';
+  import { ErrorBoundary } from '@repo/ui';
+  // eslint-disable-next-line no-restricted-imports -- App-specific realtime error boundary
   import RealtimeErrorBoundary from '$lib/components/RealtimeErrorBoundary.svelte';
+  // eslint-disable-next-line no-restricted-imports -- App-specific region modal
   import RegionSwitchModal from '$lib/components/RegionSwitchModal.svelte';
   import { page } from '$app/state';
   import { initializeLanguage, switchLanguage } from '$lib/utils/language-switcher';
   import * as i18n from '@repo/i18n';
   import type { LayoutData } from './$types';
   import type { Snippet } from 'svelte';
+  import type { ProductWithImages } from '$lib/services';
   let headerContainer: HTMLDivElement | null = $state(null);
 
   let { data, children }: { data: LayoutData; children?: Snippet } = $props();
@@ -36,7 +41,7 @@
   let showRegionModal = $state(false);
   
   // Cookie consent handling - only invalidate auth for user-specific features
-  function handleConsentChange(consent: any) {
+  function handleConsentChange() {
     // Only invalidate auth state for user-specific features (favorites, etc.)
     // Homepage content should be visible regardless of cookie acceptance
     if (browser) {
@@ -66,7 +71,7 @@
           try {
             await preloadCode(route);
             await preloadData(route);
-          } catch (e) {
+          } catch {
             // Preload failed, continue silently
           }
         });
@@ -97,7 +102,7 @@
   const isSearchPage = $derived(page.route.id?.includes('/search'));
   const isCategoryPage = $derived(page.route.id?.includes('/category'));
   const isProductPage = $derived(page.route.id?.includes('/product'));
-  const isHomePage = $derived(page.url.pathname === '/');
+  // const isHomePage = $derived(page.url.pathname === '/');
   
   // Show search in header on pages where users expect to search
   const shouldShowHeaderSearch = $derived(
@@ -109,9 +114,9 @@
     !isAuthPage && !isOnboardingPage && !isSellPage && isCategoryPage && !isSearchPage
   );
 
-  const shouldShowMainPageSearch = $derived(
-    !isAuthPage && !isOnboardingPage && !isSellPage && isHomePage
-  );
+  // const shouldShowMainPageSearch = $derived(
+  //   !isAuthPage && !isOnboardingPage && !isSellPage && isHomePage
+  // );
 
   // Compact, shared sticky search settings for browse pages
   let stickySearchQuery = $state('');
@@ -231,41 +236,41 @@
     }
   ];
 
-  // Virtual categories for quick access (clothing, shoes, etc.)
-  const virtualCategories = [
-    {
-      slug: 'clothing',
-      name: i18n.category_clothing ? i18n.category_clothing() : 'Clothing',
-      product_count: 145
-    },
-    {
-      slug: 'shoes',
-      name: i18n.category_shoesType ? i18n.category_shoesType() : 'Shoes',
-      product_count: 89
-    },
-    {
-      slug: 'bags',
-      name: i18n.category_bagsType ? i18n.category_bagsType() : 'Bags',
-      product_count: 67
-    },
-    {
-      slug: 'accessories',
-      name: i18n.category_accessoriesType ? i18n.category_accessoriesType() : 'Accessories',
-      product_count: 123
-    }
-  ];
+  // Virtual categories for quick access (clothing, shoes, etc.) - unused
+  // const virtualCategories = [
+  //   {
+  //     slug: 'clothing',
+  //     name: i18n.category_clothing ? i18n.category_clothing() : 'Clothing',
+  //     product_count: 145
+  //   },
+  //   {
+  //     slug: 'shoes',
+  //     name: i18n.category_shoesType ? i18n.category_shoesType() : 'Shoes',
+  //     product_count: 89
+  //   },
+  //   {
+  //     slug: 'bags',
+  //     name: i18n.category_bagsType ? i18n.category_bagsType() : 'Bags',
+  //     product_count: 67
+  //   },
+  //   {
+  //     slug: 'accessories',
+  //     name: i18n.category_accessoriesType ? i18n.category_accessoriesType() : 'Accessories',
+  //     product_count: 123
+  //   }
+  // ];
 
   // Quick search for dropdown results in the shared sticky bar
   async function handleStickyQuickSearch(query: string) {
     if (!query?.trim() || !supabase) {
-      return { data: [], error: null } as any;
+      return { data: [], error: null } as { data: ProductWithImages[]; error: string | null };
     }
     try {
       const { ProductService } = await import('$lib/services/products');
       const productService = new ProductService(supabase);
       return await productService.searchProducts(query, { limit: 6 });
-    } catch (error) {
-      return { data: [], error: 'Search failed' } as any;
+    } catch {
+      return { data: [], error: 'Search failed' } as { data: ProductWithImages[]; error: string | null };
     }
   }
 
@@ -276,12 +281,12 @@
       window.location.href = `/search?q=${encodeURIComponent(query.trim())}`;
     }
   }
-  function handleStickyCategorySelect(slug: string, _level: number = 1, _path: string[] = []) {
+  function handleStickyCategorySelect(slug: string) {
     if (typeof window !== 'undefined') {
       window.location.href = `/category/${slug}`;
     }
   }
-  function handleStickyFilterChange(key: string, value: any) {
+  function handleStickyFilterChange(key: string, value: string | number | boolean) {
     if (typeof window === 'undefined') return;
     const url = new URL(window.location.origin + '/search');
     // Map UI keys to URL params
@@ -323,19 +328,19 @@
       window.location.href = '/search';
     }
   }
-  function handleStickyConditionFilter(condition: string) {
-    if (!condition) return;
-    if (typeof window !== 'undefined') {
-      const url = new URL(window.location.origin + '/search');
-      url.searchParams.set('condition', condition);
-      window.location.href = url.toString();
-    }
-  }
-  function handleStickyNavigateAll() {
-    if (typeof window !== 'undefined') {
-      window.location.href = '/search';
-    }
-  }
+  // function handleStickyConditionFilter(condition: string) {
+  //   if (!condition) return;
+  //   if (typeof window !== 'undefined') {
+  //     const url = new URL(window.location.origin + '/search');
+  //     url.searchParams.set('condition', condition);
+  //     window.location.href = url.toString();
+  //   }
+  // }
+  // function handleStickyNavigateAll() {
+  //   if (typeof window !== 'undefined') {
+  //     window.location.href = '/search';
+  //   }
+  // }
   
   // Check if we should show region prompt
   $effect(() => {
@@ -593,26 +598,26 @@
 {/if}
 
 <!-- Global Follow Notification Toast -->
-{#if $activeFollowNotification}
+{#if activeFollowNotification?.value}
   <FollowNotificationToast
     show={true}
-    followerName={$activeFollowNotification.followerName}
-    followerUsername={$activeFollowNotification.followerUsername}
-    followerAvatar={$activeFollowNotification.followerAvatar}
-    onViewProfile={() => handleFollowNotificationClick($activeFollowNotification)}
-    onDismiss={() => activeFollowNotification.set(null)}
+    followerName={activeFollowNotification.value.followerName}
+    followerUsername={activeFollowNotification.value.followerUsername}
+    followerAvatar={activeFollowNotification.value.followerAvatar}
+    onViewProfile={() => handleFollowNotificationClick(activeFollowNotification.value)}
+    onDismiss={() => {}}
   />
 {/if}
 
 <!-- Global Order Notification Toast (Sales/Purchases) -->
-{#if $activeOrderNotification}
+{#if activeOrderNotification?.value}
   <OrderNotificationToast
     show={true}
-    title={$activeOrderNotification.title}
-    message={$activeOrderNotification.message}
-    type={$activeOrderNotification.type}
-    onView={() => handleOrderNotificationClick($activeOrderNotification)}
-    onDismiss={() => activeOrderNotification.set(null)}
+    title={activeOrderNotification.value.title}
+    message={activeOrderNotification.value.message}
+    type={activeOrderNotification.value.type}
+    onView={() => handleOrderNotificationClick(activeOrderNotification.value)}
+    onDismiss={() => {}}
   />
 {/if}
 

@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/sveltekit';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
 import { createLogger } from '$lib/utils/log';
-import { parseError, setupGlobalErrorHandling } from '$lib/utils/error-handling';
+import { parseError, setupGlobalErrorHandling } from '$lib/utils/error-handling.svelte';
 
 const log = createLogger('hooks-client');
 

@@ -23,8 +23,8 @@ interface CategoryHierarchy {
   level: number;
   parent_id: string | null;
   is_active: boolean;
-  level2?: Record<string, any>;
-  level3?: any[];
+  level2?: Record<string, unknown>;
+  level3?: unknown[];
 }
 
 interface CategoriesCache {

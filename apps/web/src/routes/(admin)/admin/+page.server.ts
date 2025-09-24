@@ -42,7 +42,7 @@ export const load = (async ({ locals: { supabase } }) => {
       },
       recentOrders: recentOrders || []
     };
-  } catch (error) {
+  } catch {
     // Admin dashboard error - return default stats
     return {
       stats: {

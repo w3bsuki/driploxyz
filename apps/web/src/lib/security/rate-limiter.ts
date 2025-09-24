@@ -235,7 +235,7 @@ export function rateLimitResponse(retryAfter: number, message?: string) {
 export function withRateLimit(
   endpoint: keyof typeof RATE_LIMIT_CONFIGS,
   options?: {
-    keyGenerator?: (request: Request, clientAddress: string, locals?: Record<string, unknown>) => string;
+    keyGenerator?: (request: Request, clientAddress: string, locals?: App.Locals) => string;
     customMessage?: string;
   }
 ) {

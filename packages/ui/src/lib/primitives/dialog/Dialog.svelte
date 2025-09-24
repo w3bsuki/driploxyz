@@ -166,7 +166,7 @@
       gap: 0.75rem;
     }
     
-    .flex-col-reverse button {
+    .flex-col-reverse :global(button) {
       min-height: var(--touch-primary); /* Ensure 44px touch targets on mobile */
     }
   }

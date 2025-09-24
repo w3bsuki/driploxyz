@@ -147,7 +147,7 @@ function info(message: string, options: Partial<Omit<Toast, 'id' | 'type' | 'mes
 /**
  * Create error toast from ErrorDetails
  */
-function fromError(errorDetails: import('../utils/error-handling').ErrorDetails, options: Partial<Omit<Toast, 'id' | 'type' | 'message'>> = {}): string {
+function fromError(errorDetails: import('../utils/error-handling.svelte').ErrorDetails, options: Partial<Omit<Toast, 'id' | 'type' | 'message'>> = {}): string {
   const severity = errorDetails.severity;
   const toastType: ToastType = severity === 'CRITICAL' || severity === 'HIGH' ? 'error' : 'warning';
 

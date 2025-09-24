@@ -1,0 +1,62 @@
+src/routes/(protected)/checkout/[productId]/+page.ts(56,5): error TS2353: Object literal may only specify known properties, and 'first_image' does not exist in type 'Product'.
+src/routes/(protected)/messages/+page.server.ts(32,50): error TS2345: Argument of type '"get_conversation_messages"' is not assignable to parameter of type '"approve_drip_product" | "audit_rls_coverage" | "audit_rls_status" | "boost_product" | "calculate_seller_trending" | "can_message_about_product" | "check_rate_limit" | ... 41 more ... | "validate_discount_code"'.
+src/routes/(protected)/messages/+page.server.ts(41,13): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(42,20): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(43,22): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(44,21): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(45,19): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(46,18): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(47,21): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(48,18): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(49,17): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(50,23): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(51,18): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(52,23): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(53,17): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(54,19): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(55,16): error TS18046: 'msg' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(62,48): error TS2345: Argument of type '"get_user_conversations"' is not assignable to parameter of type '"approve_drip_product" | "audit_rls_coverage" | "audit_rls_status" | "boost_product" | "calculate_seller_trending" | "can_message_about_product" | "check_rate_limit" | ... 41 more ... | "validate_discount_code"'.
+src/routes/(protected)/messages/+page.server.ts(68,5): error TS2322: Type '{ id: any; userId: any; userName: any; userAvatar: any; lastActiveAt: any; productId: any; productTitle: any; productPrice: any; productImage: any; orderId: any; orderStatus: any; orderTotal: any; lastMessage: any; lastMessageTime: any; unreadCount: any; isProductConversation: any; isOrderConversation: boolean; }[]' is not assignable to type 'Conversation[]'.
+src/routes/(protected)/messages/+page.server.ts(69,11): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(70,15): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(71,17): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(72,19): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(73,21): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(74,18): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(75,21): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(76,21): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(77,21): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(78,16): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(79,20): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(80,19): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(81,20): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(82,24): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(83,20): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(84,30): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(85,30): error TS18046: 'conv' is of type 'unknown'.
+src/routes/(protected)/messages/+page.server.ts(149,23): error TS2345: Argument of type '"mark_conversation_read"' is not assignable to parameter of type '"approve_drip_product" | "audit_rls_coverage" | "audit_rls_status" | "boost_product" | "calculate_seller_trending" | "can_message_about_product" | "check_rate_limit" | ... 41 more ... | "validate_discount_code"'.
+src/routes/api/payments/confirm/+server.ts(78,55): error TS2339: Property 'price' does not exist on type '{ title: string; }'.
+src/routes/api/payments/confirm/+server.ts(79,32): error TS2339: Property 'username' does not exist on type '{ user: User; }'.
+src/routes/api/webhooks/stripe/subscriptions/+server.ts(74,55): error TS2352: Conversion of type '{ type: "customer.subscription.updated"; data: { object: Stripe.Response<Stripe.Subscription>; }; }' to type 'Event' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/routes/category/[...segments]/+page.server.ts(214,41): error TS2345: Argument of type '{ level: 1 | 2 | 3; l1: { id: string; name: string | undefined; slug: string | undefined; } | undefined; l2: { id: string; name: string | undefined; slug: string | undefined; } | undefined; ... 4 more ...; isVirtual: boolean; }' is not assignable to parameter of type '{ isVirtual: boolean; l1?: { name: string; } | undefined; l2?: { name: string; } | undefined; l3?: { name: string; } | undefined; }'.
+src/routes/category/[...segments]/+page.server.ts(215,53): error TS2345: Argument of type '{ level: 1 | 2 | 3; l1: { id: string; name: string | undefined; slug: string | undefined; } | undefined; l2: { id: string; name: string | undefined; slug: string | undefined; } | undefined; ... 4 more ...; isVirtual: boolean; }' is not assignable to parameter of type '{ isVirtual: boolean; l1?: { name: string; } | undefined; l2?: { name: string; } | undefined; l3?: { name: string; } | undefined; }'.
+src/routes/pro/+page.server.ts(21,5): error TS2322: Type 'string | null' is not assignable to type 'string | number | undefined'.
+src/routes/pro/+page.server.ts(22,5): error TS2322: Type 'string | null' is not assignable to type 'string | number | undefined'.
+src/routes/pro/+page.server.ts(134,7): error TS2322: Type '{ condition: string | null; category: string | null; }' is not assignable to type 'string | number | undefined'.
+src/routes/product/[seller]/[slug]/+page.server.ts(76,5): error TS2345: Argument of type '{ data: null; error: null; count: null; status: number; statusText: string; }' is not assignable to parameter of type 'PostgrestSingleResponse<{ id: string; title: string; description: string; price: number; condition: "brand_new_with_tags" | "new_without_tags" | "like_new" | "good" | "worn" | "fair"; size: string | null; ... 16 more ...; profiles: { ...; }; }>'.
+src/routes/product/[seller]/[slug]/+page.server.ts(117,7): error TS2345: Argument of type '{ data: null; error: null; count: null; status: number; statusText: string; }' is not assignable to parameter of type 'PostgrestSingleResponse<{ id: string; name: string; slug: string; parent_id: string | null; }>'.
+src/routes/product/[seller]/[slug]/+page.server.ts(130,9): error TS2345: Argument of type '{ data: null; error: null; count: null; status: number; statusText: string; }' is not assignable to parameter of type 'PostgrestSingleResponse<{ id: string; name: string; slug: string; }>'.
+src/routes/search/+page.server.ts(143,7): error TS2322: Type '{ id: string; name: string; slug: string; parentId: string | null; level3: never[]; }' is not assignable to type 'CategoryHierarchyL2'.
+src/routes/search/+page.server.ts(144,28): error TS2345: Argument of type '{ id: string; name: string; slug: string; parentId: string | null; level3: never[]; }' is not assignable to parameter of type 'CategoryHierarchyL2'.
+src/routes/search/+page.server.ts(156,9): error TS2322: Type 'string | null' is not assignable to type 'string'.
+src/routes/search/+page.server.ts(239,9): error TS2345: Argument of type '{ data: never[]; }' is not assignable to parameter of type 'PostgrestSingleResponse<{ created_at: string | null; description: string | null; id: string; image_url: string | null; is_active: boolean | null; level: number | null; name: string; parent_id: string | null; slug: string; sort_order: number | null; updated_at: string | null; }[]>'.
+src/routes/search/+page.server.ts(248,9): error TS2345: Argument of type '{ data: never[]; }' is not assignable to parameter of type 'PostgrestSingleResponse<{ category_id: string; category_level: number; category_name: string; category_slug: string; product_count: number; }[]>'.
+src/routes/search/+page.server.ts(465,34): error TS2345: Argument of type '(row: { category_id: string; count: number; category_level: number; category_slug: string; product_count: number; }) => void' is not assignable to parameter of type '(value: { category_id: string; category_level: number; category_name: string; category_slug: string; product_count: number; }, index: number, array: { category_id: string; category_level: number; category_name: string; category_slug: string; product_count: number; }[]) => void'.
+src/routes/sellers/+page.server.ts(27,5): error TS2322: Type 'boolean' is not assignable to type 'string | number | undefined'.
+src/routes/sellers/+page.server.ts(128,47): error TS2345: Argument of type 'PostgrestError' is not assignable to parameter of type 'LogContext'.
+src/routes/sellers/+page.server.ts(146,42): error TS2339: Property 'instagram' does not exist on type 'string | number | boolean | { [key: string]: Json | undefined; } | Json[]'.
+src/routes/sellers/+page.server.ts(169,7): error TS2322: Type 'number | null' is not assignable to type 'string | number | undefined'.
+src/routes/sellers/+page.server.ts(173,7): error TS2322: Type 'boolean' is not assignable to type 'string | number | undefined'.
+vite.config.ts(10,3): error TS2769: No overload matches this call.
+vite.config.ts(12,3): error TS2769: No overload matches this call.
+vite.config.ts(17,3): error TS2769: No overload matches this call.

@@ -3,7 +3,7 @@ import { createStripeService } from '$lib/services/stripe';
 import { stripe } from '$lib/stripe/server';
 import { enforceRateLimit } from '$lib/security/rate-limiter';
 import type { RequestHandler } from './$types';
-import type { PaymentIntentCreateParams } from '$lib/stripe/types';
+import type { PaymentIntentCreateParams, Currency } from '$lib/stripe/types';
 import { paymentLogger } from '$lib/utils/log';
 
 export const POST: RequestHandler = async ({ request, locals, getClientAddress }) => {
@@ -35,7 +35,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
 		
 		const params: PaymentIntentCreateParams = {
 			amount,
-			currency: currency as any,
+			currency: currency as Currency,
 			productId,
 			sellerId,
 			buyerId: session.user.id,

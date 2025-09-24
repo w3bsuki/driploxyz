@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
-import { parseError, withRetry, ErrorType } from '$lib/utils/error-handling';
+import { parseError, withRetry, ErrorType } from '$lib/utils/error-handling.svelte';
 import { createLogger } from '$lib/utils/log';
 
 type Product = Database['public']['Tables']['products']['Row'];
@@ -163,7 +163,7 @@ export class ProductService {
       await this.incrementViewCount(id);
 
       return { data: product, error: null };
-    } catch (error) {
+    } catch {
       return { data: null, error: 'Failed to fetch product' };
     }
   }
@@ -312,7 +312,7 @@ export class ProductService {
         nextCursor,
         hasMore
       };
-    } catch (error) {
+    } catch {
       return { data: [], error: 'Failed to fetch products', hasMore: false };
     }
   }
@@ -341,7 +341,7 @@ export class ProductService {
       }
 
       return { data, error: null };
-    } catch (error) {
+    } catch {
       return { data: null, error: 'Failed to create product' };
     }
   }
@@ -368,7 +368,7 @@ export class ProductService {
       }
 
       return { data, error: null };
-    } catch (error) {
+    } catch {
       return { data: null, error: 'Failed to update product' };
     }
   }
@@ -437,6 +437,7 @@ export class ProductService {
           .limit(remainingLimit);
 
         if (newestError) {
+          // Error getting newest products, continue with promoted only
         } else {
           // Add newest products that aren't already in promoted list
           const promotedIds = new Set(limitedProducts.map((p) => p.id));
@@ -462,7 +463,7 @@ export class ProductService {
       });
 
       return { data: products, error: null };
-    } catch (error) {
+    } catch {
       return { data: [], error: 'Failed to fetch promoted products' };
     }
   }
@@ -483,7 +484,7 @@ export class ProductService {
       }
 
       return { error: null };
-    } catch (error) {
+    } catch {
       return { error: 'Failed to delete product' };
     }
   }
@@ -508,7 +509,7 @@ export class ProductService {
       }
 
       return { error: null };
-    } catch (error) {
+    } catch {
       return { error: 'Failed to add product images' };
     }
   }
@@ -529,7 +530,7 @@ export class ProductService {
       }
 
       return { error: null };
-    } catch (error) {
+    } catch {
       return { error: 'Failed to remove product images' };
     }
   }
@@ -540,7 +541,8 @@ export class ProductService {
   private async incrementViewCount(id: string): Promise<void> {
     try {
       await this.supabase.rpc('increment_product_view', { product_id_param: id });
-    } catch (error) {
+    } catch {
+      // Ignore view count increment errors
     }
   }
 
@@ -572,22 +574,9 @@ export class ProductService {
       const { data, error } = await this.supabase
         .from('products')
         .select(`
-          id,
-          title,
-          price,
-          condition,
-          size,
-          brand,
-          description,
-          created_at,
-          updated_at,
-          seller_id,
-          category_id,
-          is_active,
-          is_sold,
-          favorite_count,
-          product_images(image_url),
-          profiles!products_seller_id_fkey(username, avatar_url),
+          *,
+          product_images(*),
+          profiles!products_seller_id_fkey(username, avatar_url, rating, full_name),
           categories(name, slug)
         `)
         .ilike('title', `%${query}%`)
@@ -601,70 +590,27 @@ export class ProductService {
       }
 
       // Transform the data to match our interface
-      const products: ProductWithImages[] = (data || []).map((item: ProductWithJoinedData) => {
-        // Extract the properties that should become images and transform the product
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const products: ProductWithImages[] = (data || []).map((item: any) => {
+        // Handle joined data properly
+        const images = Array.isArray(item.product_images) ? item.product_images : [];
+        const profiles = item.profiles || null;
+        const categories = item.categories || null;
+
         return {
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          price: item.price,
-          condition: item.condition,
-          size: item.size,
-          brand: item.brand,
-          color: item.color,
-          material: item.material,
-          location: item.location,
-          is_active: item.is_active !== false,
-          is_sold: item.is_sold === true,
-          is_featured: item.is_featured === true,
-          view_count: item.view_count || 0,
-          created_at: item.created_at,
-          updated_at: item.updated_at || item.created_at,
-          seller_id: item.seller_id,
-          category_id: item.category_id,
-          country_code: item.country_code,
-          // Required fields from database schema with defaults
-          archived_at: item.archived_at || null,
-          auto_archive_after_days: item.auto_archive_after_days || null,
-          boost_history_id: item.boost_history_id || null,
-          boost_priority: item.boost_priority || null,
-          boost_type: item.boost_type || null,
-          boosted_until: item.boosted_until || null,
-          brand_collection_id: item.brand_collection_id || null,
-          commission_rate: item.commission_rate || null,
-          custom_subcategory: item.custom_subcategory || null,
-          drip_admin_notes: item.drip_admin_notes || null,
-          drip_approved_at: item.drip_approved_at || null,
-          drip_nominated_at: item.drip_nominated_at || null,
-          drip_nominated_by: item.drip_nominated_by || null,
-          drip_quality_score: item.drip_quality_score || null,
-          drip_rejected_at: item.drip_rejected_at || null,
-          drip_rejection_reason: item.drip_rejection_reason || null,
-          drip_reviewed_by: item.drip_reviewed_by || null,
-          drip_status: item.drip_status || null,
-          favorite_count: item.favorite_count || 0,
-          is_boosted: item.is_boosted || false,
-          is_drip_candidate: item.is_drip_candidate || null,
-          net_earnings: item.net_earnings || null,
-          platform_fee: item.platform_fee || null,
-          region: item.region || null,
-          search_vector: item.search_vector || null,
-          shipping_cost: item.shipping_cost || null,
-          slug: item.slug || null,
-          slug_locked: item.slug_locked || null,
-          sold_at: item.sold_at || null,
-          status: item.status || null,
-          tags: item.tags || null,
-          images: item.product_images || [],
-          category_name: item.categories?.name || undefined,
-          seller_username: item.profiles?.username || undefined,
-          seller_name: item.profiles?.full_name || item.profiles?.username || undefined,
-          seller_rating: item.profiles?.rating || undefined
-        };
+          // Copy all product fields directly
+          ...item,
+          // Override specific joined fields
+          images,
+          category_name: categories?.name || undefined,
+          seller_username: profiles?.username || undefined,
+          seller_name: profiles?.full_name || profiles?.username || undefined,
+          seller_rating: profiles?.rating || undefined
+        } as ProductWithImages;
       });
 
       return { data: products, error: null };
-    } catch (error) {
+    } catch {
       return { data: [], error: 'Failed to search products' };
     }
   }
@@ -836,7 +782,7 @@ export class ProductService {
         nextCursor,
         hasMore
       };
-    } catch (error) {
+    } catch {
       return { data: [], error: 'Failed to fetch hierarchical products', hasMore: false };
     }
   }
@@ -892,7 +838,7 @@ export class ProductService {
 
       const count = activeProducts.filter(Boolean).length;
       return { count, error: null };
-    } catch (error) {
+    } catch {
       return { count: 0, error: 'Failed to get category product count' };
     }
   }

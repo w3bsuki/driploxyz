@@ -16,14 +16,11 @@
   // Force fresh i18n import
   // Auth stores removed - using props directly
   import { signOut, canSell } from '$lib/auth';
-  import { 
-    notifications, 
-    notificationPanelOpen, 
-    messageToasts,
-    unreadCount, 
+  import {
+    notificationStore,
     notificationActions,
     messageToastActions
-  } from '$lib/stores/notifications';
+  } from '$lib/stores/notifications.svelte';
   import { unreadMessageCount as unreadMessageCountStore } from '$lib/stores/messageNotifications.svelte';
   import { RealtimeNotificationService } from '$lib/services/realtimeNotifications';
   import { switchLanguage, languages } from '$lib/utils/language-switcher';
@@ -256,7 +253,7 @@
           <!-- Notifications -->
           <div class="relative">
             <NotificationBell
-              count={$unreadCount}
+              count={notificationStore.unreadCount}
               onclick={async () => {
                 if (!notificationPanelLoaded && !NotificationPanel) {
                   const module = await import('@repo/ui');
@@ -270,8 +267,8 @@
 
             {#if notificationPanelLoaded && NotificationPanel}
               <NotificationPanel
-                notifications={$notifications}
-                show={$notificationPanelOpen}
+                notifications={notificationStore.notifications}
+                show={notificationStore.notificationPanelOpen}
                 onMarkAsRead={notificationActions.markAsRead}
                 onMarkAllAsRead={notificationActions.markAllAsRead}
                 onClose={notificationActions.closePanel}
@@ -330,7 +327,7 @@
       {initials}
       canSell={userCanSell}
       unreadMessages={unreadMessageCountStore()}
-      unreadNotifications={$unreadCount}
+      unreadNotifications={notificationStore.unreadCount}
       currentLanguage={currentLang}
       {languages}
       {signingOut}
@@ -347,7 +344,7 @@
 
 
 <!-- Message Toast Notifications -->
-{#each $messageToasts as toast (toast.id)}
+{#each notificationStore.messageToasts as toast (toast.id)}
   <MessageNotificationToast 
     notification={toast}
     onClose={() => messageToastActions.remove(toast.id)}

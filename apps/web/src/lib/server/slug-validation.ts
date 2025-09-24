@@ -5,7 +5,7 @@
 
 import { error } from '@sveltejs/kit';
 import { validateSlug, isReservedSlug, RESERVED_SLUGS } from '$lib/utils/slug';
-import type { RequestHandler } from '@sveltejs/kit';
+import type { RequestHandler, RequestEvent } from '@sveltejs/kit';
 
 /**
  * Configuration for slug validation
@@ -169,7 +169,7 @@ export function isRequestForReservedRoute(pathname: string): boolean {
  * This ensures reserved routes are properly handled before checking for products
  */
 export function createReservedRouteHandler() {
-  return async ({ event, resolve }: { event: any; resolve: any }) => {
+  return async ({ event, resolve }: { event: RequestEvent; resolve: (event: RequestEvent) => Promise<Response> }) => {
     const { pathname } = event.url;
     
     // If this is a reserved route, let the normal routing handle it
@@ -254,13 +254,13 @@ export function debugSlugConflicts(slug: string): {
   
   const result = {
     isReserved,
+    reservedReason: isReserved ? 'Matches reserved word list' : undefined,
     hasFormatIssues: !validation.valid,
     formatIssues: validation.errors,
     recommendations: [] as string[]
   };
-  
+
   if (isReserved) {
-    (result as any).reservedReason = 'Matches reserved word list';
     result.recommendations.push('Try adding a descriptive prefix like "item-" or "product-"');
   }
   

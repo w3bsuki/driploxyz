@@ -34,7 +34,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     // Verify the OTP token
     const { data, error: verificationError } = await supabase.auth.verifyOtp({
       token_hash,
-      type: type as any,
+      type: type as 'email' | 'signup' | 'invite' | 'magiclink' | 'recovery' | 'email_change',
     });
     
     if (dev) {

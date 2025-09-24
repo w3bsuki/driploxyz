@@ -19,7 +19,7 @@ export const load = (async ({
     const { data: collections, error: collectionsError } = await collectionService.getBrandCollections({
       collection_type: 'designer',
       is_active: true,
-      is_featured: null // Get all active designer collections, not just featured
+      is_featured: undefined // Get all active designer collections, not just featured
     });
 
     if (collectionsError) {

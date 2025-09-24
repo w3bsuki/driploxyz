@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Avatar, ProductCard, BottomNav } from '@repo/ui';
+  import { Button, Avatar, BottomNav } from '@repo/ui';
   import { getProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
   import { goto } from '$app/navigation';

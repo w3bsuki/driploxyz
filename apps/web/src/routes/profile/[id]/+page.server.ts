@@ -29,7 +29,7 @@ export const load = (async ({ params, locals }) => {
   // UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
   const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(params.id);
   
-  let profile: any;
+  let profile: Awaited<ReturnType<typeof profileService.getProfile>>['data'] | Awaited<ReturnType<typeof profileService.getProfileByUsername>>['data'];
   let profileError: string | null;
   
   if (isUUID) {

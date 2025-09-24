@@ -255,25 +255,25 @@ export const serviceUtils = {
   /**
    * Validate product data
    */
-  validateProduct(product: any): { valid: boolean; errors: string[] } {
+  validateProduct(product: Record<string, unknown>): { valid: boolean; errors: string[] } {
     const errors: string[] = [];
-    
-    if (!product.title || product.title.trim().length < 3) {
+
+    if (!product.title || typeof product.title !== 'string' || product.title.trim().length < 3) {
       errors.push('Title must be at least 3 characters long');
     }
-    
-    if (!product.description || product.description.trim().length < 10) {
+
+    if (!product.description || typeof product.description !== 'string' || product.description.trim().length < 10) {
       errors.push('Description must be at least 10 characters long');
     }
-    
-    if (!product.price || product.price <= 0) {
+
+    if (!product.price || typeof product.price !== 'number' || product.price <= 0) {
       errors.push('Price must be greater than 0');
     }
-    
+
     if (!product.condition) {
       errors.push('Condition is required');
     }
-    
+
     if (!product.category_id) {
       errors.push('Category is required');
     }

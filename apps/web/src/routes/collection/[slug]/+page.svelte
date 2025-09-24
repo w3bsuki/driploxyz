@@ -1,15 +1,13 @@
 <script lang="ts">
-  import { page } from '$app/state';
   import { goto } from '$app/navigation';
-  import { FeaturedProducts, ProductCard, LoadingSpinner, CategoryPill } from '@repo/ui';
+  import { ProductCard } from '@repo/ui';
   import type { Product } from '@repo/ui/types';
   import * as i18n from '@repo/i18n';
-  import { favoritesActions, favoritesStore } from '$lib/stores/favorites-store';
-  import { authPopupActions } from '$lib/stores/auth-popup-store';
-  import { purchaseActions } from '$lib/stores/purchase-store';
+  import { favoritesActions, favoritesStore } from '$lib/stores/favorites.svelte';
+  import { authPopupActions } from '$lib/stores/auth-popup.svelte';
   import { getProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
-  import type { BrandCollection, CollectionWithProducts } from '$lib/services/collections';
+  import type { BrandCollection } from '$lib/services/collections';
 
   let { data }: { data: PageData } = $props();
 
@@ -90,19 +88,11 @@
 
     try {
       await favoritesActions.toggleFavorite(productId);
-    } catch (error) {
+    } catch {
       // Failed to toggle favorite
     }
   }
 
-  async function handlePurchase(productId: string, selectedSize?: string) {
-    if (!data.user) {
-      authPopupActions.showForPurchase();
-      return;
-    }
-
-    await purchaseActions.initiatePurchase(productId, selectedSize);
-  }
 
   function handleRelatedCollectionClick(collection: BrandCollection) {
     goto(`/collection/${collection.slug}`);
@@ -206,8 +196,8 @@
             {product}
             onProductClick={() => handleProductClick(product)}
             onFavorite={() => handleFavorite(product.id)}
-            isFavorited={$favoritesStore.favorites[product.id] || false}
-            favoriteCount={$favoritesStore.favoriteCounts[product.id] || 0}
+            isFavorited={favoritesStore?.favorites[product.id] || false}
+            favoriteCount={favoritesStore?.favoriteCounts[product.id] || 0}
             {formatPrice}
             showCondition={true}
             showSeller={false}

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button } from '@repo/ui';
   // No lifecycle imports needed - using $effect
-  import { page } from '$app/state';
+  // import { page } from '$app/state'; // Currently unused
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
@@ -80,7 +80,7 @@
       if (!error && transactionData) {
         transactions = transactionData;
       }
-    } catch (error) {
+    } catch {
       // Transaction loading failed - error state handled by component
     }
     loading = false;
@@ -91,7 +91,12 @@
     processing = transactionId;
     
     try {
-      const updateData: any = {
+      const updateData: {
+        payout_status: string;
+        updated_at: string;
+        payout_date?: string;
+        payout_reference?: string;
+      } = {
         payout_status: status,
         updated_at: new Date().toISOString()
       };
@@ -132,7 +137,7 @@
       }
 
       await loadTransactions();
-    } catch (error) {
+    } catch {
       // Payout update failed
       alert('Failed to update payout status');
     } finally {

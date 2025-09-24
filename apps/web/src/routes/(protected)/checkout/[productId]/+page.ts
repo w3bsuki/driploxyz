@@ -15,11 +15,11 @@ export const load = (async ({ params, fetch }) => {
         product: productData.product as Product
       };
     }
-  } catch (error) {
+  } catch {
     // TODO: integrate logging once server logger is wired up
   }
 
-  const testProduct: Product = {
+  const testProduct = {
     id: params.productId,
     title: 'TEST PRODUCT - $0.01',
     description: 'Test product for payment testing - will charge $0.01',
@@ -51,24 +51,11 @@ export const load = (async ({ params, fetch }) => {
     is_featured: false,
     is_boosted: false,
     boosted_until: null,
-    weight: null,
-    dimensions: null,
     material: null,
-    color: null,
-    style: null,
-    occasion: null,
-    season: null,
-    first_image: '/placeholder-product.jpg',
-    category: null,
-    subcategory: null,
-    specific_category: null,
-    visibility: 'public' as const,
-    slug_history: null,
-    boost_score: 0,
-    quality_score: 0
+    color: null
   };
 
   return {
-    product: testProduct
+    product: testProduct as Product
   };
 }) satisfies PageLoad;

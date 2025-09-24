@@ -53,7 +53,7 @@
   {:else}
     <form method="POST" action="?/reset" use:enhance={() => {
       loading = true;
-      return async ({ result, update }) => {
+      return async ({ update }) => {
         loading = false;
         await update();
       };

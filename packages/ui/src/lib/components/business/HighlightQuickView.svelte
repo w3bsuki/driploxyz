@@ -87,12 +87,20 @@
   function handleToggleFavorite() {
     onToggleFavorite?.(product.id);
   }
+
+  function handleBackdropKeyDown(e: KeyboardEvent) {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) {
+      e.preventDefault();
+      onClose();
+    }
+  }
 </script>
 
 <!-- Modal backdrop -->
 <div
   class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
   onclick={handleBackdropClick}
+  onkeydown={handleBackdropKeyDown}
   role="dialog"
   aria-modal="true"
   aria-labelledby="modal-title-{product.id}"

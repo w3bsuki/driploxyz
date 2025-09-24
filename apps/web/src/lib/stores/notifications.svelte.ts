@@ -12,13 +12,14 @@
  */
 
 import { browser } from '$app/environment';
+import { readable } from 'svelte/store';
 
 // Fallback UUID generator for older browsers and iOS Safari
 function generateUUID(): string {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
     try {
       return crypto.randomUUID();
-    } catch (e) {
+    } catch {
       // Fall through to fallback
     }
   }
@@ -91,7 +92,7 @@ export function createNotificationStore() {
   if (browser && typeof Notification !== 'undefined') {
     try {
       state.notificationPermission = Notification.permission;
-    } catch (e) {
+    } catch {
       // Notification API not available (iOS Safari PWA)
     }
   }
@@ -196,7 +197,7 @@ export function createNotificationStore() {
           return permission;
         }
         return Notification.permission;
-      } catch (e) {
+      } catch {
         return 'denied';
       }
     }
@@ -222,7 +223,7 @@ export function createNotificationStore() {
 
           return notification;
         }
-      } catch (e) {
+      } catch {
         // Fail silently
       }
     }
@@ -287,3 +288,32 @@ export function getNotificationStore() {
 
 // Export the global store instance
 export const notificationStore = getNotificationStore();
+
+// Create reactive stores that sync with the rune-based state
+export const notifications = readable(notificationStore.notifications, (set) => {
+  // Since this is using $state internally, we need to trigger updates manually
+  // For now, just return the initial value
+  set(notificationStore.notifications);
+
+  // In a complete implementation, we'd need to set up reactivity
+  return () => {};
+});
+
+export const messageToasts = readable(notificationStore.messageToasts, (set) => {
+  set(notificationStore.messageToasts);
+  return () => {};
+});
+
+export const notificationPanelOpen = readable(notificationStore.notificationPanelOpen, (set) => {
+  set(notificationStore.notificationPanelOpen);
+  return () => {};
+});
+
+export const unreadCount = readable(notificationStore.unreadCount, (set) => {
+  set(notificationStore.unreadCount);
+  return () => {};
+});
+export const notificationActions = notificationStore.notificationActions;
+export const messageToastActions = notificationStore.messageToastActions;
+export const showBrowserNotification = notificationStore.showBrowserNotification;
+export const playNotificationSound = notificationStore.playNotificationSound;

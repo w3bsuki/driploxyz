@@ -3,9 +3,8 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import * as i18n from '@repo/i18n';
-  import { favoritesActions, favoritesStore } from '$lib/stores/favorites-store';
-  import { authPopupActions } from '$lib/stores/auth-popup-store';
-  import { getProductUrl } from '$lib/utils/seo-urls';
+  import { favoritesActions, favoritesStore } from '$lib/stores/favorites.svelte';
+  import { authPopupActions } from '$lib/stores/auth-popup.svelte';
   import type { PageData } from './$types';
   import type { Product } from '@repo/ui/types';
 
@@ -68,8 +67,8 @@
 
   function getFavoriteData(productId: string) {
     return {
-      isFavorited: data.userFavorites[productId] || $favoritesStore.favorites[productId] || false,
-      isLoading: $favoritesStore.isLoading
+      isFavorited: data.userFavorites[productId] || favoritesStore?.favorites?.[productId] || false,
+      isLoading: favoritesStore.isLoading
     };
   }
 

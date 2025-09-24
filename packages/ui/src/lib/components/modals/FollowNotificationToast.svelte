@@ -150,9 +150,5 @@
     .slide-in-from-right-full {
       animation: none;
     }
-    
-    .progress {
-      animation: none;
-    }
   }
 </style>

@@ -73,7 +73,7 @@ export const GET: RequestHandler = async ({ params, url, locals: { supabase, cou
       hasMore: products?.length === limit
     });
 
-  } catch (error) {
+  } catch {
     
     return json({ error: 'Internal server error' }, { status: 500 });
   }

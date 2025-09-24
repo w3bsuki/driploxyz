@@ -3,15 +3,16 @@
 	import { invalidateAll, goto } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { Button } from '@repo/ui';
-	import { parseError, type ErrorDetails } from '$lib/utils/error-handling';
+	import { parseError } from '$lib/utils/error-handling.svelte.ts';
 	import { toast } from '$lib/stores/toast.svelte';
 
 	// Typed error from our App.Error interface - Svelte 5 runes
+	// eslint-disable-next-line no-undef
 	const error = $derived(page.error as App.Error);
 	const status = $derived(page.status);
 
 	// Parse error for better categorization
-	const errorDetails = $derived(() => {
+	const errorDetails = $derived.by(() => {
 		if (!error) return null;
 		return parseError(error, {
 			statusCode: status,
@@ -20,7 +21,7 @@
 	});
 
 	// Determine error title and message based on status code - Svelte 5 runes
-	const errorTitle = $derived(() => {
+	const errorTitle = $derived.by(() => {
 		if (status === 404) return 'Page not found';
 		if (status === 403) return 'Access denied';
 		if (status === 401) return 'Authentication required';
@@ -29,9 +30,10 @@
 		return 'Error';
 	});
 
-	const errorMessage = $derived(() => {
-		if (errorDetails()) {
-			return errorDetails()!.userMessage;
+	const errorMessage = $derived.by(() => {
+		const details = errorDetails;
+		if (details) {
+			return details.userMessage;
 		}
 
 		switch (status) {
@@ -55,33 +57,33 @@
 		}
 	});
 
-	const suggestions = $derived(() => {
-		const baseSuggestions = [];
+	const suggestions = $derived.by(() => {
+		let baseSuggestions: string[] = [];
 
 		if (status === 404) {
-			baseSuggestions.push(
+			baseSuggestions = [
 				'Check the URL for typos',
 				'Use the search function to find what you\'re looking for',
 				'Browse our categories to discover products'
-			);
+			];
 		} else if (status === 401) {
-			baseSuggestions.push(
+			baseSuggestions = [
 				'Sign in to your account',
 				'Check if your session has expired',
 				'Create a new account if you don\'t have one'
-			);
+			];
 		} else if (status === 403) {
-			baseSuggestions.push(
+			baseSuggestions = [
 				'Verify you have the necessary permissions',
 				'Contact support if you believe this is an error',
 				'Try signing out and back in'
-			);
+			];
 		} else if (status >= 500) {
-			baseSuggestions.push(
+			baseSuggestions = [
 				'Refresh the page',
 				'Check your internet connection',
 				'Try again in a few minutes'
-			);
+			];
 		}
 
 		return baseSuggestions;
@@ -96,7 +98,7 @@
 			if (status === 401) {
 				// For auth errors, go to login
 				await goto('/login');
-			} else if (status >= 500 || errorDetails()?.retryable) {
+			} else if (status >= 500 || errorDetails?.retryable) {
 				// For server errors, try to reload data
 				await invalidateAll();
 				toast.info('Page refreshed successfully');
@@ -106,7 +108,7 @@
 					location.reload();
 				}
 			}
-		} catch (retryError) {
+		} catch {
 			toast.error('Retry failed. Please try again later.');
 		} finally {
 			isRetrying = false;
@@ -144,9 +146,9 @@
 </script>
 
 <svelte:head>
-	<title>{status} - {errorTitle()} | Driplo</title>
+	<title>{status} - {errorTitle} | Driplo</title>
 	<meta name="robots" content="noindex, nofollow" />
-	<meta name="description" content="{errorMessage()}" />
+	<meta name="description" content="{errorMessage}" />
 </svelte:head>
 
 <div class="error-container min-h-screen flex items-center justify-center px-4 py-16 sm:px-6 sm:py-24 md:grid md:place-items-center lg:px-8" role="main">
@@ -182,12 +184,12 @@
 				<div class="mt-6 sm:mt-0 sm:ml-8 flex-1">
 					<!-- Error Title -->
 					<h1 class="text-[length:var(--text-3xl)] font-extrabold text-[color:var(--text-primary)] tracking-tight sm:text-[length:var(--text-4xl)] lg:text-[length:var(--text-5xl)]">
-						{errorTitle()}
+						{errorTitle}
 					</h1>
 
 					<!-- Error Message -->
 					<p class="mt-4 text-lg text-[color:var(--text-secondary)] leading-relaxed">
-						{errorMessage()}
+						{errorMessage}
 					</p>
 
 					<!-- Error Context -->
@@ -212,9 +214,9 @@
 							</p>
 						{/if}
 
-						{#if errorDetails()?.code}
+						{#if errorDetails?.code}
 							<p class="text-sm text-[color:var(--text-muted)]">
-								<span class="font-medium">Code:</span> {errorDetails()?.code}
+								<span class="font-medium">Code:</span> {errorDetails?.code}
 							</p>
 						{/if}
 
@@ -224,11 +226,11 @@
 					</div>
 
 					<!-- Suggestions -->
-					{#if suggestions().length > 0}
+					{#if suggestions.length > 0}
 						<div class="mt-8 p-4 bg-[color:var(--surface-muted)] rounded-lg border border-[color:var(--border-subtle)]">
 							<h2 class="text-sm font-medium text-[color:var(--text-primary)] mb-3">Try these suggestions:</h2>
 							<ul class="space-y-2 text-sm text-[color:var(--text-secondary)]">
-								{#each suggestions() as suggestion}
+								{#each suggestions as suggestion}
 									<li class="flex items-start gap-2">
 										<span class="w-1 h-1 bg-[color:var(--text-muted)] rounded-full mt-2 flex-shrink-0" aria-hidden="true"></span>
 										{suggestion}
@@ -282,7 +284,7 @@
 							>
 								Go to homepage
 							</Button>
-						{:else if status >= 500 || (errorDetails()?.retryable)}
+						{:else if status >= 500 || (errorDetails?.retryable)}
 							<Button
 								onclick={handleRetry}
 								variant="primary"

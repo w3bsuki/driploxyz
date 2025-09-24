@@ -74,7 +74,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
         follower: followerInfo
       });
     }
-  } catch (err) {
+  } catch {
     throw error(500, 'Internal server error');
   }
 };

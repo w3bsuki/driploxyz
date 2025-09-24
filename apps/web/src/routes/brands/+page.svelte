@@ -11,7 +11,7 @@
   let loading = $state(false);
   let verifiedOnly = $state(Boolean(page.url.searchParams.get('verified') === 'true'));
 
-  function handleBrandClick(brand: any) {
+  function handleBrandClick(brand: { username?: string; id: string }) {
     goto(`/profile/${brand.username || brand.id}`);
   }
 

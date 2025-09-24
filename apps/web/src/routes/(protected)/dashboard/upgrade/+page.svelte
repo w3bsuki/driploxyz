@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, PricingCard, Accordion } from '@repo/ui';
+  import { Button, Accordion } from '@repo/ui';
   import { goto } from '$app/navigation';
   import { loadStripe } from '@stripe/stripe-js';
   import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
@@ -13,13 +13,10 @@
   let { data }: Props = $props();
 
   let loading = $state('');
-  let stripe: any = $state(null);
+  let stripe: import('@stripe/stripe-js').Stripe | null = $state(null);
   
   // Safe access to data properties with defaults
-  const plans = $derived(data?.plans || []);
   const userSubscriptions = $derived(data?.userSubscriptions || []);
-  const profile = $derived(data?.profile || null);
-  const user = $derived(data?.user || null);
   const discountInfo = $derived(data?.discountInfo || { eligible: false, discountPercent: 0 });
 
   // Initialize Stripe
@@ -29,12 +26,6 @@
     }
   });
 
-  function hasActivePlan(planType: string) {
-    return userSubscriptions.some(sub => 
-      sub.status === 'active' && 
-      sub.subscription_plans?.plan_type === planType
-    );
-  }
 
   function getCurrentPlan(planType: string) {
     return userSubscriptions.find(sub => 
@@ -87,8 +78,7 @@
       if (confirmError) {
         alert(i18n.upgrade_paymentFailed() + ' ' + confirmError.message);
       }
-    } catch (error) {
-      
+    } catch {
       alert(i18n.upgrade_subscriptionFailed());
     } finally {
       loading = '';
@@ -123,8 +113,7 @@
         alert(i18n.upgrade_cancelSuccess());
         goto('/dashboard/upgrade', { invalidateAll: true });
       }
-    } catch (error) {
-      
+    } catch {
       alert(i18n.upgrade_subscriptionFailed());
     } finally {
       loading = '';
@@ -136,37 +125,7 @@
     return price * (1 - discountInfo.discountPercent / 100);
   }
 
-  function getPlanFeatures(planType: string) {
-    switch (planType) {
-      case 'premium':
-        return [
-          '10 boosted ads per month',
-          '3-7 days homepage visibility',
-          'Priority customer support',
-          'Advanced analytics',
-          'No ads in your listings'
-        ];
-      case 'brand':
-        return [
-          'List unlimited products',
-          'Brand verification badge',
-          'Business account features',
-          'Bulk product management',
-          'Priority customer support',
-          'Advanced analytics dashboard'
-        ];
-      default:
-        return [];
-    }
-  }
 
-  function getPlanIcon(planType: string) {
-    switch (planType) {
-      case 'premium': return '⭐';
-      case 'brand': return '🏢';
-      default: return '📦';
-    }
-  }
   
   const faqItems = [
     {

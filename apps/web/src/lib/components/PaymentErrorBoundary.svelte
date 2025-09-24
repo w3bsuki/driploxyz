@@ -2,7 +2,7 @@
   import type { Snippet } from 'svelte';
   import { browser } from '$app/environment';
   import { goto } from '$app/navigation';
-  import { type ErrorDetails } from '$lib/utils/error-handling';
+  import { type ErrorDetails } from '$lib/utils/error-handling.svelte';
   import { toast } from '$lib/stores/toast.svelte';
   import ErrorBoundary from './ErrorBoundary.svelte';
 

@@ -59,8 +59,8 @@ export class SubscriptionService {
 		userId: string,
 		planId: string,
 		stripeInstance: Stripe,
-		discountAmount: number = 0,
-		_discountCode: string = '' // Future discount code validation
+		discountAmount: number = 0
+		// _discountCode: string = '' // Future discount code validation
 	): Promise<{ subscriptionId?: string; clientSecret?: string; error?: Error }> {
 		try {
 			if (!stripeInstance) {
@@ -194,7 +194,7 @@ export class SubscriptionService {
 	/**
 	 * Apply discount campaign (e.g., 50% off for first 100 users)
 	 */
-	async applyEarlyBirdDiscount(_userId: string): Promise<{ eligible: boolean; discountPercent: number }> { // Future user validation
+	async applyEarlyBirdDiscount(): Promise<{ eligible: boolean; discountPercent: number }> { // Future user validation
 		// Check how many users have used the early bird discount
 		const { count } = await this.supabase
 			.from('user_subscriptions')

@@ -2,16 +2,39 @@ import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { Database } from '@repo/database';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import { canonicalizeFilterUrl, buildCanonicalUrl, searchParamsToSegments } from '$lib/utils/filter-url';
 import { withTimeout } from '$lib/server/utils';
 
 type Category = Database['public']['Tables']['categories']['Row'];
 
+interface CategoryHierarchyL3 {
+  id: string;
+  name: string;
+  slug: string;
+  parentId: string | null;
+}
+
+interface CategoryHierarchyL2 {
+  id: string;
+  name: string;
+  slug: string;
+  parentId: string | null;
+  level3: CategoryHierarchyL3[];
+}
+
+interface CategoryHierarchyL1 {
+  id: string;
+  name: string;
+  slug: string;
+  level2: Record<string, CategoryHierarchyL2>;
+}
+
 /**
  * Simple category resolution using basic queries
  * Much faster and easier to maintain than complex RPC functions
  */
-async function resolveCategoryIds(supabase: any, category?: string, subcategory?: string, specific?: string): Promise<string[]> {
+async function resolveCategoryIds(supabase: SupabaseClient<Database>, category?: string, subcategory?: string, specific?: string): Promise<string[]> {
   try {
     let query = supabase
       .from('categories')
@@ -38,7 +61,7 @@ async function resolveCategoryIds(supabase: any, category?: string, subcategory?
           .or(`id.eq.${subcatData.id},parent_id.eq.${subcatData.id}`)
           .eq('is_active', true);
 
-        return (childrenData || []).map(cat => cat.id);
+        return (childrenData || []).map((cat: { id: string }) => cat.id);
       }
       return [];
     } else if (category) {
@@ -59,7 +82,7 @@ async function resolveCategoryIds(supabase: any, category?: string, subcategory?
           .or(`id.eq.${mainCatData.id},parent_id.eq.${mainCatData.id}`)
           .eq('is_active', true);
 
-        const allIds = (allDescendants || []).map(cat => cat.id);
+        const allIds = (allDescendants || []).map((cat: { id: string }) => cat.id);
 
         // Also get grandchildren (Level 3)
         if (allIds.length > 1) {
@@ -70,7 +93,7 @@ async function resolveCategoryIds(supabase: any, category?: string, subcategory?
             .in('parent_id', level2Ids)
             .eq('is_active', true);
 
-          allIds.push(...(grandchildren || []).map(cat => cat.id));
+          allIds.push(...(grandchildren || []).map((cat: { id: string }) => cat.id));
         }
 
         return allIds;
@@ -79,9 +102,9 @@ async function resolveCategoryIds(supabase: any, category?: string, subcategory?
     }
 
     const { data } = await query;
-    return (data || []).map(cat => cat.id);
+    return (data || []).map((cat: { id: string }) => cat.id);
   } catch (err) {
-    if (dev) 
+    if (dev) console.error('Category resolution error:', err);
     return [];
   }
 }
@@ -89,10 +112,10 @@ async function resolveCategoryIds(supabase: any, category?: string, subcategory?
 /**
  * Build simple category hierarchy for UI
  */
-function buildCategoryHierarchy(categories: Category[]) {
-  const hierarchy: Record<string, any> = {};
-  const level1Map = new Map<string, any>();
-  const level2Map = new Map<string, any>();
+function buildCategoryHierarchy(categories: Category[]): Record<string, CategoryHierarchyL1> {
+  const hierarchy: Record<string, CategoryHierarchyL1> = {};
+  const level1Map = new Map<string, CategoryHierarchyL1>();
+  const level2Map = new Map<string, CategoryHierarchyL2>();
 
   // Build level 1 categories
   categories.filter(c => c.level === 1 && c.is_active).forEach(l1 => {
@@ -172,7 +195,7 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
     setHeaders({
       'cache-control': 'public, max-age=120, s-maxage=300, stale-while-revalidate=600',
       'vary': 'Accept-Encoding',
-      'x-search-type': query ? 'search' : 'browse'
+      'x-search-type': 'search'
     });
   }
   
@@ -213,16 +236,14 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
           .order('level')
           .order('sort_order'),
         2000,
-        { data: [] }
+        { data: [], error: null, count: null, status: 200, statusText: 'OK' }
       ),
 
-      // Query 2: Get real category product counts
+      // Query 2: Get virtual category counts (simplified replacement)
       withTimeout(
-        locals.supabase.rpc('get_category_product_counts', {
-          p_country_code: country
-        }),
+        locals.supabase.rpc('get_virtual_category_counts'),
         2000,
-        { data: [] }
+        { data: [], error: null, count: null, status: 200, statusText: 'OK' }
       )
     ]);
 
@@ -301,7 +322,7 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
     // Apply other filters
     if (condition && condition !== 'all') {
       const validConditions = ['brand_new_with_tags', 'new_without_tags', 'like_new', 'good', 'worn', 'fair'] as const;
-      if (validConditions.includes(condition as any)) {
+      if (validConditions.includes(condition as typeof validConditions[number])) {
         productsQuery = productsQuery.eq('condition', condition as typeof validConditions[number]);
       }
     }
@@ -349,7 +370,7 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
     const { data: products, error: productsError, count } = await productsQuery;
 
     if (productsError) {
-      if (dev) 
+      if (dev) console.error('Products query error:', productsError);
       return {
         products: [],
         categories: [],
@@ -421,7 +442,7 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
 
       return {
         ...product,
-        images: product.product_images?.map((img: any) => img.image_url) || [],
+        images: product.product_images?.map((img: { image_url: string }) => img.image_url) || [],
         seller: product.profiles ? {
           id: product.seller_id,
           username: product.profiles.username,
@@ -436,19 +457,17 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
       };
     });
 
-    // Build real category product counts from our new function
+    // Build virtual category product counts from the new function
     const categoryProductCounts: Record<string, number> = {};
     if (categoryCountsData) {
-      categoryCountsData.forEach((row: any) => {
-        if (row.category_level === 1) { // Only top-level categories for main pills
-          categoryProductCounts[row.category_slug] = row.product_count || 0;
-        }
+      categoryCountsData.forEach((row: { product_count: number; virtual_type: string }) => {
+        categoryProductCounts[row.virtual_type] = row.product_count || 0;
       });
     }
 
     // Generate next cursor for pagination (using last product's created_at + id)
     const nextCursor = transformedProducts.length === pageSize && transformedProducts.length > 0
-      ? Buffer.from(`${transformedProducts[transformedProducts.length - 1].created_at}:${transformedProducts[transformedProducts.length - 1].id}`).toString('base64')
+      ? Buffer.from(`${transformedProducts[transformedProducts.length - 1]?.created_at}:${transformedProducts[transformedProducts.length - 1]?.id}`).toString('base64')
       : null;
 
     // SvelteKit 2 streaming: Return critical data immediately, stream heavy data
@@ -501,7 +520,7 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
     };
 
   } catch (err) {
-    if (dev) 
+    if (dev) console.error('Search load error:', err);
     throw error(500, 'Failed to load search results');
   }
 }) satisfies PageServerLoad;

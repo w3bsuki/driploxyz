@@ -16,7 +16,7 @@ export const GET: RequestHandler = async ({ request, getClientAddress }) => {
       acceptLanguage: acceptLanguage,
       timestamp: new Date().toISOString()
     });
-  } catch (error) {
+  } catch {
     
     return json({
       ip: null,

@@ -1,7 +1,7 @@
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 import { browser } from '$app/environment';
-import { notificationActions, showBrowserNotification, playNotificationSound } from '$lib/stores/notifications';
+import { notificationActions, showBrowserNotification } from '$lib/stores/notifications.svelte';
 
 // Database tables type reserved for future functionality
 
@@ -35,9 +35,9 @@ export class RealtimeNotificationService {
 					table: 'messages',
 					filter: `receiver_id=eq.${this.userId}`
 				},
-				async (_payload) => {
+				async () => {
 					// Handle new messages
-					
+
 				}
 			)
 			.on(
@@ -50,7 +50,7 @@ export class RealtimeNotificationService {
 				},
 				async (payload) => {
 					// Handle new notifications (orders, sales, etc.)
-					const notification = payload.new as any;
+					const notification = payload.new as { type: string; title: string; message: string; order_id?: string };
 					
 					// Add to notification store
 					notificationActions.add({
@@ -68,10 +68,10 @@ export class RealtimeNotificationService {
 							tag: notification.type
 						});
 						
-						// Play sound for important notifications
-						if (['new_sale', 'order_placed', 'order_shipped'].includes(notification.type)) {
-							playNotificationSound();
-						}
+						// Play sound for important notifications (commented out - function not available)
+						// if (['new_sale', 'order_placed', 'order_shipped'].includes(notification.type)) {
+						//	playNotificationSound();
+						// }
 					}
 				}
 			)

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page, navigating } from '$app/state';
   import { goto } from '$app/navigation';
-  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, SearchDropdown, BottomNav, FilterPill, type Product, type BreadcrumbItem } from '@repo/ui';
+  import { Button, ProductCard, Breadcrumb, SellerQuickView, IntegratedSearchBar, BottomNav, FilterPill, type Product } from '@repo/ui';
   import * as i18n from '@repo/i18n';
   import { unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
   import { formatPrice } from '$lib/utils/price';
@@ -10,7 +10,6 @@
   import { getProductUrl } from '$lib/utils/seo-urls';
   import { CategoryService } from '$lib/services/categories';
   import { ProfileService } from '$lib/services/profiles';
-  import { getCollectionsForContext } from '$lib/data/collections';
   import { browser } from '$app/environment';
   
   interface Props {
@@ -49,7 +48,7 @@
       const { data: categories, error: categoryError } = await categoryService.getSearchDropdownCategories('category', categoryContext);
 
       if (!categoryError && categories) {
-        searchDropdownCategories = categoryService.transformForSearchDropdown(categories);
+        // searchDropdownCategories = categoryService.transformForSearchDropdown(categories);
       }
 
       // Load top sellers
@@ -61,9 +60,9 @@
       }
 
       // Load collections for category context
-      searchDropdownCollections = getCollectionsForContext('category', categoryContext);
-    } catch (error) {
-      
+      // searchDropdownCollections = getCollectionsForContext('category', categoryContext);
+    } catch {
+      // Error loading search dropdown data
     }
   }
   
@@ -149,8 +148,8 @@
   const breadcrumbs = data.breadcrumbs || [];
   
   // Backward compatibility for existing logic (deprecated)
-  const subcategories = dropdownCategories;
-  const level3Categories = pillCategories;
+  // const subcategories = dropdownCategories;
+  // const level3Categories = pillCategories;
   
   // Performance-optimized product transformation using $state.raw()
   // Transform products for ProductCard component with better performance for large arrays
@@ -163,7 +162,7 @@
       title: p.title,
       description: p.description || '',
       price: p.price,
-      images: p.product_images?.sort((a: any, b: any) => (a.display_order || 0) - (b.display_order || 0)).map((img: any) => img.image_url) || [],
+      images: p.product_images?.sort((a: { display_order?: number }, b: { display_order?: number }) => (a.display_order || 0) - (b.display_order || 0)).map((img: { image_url: string }) => img.image_url) || [],
       brand: p.brand,
       size: p.size,
       condition: p.condition,
@@ -193,15 +192,13 @@
   let activeDropdownTab = $state('categories');
 
   // Search dropdown data
-  let searchDropdownCategories = $state<any[]>([]);
-  let searchDropdownSellers = $state<any[]>([]);
-  let searchDropdownCollections = $state<any[]>([]);
+  let searchDropdownSellers = $state<unknown[]>([]);
   
   // Seller quick view modal state
-  let selectedSeller = $state<any>(null);
+  let selectedSeller = $state<unknown>(null);
   let showSellerModal = $state(false);
   
-  function openSellerModal(seller: any) {
+  function openSellerModal(seller: unknown) {
     selectedSeller = seller;
     showSellerModal = true;
   }
@@ -218,7 +215,7 @@
   let priceRange = $state({ min: 0, max: 500 });
   
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
-  const brands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Gucci', 'Louis Vuitton'];
+  // const brands = ['Nike', 'Adidas', 'Zara', 'H&M', 'Gucci', 'Louis Vuitton'];
   const conditions = [
     { value: 'new', label: i18n.condition_newWithTags() },
     { value: 'like-new', label: i18n.condition_likeNew() },
@@ -295,7 +292,8 @@
   }
 
   // Search dropdown event handlers
-  function handleDropdownCategorySelect(category: any) {
+  /*
+  function handleDropdownCategorySelect(category: unknown) {
     if (category.level === 1) {
       goto(`/category/${category.key}`);
     } else if (category.level === 2) {
@@ -306,8 +304,10 @@
     }
     showSearchDropdown = false;
   }
+  */
 
-  function handleDropdownCollectionSelect(collection: any) {
+  /*
+  function handleDropdownCollectionSelect(collection: unknown) {
     // Handle collection selection based on key
     if (collection.key.startsWith('category=')) {
       const categoryKey = collection.key.replace('category=', '');
@@ -332,10 +332,11 @@
     showSearchDropdown = false;
   }
 
-  function handleDropdownSellerSelect(seller: any) {
+  function handleDropdownSellerSelect(seller: unknown) {
     // Navigate to seller profile
     goto(`/profile/${seller.username}`);
   }
+  */
 
 
   // Helper function to generate clean category URLs
@@ -364,7 +365,9 @@
   
   <!-- JSON-LD Breadcrumbs -->
   {#if data.breadcrumbsJsonLd}
-    {@html `<script type="application/ld+json">${JSON.stringify(data.breadcrumbsJsonLd)}</script>`}
+    <script type="application/ld+json">
+      {JSON.stringify(data.breadcrumbsJsonLd)}
+    </script>
   {/if}
 </svelte:head>
 

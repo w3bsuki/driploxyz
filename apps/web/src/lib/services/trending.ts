@@ -71,7 +71,7 @@ export async function getTrendingData(supabase: SupabaseClient): Promise<Trendin
         product_count: 50 - (index * 5) // Fake counts for now
       }))
     };
-  } catch (error) {
+  } catch {
     // Return fallback data if queries fail
     return {
       searches: [] as TrendingSearch[],
@@ -99,7 +99,7 @@ export async function getTrendingSearches(supabase: SupabaseClient): Promise<str
 
     // Final fallback: category-based suggestions
     return ['Vintage Jackets', 'Designer Bags', 'Y2K Jeans'];
-  } catch (error) {
+  } catch {
     return ['Vintage Jackets', 'Designer Bags', 'Y2K Jeans'];
   }
 }

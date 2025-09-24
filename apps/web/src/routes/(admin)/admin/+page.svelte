@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Button } from '@repo/ui';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
 

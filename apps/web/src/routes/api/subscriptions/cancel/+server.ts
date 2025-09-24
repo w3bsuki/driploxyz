@@ -34,8 +34,12 @@ export const POST: RequestHandler = async (event) => {
       return json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    if (!stripe) {
+      return json({ error: 'Payment system not configured' }, { status: 500 });
+    }
+
     const subscriptionService = new SubscriptionService(supabase);
-    
+
     const result = await subscriptionService.cancelSubscription(user.id, subscriptionId, stripe);
 
     if (result.error) {

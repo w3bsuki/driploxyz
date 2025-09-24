@@ -30,7 +30,7 @@ export function getSentryConfig(): SentryConfig {
     replaysSessionSampleRate: dev ? 0.1 : 0.01, // 10% in dev, 1% in prod
     replaysOnErrorSampleRate: 1.0, // 100% when errors occur
     debug: dev,
-    beforeSend: (event, _hint) => {
+    beforeSend: (event) => {
       // Skip errors in development
       if (dev) return null;
       
@@ -104,7 +104,7 @@ export function initServerSentry(dsn?: string): boolean {
     
     // Sentry: Server-side error monitoring initialized
     return true;
-  } catch (error) {
+  } catch {
     // Sentry: Failed to initialize server-side monitoring
     return false;
   }
@@ -139,7 +139,7 @@ export function initClientSentry(dsn?: string): boolean {
     
     // Sentry: Client-side error monitoring initialized
     return true;
-  } catch (error) {
+  } catch {
     // Sentry: Failed to initialize client-side monitoring
     return false;
   }
@@ -155,7 +155,7 @@ export function setSentryUser(user: Partial<User> | null): void {
       email: user.email,
       // Don't include sensitive data
     } : null);
-  } catch (error) {
+  } catch {
     // Sentry: Failed to set user context
   }
 }
@@ -167,7 +167,7 @@ export function addSentryBreadcrumb(
   message: string, 
   category: string, 
   level: Sentry.SeverityLevel = 'info',
-  data?: Record<string, any>
+  data?: Record<string, unknown>
 ): void {
   try {
     Sentry.addBreadcrumb({
@@ -177,7 +177,7 @@ export function addSentryBreadcrumb(
       data,
       timestamp: Date.now() / 1000,
     });
-  } catch (error) {
+  } catch {
     // Sentry: Failed to add breadcrumb
   }
 }
@@ -189,7 +189,7 @@ export function captureSentryError(
   error: Error | string,
   context?: {
     tags?: Record<string, string>;
-    extra?: Record<string, any>;
+    extra?: Record<string, unknown>;
     level?: Sentry.SeverityLevel;
     fingerprint?: string[];
   }
@@ -220,7 +220,7 @@ export function captureSentryError(
       
       Sentry.captureException(errorObj);
     });
-  } catch (sentryError) {
+  } catch {
     
     // Fallback to console logging
     
@@ -240,7 +240,7 @@ export function startSentryTransaction(
       name: description || name,
       op: operation,
     });
-  } catch (error) {
+  } catch {
     // Sentry span failed - continuing without tracing
     return null;
   }

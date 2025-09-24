@@ -56,7 +56,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
       message: 'Payment confirmed successfully!'
     });
 
-  } catch (err) {
+  } catch {
     return error(500, { message: 'Internal server error' });
   }
 };

@@ -73,7 +73,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
       .eq('profiles.username', params.seller)
       .single(),
     3000,
-    { data: null, error: { message: 'Request timeout' } }
+    { data: null, error: { name: 'TimeoutError', message: 'Request timeout', details: '', hint: '', code: 'TIMEOUT' }, count: null, status: 408, statusText: 'Timeout' }
   );
 
   if (productError || !product) {
@@ -114,7 +114,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
         .eq('id', product.categories.parent_id)
         .single(),
       1500,
-      { data: null }
+      { data: null, error: { name: 'TimeoutError', message: 'Request timeout', details: '', hint: '', code: 'TIMEOUT' }, count: null, status: 408, statusText: 'Timeout' }
     );
     parentCategory = parent;
     
@@ -127,7 +127,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
           .eq('id', parent.parent_id)
           .single(),
         1500,
-        { data: null }
+        { data: null, error: { name: 'TimeoutError', message: 'Request timeout', details: '', hint: '', code: 'TIMEOUT' }, count: null, status: 408, statusText: 'Timeout' }
       );
       topLevelCategory = topLevel;
     } else {
@@ -175,7 +175,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
         .eq('product_id', product.id)
         .maybeSingle(),
       1000,
-      { data: null }
+      { data: null, error: null, count: null, status: 408, statusText: 'Timeout' }
     ) : Promise.resolve({ data: null }),
     
     // Get similar products (same category, if category exists)
@@ -206,7 +206,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
             .eq('country_code', country || 'BG')
             .limit(6),
           2500,
-          { data: [] }
+          { data: [], error: null, count: null, status: 408, statusText: 'Timeout' }
         )
       : Promise.resolve({ data: [] }),
     
@@ -237,7 +237,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
         .eq('country_code', country || 'BG')
         .limit(4),
       2000,
-      { data: [] }
+      { data: [], error: null, count: null, status: 408, statusText: 'Timeout' }
     ),
     
     // Get seller reviews and rating summary
@@ -266,7 +266,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
         .order('created_at', { ascending: false })
         .limit(10),
       2500,
-      { data: [] }
+      { data: [], error: null, count: null, status: 408, statusText: 'Timeout' }
     )
   ]);
 

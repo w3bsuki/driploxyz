@@ -212,17 +212,29 @@ export const createErrorHandler = (): HandleServerError => {
     logError(context, error);
 
     // Report to monitoring service
-    reportError(context, error);
+    reportError(context);
 
     // Create response based on environment
-    const response = {
+    const response: {
+      message: string;
+      id: string;
+      debug?: {
+        category: string;
+        severity: string;
+        statusCode: number;
+        retryable: boolean;
+        stack?: string;
+        techMessage?: string;
+        metadata?: Record<string, unknown>;
+      };
+    } = {
       message: context.userMessage,
       id: context.errorId
     };
 
     // Add debug information in development
     if (isDebug) {
-      (response as any).debug = {
+      response.debug = {
         category: context.category,
         severity: context.severity,
         statusCode: context.statusCode,

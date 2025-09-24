@@ -1,9 +1,12 @@
 /**
  * SEO URL Utilities for Product Links
- * 
+ *
  * This module provides utilities for generating and working with SEO-friendly URLs
  * throughout the application.
  */
+
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@repo/database';
 
 export interface Product {
   id: string;
@@ -68,7 +71,7 @@ export function getProductUrl(p: ProductForUrl | ProductWithProfile): string {
     }
   } else {
     // Graceful fallback for unknown structure
-    return `/product/${(p as any).id}`;
+    return `/product/${(p as { id: string }).id}`;
   }
 
   // Include category when available
@@ -244,7 +247,7 @@ export function isSEOUrl(url: string): boolean {
 /**
  * Migration helper: Get all product URLs that need slug generation
  */
-export async function getProductsNeedingSlugs(supabase: any, limit = 100) {
+export async function getProductsNeedingSlugs(supabase: SupabaseClient<Database>, limit = 100) {
   const { data, error } = await supabase
     .from('products')
     .select('id, title, brand, size, condition, color, category_id, slug')

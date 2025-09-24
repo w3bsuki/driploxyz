@@ -19,13 +19,13 @@ export const load = (async ({
   const limit = 50; // Sellers per page
   const offset = (page - 1) * limit;
 
-  log.debug('Loading sellers leaderboard', { 
-    sortBy, 
-    page, 
+  log.debug('Loading sellers leaderboard', {
+    sortBy,
+    page,
     searchQuery,
     accountType,
-    verifiedOnly,
-    userEmail: user?.email 
+    verifiedOnly: verifiedOnly.toString(),
+    userEmail: user?.email
   });
 
   try {
@@ -125,7 +125,10 @@ export const load = (async ({
     const { count, error: countError } = await countQuery;
 
     if (countError) {
-      log.warn('Error getting sellers count', countError);
+      log.warn('Error getting sellers count', {
+        errorMessage: countError.message,
+        errorCode: countError.code
+      });
     }
 
     // Transform sellers data with ranking
@@ -143,7 +146,7 @@ export const load = (async ({
         verified: seller.verified || false,
         created_at: seller.created_at,
         location: seller.location,
-        instagram: seller?.social_links?.instagram,
+        instagram: (seller.social_links && typeof seller.social_links === 'object' && !Array.isArray(seller.social_links)) ? (seller.social_links as Record<string, unknown>).instagram as string : undefined,
         
         // Stats
         followers_count: seller.followers_count || 0,
@@ -166,11 +169,11 @@ export const load = (async ({
 
     log.debug('Successfully loaded sellers leaderboard', {
       sellersCount: sellersWithRanking.length,
-      totalCount: count,
+      totalCount: count ?? 0,
       sortBy,
       searchQuery,
       accountType,
-      verifiedOnly
+      verifiedOnly: verifiedOnly.toString()
     });
 
     return {

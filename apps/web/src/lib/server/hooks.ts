@@ -15,7 +15,7 @@ import { CSRFProtection } from './csrf';
  * Supabase authentication handler
  */
 const supabaseHandler: Handle = async ({ event, resolve }) => {
-  setupEnvironment(event);
+  setupEnvironment();
   await setupAuth(event);
 
   return await resolve(event, {
@@ -66,7 +66,7 @@ const csrfGuard: Handle = async ({ event, resolve }) => {
   const safeMethods = ['GET', 'HEAD', 'OPTIONS'];
   const path = event.url.pathname;
   if (!safeMethods.includes(event.request.method) && path.startsWith('/api')) {
-    const ok = await CSRFProtection.check(event as any);
+    const ok = await CSRFProtection.check(event);
     if (!ok) return new Response('Forbidden', { status: 403 });
   }
   return resolve(event);

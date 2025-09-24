@@ -40,7 +40,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			 (order.seller_id === session.user.id && !order.seller_rated));
 
 		// Check if user has already reviewed
-		const { data: existingReview, error: _reviewError } = await locals.supabase
+		const { data: existingReview } = await locals.supabase
 			.from('reviews')
 			.select(`
 				*,
@@ -76,7 +76,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 			}
 		});
 
-	} catch (error) {
+	} catch {
 		
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}

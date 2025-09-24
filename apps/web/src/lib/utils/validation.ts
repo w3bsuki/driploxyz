@@ -242,8 +242,8 @@ export const validators = {
   },
 
   phone: (value: string, locale?: string): string | null => {
-    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
-    if (value && !phoneRegex.test(value.replace(/[\s\-\(\)]/g, ''))) {
+    const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
+    if (value && !phoneRegex.test(value.replace(/[\s\-()]/g, ''))) {
       return getValidationMessage('phone', undefined, locale);
     }
     return null;

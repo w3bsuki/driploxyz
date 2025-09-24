@@ -4,7 +4,6 @@
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   import { onMount } from 'svelte';
-  import { page } from '$app/stores';
   import { subscribeToOrderUpdates, orderSubscriptionStore, clearOrderUpdates } from '$lib/stores/orderSubscription.svelte.ts';
   import { getProductUrl } from '$lib/utils/seo-urls';
   
@@ -17,11 +16,11 @@
   const supabase = createBrowserSupabaseClient();
   
   let activeTab = $state<'to_ship' | 'shipped' | 'incoming' | 'completed'>('to_ship');
-  let selectedOrder = $state<any>(null);
+  let selectedOrder = $state<{ id: string; tracking_number?: string; status: string } | null>(null);
   let trackingNumber = $state('');
   let showTrackingModal = $state(false);
   let showReviewModal = $state(false);
-  let reviewOrder = $state<any>(null);
+  let reviewOrder = $state<{ id: string; product?: { title?: string; first_image?: string; images?: string[] }; seller?: { username?: string } } | null>(null);
   let loading = $state(false);
   
   // Filter orders based on tab and user role
@@ -83,7 +82,7 @@
     loading = true;
     
     try {
-      const updateData: any = { status: newStatus };
+      const updateData: { status: string; tracking_number?: string } = { status: newStatus };
       if (tracking) {
         updateData.tracking_number = tracking;
       }
@@ -114,14 +113,14 @@
       } else {
         toasts.error('Failed to update order status');
       }
-    } catch (error) {
+    } catch {
       toasts.error('An error occurred while updating the order');
     } finally {
       loading = false;
     }
   }
   
-  function openTrackingModal(order: any) {
+  function openTrackingModal(order: { id: string; tracking_number?: string; status: string }) {
     selectedOrder = order;
     trackingNumber = order.tracking_number || '';
     showTrackingModal = true;
@@ -136,7 +135,7 @@
     await updateOrderStatus(selectedOrder.id, 'shipped', trackingNumber);
   }
   
-  async function confirmDelivery(order: any) {
+  async function confirmDelivery(order: { id: string; status: string }) {
     if (confirm('Confirm that you have received this order?')) {
       await updateOrderStatus(order.id, 'delivered');
       // Show review modal after confirming delivery
@@ -145,7 +144,7 @@
     }
   }
   
-  function openReviewModal(order: any) {
+  function openReviewModal(order: { id: string; product?: { title?: string; first_image?: string; images?: string[] }; seller?: { username?: string } }) {
     reviewOrder = order;
     showReviewModal = true;
   }
@@ -208,13 +207,6 @@
     toasts.success('Thank you for your review!');
   }
   
-  function formatDate(date: string) {
-    return new Date(date).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
-    });
-  }
   
   function getTimeLeft(createdAt: string) {
     const created = new Date(createdAt);
@@ -611,7 +603,7 @@
                       {/if}
                       
                       <Button
-                        href={getProductUrl({ id: order.product?.id!, slug: order.product?.slug })}
+                        href={getProductUrl({ id: order.product?.id || '', slug: order.product?.slug || '' })}
                         size="sm"
                         variant="outline"
                       >

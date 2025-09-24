@@ -92,7 +92,7 @@ export function createFavoritesStore() {
           };
           return data.isFavorited;
         }
-      } catch (error) {
+      } catch {
         // Silent error handling
       }
 
@@ -108,7 +108,7 @@ export function createFavoritesStore() {
       try {
         const promises = productIds.map(id => actions.checkFavoriteStatus(id));
         await Promise.all(promises);
-      } catch (error) {
+      } catch {
         // Silent error handling
       }
     },
@@ -116,7 +116,7 @@ export function createFavoritesStore() {
     /**
      * Get all user favorites
      */
-    async loadUserFavorites(): Promise<any[]> {
+    async loadUserFavorites(): Promise<unknown[]> {
       state = {
         ...state,
         isLoading: true,
@@ -133,7 +133,7 @@ export function createFavoritesStore() {
 
         // Update favorites map
         const newFavorites: Record<string, boolean> = {};
-        data.favorites?.forEach((fav: any) => {
+        data.favorites?.forEach((fav: { products?: { id: string } }) => {
           if (fav.products) {
             newFavorites[fav.products.id] = true;
           }
@@ -191,7 +191,7 @@ export function createFavoritesStore() {
     /**
      * Update counts from real-time data
      */
-    updateCounts(productId: string, favoriteCount: number, _viewCount: number): void {
+    updateCounts(productId: string, favoriteCount: number): void {
       state = {
         ...state,
         favoriteCounts: {
@@ -225,3 +225,6 @@ export function createFavoritesStore() {
 
 // Create global instance
 export const favoritesStoreInstance = createFavoritesStore();
+// Export the store and actions for convenience
+export const favoritesStore = favoritesStoreInstance;
+export const favoritesActions = favoritesStoreInstance;

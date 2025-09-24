@@ -247,7 +247,7 @@ export function validatePayoutMethod(method: PayoutMethod): {
 			}
 			break;
 
-		case 'paypal':
+		case 'paypal': {
 			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 			if (!emailRegex.test(method.details)) {
 				return { valid: false, error: 'Invalid PayPal email format' };
@@ -256,6 +256,7 @@ export function validatePayoutMethod(method: PayoutMethod): {
 				return { valid: false, error: 'PayPal email too long' };
 			}
 			break;
+		}
 
 		case 'card':
 			if (method.details.length < 15) {
@@ -317,13 +318,17 @@ export function validatePayoutAmount(
 /**
  * Format Stripe error messages for user display
  */
-export function formatStripeError(error: StripeError | any): string {
+export function formatStripeError(error: StripeError | unknown): string {
 	if (!error) return 'An unknown error occurred';
 
-	// Handle Stripe-specific error types
-	switch (error.type) {
-		case 'card_error':
-			switch (error.code) {
+	// Type guard to ensure error has the expected properties
+	if (typeof error === 'object' && error !== null && 'type' in error) {
+		const stripeError = error as StripeError;
+
+		// Handle Stripe-specific error types
+		switch (stripeError.type) {
+			case 'card_error':
+				switch (stripeError.code) {
 				case 'card_declined':
 					return 'Your card was declined. Please try a different payment method.';
 				case 'insufficient_funds':
@@ -337,11 +342,11 @@ export function formatStripeError(error: StripeError | any): string {
 				case 'incorrect_number':
 					return 'Your card number is incorrect.';
 				default:
-					return error.message || 'Your card was declined.';
+					return stripeError.message || 'Your card was declined.';
 			}
 
 		case 'validation_error':
-			return error.message || 'Please check your payment information.';
+			return stripeError.message || 'Please check your payment information.';
 
 		case 'api_error':
 			return 'A payment processing error occurred. Please try again.';
@@ -353,21 +358,26 @@ export function formatStripeError(error: StripeError | any): string {
 			return 'Too many requests. Please wait a moment and try again.';
 
 		default:
-			return error.message || 'An error occurred while processing your payment.';
+			return stripeError.message || 'An error occurred while processing your payment.';
+		}
 	}
+
+	// Fallback for non-Stripe errors
+	return 'An error occurred while processing your payment.';
 }
 
 /**
  * Check if error is retryable
  */
-export function isRetryableError(error: StripeError | any): boolean {
+export function isRetryableError(error: StripeError | unknown): boolean {
 	const retryableCodes = [
 		'processing_error',
 		'api_error',
 		'rate_limit_error'
 	];
 
-	return retryableCodes.includes(error.code) || error.type === 'api_error';
+	const err = error as { code?: string; type?: string };
+	return retryableCodes.includes(err.code || '') || err.type === 'api_error';
 }
 
 // =====================================
@@ -407,10 +417,11 @@ export function formatPayoutMethodDisplay(method: PayoutMethod): string {
 		case 'revolut':
 			return `Revolut (${method.details})`;
 		
-		case 'paypal':
+		case 'paypal': {
 			const email = method.details;
 			const masked = email.replace(/(.{2})(.*)(@.*)/, '$1***$3');
 			return `PayPal (${masked})`;
+		}
 		
 		case 'card':
 			return `Card (•••• ${method.details.slice(-4)})`;
@@ -419,7 +430,7 @@ export function formatPayoutMethodDisplay(method: PayoutMethod): string {
 			return `Bank Transfer (${method.name || 'Bank Account'})`;
 		
 		default:
-			return (method as any).type?.replace('_', ' ').toUpperCase() || 'UNKNOWN';
+			return (method as { type?: string }).type?.replace('_', ' ').toUpperCase() || 'UNKNOWN';
 	}
 }
 

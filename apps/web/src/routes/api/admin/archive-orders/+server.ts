@@ -60,7 +60,7 @@ export const POST: RequestHandler = async ({ request, locals: { safeGetSession }
       stats: stats?.[0] || null
     });
 
-  } catch (err) {
+  } catch {
     return error(500, 'Internal server error');
   }
 };
@@ -102,7 +102,7 @@ export const GET: RequestHandler = async ({ request, locals: { safeGetSession },
       }
     });
 
-  } catch (err) {
+  } catch {
     return error(500, 'Internal server error');
   }
 };

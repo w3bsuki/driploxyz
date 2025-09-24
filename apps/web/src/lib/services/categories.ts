@@ -43,8 +43,7 @@ export class CategoryService {
       }
 
       return { data: data || [], error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to fetch categories' };
     }
   }
@@ -67,8 +66,7 @@ export class CategoryService {
       }
 
       return { data, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: null, error: 'Failed to fetch category' };
     }
   }
@@ -91,8 +89,7 @@ export class CategoryService {
       }
 
       return { data, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: null, error: 'Failed to fetch category' };
     }
   }
@@ -148,8 +145,7 @@ export class CategoryService {
       });
 
       return { data: tree, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to build category tree' };
     }
   }
@@ -173,8 +169,7 @@ export class CategoryService {
       }
 
       return { data: data || [], error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to fetch main categories' };
     }
   }
@@ -198,8 +193,7 @@ export class CategoryService {
       }
 
       return { data: data || [], error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to fetch subcategories' };
     }
   }
@@ -224,8 +218,7 @@ export class CategoryService {
       }
 
       return { data: breadcrumb, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to build breadcrumb' };
     }
   }
@@ -249,8 +242,7 @@ export class CategoryService {
       }
 
       return { data: data || [], error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to search categories' };
     }
   }
@@ -275,8 +267,7 @@ export class CategoryService {
       }
 
       return { data, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: null, error: 'Failed to create category' };
     }
   }
@@ -302,8 +293,7 @@ export class CategoryService {
       }
 
       return { data, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: null, error: 'Failed to update category' };
     }
   }
@@ -347,8 +337,7 @@ export class CategoryService {
       }
 
       return { error: null };
-    } catch (error) {
-      
+    } catch {
       return { error: 'Failed to delete category' };
     }
   }
@@ -387,8 +376,7 @@ export class CategoryService {
         .slice(0, limit);
 
       return { data: popular, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to fetch popular categories' };
     }
   }
@@ -435,8 +423,7 @@ export class CategoryService {
       const allDescendants = [...children, ...(grandchildren || [])];
 
       return { data: allDescendants, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to fetch descendants' };
     }
   }
@@ -486,8 +473,7 @@ export class CategoryService {
 
 
       return { data: breadcrumbs, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to fetch ancestors' };
     }
   }
@@ -507,8 +493,7 @@ export class CategoryService {
       }
 
       return { count: data?.length || 0, error: null };
-    } catch (error) {
-      
+    } catch {
       return { count: 0, error: 'Failed to get product count' };
     }
   }
@@ -548,8 +533,7 @@ export class CategoryService {
       );
 
       return { data: categoriesWithCounts, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to fetch categories with counts' };
     }
   }
@@ -610,8 +594,7 @@ export class CategoryService {
       ];
 
       return { data: breadcrumb, error: null };
-    } catch (error) {
-      
+    } catch {
       return { data: [], error: 'Failed to build complete breadcrumb' };
     }
   }

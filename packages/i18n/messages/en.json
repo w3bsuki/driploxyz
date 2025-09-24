@@ -215,7 +215,6 @@
   "pdp_networkError": "Network error. Please check your connection.",
   "pdp_productNotFound": "Product not found",
   "pdp_productUnavailable": "This product is no longer available",
-  "pdp_loginRequired": "Please log in to continue",
   "pdp_loginrequired1": "Please log in to continue",
   "pdp_loginToBuy": "Log in to buy",
   "pdp_loginToFavorite": "Log in to save favorites",

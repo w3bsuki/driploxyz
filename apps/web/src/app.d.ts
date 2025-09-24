@@ -18,6 +18,7 @@ declare global {
 			user: User | null;
 			country: CountryCode;
 			locale: LanguageTag;
+			cspNonce?: string;
 		}
 		interface PageData {
 			session: Session | null;

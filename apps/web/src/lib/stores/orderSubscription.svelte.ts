@@ -1,4 +1,5 @@
-import type { RealtimeChannel } from '@supabase/supabase-js';
+import type { RealtimeChannel, SupabaseClient, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
+import type { Database } from '@repo/database';
 
 interface OrderUpdate {
   id: string;
@@ -42,7 +43,7 @@ export function createOrderSubscriptionStore() {
 // Global store instance
 export const orderSubscriptionStore = createOrderSubscriptionStore();
 
-export function subscribeToOrderUpdates(supabase: any, userId: string) {
+export function subscribeToOrderUpdates(supabase: SupabaseClient<Database>, userId: string) {
   // Clean up existing subscription
   const existingChannel = orderSubscriptionStore.getChannel();
   if (existingChannel) {
@@ -61,15 +62,17 @@ export function subscribeToOrderUpdates(supabase: any, userId: string) {
         table: 'orders',
         filter: `buyer_id=eq.${userId}`
       },
-      (payload: any) => {
-        orderSubscriptionStore.addUpdate(payload.new as OrderUpdate);
+      (payload: RealtimePostgresChangesPayload<OrderUpdate>) => {
+        if (payload.new && 'id' in payload.new && 'status' in payload.new) {
+          orderSubscriptionStore.addUpdate(payload.new as OrderUpdate);
 
-        // Show notification if order was shipped
-        if (payload.new.status === 'shipped' && payload.old.status !== 'shipped') {
-          showNotification('Order Shipped',
-            payload.new.tracking_number
-              ? `Your order has been shipped! Tracking: ${payload.new.tracking_number}`
-              : 'Your order has been shipped!');
+          // Show notification if order was shipped
+          if ((payload.new as OrderUpdate).status === 'shipped' && payload.old && 'status' in payload.old && (payload.old as Partial<OrderUpdate>).status !== 'shipped') {
+            showNotification('Order Shipped',
+              'tracking_number' in payload.new && (payload.new as OrderUpdate).tracking_number
+                ? `Your order has been shipped! Tracking: ${(payload.new as OrderUpdate).tracking_number}`
+                : 'Your order has been shipped!');
+          }
         }
       }
     )
@@ -81,12 +84,14 @@ export function subscribeToOrderUpdates(supabase: any, userId: string) {
         table: 'orders',
         filter: `seller_id=eq.${userId}`
       },
-      (payload: any) => {
-        orderSubscriptionStore.addUpdate(payload.new as OrderUpdate);
+      (payload: RealtimePostgresChangesPayload<OrderUpdate>) => {
+        if (payload.new && 'id' in payload.new && 'status' in payload.new) {
+          orderSubscriptionStore.addUpdate(payload.new as OrderUpdate);
 
-        // Show notification if order was delivered
-        if (payload.new.status === 'delivered' && payload.old.status !== 'delivered') {
-          showNotification('Order Delivered', 'Your buyer has confirmed delivery!');
+          // Show notification if order was delivered
+          if ((payload.new as OrderUpdate).status === 'delivered' && payload.old && 'status' in payload.old && (payload.old as Partial<OrderUpdate>).status !== 'delivered') {
+            showNotification('Order Delivered', 'Your buyer has confirmed delivery!');
+          }
         }
       }
     )

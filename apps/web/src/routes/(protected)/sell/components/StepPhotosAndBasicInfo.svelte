@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ImageUploaderSupabase, Input, CollapsibleCategorySelector } from '@repo/ui';
+  import { ImageUploaderSupabase } from '@repo/ui';
   import type { Category } from '$lib/types/product';
   import * as i18n from '@repo/i18n';
   
@@ -15,24 +15,23 @@
       gender_category_id: string;
       type_category_id: string;
       category_id: string;
-      [key: string]: any;
+      [key: string]: string | boolean | number | null | undefined;
     };
     uploadedImages: UploadedImage[];
     categories: Category[];
     isUploadingImages: boolean;
     onImageUpload: (images: UploadedImage[]) => void;
     onImageDelete: (index: number) => Promise<void>;
-    onFieldChange: (field: string, value: any) => void;
+    onFieldChange: (field: string, value: string | boolean | number | null | undefined) => void;
   }
   
-  let { 
+  let {
     formData = $bindable(),
     uploadedImages = $bindable(),
-    categories,
+    // categories,
     isUploadingImages = $bindable(),
     onImageUpload,
-    onImageDelete,
-    onFieldChange
+    onImageDelete
   }: Props = $props();
 </script>
 
@@ -113,94 +112,6 @@
       </div>
     </div>
   </div>
-  
-        
-        // Level 3 - Specific items
-        'Activewear': i18n.category_activewear(),
-        'Boots': i18n.category_boots(),
-        'Dresses': i18n.category_dresses(),
-        'Flats': i18n.category_flats(),
-        'Formal Shoes': i18n.category_formalShoes(),
-        'Heels': i18n.category_heels(),
-        'Hoodies': i18n.category_hoodies(),
-        'Jackets': i18n.category_jackets(),
-        'Jackets & Coats': i18n.category_jacketsCoats(),
-        'Jeans': i18n.category_jeans(),
-        'Jewelry': i18n.category_jewelry(),
-        'Lingerie & Underwear': i18n.category_lingerie(),
-        'Pants & Jeans': i18n.category_pantsJeans(),
-        'Pants & Trousers': i18n.category_pantsTrousers(),
-        'Sandals': i18n.category_sandals(),
-        'Sandals & Slides': i18n.category_sandalsSlides(),
-        'Shirts': i18n.category_shirts(),
-        'Shirts & Blouses': i18n.category_shirtsBlouses(),
-        'Shorts': i18n.category_shorts(),
-        'Skirts': i18n.category_skirts(),
-        'Sneakers': i18n.category_sneakers(),
-        'Suits & Blazers': i18n.category_suitsBlazers(),
-        'Sweaters & Hoodies': i18n.category_sweatersHoodies(),
-        'Swimwear': i18n.category_swimwear(),
-        'T-Shirts': i18n.category_tshirts(),
-        'Tops & T-Shirts': i18n.category_topsTshirts(),
-        'Underwear': i18n.category_underwear(),
-        'Watches': i18n.category_watches(),
-        'Hats & Caps': i18n.category_hatsAndCaps(),
-        'Belts': i18n.category_belts(),
-        'Scarves': i18n.category_scarves(),
-        'Sunglasses': i18n.category_sunglasses(),
-        'Wallets': i18n.category_wallets(),
-        'Hair Accessories': i18n.category_hairAccessories(),
-        'Ties': i18n.category_ties(),
-        'Cufflinks': i18n.category_cufflinks(),
-        'Backpacks': i18n.category_backpacks(),
-        
-        // Additional accessories
-        'Wallets & Purses': i18n.category_walletsAndPurses(),
-        'Gloves': i18n.category_gloves(),
-        'Gloves & Mittens': i18n.category_glovesAndMittens(),
-        'Shawls': i18n.category_shawls(),
-        'Bandanas': i18n.category_bandanas(),
-        'Bibs': i18n.category_bibs(),
-        'Suspenders': i18n.category_suspenders(),
-        'Keychains': i18n.category_keychains(),
-        'Phone Cases': i18n.category_phoneCases(),
-        'Pocket Squares': i18n.category_pocketSquares(),
-        
-        // Bag types
-        'Handbags': i18n.category_handbags(),
-        'Shoulder Bags': i18n.category_shoulderBags(),
-        'Crossbody Bags': i18n.category_crossbodyBags(),
-        'Clutches': i18n.category_clutches(),
-        'Tote Bags': i18n.category_toteBags(),
-        'Makeup Bags': i18n.category_makeupBags(),
-        'Travel Bags': i18n.category_travelBags(),
-        'Briefcases': i18n.category_briefcases(),
-        'Messenger Bags': i18n.category_messengerBags(),
-        'Gym Bags': i18n.category_gymBags(),
-        'Duffel Bags': i18n.category_duffelBags(),
-        'Laptop Bags': i18n.category_laptopBags(),
-        'School Bags': i18n.category_schoolBags(),
-        'Lunch Bags': i18n.category_lunchBags(),
-        'Mini Bags': i18n.category_miniBags()
-      };
-      return categoryKeyMap[name] || name;
-    }}
-    onGenderSelect={(id) => {
-      formData.gender_category_id = id;
-      formData.type_category_id = '';
-      formData.category_id = '';
-      onFieldChange('gender_category_id', id);
-    }}
-    onTypeSelect={(id) => {
-      formData.type_category_id = id;
-      formData.category_id = '';
-      onFieldChange('type_category_id', id);
-    }}
-    onSpecificSelect={(id) => {
-      formData.category_id = id;
-      onFieldChange('category_id', id);
-    }}
-  />
   
   <!-- Hidden inputs for form submission -->
   <input type="hidden" name="gender_category_id" value={formData.gender_category_id} />

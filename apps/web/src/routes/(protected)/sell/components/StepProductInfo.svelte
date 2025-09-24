@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Input } from '@repo/ui';
+  // import { Input } from '@repo/ui';
   import { POPULAR_BRANDS } from '$lib/validation/product';
   import type { SizeOption } from '$lib/types/product';
   import * as i18n from '@repo/i18n';
@@ -10,12 +10,12 @@
       size: string;
       color: string;
       material: string;
-      [key: string]: any; // Allow other fields to be present
+      [key: string]: string | boolean | number | null | undefined; // Allow other fields to be present
     };
     sizeOptions: SizeOption[];
     errors: Record<string, string>;
     touched: Record<string, boolean>;
-    onFieldChange: (field: string, value: any) => void;
+    onFieldChange: (field: string, value: string | boolean | number | null | undefined) => void;
     onFieldBlur: (field: string) => void;
   }
   
@@ -53,7 +53,7 @@
       }
     });
     
-    return Object.entries(groups).filter(([_, sizes]) => sizes.length > 0);
+    return Object.entries(groups).filter(([, sizes]) => sizes.length > 0);
   });
 
   let showCustomBrand = $state(false);

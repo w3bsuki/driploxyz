@@ -1,6 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { LayoutServerLoad } from './$types';
+import type { Database } from '@repo/database';
 import { COUNTRY_CONFIGS, shouldSuggestCountrySwitch } from '$lib/country/detection';
 import { getCanonicalAndHreflang } from '$lib/seo';
 import { withTimeout } from '@repo/core/utils';
@@ -25,7 +26,7 @@ export const load = (async (event) => {
   const { session, user } = await withTimeout(
     locals.safeGetSession(),
     2000,
-    { session: null, user: null } as any
+    { session: null, user: null }
   );
   const supabase = locals.supabase;
   
@@ -35,18 +36,21 @@ export const load = (async (event) => {
   let profile = null;
   
   if (user && supabase) {
-    const { data, error: profileError }: any = await withTimeout(
+    const { data, error: profileError }: {
+      data: Pick<Database['public']['Tables']['profiles']['Row'], 'id' | 'username' | 'full_name' | 'avatar_url' | 'onboarding_completed' | 'account_type' | 'subscription_tier' | 'region'> | null;
+      error: unknown;
+    } = await withTimeout(
       supabase
         .from('profiles')
         .select('id, username, full_name, avatar_url, onboarding_completed, account_type, subscription_tier, region')
         .eq('id', user.id)
         .single(),
       2500,
-      { data: null, error: null } as any
+      { data: null, error: null, count: null, status: 0, statusText: 'timeout' }
     );
 
     // Ignore profile not found errors (PGRST116)
-    if (profileError && profileError.code !== 'PGRST116') {
+    if (profileError && typeof profileError === 'object' && 'code' in profileError && profileError.code !== 'PGRST116') {
       // Log and continue without failing the whole request (development only)
       if (dev) {
         // Profile fetch failed - continuing without profile

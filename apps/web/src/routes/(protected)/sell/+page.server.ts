@@ -47,7 +47,7 @@ export const load = (async ({ locals }) => {
       plans: plans || [],
       needsBrandSubscription: profile?.account_type === 'brand' && !canListProducts
     };
-  } catch (error) {
+  } catch {
     // Return empty but valid data structure
     return {
       user: session.user,
@@ -247,7 +247,7 @@ export const actions = {
         });
         
         // If boost failed, log but don't fail the entire product creation
-        if (boostResult && !(boostResult as any)?.success) {
+        if (boostResult && !(boostResult as { success?: boolean })?.success) {
 
           // Could store this in a log table or send notification
         }
@@ -259,14 +259,14 @@ export const actions = {
         productId: product.id
       };
 
-    } catch (error) {
+    } catch (_error) {
       // If it's a redirect, re-throw it (this is success, not an error!)
-      if (error instanceof Response) {
-        throw error;
+      if (_error instanceof Response) {
+        throw _error;
       }
-      
+
       return fail(500, {
-        errors: { _form: error instanceof Error ? error.message : 'Failed to create product' },
+        errors: { _form: _error instanceof Error ? _error.message : 'Failed to create product' },
         values: {
           title, description, gender_category_id, type_category_id, category_id, brand, size, 
           condition, color, material, price, shipping_cost, tags, use_premium_boost

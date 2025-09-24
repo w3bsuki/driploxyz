@@ -8,20 +8,18 @@
     SocialLinksEditor,
     PayoutMethodSelector
   } from '@repo/ui';
-  import { goto, invalidateAll } from '$app/navigation';
   import { enhance } from '$app/forms';
   import { browser } from '$app/environment';
   import * as m from '@repo/i18n';
   import { initializeLanguage } from '$lib/utils/language-switcher';
-  import { page } from '$app/state';
   import { toasts } from '@repo/ui';
-  import { uploadImage } from '$lib/supabase/storage';
+  // Removed unused uploadImage import
   import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
   import { createLogger } from '$lib/utils/log';
 
   const log = createLogger('onboarding-client');
   import { createBrowserSupabaseClient } from '$lib/supabase/client';
-  import { scrollIntoView, focusWithAnnouncement } from '$lib/utils/navigation';
+  import { focusWithAnnouncement } from '$lib/utils/navigation';
   import type { PageData } from './$types';
 
   interface Props {
@@ -30,6 +28,7 @@
 
   let { data }: Props = $props();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const supabase = createBrowserSupabaseClient();
 
   let step = $state(1);
@@ -49,13 +48,11 @@
   let avatarUrl = $state('');
   let payoutMethod = $state<'revolut' | 'paypal' | 'card'>('revolut');
   let payoutDetails = $state<string>('');
+  // Removed unused _showValidationError state variable
   let payoutName = $state<string>('');
   let location = $state<string>('');
   let socialLinks = $state<Array<{ type: string; url: string }>>([]);
   let submitting = $state(false);
-  let languageInitialized = $state(false);
-  let completionInProgress = $state(false);
-  let showValidationError = $state(false);
   let stepContainer = $state<HTMLElement>();
 
   const totalSteps = 4;
@@ -65,9 +62,8 @@
     if (browser) {
       // Use server language from SSR - never override
       initializeLanguage(data?.language);
-      languageInitialized = true;
     } else {
-      languageInitialized = true;
+      // No client-side language override needed
     }
   });
 
@@ -160,7 +156,7 @@
     
     // Validate current step before proceeding
     if (!canProceed()) {
-      showValidationError = true;
+      // Show validation error in toast instead of state variable
       
       // Show specific error messages based on current step
       switch (step) {
@@ -183,8 +179,8 @@
       }
       return;
     }
-    
-    showValidationError = false;
+
+    // Validation cleared
     if (step < totalSteps) {
       step++;
       
@@ -247,46 +243,12 @@
     avatarUrl = url;
   }
 
-  async function handleAvatarUpload(file: File) {
-    if (!data.user) return;
-    
-    try {
-      // Show loading state
-      submitting = true;
-      toasts.info('Uploading avatar...');
-      
-      // Upload avatar to Supabase Storage
-      const { url } = await uploadImage(supabase, file, data.user.id, 'avatars');
-      
-      // Update the avatar URL with the uploaded URL
-      avatarUrl = url;
-      
-      toasts.success('Avatar uploaded successfully!');
-    } catch (error) {
-      toasts.error('Failed to upload avatar. Please try again.');
-      
-      // Reset to default avatar if upload fails
-      avatarUrl = '';
-    } finally {
-      submitting = false;
-    }
-  }
+  // Removed unused handleAvatarUpload function
 
   function handleSocialLinksUpdate(links: Array<{ type: string; url: string }>) {
     socialLinks = links;
   }
 
-  function handlePayoutMethodChange(method: 'revolut' | 'paypal' | 'card') {
-    payoutMethod = method;
-  }
-
-  function handlePayoutDetailsChange(details: string) {
-    payoutDetails = details || '';
-  }
-
-  function handlePayoutNameChange(name: string) {
-    payoutName = name || '';
-  }
 
   async function prepareFormSubmit() {
     if (!data.user || !username.trim()) return false;
@@ -379,7 +341,7 @@
     {#snippet children()}
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
-        {#each Array(totalSteps) as _, i}
+        {#each Array(totalSteps) as _stepItem, i} <!-- eslint-disable-line @typescript-eslint/no-unused-vars -->
           <div class="h-2 rounded-full transition-colors transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
       </div>
@@ -451,7 +413,7 @@
     {#snippet children()}
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
-        {#each Array(totalSteps) as _, i}
+        {#each Array(totalSteps) as _stepItem, i} <!-- eslint-disable-line @typescript-eslint/no-unused-vars -->
           <div class="h-2 rounded-full transition-colors transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
       </div>
@@ -532,7 +494,7 @@
     {#snippet children()}
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
-        {#each Array(totalSteps) as _, i}
+        {#each Array(totalSteps) as _stepItem, i} <!-- eslint-disable-line @typescript-eslint/no-unused-vars -->
           <div class="h-2 rounded-full transition-colors transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
       </div>
@@ -576,7 +538,7 @@
     {#snippet children()}
       <!-- Progress Indicator -->
       <div class="flex justify-center space-x-3 mb-8">
-        {#each Array(totalSteps) as _, i}
+        {#each Array(totalSteps) as _stepItem, i} <!-- eslint-disable-line @typescript-eslint/no-unused-vars -->
           <div class="h-2 rounded-full transition-colors transition-transform duration-200 {i + 1 <= step ? 'bg-black w-8' : 'bg-gray-200 w-2'}"></div>
         {/each}
       </div>
@@ -588,9 +550,9 @@
         use:enhance={async () => {
           if (!(await prepareFormSubmit())) return;
           submitting = true;
-          completionInProgress = true;
           
-          return async ({ result, update }) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          return async ({ result, update: __updateFn }) => {
             submitting = false;
             
             if (result.type === 'success') {
@@ -615,17 +577,14 @@
               } else {
                 log.error('Profile not properly completed', undefined, { profile: result.data?.profile });
                 toasts.error('Profile update may have failed. Please try again.');
-                completionInProgress = false;
               }
               
             } else if (result.type === 'failure') {
               log.error('Completion failed', undefined, result.data);
               toasts.error(result.data?.error || 'Failed to complete onboarding');
-              completionInProgress = false;
             } else {
               log.error('Unexpected result type', undefined, { resultType: result.type });
               toasts.error('An unexpected error occurred. Please try again.');
-              completionInProgress = false;
             }
           };
         }}

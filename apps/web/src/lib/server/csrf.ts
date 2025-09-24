@@ -1,4 +1,5 @@
 import { dev } from '$app/environment';
+import type { RequestEvent } from '@sveltejs/kit';
 import { authLogger } from '$lib/utils/log';
 
 /**
@@ -160,9 +161,9 @@ export class CSRFProtection {
 	/**
 	 * Get or create CSRF token for a request with proper validation
 	 */
-	static async getToken(event: any): Promise<string> {
+	static async getToken(event: RequestEvent): Promise<string> {
 		const session = await event.locals.safeGetSession();
-		const sessionId = session?.session?.access_token || event.clientAddress;
+		const sessionId = session?.session?.access_token || event.getClientAddress();
 		
 		// Check if token exists in cookies
 		let token = event.cookies.get('csrf_token');
@@ -200,7 +201,7 @@ export class CSRFProtection {
 	/**
 	 * Middleware to check CSRF token - production-grade validation
 	 */
-	static async check(event: any, providedToken?: string): Promise<boolean> {
+	static async check(event: RequestEvent, providedToken?: string): Promise<boolean> {
 		const method = event.request.method;
 		const pathname = event.url.pathname;
 
@@ -226,7 +227,7 @@ export class CSRFProtection {
 		}
 		
 		const session = await event.locals.safeGetSession();
-		const sessionId = session?.session?.access_token || event.clientAddress;
+		const sessionId = session?.session?.access_token || event.getClientAddress();
 		
 		// Get token from provided value, headers, or cookies
 		const token = providedToken ||

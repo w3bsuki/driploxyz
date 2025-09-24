@@ -161,7 +161,7 @@ export const actions = {
           details: payoutDetails.trim(), 
           name: payoutName.trim()
         },
-        social_links: parsedSocialLinks.filter((link: any) => link.url?.trim()),
+        social_links: parsedSocialLinks.filter((link: { url?: string }) => link.url?.trim()),
         onboarding_completed: true,
         verified: (accountType === 'brand' || accountType === 'pro') && brandPaid,
         brand_status: accountStatus,

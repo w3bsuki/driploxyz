@@ -20,7 +20,7 @@
     slug: string;
   }
 
-  import { unreadCount } from '$lib/stores/notifications';
+  import { unreadCount } from '$lib/stores/notifications.svelte';
   import { goto } from '$app/navigation';
   import { page, navigating } from '$app/state';
   import type { PageData } from './$types';
@@ -89,34 +89,32 @@
       };
     }
     
-    const hierarchy = {
-      categories: [] as Array<{key: string, name: string, icon: string, id: string}>,
-      subcategories: {} as Record<string, Array<{key: string, name: string, icon: string, id: string}>>,
-      specifics: {} as Record<string, Array<{key: string, name: string, icon: string, id: string}>>
-    };
-    
+    const categories: Array<{key: string, name: string, icon: string, id: string}> = [];
+    const subcategories: Record<string, Array<{key: string, name: string, icon: string, id: string}>> = {};
+    const specifics: Record<string, Array<{key: string, name: string, icon: string, id: string}>> = {};
+
     Object.entries(data.categoryHierarchy).forEach(([slug, catData]: [string, CategoryData]) => {
-      hierarchy.categories.push({
+      categories.push({
         key: slug,
         name: translateCategory(catData.name),
         icon: getCategoryIcon(catData.name),
         id: catData.id
       });
-      
+
       if (catData.level2) {
-        hierarchy.subcategories[slug] = [];
+        const subcatArray: Array<{key: string, name: string, icon: string, id: string}> = [];
         Object.entries(catData.level2).forEach(([l2Slug, l2Data]: [string, SubcategoryData]) => {
           const cleanSlug = l2Slug.replace(`${slug}-`, '').replace('-new', '');
-          hierarchy.subcategories[slug].push({
+          subcatArray.push({
             key: cleanSlug,
             name: translateCategory(l2Data.name),
             icon: getCategoryIcon(l2Data.name),
             id: l2Data.id
           });
-          
+
           if (l2Data.level3 && Array.isArray(l2Data.level3)) {
             const level3Key = `${slug}-${cleanSlug}`;
-            hierarchy.specifics[level3Key] = l2Data.level3.map((l3: SpecificCategoryData) => ({
+            specifics[level3Key] = l2Data.level3.map((l3: SpecificCategoryData) => ({
               key: l3.slug.replace(`${slug}-`, ''),
               name: translateCategory(l3.name),
               icon: getCategoryIcon(l3.name),
@@ -124,11 +122,12 @@
             }));
           }
         });
+        subcategories[slug] = subcatArray;
       }
     });
-    
+
     const order = ['women', 'men', 'kids', 'unisex'];
-    hierarchy.categories.sort((a, b) => {
+    const sortedCategories = [...categories].sort((a, b) => {
       const aIndex = order.indexOf(a.key);
       const bIndex = order.indexOf(b.key);
       if (aIndex === -1 && bIndex === -1) return 0;
@@ -136,6 +135,12 @@
       if (bIndex === -1) return -1;
       return aIndex - bIndex;
     });
+
+    const hierarchy = {
+      categories: sortedCategories,
+      subcategories,
+      specifics
+    };
 
     return hierarchy;
   });

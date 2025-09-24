@@ -7,7 +7,6 @@
   import { LoginSchema } from '$lib/validation/auth';
   import { createFormValidator } from '$lib/utils/form-validation.svelte';
   import { announceToScreenReader, focusFirstErrorField } from '$lib/utils/form-accessibility';
-  import FormField from '$lib/components/forms/FormField.svelte';
   import { toasts } from '@repo/ui';
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -39,7 +38,7 @@
       // Pre-fill email if provided
       const email = page.url.searchParams.get('email');
       if (email) {
-        formData.email = decodeURIComponent(email);
+        validator.formState.values.email = decodeURIComponent(email);
       }
     }
 
@@ -142,7 +141,7 @@
         });
       }
 
-      return async ({ result, update }) => {
+      return async ({ update }) => {
         // Always reset submitting state
         submitting = false;
 
@@ -154,27 +153,41 @@
     
     <div class="space-y-1">
       <div class="p-1">
-        <FormField
-          label={i18n.auth_email()}
-          fieldName="email"
-          fieldState={emailField}
-          type="email"
-          required
-          placeholder="Enter your email"
-          autocomplete="email"
-        />
+        <div class="space-y-2">
+          <label for="email" class="block text-sm font-medium">{i18n.auth_email()}</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            placeholder="Enter your email"
+            autocomplete="email"
+            bind:value={emailField.value}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          {#if emailField.error}
+            <p class="text-sm text-red-600">{emailField.error}</p>
+          {/if}
+        </div>
       </div>
 
       <div class="p-1">
-        <FormField
-          label={i18n.auth_password()}
-          fieldName="password"
-          fieldState={passwordField}
-          type="password"
-          required
-          placeholder="Enter your password"
-          autocomplete="current-password"
-        />
+        <div class="space-y-2">
+          <label for="password" class="block text-sm font-medium">{i18n.auth_password()}</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            bind:value={passwordField.value}
+            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+          {#if passwordField.error}
+            <p class="text-sm text-red-600">{passwordField.error}</p>
+          {/if}
+        </div>
       </div>
 
       <div class="flex items-center justify-between">

@@ -2241,18 +2241,6 @@ export type Database = {
         }
         Returns: boolean
       }
-      audit_rls_coverage: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          has_delete_policy: boolean
-          has_insert_policy: boolean
-          has_select_policy: boolean
-          has_update_policy: boolean
-          policy_count: number
-          rls_enabled: boolean
-          table_name: string
-        }[]
-      }
       audit_rls_status: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -2318,43 +2306,24 @@ export type Database = {
         Args: { base_username: string }
         Returns: string
       }
-      get_category_hierarchy: {
-        Args: { category_uuid: string }
-        Returns: Json
-      }
-      get_category_hierarchy_secure: {
-        Args: { category_ids?: string[] }
+      get_category_ancestors: {
+        Args: { category_id: string }
         Returns: {
-          hierarchy_names: string[]
-          hierarchy_slugs: string[]
           id: string
           level: number
           name: string
           slug: string
         }[]
       }
-      get_category_product_counts: {
-        Args: { p_country_code?: string }
+      get_category_descendants: {
+        Args: { category_uuid: string }
         Returns: {
-          category_id: string
-          category_level: number
-          category_name: string
-          category_slug: string
-          product_count: number
+          id: string
         }[]
       }
-      get_category_with_parents: {
-        Args: { category_slug: string }
-        Returns: {
-          category_id: string
-          category_name: string
-          category_slug: string
-          level: number
-          parent_name: string
-          parent_slug: string
-          root_name: string
-          root_slug: string
-        }[]
+      get_category_hierarchy: {
+        Args: { category_uuid: string }
+        Returns: Json
       }
       get_conversation_messages_secure: {
         Args: { limit_count?: number; other_user_id: string }
@@ -2368,10 +2337,6 @@ export type Database = {
           sender_id: string
           sender_profile: Json
         }[]
-      }
-      get_current_user_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
       }
       get_homepage_data: {
         Args: { p_country_code?: string; p_limit?: number }
@@ -2461,7 +2426,7 @@ export type Database = {
         }[]
       }
       get_virtual_category_counts: {
-        Args: Record<PropertyKey, never> | { p_country_code?: string }
+        Args: Record<PropertyKey, never>
         Returns: {
           product_count: number
           virtual_type: string

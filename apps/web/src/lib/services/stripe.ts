@@ -488,8 +488,8 @@ export class StripeService {
 			await this.supabase
 				.from('profiles')
 				.update({
-					account_type: metadata.plan_type as any,
-					subscription_tier: metadata.plan_type as any,
+					account_type: metadata.plan_type as 'basic' | 'premium' | 'pro',
+					subscription_tier: metadata.plan_type as 'basic' | 'premium' | 'pro',
 					verified: true,
 					processed_at: new Date().toISOString()
 				})
@@ -582,14 +582,21 @@ export class StripeService {
 	 * Handle subscription update
 	 */
 	private async handleSubscriptionUpdate(subscription: Stripe.Subscription): Promise<void> {
-		const { metadata: _metadata } = subscription; // Future metadata processing
-		
+		// const { metadata: _metadata } = subscription; // Future metadata processing
+
+		const periodStart = 'current_period_start' in subscription && typeof subscription.current_period_start === 'number'
+			? new Date((subscription.current_period_start as number) * 1000).toISOString()
+			: null;
+		const periodEnd = 'current_period_end' in subscription && typeof subscription.current_period_end === 'number'
+			? new Date((subscription.current_period_end as number) * 1000).toISOString()
+			: null;
+
 		await this.supabase
 			.from('user_subscriptions')
 			.update({
-				status: subscription.status as any,
-				current_period_start: new Date((subscription as any).current_period_start * 1000).toISOString(),
-				current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
+				status: subscription.status as 'active' | 'canceled' | 'past_due' | 'incomplete' | 'incomplete_expired' | 'trialing' | 'unpaid',
+				current_period_start: periodStart,
+				current_period_end: periodEnd,
 				processed_at: new Date().toISOString()
 			})
 			.eq('stripe_subscription_id', subscription.id);
@@ -621,10 +628,12 @@ export class StripeService {
 	 * Handle invoice payment
 	 */
 	private async handleInvoicePayment(invoice: Stripe.Invoice): Promise<void> {
-		const subscriptionId = (invoice as any).subscription;
+		const subscriptionId = 'subscription' in invoice && invoice.subscription
+			? invoice.subscription
+			: null;
 		if (!subscriptionId) return;
-		
-		const subscription = typeof subscriptionId === 'string' 
+
+		const subscription = typeof subscriptionId === 'string'
 			? await this.stripe.subscriptions.retrieve(subscriptionId)
 			: subscriptionId;
 

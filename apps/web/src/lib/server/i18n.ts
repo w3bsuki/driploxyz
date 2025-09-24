@@ -1,6 +1,6 @@
 import { dev } from '$app/environment';
 import type { RequestEvent } from '@sveltejs/kit';
-import { detectLocale, locales } from '@repo/i18n';
+import { detectLocale, locales, type LanguageTag, availableLanguageTags } from '@repo/i18n';
 import { checkServerConsent, COOKIES } from '$lib/cookies/production-cookie-system';
 
 // Debug flag for controlled logging
@@ -28,7 +28,7 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
   
   // Check for Vercel host-based locale header first
   const headerLocale = event.request.headers.get('x-locale');
-  let locale = headerLocale && locales.includes(headerLocale as any) ? headerLocale : null;
+  let locale = headerLocale && availableLanguageTags.includes(headerLocale as LanguageTag) ? headerLocale : null;
   
   // If no header locale, use standard detection
   if (!locale) {
@@ -63,7 +63,7 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
     });
   }
   
-  (event.locals as any).locale = locale;
+  event.locals.locale = locale as LanguageTag;
 }
 
 /**
@@ -71,8 +71,8 @@ export async function setupI18n(event: RequestEvent): Promise<void> {
  */
 export function transformPageChunk(event: RequestEvent): (params: { html: string }) => string {
   return ({ html }) => {
-    const locale = (event.locals as any).locale || 'bg';
-    const nonce = (event.locals as any).cspNonce;
+    const locale = event.locals.locale || 'bg';
+    const nonce = event.locals.cspNonce;
     let result = html.replace('<html', `<html lang="${locale}"`);
     if (!nonce) return result;
 

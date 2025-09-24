@@ -3,6 +3,7 @@ import { env } from '$env/dynamic/private';
 
 // Type definitions for email templates
 interface OrderEmailData {
+  id: string;
   product: {
     title: string;
     price: number;
@@ -10,7 +11,11 @@ interface OrderEmailData {
   buyer: {
     username: string;
   };
+  seller: {
+    username: string;
+  };
   amount: number;
+  total_amount: number;
 }
 
 interface SaleEmailData {

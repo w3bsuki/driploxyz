@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, ProductCard } from '@repo/ui';
+  import { Button } from '@repo/ui';
   import type { PageData } from './$types';
   import * as i18n from '@repo/i18n';
   import { goto } from '$app/navigation';
@@ -28,14 +28,14 @@
     }).format(price);
   };
   
-  const getStatusColor = (listing: any) => {
+  const getStatusColor = (listing: { is_sold: boolean; status: string }) => {
     if (listing.is_sold) return 'bg-green-100 text-green-800';
     if (listing.status === 'active') return 'bg-blue-100 text-blue-800';
     if (listing.status === 'draft') return 'bg-yellow-100 text-yellow-800';
     return 'bg-gray-100 text-gray-800';
   };
   
-  const getStatusText = (listing: any) => {
+  const getStatusText = (listing: { is_sold: boolean; status: string }) => {
     if (listing.is_sold) return i18n.listings_sold();
     if (listing.status === 'active') return i18n.listings_active();
     if (listing.status === 'draft') return i18n.listings_draft();

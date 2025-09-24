@@ -117,9 +117,9 @@ export class ReviewService {
 
 			return { review: review as ReviewWithDetails, error: null };
 
-		} catch (error) {
+		} catch (err) {
 			// Error in createReview
-			return { review: null, error: error as Error };
+			return { review: null, error: err as Error };
 		}
 	}
 
@@ -127,7 +127,7 @@ export class ReviewService {
 	 * Validate if a user can review a specific order
 	 */
 	async validateReviewEligibility(orderId: string, userId: string): Promise<{
-		order: any | null;
+		order: Database['public']['Tables']['orders']['Row'] | null;
 		error: Error | null;
 	}> {
 		try {
@@ -176,9 +176,9 @@ export class ReviewService {
 
 			return { order, error: null };
 
-		} catch (error) {
+		} catch (err) {
 			// Error validating review eligibility
-			return { order: null, error: error as Error };
+			return { order: null, error: err as Error };
 		}
 	}
 
@@ -444,7 +444,7 @@ export class ReviewService {
 					category: 'reviews',
 					priority: 'normal'
 				});
-		} catch (error) {
+		} catch {
 			// Failed to send review notification
 			// Don't throw - this shouldn't fail the review creation
 		}

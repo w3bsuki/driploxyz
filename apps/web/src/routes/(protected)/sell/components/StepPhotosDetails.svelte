@@ -23,7 +23,7 @@
     isUploadingImages: boolean;
     onImageUpload: (files: File[]) => Promise<UploadedImage[]>;
     onImageDelete: (path: string) => Promise<boolean>;
-    onFieldChange: (field: string, value: any) => void;
+    onFieldChange: (field: string, value: string | boolean | number | null | undefined) => void;
     onFieldBlur: (field: string) => void;
   }
   

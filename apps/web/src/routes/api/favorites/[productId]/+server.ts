@@ -3,7 +3,7 @@ import type { RequestHandler } from './$types.js';
 import { enforceRateLimit } from '$lib/security/rate-limiter';
 
 // In-memory cache to prevent duplicate requests
-const processingRequests = new Map<string, Promise<any>>();
+const processingRequests = new Map<string, Promise<Response>>();
 
 // GET - Check if product is favorited and get count
 export const GET: RequestHandler = async ({ params, locals, request, getClientAddress }) => {
@@ -111,7 +111,7 @@ export const POST: RequestHandler = async ({ params, locals, request, getClientA
 					.eq('product_id', productId);
 				
 				if (deleteError) {
-					if ((deleteError as any).code === '42501') {
+					if ('code' in deleteError && deleteError.code === '42501') {
 						return json({ error: 'Not allowed', message: 'You are not allowed to modify this favorite' }, { status: 403 });
 					}
 					
@@ -167,7 +167,7 @@ export const POST: RequestHandler = async ({ params, locals, request, getClientA
 					favoriteCount: updatedProduct?.favorite_count || 1
 				});
 			}
-		} catch (error) {
+		} catch {
 			
 			return json({ 
 				error: 'Internal server error', 

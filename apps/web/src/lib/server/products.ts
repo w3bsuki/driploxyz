@@ -115,7 +115,7 @@ export async function createProduct(
     const fileExt = photo.name.split('.').pop();
     const fileName = `${userId}/${crypto.randomUUID()}.${fileExt}`;
 
-    const { data: _uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('product-images')
       .upload(fileName, photo, {
         cacheControl: '3600',

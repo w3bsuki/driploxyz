@@ -16,7 +16,7 @@ export const POST: RequestHandler = async ({ url }) => {
   
   try {
     switch (action) {
-      case 'process':
+      case 'process': {
         // Process items in the queue
         const result = await processSlugQueue();
         return json({
@@ -24,8 +24,9 @@ export const POST: RequestHandler = async ({ url }) => {
           action: 'process',
           ...result
         });
+      }
       
-      case 'status':
+      case 'status': {
         // Get queue status
         const status = await getQueueStatus();
         return json({
@@ -33,8 +34,9 @@ export const POST: RequestHandler = async ({ url }) => {
           action: 'status',
           ...status
         });
+      }
       
-      case 'backfill':
+      case 'backfill': {
         // Backfill slugs for existing products
         const batchSize = parseInt(url.searchParams.get('batch_size') || '50');
         const backfillResult = await backfillSlugs(batchSize);
@@ -43,8 +45,9 @@ export const POST: RequestHandler = async ({ url }) => {
           action: 'backfill',
           ...backfillResult
         });
+      }
       
-      case 'cleanup':
+      case 'cleanup': {
         // Clean up old completed items
         const olderThanDays = parseInt(url.searchParams.get('older_than_days') || '7');
         const cleanupResult = await cleanupQueue(olderThanDays);
@@ -53,6 +56,7 @@ export const POST: RequestHandler = async ({ url }) => {
           action: 'cleanup',
           ...cleanupResult
         });
+      }
       
       default:
         return json({

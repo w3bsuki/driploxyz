@@ -99,7 +99,16 @@
       <!-- Backdrop -->
       <div
         class="fixed inset-0 bg-black/50"
+        role="button"
+        tabindex="0"
         onclick={() => onOpenChange(false)}
+        onkeydown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onOpenChange(false);
+          }
+        }}
+        aria-label="Close category navigation"
       ></div>
 
       <!-- Sheet content from left -->

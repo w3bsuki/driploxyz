@@ -29,7 +29,7 @@
 			} else {
 				resendError = data.error || 'Failed to resend verification email';
 			}
-		} catch (error) {
+		} catch {
 			resendError = 'An error occurred. Please try again.';
 		} finally {
 			resending = false;

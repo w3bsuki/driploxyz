@@ -22,7 +22,10 @@ const DEFAULT_OPTIONS: ViewTrackingOptions = {
 };
 
 export function createViewTracker(
-  supabase: any,
+  supabase: {
+    from: (table: string) => { insert: (data: unknown) => Promise<{ data?: unknown; error?: unknown }> };
+    rpc: (fn: string, params?: Record<string, unknown>) => Promise<{ data?: unknown; error?: unknown }>;
+  },
   userId?: string,
   options: ViewTrackingOptions = {}
 ): ViewTracker {
@@ -100,7 +103,7 @@ export function createViewTracker(
       } else if (error) {
         // Intentionally empty - view tracking errors are non-critical
       }
-    } catch (error) {
+    } catch {
       // Intentionally empty - view tracking errors are non-critical
     }
   }
@@ -130,7 +133,10 @@ export function trackView(
   element: Element,
   params: {
     productId: string;
-    supabase: any;
+    supabase: {
+      from: (table: string) => { insert: (data: unknown) => Promise<{ data?: unknown; error?: unknown }> };
+      rpc: (fn: string, params?: Record<string, unknown>) => Promise<{ data?: unknown; error?: unknown }>;
+    };
     userId?: string;
     options?: ViewTrackingOptions;
   }

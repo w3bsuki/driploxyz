@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { Button, Avatar, ProductCard, ProductCardSkeleton, ListItemSkeleton, WelcomeModal, type Product, toasts } from '@repo/ui';
+  import { Button, ProductCardSkeleton, WelcomeModal, toasts } from '@repo/ui';
   import type { PageData } from './$types';
-  import { page } from '$app/state';
   import { replaceState } from '$app/navigation';
   // No lifecycle imports needed - using $effect
   import * as i18n from '@repo/i18n';
@@ -17,7 +16,7 @@
   
   let isLoading = $state(!data.products && !data.orders);
   let showWelcomeModal = $state(false);
-  let currentTutorialStep = $state<any>(null);
+  let currentTutorialStep = $state<{ id: string; step: number; title: string; description: string; targetElement?: string; position?: string } | null>(null);
   
   // Check for success message from listing creation and first time users
   $effect(() => {
@@ -119,7 +118,7 @@
         images: product.images?.map(img => img.image_url) || ['/placeholder-product.svg'],
         brand: product.brand,
         size: product.size,
-        condition: product.condition as any,
+        condition: product.condition as 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair',
         category: product.category?.name || 'Uncategorized',
         sellerId: product.seller_id,
         sellerName: data.profile?.username || data.profile?.full_name || '',
@@ -260,7 +259,7 @@
     <!-- Stats Grid -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       {#if isLoading}
-        {#each Array(4) as _}
+        {#each Array(4) as _unused, i (i)} <!-- eslint-disable-line @typescript-eslint/no-unused-vars -->
           <div class="bg-white p-4 rounded-lg shadow-xs animate-pulse">
             <div class="h-4 bg-gray-200 rounded w-24 mb-2"></div>
             <div class="h-8 bg-gray-300 rounded w-20 mb-1"></div>
@@ -286,7 +285,7 @@
       <div class="overflow-x-auto">
         {#if isLoading}
           <div class="p-4">
-            {#each Array(3) as _}
+            {#each Array(3) as _unused, i (i)} <!-- eslint-disable-line @typescript-eslint/no-unused-vars -->
               <div class="flex items-center py-3 border-b border-gray-100 animate-pulse">
                 <div class="h-4 bg-gray-200 rounded w-32 mr-4"></div>
                 <div class="h-4 bg-gray-200 rounded w-24 mr-4"></div>
@@ -339,7 +338,7 @@
       </div>
       {#if isLoading}
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-          {#each Array(6) as _}
+          {#each Array(6) as _unused, i (i)} <!-- eslint-disable-line @typescript-eslint/no-unused-vars -->
             <ProductCardSkeleton />
           {/each}
         </div>

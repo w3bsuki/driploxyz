@@ -29,7 +29,7 @@
     loading = false;
   }
 
-  function handleSellerClick(seller: any) {
+  function handleSellerClick(seller: { username?: string; id: string }) {
     goto(`/profile/${seller.username || seller.id}`);
   }
 

@@ -74,8 +74,7 @@
       if (typeof result?.favoriteCount === 'number') favoriteCount = result.favoriteCount;
       else favoriteCount = Math.max(0, favoriteCount + (isLiked ? 1 : -1));
       return { favoriteCount, favorited: isLiked };
-    } catch (e) {
-      
+    } catch {
       return { favoriteCount, favorited: isLiked };
     }
   }
@@ -184,7 +183,7 @@
         images={data.product.images || []}
         title={data.product.title || ''}
         isSold={data.product.is_sold || false}
-        condition={data.product.condition as any}
+        condition={data.product.condition}
       />
 
       <!-- Mobile unified post: condition · header (avatar/name/@username · like) · title · description -->
@@ -228,7 +227,7 @@
           <div class="mt-3 flex items-center gap-3">
             {#if data.product.condition}
               <span class="shrink-0">
-                <ConditionBadge condition={data.product.condition as any} />
+                <ConditionBadge condition={data.product.condition} />
               </span>
             {/if}
             <h1 class="flex-1 text-lg font-semibold text-[color:var(--gray-900)] leading-snug tracking-tight truncate">

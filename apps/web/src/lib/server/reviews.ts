@@ -26,7 +26,7 @@ export interface ReviewResult {
 
 export interface OrderValidationResult {
   isValid: boolean;
-  order?: any;
+  order?: OrderWithUsers;
   error?: string;
   canReview?: boolean;
   reviewerRole?: 'buyer' | 'seller';
@@ -109,7 +109,7 @@ export class ReviewsService {
         canReview: true,
         reviewerRole: isBuyer ? 'buyer' : 'seller'
       };
-    } catch (error) {
+    } catch {
       return {
         isValid: false,
         error: 'Failed to validate order'
@@ -193,7 +193,7 @@ export class ReviewsService {
         success: true,
         review
       };
-    } catch (error) {
+    } catch {
       return {
         success: false,
         error: 'Unexpected error creating review'

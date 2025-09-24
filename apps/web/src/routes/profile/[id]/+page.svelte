@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Avatar, ProductCard, UserBadge, AdminBadge, BottomNav, ReviewDisplay, RatingSummary } from '@repo/ui';
+  import { Button, Avatar, UserBadge, AdminBadge, BottomNav, ReviewDisplay, RatingSummary } from '@repo/ui';
   import { unreadMessageCount } from '$lib/stores/messageNotifications.svelte';
   import { getProductUrl } from '$lib/utils/seo-urls';
   import type { PageData } from './$types';
@@ -17,8 +17,8 @@
   let isFollowing = $state(data.isFollowing || false);
   let showFollowersModal = $state(false);
   let showFollowingModal = $state(false);
-  let followers = $state<any[]>([]);
-  let following = $state<any[]>([]);
+  let followers = $state<unknown[]>([]);
+  let following = $state<unknown[]>([]);
   let loadingFollowers = $state(false);
   let loadingFollowing = $state(false);
   

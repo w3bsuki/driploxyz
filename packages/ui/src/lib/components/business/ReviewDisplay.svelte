@@ -123,7 +123,7 @@
 					<div class="aspect-square relative rounded-lg overflow-hidden bg-[color:var(--surface-subtle)]">
 						<img
 							src={imageUrl}
-							alt="Review photo"
+							alt="Review attachment"
 							class="w-full h-full object-cover hover:scale-105 transition-transform duration-200 cursor-pointer"
 							loading="lazy"
 						/>

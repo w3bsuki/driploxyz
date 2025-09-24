@@ -60,27 +60,39 @@ export const POST: RequestHandler = async (event) => {
 
     // Discount validation completed
 
+    // Type the validation result properly
+    interface DiscountValidationResult {
+      valid: boolean;
+      code?: string;
+      discount_amount?: number;
+      final_amount?: number;
+      discount_percent?: number;
+      description?: string;
+      error?: string;
+    }
+
     // Handle both nested and flat response structures
-    const result = (validationResult as any)?.validate_discount_code || validationResult;
-    
+    const result = (validationResult as { validate_discount_code?: DiscountValidationResult } | DiscountValidationResult);
+    const typedResult = ('validate_discount_code' in result ? result.validate_discount_code : result) as DiscountValidationResult;
+
     // Return the validation result
-    if (result && result.valid) {
+    if (typedResult && typedResult.valid) {
       return json({
         valid: true,
-        code: result.code,
-        discount_amount: result.discount_amount,
-        final_amount: result.final_amount,
-        discount_percent: result.discount_percent,
-        description: result.description
+        code: typedResult.code,
+        discount_amount: typedResult.discount_amount,
+        final_amount: typedResult.final_amount,
+        discount_percent: typedResult.discount_percent,
+        description: typedResult.description
       });
     } else {
       return json({
         valid: false,
-        error: result?.error || 'Invalid discount code'
+        error: typedResult?.error || 'Invalid discount code'
       });
     }
 
-  } catch (error) {
+  } catch {
     // Internal error during discount validation
     return json({ 
       valid: false, 

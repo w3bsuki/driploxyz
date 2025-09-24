@@ -23,7 +23,7 @@ interface CoreWebVitals {
   ttfb?: number; // Time to First Byte
 }
 
-interface StreamingMetric {
+interface StreamingMetric extends Record<string, unknown> {
   dataType: string;
   loadTime: number;
   chunkCount: number;
@@ -31,7 +31,7 @@ interface StreamingMetric {
   timestamp: string;
 }
 
-interface DatabaseQueryMetric {
+interface DatabaseQueryMetric extends Record<string, unknown> {
   query: string;
   duration: number;
   timestamp: string;
@@ -39,7 +39,7 @@ interface DatabaseQueryMetric {
   operation?: string;
 }
 
-interface APIMetric {
+interface APIMetric extends Record<string, unknown> {
   endpoint: string;
   method: string;
   duration: number;
@@ -658,7 +658,7 @@ export function trackDatabaseQuery(table?: string, operation?: string) {
 }
 
 // Helper functions for SvelteKit integration
-export const trackDataLoad = (route: string, startTime: number, metadata?: Record<string, unknown>) => {
+export const trackDataLoad = (route: string, startTime: number, metadata?: Record<string, string | number | boolean | undefined>) => {
   return performanceMonitor.trackDataLoading(route, startTime, metadata);
 };
 
@@ -674,7 +674,7 @@ export const getPerformanceSummary = () => {
 export const measureAsync = async <T>(
   operation: () => Promise<T>,
   metricName: string,
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, string>
 ): Promise<T> => {
   const startTime = Date.now();
   try {
@@ -695,10 +695,10 @@ export const createLoadTracker = (route: string) => {
   const startTime = Date.now();
 
   return {
-    finish: (metadata?: Record<string, unknown>) => {
+    finish: (metadata?: Record<string, string | number | boolean | undefined>) => {
       return trackDataLoad(route, startTime, metadata);
     },
-    track: (name: string, value: number, metadata?: Record<string, unknown>) => {
+    track: (name: string, value: number, metadata?: Record<string, string>) => {
       performanceMonitor.recordMetric(name, value, 'ms', { route, ...metadata });
     },
     trackStreaming: (dataType: string, chunkCount: number = 1) => {

@@ -3,12 +3,12 @@
   import * as i18n from '@repo/i18n';
 
   interface Props {
-    formData: any;
+    formData: Record<string, string | boolean | number | null | undefined>;
     uploadedImages: Array<{ url: string; path: string }>;
     isUploadingImages: boolean;
     onImageUpload: (imageUrls: string[], imagePaths: string[]) => void;
     onImageDelete: (index: number) => Promise<void>;
-    onFieldChange: (field: string, value: any) => void;
+    onFieldChange: (field: string, value: string | boolean | number | null | undefined) => void;
   }
 
   let { 
@@ -17,7 +17,7 @@
     isUploadingImages = $bindable(),
     onImageUpload,
     onImageDelete,
-    onFieldChange
+    // onFieldChange
   }: Props = $props();
 </script>
 

@@ -3,8 +3,9 @@ import type { RequestHandler } from './$types';
 import { createServerSupabaseClient } from '$lib/supabase/server';
 import { OrderService } from '$lib/services/OrderService';
 
-export const PATCH: RequestHandler = async ({ request, params, cookies }) => {
-	const supabase = createServerSupabaseClient({ cookies } as any);
+export const PATCH: RequestHandler = async (event) => {
+	const { request, params } = event;
+	const supabase = createServerSupabaseClient(event);
 	const orderService = new OrderService(supabase);
 	
 	const { data: { session }, error: sessionError } = await supabase.auth.getSession();

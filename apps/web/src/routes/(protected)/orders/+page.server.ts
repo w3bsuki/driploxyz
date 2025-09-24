@@ -52,11 +52,11 @@ export const load = (async ({ locals: { safeGetSession, supabase } }) => {
       .order('created_at', { ascending: false });
 
     if (buyerError) {
-      
+      console.error('Error fetching buyer orders:', buyerError);
     }
     
     if (sellerError) {
-      
+      console.error('Error fetching seller orders:', sellerError);
     }
 
     // Get product details for all orders
@@ -65,7 +65,14 @@ export const load = (async ({ locals: { safeGetSession, supabase } }) => {
       ...(sellerOrders || []).map(o => o.product_id)
     ].filter(Boolean);
     
-    let products: any[] = [];
+    let products: {
+      id: string;
+      title: string;
+      price: number;
+      condition: 'brand_new_with_tags' | 'new_without_tags' | 'like_new' | 'good' | 'worn' | 'fair';
+      size: string | null;
+      product_images: { image_url: string; }[];
+    }[] = [];
     if (allProductIds.length > 0) {
       const { data: productData } = await supabase
         .from('products')
@@ -86,7 +93,12 @@ export const load = (async ({ locals: { safeGetSession, supabase } }) => {
     const buyerIds = (sellerOrders || []).map(o => o.buyer_id).filter(Boolean);
     const allProfileIds = [...sellerIds, ...buyerIds].filter(Boolean);
     
-    let profiles: any[] = [];
+    let profiles: {
+      id: string;
+      username: string | null;
+      avatar_url: string | null;
+      full_name: string | null;
+    }[] = [];
     if (allProfileIds.length > 0) {
       const { data: profileData } = await supabase
         .from('profiles')
@@ -94,8 +106,6 @@ export const load = (async ({ locals: { safeGetSession, supabase } }) => {
           id,
           username,
           avatar_url,
-          first_name,
-          last_name,
           full_name
         `)
         .in('id', allProfileIds);
@@ -144,7 +154,7 @@ export const load = (async ({ locals: { safeGetSession, supabase } }) => {
       unreadNotifications: notifications?.length || 0
     };
 
-  } catch (err) {
+  } catch {
     
     throw error(500, 'Failed to load orders');
   }

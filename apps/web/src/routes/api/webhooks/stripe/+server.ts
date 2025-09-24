@@ -63,7 +63,7 @@ export const POST: RequestHandler = async ({ request }) => {
 async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
 	paymentLogger.info('Payment succeeded', {
 		paymentIntentId: paymentIntent.id,
-		metadata: paymentIntent.metadata
+		metadata: JSON.stringify(paymentIntent.metadata)
 	});
 	
 	const { product_id: productId, seller_id: sellerId, buyer_id: buyerId, order_id: orderId } = paymentIntent.metadata;
@@ -221,7 +221,7 @@ async function handlePaymentSuccess(paymentIntent: Stripe.PaymentIntent) {
 async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
 	paymentLogger.warn('Payment failed', {
 		paymentIntentId: paymentIntent.id,
-		metadata: paymentIntent.metadata
+		metadata: JSON.stringify(paymentIntent.metadata)
 	});
 	
 	const { product_id: productId, seller_id: sellerId, buyer_id: buyerId, order_id: orderId } = paymentIntent.metadata;
@@ -341,7 +341,7 @@ async function handlePaymentFailed(paymentIntent: Stripe.PaymentIntent) {
 async function handlePaymentCanceled(paymentIntent: Stripe.PaymentIntent) {
 	paymentLogger.info('Payment canceled', {
 		paymentIntentId: paymentIntent.id,
-		metadata: paymentIntent.metadata
+		metadata: JSON.stringify(paymentIntent.metadata)
 	});
 	
 	const { product_id: productId, seller_id: sellerId, buyer_id: buyerId, order_id: orderId } = paymentIntent.metadata;

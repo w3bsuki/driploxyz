@@ -8,13 +8,36 @@ type OrderInsert = Tables['orders']['Insert'];
 type OrderUpdate = Tables['orders']['Update'];
 type OrderStatus = 'pending' | 'paid' | 'shipped' | 'delivered' | 'cancelled' | 'disputed';
 
+// Extended order type with joined data
+interface OrderWithJoins extends Order {
+	product?: {
+		title: string;
+	};
+	buyer?: {
+		username: string;
+	};
+	seller?: {
+		username: string;
+	};
+}
+
+interface ShippingAddress {
+	street: string;
+	city: string;
+	state: string;
+	zip: string;
+	country: string;
+	full_name: string;
+	[key: string]: string | undefined;
+}
+
 interface CreateOrderParams {
 	productId: string;
 	buyerId: string;
 	sellerId: string;
 	totalAmount: number;
 	shippingCost?: number;
-	shippingAddress: any;
+	shippingAddress: ShippingAddress;
 }
 
 interface OrderStatusUpdateParams {
@@ -118,7 +141,14 @@ export class OrderService {
 					product:products(id, title, price)
 				`)
 				.eq('id', params.orderId)
-				.single();
+				.single() as {
+					data: Order & {
+						buyer: { id: string; username: string | null; full_name: string | null };
+						seller: { id: string; username: string | null; full_name: string | null };
+						product: { id: string; title: string; price: number };
+					} | null;
+					error: Error | null;
+				};
 
 			if (orderError || !order) {
 				return { order: null, error: new Error('Order not found') };
@@ -175,7 +205,7 @@ export class OrderService {
 	/**
 	 * Validate order status update permissions and transitions
 	 */
-	private validateStatusUpdate(order: any, newStatus: OrderStatus, userId: string): Error | null {
+	private validateStatusUpdate(order: Order, newStatus: OrderStatus, userId: string): Error | null {
 		// Permission checks
 		switch (newStatus) {
 			case 'shipped':
@@ -223,8 +253,18 @@ export class OrderService {
 	/**
 	 * Handle side effects of status updates (inventory, notifications, etc.)
 	 */
-	private async handleStatusUpdateSideEffects(order: any, newStatus: OrderStatus, params: OrderStatusUpdateParams) {
-		const notifications: any[] = [];
+	private async handleStatusUpdateSideEffects(order: Order, newStatus: OrderStatus, params: OrderStatusUpdateParams) {
+		interface NotificationData {
+			user_id: string;
+			type: string;
+			title: string;
+			message: string;
+			order_id: string;
+			category: string;
+			priority: string;
+			action_required?: boolean;
+		}
+		const notifications: NotificationData[] = [];
 
 		switch (newStatus) {
 			case 'shipped':
@@ -233,7 +273,7 @@ export class OrderService {
 					user_id: order.buyer_id,
 					type: 'order_shipped',
 					title: 'Your order has been shipped! 📦',
-					message: `${order.seller.username} has shipped your order for "${order.product.title}"${params.trackingNumber ? ` (Tracking: ${params.trackingNumber})` : ''}`,
+					message: `${(order as OrderWithJoins).seller?.username || 'Seller'} has shipped your order for "${(order as OrderWithJoins).product?.title || 'product'}"${params.trackingNumber ? ` (Tracking: ${params.trackingNumber})` : ''}`,
 					order_id: order.id,
 					category: 'purchases',
 					priority: 'normal'
@@ -246,7 +286,7 @@ export class OrderService {
 					user_id: order.seller_id,
 					type: 'order_delivered',
 					title: 'Order delivered! 🎉',
-					message: `Your sale of "${order.product.title}" has been marked as delivered by ${order.buyer.username}`,
+					message: `Your sale of "${(order as OrderWithJoins).product?.title || 'product'}" has been marked as delivered by ${(order as OrderWithJoins).buyer?.username || 'buyer'}`,
 					order_id: order.id,
 					category: 'sales',
 					priority: 'normal'
@@ -286,6 +326,7 @@ export class OrderService {
 					.eq('order_id', order.id);
 
 				// Notify relevant party
+				{
 				const notifyUserId = params.userId === order.buyer_id ? order.seller_id : order.buyer_id;
 				const cancelledBy = params.userId === order.buyer_id ? 'buyer' : 'seller';
 				
@@ -293,14 +334,15 @@ export class OrderService {
 					user_id: notifyUserId,
 					type: 'order_cancelled',
 					title: 'Order Cancelled',
-					message: `Order for "${order.product.title}" has been cancelled by the ${cancelledBy}`,
+					message: `Order for "${(order as OrderWithJoins).product?.title || 'product'}" has been cancelled by the ${cancelledBy}`,
 					order_id: order.id,
 					category: 'general',
 					priority: 'high'
 				});
+				}
 				break;
 
-			case 'disputed':
+			case 'disputed': {
 				// Notify both parties and admin
 				const disputeInitiatedBy = params.userId === order.buyer_id ? 'buyer' : 'seller';
 				const otherPartyId = params.userId === order.buyer_id ? order.seller_id : order.buyer_id;
@@ -309,7 +351,7 @@ export class OrderService {
 					user_id: otherPartyId,
 					type: 'order_disputed',
 					title: 'Order Disputed ⚠️',
-					message: `Order for "${order.product.title}" has been disputed. Please contact support.`,
+					message: `Order for "${(order as OrderWithJoins).product?.title || 'product'}" has been disputed. Please contact support.`,
 					order_id: order.id,
 					category: 'general',
 					priority: 'urgent',
@@ -322,7 +364,7 @@ export class OrderService {
 					.insert({
 						type: 'order_dispute',
 						title: 'Order Dispute Reported',
-						message: `Order ${order.id} for "${order.product.title}" has been disputed by the ${disputeInitiatedBy}`,
+						message: `Order ${order.id} for "${(order as OrderWithJoins).product?.title || 'product'}" has been disputed by the ${disputeInitiatedBy}`,
 						data: {
 							order_id: order.id,
 							product_id: order.product_id,
@@ -335,6 +377,7 @@ export class OrderService {
 						user_id: params.userId
 					});
 				break;
+			}
 		}
 
 		// Insert notifications

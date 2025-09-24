@@ -65,7 +65,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
       counts,
       userFavorites
     });
-  } catch (error) {
+  } catch {
     
     return json({ error: 'Internal server error' }, { status: 500 });
   }

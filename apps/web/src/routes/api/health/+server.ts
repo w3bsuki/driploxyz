@@ -26,7 +26,7 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 				.single();
 			
 			checks.database = !dbError;
-		} catch (e) {
+		} catch {
 			// Database health check failed
 			checks.database = false;
 		}
@@ -36,7 +36,7 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 			// Try to get session (won't fail if no session, just returns null)
 			const { error: authError } = await locals.supabase.auth.getSession();
 			checks.auth = !authError;
-		} catch (e) {
+		} catch {
 			// Auth health check failed
 			checks.auth = false;
 		}
@@ -48,7 +48,7 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 				.listBuckets();
 			
 			checks.storage = !storageError;
-		} catch (e) {
+		} catch {
 			// Storage might not be configured, so we don't fail the health check
 			// Storage health check skipped
 			checks.storage = true; // Mark as OK if not configured
@@ -111,7 +111,7 @@ export const HEAD: RequestHandler = async ({ locals }) => {
 				'Cache-Control': 'no-cache',
 			}
 		}));
-	} catch (err) {
+	} catch {
 		return addSecurityHeaders(new Response(null, {
 			status: 503,
 			headers: {

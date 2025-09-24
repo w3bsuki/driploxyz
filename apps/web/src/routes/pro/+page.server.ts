@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import type { Database } from '@repo/database';
 import { createLogger } from '$lib/utils/log';
 
 const log = createLogger('pro-page');
@@ -17,11 +18,11 @@ export const load = (async ({
   const limit = 24; // Products per page
   const offset = (page - 1) * limit;
 
-  log.debug('Loading pro page', { 
-    condition, 
-    category, 
-    page, 
-    userEmail: user?.email 
+  log.debug('Loading pro page', {
+    condition: condition ?? undefined,
+    category: category ?? undefined,
+    page,
+    userEmail: user?.email
   });
 
   try {
@@ -67,7 +68,7 @@ export const load = (async ({
 
     // Apply filters
     if (condition) {
-      query = query.eq('condition', condition);
+      query = query.eq('condition', condition as Database['public']['Enums']['product_condition']);
     }
 
     if (category) {
@@ -100,7 +101,7 @@ export const load = (async ({
         .eq('user_id', user.id);
 
       if (favoritesError) {
-        log.warn('Error loading user favorites', favoritesError);
+        log.warn('Error loading user favorites', { error: String(favoritesError) });
       } else {
         userFavorites = (favorites || []).reduce((acc, fav) => {
           acc[fav.product_id] = true;
@@ -117,7 +118,7 @@ export const load = (async ({
       .order('sort_order');
 
     if (categoriesError) {
-      log.warn('Error loading categories for filters', categoriesError);
+      log.warn('Error loading categories for filters', { error: String(categoriesError) });
     }
 
     const availableConditions = [
@@ -131,7 +132,8 @@ export const load = (async ({
     log.debug('Successfully loaded pro page data', {
       productCount: products?.length || 0,
       totalCount,
-      filtersApplied: { condition, category }
+      filterCondition: condition ?? undefined,
+      filterCategory: category ?? undefined
     });
 
     return {
