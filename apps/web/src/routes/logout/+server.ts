@@ -14,7 +14,7 @@ export const POST: RequestHandler = async ({ request, url, cookies, locals: { su
   const expectedOrigin = `${url.protocol}//${host}`;
   
   if (!origin || origin !== expectedOrigin) {
-    throw error(403, 'Invalid origin. Logout must be initiated from the same site.');
+    error(403, 'Invalid origin. Logout must be initiated from the same site.');
   }
 
   try {
@@ -72,10 +72,24 @@ export const POST: RequestHandler = async ({ request, url, cookies, locals: { su
   }
   
   // Always redirect to home after logout
-  throw redirect(303, '/');
+  try {
+    redirect(303, '/');
+  } catch (error) {
+    // Re-throw actual redirects (they're Response objects)
+    if (error instanceof Response && error.status >= 300 && error.status < 400) {
+      throw error;
+    }
+    // Log and handle unexpected errors - logout should not fail
+    console.error('Logout redirect error:', error);
+    // Return a basic success response if redirect fails
+    return new Response('Logged out successfully', {
+      status: 200,
+      headers: { 'Content-Type': 'text/plain' }
+    });
+  }
 };
 
 // Block GET method for security - logout must be POST-only
 export const GET: RequestHandler = async () => {
-  throw error(405, 'Method not allowed. Logout must use POST for security.');
+  error(405, 'Method not allowed. Logout must use POST for security.');
 };

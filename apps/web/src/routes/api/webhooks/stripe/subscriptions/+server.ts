@@ -55,11 +55,14 @@ export const POST: RequestHandler = async ({ request }) => {
           if (isDebug) {
             console.log('Processing subscription cycle payment');
           }
-          const invoiceObject = event.data.object as any;
-          if (invoiceObject.subscription) {
+          const invoiceObject = event.data.object as import('stripe').Stripe.Invoice;
+          const subscriptionField = (invoiceObject as unknown as { subscription?: string | import('stripe').Stripe.Subscription }).subscription;
+          if (subscriptionField) {
+            const subscriptionId = typeof subscriptionField === 'string' ? subscriptionField : subscriptionField.id;
+            const subscriptionObj = typeof subscriptionField === 'string' ? await stripe.subscriptions.retrieve(subscriptionId) : subscriptionField;
             await subscriptionService.handleStripeWebhook({
               type: 'customer.subscription.updated',
-              data: { object: invoiceObject.subscription },
+              data: { object: subscriptionObj },
               id: 'mock_event_' + Date.now(),
               object: 'event',
               api_version: null,
@@ -67,7 +70,7 @@ export const POST: RequestHandler = async ({ request }) => {
               livemode: false,
               pending_webhooks: 0,
               request: { id: null, idempotency_key: null }
-            } as any, stripe);
+            } satisfies import('stripe').Stripe.Event, stripe);
           }
         }
         break;
@@ -80,9 +83,11 @@ export const POST: RequestHandler = async ({ request }) => {
           console.error('Stripe not available for payment failed handling');
           break;
         }
-        const invoiceObject = event.data.object as any;
-        if (invoiceObject.subscription) {
-          const subscription = await stripe.subscriptions.retrieve(invoiceObject.subscription);
+        const invoiceObject = event.data.object as import('stripe').Stripe.Invoice;
+        const subscriptionField = (invoiceObject as unknown as { subscription?: string | import('stripe').Stripe.Subscription }).subscription;
+        if (subscriptionField) {
+          const subscriptionId = typeof subscriptionField === 'string' ? subscriptionField : subscriptionField.id;
+          const subscription = await stripe.subscriptions.retrieve(subscriptionId);
           await subscriptionService.handleStripeWebhook({
             type: 'customer.subscription.updated',
             data: { object: subscription },
@@ -93,7 +98,7 @@ export const POST: RequestHandler = async ({ request }) => {
             livemode: false,
             pending_webhooks: 0,
             request: { id: null, idempotency_key: null }
-          } as any, stripe);
+          } satisfies import('stripe').Stripe.Event, stripe);
         }
         break;
       }

@@ -77,7 +77,7 @@ export async function handleCountryRedirect(event: RequestEvent): Promise<void> 
       const redirectUrl = new URL(event.url);
       redirectUrl.hostname = `${targetSubdomain}.${baseHost}`;
       
-      throw redirect(302, redirectUrl.toString());
+      redirect(302, redirectUrl.toString());
     }
   } catch (error) {
     // If it's already a redirect, re-throw it

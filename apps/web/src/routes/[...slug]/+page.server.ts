@@ -31,7 +31,7 @@ export const load = (async ({ params, locals: { supabase, country } }) => {
       slug.endsWith('.png') ||
       slug.endsWith('.jpg') ||
       slug.endsWith('.svg')) {
-    throw error(404, 'Not found');
+    error(404, 'Not found');
   }
 
   const parts = slug.split('/').filter(Boolean);
@@ -42,9 +42,9 @@ export const load = (async ({ params, locals: { supabase, country } }) => {
     const productSlug = parts[parts.length - 1];
     const canonical = `/product/${seller}/${productSlug}`;
     // Extra path segment (e.g., category) → permanent redirect
-    if (parts.length > 3) throw redirect(301, canonical);
+    if (parts.length > 3) redirect(301, canonical);
     // Exactly seller + slug → temporary redirect to canonical route (lets specific route take over)
-    throw redirect(302, canonical);
+    redirect(302, canonical);
   }
 
   // Case 1: Handle legacy /product/uuid format
@@ -63,9 +63,9 @@ export const load = (async ({ params, locals: { supabase, country } }) => {
     
     if (productData?.slug && productData?.profiles?.username) {
       // Redirect to canonical URL
-      throw redirect(301, `/product/${productData.profiles.username}/${productData.slug}`);
+      redirect(301, `/product/${productData.profiles.username}/${productData.slug}`);
     } else {
-      throw error(404, 'Product not found');
+      error(404, 'Product not found');
     }
   }
 
@@ -100,15 +100,15 @@ export const load = (async ({ params, locals: { supabase, country } }) => {
         const newPath = categorySegment 
           ? `/product/${usernameHistory.profiles.username}/${categorySegment}/${productSlug}`
           : `/product/${usernameHistory.profiles.username}/${productSlug}`;
-        throw redirect(301, newPath);
+        redirect(301, newPath);
       } else {
-        throw error(404, 'Seller not found');
+        error(404, 'Seller not found');
       }
     }
 
     // Look up product by seller + slug (with null checks)
     if (!seller.id || !productSlug) {
-      throw error(404, 'Invalid request parameters');
+      error(404, 'Invalid request parameters');
     }
 
     const { data: productData } = await supabase
@@ -124,7 +124,7 @@ export const load = (async ({ params, locals: { supabase, country } }) => {
       .single();
 
     if (!productData) {
-      throw error(404, 'Product not found');
+      error(404, 'Product not found');
     }
 
     // Check if category segment is correct (if provided)
@@ -133,13 +133,13 @@ export const load = (async ({ params, locals: { supabase, country } }) => {
       const correctPath = productData.categories?.slug 
         ? `/product/${sellerUsername}/${productData.categories.slug}/${productSlug}`
         : `/product/${sellerUsername}/${productSlug}`;
-      throw redirect(301, correctPath);
+      redirect(301, correctPath);
     }
 
     // Product found - redirect to canonical route handled by specific page
     if (productData.id) {
       const canonical = `/product/${sellerUsername}/${productSlug}`;
-      throw redirect(302, canonical);
+      redirect(302, canonical);
     }
   }
 
@@ -148,7 +148,7 @@ export const load = (async ({ params, locals: { supabase, country } }) => {
     const uuid = parts[0];
     
     if (!uuid) {
-      throw error(404, 'Invalid UUID');
+      error(404, 'Invalid UUID');
     }
 
     const { data: productData } = await supabase
@@ -163,7 +163,7 @@ export const load = (async ({ params, locals: { supabase, country } }) => {
       .single();
     
     if (productData?.slug && productData?.profiles?.username) {
-      throw redirect(301, `/product/${productData.profiles.username}/${productData.slug}`);
+      redirect(301, `/product/${productData.profiles.username}/${productData.slug}`);
     }
   }
 
@@ -172,7 +172,7 @@ export const load = (async ({ params, locals: { supabase, country } }) => {
     const legacySlug = parts[0];
     
     if (!legacySlug) {
-      throw error(404, 'Invalid slug');
+      error(404, 'Invalid slug');
     }
     
     // First, look for product by slug globally
@@ -188,7 +188,7 @@ export const load = (async ({ params, locals: { supabase, country } }) => {
       .single();
 
     if (productData?.profiles?.username && productData.slug) {
-      throw redirect(301, `/product/${productData.profiles.username}/${productData.slug}`);
+      redirect(301, `/product/${productData.profiles.username}/${productData.slug}`);
     }
 
     // If not found, check slug history for redirects
@@ -206,13 +206,13 @@ export const load = (async ({ params, locals: { supabase, country } }) => {
         .single();
 
       if (slugHistory?.products?.profiles?.username && slugHistory.products.slug) {
-        throw redirect(301, `/product/${slugHistory.products.profiles.username}/${slugHistory.products.slug}`);
+        redirect(301, `/product/${slugHistory.products.profiles.username}/${slugHistory.products.slug}`);
       }
     }
   }
 
   // For any other paths, return 404 from this catch‑all to avoid duplicate UI
-  throw error(404, 'Not found');
+  error(404, 'Not found');
 }) satisfies PageServerLoad;
 
 /**

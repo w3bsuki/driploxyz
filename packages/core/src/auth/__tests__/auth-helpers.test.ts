@@ -28,7 +28,7 @@ const createMockCookies = (): Cookies => ({
   serialize: vi.fn()
 });
 
-const createMockRequestEvent = (locals: any = {}): RequestEvent => ({
+const createMockRequestEvent = (locals: Record<string, unknown> = {}): RequestEvent => ({
   locals,
   cookies: createMockCookies(),
   fetch: global.fetch,

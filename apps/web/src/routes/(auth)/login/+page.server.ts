@@ -7,7 +7,18 @@ export const load = (async (event) => {
   const { session } = await event.locals.safeGetSession();
   
   if (session) {
-    throw redirect(303, '/');
+    try {
+      redirect(303, '/');
+    } catch (error) {
+      // Re-throw actual redirects (they're Response objects)
+      if (error instanceof Response && error.status >= 300 && error.status < 400) {
+        throw error;
+      }
+      // Log and handle unexpected errors
+      console.error('Login load redirect error:', error);
+      // Continue loading the page instead of crashing
+      return { errorMessage: null };
+    }
   }
   
   // Handle auth callback errors
@@ -107,6 +118,17 @@ export const actions = {
     // This prevents race conditions with auth state propagation
     
     // Redirect to homepage after successful login
-    throw redirect(303, '/');
+    try {
+      redirect(303, '/');
+    } catch (error) {
+      // Re-throw actual redirects (they're Response objects)
+      if (error instanceof Response && error.status >= 300 && error.status < 400) {
+        throw error;
+      }
+      // Log and handle unexpected errors
+      console.error('Login action redirect error:', error);
+      // Return success without redirect if redirect fails
+      return { success: true };
+    }
   }
 } satisfies Actions;

@@ -4,7 +4,6 @@
  * Mobile-first with enhanced accessibility
  */
 
-import { writable } from 'svelte/store';
 import type { Toast, ToastType, ToastStore, ToastStoreOptions } from './types';
 
 // Global toast provider instance
@@ -28,7 +27,8 @@ function getToastHash(description: string, type: ToastType): string {
 }
 
 function createToastStore(): ToastStore {
-  const { update } = writable<Toast[]>([]);
+  // Reactive toasts state using Svelte 5 runes
+  let toasts = $state<Toast[]>([]);
   
   // Generate unique toast ID
   function generateId(): string {
@@ -58,10 +58,8 @@ function createToastStore(): ToastStore {
     }
     
     // Fallback: add to store (for compatibility)
-    update(toasts => {
-      const filtered = toasts.filter(t => t.id !== toast.id);
-      return [...filtered, toast];
-    });
+    const filtered = toasts.filter(t => t.id !== toast.id);
+    toasts = [...filtered, toast];
     
     return toast.id;
   }
@@ -74,7 +72,7 @@ function createToastStore(): ToastStore {
     }
     
     // Fallback: remove from store
-    update(toasts => toasts.filter(t => t.id !== id));
+    toasts = toasts.filter(t => t.id !== id);
   }
   
   const store: ToastStore = {
@@ -133,7 +131,7 @@ function createToastStore(): ToastStore {
       }
       
       // Fallback: clear store
-      update(() => []);
+      toasts = [];
     }
   };
   

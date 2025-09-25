@@ -186,8 +186,8 @@ export { default as TagInput } from './components/forms/TagInput.svelte';
 // These exports maintain existing API but use new Melt UI system internally
 export { default as ToastContainer } from './components/utilities/ToastContainer.svelte';
 export { default as TutorialToast } from './components/utilities/TutorialToast.svelte';
-export { toasts } from './stores/toast-store';
-export type { ToastMessage } from './stores/toast-store';
+export { toasts } from './stores/toast-store.svelte';
+export type { ToastMessage } from './stores/toast-store.svelte';
 
 // Modern Toast System - Melt UI based (recommended for new code)
 export {
@@ -199,10 +199,10 @@ export {
   toastUtils
 } from './primitives';
 
-export { toasts as modernToasts } from './primitives/toast/store';
+export { toasts as modernToasts } from './primitives/toast/store.svelte';
 
 // Convenience aliases for gradual migration
-export { toasts as legacyToasts } from './stores/toast-store';
+export { toasts as legacyToasts } from './stores/toast-store.svelte';
 
 // Filter components - accessibility-first filtering system (deduplicated)
 

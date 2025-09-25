@@ -7,7 +7,7 @@ export const load = (async ({ url, locals, cookies }) => {
 	
 	// If already logged in and admin, redirect to dashboard
 	if (user && locals.isAdmin) {
-		throw redirect(303, '/');
+		redirect(303, '/');
 	}
 
 	const csrfToken = await CSRFProtection.getToken({
@@ -58,6 +58,6 @@ export const actions = {
 
 		// The hooks.server.ts will handle admin verification
 		// If user is not admin, they'll be signed out and get an error there
-		throw redirect(303, '/');
+		redirect(303, '/');
 }
 } satisfies Actions;

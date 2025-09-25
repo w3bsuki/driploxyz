@@ -53,6 +53,6 @@ export const load = (async ({
 
   } catch (err) {
     log.error('Unexpected error in designer collections page load', err);
-    throw error(500, 'Something went wrong loading the designer collections');
+    error(500, 'Something went wrong loading the designer collections');
   }
 }) satisfies PageServerLoad;

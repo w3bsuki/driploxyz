@@ -81,7 +81,7 @@ export function validateProductSlug(
   }
   
   if (!result.valid && throwOnError) {
-    throw error(400, 'Invalid slug: ' + result.errors.join('; '));
+    error(400, 'Invalid slug: ' + result.errors.join('; '));
   }
   
   return result;
@@ -98,7 +98,7 @@ export function createSlugValidationHandler(
     const slug = params.slug || url.searchParams.get('slug');
     
     if (!slug) {
-      throw error(400, 'Slug parameter is required');
+      error(400, 'Slug parameter is required');
     }
     
     const validation = validateProductSlug(slug, {
@@ -137,7 +137,7 @@ export function validateSlugInFormData(
     };
     
     if (config.throwOnError) {
-      throw error(400, 'Slug is required');
+      error(400, 'Slug is required');
     }
     
     return result;

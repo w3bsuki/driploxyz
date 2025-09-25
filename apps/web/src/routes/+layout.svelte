@@ -12,7 +12,7 @@
   import Header from '$lib/components/Header.svelte';
   import '../app.css';
   // Deploy to driplo.xyz - force redeploy
-  import { invalidate, preloadCode, preloadData } from '$app/navigation';
+  import { invalidate, preloadCode, goto } from '$app/navigation';
   import { browser, dev } from '$app/environment';
   import { injectAnalytics } from '@vercel/analytics/sveltekit';
   // Auth stores removed - we use server data directly
@@ -54,28 +54,28 @@
     }
   }
 
-  // Preload critical category routes for faster navigation
+  // Optimized route preloading - only preload when user shows intent
   $effect(() => {
-    if (browser) {
-      // Preload main category routes on app load for instant navigation
-      const criticalRoutes = [
-        '/search',
-        '/search?category=women',
-        '/search?category=men',
-        '/search?category=kids'
-      ];
+    if (browser && document.readyState === 'complete') {
+      // Use requestIdleCallback for better performance
+      const preloadCriticalRoutes = () => {
+        const criticalRoutes = ['/search', '/category/women', '/category/men'];
 
-      // Preload in background after initial render
-      setTimeout(() => {
         criticalRoutes.forEach(async (route) => {
           try {
+            // Only preload code, not data (data changes frequently)
             await preloadCode(route);
-            await preloadData(route);
           } catch {
             // Preload failed, continue silently
           }
         });
-      }, 1000);
+      };
+
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(preloadCriticalRoutes, { timeout: 2000 });
+      } else {
+        setTimeout(preloadCriticalRoutes, 1500);
+      }
     }
   });
 
@@ -274,59 +274,60 @@
     }
   }
 
-  // Handlers for sticky search bar
-  function handleStickySearch(query: string) {
+  // Handlers for sticky search bar - using SvelteKit navigation
+  async function handleStickySearch(query: string) {
     if (!query?.trim()) return;
-    if (typeof window !== 'undefined') {
-      window.location.href = `/search?q=${encodeURIComponent(query.trim())}`;
-    }
+    await goto(`/search?q=${encodeURIComponent(query.trim())}`);
   }
-  function handleStickyCategorySelect(slug: string) {
-    if (typeof window !== 'undefined') {
-      window.location.href = `/category/${slug}`;
-    }
+
+  async function handleStickyCategorySelect(slug: string) {
+    await goto(`/category/${slug}`);
   }
-  function handleStickyFilterChange(key: string, value: string | number | boolean) {
-    if (typeof window === 'undefined') return;
-    const url = new URL(window.location.origin + '/search');
+
+  async function handleStickyFilterChange(key: string, value: string | number | boolean) {
+    const searchParams = new URLSearchParams(page.url.searchParams);
+
     // Map UI keys to URL params
     switch (key) {
       case 'sortBy':
-        url.searchParams.set('sort', String(value));
+        searchParams.set('sort', String(value));
         break;
       case 'minPrice':
-        url.searchParams.set('min_price', String(value));
+        searchParams.set('min_price', String(value));
         break;
       case 'maxPrice':
-        url.searchParams.set('max_price', String(value));
+        searchParams.set('max_price', String(value));
         break;
       default:
-        url.searchParams.set(key, String(value));
+        searchParams.set(key, String(value));
     }
-    window.location.href = url.toString();
+
+    await goto(`/search?${searchParams.toString()}`);
   }
-  function handleStickyFilterRemove(key: string) {
-    if (typeof window === 'undefined') return;
-    const url = new URL(window.location.origin + '/search');
+
+  async function handleStickyFilterRemove(key: string) {
+    const searchParams = new URLSearchParams(page.url.searchParams);
+
     switch (key) {
       case 'sortBy':
-        url.searchParams.delete('sort');
+        searchParams.delete('sort');
         break;
       case 'minPrice':
-        url.searchParams.delete('min_price');
+        searchParams.delete('min_price');
         break;
       case 'maxPrice':
-        url.searchParams.delete('max_price');
+        searchParams.delete('max_price');
         break;
       default:
-        url.searchParams.delete(key);
+        searchParams.delete(key);
     }
-    window.location.href = url.toString();
+
+    const query = searchParams.toString();
+    await goto(query ? `/search?${query}` : '/search');
   }
-  function handleStickyClearAll() {
-    if (typeof window !== 'undefined') {
-      window.location.href = '/search';
-    }
+
+  async function handleStickyClearAll() {
+    await goto('/search');
   }
   // function handleStickyConditionFilter(condition: string) {
   //   if (!condition) return;
@@ -405,94 +406,99 @@
     }
   });
 
-  // Comprehensive auth state management following Supabase best practices
+  // Optimized auth state management - single listener with batched invalidations
   $effect(() => {
     if (!browser || !supabase) return;
-    
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-      const sessionChanged = newSession?.expires_at !== session?.expires_at;
 
+    let invalidationTimeoutId: number | null = null;
+
+    const batchedInvalidate = () => {
+      if (invalidationTimeoutId) return; // Already scheduled
+      invalidationTimeoutId = window.setTimeout(() => {
+        invalidate('supabase:auth');
+        invalidationTimeoutId = null;
+      }, 100); // Batch multiple auth events within 100ms
+    };
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, newSession) => {
+      // Only invalidate for events that actually change user state
       switch (event) {
-        case 'INITIAL_SESSION':
-          // Initial session load - no action needed as layout already has the data
-          break;
-          
         case 'SIGNED_IN':
-          // User successfully signed in - invalidate to refresh data
-          setTimeout(() => invalidate('supabase:auth'), 50);
-          break;
-          
         case 'SIGNED_OUT':
-          // User signed out - clear cached data and invalidate
-          setTimeout(() => invalidate('supabase:auth'), 50);
+        case 'USER_UPDATED':
+          batchedInvalidate();
           break;
-          
+
         case 'TOKEN_REFRESHED':
-          // Session tokens were refreshed
-          if (sessionChanged) {
-            setTimeout(() => invalidate('supabase:auth'), 50);
+          // Only invalidate if session actually changed
+          if (newSession?.expires_at !== session?.expires_at) {
+            batchedInvalidate();
           }
           break;
-          
-        case 'USER_UPDATED':
-          // User metadata was updated
-          setTimeout(() => invalidate('supabase:auth'), 50);
-          break;
-          
+
+        case 'INITIAL_SESSION':
         case 'PASSWORD_RECOVERY':
-          // Password recovery initiated - no action needed
-          break;
-          
         default:
-          // Unknown auth event - no action needed
+          // No action needed for these events
           break;
       }
     });
 
-    return () => authListener.subscription.unsubscribe();
-  });
-
-  // Session health monitoring for logged-in users
-  $effect(() => {
-    if (!browser || !session) return;
-    
-    let warningShown = false;
-    
-    const checkSessionHealth = () => {
-      if (!session?.expires_at) return;
-      
-      const expiresAt = new Date(session.expires_at * 1000).getTime();
-      const now = Date.now();
-      const timeUntilExpiry = expiresAt - now;
-      
-      // Warn if session expires in less than 5 minutes (single warning only)
-      if (timeUntilExpiry > 0 && timeUntilExpiry < 5 * 60 * 1000 && !warningShown) {
-        warningShown = true;
-        // Session expiring soon - auth listener will handle refresh
-      }
-      
-      // Session has expired - auth listener will handle refresh/signout
-      if (timeUntilExpiry <= 0) {
-        return;
-      }
-    };
-    
-    // Check immediately and then every minute
-    checkSessionHealth();
-    const interval = setInterval(checkSessionHealth, 60 * 1000);
-    
-    return () => clearInterval(interval);
-  });
-
-  // Initialize order notifications subscription for logged-in users
-  $effect(() => {
-    if (!browser || !supabase || !user?.id) return;
-    
-    // Subscribe to order notifications (sales, purchases, status updates)
-    const unsubscribe = orderNotificationActions.subscribeToNotifications(supabase, user.id);
-    
     return () => {
-      if (unsubscribe) unsubscribe();
+      if (invalidationTimeoutId) {
+        clearTimeout(invalidationTimeoutId);
+      }
+      authListener.subscription.unsubscribe();
+    };
+  });
+
+  // Optimized session health monitoring - only for authenticated users
+  $effect(() => {
+    if (!browser || !session?.expires_at) return;
+
+    // Calculate next check time more efficiently
+    const expiresAt = new Date(session.expires_at * 1000).getTime();
+    const now = Date.now();
+    const timeUntilExpiry = expiresAt - now;
+
+    // Only monitor if session has significant time left
+    if (timeUntilExpiry <= 0 || timeUntilExpiry > 24 * 60 * 60 * 1000) return;
+
+    let timeoutId: number | null = null;
+
+    // Smart scheduling - check closer to expiry
+    if (timeUntilExpiry > 10 * 60 * 1000) {
+      // More than 10 minutes - check in 5 minutes
+      timeoutId = window.setTimeout(() => {
+        // Session health will be re-evaluated on next effect run
+      }, 5 * 60 * 1000);
+    } else if (timeUntilExpiry > 2 * 60 * 1000) {
+      // 2-10 minutes - check every minute
+      timeoutId = window.setTimeout(() => {
+        // Session health will be re-evaluated
+      }, 60 * 1000);
+    }
+    // Less than 2 minutes - let auth listener handle refresh
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  });
+
+  // Optimized order notifications - stable subscription with user ID check
+  $effect(() => {
+    if (!browser || !supabase) return;
+
+    const currentUserId = user?.id;
+    if (!currentUserId) return;
+
+    // Subscribe with current user ID (won't re-run unless user actually changes)
+    const unsubscribe = orderNotificationActions.subscribeToNotifications(supabase, currentUserId);
+
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
     };
   });
 </script>

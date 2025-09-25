@@ -11,7 +11,7 @@ export const load = (async ({ params, locals, url }) => {
 
   if (!slug) {
     log.error('Collection slug is required');
-    throw error(404, 'Collection not found');
+    error(404, 'Collection not found');
   }
 
   const { safeGetSession } = locals;
@@ -35,7 +35,7 @@ export const load = (async ({ params, locals, url }) => {
 
     if (collectionError || !collection) {
       log.error('Collection not found:', { slug, error: collectionError });
-      throw error(404, 'Collection not found');
+      error(404, 'Collection not found');
     }
 
     // Get user favorites if logged in
@@ -104,6 +104,6 @@ export const load = (async ({ params, locals, url }) => {
     };
   } catch (err) {
     log.error('Error loading collection:', err);
-    throw error(500, 'Failed to load collection');
+    error(500, 'Failed to load collection');
   }
 }) satisfies PageServerLoad;

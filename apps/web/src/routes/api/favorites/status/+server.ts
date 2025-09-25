@@ -64,6 +64,12 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     return json({
       counts,
       userFavorites
+    }, {
+      headers: {
+        'cache-control': session?.user ? 'private, max-age=60, stale-while-revalidate=300' : 'public, max-age=120, s-maxage=300, stale-while-revalidate=600',
+        'vary': 'Accept-Encoding, Authorization',
+        'x-cache-strategy': 'user-data-api'
+      }
     });
   } catch {
     

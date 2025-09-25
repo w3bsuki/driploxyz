@@ -25,7 +25,7 @@ type Profile = {
   followers_count: number | null;
   rating: number | null;
   bio: string | null;
-  verified: boolean;
+  verified: boolean | null;
   monthly_views: number | null;
   weekly_sales_count: number | null;
 };
@@ -44,11 +44,11 @@ type Product = {
   location: string | null;
   created_at: string | null;
   seller_id: string;
-  country_code: string;
+  country_code: string | null;
   favorite_count: number | null;
   slug: string | null;
   category_id: string | null;
-  is_boosted: boolean;
+  is_boosted: boolean | null;
   boosted_until: string | null;
   boost_priority: number | null;
   product_images: ProductImage[];
@@ -84,7 +84,7 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
     if (!params.has('next')) {
       params.set('next', '/onboarding');
     }
-    throw redirect(303, `/auth/callback?${params.toString()}`);
+    redirect(303, `/auth/callback?${params.toString()}`);
   }
   
   // Handle missing Supabase configuration
@@ -238,7 +238,7 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
     const sellersMap = new Map<string, SellerWithProducts>();
     const brandsMap = new Map<string, BrandWithProducts>();
 
-    allProductsWithSellers.forEach((product: any) => {
+    allProductsWithSellers.forEach((product: Product & { profiles?: Profile }) => {
       if (product.profiles) {
         const seller = product.profiles;
         if (seller.account_type === 'brand' && seller.verified) {
@@ -329,7 +329,7 @@ export const load = (async ({ url, locals: { supabase, country, safeGetSession }
         );
 
         // Transform products for frontend with proper category hierarchy
-        featuredProducts = await Promise.all(rawProducts.map(async (item: any) => {
+        featuredProducts = await Promise.all(rawProducts.map(async (item: Product & { product_images?: ProductImage[], profiles?: Profile }) => {
           // BOOST SYSTEM: Check if product is boosted and still active
           const isBoosted = item.is_boosted && item.boosted_until && new Date(item.boosted_until) > new Date();
           

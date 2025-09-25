@@ -483,16 +483,17 @@ export class CategoryService {
    */
   async getHierarchicalProductCount(categoryId: string): Promise<{ count: number; error: string | null }> {
     try {
-      const { data, error } = await this.supabase.rpc('get_products_in_category_tree', {
-        category_id: categoryId
-      });
+      const { count, error } = await this.supabase
+        .from('products')
+        .select('id', { count: 'exact', head: true })
+        .eq('category_id', categoryId)
+        .eq('is_active', true);
 
       if (error) {
-        
         return { count: 0, error: error.message };
       }
 
-      return { count: data?.length || 0, error: null };
+      return { count: count || 0, error: null };
     } catch {
       return { count: 0, error: 'Failed to get product count' };
     }

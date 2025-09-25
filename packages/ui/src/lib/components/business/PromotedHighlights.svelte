@@ -247,12 +247,11 @@
     {:else if hasSellers}
       <span class="sr-only">{sellers.length} premium sellers available</span>
     {/if}
-    <nav
+    <div
+      role="group"
       aria-label="Promoted products carousel"
       class="relative pb-2"
       onkeydown={handleKeyNavigation}
-      tabindex="0"
-      role="region"
       aria-controls="highlights-container"
     >
       <div
@@ -402,7 +401,7 @@
           {/each}
         {/if}
       </div>
-    </nav>
+    </div>
   </div>
 </section>
 

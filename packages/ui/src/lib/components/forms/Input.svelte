@@ -20,9 +20,9 @@
     onblur?: (event: FocusEvent) => void;
   }
 
-  let { 
+  let {
     type = 'text',
-    value = $bindable(),
+    value = $bindable(''),
     placeholder,
     label,
     error,

@@ -6,7 +6,7 @@ export const load = (async ({ locals }) => {
   const { user } = await locals.safeGetSession();
   
   if (!user) {
-    throw redirect(302, '/login');
+    redirect(302, '/login');
   }
 
   // Get user's profile to find their username
@@ -15,9 +15,9 @@ export const load = (async ({ locals }) => {
   
   if (error || !profile || !profile.username) {
     // If no username found, redirect to onboarding to complete profile
-    throw redirect(302, '/onboarding');
+    redirect(302, '/onboarding');
   }
 
   // Redirect to user's profile using their username
-  throw redirect(302, `/profile/${profile.username}`);
+  redirect(302, `/profile/${profile.username}`);
 }) satisfies PageServerLoad;

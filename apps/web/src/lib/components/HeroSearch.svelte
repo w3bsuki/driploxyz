@@ -16,7 +16,7 @@
   }
 
   let {
-    searchQuery = $bindable(),
+    searchQuery = $bindable(''),
     categories,
     onSearch,
     onFilter

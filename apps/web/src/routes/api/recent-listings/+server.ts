@@ -21,5 +21,11 @@ export const GET: RequestHandler = async ({ locals }) => {
     id: p.id,
     title: p.title.slice(0, 30) + (p.title.length > 30 ? '...' : ''),
     user: p.profiles?.username || 'User'
-  })) || []);
+  })) || [], {
+    headers: {
+      'cache-control': 'public, max-age=300, s-maxage=600, stale-while-revalidate=1800',
+      'vary': 'Accept-Encoding',
+      'x-cache-strategy': 'public-data-api'
+    }
+  });
 };

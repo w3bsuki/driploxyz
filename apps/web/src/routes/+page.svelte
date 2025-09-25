@@ -348,22 +348,18 @@
 			});
 
 			// Initialize favorites state from server if user is logged in
-			const updates: { favoriteCounts: Record<string, number>; favoriteProductIds: string[] } = {
-				favoriteCounts: {
-					...counts
-				}
-			};
+			// Update favorite counts
+			Object.entries(counts).forEach(([productId, count]) => {
+				favoritesActions.updateCounts(productId, count);
+			});
 
+			// Initialize user favorites if logged in
 			if (data.user && userFavoritesData) {
-				updates.favorites = {
-					...userFavoritesData
-				};
+				// The favoritesStore with Svelte 5 runes doesn't have an update method
+				// Instead, individual favorites are tracked through the actions
+				// The userFavoritesData will be loaded through loadUserFavorites() action
+				favoritesActions.loadUserFavorites();
 			}
-
-			favoritesStore.update(state => ({
-				...state,
-				...updates
-			}));
 		}
 	});
 
@@ -1266,8 +1262,8 @@
 
 <!-- Auth Popup -->
 <AuthPopup
-	isOpen={authPopupStore?.isOpen || false}
-	action={authPopupStore?.action || ''}
+	isOpen={authPopupStore.state.isOpen}
+	action={authPopupStore.state.action}
 	onClose={authPopupActions.close}
 	onSignIn={authPopupActions.signIn}
 	onSignUp={authPopupActions.signUp}

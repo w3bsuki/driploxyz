@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import type { Snippet } from 'svelte';
 
   interface Props {
@@ -12,6 +11,8 @@
     class?: string;
     children?: Snippet;
     footer?: Snippet;
+    onClose?: () => void;
+    onOpen?: () => void;
   }
 
   let {
@@ -23,13 +24,10 @@
     closeOnBackdrop = true,
     class: className = '',
     children,
-    footer
+    footer,
+    onClose,
+    onOpen
   }: Props = $props();
-
-  const dispatch = createEventDispatcher<{
-    close: void;
-    open: void;
-  }>();
 
   // Size mappings
   const sizeClasses = {
@@ -62,7 +60,7 @@
 
   function handleClose() {
     open = false;
-    dispatch('close');
+    onClose?.();
   }
 
   function handleKeydown(e: KeyboardEvent) {
@@ -73,7 +71,7 @@
 
   $effect(() => {
     if (open) {
-      dispatch('open');
+      onOpen?.();
       // Prevent body scroll when modal is open
       document.body.style.overflow = 'hidden';
     } else {

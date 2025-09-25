@@ -4,7 +4,7 @@ import { createServices } from '$lib/services';
 
 export const load = (async ({ params, locals: { supabase, session } }) => {
   if (!session) {
-    throw redirect(303, `/login?redirect=/product/${params.id}/edit`);
+    redirect(303, `/login?redirect=/product/${params.id}/edit`);
   }
 
   const services = createServices(supabase, null); // No stripe needed for product editing
@@ -13,12 +13,12 @@ export const load = (async ({ params, locals: { supabase, session } }) => {
   const { data: product, error } = await services.products.getProduct(params.id);
 
   if (error || !product) {
-    throw redirect(303, '/dashboard');
+    redirect(303, '/dashboard');
   }
 
   // Check if user owns this product
   if (product.seller_id !== session.user.id) {
-    throw redirect(303, `/product/${params.id}`);
+    redirect(303, `/product/${params.id}`);
   }
 
   // Get categories for the form
@@ -63,7 +63,7 @@ export const actions = {
       return fail(400, { error });
     }
 
-    throw redirect(303, `/product/${params.id}`);
+    redirect(303, `/product/${params.id}`);
   },
 
   delete: async ({ params, locals: { supabase, session } }) => {
@@ -78,6 +78,6 @@ export const actions = {
       return fail(400, { error });
     }
 
-    throw redirect(303, '/dashboard');
+    redirect(303, '/dashboard');
   }
 } satisfies Actions;

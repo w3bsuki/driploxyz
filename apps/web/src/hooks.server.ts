@@ -13,7 +13,7 @@
  * - Utilities: lib/server/utils.ts
  */
 
-// Export the modular handles and error handler
-export { handle, handleError } from '$lib/server/hooks';
+// Export the modular handles, error handler, and fetch optimization
+export { handle, handleError, handleFetch } from '$lib/server/hooks';
 
 // Reroute is handled in hooks.ts (universal hooks file)

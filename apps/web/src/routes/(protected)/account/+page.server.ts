@@ -5,7 +5,7 @@ export const load = (async ({ locals }) => {
   const { session } = await locals.safeGetSession();
   
   if (!session?.user) {
-    throw redirect(303, '/login');
+    redirect(303, '/login');
   }
 
   // Get current user's profile
@@ -16,7 +16,7 @@ export const load = (async ({ locals }) => {
     .single();
 
   if (!profile) {
-    throw redirect(303, '/login');
+    redirect(303, '/login');
   }
 
   // Get user's active listings

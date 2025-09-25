@@ -27,7 +27,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     if (dev) {
       // Development logging for invalid verification link
     }
-    throw redirect(303, '/login?error=invalid_verification_link');
+    redirect(303, '/login?error=invalid_verification_link');
   }
 
   try {
@@ -59,10 +59,10 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
         if (dev) {
           // Development logging for expired/used token
         }
-        throw redirect(303, '/onboarding?email_verified=true&message=Your+email+is+already+verified');
+        redirect(303, '/onboarding?email_verified=true&message=Your+email+is+already+verified');
       }
       
-      throw redirect(303, '/login?error=verification_failed');
+      redirect(303, '/login?error=verification_failed');
     }
 
     if (dev) {
@@ -74,7 +74,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     if (dev) {
       // Development logging for redirect to onboarding
     }
-    throw redirect(303, '/onboarding?email_verified=true&welcome=true');
+    redirect(303, '/onboarding?email_verified=true&welcome=true');
     
   } catch (error) {
     // If it's already a redirect, re-throw it
@@ -85,6 +85,6 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     if (dev) {
       // Development logging for catch block error
     }
-    throw redirect(303, '/login?error=confirmation_failed');
+    redirect(303, '/login?error=confirmation_failed');
   }
 };

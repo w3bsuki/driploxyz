@@ -14,7 +14,7 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
   const { user } = await parent();
 
   if (!user) {
-    throw redirect(303, '/login');
+    redirect(303, '/login');
   }
 
   // Get conversation params from URL
@@ -53,7 +53,7 @@ export const load = (async ({ locals: { supabase }, url, parent, depends }) => {
         delivered_at: undefined, // Not available in this RPC
         read_at: undefined, // Not available in this RPC
         message_type: 'user', // Default since not available in RPC
-        sender: msg.sender_profile && typeof msg.sender_profile === 'object' ? { ...msg.sender_profile as any } as UserInfo : undefined,
+        sender: msg.sender_profile && typeof msg.sender_profile === 'object' ? { ...(msg.sender_profile as Record<string, unknown>), id: (msg.sender_profile as Record<string, unknown>)?.id as string || '' } as UserInfo : undefined,
         receiver: undefined, // receiver_profile not available in this RPC
         order: undefined // order_details not available in this RPC
       })) : [];

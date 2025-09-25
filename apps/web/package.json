@@ -4,7 +4,8 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --config vite.dev.config.ts",
+		"dev:full": "vite dev",
 		"build": "svelte-kit sync && vite build",
 		"preview": "vite preview",
 		"test": "vitest run && playwright test",

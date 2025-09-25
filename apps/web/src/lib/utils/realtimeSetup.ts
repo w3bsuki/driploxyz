@@ -3,7 +3,7 @@
  * Initializes real-time services and connects them to stores
  */
 
-import { initRealtimeService, realtimeStore } from '../services/realtime';
+import { initRealtimeService, realtimeStore } from '../services/realtime.svelte';
 import { favoritesActions } from '../stores/favorites.svelte';
 import { followStoreInstance as followActions } from '../stores/follow.svelte';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -13,15 +13,17 @@ export function setupRealtimeServices(supabase: SupabaseClient<Database>) {
   // Initialize the real-time service
   const realtimeService = initRealtimeService(supabase);
 
-  // Connect real-time updates to favorites store
-  realtimeStore.subscribe(state => {
+  // Connect real-time updates to favorites store using effect
+  $effect(() => {
+    const state = realtimeStore.state;
     Object.entries(state.metrics.productMetrics).forEach(([productId, metrics]) => {
       favoritesActions.updateCounts(productId, metrics.favorite_count);
     });
   });
 
-  // Connect real-time updates to follow store
-  realtimeStore.subscribe(state => {
+  // Connect real-time updates to follow store using effect
+  $effect(() => {
+    const state = realtimeStore.state;
     Object.entries(state.metrics.userMetrics).forEach(([userId, metrics]) => {
       followActions.updateCounts(userId, metrics.follower_count, metrics.following_count);
     });
@@ -31,6 +33,6 @@ export function setupRealtimeServices(supabase: SupabaseClient<Database>) {
 }
 
 // Export services and stores for components to use
-export { realtimeService, realtimeStore } from '../services/realtime';
+export { realtimeService, realtimeStore } from '../services/realtime.svelte';
 export { favoritesActions, favoritesStore } from '../stores/favorites.svelte';
 export { followStoreInstance as followActions, followStoreInstance as followStore } from '../stores/follow.svelte';

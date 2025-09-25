@@ -188,7 +188,7 @@
 
       <!-- Mobile unified post: condition · header (avatar/name/@username · like) · title · description -->
       <div class="md:hidden mt-4 space-y-3">
-        <div class="bg-white rounded-xl border border-[color:var(--gray-200)] p-4">
+        <div class="bg-white rounded-xl border border-gray-200 p-4">
           <!-- Header: avatar · name/@username · like (date moved under name) -->
           <div class="flex items-center justify-between gap-4">
             <div class="flex items-center gap-3 min-w-0">
@@ -198,8 +198,8 @@
                 <div class="size-7 rounded-full bg-[color:var(--gray-200)]" aria-hidden="true"></div>
               {/if}
               <div class="min-w-0">
-                <a href={`/profile/${data.product.seller_id}`} class="block text-sm font-medium text-[color:var(--gray-900)] truncate">{data.product.seller_name}</a>
-                <div class="flex items-center gap-1.5 text-xs text-[color:var(--gray-500)] truncate">
+                <a href={`/profile/${data.product.seller_id}`} class="block text-sm font-medium text-gray-900 truncate">{data.product.seller_name}</a>
+                <div class="flex items-center gap-1.5 text-xs text-gray-500 truncate">
                   {#if data.product.seller_username}
                     <span class="truncate">@{data.product.seller_username}</span>
                     {#if data.product.location}<span aria-hidden="true">·</span>{/if}
@@ -213,11 +213,11 @@
             <div class="flex items-center gap-2 shrink-0">
               <button
                 type="button"
-                class={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${isLiked ? 'border-[color:var(--rose-200)] bg-[color:var(--rose-50)] text-[color:var(--rose-700)]' : 'border-[color:var(--gray-200)] bg-white text-[color:var(--gray-700)]'}`}
+                class={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium transition-colors ${isLiked ? 'border-rose-200 bg-rose-50 text-rose-700' : 'border-gray-200 bg-white text-gray-700'}`}
                 aria-pressed={isLiked}
                 onclick={async () => { const r = await handleFavorite(); return r; }}
               >
-                <Heart class={`size-4 ${isLiked ? 'text-[color:var(--rose-600)] fill-[color:var(--rose-600)]' : 'text-[color:var(--gray-500)]'}`}/>
+                <Heart class={`size-4 ${isLiked ? 'text-rose-600 fill-rose-600' : 'text-gray-500'}`}/>
                 <span>{favoriteCount || 0}</span>
               </button>
             </div>
@@ -230,20 +230,20 @@
                 <ConditionBadge condition={data.product.condition} />
               </span>
             {/if}
-            <h1 class="flex-1 text-lg font-semibold text-[color:var(--gray-900)] leading-snug tracking-tight truncate">
+            <h1 class="flex-1 text-lg font-semibold text-gray-900 leading-snug tracking-tight truncate">
               {data.product.title}
             </h1>
           </div>
 
           <!-- Description -->
           {#if data.product.description}
-            <p class="mt-3 text-sm text-[color:var(--gray-700)] leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-4'}">
+            <p class="mt-3 text-sm text-gray-700 leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-4'}">
               {data.product.description}
             </p>
             {#if data.product.description.length > 160}
               <button
                 type="button"
-                class="mt-2 text-xs font-medium text-[color:var(--blue-600)] hover:text-[color:var(--blue-700)]"
+                class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-700"
                 onclick={() => descExpanded = !descExpanded}
               >{descExpanded ? m.pdp_showLess() : m.pdp_readMore()}</button>
             {/if}
@@ -251,39 +251,39 @@
         </div>
 
         <!-- Quick facts table (mobile) -->
-        <div class="bg-white rounded-xl border border-[color:var(--gray-200)] shadow-sm">
-          <div class="px-4 py-3 border-b border-[color:var(--gray-200)] bg-[color:var(--gray-50)]">
-            <h3 class="text-sm font-semibold text-[color:var(--gray-900)]">{m.pdp_details()}</h3>
+        <div class="bg-white rounded-xl border border-gray-200 shadow-sm">
+          <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
+            <h3 class="text-sm font-semibold text-gray-900">{m.pdp_details()}</h3>
           </div>
           <dl class="divide-y divide-[color:var(--gray-100)]">
             {#if data.product.brand}
               <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
-                <dt class="text-xs font-medium uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">{m.pdp_brand()}</dt>
-                <dd class="font-semibold text-[color:var(--gray-900)] text-right truncate">{data.product.brand}</dd>
+                <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_brand()}</dt>
+                <dd class="font-semibold text-gray-900 text-right truncate">{data.product.brand}</dd>
               </div>
             {/if}
             {#if data.product.size}
               <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
-                <dt class="text-xs font-medium uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">{m.pdp_size()}</dt>
-                <dd class="font-semibold text-[color:var(--gray-900)] text-right truncate">{data.product.size}</dd>
+                <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_size()}</dt>
+                <dd class="font-semibold text-gray-900 text-right truncate">{data.product.size}</dd>
               </div>
             {/if}
             {#if data.product.condition}
               <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
-                <dt class="text-xs font-medium uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">{m.pdp_condition()}</dt>
-                <dd class="font-semibold text-[color:var(--gray-900)] text-right truncate">{translateCondition(data.product.condition || '')}</dd>
+                <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_condition()}</dt>
+                <dd class="font-semibold text-gray-900 text-right truncate">{translateCondition(data.product.condition || '')}</dd>
               </div>
             {/if}
             {#if data.product.color}
               <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
-                <dt class="text-xs font-medium uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">{m.pdp_color()}</dt>
-                <dd class="font-semibold text-[color:var(--gray-900)] text-right truncate">{data.product.color}</dd>
+                <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_color()}</dt>
+                <dd class="font-semibold text-gray-900 text-right truncate">{data.product.color}</dd>
               </div>
             {/if}
             {#if data.product.material}
               <div class="px-4 py-3 grid grid-cols-[auto_1fr] items-center gap-4 text-sm">
-                <dt class="text-xs font-medium uppercase tracking-wide text-[color:var(--gray-600)] whitespace-nowrap">{m.pdp_material()}</dt>
-                <dd class="font-semibold text-[color:var(--gray-900)] text-right truncate">{data.product.material}</dd>
+                <dt class="text-xs font-medium uppercase tracking-wide text-gray-600 whitespace-nowrap">{m.pdp_material()}</dt>
+                <dd class="font-semibold text-gray-900 text-right truncate">{data.product.material}</dd>
               </div>
             {/if}
           </dl>
@@ -310,27 +310,27 @@
       <!-- Product Info -->
       <div class="space-y-4">
         <!-- Main Product Information Card -->
-        <article class="hidden md:block bg-white rounded-xl border border-[color:var(--gray-200)] shadow-sm" aria-label="Product information">
+        <article class="hidden md:block bg-white rounded-xl border border-gray-200 shadow-sm" aria-label="Product information">
           <div class="p-4 sm:p-6">
 
             <!-- Brand (tiny) -->
             {#if data.product.brand}
               <div class="mb-1">
-                <span class="text-xs text-[color:var(--gray-500)] uppercase tracking-wide">{data.product.brand}</span>
+                <span class="text-xs text-gray-500 uppercase tracking-wide">{data.product.brand}</span>
               </div>
             {/if}
 
             <!-- Title -->
-            <h1 class="text-xl font-semibold text-[color:var(--gray-900)] leading-tight">
+            <h1 class="text-xl font-semibold text-gray-900 leading-tight">
               {data.product.title}
             </h1>
 
             <!-- Price Section -->
             <div class="mt-5 pb-5 border-b border-[color:var(--gray-100)]">
               <div class="flex items-baseline gap-3">
-                <span class="text-3xl font-bold text-[color:var(--gray-900)] tracking-tight" aria-label="Price">€{data.product.price}</span>
+                <span class="text-3xl font-bold text-gray-900 tracking-tight" aria-label="Price">€{data.product.price}</span>
                 {#if data.product.original_price && data.product.original_price > data.product.price}
-                  <span class="text-lg text-[color:var(--gray-500)] line-through" aria-label="Original price">€{data.product.original_price}</span>
+                  <span class="text-lg text-gray-500 line-through" aria-label="Original price">€{data.product.original_price}</span>
                   <span class="sr-only">Reduced from €{data.product.original_price} to €{data.product.price}</span>
                 {/if}
               </div>
@@ -339,17 +339,17 @@
             <!-- Product Attributes -->
             <div class="flex flex-wrap gap-2.5 mt-5" role="list" aria-label="Product attributes">
               {#if data.product.size}
-                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-[color:var(--blue-50)] text-[color:var(--blue-700)] border border-[color:var(--blue-200)]" role="listitem">
+                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-blue-50 text-blue-700 border border-blue-200" role="listitem">
                   Size {data.product.size}
                 </span>
               {/if}
               {#if data.product.color}
-                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-[color:var(--gray-50)] text-[color:var(--gray-700)] border border-[color:var(--gray-200)]" role="listitem">
+                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-gray-50 text-gray-700 border border-gray-200" role="listitem">
                   {data.product.color}
                 </span>
               {/if}
               {#if data.product.material}
-                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-[color:var(--purple-50)] text-[color:var(--purple-700)] border border-[color:var(--purple-200)]" role="listitem">
+                <span class="inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium bg-purple-50 text-purple-700 border border-purple-200" role="listitem">
                   {data.product.material}
                 </span>
               {/if}
@@ -360,15 +360,15 @@
 
         <!-- Description -->
         {#if data.product.description}
-          <div class="hidden md:block bg-white rounded-xl border border-[color:var(--gray-200)] p-5 shadow-sm">
-            <h2 class="text-base font-semibold text-[color:var(--gray-900)] mb-3">{m.pdp_description()}</h2>
-            <p class="text-sm text-[color:var(--gray-700)] leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-3'}">
+          <div class="hidden md:block bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+            <h2 class="text-base font-semibold text-gray-900 mb-3">{m.pdp_description()}</h2>
+            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap {descExpanded ? '' : 'line-clamp-3'}">
               {data.product.description}
             </p>
             {#if data.product.description.length > 150}
               <button 
                 type="button" 
-                class="mt-2 text-xs font-medium text-[color:var(--blue-600)] hover:text-[color:var(--blue-700)]"
+                class="mt-2 text-xs font-medium text-blue-600 hover:text-blue-700"
                 onclick={() => descExpanded = !descExpanded}
               >
                 {descExpanded ? m.pdp_showLess() : m.pdp_readMore()}
@@ -378,15 +378,15 @@
         {/if}
 
         <!-- Product Details Table -->
-        <section class="hidden md:block bg-white rounded-xl border border-[color:var(--gray-200)] shadow-sm" aria-labelledby="details-heading">
-          <div class="px-5 py-3.5 bg-[color:var(--gray-50)] border-b border-[color:var(--gray-200)]">
-            <h2 id="details-heading" class="text-base font-semibold text-[color:var(--gray-900)]">{m.pdp_productDetails()}</h2>
+        <section class="hidden md:block bg-white rounded-xl border border-gray-200 shadow-sm" aria-labelledby="details-heading">
+          <div class="px-5 py-3.5 bg-gray-50 border-b border-gray-200">
+            <h2 id="details-heading" class="text-base font-semibold text-gray-900">{m.pdp_productDetails()}</h2>
           </div>
           {#snippet fact(label: string, value: string)}
             <div class="px-5 py-3.5 border-b border-[color:var(--gray-100)] last:border-b-0">
               <div class="grid grid-cols-[auto_1fr] items-center gap-4">
-                <dt class="text-sm font-medium text-[color:var(--gray-600)] whitespace-nowrap">{label}</dt>
-                <dd class="text-sm text-[color:var(--gray-900)] font-semibold text-right truncate">{value}</dd>
+                <dt class="text-sm font-medium text-gray-600 whitespace-nowrap">{label}</dt>
+                <dd class="text-sm text-gray-900 font-semibold text-right truncate">{value}</dd>
               </div>
             </div>
           {/snippet}
@@ -425,7 +425,7 @@
 
     {#if showSimilar}
       <section class="mt-6">
-        <h2 class="text-xl font-semibold text-[color:var(--gray-900)] mb-4">{m.pdp_youMayAlsoLike()}</h2>
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">{m.pdp_youMayAlsoLike()}</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {#each data.similarProducts as p (p.id)}
             <ProductCard
@@ -442,7 +442,7 @@
 
     {#if showSeller}
       <section class="mt-6">
-        <h2 class="text-xl font-semibold text-[color:var(--gray-900)] mb-4">{m.pdp_moreFromSeller()}</h2>
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">{m.pdp_moreFromSeller()}</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {#each data.sellerProducts as p (p.id)}
             <ProductCard
@@ -459,7 +459,7 @@
   </div>
 
 <!-- Mobile sticky actions bar -->
-<div class="fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md border-t border-[color:var(--gray-200)] md:hidden" style="padding: 0; padding-bottom: max(1rem, env(safe-area-inset-bottom));">
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-white/98 backdrop-blur-md border-t border-gray-200 md:hidden" style="padding: 0; padding-bottom: max(1rem, env(safe-area-inset-bottom));">
   <div class="relative">
     <ProductActions
       price={data.product.price}
@@ -479,8 +479,8 @@
       productDescription={data.product.description}
       showSellerInfo={true}
     />
-    <div class="absolute right-3 top-2 flex items-center gap-1 text-[11px] text-[color:var(--gray-500)]">
-      <Clock class="size-3.5 text-[color:var(--gray-400)]" aria-hidden="true" />
+    <div class="absolute right-3 top-2 flex items-center gap-1 text-[11px] text-gray-500">
+      <Clock class="size-3.5 text-gray-400" aria-hidden="true" />
       <span>{formatRelativeDate(data.product.created_at)}</span>
     </div>
   </div>

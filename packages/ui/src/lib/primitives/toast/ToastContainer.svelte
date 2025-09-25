@@ -5,7 +5,7 @@
 -->
 <script lang="ts">
   // No lifecycle imports needed - using $effect
-  import { setToastProvider } from './store';
+  import { setToastProvider } from './store.svelte';
   import ToastProvider from './ToastProvider.svelte';
   import type { ToastProviderProps } from './types';
   

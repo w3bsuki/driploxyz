@@ -2,19 +2,19 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 
 type Tables = Database['public']['Tables'];
-type AdminNotification = Tables['notifications']['Row'];
+type AdminNotification = Tables['admin_notifications']['Row'];
 
 export class NotificationService {
 	constructor(private supabase: SupabaseClient<Database>) {}
 
 	/**
-	 * Get unread admin notifications
+	 * Get unis_read admin notifications
 	 */
-	async getUnreadNotifications(limit: number = 50) {
+	async getUnis_readNotifications(limit: number = 50) {
 		return await this.supabase
-			.from('notifications')
-			.select('id, title, message, type, priority, read, created_at, order_id')
-			.eq('read', false)
+			.from('admin_notifications')
+			.select('id, title, message, type, priority, is_read, created_at, order_id')
+			.eq('is_read', false)
 			.order('created_at', { ascending: false })
 			.limit(limit);
 	}
@@ -24,7 +24,7 @@ export class NotificationService {
 	 */
 	async getAdminNotifications(page: number = 1, limit: number = 20, type?: string) {
 		let query = this.supabase
-			.from('notifications')
+			.from('admin_notifications')
 			.select('*', { count: 'exact' });
 
 		if (type) {
@@ -38,27 +38,27 @@ export class NotificationService {
 	}
 
 	/**
-	 * Mark notification as read
+	 * Mark notification as is_read
 	 */
 	async markAsRead(notificationId: string) {
 		return await this.supabase
-			.from('notifications')
+			.from('admin_notifications')
 			.update({ 
-				read: true
+				is_read: true
 			})
 			.eq('id', notificationId);
 	}
 
 	/**
-	 * Mark all notifications as read
+	 * Mark all notifications as is_read
 	 */
 	async markAllAsRead() {
 		return await this.supabase
-			.from('notifications')
+			.from('admin_notifications')
 			.update({ 
-				read: true
+				is_read: true
 			})
-			.eq('read', false);
+			.eq('is_read', false);
 	}
 
 	/**
@@ -67,29 +67,29 @@ export class NotificationService {
 	async getNotificationCounts() {
 		// Use SQL aggregation instead of client-side processing
 		const { data: totalData } = await this.supabase
-			.from('notifications')
+			.from('admin_notifications')
 			.select('id', { count: 'exact', head: true });
 
-		const { data: unreadData } = await this.supabase
-			.from('notifications')
+		const { data: unis_readData } = await this.supabase
+			.from('admin_notifications')
 			.select('id', { count: 'exact', head: true })
-			.eq('read', false);
+			.eq('is_read', false);
 
 		// For type counts, we still need to fetch but only the type column
 		const { data: typeData, error } = await this.supabase
-			.from('notifications')
+			.from('admin_notifications')
 			.select('type');
 
-		if (error) return { total: 0, unread: 0, byType: {} };
+		if (error) return { total: 0, unis_read: 0, byType: {} };
 
 		const total = totalData?.length || 0;
-		const unread = unreadData?.length || 0;
+		const unis_read = unis_readData?.length || 0;
 		const byType = typeData?.reduce((acc, notification) => {
 			acc[notification.type] = (acc[notification.type] || 0) + 1;
 			return acc;
 		}, {} as Record<string, number>);
 
-		return { total, unread, byType };
+		return { total, unis_read, byType };
 	}
 
 	/**
@@ -103,7 +103,7 @@ export class NotificationService {
 				{
 					event: 'INSERT',
 					schema: 'public',
-					table: 'notifications'
+					table: 'admin_notifications'
 				},
 				(payload) => {
 					callback(payload.new as AdminNotification);
@@ -122,7 +122,7 @@ export class NotificationService {
 		relatedId?: string
 	) {
 		return await this.supabase
-			.from('notifications')
+			.from('admin_notifications')
 			.insert({
 				user_id: 'system',
 				title,
@@ -143,7 +143,7 @@ export class NotificationService {
 	) {
 		// Log the notification attempt
 		await this.supabase
-			.from('notifications')
+			.from('admin_notifications')
 			.insert({
 				user_id: recipient,
 				type,
@@ -174,7 +174,7 @@ export class NotificationService {
 		startDate.setDate(startDate.getDate() - days);
 
 		const { data } = await this.supabase
-			.from('notifications')
+			.from('admin_notifications')
 			.select('type, priority, created_at')
 			.gte('created_at', startDate.toISOString());
 

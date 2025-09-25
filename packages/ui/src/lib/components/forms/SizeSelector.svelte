@@ -17,12 +17,12 @@
     class?: string;
   }
 
-  let { 
-    sizes, 
-    selectedSize = $bindable(),
+  let {
+    sizes,
+    selectedSize = $bindable(''),
     onSizeSelect,
     showStock = false,
-    class: className = '' 
+    class: className = ''
   }: Props = $props();
 
   let hoveredSize = $state<string | null>(null);

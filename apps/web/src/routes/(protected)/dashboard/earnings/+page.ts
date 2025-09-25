@@ -5,7 +5,7 @@ export const load = (async ({ parent }) => {
   const { session, profile } = await parent();
   
   if (!session) {
-    throw redirect(303, '/login');
+    redirect(303, '/login');
   }
   
   return {

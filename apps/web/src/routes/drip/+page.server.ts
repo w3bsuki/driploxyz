@@ -53,6 +53,6 @@ export const load = (async ({
 
   } catch (err) {
     log.error('Unexpected error in drip collections page load', err);
-    throw error(500, 'Something went wrong loading the drip collections');
+    error(500, 'Something went wrong loading the drip collections');
   }
 }) satisfies PageServerLoad;

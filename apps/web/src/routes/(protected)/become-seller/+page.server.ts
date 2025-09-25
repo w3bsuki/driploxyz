@@ -6,7 +6,7 @@ export const load = (async ({ locals }) => {
   const { supabase, session } = locals;
   
   if (!session) {
-    throw redirect(303, '/login?redirect=/become-seller');
+    redirect(303, '/login?redirect=/become-seller');
   }
 
   // Get user profile
@@ -18,7 +18,7 @@ export const load = (async ({ locals }) => {
 
   // If user can already sell, redirect to sell page
   if (canSell(profile)) {
-    throw redirect(303, '/sell');
+    redirect(303, '/sell');
   }
 
   // Get the specific reason why they can't sell

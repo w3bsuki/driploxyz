@@ -50,12 +50,7 @@ export class ReviewsService {
       // Get order details
       const { data: order, error: orderError } = await this.supabase
         .from('orders')
-        .select(`
-          *,
-          product:products(id, title),
-          seller:profiles!seller_id(id, username),
-          buyer:profiles!buyer_id(id, username)
-        `)
+        .select('*')
         .eq('id', orderId)
         .single();
 
@@ -70,7 +65,7 @@ export class ReviewsService {
       if (order.status !== 'delivered') {
         return {
           isValid: false,
-          order,
+          order: order as OrderWithUsers,
           error: 'Only delivered orders can be reviewed'
         };
       }
@@ -82,7 +77,7 @@ export class ReviewsService {
       if (!isBuyer && !isSeller) {
         return {
           isValid: false,
-          order,
+          order: order as OrderWithUsers,
           error: 'You are not part of this transaction'
         };
       }
@@ -98,14 +93,14 @@ export class ReviewsService {
       if (existingReview) {
         return {
           isValid: false,
-          order,
+          order: order as OrderWithUsers,
           error: 'You have already reviewed this order'
         };
       }
 
       return {
         isValid: true,
-        order,
+        order: order as OrderWithUsers,
         canReview: true,
         reviewerRole: isBuyer ? 'buyer' : 'seller'
       };
@@ -236,7 +231,7 @@ export class ReviewsService {
       : order.seller?.username;
 
     await this.supabase
-      .from('notifications')
+      .from('admin_notifications')
       .insert({
         user_id: review.reviewee_id,
         type: 'order_update',

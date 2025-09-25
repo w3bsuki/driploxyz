@@ -178,7 +178,7 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
     const result = searchParamsToSegments(searchParams);
     if (result.needsRedirect && result.canonicalPath) {
       const newUrl = result.canonicalPath + (result.searchParams.toString() ? `?${result.searchParams.toString()}` : '');
-      throw redirect(301, newUrl);
+      redirect(301, newUrl);
     }
   }
   
@@ -186,18 +186,17 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
   const urlResult = canonicalizeFilterUrl(url);
   if (urlResult.needsRedirect) {
     const canonicalUrl = buildCanonicalUrl(url, urlResult.canonical);
-    throw redirect(301, canonicalUrl);
+    redirect(301, canonicalUrl);
   }
   
-  // Optimize cache headers based on query type
-  const hasUserSpecificData = url.searchParams.has('user_filters');
-  if (!hasUserSpecificData) {
-    setHeaders({
-      'cache-control': 'public, max-age=120, s-maxage=300, stale-while-revalidate=600',
-      'vary': 'Accept-Encoding',
-      'x-search-type': 'search'
-    });
-  }
+  // Optimize cache headers for search pages - user-specific but cacheable for short periods
+  // Search results are user-agnostic but contain filtering data that changes frequently
+  const { session } = await locals.safeGetSession();
+  setHeaders({
+    'cache-control': session?.user ? 'private, max-age=120, stale-while-revalidate=600' : 'public, max-age=120, s-maxage=300, stale-while-revalidate=600',
+    'vary': 'Accept-Encoding, Authorization',
+    'x-cache-strategy': 'search-page'
+  });
   
   // Parse all URL parameters with performance optimizations
   const query = url.searchParams.get('q') || '';
@@ -521,6 +520,6 @@ export const load = (async ({ url, locals, setHeaders, depends }) => {
 
   } catch (err) {
     if (dev) console.error('Search load error:', err);
-    throw error(500, 'Failed to load search results');
+    error(500, 'Failed to load search results');
   }
 }) satisfies PageServerLoad;

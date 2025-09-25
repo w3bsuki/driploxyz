@@ -10,7 +10,6 @@
     followStore,
     followActions
   } from '$lib/utils/realtimeSetup';
-  import { derived } from 'svelte/store';
 
   interface Props {
     userId: string;
@@ -38,20 +37,20 @@
 
   // Get follower count from real-time store or follow store
   const followerCount = $derived.by(() => {
-    const realtimeMetrics = realtimeStore.metrics.userMetrics[userId];
+    const realtimeMetrics = realtimeStore.state.metrics.userMetrics[userId];
     const followMetrics = followStore.followerCounts[userId];
     return realtimeMetrics?.follower_count ?? followMetrics ?? 0;
   });
 
   // Subscribe to real-time updates for this user
   $effect(() => {
-    if (realtimeService && userId) {
-      realtimeService.subscribeToUser(userId);
+    if (realtimeService.instance && userId) {
+      realtimeService.instance.subscribeToUser(userId);
     }
 
     return () => {
-      if (realtimeService && userId) {
-        realtimeService.unsubscribeFromUser(userId);
+      if (realtimeService.instance && userId) {
+        realtimeService.instance.unsubscribeFromUser(userId);
       }
     };
   });
@@ -78,7 +77,7 @@
   {variant}
   {disabled}
   {followActions}
-  {realtimeService}
+  realtimeService={realtimeService.instance}
   realtimeStore={realtimeStore}
   followerCount={followerCount()}
 />

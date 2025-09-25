@@ -1,21 +1,19 @@
-@reference;
 @import 'tailwindcss';
-@import '../../../packages/ui/src/styles/tokens.css';
-@import '../../../packages/ui/src/styles/semantic.css';
+@import '@repo/ui/styles/tokens.css';
+@import '@repo/ui/styles/semantic.css';
 
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@source '../../../packages/ui/src/**/*.{svelte,ts}';
+@source './lib/**/*.{svelte,ts}';
+@source './routes/**/*.{svelte,ts}';
+
+/* Admin console theme extends shared tokens */
 @theme {
-  /* Admin app-specific color mappings for Tailwind classes */
-  /* These map to the core tokens from tokens.css */
   --color-white: var(--gray-0);
   --color-black: var(--gray-950);
-  /* Semantic one-offs for Tailwind v4 color utilities */
-  --color-primary: var(--brand-primary);
-  --color-success: var(--status-success-solid);
-  --color-warning: var(--status-warning-solid);
-  --color-error: var(--status-error-solid);
-  --color-info: var(--status-info-solid);
-  
-  /* Map gray scale for Tailwind utilities */
+
   --color-gray-50: var(--gray-50);
   --color-gray-100: var(--gray-100);
   --color-gray-200: var(--gray-200);
@@ -26,32 +24,32 @@
   --color-gray-700: var(--gray-700);
   --color-gray-800: var(--gray-800);
   --color-gray-900: var(--gray-900);
-  
-  /* Map primary colors for admin UI */
+
   --color-blue-500: var(--blue-500);
   --color-blue-600: var(--blue-600);
   --color-blue-700: var(--blue-700);
-  
+
   --color-red-200: var(--red-200);
   --color-red-700: var(--red-700);
   --color-red-800: var(--red-800);
   --color-red-900: var(--red-900);
-  
+
   --color-orange-200: var(--orange-200);
   --color-orange-700: var(--orange-700);
   --color-orange-900: var(--orange-900);
-  
-  /* Admin-specific semantic mappings */
+
+  --color-primary: var(--brand-primary);
   --color-success: var(--status-success-solid);
   --color-warning: var(--status-warning-solid);
   --color-error: var(--status-error-solid);
   --color-info: var(--status-info-solid);
 }
 
-/* Admin app specific styles */
 @layer base {
   body {
     font-family: var(--font-sans);
     line-height: var(--leading-normal);
+    background-color: var(--surface-base);
+    color: var(--text-primary);
   }
 }

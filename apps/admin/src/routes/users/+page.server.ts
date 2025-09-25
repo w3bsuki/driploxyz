@@ -55,7 +55,7 @@ export const load = (async ({ locals, url }) => {
 
 	if (fetchError) {
 		
-		throw error(500, 'Failed to fetch users');
+		error(500, 'Failed to fetch users');
 	}
 
 	// Get user statistics
@@ -124,7 +124,7 @@ export const load = (async ({ locals, url }) => {
 	};
 	} catch (err) {
 		
-		throw error(500, {
+		error(500, {
 			message: 'Failed to load users data',
 			details: err instanceof Error ? err.message : 'Unknown error'
 		});

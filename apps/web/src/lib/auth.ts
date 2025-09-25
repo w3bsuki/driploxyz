@@ -37,7 +37,7 @@ function isPayoutMethod(value: unknown): value is PayoutMethod {
  */
 export function requireAuth(user: User | null, redirectTo = '/login') {
   if (!user) {
-    throw redirect(303, redirectTo);
+    redirect(303, redirectTo);
   }
 }
 
@@ -46,7 +46,7 @@ export function requireAuth(user: User | null, redirectTo = '/login') {
  */
 export function requireNoAuth(user: User | null, redirectTo = '/') {
   if (user) {
-    throw redirect(303, redirectTo);
+    redirect(303, redirectTo);
   }
 }
 
@@ -225,11 +225,11 @@ export function createAuthGuard(options: {
     profile: Database['public']['Tables']['profiles']['Row'] | null
   ) {
     if (options.requireAuth && !user) {
-      throw redirect(303, options.redirectTo || '/login');
+      redirect(303, options.redirectTo || '/login');
     }
 
     if (options.requireRole && !hasRole(profile, options.requireRole)) {
-      throw redirect(303, '/unauthorized');
+      redirect(303, '/unauthorized');
     }
 
     return { user, profile };

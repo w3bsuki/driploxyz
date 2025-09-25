@@ -56,18 +56,53 @@ export function createAuthHelpers(options: CreateClientOptions): AuthHelpers {
         locals.__sessionCache = result;
         return result;
       }
+
+      // Get session first - this is fast and cached by Supabase
       const { data: { session } } = await locals.supabase.auth.getSession();
+
       if (!session) {
         locals.__sessionCache = result;
         return result;
       }
-      const { data: { user }, error } = await locals.supabase.auth.getUser();
-      if (error || !user) {
+
+      // Validate session expiry first
+      const now = Math.floor(Date.now() / 1000);
+      if (session.expires_at && session.expires_at <= now) {
+        console.warn('[Auth] Session expired', {
+          expiresAt: session.expires_at,
+          now,
+          pathname: event.url.pathname
+        });
         locals.__sessionCache = result;
         return result;
       }
+
+      // Use getUser() to validate the session securely
+      const { data: { user }, error: userError } = await locals.supabase.auth.getUser();
+
+      if (userError || !user) {
+        console.warn('[Auth] Session validation failed', {
+          error: userError?.message,
+          pathname: event.url.pathname
+        });
+        locals.__sessionCache = result;
+        return result;
+      }
+
       result = { session, user };
-    } catch {
+    } catch (error) {
+      // Log rate limiting specifically for monitoring
+      if (error && typeof error === 'object' && 'status' in error && error.status === 429) {
+        console.warn('[Auth] Rate limit exceeded, using fallback', {
+          pathname: event.url.pathname,
+          timestamp: new Date().toISOString()
+        });
+      } else if (error instanceof Error) {
+        console.warn('[Auth] Unexpected error during session validation', {
+          error: error.message,
+          pathname: event.url.pathname
+        });
+      }
       result = { session: null, user: null };
     }
     locals.__sessionCache = result;

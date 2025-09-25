@@ -3,7 +3,7 @@ import type { PageServerLoad } from './$types';
 import { parseCombinedCategorySlug, searchParamsToSegments } from '$lib/utils/filter-url';
 
 export const load = (async ({ params, url }) => {
-  const slug = (params as any).slug as string;
+  const slug = (params as { slug: string }).slug;
 
   try {
     // Check if this is a legacy search parameter pattern in URL
@@ -15,7 +15,7 @@ export const load = (async ({ params, url }) => {
       const result = searchParamsToSegments(searchParams);
       if (result.needsRedirect && result.canonicalPath) {
         const newUrl = result.canonicalPath + (result.searchParams.toString() ? `?${result.searchParams.toString()}` : '');
-        throw redirect(301, newUrl);
+        redirect(301, newUrl);
       }
     }
 
@@ -26,7 +26,7 @@ export const load = (async ({ params, url }) => {
       // Preserve any additional query parameters
       const additionalParams = new URLSearchParams(url.searchParams);
       const newUrl = result.canonicalPath + (additionalParams.toString() ? `?${additionalParams.toString()}` : '');
-      throw redirect(301, newUrl);
+      redirect(301, newUrl);
     }
 
     // Always redirect to the hierarchical route, but handle L1 categories specially
@@ -41,11 +41,11 @@ export const load = (async ({ params, url }) => {
       
       // This will cause /category/men (slug route) to redirect to /category/men (segments route)
       // The segments route can handle this properly
-      throw redirect(301, newUrl);
+      redirect(301, newUrl);
     }
 
     // If no valid segments found, this might be an invalid category
-    throw error(404, `Category '${slug}' not found`);
+    error(404, `Category '${slug}' not found`);
   } catch (err) {
     
     
@@ -54,6 +54,6 @@ export const load = (async ({ params, url }) => {
       throw err;
     }
     
-    throw error(500, 'Failed to process category request');
+    error(500, 'Failed to process category request');
   }
 }) satisfies PageServerLoad;

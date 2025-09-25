@@ -251,29 +251,42 @@ export class FavoriteService {
     error: Error | null;
   }> {
     try {
-      const { data, error } = await this.supabase
+      // Get favorites first
+      const { data: favorites, error: favoritesError } = await this.supabase
         .from('favorites')
-        .select(`
-          *,
-          products!product_id (
-            id,
-            title,
-            price,
-            is_sold,
-            sold_at,
-            seller_id,
-            product_images!product_id (image_url),
-            profiles!seller_id (
-              username,
-              avatar_url
-            )
-          )
-        `)
-        .eq('user_id', userId)
-        .eq('products.is_sold', true)
-        .order('products.sold_at', { ascending: false });
+        .select('*')
+        .eq('user_id', userId);
 
-      if (error) throw error;
+      if (favoritesError) throw favoritesError;
+      if (!favorites || favorites.length === 0) {
+        return { data: [], error: null };
+      }
+
+      // Get product details for these favorites, filtered for sold items
+      const productIds = favorites.map(fav => fav.product_id);
+      const { data: products, error: productsError } = await this.supabase
+        .from('products')
+        .select(`
+          id,
+          title,
+          price,
+          is_sold,
+          sold_at,
+          seller_id
+        `)
+        .in('id', productIds)
+        .eq('is_sold', true)
+        .order('sold_at', { ascending: false });
+
+      if (productsError) throw productsError;
+
+      // Combine the data manually, only for sold products
+      const data: FavoriteWithProduct[] = favorites
+        .filter(favorite => products?.some(p => p.id === favorite.product_id))
+        .map(favorite => ({
+          ...favorite,
+          products: products?.find(p => p.id === favorite.product_id) || undefined
+        }));
 
       return { data, error: null };
     } catch (error) {

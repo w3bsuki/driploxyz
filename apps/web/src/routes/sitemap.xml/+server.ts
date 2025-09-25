@@ -75,7 +75,9 @@ export const GET: RequestHandler = async ({ locals }) => {
 	return new Response(xml, {
 		headers: {
 			'Content-Type': 'application/xml',
-			'Cache-Control': 'public, max-age=3600' // Cache for 1 hour
+			'cache-control': 'public, max-age=1800, s-maxage=3600, stale-while-revalidate=7200',
+			'vary': 'Accept-Encoding',
+			'x-cache-strategy': 'dynamic-seo'
 		}
 	});
 };

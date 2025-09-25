@@ -24,13 +24,10 @@ pop3_port = 1110
 
 [storage]
 enabled = true
-port = 54325
-image_transformation = true
 file_size_limit = "50MiB"
 
 [auth]
 enabled = true
-port = 54324
 site_url = "http://localhost:5173"
 additional_redirect_urls = ["https://localhost:5173"]
 jwt_expiry = 3600
@@ -48,10 +45,7 @@ content_path = "./apps/web/email-templates/recovery.html"
 enabled = true
 port = 54326
 
-# Type generation configuration
-[api.types]
-included_schemas = ["public"]
-excluded_schemas = []
+# Remove the problematic types configuration for now
 
 # Project settings (for linked projects)
 [project]

@@ -132,7 +132,7 @@ Creates payout requests via Supabase RPC calls
 					<span class="currency-symbol">{currency}</span>
 				</div>
 				{#if amount > 0}
-					<p class="text-xs text-[color:var(--text-muted)] mt-1">
+					<p class="text-xs text-gray-500 mt-1">
 						{#if amount < minAmount}
 							Minimum payout is {formatCurrency(minAmount)}
 						{:else if amount > maxAmount}
@@ -179,7 +179,7 @@ Creates payout requests via Supabase RPC calls
 							placeholder="your@email.com"
 						/>
 					</div>
-					<p class="text-xs text-[color:var(--text-muted)]">
+					<p class="text-xs text-gray-500">
 						Provide either phone number or email for Revolut transfer
 					</p>
 				</div>
@@ -238,35 +238,54 @@ Creates payout requests via Supabase RPC calls
 	@reference theme();
 	
 	.payout-form {
-		@apply space-y-6 w-full;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-6);
+		width: 100%;
 	}
 
 	.form-group {
-		@apply space-y-2;
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
 	}
 
 	.form-group label {
-		@apply block text-sm font-medium text-[color:var(--text-primary)];
+		display: block;
+		font-size: var(--text-sm);
+		font-weight: var(--font-medium);
+		color: var(--text-primary);
 	}
 
 	.amount-input-wrapper {
-		@apply relative;
+		position: relative;
 	}
 
 	.currency-symbol {
-		@apply absolute right-3 top-1/2 transform -translate-y-1/2 text-[color:var(--text-muted)];
+		position: absolute;
+		right: var(--space-3);
+		top: 50%;
+		transform: translateY(-50%);
+		color: var(--text-muted);
 	}
 
 	.form-row {
-		@apply grid grid-cols-2 gap-4;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-4);
 	}
 
 	.payout-details {
-		@apply border-t border-[color:var(--border-subtle)] pt-4 space-y-4;
+		border-top: 1px solid var(--border-subtle);
+		padding-top: var(--space-4);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
 	}
 
 	.payout-details h4 {
-		@apply font-medium text-[color:var(--text-primary)];
+		font-weight: var(--font-medium);
+		color: var(--text-primary);
 	}
 
 	/* Modal actions now handled by Dialog primitive's actions section */

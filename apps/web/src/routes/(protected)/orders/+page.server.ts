@@ -5,7 +5,7 @@ export const load = (async ({ locals: { safeGetSession, supabase } }) => {
   const { session, user } = await safeGetSession();
   
   if (!session || !user) {
-    throw error(401, 'Unauthorized');
+    error(401, 'Unauthorized');
   }
 
   try {
@@ -156,6 +156,6 @@ export const load = (async ({ locals: { safeGetSession, supabase } }) => {
 
   } catch {
     
-    throw error(500, 'Failed to load orders');
+    error(500, 'Failed to load orders');
   }
 }) satisfies PageServerLoad;

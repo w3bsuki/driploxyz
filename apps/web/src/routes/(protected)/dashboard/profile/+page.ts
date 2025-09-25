@@ -5,10 +5,10 @@ export const load = (async ({ parent }) => {
   const { user, profile } = await parent();
   
   if (!user) {
-    throw redirect(303, '/login');
+    redirect(303, '/login');
   }
 
   // Redirect to user's profile page using their username or ID
   const profileId = profile?.username || user.id;
-  throw redirect(301, `/profile/${profileId}`);
+  redirect(301, `/profile/${profileId}`);
 }) satisfies PageLoad;

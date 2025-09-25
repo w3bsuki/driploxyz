@@ -136,5 +136,5 @@ export const POST: RequestHandler = async ({ request, locals: { supabase }, getC
 
 // Only POST method is allowed for security
 export const GET: RequestHandler = async () => {
-  throw error(405, 'Method not allowed. Use POST.');
+  error(405, 'Method not allowed. Use POST.');
 };

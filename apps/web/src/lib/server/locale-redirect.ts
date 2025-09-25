@@ -19,7 +19,18 @@ export async function handleUnknownLocales(event: RequestEvent): Promise<void> {
     if (prefix !== 'uk' && prefix !== 'bg') {
       // Redirect to the path without the unknown prefix (defaults to Bulgarian)
       // Use 308 Permanent Redirect to preserve the HTTP method
-      throw redirect(308, rest);
+      try {
+        redirect(308, rest);
+      } catch (error) {
+        // Re-throw actual redirects (they're Response objects)
+        if (error instanceof Response && error.status >= 300 && error.status < 400) {
+          throw error;
+        }
+        // Log and handle unexpected errors
+        console.error('Locale redirect error:', error, { prefix, rest });
+        // Continue without redirect if it fails
+        return;
+      }
     }
   }
   
@@ -36,6 +47,17 @@ export async function handleUnknownLocales(event: RequestEvent): Promise<void> {
   
   // If the path was cleaned, redirect
   if (cleanPath !== pathname) {
-    throw redirect(308, cleanPath);
+    try {
+      redirect(308, cleanPath);
+    } catch (error) {
+      // Re-throw actual redirects (they're Response objects)
+      if (error instanceof Response && error.status >= 300 && error.status < 400) {
+        throw error;
+      }
+      // Log and handle unexpected errors
+      console.error('Path cleanup redirect error:', error, { original: pathname, clean: cleanPath });
+      // Continue without redirect if it fails
+      return;
+    }
   }
 }

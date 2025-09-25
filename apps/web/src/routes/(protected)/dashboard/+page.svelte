@@ -4,7 +4,7 @@
   import { replaceState } from '$app/navigation';
   // No lifecycle imports needed - using $effect
   import * as i18n from '@repo/i18n';
-  import { tutorial } from '$lib/tutorial/manager';
+  import { tutorial } from '$lib/tutorial/manager.svelte';
   import { TutorialToast } from '@repo/ui';
   import { getProductUrl } from '$lib/utils/seo-urls';
   

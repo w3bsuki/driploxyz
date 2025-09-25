@@ -38,41 +38,30 @@ export async function setupAuthGuard(event: RequestEvent): Promise<void> {
   const needsAuth = routeId?.startsWith('/(protected)') || routeId?.startsWith('/(admin)');
   const isAuthRoute = routeId?.startsWith('/(auth)');
 
-  // For public routes that don't need auth, use smart session validation
+  // For public routes that don't need auth, skip session validation to avoid recursion
   if (!needsAuth && !isAuthRoute) {
-    try {
-      // Use shorter timeout for public routes to avoid blocking page loads
-      const { session, user } = await Promise.race([
-        event.locals.safeGetSession(),
-        new Promise<{ session: null; user: null }>((resolve) => 
-          setTimeout(() => resolve({ session: null, user: null }), 800)
-        )
-      ]);
-      
-      event.locals.session = session;
-      event.locals.user = user;
-      
-      // Log slow auth validation on public routes
-      if (isDebug && session === null && user === null) {
-        authLogger.debug('Public route auth timeout, continuing without session', { 
-          pathname, 
-          timeout: 800 
-        });
-      }
-      
-    } catch (error) {
-      // If auth fails on public routes, continue without blocking
-      if (isDebug) authLogger.warn('Auth error on public route', { 
-        pathname, 
-        error: error instanceof Error ? error.message : String(error) 
-      });
-      event.locals.session = null;
-      event.locals.user = null;
-    }
+    // Set null auth context for public routes - session will be handled by layout if needed
+    event.locals.session = null;
+    event.locals.user = null;
     return;
   }
 
-  // Validate session for routes that need it
+  // For auth routes (login, signup, etc), allow session validation in their own load functions
+  if (isAuthRoute) {
+    // Don't validate session here to avoid recursion - let the auth layout handle it
+    return;
+  }
+
+  // For routes that need auth, check if session cache exists to avoid recursion
+  const locals = event.locals as any;
+  if (locals.__sessionCache !== undefined) {
+    // Session already validated, use cached values
+    event.locals.session = locals.__sessionCache.session;
+    event.locals.user = locals.__sessionCache.user;
+    return;
+  }
+
+  // Validate session for routes that need it (only if not already cached)
   const authStartTime = performance.now();
   const { session, user } = await event.locals.safeGetSession();
   event.locals.session = session;
@@ -89,11 +78,26 @@ export async function setupAuthGuard(event: RequestEvent): Promise<void> {
 
   // Redirect unauthenticated users from protected routes
   if (!session && needsAuth) {
-    if (isDebug) authLogger.info('Redirecting unauthenticated user to login', { 
-      from: pathname, 
-      to: '/login' 
+    if (isDebug) authLogger.info('Redirecting unauthenticated user to login', {
+      from: pathname,
+      to: '/login'
     });
-    throw redirect(303, '/login');
+
+    try {
+      redirect(303, '/login');
+    } catch (error) {
+      // Re-throw actual redirects (they're Response objects)
+      if (error instanceof Response && error.status >= 300 && error.status < 400) {
+        throw error;
+      }
+      // Log and handle unexpected errors
+      authLogger.error('Critical auth redirect error', {
+        pathname,
+        error: error instanceof Error ? error.message : String(error)
+      });
+      // In auth guard context, we can't return an error response, so re-throw
+      throw new Error('Authentication system error');
+    }
   }
 
   // Session health monitoring for authenticated users

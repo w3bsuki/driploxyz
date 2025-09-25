@@ -17,7 +17,7 @@ export const load = (async ({ locals: { safeGetSession }, parent }) => {
   
   if (!session || !user) {
     log.debug('No session/user, redirecting to login');
-    throw redirect(303, '/login');
+    redirect(303, '/login');
   }
 
   const parentData = await parent();
@@ -31,7 +31,7 @@ export const load = (async ({ locals: { safeGetSession }, parent }) => {
   // Check if onboarding is already completed
   if (parentData.profile?.onboarding_completed === true) {
     log.debug('User already completed onboarding, redirecting to dashboard');
-    throw redirect(303, '/dashboard');
+    redirect(303, '/dashboard');
   }
 
   log.debug('User needs onboarding, proceeding with page load');

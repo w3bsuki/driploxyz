@@ -28,7 +28,7 @@ export async function setupAuth(event: RequestEvent): Promise<void> {
     anonKey: PUBLIC_SUPABASE_ANON_KEY,
     cookieDefaults: { sameSite: 'lax' }
   });
-  event.locals.supabase = createSupabaseServerClient(event.cookies, event.fetch) as any;
+  event.locals.supabase = createSupabaseServerClient(event.cookies, event.fetch) as unknown as App.Locals['supabase'];
 
   /**
    * Safe session getter with per-request caching and proper validation order

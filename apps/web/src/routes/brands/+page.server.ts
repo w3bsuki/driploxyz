@@ -67,7 +67,7 @@ export const load = (async ({
 
     if (brandsError) {
       log.error('Error loading brands', { error: brandsError.message });
-      throw error(500, 'Failed to load brands');
+      error(500, 'Failed to load brands');
     }
 
     // Get available categories from brands' products
@@ -191,6 +191,6 @@ export const load = (async ({
 
   } catch (err) {
     log.error('Unexpected error in brands page load', err);
-    throw error(500, 'Something went wrong loading the brands showcase');
+    error(500, 'Something went wrong loading the brands showcase');
   }
 }) satisfies PageServerLoad;

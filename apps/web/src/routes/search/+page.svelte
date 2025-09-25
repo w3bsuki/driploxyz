@@ -882,7 +882,7 @@
   currentPath={page.url.pathname}
   isNavigating={!!navigating}
   navigatingTo={navigating?.to?.url.pathname}
-  unreadMessageCount={unreadCount()}
+  unreadMessageCount={unreadCount}
   profileHref={data.profile?.username ? `/profile/${data.profile.username}` : '/account'}
   isAuthenticated={!!data.user}
   labels={{

@@ -6,7 +6,7 @@ export const load = (async ({ url, locals: { supabase, safeGetSession } }) => {
   const { session } = await safeGetSession();
   
   if (!session) {
-    throw redirect(303, '/login');
+    redirect(303, '/login');
   }
 
   const params = url.searchParams;

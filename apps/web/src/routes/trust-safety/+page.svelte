@@ -10,17 +10,17 @@
 
 <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
 	<div class="max-w-4xl mx-auto">
-		<h1 class="text-[length:var(--text-3xl)] font-bold text-[color:var(--text-primary)] mb-8">Trust & Safety</h1>
+		<h1 class="text-3xl font-bold text-gray-900 mb-8">Trust & Safety</h1>
 		
 		<div class="bg-white shadow-sm rounded-lg p-6 space-y-8 prose prose-gray max-w-none">
-			<div class="bg-[color:var(--status-info-bg)] border border-[color:var(--status-info-border)] rounded-lg p-4">
-				<p class="text-sm text-[color:var(--status-info-fg)]">
+			<div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+				<p class="text-sm text-blue-700">
 					<strong>Last updated:</strong> {new Date().toLocaleDateString()}
 				</p>
 			</div>
 
 			<div class="bg-green-50 border border-green-200 rounded-lg p-4">
-				<h2 class="text-[length:var(--text-lg)] font-semibold text-green-800 mb-2">🛡️ Our Commitment</h2>
+				<h2 class="text-lg font-semibold text-green-800 mb-2">🛡️ Our Commitment</h2>
 				<p class="text-sm text-green-700">
 					Driplo is dedicated to creating a safe, trustworthy marketplace where everyone can buy and sell with confidence. 
 					Your safety is our top priority.
@@ -28,15 +28,15 @@
 			</div>
 
 			<section>
-				<h2 class="text-[length:var(--text-2xl)] font-semibold text-[color:var(--text-primary)] mb-6">How We Keep You Safe</h2>
+				<h2 class="text-2xl font-semibold text-gray-900 mb-6">How We Keep You Safe</h2>
 				<div class="grid md:grid-cols-2 gap-6">
 					<div class="space-y-4">
 						<div class="border border-gray-200 rounded-lg p-4">
 							<div class="flex items-center mb-2">
-								<svg class="w-6 h-6 text-[color:var(--primary)] mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<svg class="w-6 h-6 text-gray-700 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
 								</svg>
-								<h3 class="text-[length:var(--text-base)] font-semibold text-[color:var(--text-primary)]">Secure Payments</h3>
+								<h3 class="text-base font-semibold text-gray-900">Secure Payments</h3>
 							</div>
 							<p class="text-gray-600 text-sm">
 								All payments processed through Stripe with escrow protection. Your money is held safely until you confirm receipt.
@@ -48,7 +48,7 @@
 								<svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
 								</svg>
-								<h3 class="text-[length:var(--text-base)] font-semibold text-[color:var(--text-primary)]">Identity Verification</h3>
+								<h3 class="text-base font-semibold text-gray-900">Identity Verification</h3>
 							</div>
 							<p class="text-gray-600 text-sm">
 								All users verify their email and phone number. Sellers undergo additional verification for higher transaction limits.
@@ -62,7 +62,7 @@
 								<svg class="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
 								</svg>
-								<h3 class="text-[length:var(--text-base)] font-semibold text-[color:var(--text-primary)]">24/7 Monitoring</h3>
+								<h3 class="text-base font-semibold text-gray-900">24/7 Monitoring</h3>
 							</div>
 							<p class="text-gray-600 text-sm">
 								Our team monitors the platform around the clock for suspicious activity, fake listings, and policy violations.
@@ -74,7 +74,7 @@
 								<svg class="w-6 h-6 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
 								</svg>
-								<h3 class="text-[length:var(--text-base)] font-semibold text-[color:var(--text-primary)]">Quick Response</h3>
+								<h3 class="text-base font-semibold text-gray-900">Quick Response</h3>
 							</div>
 							<p class="text-gray-600 text-sm">
 								Report issues and get help within hours. Our support team is trained to handle disputes fairly and quickly.
@@ -85,14 +85,14 @@
 			</section>
 
 			<section>
-				<h2 class="text-[length:var(--text-2xl)] font-semibold text-[color:var(--text-primary)] mb-6">Community Guidelines</h2>
+				<h2 class="text-2xl font-semibold text-gray-900 mb-6">Community Guidelines</h2>
 				<p>
 					Our community thrives when everyone follows these essential guidelines:
 				</p>
 				
 				<div class="space-y-6">
 					<div>
-						<h3 class="text-[length:var(--text-lg)] font-semibold text-[color:var(--text-primary)] mb-4">✅ What We Encourage</h3>
+						<h3 class="text-lg font-semibold text-gray-900 mb-4">✅ What We Encourage</h3>
 						<div class="grid md:grid-cols-2 gap-4">
 							<ul class="list-disc pl-6 text-gray-600 space-y-2 text-sm">
 								<li>Honest, detailed item descriptions</li>
@@ -114,7 +114,7 @@
 					</div>
 
 					<div>
-						<h3 class="text-[length:var(--text-lg)] font-semibold text-[color:var(--text-primary)] mb-4">🚫 What's Not Allowed</h3>
+						<h3 class="text-lg font-semibold text-gray-900 mb-4">🚫 What's Not Allowed</h3>
 						<div class="bg-red-50 border border-red-200 rounded-lg p-4">
 							<div class="grid md:grid-cols-2 gap-4">
 								<ul class="list-disc pl-6 text-red-700 space-y-2 text-sm">
@@ -140,11 +140,11 @@
 			</section>
 
 			<section>
-				<h2 class="text-[length:var(--text-2xl)] font-semibold text-[color:var(--text-primary)] mb-6">Reporting & Support</h2>
+				<h2 class="text-2xl font-semibold text-gray-900 mb-6">Reporting & Support</h2>
 				
 				<div class="space-y-6">
 					<div>
-						<h3 class="text-[length:var(--text-lg)] font-semibold text-[color:var(--text-primary)] mb-3">How to Report Issues</h3>
+						<h3 class="text-lg font-semibold text-gray-900 mb-3">How to Report Issues</h3>
 						<div class="grid md:grid-cols-3 gap-4">
 							<div class="border border-gray-200 rounded-lg p-4 text-center">
 								<div class="w-12 h-12 bg-[color:var(--status-info-bg)] rounded-full flex items-center justify-center mx-auto mb-3">
@@ -152,7 +152,7 @@
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
 									</svg>
 								</div>
-								<h4 class="text-[length:var(--text-sm)] font-semibold text-[color:var(--text-primary)] mb-2">Report a Listing</h4>
+								<h4 class="text-sm font-semibold text-gray-900 mb-2">Report a Listing</h4>
 								<p class="text-xs text-gray-600">Click "Report" on any suspicious or inappropriate listing</p>
 							</div>
 							
@@ -162,7 +162,7 @@
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
 									</svg>
 								</div>
-								<h4 class="text-[length:var(--text-sm)] font-semibold text-[color:var(--text-primary)] mb-2">Report a User</h4>
+								<h4 class="text-sm font-semibold text-gray-900 mb-2">Report a User</h4>
 								<p class="text-xs text-gray-600">Report harassment, fraud, or policy violations by users</p>
 							</div>
 							
@@ -172,16 +172,16 @@
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
 									</svg>
 								</div>
-								<h4 class="text-[length:var(--text-sm)] font-semibold text-[color:var(--text-primary)] mb-2">Get Help</h4>
+								<h4 class="text-sm font-semibold text-gray-900 mb-2">Get Help</h4>
 								<p class="text-xs text-gray-600">Contact support for any safety concerns or questions</p>
 							</div>
 						</div>
 					</div>
 
 					<div>
-						<h3 class="text-[length:var(--text-lg)] font-semibold text-[color:var(--text-primary)] mb-3">What Happens After You Report</h3>
+						<h3 class="text-lg font-semibold text-gray-900 mb-3">What Happens After You Report</h3>
 						<div class="bg-[color:var(--status-info-bg)] rounded-lg p-4">
-							<ol class="list-decimal pl-6 text-[color:var(--status-info-fg)] space-y-2 text-sm">
+							<ol class="list-decimal pl-6 text-blue-700 space-y-2 text-sm">
 								<li><strong>Immediate Review:</strong> Our team reviews all reports within 24 hours</li>
 								<li><strong>Investigation:</strong> We gather evidence and may contact involved parties</li>
 								<li><strong>Action Taken:</strong> Violations result in warnings, restrictions, or account suspension</li>

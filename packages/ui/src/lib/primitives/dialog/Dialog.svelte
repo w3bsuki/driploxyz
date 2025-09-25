@@ -1,7 +1,26 @@
 <script lang="ts">
   import { createDialog } from '@melt-ui/svelte';
   import type { Snippet } from 'svelte';
-  import { writable } from 'svelte/store';
+
+  // Create a store-compatible reactive wrapper for Melt UI
+  function createReactiveStore<T>(initialValue: T) {
+    let value = $state(initialValue);
+
+    return {
+      subscribe(run: (value: T) => void) {
+        $effect(() => {
+          run(value);
+        });
+        return () => {}; // Cleanup handled by effect
+      },
+      set(newValue: T) {
+        value = newValue;
+      },
+      update(fn: (value: T) => T) {
+        value = fn(value);
+      }
+    };
+  }
 
   interface Props {
     open?: boolean;
@@ -31,8 +50,8 @@
     class: className = ''
   }: Props = $props();
 
-  // Create writable store for Melt UI
-  const openStore = writable(open);
+  // Create reactive store for Melt UI using runes
+  const openStore = createReactiveStore(open);
 
   const {
     elements: { trigger: triggerElement, overlay, content, title: titleElement, description: descriptionElement, close },

@@ -98,7 +98,7 @@ export const load = (async ({
 
     if (sellersError) {
       log.error('Error loading sellers', sellersError);
-      throw error(500, 'Failed to load sellers');
+      error(500, 'Failed to load sellers');
     }
 
     // Get total count for pagination
@@ -198,6 +198,6 @@ export const load = (async ({
 
   } catch (err) {
     log.error('Unexpected error in sellers page load', err);
-    throw error(500, 'Something went wrong loading the sellers leaderboard');
+    error(500, 'Something went wrong loading the sellers leaderboard');
   }
 }) satisfies PageServerLoad;

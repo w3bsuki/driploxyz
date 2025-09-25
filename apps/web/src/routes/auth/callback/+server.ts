@@ -20,12 +20,12 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
   // Handle provider-side errors immediately
   if (providerError) {
-    throw redirect(303, `/login?error=${encodeURIComponent(errorDescription || providerError)}`);
+    redirect(303, `/login?error=${encodeURIComponent(errorDescription || providerError)}`);
   }
 
   // Require auth code
   if (!code) {
-    throw redirect(303, '/login?error=no_auth_code');
+    redirect(303, '/login?error=no_auth_code');
   }
 
   try {
@@ -35,14 +35,14 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     if (exchangeError) {
       // Handle specific exchange errors
       if (exchangeError.message?.includes('expired') || exchangeError.message?.includes('invalid')) {
-        throw redirect(303, '/login?error=' + encodeURIComponent('Verification link has expired or already been used. Please sign in normally.'));
+        redirect(303, '/login?error=' + encodeURIComponent('Verification link has expired or already been used. Please sign in normally.'));
       }
       
-      throw redirect(303, '/login?error=' + encodeURIComponent('Authentication failed. Please try signing in again.'));
+      redirect(303, '/login?error=' + encodeURIComponent('Authentication failed. Please try signing in again.'));
     }
 
     if (!data.session || !data.user) {
-      throw redirect(303, '/login?error=auth_failed');
+      redirect(303, '/login?error=auth_failed');
     }
 
 
@@ -55,11 +55,11 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 
     // If no profile exists (extremely rare due to DB trigger), redirect to onboarding
     if (profileError?.code === 'PGRST116') {
-      throw redirect(303, '/onboarding?welcome=true');
+      redirect(303, '/onboarding?welcome=true');
     }
 
     if (profileError) {
-      throw redirect(303, '/login?error=profile_fetch_failed');
+      redirect(303, '/login?error=profile_fetch_failed');
     }
 
     // Check if this is email verification (user just verified their email)
@@ -70,9 +70,9 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     if (profile.onboarding_completed !== true) {
       // Show success page first for email verification
       if (isEmailVerification) {
-        throw redirect(303, '/auth/verified');
+        redirect(303, '/auth/verified');
       }
-      throw redirect(303, '/onboarding');
+      redirect(303, '/onboarding');
     }
 
     // User is fully onboarded - redirect to intended destination
@@ -86,7 +86,7 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
       }
     }
     
-    throw redirect(303, redirectPath);
+    redirect(303, redirectPath);
     
   } catch (error) {
     // If it's already a redirect, re-throw it
@@ -94,6 +94,6 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
       throw error;
     }
     
-    throw redirect(303, '/login?error=callback_failed');
+    redirect(303, '/login?error=callback_failed');
   }
 };

@@ -39,7 +39,9 @@ Crawl-delay: 0
 	return new Response(robotsTxt, {
 		headers: {
 			'Content-Type': 'text/plain',
-			'Cache-Control': 'public, max-age=3600'
+			'cache-control': 'public, max-age=7200, s-maxage=14400, stale-while-revalidate=86400',
+			'vary': 'Accept-Encoding',
+			'x-cache-strategy': 'static-seo'
 		}
 	});
 };

@@ -82,8 +82,9 @@
 </script>
 
 <!-- Native mobile bottom navigation -->
-<nav 
-  role="tablist"
+<nav
+  role="navigation"
+  aria-label="Bottom navigation"
   data-bottom-nav
   class="fixed bottom-0 left-0 right-0 z-50 sm:hidden
          bg-[color:var(--surface-base)]/95 backdrop-blur-xl 

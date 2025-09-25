@@ -45,13 +45,9 @@
   // Initialize favorites from server data
   $effect(() => {
     if (data.userFavorites) {
-      favoritesStore.update(state => ({
-        ...state,
-        favorites: {
-          ...state.favorites,
-          ...data.userFavorites
-        }
-      }));
+      // The favoritesStore with Svelte 5 runes doesn't have an update method
+      // Load user favorites through the actions instead
+      favoritesActions.loadUserFavorites();
     }
   });
 

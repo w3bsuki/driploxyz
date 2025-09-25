@@ -2,15 +2,21 @@
   import { Button } from '@repo/ui';
   // import { goto } from '$app/navigation'; // Not used, region switching handled via window.location
   
+  type RegionCode = 'UK' | 'BG';
+
   interface Props {
     show: boolean;
     onClose: () => void;
     onSwitch: () => void;
-    detectedRegion: 'UK' | 'BG';
-    currentRegion: 'UK' | 'BG';
+    detectedRegion: RegionCode | string; // Allow any string but validate below
+    currentRegion: RegionCode | string;  // Allow any string but validate below
   }
-  
-  let { show, onClose, onSwitch, detectedRegion, currentRegion }: Props = $props();
+
+  let { show, onClose, onSwitch, detectedRegion: rawDetectedRegion, currentRegion: rawCurrentRegion }: Props = $props();
+
+  // Validate and normalize region values with fallbacks
+  const detectedRegion: RegionCode = rawDetectedRegion === 'UK' || rawDetectedRegion === 'BG' ? rawDetectedRegion : 'BG';
+  const currentRegion: RegionCode = rawCurrentRegion === 'UK' || rawCurrentRegion === 'BG' ? rawCurrentRegion : 'BG';
   
   function handleSwitch() {
     // Set cookie and redirect to subdomain
@@ -70,7 +76,7 @@
     }
   };
   
-  const detected = regionInfo[detectedRegion];
+  const detected = regionInfo[detectedRegion] || regionInfo.BG; // Safe fallback to BG if region is invalid
   // const current = regionInfo[currentRegion]; // Defined but not used
 </script>
 

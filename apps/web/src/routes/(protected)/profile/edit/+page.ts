@@ -6,7 +6,7 @@ export const load = (async ({ parent }) => {
   const { user } = await parent();
   
   if (!user) {
-    throw redirect(303, '/login');
+    redirect(303, '/login');
   }
 
   const supabase = createBrowserSupabaseClient();

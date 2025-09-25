@@ -80,7 +80,7 @@ export const load = (async ({
 
     if (productsError) {
       log.error('Error loading pro products', productsError);
-      throw error(500, 'Failed to load premium products');
+      error(500, 'Failed to load premium products');
     }
 
     // Filter products by seller account type
@@ -155,6 +155,6 @@ export const load = (async ({
 
   } catch (err) {
     log.error('Unexpected error in pro page load', err);
-    throw error(500, 'Something went wrong loading premium products');
+    error(500, 'Something went wrong loading premium products');
   }
 }) satisfies PageServerLoad;

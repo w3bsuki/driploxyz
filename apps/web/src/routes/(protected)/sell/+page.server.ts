@@ -11,7 +11,7 @@ export const load = (async ({ locals }) => {
   
   // Redirect to login if not authenticated
   if (!session) {
-    throw redirect(303, '/login?redirect=/sell');
+    redirect(303, '/login?redirect=/sell');
   }
 
   const services = createServices(supabase, null); // No stripe needed for selling products

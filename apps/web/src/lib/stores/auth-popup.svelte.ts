@@ -87,15 +87,23 @@ function createAuthPopupStore() {
 
     showForMessaging(): void {
       actions.show('message sellers');
+    },
+
+    showForSignUp(): void {
+      actions.show('get started');
     }
   };
 
-  return { state, actions };
+  return {
+    get state() { return state; },
+    set state(newState) { state = newState; },
+    actions
+  };
 }
 
 // Create global instance
-const { state, actions } = createAuthPopupStore();
+const authPopupStoreInstance = createAuthPopupStore();
 
-// Export the state for direct access and actions separately
-export const authPopupStore = state;
-export const authPopupActions = actions;
+// Export the reactive store directly - this maintains proper Svelte 5 reactivity
+export const authPopupStore = authPopupStoreInstance;
+export const authPopupActions = authPopupStoreInstance.actions;

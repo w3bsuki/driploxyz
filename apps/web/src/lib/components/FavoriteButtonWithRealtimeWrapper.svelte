@@ -58,13 +58,13 @@
 
   // Subscribe to real-time updates for this product
   $effect(() => {
-    if (realtimeService && product?.id) {
-      realtimeService.subscribeToProduct(product.id);
+    if (realtimeService.instance && product?.id) {
+      realtimeService.instance.subscribeToProduct(product.id);
     }
 
     return () => {
-      if (realtimeService && product?.id) {
-        realtimeService.unsubscribeFromProduct(product.id);
+      if (realtimeService.instance && product?.id) {
+        realtimeService.instance.unsubscribeFromProduct(product.id);
       }
     };
   });

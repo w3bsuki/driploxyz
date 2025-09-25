@@ -59,7 +59,7 @@ export const GET: RequestHandler = async ({ request, locals }) => {
 		
 		// If any critical service is down, return 503
 		if (!checks.database || !checks.auth) {
-			throw error(503, 'Service degraded');
+			error(503, 'Service degraded');
 		}
 		
 		// Return health status with security headers
@@ -101,7 +101,7 @@ export const HEAD: RequestHandler = async ({ locals }) => {
 			.single();
 		
 		if (dbError) {
-			throw error(503, 'Database unavailable');
+			error(503, 'Database unavailable');
 		}
 		
 		return addSecurityHeaders(new Response(null, {

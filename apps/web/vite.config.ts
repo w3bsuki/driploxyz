@@ -16,6 +16,13 @@ export default defineConfig({
 		}),
 		sveltekit()
 	],
+	// Speed up dev server
+	esbuild: {
+		logOverride: { 'this-is-undefined-in-esm': 'silent' }
+	},
+	ssr: {
+		noExternal: ['@repo/ui', '@repo/core', '@repo/database']
+	},
 	resolve: {
 		alias: {
 			// Use source files from workspace during dev to avoid packaging/watch issues

@@ -3,5 +3,5 @@ import type { PageServerLoad } from './$types';
 
 export const load = (async () => {
   // Redirect to consolidated sales page with earnings tab
-  throw redirect(301, '/dashboard/sales?tab=earnings');
+  redirect(301, '/dashboard/sales?tab=earnings');
 }) satisfies PageServerLoad;

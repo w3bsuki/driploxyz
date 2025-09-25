@@ -15,7 +15,18 @@ import type { LayoutServerLoad } from './$types';
 export const load = (async ({ locals: { session, user, supabase } }) => {
   // Redirect to login if not authenticated
   if (!session || !user) {
-    throw redirect(303, '/login');
+    try {
+      redirect(303, '/login');
+    } catch (error) {
+      // Re-throw actual redirects (they're Response objects)
+      if (error instanceof Response && error.status >= 300 && error.status < 400) {
+        throw error;
+      }
+      // Log and handle unexpected errors
+      console.error('Protected layout redirect error:', error);
+      // This is a critical auth failure - we can't continue without authentication
+      throw new Error('Authentication system error');
+    }
   }
 
   // Get fresh user profile data
@@ -24,7 +35,7 @@ export const load = (async ({ locals: { session, user, supabase } }) => {
   // IMPORTANT: Don't redirect to onboarding here!
   // Individual routes will handle onboarding requirements.
   // This prevents loops when onboarding is completed but cache isn't updated yet.
-  
+
   return {
     session,
     user,

@@ -6,13 +6,13 @@ export const load = (async ({ parent }) => {
   
   // User authentication check
   if (!user) {
-    throw redirect(303, '/login');
+    redirect(303, '/login');
   }
 
   // Use profile from parent to avoid duplicate fetch
   // Parent already fetched profile, no need to fetch again
   if (profile?.onboarding_completed === true) {
-    throw redirect(303, '/');
+    redirect(303, '/');
   }
 
   return {

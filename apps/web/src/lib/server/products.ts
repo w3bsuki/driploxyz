@@ -57,7 +57,7 @@ export async function searchProducts(
 
   // Condition filter
   if (filters.condition && filters.condition.length > 0) {
-    dbQuery = dbQuery.in('condition', filters.condition as Database['public']['Enums']['product_condition'][]);
+    dbQuery = dbQuery.in('condition', filters.condition as Database['public']['Tables']['products']['Row']['condition'][]);
   }
 
   // Brand filter

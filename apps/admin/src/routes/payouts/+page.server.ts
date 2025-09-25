@@ -4,7 +4,7 @@ import type { PageServerLoad, Actions } from './$types';
 export const load = (async ({ locals }) => {
 	// Verify admin access
 	if (!locals.isAdmin) {
-		throw error(403, 'Admin access required');
+		error(403, 'Admin access required');
 	}
 
 	const supabase = locals.supabase;
@@ -17,7 +17,7 @@ export const load = (async ({ locals }) => {
 
 	if (payoutsError) {
 		
-		throw error(500, 'Failed to fetch payouts');
+		error(500, 'Failed to fetch payouts');
 	}
 
 	// Get summary stats

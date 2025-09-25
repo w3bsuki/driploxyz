@@ -1,5 +1,6 @@
 import { sequence } from '@sveltejs/kit/hooks';
-import type { Handle, HandleServerError } from '@sveltejs/kit';
+import type { Handle, HandleServerError, HandleFetch } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 
 import { setupEnvironment } from './env';
 import { setupAuth } from './supabase-hooks';
@@ -78,6 +79,56 @@ const csrfGuard: Handle = async ({ event, resolve }) => {
 const authGuardHandler: Handle = async ({ event, resolve }) => {
   await setupAuthGuard(event);
   return resolve(event);
+};
+
+/**
+ * HandleFetch optimization for internal API calls
+ * Routes internal API calls directly to handlers, avoiding HTTP overhead
+ */
+export const handleFetch: HandleFetch = async ({ event, request, fetch }) => {
+  const url = new URL(request.url);
+  const eventUrl = new URL(event.url);
+
+  // Only optimize requests to the same origin
+  if (url.origin !== eventUrl.origin) {
+    return fetch(request);
+  }
+
+  // Only optimize internal API routes
+  if (!url.pathname.startsWith('/api/')) {
+    return fetch(request);
+  }
+
+  // For internal API calls, ensure cookies are properly forwarded
+  const cookieHeader = event.request.headers.get('cookie');
+  if (cookieHeader && !request.headers.get('cookie')) {
+    const clonedRequest = new Request(request, {
+      headers: {
+        ...Object.fromEntries(request.headers.entries()),
+        cookie: cookieHeader,
+        // Forward auth headers for API calls
+        authorization: event.request.headers.get('authorization') || '',
+        'x-forwarded-for': (() => {
+          try {
+            return event.getClientAddress();
+          } catch {
+            return 'localhost';
+          }
+        })(),
+        'x-forwarded-proto': url.protocol.slice(0, -1),
+        'x-forwarded-host': url.host
+      }
+    });
+
+    if (dev) {
+      // Log internal API calls in development
+      console.log(`[HandleFetch] Internal API call: ${request.method} ${url.pathname}`);
+    }
+
+    return fetch(clonedRequest);
+  }
+
+  return fetch(request);
 };
 
 /**

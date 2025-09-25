@@ -1,107 +1,170 @@
 import { redirect } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 import type { LayoutServerLoad } from './$types';
-import type { Database } from '@repo/database';
-import { COUNTRY_CONFIGS, shouldSuggestCountrySwitch } from '$lib/country/detection';
+import { COUNTRY_CONFIGS, shouldSuggestCountrySwitch, type CountryCode } from '$lib/country/detection';
 import { getCanonicalAndHreflang } from '$lib/seo';
-import { withTimeout } from '@repo/core/utils';
 
 const REDIRECT_PATHS_TO_SKIP = [
   '/onboarding',
   '/api',
-  '/login', 
+  '/login',
   '/signup',
   '/logout',
   '/auth'
 ];
 
-export const load = (async (event) => {
-  const { url, cookies, depends, locals } = event;
-  // CRITICAL: Only depend on auth - other deps cause unnecessary reloads
-  depends('supabase:auth');
-  
-  // CRITICAL: Always get fresh session data on each request
-  // This ensures auth state is current after login/logout
-  // Avoid dev hang if auth provider stalls
-  const { session, user } = await withTimeout(
-    locals.safeGetSession(),
-    2000,
-    { session: null, user: null }
-  );
-  const supabase = locals.supabase;
-  
-  // Auth state loaded
-  
-
-  let profile = null;
-  
-  if (user && supabase) {
-    const { data, error: profileError }: {
-      data: Pick<Database['public']['Tables']['profiles']['Row'], 'id' | 'username' | 'full_name' | 'avatar_url' | 'onboarding_completed' | 'account_type' | 'subscription_tier' | 'region'> | null;
-      error: unknown;
-    } = await withTimeout(
-      supabase
-        .from('profiles')
-        .select('id, username, full_name, avatar_url, onboarding_completed, account_type, subscription_tier, region')
-        .eq('id', user.id)
-        .single(),
-      2500,
-      { data: null, error: null, count: null, status: 0, statusText: 'timeout' }
-    );
+/**
+ * Stream profile data - non-blocking promise for better performance
+ */
+async function streamProfileData(supabase: App.Locals['supabase'], userId: string) {
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, username, full_name, avatar_url, onboarding_completed, account_type, subscription_tier, region')
+      .eq('id', userId)
+      .single();
 
     // Ignore profile not found errors (PGRST116)
-    if (profileError && typeof profileError === 'object' && 'code' in profileError && profileError.code !== 'PGRST116') {
-      // Log and continue without failing the whole request (development only)
+    if (error && error.code !== 'PGRST116') {
       if (dev) {
-        // Profile fetch failed - continuing without profile
+        console.warn('Profile fetch failed:', error);
       }
+      return null;
     }
 
-    profile = data;
+    return data;
+  } catch (err) {
+    if (dev) {
+      console.warn('Profile streaming error:', err);
+    }
+    return null;
+  }
+}
 
-    // FORCE ONBOARDING CHECK - NO EXCEPTIONS
-    // If user exists but has no profile or onboarding not completed -> ONBOARDING
-    const needsOnboarding = user && (!profile || profile.onboarding_completed !== true);
+/**
+ * Stream region detection data - non-blocking for performance
+ */
+async function streamRegionData(event: Parameters<LayoutServerLoad>[0], currentCountry: string) {
+  try {
+    const { detectCountryFromIP } = await import('$lib/country/detection');
+    return detectCountryFromIP(event);
+  } catch (err) {
+    if (dev) {
+      console.warn('Region detection failed:', err);
+    }
+    return currentCountry;
+  }
+}
+
+export const load = (async (event) => {
+  const { url, cookies, depends, locals } = event;
+
+  // Granular dependency tracking for better invalidation
+  depends('supabase:auth');     // Auth state changes
+  depends('app:profile');       // Profile data changes
+  depends('app:preferences');   // User preferences changes
+
+  // CRITICAL DATA - Load immediately and block page render
+  const { session, user } = await locals.safeGetSession();
+  const supabase = locals.supabase;
+  const language = locals.locale || 'bg';
+  const country = locals.country || 'BG';
+  const countryConfig = COUNTRY_CONFIGS[country];
+  const currency = countryConfig.currency;
+
+  // Generate SEO data (synchronous)
+  const seoData = getCanonicalAndHreflang(event);
+
+  // STREAMED DATA - Non-blocking promises for better performance
+  const profilePromise = user && supabase
+    ? streamProfileData(supabase, user.id)
+    : Promise.resolve(null);
+
+  const regionPromise = streamRegionData(event, country);
+
+  // SMART STREAMING - Only await profile for protected paths that need onboarding check
+  if (user) {
     const isProtectedPath = !REDIRECT_PATHS_TO_SKIP.some(path => url.pathname.startsWith(path));
-    
-    if (needsOnboarding && isProtectedPath) {
-      // User needs onboarding
-      throw redirect(303, '/onboarding');
+
+    if (isProtectedPath) {
+      // For protected paths, we need profile immediately for onboarding redirect
+      // But we can still parallelize region detection
+      const [profile, detectedCountry] = await Promise.all([
+        profilePromise,
+        regionPromise
+      ]);
+
+      const needsOnboarding = user && (!profile || profile.onboarding_completed !== true);
+      if (needsOnboarding) {
+        redirect(303, '/onboarding');
+      }
+
+      // Return with loaded data for protected paths
+      return {
+        // Critical data (loaded immediately)
+        session,
+        user,
+        language,
+        country,
+        currency,
+        seo: seoData,
+        cookies: cookies.getAll(),
+
+        // Loaded data for protected paths
+        profile,
+        detectedRegion: detectedCountry === 'GB' ? 'UK' : 'BG',
+        region: profile?.region || (country === 'GB' ? 'UK' : 'BG'),
+        shouldPromptRegionSwitch:
+          !cookies.get('region_prompt_dismissed') &&
+          !profile?.region &&
+          shouldSuggestCountrySwitch(country as CountryCode, detectedCountry as CountryCode)
+      };
+    } else {
+      // For non-protected paths (auth, api, etc), await region data to prevent Promise issues
+      const [profile, detectedCountry] = await Promise.all([
+        profilePromise,
+        regionPromise
+      ]);
+
+      return {
+        // Critical data (loaded immediately)
+        session,
+        user,
+        language,
+        country,
+        currency,
+        seo: seoData,
+        cookies: cookies.getAll(),
+
+        // Resolved data (awaited to prevent type issues)
+        profile,
+        detectedRegion: detectedCountry === 'GB' ? 'UK' : 'BG',
+        region: profile?.region || (country === 'GB' ? 'UK' : 'BG'),
+        shouldPromptRegionSwitch:
+          !cookies.get('region_prompt_dismissed') &&
+          !profile?.region &&
+          shouldSuggestCountrySwitch(country as CountryCode, detectedCountry as CountryCode)
+      };
     }
   }
 
-  // Language is already set in locals by the i18n hook
-  const language = locals.locale || 'bg';
-  
-  // Get country from locals (set by server hooks)
-  const country = locals.country || 'BG';
-  
-  // Get country config and derive region/currency info
-  const countryConfig = COUNTRY_CONFIGS[country];
-  const currency = countryConfig.currency;
-  const userRegion = profile?.region || (country === 'GB' ? 'UK' : 'BG');
-  
-  // Check if user should be prompted to switch regions using unified detection
-  const detectedCountry = await import('$lib/country/detection').then(m => m.detectCountryFromIP(event));
-  const shouldPromptRegionSwitch = 
-    !cookies.get('region_prompt_dismissed') && 
-    !profile?.region && // User hasn't set a preference
-    shouldSuggestCountrySwitch(country, detectedCountry);
-  
-  // Generate SEO data
-  const seoData = getCanonicalAndHreflang(event);
-  
+  // No user - return minimal data with resolved region detection
+  const detectedCountry = await regionPromise;
+
   return {
+    // Critical data
     session,
     user,
-    profile,
-    language, // Always return the determined language
-    country, // Pass country for country-based filtering
-    cookies: cookies.getAll(), // Pass cookies for SSR hydration
-    region: userRegion,
-    detectedRegion: detectedCountry === 'GB' ? 'UK' : 'BG',
-    shouldPromptRegionSwitch,
+    language,
+    country,
     currency,
-    seo: seoData
+    seo: seoData,
+    cookies: cookies.getAll(),
+
+    // Resolved data (awaited to prevent type issues)
+    profile: null,
+    detectedRegion: detectedCountry === 'GB' ? 'UK' : 'BG',
+    region: country === 'GB' ? 'UK' : 'BG',
+    shouldPromptRegionSwitch: false
   };
 }) satisfies LayoutServerLoad;

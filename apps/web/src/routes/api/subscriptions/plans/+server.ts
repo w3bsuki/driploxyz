@@ -33,8 +33,14 @@ export const GET: RequestHandler = async (event) => {
         : null
     })) || [];
 
-    return json({ plans: transformedPlans });
-    
+    return json({ plans: transformedPlans }, {
+      headers: {
+        'cache-control': 'public, max-age=600, s-maxage=1200, stale-while-revalidate=3600',
+        'vary': 'Accept-Encoding',
+        'x-cache-strategy': 'public-data-api'
+      }
+    });
+
   } catch (error) {
     if (DEBUG) {
       console.error('Subscription plans endpoint error:', error);

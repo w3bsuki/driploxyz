@@ -6,7 +6,7 @@ export const load = (async ({ params, locals }) => {
   const { session } = await locals.safeGetSession();
   
   if (!session?.user) {
-    throw redirect(303, '/login');
+    redirect(303, '/login');
   }
   
   const profileService = new ProfileService(locals.supabase);
@@ -15,7 +15,7 @@ export const load = (async ({ params, locals }) => {
   const { data: seller, error: sellerError } = await profileService.getProfile(params.sellerId);
   
   if (sellerError || !seller) {
-    throw error(404, 'Seller not found');
+    error(404, 'Seller not found');
   }
   
   // Get seller's active products

@@ -57,7 +57,7 @@ describe('Data Access Patterns', () => {
       const categoryId = 'parent-category-id';
 
       // Should use direct queries instead of removed RPC functions
-      const result = mockSupabase
+      mockSupabase
         .from('categories')
         .select('id')
         .or(`id.eq.${categoryId},parent_id.eq.${categoryId}`)

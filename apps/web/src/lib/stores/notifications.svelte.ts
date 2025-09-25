@@ -12,7 +12,6 @@
  */
 
 import { browser } from '$app/environment';
-import { readable } from 'svelte/store';
 
 // Fallback UUID generator for older browsers and iOS Safari
 function generateUUID(): string {
@@ -289,31 +288,16 @@ export function getNotificationStore() {
 // Export the global store instance
 export const notificationStore = getNotificationStore();
 
-// Create reactive stores that sync with the rune-based state
-export const notifications = readable(notificationStore.notifications, (set) => {
-  // Since this is using $state internally, we need to trigger updates manually
-  // For now, just return the initial value
-  set(notificationStore.notifications);
+// Export reactive values directly from the rune-based store
+export const notifications = notificationStore.notifications;
+export const messageToasts = notificationStore.messageToasts;
+export const notificationPanelOpen = notificationStore.notificationPanelOpen;
+export const unreadNotifications = notificationStore.unreadNotifications;
+export const unreadCount = notificationStore.unreadCount;
 
-  // In a complete implementation, we'd need to set up reactivity
-  return () => {};
-});
-
-export const messageToasts = readable(notificationStore.messageToasts, (set) => {
-  set(notificationStore.messageToasts);
-  return () => {};
-});
-
-export const notificationPanelOpen = readable(notificationStore.notificationPanelOpen, (set) => {
-  set(notificationStore.notificationPanelOpen);
-  return () => {};
-});
-
-export const unreadCount = readable(notificationStore.unreadCount, (set) => {
-  set(notificationStore.unreadCount);
-  return () => {};
-});
+// Export actions and utilities
 export const notificationActions = notificationStore.notificationActions;
 export const messageToastActions = notificationStore.messageToastActions;
 export const showBrowserNotification = notificationStore.showBrowserNotification;
 export const playNotificationSound = notificationStore.playNotificationSound;
+export const requestNotificationPermission = notificationStore.requestNotificationPermission;

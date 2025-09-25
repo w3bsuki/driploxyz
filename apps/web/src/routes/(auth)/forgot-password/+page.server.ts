@@ -6,7 +6,7 @@ export const load = (async (event) => {
   const { session } = await event.locals.safeGetSession();
   
   if (session) {
-    throw redirect(303, '/');
+    redirect(303, '/');
   }
   
   // Generate CSRF token for the form

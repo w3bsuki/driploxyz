@@ -14,18 +14,18 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
   
   const { session } = await locals.safeGetSession();
   if (!session?.user) {
-    throw error(401, 'Unauthorized');
+    error(401, 'Unauthorized');
   }
 
   try {
     const { following_id } = await request.json();
 
     if (!following_id) {
-      throw error(400, 'Missing following_id');
+      error(400, 'Missing following_id');
     }
 
     if (following_id === session.user.id) {
-      throw error(400, 'Cannot follow yourself');
+      error(400, 'Cannot follow yourself');
     }
 
     // Check if already following
@@ -45,7 +45,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
         .eq('following_id', following_id);
 
       if (deleteError) {
-        throw error(500, 'Failed to unfollow');
+        error(500, 'Failed to unfollow');
       }
 
       return json({ following: false });
@@ -59,7 +59,7 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
         });
 
       if (insertError) {
-        throw error(500, 'Failed to follow');
+        error(500, 'Failed to follow');
       }
 
       // Get follower info for notifications
@@ -75,6 +75,6 @@ export const POST: RequestHandler = async ({ request, locals, getClientAddress }
       });
     }
   } catch {
-    throw error(500, 'Internal server error');
+    error(500, 'Internal server error');
   }
 };

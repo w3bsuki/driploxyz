@@ -10,7 +10,7 @@ export const load = (async ({ locals: { safeGetSession }, parent }) => {
   const { session, user } = await safeGetSession();
   
   if (!session || !user) {
-    throw redirect(303, '/login');
+    redirect(303, '/login');
   }
 
   const parentData = await parent();
@@ -30,12 +30,12 @@ export const load = (async ({ locals: { safeGetSession }, parent }) => {
     if (dev) {
       // Development logging for onboarding redirect
     }
-    throw redirect(303, '/onboarding');
+    redirect(303, '/onboarding');
   }
 
   // Profile is complete, proceed to dashboard
   if (dev) {
     console.log('Development mode - redirecting to dashboard');
   }
-  throw redirect(303, '/dashboard');
+  redirect(303, '/dashboard');
 }) satisfies PageServerLoad;

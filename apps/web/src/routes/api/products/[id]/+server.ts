@@ -10,7 +10,7 @@ export const GET: RequestHandler = async ({ params, locals: { supabase } }) => {
 		const { data: product, error: productError } = await services.products.getProduct(params.id);
 
 		if (productError || !product) {
-			throw error(404, 'Product not found');
+			error(404, 'Product not found');
 		}
 
 		// Transform product data to match the UI Product interface

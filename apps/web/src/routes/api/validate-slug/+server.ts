@@ -19,27 +19,27 @@ export const POST: RequestHandler = async (event) => {
   
   // Rate limiting
   if (await limiter.isLimited(event)) {
-    throw error(429, 'Too many validation requests');
+    error(429, 'Too many validation requests');
   }
 
   const { supabase, session } = locals;
   
   // Authentication check - only authenticated users can validate slugs
   if (!session?.user) {
-    throw error(401, 'Authentication required');
+    error(401, 'Authentication required');
   }
 
   let requestData;
   try {
     requestData = await request.json();
   } catch {
-    throw error(400, 'Invalid JSON body');
+    error(400, 'Invalid JSON body');
   }
 
   const { slug, productId, checkExistence = true } = requestData;
 
   if (!slug || typeof slug !== 'string') {
-    throw error(400, 'Slug is required and must be a string');
+    error(400, 'Slug is required and must be a string');
   }
 
   try {
@@ -83,7 +83,7 @@ export const POST: RequestHandler = async (event) => {
 
   } catch {
     
-    throw error(500, 'Validation failed');
+    error(500, 'Validation failed');
   }
 };
 
@@ -92,13 +92,13 @@ export const GET: RequestHandler = async ({ url, locals }) => {
   const { session } = locals;
   
   if (!session?.user) {
-    throw error(401, 'Authentication required');
+    error(401, 'Authentication required');
   }
 
   const slug = url.searchParams.get('slug');
   
   if (!slug) {
-    throw error(400, 'Slug parameter is required');
+    error(400, 'Slug parameter is required');
   }
 
   // Simple validation without database check for GET requests

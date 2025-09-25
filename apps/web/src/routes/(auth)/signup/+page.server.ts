@@ -12,7 +12,18 @@ export const load = (async (event) => {
   const { session } = await event.locals.safeGetSession();
   
   if (session) {
-    throw redirect(303, '/');
+    try {
+      redirect(303, '/');
+    } catch (error) {
+      // Re-throw actual redirects (they're Response objects)
+      if (error instanceof Response && error.status >= 300 && error.status < 400) {
+        throw error;
+      }
+      // Log and handle unexpected errors
+      console.error('Signup load redirect error:', error);
+      // Continue loading the page instead of crashing
+      return {};
+    }
   }
   
   return {};
@@ -172,7 +183,23 @@ export const actions = {
 
     // If user has a session (e.g., email confirmation not required), redirect to onboarding
     if (data.session) {
-      throw redirect(303, '/onboarding');
+      try {
+        redirect(303, '/onboarding');
+      } catch (error) {
+        // Re-throw actual redirects (they're Response objects)
+        if (error instanceof Response && error.status >= 300 && error.status < 400) {
+          throw error;
+        }
+        // Log and handle unexpected errors
+        console.error('Signup onboarding redirect error:', error);
+        // Return success without redirect if redirect fails
+        return {
+          success: true,
+          message: `Account created successfully! You can now continue to onboarding.`,
+          email: normalizedEmail,
+          redirectPath: '/onboarding'
+        };
+      }
     }
     
     // Otherwise return success response with email confirmation message

@@ -108,17 +108,18 @@ export class OrderService {
 				return { order: null, error };
 			}
 
-			// Create initial transaction record (will be updated by webhooks)
-			await this.supabase
-				.from('transactions')
-				.insert({
-					order_id: order.id,
-					buyer_id: params.buyerId,
-					seller_id: params.sellerId,
-					amount_total: params.totalAmount,
-					stripe_payment_intent_id: '', // Will be updated by webhook
-					status: 'pending'
-				});
+			// TODO: Create initial transaction record (will be updated by webhooks)
+			// Need to implement transactions table first
+			// await this.supabase
+			//	.from('transactions')
+			//	.insert({
+			//		order_id: order.id,
+			//		buyer_id: params.buyerId,
+			//		seller_id: params.sellerId,
+			//		amount_total: params.totalAmount,
+			//		stripe_payment_intent_id: '', // Will be updated by webhook
+			//		status: 'pending'
+			//	});
 
 			return { order, error: null };
 		} catch (error) {
@@ -292,14 +293,14 @@ export class OrderService {
 					priority: 'normal'
 				});
 
-				// Update transaction status for payout eligibility
-				await this.supabase
-					.from('transactions')
-					.update({
-						payout_status: 'pending',
-						updated_at: new Date().toISOString()
-					})
-					.eq('order_id', order.id);
+				// TODO: Update transaction status for payout eligibility
+				// await this.supabase
+				//	.from('transactions')
+				//	.update({
+				//		payout_status: 'pending',
+				//		updated_at: new Date().toISOString()
+				//	})
+				//	.eq('order_id', order.id);
 
 				// Review capability is already enabled via buyer_rated/seller_rated flags
 				// These are set to false by default and only changed when reviews are submitted
@@ -316,14 +317,14 @@ export class OrderService {
 					})
 					.eq('id', order.product_id);
 
-				// Update transaction status
-				await this.supabase
-					.from('transactions')
-					.update({
-						status: 'cancelled',
-						updated_at: new Date().toISOString()
-					})
-					.eq('order_id', order.id);
+				// TODO: Update transaction status
+				// await this.supabase
+				//	.from('transactions')
+				//	.update({
+				//		status: 'cancelled',
+				//		updated_at: new Date().toISOString()
+				//	})
+				//	.eq('order_id', order.id);
 
 				// Notify relevant party
 				{
@@ -383,7 +384,7 @@ export class OrderService {
 		// Insert notifications
 		if (notifications.length > 0) {
 			await this.supabase
-				.from('notifications')
+				.from('admin_notifications')
 				.insert(notifications);
 		}
 	}
@@ -521,14 +522,14 @@ export class OrderService {
 			})
 			.eq('id', orderId);
 
-		// Finalize transaction for payout
-		await this.supabase
-			.from('transactions')
-			.update({
-				payout_status: 'ready',
-				updated_at: new Date().toISOString()
-			})
-			.eq('order_id', orderId);
+		// TODO: Finalize transaction for payout
+		// await this.supabase
+		//	.from('transactions')
+		//	.update({
+		//		payout_status: 'ready',
+		//		updated_at: new Date().toISOString()
+		//	})
+		//	.eq('order_id', orderId);
 
 		return { error: null };
 	}

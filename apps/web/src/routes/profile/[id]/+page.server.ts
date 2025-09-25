@@ -2,14 +2,21 @@ import { error, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { ProfileService } from '$lib/services/profiles';
 
-export const load = (async ({ params, locals }) => {
+export const load = (async ({ params, locals, setHeaders }) => {
   const { session } = await locals.safeGetSession();
   const profileService = new ProfileService(locals.supabase);
+
+  // Optimize cache headers for profile pages - user-specific data that changes occasionally
+  setHeaders({
+    'cache-control': 'private, max-age=60, stale-while-revalidate=300',
+    'vary': 'Accept-Encoding, Authorization',
+    'x-cache-strategy': 'profile-page'
+  });
   
   // Handle special "me" case - redirect to current user's profile
   if (params.id === 'me') {
     if (!session?.user) {
-      throw redirect(303, '/login');
+      redirect(303, '/login');
     }
     // Get current user's profile to get their username
     const { data: currentUserProfile } = await locals.supabase
@@ -19,9 +26,9 @@ export const load = (async ({ params, locals }) => {
       .single();
     
     if (currentUserProfile?.username) {
-      throw redirect(303, `/profile/${currentUserProfile.username}`);
+      redirect(303, `/profile/${currentUserProfile.username}`);
     } else {
-      throw redirect(303, `/profile/${session.user.id}`);
+      redirect(303, `/profile/${session.user.id}`);
     }
   }
   
@@ -45,7 +52,7 @@ export const load = (async ({ params, locals }) => {
   }
   
   if (profileError || !profile) {
-    throw error(404, 'User not found');
+    error(404, 'User not found');
   }
 
   // Check if this is the current user's profile
@@ -53,7 +60,7 @@ export const load = (async ({ params, locals }) => {
   
   // Redirect users viewing their own profile to account page
   if (isOwnProfile) {
-    throw redirect(303, '/account');
+    redirect(303, '/account');
   }
 
 

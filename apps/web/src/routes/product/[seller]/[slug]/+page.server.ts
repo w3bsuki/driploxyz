@@ -11,13 +11,13 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
   depends('app:products');
   depends('app:reviews');
 
-  // Optimize caching based on user session
-  if (!session?.user) {
-    setHeaders({
-      'cache-control': 'public, max-age=300, s-maxage=600, stale-while-revalidate=900',
-      'vary': 'Accept-Encoding'
-    });
-  }
+  // Optimize caching for product pages - product data changes occasionally, CDN can cache longer
+  // Use public caching since product data is the same for all users (user-specific data is streamed separately)
+  setHeaders({
+    'cache-control': 'public, max-age=300, s-maxage=600, stale-while-revalidate=3600',
+    'vary': 'Accept-Encoding',
+    'x-cache-strategy': 'product-page'
+  });
 
   // Get product by seller username and slug with timeout for resilience
   // This is the new SEO-friendly URL format: /product/{seller}/{slug}
@@ -79,7 +79,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
   if (productError || !product) {
     
     
-    throw error(404, 'Product not found');
+    error(404, 'Product not found');
   }
 
   // Verify the seller username matches (extra security check)
@@ -88,7 +88,7 @@ export const load = (async ({ params, locals: { supabase, safeGetSession, countr
       expected: params.seller,
       actual: product.profiles?.username
     });
-    throw error(404, 'Product not found');
+    error(404, 'Product not found');
   }
 
   // Performance logging for monitoring

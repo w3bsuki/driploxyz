@@ -39,7 +39,7 @@ const ipCheckHandler: Handle = async ({ event, resolve }) => {
 	// Enforce IP whitelist in production
 	if (ALLOWED_IPS.length > 0 && !ALLOWED_IPS.includes(clientIp)) {
 		
-		throw error(403, {
+		error(403, {
 			message: 'Access denied from this location'
 		});
 	}
@@ -65,7 +65,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	if (!user) {
 		// Redirect to login if trying to access protected page
 		if (event.url.pathname !== '/login') {
-			throw redirect(303, '/login');
+			redirect(303, '/login');
 		}
 		event.locals.isAdmin = false;
 		return resolve(event);
@@ -85,7 +85,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	if (!isAdmin || !emailIsAllowed) {
 		
 		await event.locals.supabase.auth.signOut();
-		throw error(403, {
+		error(403, {
 			message: 'You do not have admin privileges'
 		});
 	}
@@ -135,7 +135,7 @@ const sessionTimeoutHandler: Handle = async ({ event, resolve }) => {
 		if (lastActivity && now - parseInt(lastActivity) > TIMEOUT_MS) {
 			// Session expired
 			await event.locals.supabase.auth.signOut();
-			throw redirect(303, '/login?expired=true');
+			redirect(303, '/login?expired=true');
 		}
 
 

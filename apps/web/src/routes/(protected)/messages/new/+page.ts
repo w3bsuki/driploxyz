@@ -7,7 +7,7 @@ export const load = (async ({ parent, url }) => {
   const supabase = createBrowserSupabaseClient();
 
   if (!user) {
-    throw redirect(303, '/login');
+    redirect(303, '/login');
   }
 
   const searchParams = url.searchParams;
@@ -15,7 +15,7 @@ export const load = (async ({ parent, url }) => {
   const productId = searchParams.get('product');
 
   if (!recipientId) {
-    throw redirect(303, '/messages');
+    redirect(303, '/messages');
   }
 
   // Fetch recipient data
@@ -49,7 +49,7 @@ export const load = (async ({ parent, url }) => {
 
   if (recipientError) {
     
-    throw redirect(303, '/messages');
+    redirect(303, '/messages');
   }
 
   return {

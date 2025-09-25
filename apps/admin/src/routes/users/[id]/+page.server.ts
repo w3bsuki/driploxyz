@@ -12,7 +12,7 @@ export const load = (async ({ params, locals }) => {
 		.single();
 
 	if (userError || !user) {
-		throw error(404, 'User not found');
+		error(404, 'User not found');
 	}
 
 	// Get user's listings

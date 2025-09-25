@@ -1,4 +1,3 @@
-import { writable, get } from 'svelte/store';
 import { browser } from '$app/environment';
 
 export interface TutorialStep {
@@ -98,71 +97,78 @@ function saveState(state: TutorialState) {
   }
 }
 
-// Create the store
-const tutorialState = writable<TutorialState>(getStoredState());
+// Create reactive state using Svelte 5 runes
+let tutorialState = $state<TutorialState>(getStoredState());
 
-// Subscribe to changes and save to localStorage
-tutorialState.subscribe(state => {
-  saveState(state);
+// Auto-save to localStorage whenever state changes
+$effect(() => {
+  saveState(tutorialState);
 });
 
 export const tutorial = {
-  state: tutorialState,
-  
+  // Reactive state getter for backward compatibility
+  get state() {
+    return tutorialState;
+  },
+
+  // For backward compatibility with existing store-based code
+  subscribe(run: (value: TutorialState) => void) {
+    $effect(() => {
+      run(tutorialState);
+    });
+    return () => {}; // Cleanup handled by effect
+  },
+
   // Get current step for a specific route
   getCurrentStep(route: string): TutorialStep | null {
-    const state = get(tutorialState);
-    
-    if (state.dismissed || state.completed) {
+    if (tutorialState.dismissed || tutorialState.completed) {
       return null;
     }
-    
+
     // Find steps for this route that haven't been shown
     const routeSteps = TUTORIAL_STEPS.filter(
-      step => step.route === route && !state.shownSteps.includes(step.id)
+      step => step.route === route && !tutorialState.shownSteps.includes(step.id)
     );
-    
+
     // Return the lowest numbered step for this route
     return routeSteps.sort((a, b) => a.step - b.step)[0] || null;
   },
-  
+
   // Mark a step as shown
   markStepShown(stepId: string) {
-    tutorialState.update(state => ({
-      ...state,
-      shownSteps: [...state.shownSteps, stepId],
-      currentStep: state.currentStep + 1
-    }));
+    tutorialState = {
+      ...tutorialState,
+      shownSteps: [...tutorialState.shownSteps, stepId],
+      currentStep: tutorialState.currentStep + 1
+    };
   },
-  
+
   // Go to next step
   nextStep() {
-    tutorialState.update(state => {
-      const newStep = state.currentStep + 1;
-      
-      if (newStep > TUTORIAL_STEPS.length) {
-        return {
-          ...state,
-          currentStep: newStep,
-          completed: true
-        };
-      }
-      
-      return {
-        ...state,
+    const newStep = tutorialState.currentStep + 1;
+
+    if (newStep > TUTORIAL_STEPS.length) {
+      tutorialState = {
+        ...tutorialState,
+        currentStep: newStep,
+        completed: true
+      };
+    } else {
+      tutorialState = {
+        ...tutorialState,
         currentStep: newStep
       };
-    });
+    }
   },
-  
+
   // Dismiss tutorial
   dismiss() {
-    tutorialState.update(state => ({
-      ...state,
+    tutorialState = {
+      ...tutorialState,
       dismissed: true
-    }));
+    };
   },
-  
+
   // Reset tutorial (for testing or re-enabling)
   reset() {
     const freshState = {
@@ -171,16 +177,15 @@ export const tutorial = {
       dismissed: false,
       shownSteps: []
     };
-    tutorialState.set(freshState);
+    tutorialState = freshState;
     saveState(freshState);
   },
-  
+
   // Check if user should see tutorial
   shouldShowTutorial(): boolean {
-    const state = get(tutorialState);
-    return !state.dismissed && !state.completed && state.currentStep <= TUTORIAL_STEPS.length;
+    return !tutorialState.dismissed && !tutorialState.completed && tutorialState.currentStep <= TUTORIAL_STEPS.length;
   },
-  
+
   getTotalSteps(): number {
     return TUTORIAL_STEPS.length;
   }

@@ -3,7 +3,6 @@
  * Uses Supabase Realtime to provide instant updates across all connected clients
  */
 
-import { writable } from 'svelte/store';
 import type { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js';
 import type { Database } from '@repo/database';
 
@@ -31,7 +30,30 @@ const initialState: RealtimeState = {
   }
 };
 
-export const realtimeStore = writable<RealtimeState>(initialState);
+// Create reactive store using Svelte 5 runes
+let realtimeState = $state<RealtimeState>(initialState);
+
+export const realtimeStore = {
+  get state() {
+    return realtimeState;
+  },
+
+  // For backward compatibility with existing code
+  subscribe(run: (value: RealtimeState) => void) {
+    $effect(() => {
+      run(realtimeState);
+    });
+    return () => {}; // Cleanup handled by effect
+  },
+
+  update(fn: (state: RealtimeState) => RealtimeState) {
+    realtimeState = fn(realtimeState);
+  },
+
+  set(value: RealtimeState) {
+    realtimeState = value;
+  }
+};
 
 export class RealtimeService {
   private supabase: SupabaseClient<Database>;
@@ -189,29 +211,32 @@ export class RealtimeService {
    * Get current metrics for a product from store
    */
   getProductMetrics(productId: string) {
-    let metrics = { favorite_count: 0, view_count: 0 };
-    realtimeStore.subscribe(state => {
-      metrics = state.metrics.productMetrics[productId] || metrics;
-    })();
-    return metrics;
+    const state = realtimeStore.state;
+    return state.metrics.productMetrics[productId] || { favorite_count: 0, view_count: 0 };
   }
 
   /**
    * Get current metrics for a user from store
    */
   getUserMetrics(userId: string) {
-    let metrics = { follower_count: 0, following_count: 0 };
-    realtimeStore.subscribe(state => {
-      metrics = state.metrics.userMetrics[userId] || metrics;
-    })();
-    return metrics;
+    const state = realtimeStore.state;
+    return state.metrics.userMetrics[userId] || { follower_count: 0, following_count: 0 };
   }
 }
 
 // Global realtime service instance (will be initialized in layout)
-export let realtimeService: RealtimeService | null = null;
+let realtimeServiceInstance: RealtimeService | null = null;
+
+export const realtimeService = {
+  get instance() {
+    return realtimeServiceInstance;
+  },
+  set instance(service: RealtimeService | null) {
+    realtimeServiceInstance = service;
+  }
+};
 
 export function initRealtimeService(supabase: SupabaseClient<Database>) {
-  realtimeService = new RealtimeService(supabase);
-  return realtimeService;
+  realtimeService.instance = new RealtimeService(supabase);
+  return realtimeService.instance;
 }
